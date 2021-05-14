@@ -1,4 +1,4 @@
-//v12.69
+//v12.70
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -193,10 +193,10 @@ function legendmaster(self) {
             endpoint_version: "v4",
             proto_version: "15.0.3",
             //client_version: 30706,
-			client_version: 31009,
+			client_version: 31100,
 			//3.4.6
-            client_version_string: "3.10.9",
-			protocolVersion: 22
+            client_version_string: "3.11.0",
+			protocolVersion: 23
         };
     } else if (window.EnvConfig.master_url){
         var headers = {
@@ -205,9 +205,9 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "15.0.3",
-            client_version: 31009,
-            client_version_string: "3.10.9",
-			protocolVersion: 22
+            client_version: 31100,
+            client_version_string: "3.11.0",
+			protocolVersion: 23
         };
 		} else {
         var headers = {
@@ -216,9 +216,9 @@ function legendmaster(self) {
             master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "15.0.3",
-            client_version: 31009,
-            client_version_string: "3.10.9",
-			protocolVersion: 22
+            client_version: 31100,
+            client_version_string: "3.11.0",
+			protocolVersion: 23
         };		
     }
 	window.LMagarioheaders=headers;
