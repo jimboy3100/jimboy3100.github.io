@@ -676,7 +676,7 @@
 			url: "//snez.org:8080/stats",
             datatype: "json",
             success: function(info) {
-                window.modusers = JSON.parse(info)
+                window.modusers = info; //JSON.parse(info)
                 $("#LMscriptsEnd").after('<div id="ModIcons"><img width="16" height="16" src="https://legendmod.ml/banners/icontinyLegend.png">: ' + window.modusers.lm +
                     ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyDelta.png">: ' + window.modusers.dl +
                     ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyUnknown.png">: ' + window.modusers.og +
