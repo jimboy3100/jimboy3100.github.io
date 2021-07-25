@@ -1,4 +1,4 @@
-//SPECS v4.6a WORKS UNTIL HERE
+//SPECS v4.7 WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -406,7 +406,8 @@ class Spect {
                 self.sendMessage(view);
             }
         legendmod.integrity && agarCaptcha.requestCaptchaV3("play", function(token) {
-            sendSpawn(token)
+            sendSpawn('0'); // 25/7/2021
+			//sendSpawn(token) 
         });
         !legendmod.integrity && sendSpawn('0')
 		}
@@ -682,12 +683,22 @@ class Spect {
                 }
 				this.GhostFix()				
                 break;
+				
             case 85:
 			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
               console.log('[SPECT] case 85');
 			  this.terminate()
                 
                 break;
+	    	case 87:
+			//(function anonymous(t) {
+				window.agarCaptcha.requestCaptchaV3("play", function(a) {
+				var b = this.createView(2 + a.length);
+				b.setUint8(0, 88);
+				for (var c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
+				b.setUint8(a.length + 1, 0);
+				this.sendMessage(b)
+				});				
             case 102:
 						//this.sendCursor()
 						//console.log("[SPECT] SendNick with")						
