@@ -89,6 +89,7 @@ ProLicenceUsersTable = {
             "reason": "Donate",
             "notes": "TeachMe"
         },
+
         "21e8e56d-b2b7-44a0-a35e-e9004309fa2a": {
             "reason": "Donate",
             "notes": "Kristina"
@@ -100,7 +101,11 @@ ProLicenceUsersTable = {
         "b8ae7f49-30b2-4354-93e9-84d44dda84b4": {
             "reason": "Donate",
             "notes": "JonathanMedrano"
-        },		
+        },	
+        "43f70f95-dd23-441b-b8c7-95787db46062": {
+            "reason": "HendriksFriend",
+            "notes": "Riven"
+        },	
         "c930db58-ff74-429b-a05b-099388031f50": {
             "reason": "Donate",
             "notes": "SkyOmer"
