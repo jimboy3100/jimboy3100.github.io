@@ -125,7 +125,11 @@ ProLicenceUsersTable = {
         "77cd1c7f-a602-457f-b192-8c8b55b1fc46": {
             "reason": "Donate",
             "notes": "Alphamenzo"
-        },		
+        },	
+        "43b81454-bb19-4c52-941f-e2231b8bfea3": {
+            "reason": "friendOfJan",
+            "notes": "Jamie_23744"
+        }, 	    
         "17914d3b-6b8f-468a-bb6b-4d91d3c3f670": {
             "reason": "GoodWillForSon",
             "notes": "jebak"
