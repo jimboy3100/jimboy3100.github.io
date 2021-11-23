@@ -73,6 +73,7 @@ ProLicenceUsersTable = {
             "reason": "FriendOfBotplayer",
             "notes": "Overkill"
         }, 	    
+
         "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
             "reason": "Donate",
             "notes": "Cla"
@@ -89,7 +90,10 @@ ProLicenceUsersTable = {
             "reason": "Donate",
             "notes": "TeachMe"
         },
-
+        "40252edd-4ec4-41a0-865f-aa9d967a3706": {
+            "reason": "Nov2021",
+            "notes": "Java"
+        }, 	    
         "21e8e56d-b2b7-44a0-a35e-e9004309fa2a": {
             "reason": "Donate",
             "notes": "Kristina"
