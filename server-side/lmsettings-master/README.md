@@ -9,3 +9,5 @@ Website: [www.legendmod.ml](http://www.legendmod.ml)
 
 ...
 getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
+
+php server
