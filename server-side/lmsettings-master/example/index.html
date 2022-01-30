@@ -1,0 +1,30 @@
+<html>
+<head>
+    <script type="text/javascript" src="example.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body class="container">
+    <h1>Example</h1>
+    <label>Server:</label> <input type="text" id="server" value="http://lmsettings.snez.org/"><br>
+    <label>Username:</label> <input type="text" id="username" value="test"><br>
+    <label>Password:</label> <input type="text" id="password" value="test1234"><br>
+    <label>Data:</label><br>
+    <textarea id="data" cols="100" rows="10">
+{
+    "some": "data"
+}
+    </textarea>
+
+    <br><br>
+
+    <button onclick="get()">GET</button>
+    <button onclick="post()">POST</button>
+
+    <br><br>
+
+    <label>Response Status:</label>
+    <div id="status"></div>
+
+    <label>Response Body:</label>
+    <div id="body"></div>
+</body>
