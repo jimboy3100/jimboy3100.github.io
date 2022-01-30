@@ -1,0 +1,14 @@
+git remote add snez root@178.79.140.34:/data/repos/neo
+git push -u master snez master
+
+git remote add origin git@github.com:snez/socket.git
+git fetch origin --all
+
+GIT_WORK_TREE=/data/apps/neo git checkout -f
+cd /data/apps/neo
+docker build -t neo .
+docker rm -f neo
+docker run -it -v /data/www/ssl/:/ssl/ -d --name="neo" --restart=always -p 8080:8080 -p 8081:8081 neo
+
+devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=178.79.140.34:8081/b86391a0-237f-426c-b365-5ebdbc50bdad
+devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=178.79.140.34:8081/b86391a0-237f-426c-b365-5ebdbc50bdad

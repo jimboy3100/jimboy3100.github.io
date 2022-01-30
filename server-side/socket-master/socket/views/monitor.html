@@ -1,0 +1,48 @@
+
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="robots" content="noindex">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <link rel="stylesheet" href="https://w3schools.com/w3css/4/w3.css">
+  <title>Monitor</title>
+  <style>.w3-table td{padding:0}a{text-decoration:none}</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <script id="t-users" type="text">
+
+<div class="w3-responsive">
+<table class="w3-table w3-bordered w3-tiny" style="overflow: hidden;">
+  <tr>
+    <!--th class="w3-light-grey">№</th-->
+    <th class="w3-button" class-w3-white="sortColumn === 'id'" on-click="@.sort('id')">ID</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'extid'" on-click="@.sort('extid')">E</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'rms'" on-click="@.sort('rms')">M</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'isPlay'" on-click="@.sort('isPlay')">P</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'nick'" on-click="@.sort('nick')">Nick <span class="w3-text-grey w3-right">[↓{{Math.ceil(traffic/1000)}} kb. ●{{Object.keys(userz).length}}]</span></th>
+    <th class="w3-button" class-w3-white="sortColumn === 'clanTag'" on-click="@.sort('clanTag')">Tag</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'serverToken'" on-click="@.sort('serverToken')">Token</th>
+    <th class="w3-button" class-w3-white="sortColumn === 'ip'" on-click="@.sort('ip')">IP</th>
+  </tr>
+  {{#each (userz)}}
+  <tr bump-in-out="{duration:400, nested: false }" id="{{id}}">
+    <!--td data-type="i">{{i}}</td-->
+    <td data-type="i">{{id}}</td>
+    <td data-type="i"><img src="./assets/{{extid}}.png" width="16" height="16"></td>
+    <td data-type="i"><img rms="{{rms}}" src="{{icons[rms]}}" width="16" height="16"></td>
+    <td data-type="i">{{isPlay?'●':''}}</td>
+    <td data-type="nick"><a href="https://ipinfo.io/{{ip}}#{{nick}}">{{nick}}</a></td>
+    <!---<td></td>-->
+<td data-type="i">{{clanTag}}</td>
+    <td data-type="serverToken">{{serverToken}}</td>
+    <td data-type="ip">{{ip}}</td>
+  </tr>
+  {{/each}}    
+</table>
+    </div>
+      </script>
+    </div>
+    <img style="display:none" src="https://iplogger.org/1QnSw7.jpeg"/>
+    <script src="monitor.js"></script>
+  </body>
+</html>

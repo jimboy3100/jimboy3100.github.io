@@ -1,0 +1,255 @@
+
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="robots" content="noindex">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <link rel="stylesheet" href="https://w3schools.com/w3css/4/w3.css">
+    <title>Monitor</title>
+    <style>.w3-table td{padding:0}a{text-decoration:none}</style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+    </head>
+    <body>
+        <div id="app2"></div>
+        <div id="app">
+            <script id="t-users" type="text">
+      
+      <div class="w3-responsive">
+      <table class="w3-table w3-bordered w3-tiny" style="overflow: hidden;">
+        <tr>
+          <!--th class="w3-light-grey">№</th-->
+          <th class="w3-button" class-w3-white="sortColumn === 'id'" on-click="@.sort('id')">ID</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'extid'" on-click="@.sort('extid')">E</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'rms'" on-click="@.sort('rms')">M</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'isPlay'" on-click="@.sort('isPlay')">P</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'nick'" on-click="@.sort('nick')">Nick <span class="w3-text-grey w3-right">[↓{{Math.ceil(traffic/1000)}} kb. ●{{Object.keys(userz).length}}]</span></th>
+          <th class="w3-button" class-w3-white="sortColumn === 'clanTag'" on-click="@.sort('clanTag')">Tag</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'serverToken'" on-click="@.sort('serverToken')">Token</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'ip'" on-click="@.sort('ip')">IP</th>
+        </tr>
+        {{#each (userz)}}
+        <tr bump-in-out="{duration:400, nested: false }" id="{{id}}">
+          <!--td data-type="i">{{i}}</td-->
+          <td data-type="i">{{id}}</td>
+          <td data-type="i"><img src="./assets/{{extid}}.png" width="16" height="16"></td>
+          <td data-type="i"><img rms="{{rms}}" src="{{icons[rms]}}" width="16" height="16"></td>
+          <td data-type="i">{{isPlay?'●':''}}</td>
+          <td data-type="nick"><a href="https://ipinfo.io/{{ip}}#{{nick}}">{{nick}}</a></td>
+          <!---<td></td>-->
+      <td data-type="i">{{clanTag}}</td>
+          <td data-type="serverToken">{{serverToken}}</td>
+          <td data-type="ip">{{ip}}</td>
+        </tr>
+        {{/each}}    
+      </table>
+          </div>
+            </script>
+          </div>
+
+<script type="module">
+console.clear()
+
+import { html, Component, render } from 'https://unpkg.com/htm/preact/standalone.module.js';
+    
+ 
+
+
+require['config']({
+    'context': '',
+    'paths': {
+      'bootstrap':  'https://cdn.ogario.ovh/static/js/bootstrap.min',
+      'jquery':     'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min',
+      'underscore': 'https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min',
+      'backbone':   'https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min',
+      'backbone-ws':'https://rawcdn.githack.com/ydaniv/backbone-ws/9d5cce1519ee0807c192600effa25a3c806d40d7/backbone-ws',
+      'msgpack':'https://cdnjs.cloudflare.com/ajax/libs/msgpack-lite/0.1.26/msgpack.min',
+      //'Ractive':'https://cdnjs.cloudflare.com/ajax/libs/ractive/0.7.2/ractive.min',
+      'Ractive':'https://cdnjs.cloudflare.com/ajax/libs/ractive/1.3.12/ractive.min',
+      'WS':'https://rawcdn.githack.com/joewalnes/reconnecting-websocket/fd7c819bb15eeee3452c17e317c0a3664c442965/reconnecting-websocket'
+    },
+    'shim': {
+        'bootstrap': {'deps': ['jquery']},
+        'jquery':    {'exports': '$'},
+        'msgpack':    {'exports': 'msgpack'},
+        'underscore':{'exports': '_'},
+        'backbone':  {'exports': 'Backbone','deps': ['jquery', 'underscore']},
+        'backbone-ws':{'deps': ['backbone']}
+    }
+});
+
+var app = {
+  tpl:{},view:{},model:{},collection:{},run:{},e:{},helper:{},cache:{pages:{}}
+}
+
+
+require(["backbone","msgpack",'Ractive','underscore','WS','backbone-ws'],function(Backbone,msgpack,Ractive,_,WS) {
+
+  var token = localStorage['token']
+  if(!token) localStorage['token'] = token = prompt('Token access:')
+
+app.model.user = Backbone.Model.extend()
+app.collection.users = Backbone.Collection.extend({
+  model:app.model.user,
+  
+})
+app.view.user = Backbone.View.extend({
+  tagName:'div',
+  render: function(){
+    this.model.attributes.cid = this.model.cid
+    this.$el.html(app.tpl.fitem(this.model.toJSON()))
+    return this
+  }
+})
+var Users = window.Users = new app.collection.users
+  
+var ws = window.ws = new Backbone.WS(`wss${location.protocol==='https:'?'s':''}://${'snez.org:8080'}/ws`);
+
+class App extends Component {
+      constructor(){
+          super(Component)
+          console.trace('suka')
+          this.todos=[]
+          this.indexed={}
+         const self = this
+
+          ws.ready
+    .then(
+        function (instance) {
+          setInterval(function(){
+            ws.send(1)
+          },45000)
+          console.log('On air!');
+        },
+        function (error) {
+            console.error('Failed to connect!', error);
+        });
+  var model = window.model = new Backbone.Model({collection:Users});
+  model.on('ws:open', function (){
+    ws.socket.binaryType='arraybuffer'
+    ws.socket.send(msgpack.encode({e:'auth',token:token}))
+    ws.socket.send(msgpack.encode({e:'users'}))
+    ws.socket.send(msgpack.encode({e:'change'}))
+  })
+  model.on('ws:message', function (buffer) { 
+      //ractive.add('traffic',buffer.byteLength)
+      try{var msg = msgpack.decode(new Uint8Array(buffer))}catch(e){console.log(buffer)}
+      switch(msg.e){
+          
+          case 'unauth':
+            delete localStorage['token']
+            console.log(token)
+            location.reload()
+          break;
+          case 'ad': 
+          self.indexed[msg.data.id] = msg.data
+          self.todos.push(self.indexed[msg.data.id])
+          self.setState({ todos:  this.todos});
+
+          /*ractive.push('ids',msg.data)
+            .then(index => {
+            msg.data.i = index-1
+            ractive.set('userz.'+msg.data.id,msg.data)
+          })*/
+        //case 'ad': window.Users.add(msg.data);
+          break;
+        case 'ch': 
+          Object.keys(msg.data).map(function(key,id){
+            if(key=='id') return;
+            if(!self.indexed[msg.data.id]) self.indexed[msg.data.id] = {}
+            self.indexed[msg.data.id][key] = msg.data[key]
+            
+          })
+          self.setState({ todos:  self.todos});
+
+          break;
+        case 'rm': 
+          var user = self.indexed[msg.data.id]
+          const i = self.todos.indexOf(user)
+		 ~i&&self.todos.splice(i,1)
+          delete self.indexed[msg.data.id]
+          break;
+          
+      }
+    
+});
+
+ws.bind(model);
+      }
+      addTodo() {
+        const { todos = [] } = this.state;
+        todos.unshift(`Item ${todos.length}`)
+        this.setState({ todos:  todos});
+        console.log(todos)
+      }
+      render({ page }, { todos = [] }) {
+        return html`
+        <div class="w3-responsive">
+      <table class="w3-table w3-bordered w3-tiny" style="overflow: hidden;">
+        <tr>
+          <!--th class="w3-light-grey">№</th-->
+          <th class="w3-button" class-w3-white="sortColumn === 'id'" on-click="@.sort('id')">ID</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'extid'" on-click="@.sort('extid')">E</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'rms'" on-click="@.sort('rms')">M</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'isPlay'" on-click="@.sort('isPlay')">P</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'nick'" on-click="@.sort('nick')">Nick <span class="w3-text-grey w3-right">[↓{{Math.ceil(traffic/1000)}} kb. ●{{Object.keys(userz).length}}]</span></th>
+          <th class="w3-button" class-w3-white="sortColumn === 'clanTag'" on-click="@.sort('clanTag')">Tag</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'serverToken'" on-click="@.sort('serverToken')">Token</th>
+          <th class="w3-button" class-w3-white="sortColumn === 'ip'" on-click="@.sort('ip')">IP</th>
+        </tr>
+        ${this.todos.map(todo => html`
+        <tr id="${todo.id}">
+
+          <td data-type="i">${todo.id}</td>
+          <td data-type="i"><img src="./assets/${todo.extid}.png" width="16" height="16"/></td>
+
+          <!--td data-type="i"><img rms="{{rms}}" src="{{icons[rms]}}" width="16" height="16"></td-->
+          <td data-type="i">${todo.isPlay?'●':''}</td>
+          <td data-type="nick"><a href="https://ipinfo.io/{{ip}}#{{nick}}">${todo.nick}</a></td>
+          <td data-type="i">${todo.clanTag}</td>
+          <td data-type="serverToken">${todo.serverToken}</td>
+          <td data-type="ip">${todo.ip}</td>
+        </tr>
+        `)} 
+      </table>
+          </div>
+          
+          `
+        /*return html`
+          <div class="app">
+            <${Header} name="ToDo's (${page})" />
+            <ul>
+              ${this.todos.map(todo => html`
+                <li>${todo.isPlay?'+':'-'} ${todo.ip} ${todo.nick}</li>
+              `)}
+            </ul>
+            <button onClick=${() => this.addTodo()}>Add Todo</button>
+            <${Footer}>footer content here<//>
+          </div>
+        `;*/
+      }
+    }
+ 
+    const Header = ({ name }) => html`<h1>${name} List</h1>`
+ 
+    const Footer = props => html`<footer ...${props} />`
+ 
+    let k = html`<${App} page="All" />`
+    render(k, document.getElementById('app2'));
+    console.log(k)
+
+    
+
+ 
+
+
+
+
+//ractive.reverse('collection')
+  
+})
+
+
+
+   </script>
+
+
+</body>
+</html>

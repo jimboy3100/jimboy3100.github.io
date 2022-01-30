@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+
+#  redis:
+#    build: ./redis
+#    container_name: redis
+#    restart: always
+#    ports:
+#        - "6380:6379"
+#    networks:
+#        app_net:
+#            ipv4_address: 172.16.240.33
+
+  socket:
+    build: ./socket
+    container_name: socket
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - /data/www/ssl/:/ssl/
+    environment:
+      - PORT=8080
+    #depends_on:
+    #  - redis
+    networks:
+      app_net:
+        ipv4_address: 172.16.240.110
+
+networks:
+  app_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.240.0/24
+        gateway: 172.16.240.1

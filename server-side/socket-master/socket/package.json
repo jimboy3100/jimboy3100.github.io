@@ -1,0 +1,25 @@
+{
+  "name": "map-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./server.js",
+  "scripts": {
+    "start": "node --nouse-idle-notification --expose-gc --max-old-space-size=8192 server.js",
+    "dev": "nodemon --inspect server.js",
+    "-start": "variable=`node --inspect=0.0.0.0:8081 server.js`"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-ws": "^4.0.0",
+    "http-proxy": "^1.18.0",
+    "msgpack-lite": "0.1.26",
+    "node-os-utils": "^1.2.2",
+    "uws": "^200.0.0",
+    "ws": "^7.1.2"
+  },
+  "engines": {
+    "node": "8.x"
+  }
+}

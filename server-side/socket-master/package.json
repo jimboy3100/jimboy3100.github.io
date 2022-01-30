@@ -1,0 +1,22 @@
+{
+  "name": "map-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "socket/server.js",
+  "scripts": {
+    "start": "node --nouse-idle-notification --expose-gc --max-old-space-size=8192 socket/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-ws": "^4.0.0",
+    "ws": "^7.1.2",
+    "msgpack-lite": "^0.1.26",
+    "node-os-utils": "^1.2.2",
+    "http-proxy": "^1.18.0"
+  },
+  "engines": {
+    "node": "8.x"
+  }
+}

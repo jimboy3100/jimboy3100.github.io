@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="https://rawcdn.githack.com/sindresorhus/github-markdown-css/888d5a03223a2c14a8d3eb40e90a22f62469a46b/github-markdown.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+<div class="markdown-body" id="app"></div>
+<script id="markdown" type="markdown">
+# Standby server
+...by the developers of modifications Legendmod and Delta
+
+### Uptime - .
+### Total online - .
+
+| Mod | Online clients |
+|--|--|
+| ![alt](./assets/10.png =16x16) Ogario | . |
+| ![alt](./assets/20.png =16x16) Legendmod | . |
+| ![alt](./assets/40.png =16x16) Delta 4 | . |
+| ![alt](./assets/50.png =16x16) Delta 5 | . |
+| ![alt](./assets/41.png =16x16) Dead Mod | . |
+| ![alt](./assets/30.png =16x16) HSLO 5.x.x| . |
+| ![alt](./assets/90.png =16x16) Agarix | . |
+| ![alt](./assets/sc.png =16x16) Scantrick| . |
+| ![alt](./assets/0.png =16x16) Others | . |
+
+
+## Chat commands
+
+|Command|Description|
+|--|--|
+|.here|Total online on current game server|
+|.up| Server uptime|
+|.me| Current room location|
+
+## Contact
+
+Discord : **neo#1544**
+</script>
+
+<script>
+
+    var converter = new showdown.Converter({tables: true,customizedHeaderId:true}),
+    text      = document.getElementById('markdown').innerHTML,
+    html      = converter.makeHtml(text);
+    document.getElementById('app').innerHTML=html;
+
+
+    var xmlhttp = new XMLHttpRequest();
+    var url = './stats';
+
+    xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var json = JSON.parse(this.responseText);
+         myFunction(json);
+    }
+    };
+    
+    setInterval(()=>{xmlhttp.open("GET", url, true);xmlhttp.send();},5000)
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    function myFunction(data) {
+        document.getElementById('uptime').innerText="Uptime - "+data.uptime
+        document.getElementById('totalonline').innerText="Total online - "+data.t
+        document.getElementsByTagName('table')[0].rows[1].cells[1].innerText = data.og
+        document.getElementsByTagName('table')[0].rows[2].cells[1].innerText = data.lm
+        document.getElementsByTagName('table')[0].rows[3].cells[1].innerText = data.d4
+        document.getElementsByTagName('table')[0].rows[4].cells[1].innerText = data.d5
+        document.getElementsByTagName('table')[0].rows[5].cells[1].innerText = data.dm
+        document.getElementsByTagName('table')[0].rows[6].cells[1].innerText = data.hs
+        document.getElementsByTagName('table')[0].rows[7].cells[1].innerText = data.ix
+        document.getElementsByTagName('table')[0].rows[8].cells[1].innerText = data.sc
+        document.getElementsByTagName('table')[0].rows[9].cells[1].innerText = data.unknownClient
+    }
+</script>
