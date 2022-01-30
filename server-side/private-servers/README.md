@@ -1,5 +1,4 @@
-
-Also look here:
+Copy one-by-one files from these links:
 
 https://github.com/jimboy3100/imsolo-servers
 https://glitch.com/edit/#!/imsolo-megasplit-beta?path=README.md%3A1%3A0
