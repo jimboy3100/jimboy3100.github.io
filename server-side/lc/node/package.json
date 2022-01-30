@@ -1,0 +1,12 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "async-limiter": {
+      "integrity": "sha512-jp/uFnooOiO+L211eZOoSyzpOITMXx1rBITauYykG3BRYPu8h0UcxsPNB04RR5vo4Tyz3+ay17tR6JVf9qzYWg==",
+      "resolved": "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.0.tgz",
+      "version": "1.0.0"
+    },
+    "ws": "^6.1.0"
+  }
+}

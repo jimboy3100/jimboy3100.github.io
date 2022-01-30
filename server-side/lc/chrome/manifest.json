@@ -1,0 +1,39 @@
+{
+    "name": "℄ Player Servers",
+    "version": "1.0",
+    "description": "Tracks your connected Agar.io server and updates the ℄ clan so other players can find and join your server.",
+    "permissions": [
+      "declarativeContent",
+      "storage",
+      "activeTab",
+      "tabs"
+    ],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    },
+    "page_action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "images/lc16.png",
+        "32": "images/lc32.png",
+        "64": "images/lc64.png",
+        "128": "images/lc128.png"
+      }
+    },
+    "icons": {
+      "16": "images/lc16.png",
+      "32": "images/lc32.png",
+      "64": "images/lc64.png",
+      "128": "images/lc128.png"
+    },
+    "content_scripts": [
+      {
+        "run_at": "document_end",
+        "matches": ["http://agar.io/*"],
+        // "css": ["styles.css"],
+        "js": ["contentScript.js"]
+      }
+    ],
+    "manifest_version": 2
+  }
