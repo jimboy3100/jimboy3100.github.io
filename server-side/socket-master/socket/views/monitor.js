@@ -82,7 +82,7 @@ ws.ready
             location.reload()
           break;
           case 'ad': 
-          
+          var index;
           ractive.push('ids',msg.data)
             .then(index => {
             msg.data.i = index-1
