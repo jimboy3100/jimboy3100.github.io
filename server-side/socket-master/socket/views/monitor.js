@@ -46,8 +46,10 @@ app.view.user = Backbone.View.extend({
   }
 })
 var Users = window.Users = new app.collection.users
-  
-var ws = window.ws = new Backbone.WS(`ws${location.protocol==='https:'?'s':''}://${location.host}/ws`);
+
+
+var ws = window.ws = new Backbone.WS(`ws${location.protocol==='https:'?'s':''}://${https://snez.org:8080}/ws`);
+//var ws = window.ws = new Backbone.WS(`ws${location.protocol==='https:'?'s':''}://${location.host}/ws`);
 
 
 ws.ready
