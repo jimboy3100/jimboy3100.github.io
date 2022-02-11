@@ -49,7 +49,7 @@ var Users = window.Users = new app.collection.users
 
 
 //var ws = window.ws = new Backbone.WS(`ws${location.protocol==='https:'?'s':''}://${location.host}/ws`);
-var urlToSearch="https://snez.org:8080";
+var urlToSearch="snez.org:8080";
 var ws = window.ws = new Backbone.WS(`ws${location.protocol==='https:'?'s':''}://${urlToSearch}/ws`);
 
 ws.ready
