@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.70 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.71 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "12"; // the version 1.1-> 1.11
 
@@ -2082,8 +2082,8 @@ function universalchat() {
         "AgarToolVersion": window.lalala,
 		
         //"AgarToolServer": "wss://minimap.agartool.io:9000",
-		"AgarToolServer": "wss://minimap.agartool.io",
-		//"AgarToolServer": "wss://minimap.agartool.io:443",
+		//"AgarToolServer": "wss://minimap.agartool.io",
+		"AgarToolServer": "wss://minimap.agartool.io:443",
         minimapBalls: {},
         "socketIoURL": "https://legendmod.ml/ExampleScripts/socket-io.min.js",
         "minimapNickFont": "700 11px Ubuntu",
