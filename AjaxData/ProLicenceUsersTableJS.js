@@ -301,7 +301,11 @@ ProLicenceUsersTable = {
         "2ab3c1b6-3e83-41aa-aea8-7f2fc29536e0": {
             "reason": "Give@20200910",
             "notes": "RewardDay-HaseebSultan"
-        }, 
+        },
+        "a71d2c6d-6e9b-471b-abd1-e22daceabc3a": {
+            "reason": "Junky",
+            "notes": "emmanuil"
+        }, 	    
         "02279fd0-ce99-444e-9f94-788ca4674509": {
             "reason": "WinnerPrizeQuestsCompleted",
             "notes": "WinnerPrize-ChristhopherBrandhon"
