@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.71 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.72 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "12"; // the version 1.1-> 1.11
 
@@ -308,7 +308,7 @@ function startLM(modVersion) {
 			toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
 		}
 		//$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
-		universalchat();
+		//universalchat();
 		adminstuff();
 		return initializeLM(modVersion);
 	}
