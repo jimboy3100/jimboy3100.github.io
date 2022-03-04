@@ -1,5 +1,5 @@
 /* Source script
-v3.121
+v3.119
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -4614,7 +4614,7 @@ window.MouseClicks=[];
         },
         setUniversalChat() {
             if (defaultmapsettings.universalChat && $("#ao2t-hud").length && legendmod && legendmod.ws && legendmod.integrity) {
-                //$("#ao2t-hud").show();
+                $("#ao2t-hud").show();
             } else {
                 $("#ao2t-hud").hide();
             }
