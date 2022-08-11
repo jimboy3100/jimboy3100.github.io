@@ -1,5 +1,5 @@
 /* Source script
-v3.120
+v3.121
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -4179,9 +4179,9 @@ window.MouseClicks=[];
             if (on) {
                 if (this.feedInterval) return;
                 var app = this;
-                this.Botsmacroeject();
+                this.Botseject();
                 this.feedInterval = setInterval(function() {
-                    app.Botsmacroeject();
+                    app.Botseject();
                 }, defaultmapsettings.macroFeeding);
             } else if (this.feedInterval) {
                 clearInterval(this.feedInterval);
@@ -4215,9 +4215,9 @@ window.MouseClicks=[];
         Botseject() {
             if (window.core && window.core.Botseject) window.core.Botseject();
         },
-        Botsmacroeject() {
+        /*Botsmacroeject() {
             if (window.core && window.core.Botsmacroeject) window.core.Botsmacroeject();
-        },		
+        },*/		
 		
         doubleBotSplit() {
             var app = this;
@@ -15976,13 +15976,13 @@ Game name     : ${i.displayName}<br/>
                 LM.sendBotEject();
             }
         },
-        Botsmacroeject() {
+        /*Botsmacroeject() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendBotEject()
             } else {
                 LM.sendBotEject();
             }
-        },		
+        },	*/	
         Botsplit() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendBotSplit()
