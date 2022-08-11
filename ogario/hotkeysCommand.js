@@ -1,4 +1,5 @@
 //v1.3i
+
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
