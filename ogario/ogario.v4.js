@@ -1,5 +1,5 @@
 /* Source script
-v3.119
+v3.120
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1532,7 +1532,8 @@ var displayText = {
         'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
         'hk-bots-split': 'Bots split',
         'hk-bots-feed': 'Bots feed',
-        'hk-bots-ai': 'Bots AI toggle',
+		'hk-bots-macrofeed': 'Bots Macro feed',
+        //'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Szybki feed',
 		'hk-macroFeedPerm': 'Permanent feed',
@@ -2013,7 +2014,8 @@ var displayText = {
         'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
         'hk-bots-split': 'Bots split',
         'hk-bots-feed': 'Bots feed',
-        'hk-bots-ai': 'Bots AI toggle',
+		'hk-bots-macrofeed': 'Bots Macro feed',				
+        //'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Macro feed',
 		'hk-macroFeedPerm': 'Permanent feed',
@@ -4172,6 +4174,19 @@ window.MouseClicks=[];
                     app.feed();
                 }, defaultmapsettings.macroFeeding);
             } 
+        },
+        macrobotFeed(on) {
+            if (on) {
+                if (this.feedInterval) return;
+                var app = this;
+                this.Botsmacroeject();
+                this.feedInterval = setInterval(function() {
+                    app.Botsmacroeject();
+                }, defaultmapsettings.macroFeeding);
+            } else if (this.feedInterval) {
+                clearInterval(this.feedInterval);
+                this.feedInterval = null
+            };
         },		
         macroFeed(on) {
             if (on) {
@@ -4200,6 +4215,10 @@ window.MouseClicks=[];
         Botseject() {
             if (window.core && window.core.Botseject) window.core.Botseject();
         },
+        Botsmacroeject() {
+            if (window.core && window.core.Botsmacroeject) window.core.Botsmacroeject();
+        },		
+		
         doubleBotSplit() {
             var app = this;
             app.Botsplit();
@@ -10489,7 +10508,7 @@ window.MouseClicks=[];
         sendBotEject() {
             //this.sendPosition();
             this.sendAction(23);
-        },
+        },	
         sendBotSplit() {
             //this.sendPosition();
             this.sendAction(22);
@@ -15957,6 +15976,13 @@ Game name     : ${i.displayName}<br/>
                 LM.sendBotEject();
             }
         },
+        Botsmacroeject() {
+            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                spects[window.multiboxPlayerEnabled - 1].sendBotEject()
+            } else {
+                LM.sendBotEject();
+            }
+        },		
         Botsplit() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendBotSplit()
