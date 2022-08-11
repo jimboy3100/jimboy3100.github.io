@@ -1,4 +1,4 @@
-//v1.3h
+//v1.3i
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -571,7 +571,7 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },	
+            },	/*
             'hk-bots-ai': {
                 label: textLanguage['hk-bots-ai'],
                 defaultKey: 'P',
@@ -592,7 +592,7 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },
+            },*/
             'hk-macroFeed': {
                 label: textLanguage['hk-macroFeed'],
                 defaultKey: 'E',
@@ -605,11 +605,11 @@
                 type: 'normal'
             },				
             'hk-bots-macrofeed': {
-                label: textLanguage['hk-bots-feed'],
+                label: textLanguage['hk-bots-macrofeed'],
                 defaultKey: '',
                 keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legendmod.ws.includes("imsolo.pro") && application) {
+                    //if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
+					if (legendmod.ws.includes("imsolo.pro") && application) {
 						application.macrobotFeed(!1);	
 						//application.Botseject();
 					}																
