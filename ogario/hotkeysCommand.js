@@ -1,5 +1,4 @@
-//v1.3i
-
+//v1.3j
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -611,7 +610,7 @@
                 keyDown() {
                     //if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
 					if (legendmod.ws.includes("imsolo.pro") && application) {
-						application.macrobotFeed(!1);	
+						application.macrobotFeed(!0);	
 						//application.Botseject();
 					}																
                 },
