@@ -1,5 +1,5 @@
 /* Source script
-v3.121
+v3.122
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -84,12 +84,12 @@ function deleteGamemode(temp) {
             text: 'Delta FFA',
             value: 4001
         },
-	{
+	/*{
             text: 'Delta Party',
             value: 4002
-        },
+        },*/
 	{
-            text: 'FFA PowerUp',
+            text: 'FeelForeverAlone',
             value: 34
         }, {
             text: 'Arctida',
@@ -147,20 +147,20 @@ function deleteGamemode(temp) {
             text: 'Crazy NA',
             value: 54
         }*/
-		, {			
+		, /*{			
             text: 'Instant Merging',
             value: 16
-        }, {			
+        },*/ {			
             text: 'Party MegaSplit',
             value: 19
         }, {
             text: 'Party Mode',
             value: 20
         }, {
-            text: 'Party Selfeed',
+            text: 'EatCells FFA 1',
             value: 21
         }, {
-            text: 'Crazy Selfeed',
+            text: 'EatCells FFA 2',
             value: 22
         }, {
             text: '1vs1 FFA #1',
@@ -324,9 +324,9 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 20) {
             core.connect('wss://imsolo.pro:4101');
         } else if ($('#gamemode').val() == 21) {
-            core.connect('wss://imsolo.pro:4107');
+            core.connect('wss://eatcells.com/api/~');
         } else if ($('#gamemode').val() == 22) {
-            core.connect('wss://imsolo.pro:4108');
+            core.connect('wss://ogar.eatcells.com/api/~');
         } else if ($('#gamemode').val() == 23) {
             core.connect('wss://imsolo.pro:4102');
         } else if ($('#gamemode').val() == 24) {
@@ -401,11 +401,14 @@ function deleteGamemode(temp) {
 			core.connect('ws://na.agarios.org:443/');
         }
 	else if ($('#gamemode').val() == 4001) {
-			core.connect('wss://delta-ffa.fly.dev');
+			core.connect('wss://delta-ffa.glitch.me');
         }
 	else if ($('#gamemode').val() == 4002) {
 			core.connect('wss://delta-server.fly.dev');
         }
+
+//wss://eatcells.com/api/~ EatCells FFA 1
+//wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
 
         /*
 		else if ($('#gamemode').val() == 42) {
