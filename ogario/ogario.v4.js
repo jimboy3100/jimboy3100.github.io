@@ -1,5 +1,5 @@
 /* Source script
-v3.122
+v3.123
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -190,17 +190,11 @@ function deleteGamemode(temp) {
             text: 'Beta Party #1',
             value: 14
         }, {
-            text: 'Beta Party #2',
-            value: 15
-        }, {
             text: 'Beta Party v2 #1',
             value: 17
         }, {
             text: 'Beta Party v2 #2',
             value: 18
-        }, {
-            text: 'Beta 1v1 Scrims',
-            value: 32
         }, {
             text: 'Bots',
             value: 33
@@ -213,10 +207,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'MK Bots WIP',
             value: 39
-        }, {			
-            text: 'Ogar Eat-cells',
-            value: 40
-        }, {				
+        }, 							
 
             /*
         text: 'MK Disturb Furry',
@@ -243,7 +234,7 @@ function deleteGamemode(temp) {
         text: 'Cellz ultra split',
         value: 40		
     }, {
-*/
+*/		{
             text: 'FPS Test',
             value: 12
         }, 
@@ -364,8 +355,6 @@ function deleteGamemode(temp) {
             }, 500)
         } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
-        } else if ($('#gamemode').val() == 40) {
-            core.connect('wss://ogar.eatcells.com/api/');	
         } else if ($('#gamemode').val() == 42) {
 			core.connect('wss://eatcells.com/api/');			
         } else if ($('#gamemode').val() == 41) {
