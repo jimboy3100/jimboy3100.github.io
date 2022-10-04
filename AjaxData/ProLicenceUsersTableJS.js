@@ -352,5 +352,9 @@ ProLicenceUsersTable = {
 	    "notes": "junkyxl"
         }		
     },
+	"a71d2c6d-6e9b-471b-abd1-e22daceabc3a": {
+	    "reason": "lcplayer",
+	    "notes": "junkyxl"
+		
     "versionsInfo": ["v-0.3", "LM-v2.5"]
 };
