@@ -344,17 +344,21 @@ ProLicenceUsersTable = {
         }, 				 			
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
-            "notes": "Lizzie"
-		
-	},
-	"c622e806-974f-42d5-b2d4-dc243ceebdc5": {
+            "notes": "Lizzie"	
+		},
+		"7c8bc4e2-3b20-4f92-b929-d80033150dbb": {
+	    "reason": "drlazzam",
+	    "notes": "jimboy3100"		
+		},		
+		"c622e806-974f-42d5-b2d4-dc243ceebdc5": {
 	    "reason": "streamerlme",
-	    "notes": "junkyxl"
-        }		
-    },
-	"a71d2c6d-6e9b-471b-abd1-e22daceabc3a": {
-	    "reason": "lcplayer",
-	    "notes": "junkyxl"
-		
+	    "notes": "junkyxl"		
+		},
+        "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
+            "reason": "lcplayer",
+            "notes": "junkyxl"		
+		}
     "versionsInfo": ["v-0.3", "LM-v2.5"]
-};
+};	
+	
+	
