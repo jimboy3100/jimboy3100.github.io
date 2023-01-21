@@ -42,7 +42,7 @@ window.tempH = 6
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
 //var agarTesterArena = "wss://livec-arena-12luq8l.tech.agar.io"
-window.clanTagLc = "JOE";
+window.clanTagLc = "ZZX";
 appendLMhiFbPs()
 window.externalScriptMassBar = []
 window.capthaWindow = []
