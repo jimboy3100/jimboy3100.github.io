@@ -1,7 +1,7 @@
 /**************
- * Legend express v1.73 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.74 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "12"; // the version 1.1-> 1.11
+var semimodVersion = "13"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -5060,15 +5060,15 @@ function initializeLM(modVersion) {
 	//$('#animation-value').parent().before("1. Type on browser: <b>chrome://settings/system</b> , ensure <i>Use hardware acceleration when available</i> checkbox, is <b>ENABLED</b>. 2. Prefer <b>Opera GX</b><br><br>");
 		
 	$('#animation-value').parent().before(
-        '<label style="float:left; padding-left:0; padding-right:0">' + textLanguage.unlockedFPS + '<select id="FrameWorkOption" class="form-control" onchange="changeFrameWork();" required="" data-original-title="" title="" style="display:inline; width: 70%; float:right;" >' +        			
-		'<option value="true" data-itr="">Unlimited Rate</option>' +
+        '<label style="float:left; padding-left:0; padding-right:0">' + textLanguage.unlockedFPS + '<select id="FrameWorkOption" class="form-control" onchange="changeFrameWork();" required="" data-original-title="" title="" style="display:inline; width: 70%; float:right;" >' +        				
 		'<option value="false" data-itr="">Limited Rate + No delay</option>' +     
         '<option value="2" data-itr="">Limited Rate + 2ms delay</option>' +	
 		'<option value="4" data-itr="">Limited Rate + 4ms delay</option>' +			
         '<option value="8" data-itr="">Limited Rate + 8ms delay</option>' +
 		'<option value="16" data-itr="">Limited Rate + 16ms delay</option>' +
 		'<option value="32" data-itr="">Limited Rate + 32ms delay</option>' +
-		'<option value="64" data-itr="">Limited Rate + 64ms delay</option>' +				
+		'<option value="64" data-itr="">Limited Rate + 64ms delay</option>' +	
+		'<option value="notgood" data-itr="">Unlimited Rate (not suggested)</option>' +
 		'<option value="ultra" data-itr="">Ultra (not suggested - test)</option>' +
 		//'<option value="sophisticated" data-itr="">Sophisticated (not suggested - test)</option>' +
         '</select></label>');
@@ -6537,7 +6537,7 @@ function changeFrameWork(){
 	if ($('#FrameWorkOption').val()=="false"){
 		defaultmapsettings.unlockedFPS=false
 	} 
-	else if ($('#FrameWorkOption').val()=="true"){
+	if ($('#FrameWorkOption').val()=="true" || $('#FrameWorkOption').val()=="false"){
 		defaultmapsettings.unlockedFPS=true
 	} 
 	else if ($('#FrameWorkOption').val()==2){
@@ -6563,7 +6563,10 @@ function changeFrameWork(){
 	} 	
 	else if ($('#FrameWorkOption').val()=="sophisticated"){
 		defaultmapsettings.unlockedFPS="sophisticated"
-	} 		
+	}
+	else if ($('#FrameWorkOption').val()=="notgood"){
+		defaultmapsettings.unlockedFPS=false
+	} 	
 	application.saveSettings(defaultmapsettings, "ogarioSettings");
 }	
 
