@@ -1,5 +1,5 @@
 /* Source script
-v3.125
+v3.126
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -12913,7 +12913,19 @@ Game name     : ${i.displayName}<br/>
             //if (legendmod.gameMode != ":battleroyale" && LM.ws && !LM.ws.includes("imsolo.pro")) {
             if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
                 //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
-                teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                let key = "nick"; 
+				let counterNicks = 0;
+				var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
+				ArrayLeaderboardCount.forEach((element) => { 
+					var botcounter = element.occurrence; 
+					if (botcounter >3){
+						counterNicks += botcounter;
+					}
+				});
+				teamText += '<span class="me">' + Premadeletter130 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
+				
+				//teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+				
                 if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
                     teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                 }
@@ -17189,6 +17201,41 @@ function playReplayLM(temp){
 	}
 }
 */
+
+function findOcc(arr, key){
+      let arr2 = [];
+        
+      arr.forEach((x)=>{
+           
+        // Checking if there is any object in arr2
+        // which contains the key value
+         if(arr2.some((val)=>{ return val[key] == x[key] })){
+             
+           // If yes! then increase the occurrence by 1
+           arr2.forEach((k)=>{
+             if(k[key] === x[key]){ 
+               k["occurrence"]++
+             }
+          })
+             
+         }else{
+           // If not! Then create a new object initialize 
+           // it with the present iteration key's value and 
+           // set the occurrence to 1
+           let a = {}
+           a[key] = x[key]
+           a["occurrence"] = 1
+           arr2.push(a);
+         }
+      })
+        
+      return arr2;
+	  //    let key = "nick"; console.log(findOcc(legendmod.leaderboard, key));
+}
+      
+
+
+
 Array.prototype.stDev = function stDev() {
     const average = data => data.reduce((sum, value) => sum + value) / data.length
     return Math.sqrt(average(this.map(value => Math.pow(value - average(this), 2))))
