@@ -1,5 +1,5 @@
 /* Source script
-v3.127
+v3.129
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -60,7 +60,9 @@ window.renderDelay = 0;
 window.chatLimit = 15;
 
 //inject gamepad libraries if Mobile
-var isMobile = window.orientation > -1; //false for PC, true for mobile 
+//var isMobile = window.orientation > -1; //false for PC, true for mobile 
+var isMobile = jQuery.browser.mobile;
+
 
 function changeregion() {
     if ($('#region').val() == "Private") {
@@ -12915,15 +12917,20 @@ Game name     : ${i.displayName}<br/>
                 //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
                 let key = "nick"; 
 				let counterNicks = 0;
+				var botcounter = 0;
+				var howmanytypesofbots = 0;
 				var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
 				ArrayLeaderboardCount.forEach((element) => { 
-					var botcounter = element.occurrence; 
+					
+					botcounter = element.occurrence; 
 					if (botcounter >3){
 						counterNicks += botcounter;
+						howmanytypesofbots++;
 					}
 				});
+				var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
 				if (counterNicks>0){
-					teamText += '<span class="me">' + Languageletter313 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
+					teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
 				}
 				else {
 					teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
