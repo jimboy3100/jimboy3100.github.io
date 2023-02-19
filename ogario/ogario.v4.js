@@ -1,5 +1,5 @@
 /* Source script
-v3.129
+v3.130
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -61,7 +61,9 @@ window.chatLimit = 15;
 
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
-var isMobile = jQuery.browser.mobile;
+var isMobile = false;
+if (jQuery && jQuery.browser && jQuery.browser.mobile) isMobile = true;
+
 
 
 function changeregion() {
