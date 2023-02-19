@@ -1,5 +1,5 @@
 /* Source script
-v3.126
+v3.127
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -12922,8 +12922,12 @@ Game name     : ${i.displayName}<br/>
 						counterNicks += botcounter;
 					}
 				});
-				teamText += '<span class="me">' + Languageletter313 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
-				
+				if (counterNicks>0){
+					teamText += '<span class="me">' + Languageletter313 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
+				}
+				else {
+					teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+				}
 				//teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
 				
                 if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
