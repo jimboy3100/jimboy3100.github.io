@@ -5061,15 +5061,15 @@ function initializeLM(modVersion) {
 		
 	$('#animation-value').parent().before(
         '<label style="float:left; padding-left:0; padding-right:0">' + textLanguage.unlockedFPS + '<select id="FrameWorkOption" class="form-control" onchange="changeFrameWork();" required="" data-original-title="" title="" style="display:inline; width: 70%; float:right;" >' +        				
-		'<option value="false" data-itr="">Limited Rate + No delay</option>' +     
+		'<option value="false" data-itr="">Limited Rate + No delay (Recommended)</option>' +     
         '<option value="2" data-itr="">Limited Rate + 2ms delay</option>' +	
 		'<option value="4" data-itr="">Limited Rate + 4ms delay</option>' +			
         '<option value="8" data-itr="">Limited Rate + 8ms delay</option>' +
 		'<option value="16" data-itr="">Limited Rate + 16ms delay</option>' +
 		'<option value="32" data-itr="">Limited Rate + 32ms delay</option>' +
 		'<option value="64" data-itr="">Limited Rate + 64ms delay</option>' +	
-		'<option value="notgood" data-itr="">Unlimited Rate (not suggested)</option>' +
-		'<option value="ultra" data-itr="">Ultra (not suggested - test)</option>' +
+		'<option value="notgood" data-itr="">Unlimited Rate (not recommended)</option>' +
+		'<option value="ultra" data-itr="">Ultra (not recommended - test)</option>' +
 		//'<option value="sophisticated" data-itr="">Sophisticated (not suggested - test)</option>' +
         '</select></label>');
 	$("#FrameWorkOption").parent().tooltip({	
@@ -6534,9 +6534,6 @@ targetNode.lastChild.lastChild.appendChild(trText);
   //}
 }							
 function changeFrameWork(){
-	if ($('#FrameWorkOption').val()=="false"){
-		defaultmapsettings.unlockedFPS=false
-	} 
 	if ($('#FrameWorkOption').val()=="true" || $('#FrameWorkOption').val()=="false"){
 		defaultmapsettings.unlockedFPS=true
 	} 
