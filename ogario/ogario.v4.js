@@ -3117,7 +3117,7 @@ var defaultmapsettings = {
     spawnSpecialEffects: false,
     animatedRainbowColor: false,
     autoZoom: false,
-    unlockedFPS: 4 //unlockedFPS: false,
+    unlockedFPS: 4, //unlockedFPS: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
