@@ -12922,7 +12922,7 @@ Game name     : ${i.displayName}<br/>
 						counterNicks += botcounter;
 					}
 				});
-				teamText += '<span class="me">' + Premadeletter130 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
+				teamText += '<span class="me">' + Languageletter313 + ': ' + ArrayLeaderboardCount.length + ' Bots: ' + counterNicks + '</span>';
 				
 				//teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
 				
