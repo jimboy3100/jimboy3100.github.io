@@ -1,4 +1,4 @@
-/*v0.11*/
+/*v0.12*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -458,7 +458,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #exp-bar{
     height:42px;
     background-color:rgba(0,0,0,.5); 
-    display: inline-block;
+    display: inline-block !important;
 	width:50%;
 }
 #exp-bar.agario-profile-panel{
