@@ -1,4 +1,4 @@
-//v12.70
+//v12.71
 
 var consoleMsgLMMaster = "[Master] ";
 
