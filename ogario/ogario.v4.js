@@ -1,4 +1,4 @@
-window.OgVer=3.239;
+window.OgVer=3.240;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -6337,13 +6337,18 @@ window.MouseClicks=[];
         },
         setStreamMode() {
             if (defaultmapsettings.streamMode) {
+				defaultmapsettings.streamModeFlag=true;
                 $("#stream-mode").addClass("ogicon-eye-blocked");
                 //$("#clantag, #nick, #party-token").addClass("stream-mode");
                 $("#clantag, #nick, #skin").foggy();
-            } else {
+            } 
+			else {			
                 $("#stream-mode").removeClass("ogicon-eye-blocked");
-                //$("#clantag, #nick, #party-token").removeClass("stream-mode");
-                $("#clantag, #nick, #skin").foggy(false);
+				if (defaultmapsettings.streamModeFlag){
+					defaultmapsettings.streamModeFlag=null;
+					//$("#clantag, #nick, #party-token").removeClass("stream-mode");
+					$("#clantag, #nick, #skin").foggy(false);
+				}
             }
         },
         setHideSkinUrl() {
