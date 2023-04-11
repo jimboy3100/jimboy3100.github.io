@@ -1,5 +1,5 @@
+window.OgVer=3.238;
 /* Source script
-v3.130
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -58,7 +58,7 @@ window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
 window.chatLimit = 15;
-
+window.LMscore=0;
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
 var isMobile = false;
@@ -637,6 +637,38 @@ window.changeSkin = function(productID) {
     window.core.proxyMobileData(bytes);
 }
 
+var root = protobuf.parse(proto, { keepCase: true }).root;
+window.mesega = root.lookupType("Data");
+var compressed = root.lookupType("uncompressedData");
+function decodeMobileData(data){
+		return window.mesega.decode(data)
+}
+function ReqPing(){
+		const pingId = ~~(Math.random()*1000)
+		const ping = Date.now()
+
+		const buffer = mesega.encode({
+            contentType: 1,
+            uncompressedData: {
+                type: 30,
+                pingField: {
+                    pingId:pingId,
+                    previousRoundtrip: 1
+                }
+            }
+		}).finish()
+		
+		console.log(buffer);
+		window.core.proxyMobileData(buffer, true);
+		//console.time(`[${pingId}] My ping`)
+		/*this.once('pongField',(pongField)=>{
+			const pong = Date.now()
+			window.core.ping = pong - ping
+			window.core.emit('ping')
+			//console.timeEnd(`[${pongField.pingId}] My ping`)
+		})	*/
+}
+
 function buyBoost(req) {
     console.log("buy boost", req)
 
@@ -817,14 +849,22 @@ function setLevelProgressBar() {
         "transition": "5s",
         "width": window.agarioLEVEL + "%"
     });
+    $('.progress-bar.progress-bar-striped2').css({
+        "transition": "5s",
+        "width": window.LMscore + "%"
+    });	
 }
 
 function resetLevelProgressBar() {
     //$('.progress-bar.progress-bar-striped').css('width', '100%');
     $('.progress-bar.progress-bar-striped').css({
         "transition": "5s",
-        "width": "100%"
+        "width": "0%"
     });
+    $('.progress-bar.progress-bar-striped2').css({
+        "transition": "5s",
+        "width": "0%"
+    });	
 }
 /*
 const standardDeviation = (arr, usePopulation = false) => {
@@ -5562,7 +5602,9 @@ window.MouseClicks=[];
         setMenu() {
             const app = this;
             document.title = this.name;
-            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text"></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div><div class="progress-bar-star"></div></div><div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
+            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">agar.io level: <strong class="progress-bar-star3"></strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>'+
+			'<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">LM level: <strong class="progress-bar-star2"></strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>'+
+			'<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
             $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a>' +
@@ -10121,6 +10163,8 @@ window.MouseClicks=[];
         master.protocolVersion = localStorage.getItem("ogarioProtocolVersion");
     }
     var LM = {
+		pingId: 0,
+		pingInterval : null,
         integrity: true,
         quadtree: null,
         updateQuadtree: function(cells) {
@@ -10307,7 +10351,11 @@ window.MouseClicks=[];
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function() {
                 app.onOpen();
+				//this.socket.ping();
             };
+            /*this.socket.onpong = function(t) {
+                console.log(t);
+            };	*/		
             this.socket.onmessage = function(t) {
                 app.onMessage(t);
             };
@@ -10374,7 +10422,10 @@ window.MouseClicks=[];
             } //protocol 6 and 5
             else {
                 view.setUint32(1, this.clientVersion, true);
-                window.gameBots.clientVersion = this.clientVersion
+                window.gameBots.clientVersion = this.clientVersion;
+				//new
+				//this.pingInterval = setInterval(this.sendPong.bind(this), 3000);
+				//this.sendPong();				
             } 
 			
 			//
@@ -10382,6 +10433,7 @@ window.MouseClicks=[];
             //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 
             this.sendMessage(view);
+			
             this.connectionOpened = true;
         },
         onMessage(message) {
@@ -10405,6 +10457,7 @@ window.MouseClicks=[];
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
             this.flushCellsData();
+			//clearInterval(this.pingInterval);
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
@@ -10703,7 +10756,27 @@ window.MouseClicks=[];
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
             this.sendMessage(view);
         },
-
+		sendPing(){
+			this.pingTime = Date.now();
+			var view = this.createView(4);
+			//const w = new Writer();
+			view.setUint8(0, 226);
+			//view.setUInt8(226);
+			this.pingId++;
+			if (this.pingId == 65536) this.pingId = 0;
+			view.setUint16(1, this.pingId, true);
+			console.log("ping id:",this.pingId);
+			this.sendMessage(view);
+		},
+		sendPong(pingId = 0){		
+			var view = this.createView(4);
+			//const w = new Writer();
+			view.setUint8(0, 227);
+			//w.setUInt8(227);
+			view.setUint16(1, pingId, true);
+			console.log("pong id:",this.pingId);
+			this.sendMessage(view);
+		},
         sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
@@ -10833,6 +10906,8 @@ window.MouseClicks=[];
                             this.sendMessage(r);
                         }
                     }, */
+			  //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
+		//[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
             if (!legendmod.integrity) {
                 return
@@ -10866,6 +10941,7 @@ window.MouseClicks=[];
             for (; prev < curr; prev++) {
                 data.push(shapes.charCodeAt(prev));
             }
+			//console.log(data); 
             data = new Uint8Array(data);
             var raw_basefont = new DataView(data.buffer);
             this.sendMessage(raw_basefont);
@@ -12023,10 +12099,15 @@ window.MouseClicks=[];
                     temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
                     toastr.info(temp);
                     break;
-                case 226:
+                case 226: //227
 					//console.log("pong")
                     window.testobjectsOpcode226 = data;
                     var extraOptions = data.getUint16(1, !![]);
+					/*var extraOptions2 = data.getUint8(1, !![]);
+					var extraOptions3 = data.getUint16(s);
+					console.log(extraOptions,1);
+					console.log(extraOptions2,2);
+					console.log(extraOptions3,3);*/
                     data = this.createView(3);
                     data.setUint8(0, 227);
                     data.setUint16(1, extraOptions);
@@ -12106,33 +12187,14 @@ window.MouseClicks=[];
                 return
             }
             const response = window.decodeMobileData(msg);
-            //console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
+            console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
             this.unpackageMessage(response);
         },
         unpackageMessage: function(r) {
             //var returnMessage = r;
-
             var type = r.uncompressedData.type;
+			console.log(r);
             switch (type) {
-                case 71:
-                    console.log("returnMessage = r.get_softPurchaseResponseField();");
-                    break;
-                case 74:
-                    console.log("returnMessage = r.get_inappPurchaseResponseField();");
-                    break;
-                case 20:
-                    var u = r.uncompressedData.disconnectField;
-                    this.disconnectMessage(u.reason);
-
-                    this.loggedIn = false;
-                    window.logout && window.logout();
-
-                    break;
-                case 113:
-                    var u = r.uncompressedData.activateBoostResponseField;
-                    this.updateWalletInfo([u.productUpdates[0].userWalletItem]);
-                    this.displayActiveBoosts([u.userBoostItem]);
-                    break;
                 case 11:
                     this.user = {
                         coins: 0,
@@ -12173,19 +12235,21 @@ window.MouseClicks=[];
                     this.updateUserInfo(u.userInfo)
 
                     this.updatePotions(u.userPotions)
-                    break;
-                case 81:
-                    var u = r.uncompressedData.updateUserSettingsResponseField;
-                    this.updateUserSettings(u.updatedUserSettings)
-                    break;
-                case 111:
-                    var u = r.uncompressedData.activateTimedEventResponseField;
-                    this.updateProducts(u.productUpdates);
-                    this.updateEvents([u.userTimedEvent])
-                    break;
-                case 76:
-                    console.log("returnMessage = r.get_purchaseWalletUpdatesField();");
-                    break;
+                    break;	
+                case 20:
+                    var u = r.uncompressedData.disconnectField;
+                    this.disconnectMessage(u.reason);
+
+                    this.loggedIn = false;
+                    window.logout && window.logout();
+                    break;	
+                case 22:
+                    console.log("returnMessage = r.get_noProperResponseField();");
+                    break;	
+				//ping 30 pong 31
+                case 33:
+                    console.log("returnMessage = r.get_configurationChangeField();");
+                    break;					
                 case 62:
                     var u = r.uncompressedData.gameOverField;
                     this.displayStats(u.userStats);
@@ -12193,7 +12257,9 @@ window.MouseClicks=[];
                         i = u.xpLevelUpdates[0];
                     if (i.finalLevel != 100) exp = ~~(i.finalXpForLevel * 100 / this.agarExp(i.finalLevel));
                     $('.progress-bar-striped').width(exp + '%');
-                    $('.progress-bar-star').text(i.finalLevel);
+					//$('.progress-bar-striped2').width(exp + '%');
+                    $('.progress-bar-star3').text(i.finalLevel);
+					//$('.progress-bar-star2').text(i.finalLevel);
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
@@ -12201,33 +12267,59 @@ window.MouseClicks=[];
                     if (defaultmapsettings.gameOverStats) {
                         this.showSessionStats(u.gameSessionStats);
                     }
+                    break;					
+                case 71:
+                    console.log("returnMessage = r.get_softPurchaseResponseField();");
+                    break;
+                case 74:
+                    console.log("returnMessage = r.get_inappPurchaseResponseField();");
                     break;
                 case 75:
                     console.log("returnMessage = r.get_walletUpdatesField();");
-                    break;
-                case 116:
-                    console.log("returnMessage = r.get_userTimedEventUpdatesField();");
-                    break;
-                case 33:
-                    console.log("returnMessage = r.get_configurationChangeField();");
+                    break;					
+                case 76:
+                    console.log("returnMessage = r.get_purchaseWalletUpdatesField();");
+                    break;	
+                case 78:
+                    console.log("returnMessage = r.get_offerBundleResponseField();");
+                    break;					
+                case 81:
+                    var u = r.uncompressedData.updateUserSettingsResponseField;
+                    this.updateUserSettings(u.updatedUserSettings)
+                    break;	
+                case 83:
+                    console.log("returnMessage = r.get_userStatsResponseField();");
                     break;
                 case 101:
                     console.log("returnMessage = r.get_claimGiftsResponseField();");
+                    break;						
+                case 105:
+                    console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
+                    break;				
+                case 111:
+                    var u = r.uncompressedData.activateTimedEventResponseField;
+                    this.updateProducts(u.productUpdates);
+                    this.updateEvents([u.userTimedEvent])
+                    break;					
+                case 113:
+                    var u = r.uncompressedData.activateBoostResponseField;
+                    this.updateWalletInfo([u.productUpdates[0].userWalletItem]);
+                    this.displayActiveBoosts([u.userBoostItem]);
                     break;
                 case 115:
                     var u = r.uncompressedData.activateQuestResponseField;
                     this.updateProducts(u.productUpdates);
                     this.displayActiveQuests([u.userQuest])
+                    break;					
+                case 116:
+                    console.log("returnMessage = r.get_userTimedEventUpdatesField();");
                     break;
-                case 78:
-                    console.log("returnMessage = r.get_offerBundleResponseField();");
+                case 121:
+                    console.log("returnMessage = r.get_openPotionForProductResponseField();");
                     break;
                 case 123:
                     var u = r.uncompressedData.brewPotionForSlotResponseField;
                     this.updatePotions(u.userPotions)
-                    break;
-                case 121:
-                    console.log("returnMessage = r.get_openPotionForProductResponseField();");
                     break;
                 case 125:
                     var u = r.uncompressedData.openPotionForSlotResponseField;
@@ -12241,31 +12333,23 @@ window.MouseClicks=[];
                 case 132:
                     console.log("returnMessage = r.get_userLeaguesPassUpdateField();");
                     break;
-                case 83:
-                    console.log("returnMessage = r.get_userStatsResponseField();");
-                    break;
-                case 105:
-                    console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
-                    break;
-                case 22:
-                    console.log("returnMessage = r.get_noProperResponseField();");
-                    break;
-                case 184:
-                    console.log("returnMessage = r.get_activateRewardLinkResponseField();");
-                    break;
-                case 186:
-                    console.log("returnMessage = r.get_genericVideoAdRewardTokenResponseField();");
-                    break;
                 case 151:
                     console.log("returnMessage = r.get_userSkinsCreateResponseField();");
-                    break;
+                    break;	
                 case 170:
                     var u = r.uncompressedData.actionCountersUpdateField,
                         prev = this.user.actionCounters;
                     if (u.potionsObtained > prev.potionsObtained) toastr.info('<b>[' + Premadeletter123 + ']:</b> New potion');
                     if (u.questsCompleted > prev.questsCompleted) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
                     if (u.skinsCreated > prev.skinsCreated) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
+                    break;					
+                case 184:
+                    console.log("returnMessage = r.get_activateRewardLinkResponseField();");
                     break;
+                case 186:
+                    console.log("returnMessage = r.get_genericVideoAdRewardTokenResponseField();");
+                    break;
+
                 default:
                     //null
                     console.log("unknown type", type)
@@ -12754,6 +12838,9 @@ window.MouseClicks=[];
             }
         },
         displayStats(s) {
+			window.LMscore = Math.trunc(s.allTimeScore/2000000);
+			$('.progress-bar-striped2').width(window.LMscore + '%');
+			$('.progress-bar-star2').text(window.LMscore);			
             $("#stats-content").html(`
 All time score     : ${s.allTimeScore}<br/>
 Games played      : ${s.gamesPlayed}<br/>
@@ -12767,7 +12854,9 @@ Most cells eaten   : ${s.mostCellsEaten}
             var exp = 100;
             if (i.level != 100) exp = ~~(i.xp * 100 / this.agarExp(i.level));
             $('.progress-bar-striped').width(exp + '%');
-            $('.progress-bar-star').text(i.level);
+			//$('.progress-bar-striped2').width(exp + '%');
+            $('.progress-bar-star3').text(i.level);
+			//$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
             $("#user-info").html(`
 Account age     : ${~~(i.accountAge/3600/24)}D<br/>
@@ -16058,15 +16147,27 @@ Game name     : ${i.displayName}<br/>
             LM.setClientVersion(version, strVersion);
         },		
         proxyMobileData(arr = []) {
-            if (!Array.isArray(arr)) {
-                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.");
-                return;
-            }
-            if (arr[0] == 8) {
-                arr.unshift(102);
-            }
-            arr = new Uint8Array(arr);
-            LM.sendMessage(new DataView(arr.buffer));
+				let data;
+				if (Array.isArray(arr)) {
+					if (arr[0] == 8) {
+						arr.unshift(102);			
+					}
+					data = new Uint8Array(arr);
+					
+				}
+				else{
+					if (arr[0] === 8) {
+						data = new Uint8Array(arr.length + 1);
+						data.set([102]);
+						data.set(arr, 1);	
+						console.log(data);
+					}
+					else{
+						data = new Uint8Array(arr);
+						console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.: ",arr);
+					}	
+				}
+			LM.sendMessage(new DataView(data.buffer));			
         },
         registerSkin(a, b, c, d) {
             if (a) {
