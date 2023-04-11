@@ -1,4 +1,4 @@
-/*v0.10*/
+/*v0.11*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -55,7 +55,7 @@ label{
     margin:0;
     padding:6px 12px 
 }
-#active-parties,#menu-footer,#overlays-hud,#stats h2,.agario-panel h5,.agario-side-panel h4,.agario-side-panel h5,.btn,.progress-bar-text,.slider-box .value,.tooltip{
+#active-parties,#menu-footer,#overlays-hud,#stats h2,.agario-panel h5,.agario-side-panel h4,.agario-side-panel h5,.btn,.progress-bar-text,.progress-bar-text2,.slider-box .value,.tooltip{
     font-weight:700 
 }
 label .switchery,label input{
@@ -238,10 +238,12 @@ label:hover{
 .agario-exp-bar{
     width:290px 
 }
+/*
 .progress-bar-star{
     font-weight:700;
     right:-5px 
 }
+*/
 .agario-panel-freecoins,.agario-panel-gifting,.agario-shop-panel{
     padding:5px 15px 
 }
@@ -455,18 +457,23 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 #exp-bar{
     height:42px;
-    background-color:rgba(0,0,0,.5) 
+    background-color:rgba(0,0,0,.5); 
+    display: inline-block;
+	width:50%;
 }
 #exp-bar.agario-profile-panel{
     padding:0;
-    float:none 
+    float:none;
+	width:50%;
+    display: inline-block;
 }
 #exp-bar .ogicon-user{
     color:#fff;
     font-size:24px;
     position:absolute;
     top:4px;
-    left:10px 
+    /*left:10px;*/
+    display: inline-block;
 }
 #exp-bar .agario-exp-bar{
     width:290px;
@@ -474,7 +481,9 @@ input.hide-url::selection,input.stream-mode::selection{
     border:none;
     position:absolute;
     bottom:10px;
-    right:10px 
+    right: 0px;
+    width: 80%;
+    display: inline-block;
 }
 #quick-menu a,.quick{
     height:40px;
@@ -493,10 +502,13 @@ input.hide-url::selection,input.stream-mode::selection{
 #chat-box,#leaderboard-info,#leaderboard-positions,#message-menu,#next-profile,#prev-profile,#profiles,#skin-preview,#skins,#skins a,#top5-hud{
     overflow:hidden 
 }
-#exp-bar .progress-bar{
-    border-radius:0 
+#exp-bar{
+    height:42px;
+    background-color:rgba(0,0,0,.5); 
+    width:50%;
+    display: inline-block;
 }
-#exp-bar .progress-bar-striped{
+#exp-bar .progress-bar-striped, #exp-bar .progress-bar-striped2{
     background-color:#01d9cc;
     background-image:none 
 }
@@ -508,7 +520,7 @@ input.hide-url::selection,input.stream-mode::selection{
     background-color:#002f52;
     transition:all .2s linear 
 }
-#exp-bar .progress-bar-text{
+#exp-bar .progress-bar-text, #exp-bar .progress-bar-text2{
     color:#fff;
     font-size:11px;
     text-align:left;
@@ -584,6 +596,7 @@ input.hide-url::selection,input.stream-mode::selection{
 .quick-skins{
     right:15px 
 }
+/*
 #exp-bar .progress-bar-star{
     width:auto;
     height:auto;
@@ -593,8 +606,9 @@ input.hide-url::selection,input.stream-mode::selection{
     text-shadow:none;
     line-height:normal;
     top:6px;
-    right:10px 
+    right:0px 
 }
+*/
 #skins-panel{
     width:280px 
 }
