@@ -846,7 +846,10 @@ function legendmaster(self) {
         }
         delete self.localStorage.storeObjectInfo;
         $("#helloContainer").attr("data-logged-in", "0");
+		$('.progress-bar-star3').text(0);
+		$('.progress-bar-star2').text(0);
         $(".progress-bar-striped").width("0%");
+		$(".progress-bar-striped2").width("0%");
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
         toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");	
