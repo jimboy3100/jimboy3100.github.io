@@ -1,4 +1,4 @@
-window.OgVer=3.238;
+window.OgVer=3.239;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -853,7 +853,7 @@ function setLevelProgressBar() {
         "transition": "5s",
         "width": window.LMscore + "%"
     });
-	$('.progress-bar-star3').text(window.agarioLEVEL);	
+	$('.progress-bar-star3').text(window.agarioLEVEL); $('.progress-bar-star').text(window.agarioLEVEL);	
 	$('.progress-bar-star2').text(window.LMscore);	
 	
 }
@@ -10910,7 +10910,7 @@ window.MouseClicks=[];
                         }
                     }, */
 			  //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
-		//[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
+		//[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
             if (!legendmod.integrity) {
                 return
@@ -12261,7 +12261,7 @@ window.MouseClicks=[];
                     if (i.finalLevel != 100) exp = ~~(i.finalXpForLevel * 100 / this.agarExp(i.finalLevel));
                     $('.progress-bar-striped').width(exp + '%');
 					//$('.progress-bar-striped2').width(exp + '%');
-                    $('.progress-bar-star3').text(i.finalLevel);
+                    $('.progress-bar-star3').text(i.finalLevel); $('.progress-bar-star').text(i.finalLevel);
 					//$('.progress-bar-star2').text(i.finalLevel);
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
@@ -12843,7 +12843,8 @@ window.MouseClicks=[];
         displayStats(s) {
 			window.LMscore = Math.trunc(s.allTimeScore/2000000);
 			$('.progress-bar-striped2').width(window.LMscore + '%');
-			$('.progress-bar-star2').text(window.LMscore);			
+			$('.progress-bar-star2').text(window.LMscore);	
+			
             $("#stats-content").html(`
 All time score     : ${s.allTimeScore}<br/>
 Games played      : ${s.gamesPlayed}<br/>
@@ -12858,7 +12859,8 @@ Most cells eaten   : ${s.mostCellsEaten}
             if (i.level != 100) exp = ~~(i.xp * 100 / this.agarExp(i.level));
             $('.progress-bar-striped').width(exp + '%');
 			//$('.progress-bar-striped2').width(exp + '%');
-            $('.progress-bar-star3').text(i.level);
+			
+            $('.progress-bar-star3').text(i.level); $('.progress-bar-star').text(i.level);
 			//$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
             $("#user-info").html(`
