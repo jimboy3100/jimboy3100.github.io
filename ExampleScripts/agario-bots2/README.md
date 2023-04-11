@@ -89,4 +89,4 @@ Please visit https://www.paypal.com/donate/?token=cV-ycVkH9p76i7ZE7SeznzU4Am16Mm
 Thank you for supporting the Legend mod project.
 
 ## Donate
-PayPal: [click here](https://www.paypal.com/donate/?token=cV-ycVkH9p76i7ZE7SeznzU4Am16MmP7tVpn_oBc5260qPUxEGAMGFoxaNqmZ3UTh_4Vy0)
+Buymeacoffee: [click here](https://www.buymeacoffee.com/legendmod)
