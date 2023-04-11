@@ -11065,7 +11065,7 @@ form {
 }
 
 #helloContainer[data-logged-in="1"] .agario-profile-panel {
-	display: block;
+	/*display: block;*/
 }
 
 #helloContainer[data-logged-in="1"] .agario-loggedout-panel {
