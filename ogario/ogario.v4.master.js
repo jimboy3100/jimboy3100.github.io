@@ -891,7 +891,7 @@ function continuelogout(){
 		$("#stats-content").html("");
 		$("#user-info").html("");	
 		$(".vanilla-skin-preview").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
-		$('.progress-bar-star').text("");
+		//$('.progress-bar-star3').text(0);
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
                                         '<div id="coins" style="display: inline-block;">💰000</div>'+
                                         '<div id="dna" style="display: inline-block;">💊000</div>'+
