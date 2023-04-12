@@ -1,7 +1,7 @@
 /**************
- * Legend express v1.74 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.81 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "13"; // the version 1.1-> 1.11
+var semimodVersion = "15"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -53,7 +53,7 @@ var previousMode = localStorage.getItem("gamemode");
 var checkonlyonce = localStorage.getItem("checkonlyonce");
 var checkonlyfourtenth = localStorage.getItem("checkonlyfourtenth");
 var checkonlyeleventh = localStorage.getItem("checkonlyeleventh");
-var checkonlyrewardday1 = localStorage.getItem("checkonlyrewardday1");
+var checkonlyrewardday2 = localStorage.getItem("checkonlyrewardday2");
 var defaultMusicUrl = "https://www.youtube.com/watch?v=nj33MArNjC8";
 var musicPlayer;
 
@@ -377,10 +377,10 @@ function loadersettings() {
        // }					
 		}
 */		
-		else if(checkonlyrewardday1 != "true"){
-			//LMrewardDay();
-			checkonlyrewardday1 = "true";
-			localStorage.setItem("checkonlyrewardday1", checkonlyrewardday1);					
+		else if(checkonlyrewardday2 != "true"){
+			LMrewardDay();
+			checkonlyrewardday2 = "true";
+			localStorage.setItem("checkonlyrewardday2", checkonlyrewardday2);					
 		}
         else if (checkonlyeleventh!= "true") {
 			//VideoSkinsPromo();		
@@ -462,11 +462,16 @@ function PremiumUsers() {
 					localStorage.setItem("proLicenceUID", true);		
 					toastr.warning("<b>[SERVER]:</b> Your licence is stored as Premium. Thank you for using our mod!").css("width", "350px");
 			}
-		}
+		}	
 		localStorage.setItem("proLicenceUID", window.proLicenceUID);
 	}
 }
-
+function PremiumUsersLMscore(){
+	if (!window.proLicenceUID){
+		localStorage.setItem("proLicenceUID", true);
+		toastr.warning("<b>[SERVER]:</b> Congratulations! Your LM level is " + window.LMscore + ". Your licence is stored as Premium permanently. Thank you for using our mod!").css("width", "350px");
+	}
+}
 function getaccesstoken() {
     $.ajax({
         type: "GET",
@@ -5539,12 +5544,12 @@ function initializeLM(modVersion) {
         $("#searchInput").focus().select();
     });
 
-    $('#nick').mouseenter(function() {
+    /*$('#nick').mouseenter(function() {
         $('#nick').css('background-color', '#000066');
         return clickedname = "YES"
     }).mouseleave(function() {
         $('#nick').css('background-color', '');
-    });
+    });*/
     $('#nick').blur(function() {
         previousnickname = $("#nick").val();
         localStorage.setItem("previousnickname", previousnickname);
@@ -5641,14 +5646,14 @@ function initializeLM(modVersion) {
 
     $('#clantag').css("width", "95.5px");
     $('#nick').css("width", "171px");
-    $('#clantag').mouseenter(function() {
+    /*$('#clantag').mouseenter(function() {
         $('#clantag').css('background-color', '#000066');
     }).mouseleave(function() {
         $('#clantag').css('background-color', '');
-    });
+    });*/
     //	$('#region').unbind('mouseenter');
     //	$('#gamemode').unbind('mouseenter');
-    $('#region').mouseenter(function() {
+    /*$('#region').mouseenter(function() {
         $('#region').css('background-color', '#003300');
     }).mouseleave(function() {
         $('#region').css('background-color', '');
@@ -5657,7 +5662,7 @@ function initializeLM(modVersion) {
         $('#gamemode').css('background-color', '#003300');
     }).mouseleave(function() {
         $('#gamemode').css('background-color', '');
-    });
+    });*/
 
     $(".btn.btn-block.btn-success.btn-export").click(function() {
         setTimeout(function() {
@@ -5928,13 +5933,9 @@ function initializeLM(modVersion) {
     //$("#LEGENDAds4").load("https://legendmod.ml/banners/bannerLMdevs"); //
 	$("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion + 
 	//' </a> <img align="right" src="https://legendmod.ml/banners/iconsaynotoffabots.png"></span>' +
-        '</a></span><span style="float: left;  margin-left: 80px; font-size: 13px;"><a id="MorefpsText" href="https://legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>'+
-		'<span style="float: right; font-size: 13px; height:10px;margin-top: -2px"><form id="donationbtn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></span>');
 	
-    //$("#menu-footer").after('<form id="donationbtn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>');
-    //$("#MorefpsText").parent().after('<span style="float: left;  margin-left: 80px; font-size: 13px;"><form id="donationbtn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></span>');
-
-	//$("#donationbtn").css("height", "10px");
+        '</a></span><span style="float: left;  margin-left: 25%; font-size: 13px;"><a id="MorefpsText" href="https://legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>'+
+		'<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">🍺</a>');
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
     $("#time-hud").hide();
@@ -6587,7 +6588,7 @@ function LMrewardDay(){
                 '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Reward Day' + '</h4>' +
                 '</div>' +
-				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://legendmod.ml/extras/rewardday.html" width="920" height="550" >' +
+				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://legendmod.ml/extras/rewardday2.html" width="920" height="550" >' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
