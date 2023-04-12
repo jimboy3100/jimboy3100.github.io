@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.20 by jimboy3100
+//Legend Mod Sniff 3.21 by jimboy3100
 
 //Prevent Image crash
 
@@ -74,10 +74,10 @@ var textspeach="";
 				cfg.lang="default";
 			}						
             //cfg.lang = GM_getValue("lang", "default");
-			cfg.unpause = localStorage.getItem("unpause");
+			/*cfg.unpause = localStorage.getItem("unpause");
 			if (cfg.unpause==null){
 				cfg.unpause=false;
-			}			
+			}	*/		
             //cfg.unpause = GM_getValue("unpause", false);
 //            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             $("#message-box").mousedown(function() {
@@ -89,13 +89,13 @@ var textspeach="";
             $("#message-menu").append('<a href="#" class="chatbox-hide icon-close" style="float:right;">X</a>');
             $(".chatbox-hide").click(function() {
                 $("#message-box").css("display", "none");
-                if (cfg.unpause && $("#pause-hud").css("display") == "block") {
+                /*if (cfg.unpause && $("#pause-hud").css("display") == "block") {
                     var code = 82; // 'R'
                     $(document).trigger(jQuery.Event('keydown', {
                         keyCode: code,
                         which: code
                     }));
-                }
+                }*/
             });
             /*$("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
             $(".chatbox-clear").click(function() {
@@ -169,7 +169,7 @@ var textspeach="";
                 }
             }
             fn_lang_make();
-            $("#voice-config").append('<label title="Voice UnPause"><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
+            //$("#voice-config").append('<label title="Voice UnPause"><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
 
             var observ_obj = $("#og-settings");
             var observ_cur = observ_obj.css("display");
@@ -196,8 +196,8 @@ var textspeach="";
                 if (cfg.lang !== "default") {
                     recognition.lang = cfg.lang;
                 }
-                cfg.unpause = $("#voice-unpause").prop('checked');
-				localStorage.setItem("unpause", cfg.unpause);
+                /*cfg.unpause = $("#voice-unpause").prop('checked');
+				localStorage.setItem("unpause", cfg.unpause);*/
                 //GM_setValue("unpause", cfg.unpause);
 //                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             }
