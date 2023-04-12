@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.3 by jimboy3100
+//Legend Mod Sniff 3.4 by jimboy3100
 
 //Prevent Image crash
 
@@ -119,7 +119,7 @@ var textspeach="";
 				window.voiceStarted=null;
 				setTimeout(function() {					
             		$(".voice-start").click();
-            	}, 100)
+            	}, 500)
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
@@ -130,6 +130,9 @@ var textspeach="";
 				if (!window.voiceStarted){
 					window.voiceStarted=true;
 					fn_recognition_start();
+				}
+				else{
+					window.voiceStarted=null;
 				}
             });
 
