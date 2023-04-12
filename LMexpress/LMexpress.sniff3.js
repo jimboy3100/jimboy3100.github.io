@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.6 by jimboy3100
+//Legend Mod Sniff 3.18 by jimboy3100
 
 //Prevent Image crash
 
@@ -119,19 +119,21 @@ var textspeach="";
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
-;
             }, false);
             $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
             $(".voice-start").click(function() {
+				window.voiceStarted=null;
+				doNextStartStep();
+            });
+			function doNextStartStep(){
 				if (!window.voiceStarted){
 					window.voiceStarted=true;
 					fn_recognition_start();
 				}
 				else{
-					window.voiceStarted=null;
-				}
-            });
-
+					toastr.info("voice to text stop unexpectedly");
+				}				
+			}
             function fn_recognition_start() {
                 $("#voice-config").css("display", "none");
                 $(".voice-start").css("background-color", "green");
@@ -144,7 +146,7 @@ var textspeach="";
 				$("#VoiceBtn1").css("background-color", "");	
 				window.voiceStarted=null;
 				setTimeout(function() {					
-            		$(".voice-start").click();
+            		doNextStartStep();
             	}, 500);				
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
