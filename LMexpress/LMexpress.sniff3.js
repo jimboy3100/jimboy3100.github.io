@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.1 by jimboy3100
+//Legend Mod Sniff 3.2 by jimboy3100
 
 //Prevent Image crash
 
@@ -115,10 +115,11 @@ var textspeach="";
                 }
                 $("#message").val(text_to); */
 				textspeach=text_to;
-				application.sendChatMessage(101,"🎤 " +text_to)
+				application.sendChatMessage(101,"🎤 " +text_to);
+				window.voiceStarted=null;
 				setTimeout(function() {					
             		$(".voice-start").click();
-            	}, 5000)
+            	}, 100)
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
@@ -126,7 +127,10 @@ var textspeach="";
             }, false);
             $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
             $(".voice-start").click(function() {
-                fn_recognition_start();
+				if (!window.voiceStarted){
+					window.voiceStarted=true;
+					fn_recognition_start();
+				}
             });
 
             function fn_recognition_start() {
