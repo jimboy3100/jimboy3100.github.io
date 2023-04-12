@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.18 by jimboy3100
+//Legend Mod Sniff 3.19 by jimboy3100
 
 //Prevent Image crash
 
@@ -122,16 +122,20 @@ var textspeach="";
             }, false);
             $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
             $(".voice-start").click(function() {
-				window.voiceStarted=null;
-				doNextStartStep();
-            });
-			function doNextStartStep(){
 				if (!window.voiceStarted){
 					window.voiceStarted=true;
+					doNextStartStep();
+				}
+				else{
+					window.voiceStarted=null;
+				}
+            });
+			function doNextStartStep(){
+				if (window.voiceStarted){
 					fn_recognition_start();
 				}
 				else{
-					toastr.info("voice to text stop unexpectedly");
+					toastr.info("Voice to text stopped");
 				}				
 			}
             function fn_recognition_start() {
@@ -144,7 +148,7 @@ var textspeach="";
             function fn_recognition_end() {
                 $(".voice-start").css("background-color", "");
 				$("#VoiceBtn1").css("background-color", "");	
-				window.voiceStarted=null;
+				
 				setTimeout(function() {					
             		doNextStartStep();
             	}, 500);				
