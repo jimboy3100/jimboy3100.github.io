@@ -12201,7 +12201,7 @@ window.MouseClicks=[];
         unpackageMessage: function(r) {
             //var returnMessage = r;
             var type = r.uncompressedData.type;
-			console.log(r);
+			//console.log(r);
             switch (type) {
                 case 11:
                     this.user = {
