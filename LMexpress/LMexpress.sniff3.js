@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.4 by jimboy3100
+//Legend Mod Sniff 3.5 by jimboy3100
 
 //Prevent Image crash
 
