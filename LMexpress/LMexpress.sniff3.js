@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.2 by jimboy3100
+//Legend Mod Sniff 3.3 by jimboy3100
 
 //Prevent Image crash
 
@@ -94,11 +94,11 @@ var textspeach="";
                     }));
                 }
             });
-            $("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
+            /*$("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
             $(".chatbox-clear").click(function() {
                 $("#message").val("");
 				textspeach="";
-            });
+            });*/
             window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
             var recognition = new window.SpeechRecognition();
             if (cfg.lang !== "default") {
