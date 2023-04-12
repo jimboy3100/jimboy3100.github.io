@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.19 by jimboy3100
+//Legend Mod Sniff 3.20 by jimboy3100
 
 //Prevent Image crash
 
@@ -48,18 +48,21 @@ var textspeach="";
         pre_loop();
 
         function initialize() {
-            /*var lang_hash = {
-                "default": "default",
+            var lang_hash = {
+				"en-US": "English",
+                "default": "All (not suggested)",
                 "ja": "日本語",
-                "en-US": "English",
+				"ar": "عربي"
                 "el-GR": "Ελληνικά",
                 "zh-CN": "简体中文",
                 "zh-TW": "繁體中文",
                 "ko": "한국어"
-            };*/
+            };
+			/*
             var lang_hash = {
                 "en-US": "English"
-            };			
+            };	
+*/			
             var cfg = {};
 			cfg.prefix = localStorage.getItem("prefix");
 			if (cfg.prefix==null){
