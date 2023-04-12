@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.81 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.82 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "15"; // the version 1.1-> 1.11
 
@@ -377,12 +377,12 @@ function loadersettings() {
        // }					
 		}
 */		
-		else if(checkonlyrewardday2 != "true"){
+		if(checkonlyrewardday2 != "true"){
 			LMrewardDay();
 			checkonlyrewardday2 = "true";
 			localStorage.setItem("checkonlyrewardday2", checkonlyrewardday2);					
 		}
-        else if (checkonlyeleventh!= "true") {
+        if (checkonlyeleventh!= "true") {
 			//VideoSkinsPromo();		
 		checkonlyeleventh = "true";
 		localStorage.setItem("checkonlyeleventh", checkonlyeleventh);				
