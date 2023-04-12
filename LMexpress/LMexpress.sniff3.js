@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.21 by jimboy3100
+//Legend Mod Sniff 3.22 by jimboy3100
 
 //Prevent Image crash
 
@@ -71,7 +71,7 @@ var textspeach="";
             //cfg.prefix = GM_getValue("prefix", "🎤");
 			cfg.lang = localStorage.getItem("lang");
 			if (cfg.lang==null){
-				cfg.lang="default";
+				cfg.lang="en-US";
 			}						
             //cfg.lang = GM_getValue("lang", "default");
 			/*cfg.unpause = localStorage.getItem("unpause");
