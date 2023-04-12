@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.83 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.84 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "15"; // the version 1.1-> 1.11
 
@@ -5066,8 +5066,8 @@ function initializeLM(modVersion) {
 		
 	$('#animation-value').parent().before(
         '<label style="float:left; padding-left:0; padding-right:0">' + textLanguage.unlockedFPS + '<select id="FrameWorkOption" class="form-control" onchange="changeFrameWork();" required="" data-original-title="" title="" style="display:inline; width: 70%; float:right;" >' +        				
-		'<option value="4" data-itr="">Limited Rate + 4ms delay</option>' +
-		'<option value="false" data-itr="">Limited Rate + No delay (Recommended)</option>' +     
+		'<option value="4" data-itr="">Limited Rate + 4ms delay (Recommended)</option>' +
+		'<option value="false" data-itr="">Limited Rate + No delay</option>' +     
         '<option value="2" data-itr="">Limited Rate + 2ms delay</option>' +				
         '<option value="8" data-itr="">Limited Rate + 8ms delay</option>' +
 		'<option value="16" data-itr="">Limited Rate + 16ms delay</option>' +
