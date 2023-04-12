@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3 by jimboy3100
+//Legend Mod Sniff 3.1 by jimboy3100
 
 //Prevent Image crash
 
@@ -48,7 +48,7 @@ var textspeach="";
         pre_loop();
 
         function initialize() {
-            var lang_hash = {
+            /*var lang_hash = {
                 "default": "default",
                 "ja": "日本語",
                 "en-US": "English",
@@ -56,7 +56,10 @@ var textspeach="";
                 "zh-CN": "简体中文",
                 "zh-TW": "繁體中文",
                 "ko": "한국어"
-            };
+            };*/
+            var lang_hash = {
+                "en-US": "English"
+            };			
             var cfg = {};
 			cfg.prefix = localStorage.getItem("prefix");
 			if (cfg.prefix==null){
@@ -113,9 +116,13 @@ var textspeach="";
                 $("#message").val(text_to); */
 				textspeach=text_to;
 				application.sendChatMessage(101,"🎤 " +text_to)
+				setTimeout(function() {					
+            		$(".voice-start").click();
+            	}, 5000)
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
+;
             }, false);
             $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
             $(".voice-start").click(function() {
@@ -131,7 +138,7 @@ var textspeach="";
 
             function fn_recognition_end() {
                 $(".voice-start").css("background-color", "");
-				$("#VoiceBtn1").css("background-color", "");
+				$("#VoiceBtn1").css("background-color", "");			
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
@@ -181,4 +188,3 @@ var textspeach="";
         }
 	}
 //	}, 4000);
-
