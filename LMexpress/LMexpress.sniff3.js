@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.26 by jimboy3100
+//Legend Mod Sniff 3.27 by jimboy3100
 
 //Prevent Image crash
 
@@ -102,6 +102,22 @@ var textspeach="";
                 $("#message").val("");
 				textspeach="";
             });*/
+            function fn_config_save() {
+                cfg.prefix = $("#voice-prefix").val();
+				localStorage.setItem("prefix", cfg.prefix);	
+                //GM_setValue("prefix", cfg.prefix);				
+                cfg.lang = $("#voice-lang").val();
+				localStorage.setItem("lang", cfg.lang);	
+                //GM_setValue("lang", cfg.lang);
+                if (cfg.lang !== "default") {
+                    recognition.lang = cfg.lang;
+                }
+                /*cfg.unpause = $("#voice-unpause").prop('checked');
+				localStorage.setItem("unpause", cfg.unpause);*/
+                //GM_setValue("unpause", cfg.unpause);
+//                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            }
+			
             window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
             var recognition = new window.SpeechRecognition();
             if (cfg.lang !== "default") {
@@ -186,21 +202,7 @@ var textspeach="";
                 attributeFilter: ['style']
             });
 
-            function fn_config_save() {
-                cfg.prefix = $("#voice-prefix").val();
-				localStorage.setItem("prefix", cfg.prefix);	
-                //GM_setValue("prefix", cfg.prefix);				
-                cfg.lang = $("#voice-lang").val();
-				localStorage.setItem("lang", cfg.lang);	
-                //GM_setValue("lang", cfg.lang);
-                if (cfg.lang !== "default") {
-                    recognition.lang = cfg.lang;
-                }
-                /*cfg.unpause = $("#voice-unpause").prop('checked');
-				localStorage.setItem("unpause", cfg.unpause);*/
-                //GM_setValue("unpause", cfg.unpause);
-//                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
-            }
+
         }
 	}
 //	}, 4000);
