@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.28 by jimboy3100
+//Legend Mod Sniff 3.29 by jimboy3100
 
 //Prevent Image crash
 
@@ -47,7 +47,7 @@ var textspeach="";
         }
         pre_loop();
 		
-            function fn_config_save() {
+            function fn_config_save(cfg) {
                 cfg.prefix = $("#voice-prefix").val();
 				localStorage.setItem("prefix", cfg.prefix);	
                 //GM_setValue("prefix", cfg.prefix);				
@@ -174,10 +174,10 @@ var textspeach="";
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
-            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '" onchange="fn_config_save();"/></label>');
+            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '" onchange="fn_config_save("' + cfg + '");"/></label>');
 
             function fn_lang_make() {
-                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang" onchange="fn_config_save();"/></select></label>');
+                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang" onchange="fn_config_save("' + cfg + '");"/></select></label>');
                 for (var code in lang_hash) {
                     var desc = lang_hash[code];
                     var selected = (code === cfg.lang) ? ' selected' : '';
@@ -194,7 +194,7 @@ var textspeach="";
                 var observ_new = observ_obj.css("display");
                 observ_cur = observ_new;
                 if (observ_new == "none" && observ_pre == "block") {
-                    fn_config_save();
+                    fn_config_save(cfg);
                 }
             });
             observer.observe(observ_obj[0], {
