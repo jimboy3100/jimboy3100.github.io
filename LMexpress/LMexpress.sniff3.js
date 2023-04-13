@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.30 by jimboy3100
+//Legend Mod Sniff 3.31 by jimboy3100
 
 //Prevent Image crash
 
@@ -45,7 +45,7 @@ var textspeach="";
             }
             return initialize();
         }
-        pre_loop();
+        //pre_loop();
 		
             function fn_config_save(cfg) {
                 cfg.prefix = $("#voice-prefix").val();
@@ -174,7 +174,7 @@ var textspeach="";
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
-            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '" onchange="fn_config_save(' + cfg + ');"/></label>');
+            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '" onchange="fn_config_save("' + cfg + '");"/></label>');
 
             function fn_lang_make() {
                 $("#voice-config").append('<label>Voice-lang:<select id="voice-lang" onchange="fn_config_save("' + cfg + '");"/></select></label>');
