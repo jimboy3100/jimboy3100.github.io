@@ -1,4 +1,4 @@
-//Legend Mod Sniff 3.31 by jimboy3100
+//Legend Mod Sniff 3.32 by jimboy3100
 
 //Prevent Image crash
 
@@ -45,23 +45,9 @@ var textspeach="";
             }
             return initialize();
         }
-        //pre_loop();
+        pre_loop();
 		
-            function fn_config_save(cfg) {
-                cfg.prefix = $("#voice-prefix").val();
-				localStorage.setItem("prefix", cfg.prefix);	
-                //GM_setValue("prefix", cfg.prefix);				
-                cfg.lang = $("#voice-lang").val();
-				localStorage.setItem("lang", cfg.lang);	
-                //GM_setValue("lang", cfg.lang);
-                if (cfg.lang !== "default") {
-                    recognition.lang = cfg.lang;
-                }
-                /*cfg.unpause = $("#voice-unpause").prop('checked');
-				localStorage.setItem("unpause", cfg.unpause);*/
-                //GM_setValue("unpause", cfg.unpause);
-//                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
-            }
+
         function initialize() {
             var lang_hash = {
 				"en-US": "English",
@@ -174,19 +160,40 @@ var textspeach="";
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
-            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '" onchange="fn_config_save("' + cfg + '");"/></label>');
-
+            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '"/></label>');
+			$("#voice-prefix").blur(function() {
+					fn_config_save();
+			});
             function fn_lang_make() {
-                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang" onchange="fn_config_save("' + cfg + '");"/></select></label>');
+                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang"/></select></label>');
                 for (var code in lang_hash) {
                     var desc = lang_hash[code];
                     var selected = (code === cfg.lang) ? ' selected' : '';
                     $("#voice-lang").append('<option value="' + code + '"' + selected + '>' + desc + '</option>');
                 }
-            }
+				$("#voice-lang").change(function() {
+					//console.log('changed');
+					fn_config_save();
+				});					
+            }	
             fn_lang_make();
+			
             //$("#voice-config").append('<label title="Voice UnPause"><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
-
+            function fn_config_save() {
+                cfg.prefix = $("#voice-prefix").val();
+				localStorage.setItem("prefix", cfg.prefix);	
+                //GM_setValue("prefix", cfg.prefix);				
+                cfg.lang = $("#voice-lang").val();
+				localStorage.setItem("lang", cfg.lang);	
+                //GM_setValue("lang", cfg.lang);
+                if (cfg.lang !== "default") {
+                    recognition.lang = cfg.lang;
+                }
+                /*cfg.unpause = $("#voice-unpause").prop('checked');
+				localStorage.setItem("unpause", cfg.unpause);*/
+                //GM_setValue("unpause", cfg.unpause);
+//                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            }
             var observ_obj = $("#og-settings");
             var observ_cur = observ_obj.css("display");
             var observer = new MutationObserver(function(mutations) {
