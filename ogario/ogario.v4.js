@@ -1,4 +1,4 @@
-window.OgVer=3.241;
+window.OgVer=3.254;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -539,17 +539,30 @@ window.changeOnline = function(option) {
     window.core.proxyMobileData(bytes);
 }
 
+function autocoinsAsPing(slot) {
+	if (legendmod.integrity && window.loggedIn){
+		window.agarpingstarted = Date.now()
+		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+		let massBoostName = "hourlyBonus";
+		for (let i = 0; i < massBoostName.length; i++) {
+			bytes.push(massBoostName.charCodeAt(i));
+		}
+		window.core.proxyMobileData(bytes);
+	}
+}
 function autocoins(slot) {
-    //var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
-    var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-    let massBoostName = "hourlyBonus";
-    for (let i = 0; i < massBoostName.length; i++) {
-        bytes.push(massBoostName.charCodeAt(i));
-    }
-    window.core.proxyMobileData(bytes);
-    if (defaultmapsettings.potionsDrinker) {
-        autoRandomPotionDigger();
-    }
+	if (legendmod.integrity && window.loggedIn){
+		//var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
+		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+		let massBoostName = "hourlyBonus";
+		for (let i = 0; i < massBoostName.length; i++) {
+			bytes.push(massBoostName.charCodeAt(i));
+		}
+		window.core.proxyMobileData(bytes);
+		if (defaultmapsettings.potionsDrinker) {
+			autoRandomPotionDigger();
+		}
+	}
     //console.log(String.fromCharCode.apply(String, bytes));
 }
 
@@ -643,30 +656,21 @@ var compressed = root.lookupType("uncompressedData");
 function decodeMobileData(data){
 		return window.mesega.decode(data)
 }
-function ReqPing(){
-		const pingId = ~~(Math.random()*1000)
-		const ping = Date.now()
-
-		const buffer = mesega.encode({
+function openPotionForSlotRequest(slot) {
+        console.log('Trying to open potion for slot' + slot);
+        const buffer = mesega.encode({
             contentType: 1,
             uncompressedData: {
-                type: 30,
-                pingField: {
-                    pingId:pingId,
-                    previousRoundtrip: 1
+                type: 124,
+                openPotionForSlotRequestField: {
+                    slot: slot
                 }
             }
 		}).finish()
-		
-		console.log(buffer);
-		window.core.proxyMobileData(buffer, true);
-		//console.time(`[${pingId}] My ping`)
-		/*this.once('pongField',(pongField)=>{
-			const pong = Date.now()
-			window.core.ping = pong - ping
-			window.core.emit('ping')
-			//console.timeEnd(`[${pongField.pingId}] My ping`)
-		})	*/
+        setTimeout(() => {
+            window.core.proxyMobileData(buffer);
+        }, 1000);
+
 }
 
 function buyBoost(req) {
@@ -801,6 +805,7 @@ function massx324hour(slot) {
     }, 100); 		
 }
 */
+
 function callEveryFullHourCoinDigger() {
     autocoins();
     var now = new Date();
@@ -4826,7 +4831,7 @@ window.MouseClicks=[];
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-
+					if (legendmod.integrity && window.loggedIn && drawRender.ping) t += ' | PING: ' +  drawRender.ping;
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
                 	if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
@@ -10171,8 +10176,6 @@ window.MouseClicks=[];
         master.protocolVersion = localStorage.getItem("ogarioProtocolVersion");
     }
     var LM = {
-		pingId: 0,
-		pingInterval : null,
         integrity: true,
         quadtree: null,
         updateQuadtree: function(cells) {
@@ -10432,7 +10435,7 @@ window.MouseClicks=[];
                 view.setUint32(1, this.clientVersion, true);
                 window.gameBots.clientVersion = this.clientVersion;
 				//new
-				//this.pingInterval = setInterval(this.sendPong.bind(this), 3000);
+				this.pingInterval = setInterval(autocoinsAsPing, 5000);
 				//this.sendPong();				
             } 
 			
@@ -10465,7 +10468,7 @@ window.MouseClicks=[];
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
             this.flushCellsData();
-			//clearInterval(this.pingInterval);
+			clearInterval(this.pingInterval);
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
@@ -10764,27 +10767,6 @@ window.MouseClicks=[];
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
             this.sendMessage(view);
         },
-		sendPing(){
-			this.pingTime = Date.now();
-			var view = this.createView(4);
-			//const w = new Writer();
-			view.setUint8(0, 226);
-			//view.setUInt8(226);
-			this.pingId++;
-			if (this.pingId == 65536) this.pingId = 0;
-			view.setUint16(1, this.pingId, true);
-			console.log("ping id:",this.pingId);
-			this.sendMessage(view);
-		},
-		sendPong(pingId = 0){		
-			var view = this.createView(4);
-			//const w = new Writer();
-			view.setUint8(0, 227);
-			//w.setUInt8(227);
-			view.setUint16(1, pingId, true);
-			console.log("pong id:",this.pingId);
-			this.sendMessage(view);
-		},
         sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
@@ -11437,6 +11419,8 @@ window.MouseClicks=[];
                     break;
 	    	case 87:
 			//(function anonymous(t) {
+				console.log('case 87');
+				window.testobjectsOpcode87 = data;
 				window.agarCaptcha.requestCaptchaV3("play", function(a) {
 				var b = this.createView(2 + a.length);
 				b.setUint8(0, 88);
@@ -11562,7 +11546,9 @@ window.MouseClicks=[];
                         var option = node.readUint32();
                         var response = node.readFlag();
                         var response_2 = node.readUint32();
-                        switch (option) {
+						//console.log(option, response, response_2); //see dis
+						for (var ai=0; ai<data.length;ai++) console.log(data.getUint8(ai));
+                        switch (option) {						
                             case 1:
                                 window.testobjects1021 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Type", option, response);
@@ -12248,7 +12234,7 @@ window.MouseClicks=[];
                     var u = r.uncompressedData.disconnectField;
                     this.disconnectMessage(u.reason);
 
-                    this.loggedIn = false;
+                    window.loggedIn=false;
                     window.logout && window.logout();
                     break;	
                 case 22:
@@ -12305,6 +12291,7 @@ window.MouseClicks=[];
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
                     break;				
                 case 111:
+					drawRender.ping = Date.now()-window.agarpingstarted;
                     var u = r.uncompressedData.activateTimedEventResponseField;
                     this.updateProducts(u.productUpdates);
                     this.updateEvents([u.userTimedEvent])
