@@ -1,4 +1,4 @@
-window.OgVer=3.254;
+window.OgVer=3.255;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -540,7 +540,7 @@ window.changeOnline = function(option) {
 }
 
 function autocoinsAsPing(slot) {
-	if (legendmod.integrity && window.loggedIn){
+	if (false && legendmod.integrity && window.loggedIn){
 		window.agarpingstarted = Date.now()
 		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
 		let massBoostName = "hourlyBonus";
@@ -12291,7 +12291,7 @@ window.MouseClicks=[];
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
                     break;				
                 case 111:
-					drawRender.ping = Date.now()-window.agarpingstarted;
+					if (window.agarpingstarted) drawRender.ping = Date.now()-window.agarpingstarted;
                     var u = r.uncompressedData.activateTimedEventResponseField;
                     this.updateProducts(u.productUpdates);
                     this.updateEvents([u.userTimedEvent])
