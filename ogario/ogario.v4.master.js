@@ -1,4 +1,4 @@
-//v12.72
+//v12.71
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -9,7 +9,7 @@ window.EnvConfig.master_url = self.localStorage.getItem("EnvConfig.master_url");
 window.EnvConfig.configVersion = self.localStorage.getItem("EnvConfig.configVersion");
 
 var window = this;
-
+window.loggedIn=false;
 if (!(document.URL && document.URL.includes('legendmod.ml'))){
 $.ajax("//agar.io/index.html", {
     error() {},
@@ -102,12 +102,14 @@ function legendmaster(self) {
 					$("#login-google").attr("class", "menu-bar-button");
 					$("#login-facebook").attr("class", "menu-bar-button barf");
 					toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Facebook!");
+					window.loggedIn=true;
 				}
             } else {
                 if (f < 3) {
                     f++;
                     self.facebookRelogin();
                     self.logout();
+					window.loggedIn=false;
                 }
             }
         }
@@ -164,6 +166,7 @@ function legendmaster(self) {
 				$("#login-facebook").attr("class", "menu-bar-button");
 				$("#login-google").attr("class", "menu-bar-button barf");
 				toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+				window.loggedIn=true;
 			}
         }
     }
@@ -768,6 +771,7 @@ function legendmaster(self) {
             this.accessToken = null;
 			this.context = "";
             console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " logout called, not reconnecting");
+			window.loggedIn=false;
             //            this.reconnect();
         },
         setUI() {
@@ -846,7 +850,7 @@ function legendmaster(self) {
         }
         delete self.localStorage.storeObjectInfo;
         $("#helloContainer").attr("data-logged-in", "0");
-		$('.progress-bar-star3').text(0); $('.progress-bar-star').text(0);
+		$('.progress-bar-star3').text(0);
 		$('.progress-bar-star2').text(0);
         $(".progress-bar-striped").width("0%");
 		$(".progress-bar-striped2").width("0%");
@@ -891,7 +895,7 @@ function continuelogout(){
 		$("#stats-content").html("");
 		$("#user-info").html("");	
 		$(".vanilla-skin-preview").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
-		//$('.progress-bar-star3').text(0);
+		$('.progress-bar-star').text("");
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
                                         '<div id="coins" style="display: inline-block;">💰000</div>'+
                                         '<div id="dna" style="display: inline-block;">💊000</div>'+
