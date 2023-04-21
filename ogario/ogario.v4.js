@@ -1,4 +1,4 @@
-window.OgVer=3.255;
+window.OgVer=3.261;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -539,17 +539,7 @@ window.changeOnline = function(option) {
     window.core.proxyMobileData(bytes);
 }
 
-function autocoinsAsPing(slot) {
-	if (false && legendmod.integrity && window.loggedIn){
-		window.agarpingstarted = Date.now()
-		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-		let massBoostName = "hourlyBonus";
-		for (let i = 0; i < massBoostName.length; i++) {
-			bytes.push(massBoostName.charCodeAt(i));
-		}
-		window.core.proxyMobileData(bytes);
-	}
-}
+
 function autocoins(slot) {
 	if (legendmod.integrity && window.loggedIn){
 		//var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
@@ -655,6 +645,48 @@ window.mesega = root.lookupType("Data");
 var compressed = root.lookupType("uncompressedData");
 function decodeMobileData(data){
 		return window.mesega.decode(data)
+}
+/*function autocoinsAsPing(slot) {
+	if (false && legendmod.integrity && window.loggedIn){
+		window.agarpingstarted = Date.now()
+		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+		let massBoostName = "hourlyBonus";
+		for (let i = 0; i < massBoostName.length; i++) {
+			bytes.push(massBoostName.charCodeAt(i));
+		}
+		window.core.proxyMobileData(bytes);
+	}
+}*/
+function ReqPing(){
+	if (legendmod.integrity){
+		//console.log('ping');
+		const pingId = ~~(Math.random()*127);
+		const pingId3 = ~~(Math.random()*999999);
+		var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId]; 
+		//var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
+		window.agarpingstarted = Date.now();
+		window.core.proxyMobileData(bytes);
+		
+	
+		/*const pingId = ~~(Math.random()*1000);const ping = Date.now();
+		const buffer = mesega.encode({
+            contentType: 1,
+            uncompressedData: {
+                type: 30,
+                pingField: {
+                    pingId:pingId,
+                    previousRoundtrip: 1
+                }
+            }
+		}).finish()
+
+		window.core.proxyMobileData(buffer);
+		this.once('pongField',(pongField)=>{
+			const pong = Date.now()
+			this.client.ping = pong - ping
+			this.client.emit('ping')
+		})*/
+	}		
 }
 function openPotionForSlotRequest(slot) {
         console.log('Trying to open potion for slot' + slot);
@@ -1549,6 +1581,7 @@ var displayText = {
         showTop5: 'Pokaż top 5 teamu',
         showTargeting: 'Pokaż namierzanie',
         showTime: 'Pokaż aktualny czas',
+		showDevConsole:'Show developer console',
         showLbData: 'Pokaż masę w topce',
         //normalLb: 'Nagłówek \"Topka\"',
         centeredLb: 'Wyśrodkowana topka',
@@ -1556,6 +1589,7 @@ var displayText = {
         tweenMaxEffect: 'Tween max effect',
         top5skins: 'Skins on teamboard',
         showStats: 'Pokaż statystyki',
+		
         showStatsMass: 'Statystyki: Masa',
         //showStatsSTE: 'Statystyki: Przedziały Masy',
         showStatsESTE: 'BSTE: Enemy\'s minimal mass to splt & eat',
@@ -1593,6 +1627,7 @@ var displayText = {
         'hk-dance': 'Dance',
 		'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Pokaż/ukryj aktualny czas',
+		'hk-showDevConsole': 'Show developer console',
         'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
         'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
         'hk-showTeammatesInd': 'Pokaż/ukryj wskaźniki graczy teamu',
@@ -2032,6 +2067,7 @@ var displayText = {
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
+		showDevConsole: 'Show developer console',
         showLbData: 'Show leaderboard mass',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
@@ -2075,6 +2111,7 @@ var displayText = {
         'hk-dance': 'Dance',
 		'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Show/hide current time',
+		'hk-showDevConsole': 'Show developer console',
         'hk-showSplitRange': 'Show/hide split range',
         'hk-showSplitInd': 'Show/hide split indicators',
         'hk-showTeammatesInd': 'Show/hide teammates indicators',
@@ -3254,6 +3291,7 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     showTime: false,
+	showDevConsole: false,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -4831,7 +4869,7 @@ window.MouseClicks=[];
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-					if (legendmod.integrity && window.loggedIn && drawRender.ping) t += ' | PING: ' +  drawRender.ping;
+					if (legendmod.integrity && drawRender.ping) t += ' | PING: ' +  drawRender.ping;
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
                 	if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
@@ -5752,7 +5790,7 @@ window.MouseClicks=[];
 //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -10435,7 +10473,7 @@ window.MouseClicks=[];
                 view.setUint32(1, this.clientVersion, true);
                 window.gameBots.clientVersion = this.clientVersion;
 				//new
-				this.pingInterval = setInterval(autocoinsAsPing, 5000);
+				if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
 				//this.sendPong();				
             } 
 			
@@ -11546,7 +11584,7 @@ window.MouseClicks=[];
                         var option = node.readUint32();
                         var response = node.readFlag();
                         var response_2 = node.readUint32();
-						//console.log(option, response, response_2); //see dis
+						//if (defaultmapsettings.showDevConsole) console.log(option, response, response_2); //see dis
 						for (var ai=0; ai<data.length;ai++) console.log(data.getUint8(ai));
                         switch (option) {						
                             case 1:
@@ -12187,7 +12225,7 @@ window.MouseClicks=[];
         unpackageMessage: function(r) {
             //var returnMessage = r;
             var type = r.uncompressedData.type;
-			//console.log(r);
+			if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
                     this.user = {
@@ -12240,6 +12278,9 @@ window.MouseClicks=[];
                 case 22:
                     console.log("returnMessage = r.get_noProperResponseField();");
                     break;	
+				case 31:
+					if (window.agarpingstarted) drawRender.ping = Date.now()-window.agarpingstarted;
+					break;
 				//ping 30 pong 31
                 case 33:
                     console.log("returnMessage = r.get_configurationChangeField();");
@@ -12291,7 +12332,6 @@ window.MouseClicks=[];
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
                     break;				
                 case 111:
-					if (window.agarpingstarted) drawRender.ping = Date.now()-window.agarpingstarted;
                     var u = r.uncompressedData.activateTimedEventResponseField;
                     this.updateProducts(u.productUpdates);
                     this.updateEvents([u.userTimedEvent])
