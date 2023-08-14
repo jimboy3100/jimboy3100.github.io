@@ -9,10 +9,14 @@ ProLicenceUsersTable = {
             "reason": "Moderator",
             "notes": "Darkspace"
         },
+        "83cc1f6e-6ccf-4e05-8bf2-46cf1e26b6a1": {
+            "reason": "Moderator",
+            "notes": "New-Jack"
+        },   
         "32254495-c62d-4d0c-b66e-3d81010d401d": {
             "reason": "℄🌀idris",
             "notes": "℄🌀"
-        },        
+        }, 	    
         "7bea1cb9-7e14-4e14-824c-c2682036b0a6": {
             "reason": "℄🌀βurNouT",
             "notes": "℄🌀"
