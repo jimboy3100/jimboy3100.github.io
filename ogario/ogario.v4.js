@@ -8735,10 +8735,29 @@ window.MouseClicks=[];
                         $('#target-skin img').css('border', '2px solid' + color);
                         this.targetSkinURL = skinUrl;
                     } else {
-                        $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png')
+                        $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png');
                     }
                 }
             }
+            
+            // Creating a pop-up div if it doesn't exist
+            if (!$('#popup-image').length) {
+                $('body').append('<div id="popup-image" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);"><img style="width:512px; height:512px;" src="" /></div>');
+            }
+            
+            // Adding a click event to the preview
+            $('#target-skin img').click(function() {
+                var popup = $('#popup-image');
+                if (popup.css('display') === 'none') {
+                    // Show the pop-up with the image
+                    popup.find('img').attr('src', skinUrl);
+                    popup.show();
+                } else {
+                    // Hide the pop-up
+                    popup.hide();
+                }
+            });
+            
             $('#target-status').text('[' + this.shortMassFormat(mass) + ']');
             var l = this.calculateMapSector(x, y);
             var text;
