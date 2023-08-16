@@ -1,4 +1,4 @@
-window.OgVer=3.262;
+window.OgVer=3.263;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -659,14 +659,14 @@ function decodeMobileData(data){
 }*/
 function ReqPing(){
 	if (legendmod.integrity){
-		//console.log('ping');
-		const pingId = ~~(Math.random()*127);
-		const pingId3 = ~~(Math.random()*999999);
-		var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId]; 
-		//var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
+		//if (defaultmapsettings.showDevConsole) console.log('ping');
+		//const pingId = ~~(Math.random()*127);
+		//const pingId3 = ~~(Math.random()*999999);
+		//var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId]; 
+		var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
 		window.agarpingstarted = Date.now();
 		window.core.proxyMobileData(bytes);
-		
+		window.agarpingstarted = Date.now();
 	
 		/*const pingId = ~~(Math.random()*1000);const ping = Date.now();
 		const buffer = mesega.encode({
@@ -5834,16 +5834,16 @@ window.MouseClicks=[];
                 //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                 textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                 textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">' +
-                '<a href="#" id="set-debug" class="ogicon-location" title="Debug View"></a>' +
-                '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none" title="Spectate"></a>' +
-                '<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none" title="Set in Game Spectator"></a>' +
-                '<a href="#" id="fullscreenBtn" onclick="toggleFullScreen();"  class="ogicon-display" title="Full Screen Toggle"></a>' +
-                '<a href="#" id="RotateLeft" onclick="rotateminimapsectors();"  class="ogicon-loop2" title="Rotate Map"></a>' +
-                '<a href="#" id="Bino" onclick="legendmod.sendFreeSpectate()"  class="ogicon-pacman" title="Spectate"></a>' +
-                '<a href="#" id="set-targeting" class="ogicon-target" title="Set Targeting"></a>' +
-                '<a href="#" id="set-private-minimap" class="ogicon-location2" title="Set Private Minimap"></a>' +
-                '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle" title="Cancel Target"></a>' +
-                '<a href="#" id="change-target" class="ogicon-arrow-right" title="Change Target"></a></div>' +
+                '<a href="#" id="set-debug" class="ogicon-location"></a>' +
+                '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
+                '<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none"></a>' +
+                '<a href="#" id="fullscreenBtn" onclick="toggleFullScreen();"  class="ogicon-display"></a>' +
+                '<a href="#" id="RotateLeft" onclick="rotateminimapsectors();"  class="ogicon-loop2"></a>' +
+                '<a href="#" id="Bino" onclick="legendmod.sendFreeSpectate()"  class="ogicon-pacman"></a>' +
+                '<a href="#" id="set-targeting" class="ogicon-target"></a>' +
+                '<a href="#" id="set-private-minimap" class="ogicon-location2"></a>' +
+                '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
+                '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
                 '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
             $("body").append('<ul id="messages"></ul>');
             $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
@@ -8735,29 +8735,10 @@ window.MouseClicks=[];
                         $('#target-skin img').css('border', '2px solid' + color);
                         this.targetSkinURL = skinUrl;
                     } else {
-                        $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png');
+                        $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png')
                     }
                 }
             }
-            
-            // Creating a pop-up div if it doesn't exist
-            if (!$('#popup-image').length) {
-                $('body').append('<div id="popup-image" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);"><img style="width:512px; height:512px;" src="" /></div>');
-            }
-            
-            // Adding a click event to the preview
-            $('#target-skin img').click(function() {
-                var popup = $('#popup-image');
-                if (popup.css('display') === 'none') {
-                    // Show the pop-up with the image
-                    popup.find('img').attr('src', skinUrl);
-                    popup.show();
-                } else {
-                    // Hide the pop-up
-                    popup.hide();
-                }
-            });
-            
             $('#target-status').text('[' + this.shortMassFormat(mass) + ']');
             var l = this.calculateMapSector(x, y);
             var text;
@@ -10492,7 +10473,7 @@ window.MouseClicks=[];
                 view.setUint32(1, this.clientVersion, true);
                 window.gameBots.clientVersion = this.clientVersion;
 				//new
-				if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
+				if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000); //stable interval
 				//this.sendPong();				
             } 
 			
@@ -10798,7 +10779,7 @@ window.MouseClicks=[];
 			setTimeout(function() {*/
             for (var i = 0; i < window.captchaOpenedWindow; i++) {
                 if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed) {
-                    window.capthaWindow[i].ProcessParentMessage('doCaptcha');
+                    window.capthaWindow[i].ProcessParentMessage('doCaptcha'); // see dis
                 } else if (legendmod.integrity && window.capthaWindow[i] && window.capthaWindow[i].closed) {
                     createCaptchaWindow(i)
                 }
