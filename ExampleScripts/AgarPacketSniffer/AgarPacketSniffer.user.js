@@ -23,8 +23,8 @@ window.decryptionKey = 0;
 $.ajax('https://agar.io/agario.core.js', {
     success: core => {
         core = core.replace(/function\((\w)\)\{/i, '$& console.log($1);');
-        core = core.replace(/;if\((\w)<1\.0\){/i, `;if($1<!true){`); //
-        core = core.replace(/function tm\((w)\){/i, '$& console.log($1);')
+        core = core.replace(/;if\((\w)<1\.0\){/i, `;if($1<!true){`); 	
+        core = core.replace(/function tm\((w)\){/i, '$& console.log($1);');
         core = core.replace(/c\[h>>2\]=d;d/, 'c\[h>>2\]=d;if(window.gotKey == false || window.gotKey == undefined || window.gotKey == null){window.encryptionKey = d; window.gotKey = true; console.log("Encryption key (host):"+d)}d');
         eval(core);
     },
@@ -33,6 +33,19 @@ $.ajax('https://agar.io/agario.core.js', {
     cache: false,
     crossDomain: true
 });
+$( document ).ready(function() {
+	window.MC._onPlayerDeath = window.MC.onPlayerDeath, 
+	window.MC.onPlayerDeath = function() {
+        window.MC._onPlayerDeath.apply(this, arguments),  
+		$("canvas").hide();
+     }
+	window.MC._onPlayerSpawn = window.MC.onPlayerSpawn, 
+	window.MC.onPlayerSpawn = function() {
+        window.MC._onPlayerSpawn.apply(this, arguments), 
+		$("canvas").show();
+    }	
+});
+	
 
 function refer(master, slave, prop) {
     Object.defineProperty(master, prop, {
