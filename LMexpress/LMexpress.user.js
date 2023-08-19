@@ -21,7 +21,6 @@
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // @grant        GM_registerMenuCommand
-
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
