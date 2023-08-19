@@ -17,6 +17,7 @@
 // @connect	 agartool.io
 // @connect	 imasters.org.ru
 // @connect	 cdn.ogario.ovh
+// @connect	 deanomac.github.io
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // @grant        GM_registerMenuCommand
