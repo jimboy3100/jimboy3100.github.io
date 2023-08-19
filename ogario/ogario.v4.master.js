@@ -433,7 +433,7 @@ function legendmaster(self) {
 						else if (that.regionNames[i] == "Europe"){
 							tempRegion = Premadeletter136;
 						}					
-						else if (that.regionNames[i] == "Russia"){
+						else if (that.regionNames[i] == "Ukraine"){
 							tempRegion = Premadeletter137;
 						}	
 						else if (that.regionNames[i] == "Turkey"){
