@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.93 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.93a by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "16"; // the version 1.1-> 1.11
 
@@ -2999,9 +2999,13 @@ function hideSearchHud() {
 
 function showBotNameHud() {
 	hideSearchHud();
-	for (var i=0;i<legendmod.botNicks.length;i++){
-		//appendLog2("<span class='main-color'><span id='playerinfo'>" + temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2);
-		appendLog2("<span class='main-color'><span id='playerBots'>" + legendmod.botNicks[i].nick + "</span></span>" + " <span id='botNamesCount'>" + legendmod.botNicks[i].occurrence + "</span><span> (" + legendmod.ws + "</span>)");		
+	if (legendmod.botNicks.length==0 ){ 
+		appendLog2("<span class='main-color'><span id='playerBots'>No bots found</span></span> (" + legendmod.ws + "</span>)");
+	}
+	else{
+		for (var i=0;i<legendmod.botNicks.length;i++){
+			appendLog2("<span class='main-color'><span id='playerBots'>" + legendmod.botNicks[i].nick + "</span></span>" + " <span id='botNamesCount'>" + legendmod.botNicks[i].occurrence + "</span><span> (" + legendmod.ws + "</span>)");		
+		}
 	}
     $("#backgroundFade").fadeIn();   
     $("#searchLog").fadeIn();
@@ -5380,7 +5384,7 @@ function initializeLM(modVersion) {
         'background-color: transparent;color: ' + legmaincolor + ' ;width: 33.3%; text-shadow: 0.3px 0.3px #000000; font-size: small; margin-top: 0px; border: none;"><i class="fa fa-refresh fa-lg"></i></a>' +
 
         '<div id="dropDown3" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 60px; left: 0px; padding: 0px; border-radius: 0px;">' +
-        '<a id="checkServerBots" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;>NEW</span>Bot names</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>   View bots nicknames</p>"><i class="fa fa-exclamation fa-lg"></i></a><br>' +
+        '<a id="checkServerBots" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;>NEW</span>  Bot names</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>   View bots nicknames</p>"><i class="fa fa-exclamation fa-lg"></i></a><br>' +
         '<a id="lastIPBtn" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;></span>Join back</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>Connect to last IP you played</p>"><i class="fa fa-arrow-circle-down fa-lg"></i></a>' +
         '</div>' +
         '<div id="dropDown2" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 90px; left: 67px; padding: 0px; border-radius: 0px;">' +
