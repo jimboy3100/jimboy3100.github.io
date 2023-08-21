@@ -1,4 +1,4 @@
-window.OgVer=3.278;
+window.OgVer=3.279;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -13033,10 +13033,8 @@ Game name     : ${i.displayName}<br/>
 						legendmod.botNicks[counter]=element;		
 						counter++;
 					}
-					else{
-						legendmod.botNicks=[];
-					}
 				});
+				if (botcounter == 0) legendmod.botNicks=[];
 				var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
 				if (counterNicks>0){
 					teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
