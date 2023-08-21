@@ -1,5 +1,5 @@
 /**************
- * Legend express v1.93a by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.93e by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
 var semimodVersion = "16"; // the version 1.1-> 1.11
 
@@ -2978,7 +2978,7 @@ function hideMenu() {
 }
 
 function showSearchHud() {
-	hideBotNameHud();
+	//hideBotNameHud();
 	if (!document.URL.includes('legendmod.ml')){
 		getInfo();
 	}	
@@ -2998,8 +2998,8 @@ function hideSearchHud() {
 }
 
 function showBotNameHud() {
-	hideSearchHud();
-	if (legendmod.botNicks.length==0 ){ 
+	$("#searchHud").fadeOut();
+	if (legendmod.botNicks.length==0){ 
 		appendLog2("<span class='main-color'><span id='playerBots'>No bots found</span></span> (" + legendmod.ws + "</span>)");
 	}
 	else{
@@ -3008,13 +3008,14 @@ function showBotNameHud() {
 		}
 	}
     $("#backgroundFade").fadeIn();   
+	$("#notes").fadeIn();
     $("#searchLog").fadeIn();
-	$("#botNames").fadeIn();
+	//$("#botNames").fadeIn();
 }
 function hideBotNameHud() {
     $("#searchHud").fadeOut();
     $("#backgroundFade").fadeOut();
-    $("#botNames").fadeOut();
+    //$("#botNames").fadeOut();
     $("#statsInfo").fadeOut();
     $("#searchLog").fadeOut();
 }
@@ -5125,17 +5126,6 @@ function initializeLM(modVersion) {
         '</div>');
     $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
 
-    $("#statsInfo").before('<div id="botNames" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="botNameNote" class="main-color text-center" style="margin-top: 0px;">Count bots per name for this server</h5>' +
-        '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
-        '<input id="note2" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note3" class="form-control main-color note" style="background: transparent; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note4" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 25%; float: left; border: none; border-bottom: 1px solid; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note5" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note6" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note7" class="form-control main-color note" style="background: transparent; color: lightgrey; border: none; border-bottom: 1px solid; text-align: center; border-color: darkgrey;">' +
-        '</div>');
-    $("#botNames").append('<button id="closeBtnBotNames" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
-
     $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
         '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-original-title="Start Timer"" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
         '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
@@ -5573,10 +5563,7 @@ function initializeLM(modVersion) {
         hideSearchHud();
         showMenu2();
     });
-    $("#closeBtnBotNames").click(function() {
-        hideBotNameHud();
-        showMenu2();
-    });	
+	
     $("#searchShortcut").mouseenter(function() {
         $("#dropDown").hide();
         $("#dropDown3").show(100);
