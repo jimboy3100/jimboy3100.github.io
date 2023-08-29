@@ -175,12 +175,18 @@
         maxLength: 15
     };
     nickGenerator.input.addEventListener("input", function(e) {
-        var t = e.target,
-            n = Array.from(t.value);
-        n.length > nickGenerator.maxLength && t.storedValue ? t.value = t.storedValue : (nickGenerator.selStart = t.selectionStart, nickGenerator.selEnd = t.selectionEnd, n.length = Math.min(n.length, nickGenerator.maxLength), t.value = t.storedValue = n.join(""), generateNick(t.value)), t.selectionStart = nickGenerator.selStart, t.selectionEnd = nickGenerator.selEnd
-    }, !1), nickGenerator.input.addEventListener("keydown", function(e) {
+		GenerateNickFunction(e);
+	}, !1), 
+	nickGenerator.input.addEventListener("keydown", function(e) {
         nickGenerator.selStart = e.target.selectionStart, nickGenerator.selEnd = e.target.selectionEnd
-    }, !1)
+    }, !1);
+	function GenerateNickFunction(var e){
+		console.log(e);
+		var t = e.target;
+        n = Array.from(t.value);
+        n.length > nickGenerator.maxLength && t.storedValue ? t.value = t.storedValue : (nickGenerator.selStart = t.selectionStart, nickGenerator.selEnd = t.selectionEnd, n.length = Math.min(n.length, nickGenerator.maxLength), t.value = t.storedValue = n.join(""), generateNick(t.value)), t.selectionStart = nickGenerator.selStart, t.selectionEnd = nickGenerator.selEnd
+    
+	}
 </script>
 
     </body>
