@@ -1,10 +1,114 @@
-/*v0.12*/
+/*v0.13*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
 @import url(https:///fonts.googleapis.com/css?family=Shojumaru:400,700&subset=latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Allura:400,700&subset=latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Oswald:400,700&subset=latin-ext);
+
+/*emojis*/
+.emoji-picker {
+	
+    transform: translate(-50%, -50%);
+    margin-right:50%;  
+    margin-left:50%; 
+    background-color: rgba(0,0,0,0.72);
+    width: 400px;
+    border-radius: 5px;
+    height: 228px;
+    display: flex;
+    margin-top:140px;
+    margin-bottom:-130px;
+}
+
+.emoji-selectables {
+    background-color: #212427;
+    width: 45px;
+    /*height: 100%;*/
+	
+	display: flex;
+    padding: 5px 0 5px 5px;
+    
+    flex-direction: column;
+    align-items: center;
+}
+
+.emoji-selectables span {
+    margin-bottom: 7px;
+}
+
+.emoji-selectables span.active img {
+    filter: none;
+}
+
+.emoji-selectables span img {
+    width: 20px;
+    display: block;
+    display: flex;
+    align-items: center;
+    filter: grayscale(100%)
+}
+
+.emoji-content div {
+	flex-wrap: wrap;
+	justify-content: center;
+    /*width: 100%;
+    
+    padding: 0px;*/
+}
+
+.emoji-content span {
+    /*display: block;*/
+    padding: 5px 0 5px 5px;
+}
+
+.emoji-content span:hover {
+    transform: scale(1.1);
+    background-color: #3f4953;
+    border-radius: 5px;
+}
+
+.picker-emoji-content {
+    display: none;
+    
+}
+
+.picker-emoji-sel.face {
+    color: aliceblue;
+    font-size: 18px;
+}
+
+.picker-emoji-content.active {
+    display: flex;
+	align-content: flex-start;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.emoji-content span img {
+    width: 18px;
+    height: 18px;
+}
+
+
+.picker-emoji-content::-webkit-scrollbar-thumb {
+    height: 10px;
+    background-color: #65B88D;
+    border-radius: 100px;
+}
+
+.picker-emoji-content::-webkit-scrollbar-track {
+    background-color: #303841;
+}
+
+.picker-emoji-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+/*the rest css*/
+
+
+
 #exp-imp-settings label,#hotkeys-cfg div,#menu-footer a.release,.emoticon,label{
     vertical-align:middle 
 }
