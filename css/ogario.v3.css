@@ -1,4 +1,4 @@
-/*v0.14*/
+/*v0.15*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -1138,7 +1138,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #btl-leaderboard-hud .hud-c,#leaderboard-data .lb-data,#leaderboard-hud,#leaderboard-positions span,#message-menu a,#messages li,#overlays-hud[data-gamemode=":battleroyale"] #btl-leaderboard-hud,#time-hud{
     display:block 
 }
-#chat-emoticons,#message,.toast-success{
+#message,.toast-success{
     background-color:rgba(0,0,0,.4) 
 }
 #top5-total{
