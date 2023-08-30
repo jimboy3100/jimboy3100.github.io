@@ -1,4 +1,4 @@
-/*v0.13*/
+/*v0.14*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -17,8 +17,8 @@
     border-radius: 5px;
     height: 228px;
     display: flex;
-    margin-top:140px;
-    margin-bottom:-130px;
+    /*margin-top:140px;*/
+    margin-bottom:-125px;
 }
 
 .emoji-selectables {
