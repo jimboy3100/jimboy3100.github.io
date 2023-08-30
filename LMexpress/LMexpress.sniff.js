@@ -135,5 +135,4 @@ function getParameterByName2(name) {
 
 }
 
-//trigger twemoji emoji icons 
-var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]);
+
