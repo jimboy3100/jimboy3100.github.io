@@ -20,6 +20,7 @@
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // @grant        GM_registerMenuCommand
+
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
@@ -94,7 +95,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html?' + version;
+        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
@@ -102,7 +103,7 @@ switch (mode) {
 		}, 5000);
 	break;	
     case 'mobile': 
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html/';
+        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html';
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
@@ -114,7 +115,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html'
+        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html'
         Htmlscript(modwebsite);
         break;
 }
