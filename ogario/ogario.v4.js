@@ -1,4 +1,4 @@
-window.OgVer=3.279;
+window.OgVer=3.297;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -3902,11 +3902,11 @@ window.MouseClicks=[];
             $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
         },
         setMenuMainColor() {
-            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
+            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
             this.addCustomCSS('menuMainColorCSS', css);
         },
         setMenuPanelColor() {
-            var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
+            var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.emoji-selectables,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
             this.addCustomCSS('menuPanelColorCSS', css);
         },
         setMenuTextColor() {
@@ -3931,7 +3931,8 @@ window.MouseClicks=[];
             this.setHudScale();
         },
         setHudColors() {
-            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,.hud-b,#chat-emoticons{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
+            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,'+
+			'.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
             this.addCustomCSS('hudCSS', css);
         },
@@ -5414,6 +5415,28 @@ window.MouseClicks=[];
                 ogarcopythelb.color = profiles[this.selectedProfile].color;
             }
         },
+		marqueeSkins(t) {
+			var scrollingText = document.createElement('div');
+			scrollingText.className = 'scrolling-text'; // Add a class to prevent duplication
+			scrollingText.style.position = 'absolute';
+			scrollingText.style.top = '50%'; // Center vertically
+			scrollingText.style.width = '100%';
+			scrollingText.style.textAlign = 'center';
+			scrollingText.style.fontSize = '8px';
+			scrollingText.style.whiteSpace = 'nowrap';
+			scrollingText.style.overflow = 'hidden';
+			scrollingText.style.color = 'white'; // White font color
+			scrollingText.style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black'; // Black outline
+
+			// Create a marquee element for scrolling from right to left
+			var marquee = document.createElement('marquee');
+			marquee.direction = 'left';
+			marquee.innerText = 'MP4, video skin';
+			scrollingText.appendChild(marquee);
+
+			// Append the scrolling text to the anchor element
+			$("#" + t).append(scrollingText);
+		},			
         changeSkinPreview(e, t) {
             //console.log(e,t);
             if (!t || !e) {
@@ -5423,22 +5446,34 @@ window.MouseClicks=[];
                 //console.log(e,e.src);
 
                 if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")) { //console.log("stage 3a videos");
+
                     $("#skin-preview").children().remove();
                     $("#skin-preview").removeClass("default");
                     $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='350'>\"></a>");
                     $("#skin-popover").append('<video id="videoskinpreview" src=\'' + e.src + "' width='350' controls>\"></video>");
                     //						$("#skin-popover").popover();
-
                     //$("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
                 } else {
                     //console.log("default settings for images on changeSkinPreview")
                     $("#skin-preview").removeClass("default");
                     $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<img src=\'' + e.src + "' width='500'>\"></a>");
                 }
+				//e.style.width = $("#skin-popover").width();
+				//e.style.height = $("#skin-popover").height();
                 $("#skin-popover").append($(e).fadeIn(1000));
                 $("#skin-popover").popover();
             } else {
                 if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")) { //console.log("stage 3b videos");
+					/*if ((e.src).startsWith('https://i.imgur.com/') && (e.src).endsWith('.mp4')){
+						e.style.width = "180px" 
+						e.style.height = "180px";
+					}*/
+					/*if (/^https://i.imgur.com/.*.mp4$/i.test(e.src)) {
+						console.log('contains imgur');
+						e.src = e.src.replace('.mp4', '.gif');
+					}*/
+					//e.style.width=$("#skin-preview").width();
+					//e.style.height=$("#skin-preview").height();				
                     $("#" + t).removeClass("default");
                     $("#" + t).append($(e).fadeIn(1000));
 
@@ -5447,7 +5482,6 @@ window.MouseClicks=[];
                     $("#" + t).append($(e).fadeIn(1000));
                 }
             }
-
         },
         setSkinPreview(t, e) {
             if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
@@ -5460,8 +5494,11 @@ window.MouseClicks=[];
                     o = new Video();
                     o.crossOrigin = 'anonymous';
                     o.src = t;
+					//o.style.width = "100%";
+					//o.style.height = "100%";
+					//this.marqueeSkins(e);
                     // o = new Image();
-
+					
                     //o.style.borderRadius = "25px";
                     setTimeout(function() {
                         //newo.onload = function() {
@@ -5815,11 +5852,16 @@ window.MouseClicks=[];
             $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                 textLanguage.enterChatMsg + '..." maxlength="80"></div>');
             $("body").append('<div id="chat-box"></div>');
-            for (const emoji in emoticonicons) {
+            $("#chat-emoticons").disMojiPicker();
+			$("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
+			//var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]); this needs on LMexpress.sniff3.js
+			//var twemoji; if (twemoji) twemoji.parse(document.body);
+			/*
+			for (const emoji in emoticonicons) {
                 if (emoticonicons.hasOwnProperty(emoji)) {
                     $("#chat-emoticons").append('<img src="https://legendmod.ml/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
                 }
-            }
+            }*/
             $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>');
             $("#exp-imp-settings").append("<h1>" + textLanguage.exportSettings + "</h1><h2>" + textLanguage.exportInfo + "</h2>");
             this.addOption("#exp-imp-settings", "export-ogarioCommands", textLanguage.commands, true);
