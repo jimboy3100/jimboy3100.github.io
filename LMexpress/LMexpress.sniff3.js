@@ -217,3 +217,6 @@ var textspeach="";
         }
 	}
 //	}, 4000);
+
+//trigger twemoji emoji icons 
+var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]);
