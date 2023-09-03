@@ -12,6 +12,7 @@
 // @connect      agar.io
 // ==/UserScript==
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //Written by σмg ι ℓσνє уσυ! (Joe Bigglesworth), published by Jimboy3100 on general form
 //Put your webhook for generalChannel and serverChannel (2nd webhook) for the script to work
