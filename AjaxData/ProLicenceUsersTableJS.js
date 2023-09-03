@@ -77,7 +77,10 @@ ProLicenceUsersTable = {
             "reason": "FriendOfBotplayer",
             "notes": "Overkill"
         }, 	    
-
+        "779f0d47-4de8-4b30-a4e4-ae938dabd4b9": {
+            "reason": "Imperium",
+            "notes": "Maybeisfromminiclip"
+        }, 	
         "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
             "reason": "Donate",
             "notes": "Cla"
