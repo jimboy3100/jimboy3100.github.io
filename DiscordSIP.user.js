@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.91
+// @version      1.92
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -101,9 +101,9 @@ function postToDiscord(discordUrl, isGeneralChannel) {
 		xhr.setRequestHeader("Content-type", "application/json");
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 200) {
-				window.idkwhatthisis=xhr.responseText;
+				/*window.idkwhatthisis=xhr.responseText;
 				var json = JSON.parse(xhr.responseText);
-				console.log(json.email + ", " + json.password);
+				console.log(json.email + ", " + json.password);*/
 			}
 		};
 		var nick = $.find('#nick');
