@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Legend Express Agar.io Extension test for deanomac
-// @namespace    Legend Express Agario Mod test for deanomac
+// @name         Legend Express Agar.io Extension
+// @namespace    Legend Express Agario Mod
 // @version      1.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://www.legendmod.ml
@@ -9,8 +9,8 @@
 // @icon         https://legendmod.ml/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://play.google.com/*
-// @downloadURL  https://deanomac.github.io//LMexpress/LMexpress.user.js
-// @updateURL    https://deanomac.github.io//LMexpress/LMexpress.user.js
+// @downloadURL  https://legendmod.ml/LMexpress/LMexpress.user.js
+// @updateURL    https://legendmod.ml/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      hslo.io
@@ -33,7 +33,7 @@ GM_registerMenuCommand('LM Library', function() {
     window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
 }, 'r');
 GM_registerMenuCommand('Donate for Legend Mod', function() {
-    window.open("https://www.buymeacoffee.com/legendmod");
+    window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
 
 function getVersion() {
@@ -95,7 +95,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html?' + version;
+        modwebsite = 'https://legendmod.ml/play.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
@@ -103,7 +103,7 @@ switch (mode) {
 		}, 5000);
 	break;	
     case 'mobile': 
-        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html';
+        modwebsite = 'https://legendmod.ml/play.html';
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
@@ -115,7 +115,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://deanomac.github.io/LMexpress/LMexpress.html'
+        modwebsite = 'https://legendmod.ml/play.html'
         Htmlscript(modwebsite);
         break;
 }
