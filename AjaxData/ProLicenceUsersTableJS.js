@@ -55,15 +55,15 @@ ProLicenceUsersTable = {
         }, 	
         "1704daba-4f74-436f-9b17-a2f69a9e910b": {
             "reason": "Hano",
-            "notes": "Admin",
+            "notes": "Admin"
         }, 	
         "396023b0-fc28-4638-b4e4-f836620ba746": {
             "reason": "Hilde",
-            "notes": "Admin",
+            "notes": "Admin"
         }, 
         "b74efc8b-4e87-4c39-a7ac-a289e78eb012": {
             "reason": "Hilde",
-            "notes": "Admin",
+            "notes": "Admin"
         }, 	    
         "0c8e1929-d2ce-4738-84d5-3c7f7d10f4c6": {
             "reason": "Junky",
@@ -77,9 +77,9 @@ ProLicenceUsersTable = {
             "reason": "FriendOfBotplayer",
             "notes": "Overkill"
         }, 	    
-        "779f0d47-4de8-4b30-a4e4-ae938dabd4b9": {
-            "reason": "Imperium",
-            "notes": "Maybeisfromminiclip"
+        "7bb006df-2994-4e4c-9ed8-1f40aa541196": {
+            "reason": "coronaagar",
+            "notes": "friend"
         }, 	
         "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
             "reason": "Donate",
