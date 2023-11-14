@@ -1,4 +1,4 @@
-//v12.73
+//v12.74
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -262,8 +262,8 @@ function legendmaster(self) {
             $.ajax("//agar.io/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
-                    //var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
-					var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/);
+                    var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
+					//var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/);
 					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
