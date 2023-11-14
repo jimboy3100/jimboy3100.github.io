@@ -1,4 +1,4 @@
-//v12.79
+//v12.80
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -268,12 +268,13 @@ function legendmaster(self) {
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
 						var pluginName2 = optionMatch2[1];
-						var pluginName = '3.11.16';
-                        var data = window.master.parseClientVersion(pluginName);
+						var pluginName = '3.11.16';      
+                        window.master.setClientVersion(data, pluginName);
+						window.master.setxsupportprotoversion(pluginName2);		
+						var data = window.master.parseClientVersion(pluginName);						
                         console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginName);
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
-                        window.master.setClientVersion(data, pluginName);
-						window.master.setxsupportprotoversion(pluginName2);
+
                     }
                 },
                 dataType: "text",
