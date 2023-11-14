@@ -69,6 +69,10 @@ ProLicenceUsersTable = {
             "reason": "Junky",
             "notes": "Admin"
         }, 	
+        "7bb006df-2994-4e4c-9ed8-1f40aa541196": {
+            "reason": "idk",
+            "notes": "CoronaAgar"
+        }, 	    
         "81831afa-0a11-4fce-82b3-81067f6cc9bc": {
             "reason": "Shiro",
             "notes": "Advertiser-Japan-Google"
