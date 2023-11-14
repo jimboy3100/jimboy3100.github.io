@@ -1,4 +1,4 @@
-//v12.75
+//v12.76
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -262,17 +262,17 @@ function legendmaster(self) {
             $.ajax("//agar.io/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
-                    var optionMatch = sketchContents.match(/versionString="(\d+\.\d+\.\d+)"/);
+                    var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
 					//var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/);
 					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
 						var pluginName2 = optionMatch2[1];
-                        var data = window.parseClientVersion(pluginName);
+                        var data = this.parseClientVersion(pluginName);
                         //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginName);
 						//console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
-                        window.setClientVersion(data, pluginName);
-						window.setxsupportprotoversion(pluginName2);
+                        this.setClientVersion(data, pluginName);
+						this.setxsupportprotoversion(pluginName2);
                     }
                 },
                 dataType: "text",
