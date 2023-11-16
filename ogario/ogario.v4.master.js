@@ -1,4 +1,4 @@
-//v12.82
+//v12.83
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -1045,19 +1045,23 @@ function ajaxrequestMaster(){
 	$.ajax("//agar.io/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
-                    var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
-					//var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/);
+                    //var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
+					//var optionMatch = sketchContents.match(/{\s\s\svar\s*versionString\s?=\s?"(\d+\.\d+\.\d+)"/g);
+					//var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/g);
+					var optionMatch = sketchContents.match(/versionString\s?=\s,?"(\d+\.\d+).\d+"/);	
 					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
 						var pluginName2 = optionMatch2[1];
-						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", pluginName);
-						var pluginName = '3.11.16';      
-	
-						var data = window.master.parseClientVersion(pluginName);
-                        window.master.setClientVersion(data, pluginName);
+						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version from agario.js:", optionMatch[1]);
+						pluginNameLast = pluginName; 
+						//var pluginNameLast = pluginName.substring(pluginName.lastIndexOf(".") + 1); 
+						pluginNameLast = pluginNameLast + ".11";
+						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Replace with 2 numbers on the end", pluginNameLast);
+						var data = window.master.parseClientVersion(pluginNameLast);
+                        window.master.setClientVersion(data, pluginNameLast);
 						window.master.setxsupportprotoversion(pluginName2);							
-                        console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginName);									
+                        console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginNameLast);									
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
 
                     }
