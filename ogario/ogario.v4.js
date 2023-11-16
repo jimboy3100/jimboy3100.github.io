@@ -1,5 +1,4 @@
-window.OgVer=3.298;
-
+window.OgVer=3.303;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -5855,7 +5854,8 @@ window.MouseClicks=[];
             $("body").append('<div id="chat-box"></div>');
             //$("#chat-emoticons").disMojiPicker();
 			if ($("#chat-emoticons").disMojiPicker) $("#chat-emoticons").disMojiPicker();
-			$("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
+			//$("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
+			$("#chat-emoticons").click(emoji => document.getElementById("message").value += emoji.target.textContent);
 			//var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]); this needs on LMexpress.sniff3.js
 			//var twemoji; if (twemoji) twemoji.parse(document.body);
 			/*
@@ -7347,6 +7347,7 @@ window.MouseClicks=[];
                 //text = 'wss://live-arena-' + token + '.tech.agar.io:80';
                 //text = 'wss://live-arena-' + token + '.agar.io:80';
                 text = 'wss://live-arena-' + token + '.agar.io:443'
+				//console.log("!text && /^[a-z0-9]{5,}$/.test(token)" + token);
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
                 text = 'wss://' + token; //private servers
@@ -7354,6 +7355,7 @@ window.MouseClicks=[];
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
             }
+			console.log(text);
             return text;
         },
         createServerToken() {
@@ -10635,7 +10637,8 @@ window.MouseClicks=[];
             this.sendAction(17);
         },
         sendFBIDS(data) { //Yahnych
-            var friendsIDs = "";
+            if (data){
+			var friendsIDs = "";
 
             var pIDs = application.FacebookIDs.split(',');
             for (let length = 0; length < pIDs.length; length++) {
@@ -10660,7 +10663,7 @@ window.MouseClicks=[];
             }
             view.setUint8(friendsIDs.length + 1, 0);
             this.sendMessage(view);
-
+			}
         },
         sendNick(nick) {
 
@@ -10668,9 +10671,13 @@ window.MouseClicks=[];
             this.playerNick = nick;
 
             var sendSpawn = function(token) {
+				console.log(token);
                 //var token = grecaptcha.getResponse();
+				//console.log(self.playerNick);
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
+				//console.log(nick);
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
+				
                 var pos = 1
                 //"℄🌀".codePointAt(length)
                 for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
