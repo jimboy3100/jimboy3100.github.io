@@ -1,5 +1,5 @@
 //OLD DEALS
-//v2.14
+//v2.15
 //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
 /* you will need this
@@ -41,9 +41,10 @@ function SpecialDeals() {
         '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' + '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"><input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' + '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' + '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' + '<h4 id="dealcost" class="text-right">99.99 $</h4>' + '<div class="xpmt-buy-content" style="font-size: 13px; margin-top: -30px; float: left;font-weight: 700; background-color: rgba(0, 0, 0, 0.2); background-image: url(https://legendmod.ml/banners/icondeal2.png);padding: 3px; align: middle; border-radius: 4px;width: 100%;height: 150px;z-index: 15;margin: auto;">' + '<div class="xpmt-money-stack" style="display: inline-block; margin-left: 70px; margin-top: 115px;"><span class="coins" style=""><b>125000 C</b></span></div>' + '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' + '<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' + '</div>' + '</div><select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select><select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select><color="red" style="display:inline"> ' + Premadeletter112 + '</color>' + '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
         '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' + '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' + '</div>' + '</div>' + '</div>' + '</div>');
         $("#agario_uid_input").val(window.agarioEncodedUID)
-        setTimeout(function() {
+        populateLibConfig();
+		setTimeout(function() {
             
-            populateLibConfig();
+            
 			populateSD();
             $(".modal-dialog").draggable()
         }, 1500);
@@ -339,24 +340,19 @@ function LoadGameConfiguration() {
               }
           });
      */
-    $.ajax({
-        //url: 'https://configs-web.agario.miniclippt.com/live/v12/2204/GameConfiguration.json',
-        url: window.MiniclipConfigDestination,
-        type: 'GET',
-        beforeSend: ((req)=>{
-            req.setRequestHeader('Accept', 'text/plain');
-            req.setRequestHeader('Accept', '*/*');
-            req.setRequestHeader('Accept', 'q=0.01');
-            req.setRequestHeader('Content-Type', 'application/octet-stream');
-            req.setRequestHeader('x-support-proto-version', window.LMagarioheaders.proto_version);
-            req.setRequestHeader('x-client-version', '' + window.LMagarioheaders.client_version);
-        }
-        ),
-        success: ((info)=>{
-            return GameConfiguration = JSON.parse(info);
-        }
-        )
-    });
+	 
+	 
+
+	window.GameConfiguration = $.ajax({
+		type: "GET",
+		url: window.MiniclipConfigDestination,
+		async: false,
+		datatype: "jsonp",
+		success: function(info) {
+        //var GameConfiguration = info;
+		}
+	}).responseJSON;	
+	
 }
 
 function populateLibConfig() {
