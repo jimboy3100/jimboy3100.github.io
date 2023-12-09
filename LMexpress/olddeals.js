@@ -1,5 +1,5 @@
 //OLD DEALS
-//v2.18
+//v2.19
 //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
 /* you will need this
@@ -80,7 +80,7 @@ function SpecialDeals() {
         });
         $('#agario_uid_input').blur(function() {
             //if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
-            if ($('#agario_uid_input').val().length > 100) {
+            if ($('#agario_uid_input').val().length > 50) {
 
                 document.getElementById("checkBoxLockUID").checked = true;
                 toastr["info"](Premadeletter92).css("width", "250px");
