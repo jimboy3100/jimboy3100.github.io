@@ -1,5 +1,5 @@
 //OLD DEALS
-//v2.15
+//v2.18
 //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
 /* you will need this
@@ -42,11 +42,12 @@ function SpecialDeals() {
         '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' + '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' + '</div>' + '</div>' + '</div>' + '</div>');
         $("#agario_uid_input").val(window.agarioEncodedUID);
 		LoadGameConfiguration();
-        populateLibConfig();
+        
 		//populateSD();
         $(".modal-dialog").draggable()		
-		//setTimeout(function() {
-        //}, 1500);
+		setTimeout(function() {
+			populateLibConfig();
+        }, 2500);
 
         $("#ss-select-agarVersionDestinations").change(function() {
 
@@ -253,8 +254,7 @@ function buydeals() {
 }
 
 function populateSD() {
-    for (var i = document.getElementById("ss-select-purchases").options.length; i-- > 0; )
-        document.getElementById("ss-select-purchases").options[i] = null;
+
     var select = document.getElementById("ss-select-purchases");
     for (i = 0; i < GameConfiguration.gameConfig["Wallet - In-App Purchases"].length; i++) {
         if (GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].priceTier == "2") {
@@ -328,30 +328,49 @@ function letterCount(string, letter, caseSensitive) {
 }
 
 function LoadGameConfiguration() {
-
+    for (var i = document.getElementById("ss-select-purchases").options.length; i-- > 0; )
+        document.getElementById("ss-select-purchases").options[i] = null;
     GameConfiguration = {};
-    /*     $.ajax({
-              type: "GET",
-              url: window.MiniclipConfigDestination,
-              datatype: "json",
-              success: function(info) {
-                  return GameConfiguration = info;
-              }
-          });
-     */
-	 
-	 
-
-		$.ajax({
+    /*     		$.ajax({
 			type: "GET",
 			url: window.MiniclipConfigDestination,
 			async: false,
 			datatype: "jsonp",
 			success: function(info) {
-				window.GameConfiguration = JSON.parse(info);
+				window.GameConfiguration = info;
 				populateSD();
 			}
 		}).responseJSON;	
+     */
+    $.ajax({
+        //url: 'https://configs-web.agario.miniclippt.com/live/v12/2204/GameConfiguration.json',
+        url: window.MiniclipConfigDestination,
+        type: 'GET',
+        beforeSend: ((req)=>{
+            req.setRequestHeader('Accept', 'text/plain');
+           req.setRequestHeader('Accept', '*/*');
+            req.setRequestHeader('Accept', 'q=0.01');
+            req.setRequestHeader('Content-Type', 'application/octet-stream');
+            req.setRequestHeader('x-support-proto-version', window.LMagarioheaders.proto_version);
+            req.setRequestHeader('x-client-version', '' + window.LMagarioheaders.client_version);
+        }
+        ),
+        success: ((info)=>{
+            if (typeof info === 'string' || info instanceof String){
+				window.GameConfiguration = JSON.parse(info);
+			}
+			else{
+				window.GameConfiguration = info;
+			}
+			populateSD();
+			}
+         ),
+		error: ((info)=>{ 
+		console.log(info);
+		toastr.error('<b>[' + Premadeletter123 + ']:</b> There is no such library anymore');
+		})
+       
+    });		
 	
 }
 
