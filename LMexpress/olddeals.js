@@ -1,5 +1,5 @@
 //OLD DEALS
-//v2.19
+//v2.20
 //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
 /* you will need this
@@ -328,8 +328,10 @@ function letterCount(string, letter, caseSensitive) {
 }
 
 function LoadGameConfiguration() {
-    for (var i = document.getElementById("ss-select-purchases").options.length; i-- > 0; )
-        document.getElementById("ss-select-purchases").options[i] = null;
+    for (var i = document.getElementById("ss-select-purchases").options.length; i-- > 0; ){
+		document.getElementById("ss-select-purchases").options[i] = null;}
+    $(".xpmt-skins2").css('background-image', '');
+    $(".xpmt-skins").css('background-image', '');	
     GameConfiguration = {};
     /*     		$.ajax({
 			type: "GET",
