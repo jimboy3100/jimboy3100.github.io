@@ -111,7 +111,7 @@ setTimeout(function() {
                             e += '<button id="tcm-video-unload">unselect video skin</button>',
                             e += '<button id="tcm-video-mute">mute audio</button>',
                             e += "</div>",
-                            e += '<span id="tcm-videoskin-credits">Script made by <a href="http://www.legendmod.ml" target="_blank">Jimboy3100</a>.</span>',
+                            e += '<span id="tcm-videoskin-credits">Script made by <a href="http://www.jimboy3100.github.io" target="_blank">Jimboy3100</a>.</span>',
                             e += "</div>"
                     }
                 }
