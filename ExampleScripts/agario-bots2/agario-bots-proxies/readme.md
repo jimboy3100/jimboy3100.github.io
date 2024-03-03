@@ -14,7 +14,7 @@ Troxep: https://github.com/darkx-developer/agar.io
 Darkx ➙ Developer
 
 ### Collaborator of bots:
-jimboy3100: http://legendmod.ml
+jimboy3100: http://jimboy3100.github.io
 
 ### Collaborator of bots:
 xN3BULA: https://github.com/xN3BULA/free-agario-bots/
