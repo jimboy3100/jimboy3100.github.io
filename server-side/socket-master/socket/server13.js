@@ -301,7 +301,7 @@ app.get('/stats', function (req, res) {
     if(req.destroyed) return false;
     if(req.headers.origin.indexOf('agar.io')>-1
       || req.headers.origin.indexOf('deltav4')>-1 
-      || req.headers.origin.indexOf('legendmod.ml')>-1
+      || req.headers.origin.indexOf('jimboy3100.github.io')>-1
       || req.headers.origin.indexOf('rawcdn.githack.com')>-1
       || req.headers.origin.indexOf('agardelta.com')>-1
       ){}else{ws.close(); return;}
