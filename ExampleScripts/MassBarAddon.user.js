@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Legend mod - Mass Bar Addon
 // @author       DAVI すべての最強!
-// @icon         https://legendmod.ml/banners/CropedImage128.gif
+// @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // ==/UserScript==
 
@@ -30,7 +30,7 @@ SOFTWARE.
           clearInterval(tamp);
           var elem = document.body;
           var script = document.createElement('script');
-          script.src = 'https://legendmod.ml/ExampleScripts/legendmodAddonDAVI.js';
+          script.src = 'https://jimboy3100.github.io/ExampleScripts/legendmodAddonDAVI.js';
           document.head.appendChild(script);
           elem.appendChild(script);
   }, 100);
