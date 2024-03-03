@@ -10,7 +10,7 @@ window.EnvConfig.configVersion = self.localStorage.getItem("EnvConfig.configVers
 
 var window = this;
 window.loggedIn=false;
-if (!(document.URL && document.URL.includes('legendmod.ml'))){
+if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
 $.ajax("//agar.io/index.html", {
     error() {},
     success(sketchContents) {
@@ -258,7 +258,7 @@ function legendmaster(self) {
                 this.protocolVersion = self.localStorage.getItem("ogarioProtocolVersion");
             }					
             var window = this;
-			if (!(document.URL && document.URL.includes('legendmod.ml'))){	
+			if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){	
 			setTimeout(function() {
 				ajaxrequestMaster();
 			}, 500);	
@@ -652,7 +652,7 @@ function legendmaster(self) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
                 } else {
-					if (!(document.URL && document.URL.includes('legendmod.ml'))){
+					if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
 						this.findServer(this.region, this.gameMode);
 					}
                 }
@@ -792,7 +792,7 @@ function legendmaster(self) {
             var n = this;
             this.setUI();
             this.getRegionNames();
-			if (!(document.URL && document.URL.includes('legendmod.ml'))){
+			if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
             this.refreshRegionInfo();
 			this.checkHash();
 			this.getRegionCode()
@@ -849,7 +849,7 @@ function legendmaster(self) {
         alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
 	
-	if (!(document.URL && document.URL.includes('legendmod.ml'))){
+	if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
     self.fbAsyncInit = function() {
         self.FB.init({
             appId: headers.fb_app_id,
@@ -875,10 +875,10 @@ function continuelogout(){
 		$("#replayuid").val("")
 		
 		$("#UserProfileUUID1").val("");	
-        $(".agario-profile-picture").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+        $(".agario-profile-picture").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
 		$("#stats-content").html("");
 		$("#user-info").html("");	
-		$(".vanilla-skin-preview").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+		$(".vanilla-skin-preview").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
 		$('.progress-bar-star').text("");
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
                                         '<div id="coins" style="display: inline-block;">💰000</div>'+
@@ -962,7 +962,7 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = $.ajax({
     type: "GET",
-    url: "https://legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json",
+    url: "https://jimboy3100.github.io/agario/live/" + Lmagarversion + "GameConfiguration.json",
     async: false,
     datatype: "jsonp",
     success: function(info) {
@@ -1013,15 +1013,15 @@ function getInfo() {
 }
 function potionsLogout(){
 $("#potions").html('<div id="potion1" class="potion">'+
-                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
+                                        '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
                                     '<div id="potion2" class="potion">'+
-                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
+                                        '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
                                    '<div id="potion3" class="potion">'+
-                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
+                                        '<img src="https://jimboy3100.github.io/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>')
 $("#potions").hide()									
