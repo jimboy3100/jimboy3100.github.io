@@ -3,7 +3,7 @@
 // @namespace    Upload your settings from agario to webpage or apply them on mod easily
 // @version      1
 // @description  Upload your JSON file settings from agario to webpage or apply them on mod easily
-// @homepage     http://www.legendmod.ml
+// @homepage     http://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
@@ -19,7 +19,7 @@
 
 // Website: http://ext.fzogar.xyz/ogs/
 // Legend Mod by Jimboy3100 for Fayiz
-// Part of the Legend Mod Project Agario http://www.legendmod.ml
+// Part of the Legend Mod Project Agario http://www.jimboy3100.github.io
 
 /*MIT License
 Copyright (c) [The Legend Mod]
