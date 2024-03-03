@@ -3,7 +3,7 @@
 // @namespace    Legend Agario Mod
 // @version      2.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     http://www.legendmod.ml
+// @homepage     http://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
@@ -48,7 +48,7 @@ SOFTWARE.
 
 // Start of script
 GM_registerMenuCommand('Legend Mod Website', function() {
-    window.open("http://legendmod.ml");
+    window.open("http://jimboy3100.github.io");
 }, 'r');
 GM_registerMenuCommand('LM Library', function() {
     window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
@@ -271,7 +271,7 @@ if (location.host == "talky.io") {
     }, 5500);
     setTimeout(function() {
         document.getElementsByClassName('_1U4l9')[1].value = gamename;
-        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a> 
+        //<a href="http://jimboy3100.github.io" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a> 
         
 		if (IPAgario.length==28){
 		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
