@@ -381,7 +381,7 @@ function setGUI() {
             <a href="https://discord.gg/JUfpR9k" target="_blank">Free Agar.io Bots</a>
         </h3>
         <h5 id="botsAuthor">
-            Developed by <a href="https://www.youtube.com/channel/UCZo9WmnFPWw38q65Llu5Lug" target="_blank">Nel, </a><a href="http://legendmod.ml/" target="_blank">Jimboy3100</a>
+            Developed by <a href="https://www.youtube.com/channel/UCZo9WmnFPWw38q65Llu5Lug" target="_blank">Nel, </a><a href="http://jimboy3100.github.io/" target="_blank">Jimboy3100</a>
 			<br><a href="https://www.youtube.com/watch?v=DhiBxedrnKY" target="_blank">VPS Bots</a>
         </h5>
         <span id="statusText">Status: <b id="userStatus">Disconnected</b></span>
