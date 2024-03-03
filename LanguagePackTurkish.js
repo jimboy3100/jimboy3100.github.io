@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Agar.io Legend Mod Translations
-// @namespace    www.legendmod.ml
+// @namespace    www.jimboy3100.github.io
 // @version      0.2
 // @description  Help Legend Mod to be translated in all languages
 // @author       Jimboy3100
