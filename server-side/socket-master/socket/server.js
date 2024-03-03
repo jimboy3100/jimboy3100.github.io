@@ -342,7 +342,7 @@ app.get('/stats', function (req, res) {
 			|| req.headers.origin.indexOf('deltav4')>-1
 			|| req.headers.origin.indexOf('127.0.0.1:8080')>-1
 			|| req.headers.origin.indexOf('snez.org:8080')>-1
-			|| req.headers.origin.indexOf('legendmod.ml')>-1
+			|| req.headers.origin.indexOf('jimboy3100.github.io')>-1
 			|| req.headers.origin.indexOf('rawcdn.githack.com')>-1 
 			|| req.headers.origin.indexOf('agardelta.com')>-1
 			){}else{
