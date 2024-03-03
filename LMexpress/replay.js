@@ -68,7 +68,7 @@ $("#CloseReplay").click(function() {
     $("#replayModal").remove();
 });
 $("#FAQReplay").click(function() {
-    window.open('https://legendmod.ml/', '_blank');
+    window.open('https://jimboy3100.github.io/', '_blank');
 });
 
 
