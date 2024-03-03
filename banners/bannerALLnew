@@ -2,7 +2,7 @@
 var imgUrl = localStorage.getItem("imgUrl");
 var imgHref = localStorage.getItem("imgHref");
 if(imgUrl==null||imgUrl==""){imgUrl = "https://jimboy3100.github.io/banners/CropedImage128.gif"}
-if(imgHref==null||imgHref==""){imgHref = "http://www.legendmod.ml"; }
+if(imgHref==null||imgHref==""){imgHref = "http://www.jimboy3100.github.io"; }
 
 </script>
 
