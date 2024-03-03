@@ -4,7 +4,7 @@
 // @version      0.5
 // @description  client side handler of communication socket
 // @author       You
-// @match        https://legendmod.ml/ogario/
+// @match        https://jimboy3100.github.io/ogario/
 // @grant        unsafeWindow
 // ==/UserScript==
 
