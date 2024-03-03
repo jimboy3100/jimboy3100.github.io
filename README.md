@@ -6,7 +6,7 @@ Mod for Agar.io multiplayer action browser game.
 
 Author: jimboy3100@hotmail.com
 
-Website: [www.legendmod.ml](http://www.legendmod.ml)
+Website: [www.jimboy3100.github.io](http://www.jimboy3100.github.io)
 
 
 ###### [Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)
@@ -48,7 +48,7 @@ Website: [www.legendmod.ml](http://www.legendmod.ml)
 
 ### Installation 
 1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) , [Opera](https://addons.opera.com/en/extensions/details/tampermonkey-beta)
-2. Install Legend Express script [here](http://jimboy3100.github.io/LMexpress/LMexpress.user.js)  
+2. Install Legend Express script [here](http://jimboy3100.github.io/LMexpress/LMexpress.user.js)  
 
 ### Screenshots
 
