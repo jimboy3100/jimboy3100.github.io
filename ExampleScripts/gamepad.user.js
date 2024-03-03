@@ -35,7 +35,7 @@ function addStyleString(str) {
 }
 
 
-addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
+addStyleString(`@import "https://jimboy3100.github.io/css/styles.css" all;
 
 
 #leaderboard-data{font-size:70%;text-align:right;left:-5px;transform:translate(-100%,0)}
@@ -216,8 +216,8 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
 </div>
 
 <div class="wpk-container-buttons">
-  <div class="wpk-button w-feed-auto" key="69"><img src="https://legendmod.ml/banners/iconMobileFeed.png" height="50px"></img></div>
-  <div class="wpk-button split" key="32"><img src="https://legendmod.ml/banners/iconMobileSplit.png" height="50px"></img></div>
+  <div class="wpk-button w-feed-auto" key="69"><img src="https://jimboy3100.github.io/banners/iconMobileFeed.png" height="50px"></img></div>
+  <div class="wpk-button split" key="32"><img src="https://jimboy3100.github.io/banners/iconMobileSplit.png" height="50px"></img></div>
   <div class="wpk-button double-split" key="81">Q</div>
   <div class="wpk-button infinity-cursor" key="82">R</img></div>
   <div class="wpk-button sixteen-split" key="16">Shift</div>`
