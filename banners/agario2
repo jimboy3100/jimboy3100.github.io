@@ -1,7 +1,7 @@
 <a id="legendAdAnchor" onclick="ga('send', 'event', 'Ad', 'click', 'euWebsite');" target="_blank" href="https://senpa.io/web#lm">
 </a>
 <script>
-  var imgUrl = "https://legendmod.ml/banners/agario2.gif";
+  var imgUrl = "https://jimboy3100.github.io/banners/agario2.gif";
   var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
   $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
   $img.on('error', function() { ga('send', 'event', 'Ad', 'loadError', 'euWebsite'); });
