@@ -3,7 +3,7 @@
 // @namespace    MultiplayerScript Agario v.1
 // @version      1
 // @description  IP address on URL, COPY+PASTE for Agario multiplayer (all modes)
-// @homepage     http://www.legendmod.ml
+// @homepage     http://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
 // @match        http://agar.io/*
@@ -38,6 +38,6 @@ var stateObj = { foo: "bar" };
 	}, 3000);
 
 		$("#instructions").append('<center><span></span>' +
-        'SIP address on URL, COPY+PASTE for multiplayer. By Jimboy3100, author of <a href="http://www.legendmod.ml" target="_blank">LegendMod</a></center>');
+        'SIP address on URL, COPY+PASTE for multiplayer. By Jimboy3100, author of <a href="http://www.jimboy3100.github.io" target="_blank">LegendMod</a></center>');
 }, 8000);
               
