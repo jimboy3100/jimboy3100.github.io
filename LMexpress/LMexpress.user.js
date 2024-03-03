@@ -3,14 +3,14 @@
 // @namespace    Legend Express Agario Mod
 // @version      1.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     https://www.legendmod.ml
+// @homepage     https://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
-// @icon         https://legendmod.ml/banners/CropedImage128.gif
+// @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://play.google.com/*
-// @downloadURL  https://legendmod.ml/LMexpress/LMexpress.user.js
-// @updateURL    https://legendmod.ml/LMexpress/LMexpress.user.js
+// @downloadURL  https://jimboy3100.github.io/LMexpress/LMexpress.user.js
+// @updateURL    https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      hslo.io
@@ -18,7 +18,7 @@
 // @connect	 imasters.org.ru
 // @connect	 cdn.ogario.ovh
 // @connect      deltav4.glitch.me
-// @connect      legendmod.ml
+// @connect      jimboy3100.github.io
 // @grant        GM_registerMenuCommand
 
 // ==/UserScript==
@@ -27,7 +27,7 @@
 /*MIT License*/
 
 GM_registerMenuCommand('Legend Mod Website', function() {
-    window.open("http://legendmod.ml");
+    window.open("http://jimboy3100.github.io");
 }, 'r');
 GM_registerMenuCommand('LM Library', function() {
     window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
@@ -40,7 +40,7 @@ function getVersion() {
     try
     {
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://legendmod.ml/VERSION.txt', false);
+        request.open('GET', 'https://jimboy3100.github.io/VERSION.txt', false);
         request.send(null);
 
         if (request.status === 200)
@@ -95,27 +95,27 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://legendmod.ml/play.html?' + version;
+        modwebsite = 'https://jimboy3100.github.io/play.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
-			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
+			modwebsite = 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js';
 			Userscript(modwebsite);
 		}, 5000);
 	break;	
     case 'mobile': 
-        modwebsite = 'https://legendmod.ml/play.html';
+        modwebsite = 'https://jimboy3100.github.io/play.html';
         Htmlscript(modwebsite);
 		setTimeout(function() {		
-			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
+			modwebsite = 'https://jimboy3100.github.io/ExampleScripts/gamepad.user.js';
 			Userscript(modwebsite);
 		}, 5000);
 	break;		
     case 'captcha':
-        modwebsite = 'https://legendmod.ml/ogario/captcha.html'
+        modwebsite = 'https://jimboy3100.github.io/ogario/captcha.html'
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://legendmod.ml/play.html'
+        modwebsite = 'https://jimboy3100.github.io/play.html'
         Htmlscript(modwebsite);
         break;
 }
