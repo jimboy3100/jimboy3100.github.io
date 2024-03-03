@@ -3,7 +3,7 @@
 // @namespace    Legend Agario Mod
 // @version      3.1
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     http://www.legendmod.ml
+// @homepage     http://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
@@ -48,7 +48,7 @@ SOFTWARE.
 // Start of script
 url = window.location.href;
 GM_registerMenuCommand('Legend Mod Website', function() {
-    window.open("http://legendmod.ml");
+    window.open("http://jimboy3100.github.io");
 }, 'r');
 GM_registerMenuCommand('LM Library', function() {
     window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
