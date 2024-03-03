@@ -16,7 +16,7 @@ for (var i=1;i<window.RecordPlayers.length;i++){
 	else{
 		window.RecordPlayers[i].country = "UN"
 	}
-	if (!window.RecordPlayers[i].icon.includes('https://platform-lookaside.fbsbx.com/')) window.RecordPlayers[i].icon = 'https://legendmod.ml/banners/profilepic_guest.png'
+	if (!window.RecordPlayers[i].icon.includes('https://platform-lookaside.fbsbx.com/')) window.RecordPlayers[i].icon = 'https://jimboy3100.github.io/banners/profilepic_guest.png'
 	
 	temphtml = temphtml + '<br> [' + i + '] UID: ' + window.RecordPlayers[i].uid + ' ID: ' + window.RecordPlayers[i].id + ' SKIN: ' + window.RecordPlayers[i].level + ' COUNTRY: ' +
 	'<span data-toggle="popover" data-placement="left" title="" data-content="data-html=" true="" class= "country-icon flag-icon flag-icon-' + window.RecordPlayers[i].country + '" data-original-title="Player Details"></span>' + 
@@ -25,7 +25,7 @@ for (var i=1;i<window.RecordPlayers.length;i++){
 }
 	
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
-				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
+				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
 				'<div class="modal-backdrop fade in"></div>' +
                 '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 1000px; height:500px;">' +
                 '<div class="modal-content">' +
@@ -64,6 +64,6 @@ for (var i=1;i<window.RecordPlayers.length;i++){
                 $("#LMShop").remove();
             });
             $("#FAQLMShop").click(function() {
-				window.open('https://legendmod.ml/', '_blank');
+				window.open('https://jimboy3100.github.io/', '_blank');
             });	
 }
