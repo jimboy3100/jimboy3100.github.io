@@ -25,7 +25,7 @@ if (isMobile){
 function opengamepad() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/ExampleScripts/gamepad.user.js";
+    s.src = "https://jimboy3100.github.io/ExampleScripts/gamepad.user.js";
     $("body").append(s);
 }
 
