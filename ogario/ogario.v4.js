@@ -967,7 +967,7 @@ function createCaptchaWindow(i) {
     window.capthaWindow[i].style.height = "0px";
     document.body.appendChild(window.capthaWindow[i]);	*/
     if (window.LMVersion == "1.7") {
-        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
+        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.jimboy3100.github.io"><font color="yellow"><b><u>www.jimboy3100.github.io</u></b></font></a>');
     }
     window.capthaWindow[i] = window.open("https://agar.io/captcha");
 }
@@ -2443,7 +2443,7 @@ var themePresets = {
         btn3Color2: '#814ee3',
         btn4Color: '#bf00aa',
         btn4Color2: '#a80096',
-        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
         menuOpacity: 0.96,
         hudMainColor: '#01d9cc',
         hudColor: 'rgba(0,0,0,0.4)',
@@ -2486,7 +2486,7 @@ var themePresets = {
         miniMapMyCellStrokeSize: 4,
         miniMapTeammatesSize: 5.5,
         customBackground: '',
-        customCursor: 'https://legendmod.ml/cursors/cursor_02.cur'
+        customCursor: 'https://jimboy3100.github.io/cursors/cursor_02.cur'
     },
     legendv1: {
         name: 'Legend v1',
@@ -2608,7 +2608,7 @@ var themePresets = {
         btn3Color2: '#80063b',
         btn4Color: '#aa084e',
         btn4Color2: '#8a063f',
-        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
         menuOpacity: 1,
         hudMainColor: '#5974ff',
         hudColor: 'rgba(36,36,36,0.49)',
@@ -2647,7 +2647,7 @@ var themePresets = {
         miniMapMyCellStrokeSize: 0,
         miniMapTeammatesSize: 5,
         customBackground: '',
-        customCursor: 'https://legendmod.ml/cursors/cursor_01.cur'
+        customCursor: 'https://jimboy3100.github.io/cursors/cursor_01.cur'
     },
     crazystyle: {
         name: 'Crazy Style 1',
@@ -2769,7 +2769,7 @@ var themeMenus = {
         btn3Color2: '#814ee3',
         btn4Color: '#f300d8',
         btn4Color2: '#df00c6',
-        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png'
+        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png'
     },
     legendv1: {
         name: 'Legend v1',
@@ -2921,7 +2921,7 @@ var defaultSettings = {
     btn3Color2: '#814ee3',
     btn4Color: '#bf00aa',
     btn4Color2: '#a80096',
-    menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+    menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
     menuOpacity: 0.96,
     hudMainColor: '#01d9cc',
     hudColor: 'rgba(0,0,0,0.4)',
@@ -2959,16 +2959,16 @@ var defaultSettings = {
     ////
     color: "#fff",
     //commanderImage : "https://i.imgur.com/wQKUDB3.png",
-    //customServerImage1: "https://legendmod.ml/banners/IconCustomServer1.png",
-    commanderImage: "https://legendmod.ml/banners/drawCommander.png",
-    commanderImage1: "https://legendmod.ml/banners/drawCommander1.png",
-    commanderImage2: "https://legendmod.ml/banners/drawCommander2.png",
-    commanderImage3: "https://legendmod.ml/banners/drawCommander3.png",
-    commanderImage4: "https://legendmod.ml/banners/drawCommander4.png",
-    commanderImage5: "https://legendmod.ml/banners/drawCommander5.png",
-    commanderImage6: "https://legendmod.ml/banners/iconJustWatchPro.png",
-    commanderImageDyingLight: "https://legendmod.ml/banners/icondyinglightzombie.png",
-    commanderImageDyingLightvirus: "https://legendmod.ml/banners/icondyinglightvirus.png",
+    //customServerImage1: "https://jimboy3100.github.io/banners/IconCustomServer1.png",
+    commanderImage: "https://jimboy3100.github.io/banners/drawCommander.png",
+    commanderImage1: "https://jimboy3100.github.io/banners/drawCommander1.png",
+    commanderImage2: "https://jimboy3100.github.io/banners/drawCommander2.png",
+    commanderImage3: "https://jimboy3100.github.io/banners/drawCommander3.png",
+    commanderImage4: "https://jimboy3100.github.io/banners/drawCommander4.png",
+    commanderImage5: "https://jimboy3100.github.io/banners/drawCommander5.png",
+    commanderImage6: "https://jimboy3100.github.io/banners/iconJustWatchPro.png",
+    commanderImageDyingLight: "https://jimboy3100.github.io/banners/icondyinglightzombie.png",
+    commanderImageDyingLightvirus: "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
 
     ////
     miniMapFont: 'ubuntu-bold',
@@ -2987,7 +2987,7 @@ var defaultSettings = {
     miniMapTeammatesSize: 5.5,
     miniMapGhostCellsAlpha: 0.15,
     customBackground: '',
-    customCursor: 'https://legendmod.ml/cursors/cursor_02.cur'
+    customCursor: 'https://jimboy3100.github.io/cursors/cursor_02.cur'
 }
 
 cimg2 = new Image;
@@ -2997,122 +2997,122 @@ cimg5.src = defaultSettings.commanderImage5;
 cimg6 = new Image;
 cimg6.src = defaultSettings.commanderImage6;
 //cimg7 = new Image;
-//cimg7.src = 'https://legendmod.ml/banners/iconLcForCanvas.png';
+//cimg7.src = 'https://jimboy3100.github.io/banners/iconLcForCanvas.png';
 function loadIconSpecialSkins(val){
 	eval('window.' + val + ' = new Image');
-	eval('window.' + val + '.src = "https://legendmod.ml/banners/' + val + '.png"')
+	eval('window.' + val + '.src = "https://jimboy3100.github.io/banners/' + val + '.png"')
 }
 /*
 iconSpecialSkinEffectsCrown = new Image;
-iconSpecialSkinEffectsCrown.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsCrown.png';
+iconSpecialSkinEffectsCrown.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsCrown.png';
 iconSpecialSkinEffectsMask = new Image;
-iconSpecialSkinEffectsMask.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png';
+iconSpecialSkinEffectsMask.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMask.png';
 iconSpecialSkinEffectsHat3 = new Image;
-iconSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHat3.png';
+iconSpecialSkinEffectsHat3.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHat3.png';
 iconSpecialSkinEffectsVip = new Image;
-iconSpecialSkinEffectsVip.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png';
+iconSpecialSkinEffectsVip.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsVip.png';
 iconSpecialSkinEffectsDdev = new Image;
-iconSpecialSkinEffectsDdev.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png';
+iconSpecialSkinEffectsDdev.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDdev.png';
 iconSpecialSkinEffectsSunGlasses = new Image;
-iconSpecialSkinEffectsSunGlasses.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png';
+iconSpecialSkinEffectsSunGlasses.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSunGlasses.png';
 iconSpecialSkinEffectsYoutube = new Image;
-iconSpecialSkinEffectsYoutube.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
+iconSpecialSkinEffectsYoutube.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsYoutube.png';
 iconSpecialSkinEffectsJellyFish = new Image;
-iconSpecialSkinEffectsJellyFish.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png';
+iconSpecialSkinEffectsJellyFish.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJellyFish.png';
 iconSpecialSkinEffectsModerator = new Image;
-iconSpecialSkinEffectsModerator.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png';
+iconSpecialSkinEffectsModerator.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsModerator.png';
 iconSpecialSkinEffectsUSA = new Image;
-iconSpecialSkinEffectsUSA.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsUSA.png';
+iconSpecialSkinEffectsUSA.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSA.png';
 iconSpecialSkinEffectsHeart = new Image;
-iconSpecialSkinEffectsHeart.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHeart.png';
+iconSpecialSkinEffectsHeart.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHeart.png';
 iconSpecialSkinEffectsSword = new Image;
-iconSpecialSkinEffectsSword.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSword.png';
+iconSpecialSkinEffectsSword.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSword.png';
 iconSpecialSkinEffectsSmoke = new Image;
-iconSpecialSkinEffectsSmoke.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png';
+iconSpecialSkinEffectsSmoke.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSmoke.png';
 iconSpecialSkinEffectsLegendclan = new Image;
-iconSpecialSkinEffectsLegendclan.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png';
+iconSpecialSkinEffectsLegendclan.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan.png';
 iconSpecialSkinEffectsLegendclan2 = new Image;
-iconSpecialSkinEffectsLegendclan2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png';
+iconSpecialSkinEffectsLegendclan2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan2.png';
 iconSpecialSkinEffectsShiro = new Image;
-iconSpecialSkinEffectsShiro.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png';
+iconSpecialSkinEffectsShiro.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsShiro.png';
 iconSpecialSkinEffectsBird = new Image;
-iconSpecialSkinEffectsBird.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsBird.png';
+iconSpecialSkinEffectsBird.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBird.png';
 iconSpecialSkinEffectsButterfly = new Image;
-iconSpecialSkinEffectsButterfly.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png';
+iconSpecialSkinEffectsButterfly.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsButterfly.png';
 iconSpecialSkinEffectsMouse = new Image;
-iconSpecialSkinEffectsMouse.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png';
+iconSpecialSkinEffectsMouse.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMouse.png';
 iconSpecialSkinEffectsTurtle = new Image;
-iconSpecialSkinEffectsTurtle.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png';
+iconSpecialSkinEffectsTurtle.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTurtle.png';
 iconSpecialSkinEffectsAbsolutVodka = new Image;
-iconSpecialSkinEffectsAbsolutVodka.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png';
+iconSpecialSkinEffectsAbsolutVodka.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsAbsolutVodka.png';
 iconSpecialSkinEffectsChemistry = new Image;
-iconSpecialSkinEffectsChemistry.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png';
+iconSpecialSkinEffectsChemistry.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsChemistry.png';
 iconSpecialSkinEffectsJapan = new Image;
-iconSpecialSkinEffectsJapan.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png';
+iconSpecialSkinEffectsJapan.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan.png';
 iconSpecialSkinEffectsJapan2 = new Image;
-iconSpecialSkinEffectsJapan2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png';
+iconSpecialSkinEffectsJapan2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan2.png';
 iconSpecialSkinEffectsKebab = new Image;
-iconSpecialSkinEffectsKebab.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png';
+iconSpecialSkinEffectsKebab.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKebab.png';
 iconSpecialSkinEffectsMeditation = new Image;
-iconSpecialSkinEffectsMeditation.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png';
+iconSpecialSkinEffectsMeditation.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMeditation.png';
 iconSpecialSkinEffectsSplash = new Image;
-iconSpecialSkinEffectsSplash.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png';
+iconSpecialSkinEffectsSplash.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSplash.png';
 iconSpecialSkinEffectsByzantium = new Image;
-iconSpecialSkinEffectsByzantium.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png';
+iconSpecialSkinEffectsByzantium.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsByzantium.png';
 iconSpecialSkinEffectsClose = new Image;
-iconSpecialSkinEffectsClose.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsClose.png';
+iconSpecialSkinEffectsClose.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsClose.png';
 iconSpecialSkinEffectsEarth = new Image;
-iconSpecialSkinEffectsEarth.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsEarth.png';
+iconSpecialSkinEffectsEarth.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEarth.png';
 iconSpecialSkinEffectsFootStep = new Image;
-iconSpecialSkinEffectsFootStep.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png';
+iconSpecialSkinEffectsFootStep.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFootStep.png';
 iconSpecialSkinEffectsForward = new Image;
-iconSpecialSkinEffectsForward.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsForward.png';
+iconSpecialSkinEffectsForward.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsForward.png';
 iconSpecialSkinEffectsFriendsForever = new Image;
-iconSpecialSkinEffectsFriendsForever.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png';
+iconSpecialSkinEffectsFriendsForever.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever.png';
 iconSpecialSkinEffectsFriendsForever2 = new Image;
-iconSpecialSkinEffectsFriendsForever2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png';
+iconSpecialSkinEffectsFriendsForever2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever2.png';
 iconSpecialSkinEffectsFriendsForever3 = new Image;
-iconSpecialSkinEffectsFriendsForever3.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png';
+iconSpecialSkinEffectsFriendsForever3.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever3.png';
 iconSpecialSkinEffectsPolice = new Image;
-iconSpecialSkinEffectsPolice.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsPolice.png';
+iconSpecialSkinEffectsPolice.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice.png';
 iconSpecialSkinEffectsPolice2 = new Image;
-iconSpecialSkinEffectsPolice2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png';
+iconSpecialSkinEffectsPolice2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice2.png';
 iconSpecialSkinEffectsUnrest = new Image;
-iconSpecialSkinEffectsUnrest.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png';
+iconSpecialSkinEffectsUnrest.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUnrest.png';
 iconSpecialSkinEffectsEagle = new Image;
-iconSpecialSkinEffectsEagle.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsEagle.png';
+iconSpecialSkinEffectsEagle.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEagle.png';
 iconSpecialSkinEffectsBobMarley = new Image;
-iconSpecialSkinEffectsBobMarley.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsBobMarley.png';
+iconSpecialSkinEffectsBobMarley.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBobMarley.png';
 iconSpecialSkinEffectsEinstein = new Image;
-iconSpecialSkinEffectsEinstein.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png';
+iconSpecialSkinEffectsEinstein.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEinstein.png';
 iconSpecialSkinEffectsDeadTable = new Image;
-iconSpecialSkinEffectsDeadTable.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png';
+iconSpecialSkinEffectsDeadTable.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDeadTable.png';
 
 
 iconSpecialSkinEffectsBabyBoss = new Image;
-iconSpecialSkinEffectsBabyBoss.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png';
+iconSpecialSkinEffectsBabyBoss.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss.png';
 iconSpecialSkinEffectsBabyBoss1 = new Image;
-iconSpecialSkinEffectsBabyBoss1.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss1.png';
+iconSpecialSkinEffectsBabyBoss1.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss1.png';
 iconSpecialSkinEffectsGladiator = new Image;
-iconSpecialSkinEffectsGladiator.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png';
+iconSpecialSkinEffectsGladiator.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsGladiator.png';
 iconSpecialSkinEffectsHero = new Image;
-iconSpecialSkinEffectsHero.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png';
+iconSpecialSkinEffectsHero.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero.png';
 iconSpecialSkinEffectsHero1 = new Image;
-iconSpecialSkinEffectsHero1.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png';
+iconSpecialSkinEffectsHero1.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero1.png';
 iconSpecialSkinEffectsHero2 = new Image;
-iconSpecialSkinEffectsHero2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png';
+iconSpecialSkinEffectsHero2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero2.png';
 iconSpecialSkinEffectsKey = new Image;
-iconSpecialSkinEffectsKey.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png';
+iconSpecialSkinEffectsKey.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKey.png';
 iconSpecialSkinEffectsMetalOfHonor = new Image;
-iconSpecialSkinEffectsMetalOfHonor.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png';
+iconSpecialSkinEffectsMetalOfHonor.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMetalOfHonor.png';
 iconSpecialSkinEffectsPeaceMaker = new Image;
-iconSpecialSkinEffectsPeaceMaker.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png';
+iconSpecialSkinEffectsPeaceMaker.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPeaceMaker.png';
 iconSpecialSkinEffectsSurvivor = new Image;
-iconSpecialSkinEffectsSurvivor.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png';
+iconSpecialSkinEffectsSurvivor.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSurvivor.png';
 iconSpecialSkinEffectsTiger = new Image;
-iconSpecialSkinEffectsTiger.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png';
+iconSpecialSkinEffectsTiger.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTiger.png';
 iconSpecialSkinEffectsPanicAtDisco = new Image;
-iconSpecialSkinEffectsPanicAtDisco.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
+iconSpecialSkinEffectsPanicAtDisco.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 */
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
@@ -3122,17 +3122,17 @@ if (dyinglight1load == "yes") {
 }
 /*
                 cimgDyingLight1 = new Image;
-                cimgDyingLight1.src = 'https://legendmod.ml/banners/icondyinglightzombie2.png';
+                cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';
                 cimgDyingLight2 = new Image;
-                cimgDyingLight2.src = 'https://legendmod.ml/banners/icondyinglightzombie3.png';
+                cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';
                 cimgDyingLight3 = new Image;
-                cimgDyingLight3.src = 'https://legendmod.ml/banners/icondyinglightzombie4.png';
+                cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';
                 cimgDyingLight4 = new Image;
-                cimgDyingLight4.src = 'https://legendmod.ml/banners/icondyinglightzombie5.png';
+                cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';
                 cimgDyingLight5 = new Image;
-                cimgDyingLight5.src = 'https://legendmod.ml/banners/icondyinglightzombiebig.png';
+                cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';
                 cimgDyingLight6 = new Image;
-                cimgDyingLight6.src = 'https://legendmod.ml/banners/icondyinglightvolaltile.png';
+                cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';
 				*/
 
 
@@ -3304,10 +3304,10 @@ var defaultmapsettings = {
     videoSkinSoundLevel: 1,
     leaderboardlimit: 20,
     teamboardlimit: 20,
-    messageSound: 'https://legendmod.ml/sounds/notification_01.mp3',
-    //                commandSound: 'https://legendmod.ml/sounds/notification_02.mp3'
-    commandSound: 'https://legendmod.ml/sounds/chat-message.mp3',
-    virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
+    messageSound: 'https://jimboy3100.github.io/sounds/notification_01.mp3',
+    //                commandSound: 'https://jimboy3100.github.io/sounds/notification_02.mp3'
+    commandSound: 'https://jimboy3100.github.io/sounds/chat-message.mp3',
+    virusSoundurl: 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
 	//
 	leftClick: 'hk-macroFeed',
@@ -3767,7 +3767,7 @@ window.MouseClicks=[];
             this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
             this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
             /*this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);*/
-            for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
+            for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
             $(document).on('click', '#theme-images .cursor-box a', function(e) {
                     e.preventDefault();
                     var i = $('img', this).attr('src');
@@ -4897,7 +4897,7 @@ window.MouseClicks=[];
                     for (; entityType < PL$29; entityType++) {
                       bufferString = bufferString + this.top5[entityType].mass;
                       if (!(entityType >= defaultmapsettings["limTP"])) {
-                        pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://legendmod.ml/banners/icon32croped.ico.gif") + '" alt=""> ' +
+                        pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' +
         				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
                         this.shortMassFormat(this.top5[entityType].mass) + '</span></li>');
                       }
@@ -4999,12 +4999,12 @@ window.MouseClicks=[];
                             /*
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
 								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
-								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
+								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
                             var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
                             if (teamboardskin == null) {
                                 teamboardskin = new Image();
                                 teamboardskin.crossOrigin = 'anonymous';
-                                teamboardskin.src = "https://legendmod.ml/banners/icon32croped.ico.gif";
+                                teamboardskin.src = "https://jimboy3100.github.io/banners/icon32croped.ico.gif";
                             }
                             t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color +
                                 '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
@@ -5690,7 +5690,7 @@ window.MouseClicks=[];
             $("#statsContinue").attr("id", "statsContinue2");
             $("#mainPanel").empty().remove();
             $(".center-container").addClass("ogario-menu");
-            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="https://legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
+            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://jimboy3100.github.io" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://jimboy3100.github.io" class="release ogicon-info" target="_blank"></a></div>');
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
@@ -5700,9 +5700,9 @@ window.MouseClicks=[];
             $("#tags-container").appendTo($("#profile"));
             //$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
             //$(".btn-logout").appendTo($("#profile"));
-            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
+            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
                 //'<a href="https://www.youtube.com/watch?v=CnIfNSpCf70" class="quick-yt ogicon-youtube2" id="legendid" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Legend Promo Video"></a>' +
-                '<a id= "themesBtn" target="_blank" href="https://legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
+                '<a id= "themesBtn" target="_blank" href="https://jimboy3100.github.io/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
                 '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>');
@@ -5748,7 +5748,7 @@ window.MouseClicks=[];
             $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel");
             $(".agario-party h4, #cancel-party-btn").remove();
             $(".agario-party .btn").addClass("btn-sm");
-            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://legendmod.ml/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
+            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://jimboy3100.github.io/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
             $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none");
             $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
@@ -5834,8 +5834,8 @@ window.MouseClicks=[];
             $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color" style="font-size: 19px">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                 textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                 textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
-                //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
-                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">jimboy3100.github.io</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                 textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">' +
                 '<a href="#" id="set-debug" class="ogicon-location"></a>' +
                 '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
@@ -5868,7 +5868,7 @@ window.MouseClicks=[];
 			/*
 			for (const emoji in emoticonicons) {
                 if (emoticonicons.hasOwnProperty(emoji)) {
-                    $("#chat-emoticons").append('<img src="https://legendmod.ml/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
+                    $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
                 }
             }*/
             $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>');
@@ -6618,7 +6618,7 @@ window.MouseClicks=[];
         },
         findOwnedVanillaSkin() {
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
-                core.registerSkin(ogarcopythelb.nick, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
+                core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (var player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) == window.FreeSkins[player].id) {
@@ -6743,14 +6743,14 @@ window.MouseClicks=[];
                     img[url].onerror = function() {
                         //console.log("error loading image: "+ url);
                         if (url && url.includes(window.EnvConfig.config_url)) {
-                            url = "https://legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            url = "https://jimboy3100.github.io/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
                             application.customSkinsMap[window.lastusednameforskin] = url;
                             application.loadSkin(img, url);
                             return url;
 
-                        } else if (url && url.includes("https://legendmod.ml/vanillaskins/")) {
-                            url = "https://legendmod.ml/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                        } else if (url && url.includes("https://jimboy3100.github.io/vanillaskins/")) {
+                            url = "https://jimboy3100.github.io/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
                             application.customSkinsMap[window.lastusednameforskin] = url;
                             application.loadSkin(img, url);
@@ -8468,12 +8468,12 @@ window.MouseClicks=[];
         },
         parseEmoticons(string) {
             /*return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(string) {
-                return '<img src=\"https://legendmod.ml/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
+                return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });*/
             //return String(string).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
             return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
                 //console.log(d[string]);
-                return '<img src=\"https://legendmod.ml/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
+                return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });
 
         },
@@ -8754,7 +8754,7 @@ window.MouseClicks=[];
                         $('#target-skin img').css('border', '2px solid' + color);
                         this.targetSkinURL = skinUrl;
                     } else {
-                        $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png')
+                        $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')
                     }
                 }
             }
@@ -12662,7 +12662,7 @@ window.MouseClicks=[];
                 expires: time,
                 slot: s.slot
             };
-            $(`#${potion} img`).attr('src', `https://legendmod.ml/banners/${t}.png`);
+            $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/${t}.png`);
             if (s.status == 1) {
                 if (defaultmapsettings.autobrewing && this.user.brewingEnd < Date.now()) window.brewPotion(s.slot);
                 $(`#${potion} img`).css("border-color", "red");
@@ -12694,7 +12694,7 @@ window.MouseClicks=[];
                     expires: time,
                     slot: s.slot
                 };
-                $(`#${potion} img`).attr('src', `https://legendmod.ml/banners/${t}.png`);
+                $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/${t}.png`);
                 if (s.status == 1) {
                     $(`#${potion} img`).css("border-color", "red");
                     $(`#${potion} div`).css("border-color", "red");
@@ -12717,7 +12717,7 @@ window.MouseClicks=[];
             }
             this.user.emptySlots = empty.length;
             empty.forEach((potion) => {
-                $(`#${potion} img`).attr('src', `https://legendmod.ml/banners/potion_empty.png`);
+                $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/potion_empty.png`);
                 $(`#${potion} img`).css("border-color", "grey");
                 $(`#${potion} div`).css("border-color", "grey");
                 $(`#${potion} div`).text('empty');
@@ -12810,14 +12810,14 @@ window.MouseClicks=[];
             img.onerror = function() {
                 //console.log("error loading image: "+ url);
                 if (url.includes('configs-web.agario.miniclippt')) {
-                    var newURL = "https://legendmod.ml/vanillaskins/" + url.split('/').pop();
+                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + url.split('/').pop();
                     app.urlReplaces[url] = newURL;
                     //console.log("new destination is: " + newURL);
                     app.user.skins[url].url = newURL;
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('legendmod.ml/vanillaskins/"')) {
+                } else if (url.includes('jimboy3100.github.io/vanillaskins/"')) {
                     if (!application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
                         application.messageToDiscord('Unknown skin: ', url);
@@ -13294,7 +13294,7 @@ Game name     : ${i.displayName}<br/>
                 }
                 //console.log(g)		
                 if (legendflags.includes(LowerCase(y))) {
-                    core.registerSkin(y, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
+                    core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
                 } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
                         if (LowerCase(y) == window.FreeSkins[player].id) {
@@ -13391,7 +13391,7 @@ Game name     : ${i.displayName}<br/>
                         //tempdateNow2 = "last day"
                     }
                     tempdateNow2 += "th";
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
                 }
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
@@ -14294,8 +14294,8 @@ Game name     : ${i.displayName}<br/>
 		drawCustomNewGrid(grid) {	
 					if (!legendmod.gridPic){
 		            legendmod.gridPic = new Image;
-                    legendmod.gridPic.src = "https://legendmod.ml/banners/grid3.png";
-					//legendmod.gridPic.src = "https://legendmod.ml/banners/grid5.png";
+                    legendmod.gridPic.src = "https://jimboy3100.github.io/banners/grid3.png";
+					//legendmod.gridPic.src = "https://jimboy3100.github.io/banners/grid5.png";
 					}
 					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
 					/*this.ctx.drawImage(legendmod.gridPic,			
@@ -16728,7 +16728,7 @@ function PreLcCelebration() {
 function LcCelebration() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/extras/LcHistory/LcHistoryBanner.js";
+    s.src = "https://jimboy3100.github.io/extras/LcHistory/LcHistoryBanner.js";
     $("body").append(s);
     defaultSettings.checkonetimeLc2 = true;
 }
@@ -16740,7 +16740,7 @@ var stylesLegendModConsole2 = [
 ].join(';');
 
 function consoleNotice() {
-    console.groupCollapsed('%cLegend express%c  %chttp://www.legendmod.ml', stylesLegendModConsole1, 'font-size: 48px; background: url(https://legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
+    console.groupCollapsed('%cLegend express%c  %chttp://www.jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
     console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
@@ -16983,28 +16983,28 @@ function repeatSendingSpecialSkins() {
 function preUserLeaguesInfoRequest() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/LMexpress/userLeaguesInfoRequest.js";
+    s.src = "https://jimboy3100.github.io/LMexpress/userLeaguesInfoRequest.js";
     $("body").append(s);
 }
 
 function openhelper() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/legendhelper.js";
+    s.src = "https://jimboy3100.github.io/legendhelper.js";
     $("body").append(s);
 }
 
 function opennamechars() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/nicks/nicknamechars.js";
+    s.src = "https://jimboy3100.github.io/nicks/nicknamechars.js";
     $("body").append(s);
 }
 
 function legendformIframe() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://legendmod.ml/legendformIframe.js";
+    s.src = "https://jimboy3100.github.io/legendformIframe.js";
     $("body").append(s);
 }
 
@@ -17201,7 +17201,7 @@ function LMadvertisement2020() {
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
         '</div>' +
-        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
+        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -17211,7 +17211,7 @@ function LMadvertisement2020() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function() {
-        window.open('https://legendmod.ml/', '_blank');
+        window.open('https://jimboy3100.github.io/', '_blank');
     });
 }
 
