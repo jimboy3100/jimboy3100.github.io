@@ -3,7 +3,7 @@
 // @namespace    Simplest Agario script for finding Agario servers
 // @version      1.1
 // @description  Play 
-// @homepage     http://www.legendmod.ml
+// @homepage     http://www.jimboy3100.github.io
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
 // @match        http://agar.io/*
@@ -12,7 +12,7 @@
 // @connect      agar.io
 // ==/UserScript==
 
-// By Jimboy3100, author of Legend AGARIO mod (www.legendmod.ml)
+// By Jimboy3100, author of Legend AGARIO mod (www.jimboy3100.github.io)
 //Special thanks to efsan/fayizan
 
 //Script is Compatible with Vanilla, Legendmod, Ogario, KittyMod and most mods
