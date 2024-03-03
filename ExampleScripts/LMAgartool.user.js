@@ -9,8 +9,8 @@
 // @description:en   Link to Agar Tool on Legend Mod
 // @author       tannichi & Jimboy3100
 // @match        https://agar.io/*
-// @downloadURL  legendmod.ml/ExampleScripts/LMAgartool.user.js
-// @updateURL    legendmod.ml/ExampleScripts/LMAgartool.user.js
+// @downloadURL  jimboy3100.github.io/ExampleScripts/LMAgartool.user.js
+// @updateURL    jimboy3100.github.io/ExampleScripts/LMAgartool.user.js
 // @grant        none
 // @run-at document-end
 // @grant none
@@ -45,7 +45,7 @@ SOFTWARE.
           clearInterval(tamp);
           var elem = document.body;
           var script = document.createElement('script');
-          script.src = 'https://legendmod.ml/ExampleScripts/LMAgartool.js';
+          script.src = 'https://jimboy3100.github.io/ExampleScripts/LMAgartool.js';
           document.head.appendChild(script);
           elem.appendChild(script);
       }
