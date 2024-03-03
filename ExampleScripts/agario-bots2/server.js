@@ -1,4 +1,4 @@
-// These bots are working with www.legendmod.ml extension or agar.io
+// These bots are working with www.jimboy3100.github.io extension or agar.io
 // version 1.3 version B
 // creator Jimboy3100
 
@@ -39,7 +39,7 @@ if (config.server.update) {
 
         if (config.server.version < requesterConfig.server.version) {
             logger.warn('[SERVER]: A new update was found!')
-            logger.warn('[SERVER]: Download -> https://legendmod.ml/ExampleScripts/agario-bots2')
+            logger.warn('[SERVER]: Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2')
         } else {
             logger.good('[SERVER]: No updates found!')
         }
