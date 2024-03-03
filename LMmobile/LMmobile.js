@@ -211,23 +211,23 @@ $(".tosBox.right").remove();
 			//document.getElementByiD("title")[0].innerHTML = "<h1> <b>Agar.io LM Mobile</b></h1></font></b>";
 /*            if (!document.getElementsByClassName("row")[0].innerHTML.match(/▶/gi)) {
                 var variable_12 = document.createElement("a");
-                variable_12.href = "http://legendmod.ml";
+                variable_12.href = "http://jimboy3100.github.io";
 				variable_12.innerHTML = "." + "Free premium scripts" + ".";
                 variable_12.className = "btn btn-primary btn-gifting";
 
                 var variable_13 = document.createElement("a");
-                variable_13.href = "http://legendmod.ml";
+                variable_13.href = "http://jimboy3100.github.io";
 				variable_13.innerHTML = "." + "Donate to support LM" + ".";
                 variable_13.className = "btn btn-primary btn-shop";
             }; */
-            document.getElementById("mainui-ads").innerHTML = "<br><a id=\"ftbtn\" href=\"http://legendmod.ml/\" target=\"_blank\"><img style=\"margin-top:-20px\" width=\"300\" height=\"100\" src=\"https://jimboy3100.github.io/banners/iconmod3.png\"></a><br/><br/>";
+            document.getElementById("mainui-ads").innerHTML = "<br><a id=\"ftbtn\" href=\"http://jimboy3100.github.io/\" target=\"_blank\"><img style=\"margin-top:-20px\" width=\"300\" height=\"100\" src=\"https://jimboy3100.github.io/banners/iconmod3.png\"></a><br/><br/>";
 			$("#advertisement").css("height", "140px");
 			
 
 		}
     }, 100);
 setTimeout(function() {
-	console.group('%cLegend Mobile%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
+	console.group('%cLegend Mobile%c  %chttp://www.jimboy3100.github.io',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
     console.group("Part of");    		
 		console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
