@@ -1,5 +1,5 @@
 /*v0.15*/
-@import url(https://legendmod.ml/css/ogicomoon.css);
+@import url(https://jimboy3100.github.io/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
 @import url(https:///fonts.googleapis.com/css?family=Shojumaru:400,700&subset=latin-ext);
@@ -268,7 +268,7 @@ label:hover{
     padding:12px 0 
 }
 #exp-imp,#hotkeys,.agario-side-panel,.menu-panel{
-    background-image:url(//legendmod.ml/banners/static/img/pattern.png);
+    background-image:url(//jimboy3100.github.io/banners/static/img/pattern.png);
     background-repeat:repeat;
     background-position:top center 
 }
