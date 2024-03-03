@@ -4,7 +4,7 @@
 
 Mod for Agar.io multiplayer action browser game.  
 Author: Snez & Jimboy3100
-Website: [www.legendmod.ml](http://www.legendmod.ml)
+Website: [www.jimboy3100.github.io](http://www.jimboy3100.github.io)
 ###### [Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)
 
 ...
