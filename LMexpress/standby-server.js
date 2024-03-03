@@ -286,7 +286,7 @@ if (!window.recovery) {
             var m = '0';
             if (document.body.innerText.indexOf('cdn.ogario.ovh/v4/beta/ogario.v4.js') > -1) {
                 m = '1';
-            } else if (document.body.innerText.indexOf('legendmod.ml') > -1) {
+            } else if (document.body.innerText.indexOf('jimboy3100.github.io') > -1) {
                 m = '2';
             } else if (document.body.innerText.indexOf('deltav4.glitch.me') > -1) {
                 m = '3';
