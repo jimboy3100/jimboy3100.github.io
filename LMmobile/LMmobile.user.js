@@ -1,6 +1,6 @@
 // ==UserScript==
  // @name Join Agario PC from mobile or Tablet
- // @namespace https://legendmod.ml
+ // @namespace https://jimboy3100.github.io
  // @version 0.3
  // @description Join PC party from mobile or tablet!
  // @author Jimboy3100
