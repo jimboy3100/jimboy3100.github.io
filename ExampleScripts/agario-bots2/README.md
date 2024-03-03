@@ -4,7 +4,7 @@ Free open source agar.io bots for Legend mod Express
 ## About
 ℄🔥𝙻𝚎𝚐𝚎𝚗𝚍 𝙲𝚕𝚊𝚗 Discord Community for questions about bots: https://discord.gg/CbMkY77
 
-Legend mod: https://legendmod.ml/
+Legend mod: https://jimboy3100.github.io/
 
 Repl.it repository: https://repl.it/@legendmod/party-bots
 
@@ -24,7 +24,7 @@ Node.js run server from PC
 - (For folder agario-bots2) `cd agario-bots2`
 - `install.bat`
 - `start.bat`
-6. Install and use Legend mod Express https://legendmod.ml , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" of main HUD area.
+6. Install and use Legend mod Express https://jimboy3100.github.io , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" of main HUD area.
 7. CLick "Connect" button, the status should say "Connected"
 8. To stop bots click the "Stop Bots" button and wait 30 seconds for the CMD to close you will see a countdown there
 9. To run the bots again just run `start.bat`, click "Connect" button and then click "Start Bots" button
@@ -52,7 +52,7 @@ VPS
 
 ## Author
 [Nel](https://github.com/nelthedev/free-agario-bots)
-[Jimboy3100](https://legendmod.ml)
+[Jimboy3100](https://jimboy3100.github.io)
 
 ## Repl.it VPS FAQ
 https://repl.it/@legendmod/party-bots (watch video tutorial from above)
