@@ -11,7 +11,7 @@
 // @connect      hslo.io
 // @connect		 www.agartool.io
 // @connect		 imasters.org.ru
-// @connect      legendmod.ml
+// @connect      jimboy3100.github.io
 // @connect      gitlab.io
 // @connect      github.io
 // @connect      127.0.0.1
@@ -102,7 +102,7 @@ if (window.location.host == 'agar.io' && window.location.pathname === '/' ) {
           document.documentElement.innerHTML = "";
           GM.xmlHttpRequest({
               method : "GET",
-              url : 'https://legendmod.ml/LMexpress/LMexpress.user.js',
+              url : 'https://jimboy3100.github.io/LMexpress/LMexpress.user.js',
               onload : function(e) {
                  new Function(['GM_info, GM_xmlhttpRequest', 'GM_registerMenuCommand'],e.responseText)(GM.info, GM.xmlHttpRequest, GM_registerMenuCommand)
                  history.replaceState(null, null, 'lm');
