@@ -24,14 +24,19 @@ Losbro
 
 ### Discord community of open source bots:
 
-https://discord.gg/YkyS8zd
+https://discord.gg/JUfpR9k
 
 ## Usage
 
 * click the icon for watching the video
 
-[![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=k4PfQNZqEUs)
+[![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=CROvbjyLmS0)
 
+"My repl.it got banned for using proxies", the only way is node.js as explained:
+https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2
+
+Zip file for node.js
+http://jimboy3100.github.io/ExampleScripts/agario-bots2/agario-bots-proxies/agar-bot-proxies.zip
 
 ## Replacing proxies.txt
 Download this:
@@ -47,10 +52,8 @@ YOU ARE NOT SAFE IF USING PROXIES AND I DO NOT KNOW HOW THIS THING WORKS
 On Gather Proxy -> Proxy Checker -> Choose only SOCK5 (it takes 30 min)
 Export at least 1000 ALIVE proxies (not less), see the generated file and replace everything on proxies.txt after # SOCKS5
 
-You can also find proxy bots IPs from https://discord.gg/JUfpR9k , room #free-bots-proxies-🔨
+You can also find proxy bots IPs from http://discord.gg/sK2Fkgw  , room #CHAT
 
-** If you use Repl.it, and it is connected to proxies, in theory users can be safe even with SOCK4, but they are recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
+** Recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
 
 ### GOOD LUCK!
-
-
