@@ -1,4 +1,4 @@
-window.OgVer=3.304;
+window.OgVer=3.305;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -5001,14 +5001,14 @@ window.MouseClicks=[];
 								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
 								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
                             var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
-                            if (teamboardskin === null) {
+                            if (!teamboardskin) {
                                 teamboardskin = new Image();
                                 teamboardskin.crossOrigin = 'anonymous';
                                 teamboardskin.src = "https://jimboy3100.github.io/banners/icon32croped.ico.gif";
                             }
-                            t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color +
-                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
-                                teamboardskin.outerHTML + '</span>' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+							t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + this.top5[o].id + '" style="background-color: ' + this.top5[o].color +
+							'; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
+							(teamboardskin.outerHTML || '<img src="' + teamboardskin.src + '" alt=""/>') + '</span></a><div style="margin-top: -30px; margin-left: 32px;">');
                             // t = t + ('<div><img src=' + teamboardskin.src + 'class="player-skin" style="border: solid 3px' + this.top5[o].color + '">' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 
                             /* if (defaultmapsettings["showTargeting"]) {
@@ -16857,15 +16857,15 @@ function Socket3handler(message) {
     //
     if (Socket3data === null) {
         return;
-    } else if (Socket3data.com === "chat") {
+    } else if (Socket3data.com == "chat") {
         Socket3DisplaychatMsg(Socket3data.chattype, Socket3data.tid, Socket3data.nick, Socket3data.chat);
-    } else if (Socket3data.com === "sendPlayerSkinURL") {
+    } else if (Socket3data.com == "sendPlayerSkinURL") {
         Socket3updateTeamPlayer(Socket3data);
-    } else if (Socket3data.com === "pos") {
+    } else if (Socket3data.com == "pos") {
         Socket3updateTeamPlayerPosition(Socket3data);
-    } else if (Socket3data.com === "death") { //not used yet
+    } else if (Socket3data.com == "death") { //not used yet
         Socket3updateTeamPlayerDeath(Socket3data);
-    } else if (Socket3data.com === "info") {
+    } else if (Socket3data.com == "info") {
         if (Socket3data.com2 = "spfc") {
             Socket3updateTeamPlayerSpfc(Socket3data);
         }
