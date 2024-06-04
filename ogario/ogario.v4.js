@@ -1,4 +1,4 @@
-window.OgVer=3.305;
+window.OgVer=3.306;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -16855,7 +16855,7 @@ function Socket3handler(message) {
     var Socket3data = Socket3data2.msg;
     //console.log(Socket3data);
     //
-    if (Socket3data === null) {
+    if (Socket3data == null) {
         return;
     } else if (Socket3data.com == "chat") {
         Socket3DisplaychatMsg(Socket3data.chattype, Socket3data.tid, Socket3data.nick, Socket3data.chat);
