@@ -114,11 +114,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('jimb
 	if (location.protocol !== 'https:') {
 		toastr.warning("Legend mod over http. Many functions cannot work properly. To join Non SSL servers use <font color='blue'>ws://</font> in front of websocket.<br>e.g <font color='blue'>ws://34.89.203.157:3000/</font>").css("width", "350px");
 	}
-	$("#region").val("Private").change()
-	$("#region").hide()
+	$("#region").val("Private").change();
+	$("#region").hide();
 	//$(".row").hide()
 	modVersion="1.8"
-	init(modVersion)
+	init(modVersion);
 	$(".btn.btn-warning.btn-spectate.btn-needs-server").children()[0].className = "ogicon-eye"
     setTimeout(function() {
         legendmod.gameMode=":party"
@@ -628,7 +628,7 @@ function isValidIpAndPort(input) {
 
 function validateNum(input, min, max) {
     var num = +input;
-    return num >= min && num <= max && input === num.toString();
+    return num >= min && num <= max && input == num.toString();
 }
 
 function joinToken(token) {
@@ -2241,16 +2241,16 @@ function universalchat() {
                 (event.ctrlKey ? "c" : "") +
                 (event.metaKey ? "m" : "") +
                 (event.shiftKey ? "s" : "");
-            if (event.keyCode === stat.keyCodeEnter) {
-                if (modify === "a" && cfg.chat_alt) {
+            if (event.keyCode == stat.keyCodeEnter) {
+                if (modify == "a" && cfg.chat_alt) {
                     my.chatSend();
                     return false;
-                } else if (modify === "ac" && cfg.chat_ctrlalt) {
+                } else if (modify == "ac" && cfg.chat_ctrlalt) {
                     my.chatSend({
                         "ogar": true
                     });
                     return false;
-                } else if (modify === "c" && cfg.chat_ctrl) {
+                } else if (modify == "c" && cfg.chat_ctrl) {
                     my.chatClose();
                     return false;
                 }
@@ -2465,7 +2465,7 @@ function universalchat() {
             which: stat.keyCodeA
         }));
     };
-    // =====  Agar Tool Communication processing / connection  =====
+    // ====  Agar Tool Communication processing / connection  ====
     my.connect = function() {
         my.disconnect();
         if (!global.io) {
@@ -2544,9 +2544,9 @@ function universalchat() {
             save_minimap_socket.disconnect();
         }
     };
-    // =====  Agar Tool Communication processing / processing  =====
+    // ====  Agar Tool Communication processing / processing  ====
     my.minimap_command = function(cmd) {
-        if (void 0 === cmd.name) {
+        if (void 0 == cmd.name) {
             return;
         }
         //my.log("cmd="+ cmd.name);
@@ -2701,7 +2701,7 @@ function universalchat() {
         }
     };
 
-    // =====  Process Legend Mod  ======
+    // ====  Process Legend Mod  ====
     my.ogarChatAdd = function(nick, msg) {
         //if ((~msg.indexOf('LM:'))==false) {
         //console.log("...")
@@ -2795,7 +2795,7 @@ function universalchat() {
 		}
 		//var keys = Object.keys(stat.minimapBalls).sort(function(a, b){return a - b});
 		//
-        if (keys.length === 0) {
+        if (keys.length == 0) {
             //user_txt = "No agar tool user";
         }
         var count = 2;
@@ -2887,7 +2887,7 @@ function universalchat() {
         return global.ogario ? global.ogario.mapOffset : stat.mapOffset;
     };
 
-    // =====  Other processing ======
+    // ====  Other processing ====
     my.cfg_save = function() {
         var cfg_new = {};
         $('[data-ao2t-config]').each(function() {
@@ -2895,7 +2895,7 @@ function universalchat() {
             var type = elem.prop('type');
             var name = elem.attr('data-ao2t-config');
             var value;
-            if (type === "checkbox") {
+            if (type == "checkbox") {
                 value = elem.prop('checked');
             } else {
                 value = $(this).val();
@@ -2911,7 +2911,7 @@ function universalchat() {
             var name = elem.attr('data-ao2t-config');
             if (cfg_new.hasOwnProperty(name)) {
                 var value = cfg_new[name];
-                if (type === "checkbox") {
+                if (type == "checkbox") {
                     elem.prop('checked', value);
                 } else {
                     $(this).val(value);
@@ -2947,7 +2947,7 @@ function universalchat() {
 
 	
     $('#message').keydown(function(e) {
-        if (e.keyCode === 13) { // If Enter key pressed
+        if (e.keyCode == 13) { // If Enter key pressed
             $('#ao2t-message').click();	
         }
     });
@@ -4564,9 +4564,9 @@ function emphasischat() {
                 }
                 var displayValue = mutation.target.style.display;
                 //my.log("input changed display="+ displayValue);
-                if (displayValue === "block") {
+                if (displayValue == "block") {
                     my.inpt_show();
-                } else if (displayValue === "none") {
+                } else if (displayValue == "none") {
                     my.inpt_hide();
                 }
             });
@@ -4603,7 +4603,7 @@ function emphasischat() {
             stat.histhide_timeID = null;
         }
         var displayValue = $("#chat-box").css("display");
-        if (displayValue === "none") {
+        if (displayValue == "none") {
             stat.histhide_enable = true;
             //$("#chat-box").show();
         }
@@ -4910,7 +4910,7 @@ function getSNEZServers(ifcalled) {
                 return true;
 
             // For arrays or empty strings
-            if (obj.length === 0)
+            if (obj.length == 0)
                 return true;
 
             // For objects
@@ -6374,10 +6374,10 @@ function AgarVersionDestinations() {
 
 
 function isObject(val) {
-    if (val === null) {
+    if (val == null) {
         return false;
     }
-    return ((typeof val === 'function') || (typeof val === 'object'));
+    return ((typeof val == 'function') || (typeof val == 'object'));
 }
 
 function LegendModServerConnect(){};
@@ -6431,7 +6431,7 @@ function RemoveAgarBannedUIDs(UID){
 	if (window.bannedUserUIDs && window.AgarBannedUIDsAdded){
 		if (UID != null){ 
 			for(var i = bannedUserUIDs.length - 1; i >= 0; i--) {
-				if(bannedUserUIDs[i] === UID) {
+				if(bannedUserUIDs[i] == UID) {
 				bannedUserUIDs.splice(i, 1);
 				}
 			}	
