@@ -36,21 +36,7 @@ GM_registerMenuCommand('Donate for Legend Mod', function() {
     window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
 
-function getVersion() {
-    try
-    {
-        var request = new XMLHttpRequest();
-        request.open('GET', 'https://jimboy3100.github.io/VERSION.txt', false);
-        request.send(null);
-
-        if (request.status === 200)
-            return request.responseText.replace(/^\s+|\s+$/g, '');
-    } catch (e) {}
-
-    return (new Date()).getTime();
-}
-
-var version = getVersion();
+var version = 2;
 
 // Check location
 if (location.host === "agar.io" && location.pathname === "/") {
@@ -115,7 +101,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://jimboy3100.github.io/play.html'
+        modwebsite = 'https://jimboy3100.github.io/play.html?' + version;
         Htmlscript(modwebsite);
         break;
 }
