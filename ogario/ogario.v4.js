@@ -1,4 +1,4 @@
-window.OgVer=3.306;
+window.OgVer=3.307;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -4609,7 +4609,7 @@ window.MouseClicks=[];
         changeSpectatorMode() {
             this.spectatorFollow = !this.spectatorFollow;
             ogario.spectatorFollow = this.spectatorFollow;
-            if (this.spectatorFollow && spects.length > 0 && spects[0].staticX === null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/ ) {
+            if (this.spectatorFollow && spects.length > 0 && spects[0].staticX ==null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/ ) {
                 spects[0].sendFreeSpectate();
             } else {
                 void(0);
@@ -7732,7 +7732,7 @@ window.MouseClicks=[];
         //Sonia4
         SLGHandler(message) {
             var packet = this.unpackSLG(message);
-            if (packet === null) return;
+            if (packet ==null) return;
             switch (message.charAt(0)) {
                 case "R":
                     this.getSuperLegendSDATA(packet);
@@ -7744,7 +7744,7 @@ window.MouseClicks=[];
         },
         SLGSimpleHandler(message ) {
             console.log("SLGSimpleHandler recieve", message);
-            if (message === null) {
+            if (message == null) {
                 return;
             } else {
                 const ids = window.decodeURIComponent(escape(message.t));
@@ -10192,7 +10192,7 @@ window.MouseClicks=[];
                             }
                         }
                     }
-                    if (dyinglight1load === "yes" && node === null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
+                    if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
                         try {
                             style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
                         } catch (e) {}
@@ -13148,13 +13148,13 @@ Game name     : ${i.displayName}<br/>
 
 
             ///////////////// establish core.registerSkin
-            if (defaultmapsettings.vanillaSkins === true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] === null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
+            if (defaultmapsettings.vanillaSkins === true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] ==null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
                 for (i = 0; i <= this.leaderboard.length - 1; i++) {
                     if (this.leaderboard[i].nick === window.customskinsname) {
                         application.customSkinsMap[window.customskinsname] = window.customskinsarray[window.customskinsname].customskinsurl;
                         application.loadSkin(application.customSkinsCache, window.customskinsarray[window.customskinsname].customskinsurl, window.customskinsarray[window.customskinsname].customskinanimated);
                         window.customskinsname = null;
-                        window.customskinsarray[window.customskinsname] === null
+                        window.customskinsarray[window.customskinsname] ==null
                     }
                 }
             }
@@ -16316,12 +16316,12 @@ function setGUIEvents() {
         e.preventDefault()
     })
     var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
-    if (storedbotsRemoteIP === null || storedbotsRemoteIP === "") {
+    if (storedbotsRemoteIP ==null || storedbotsRemoteIP === "") {
         storedbotsRemoteIP = "ws://localhost:1337";
     }
     window.captchaOpenedWindow = 1;
     /*var captchaSpeed = localStorage.getItem("captchaSpeed2");
-	if (captchaSpeed === null || captchaSpeed === "null" || captchaSpeed === ""){
+	if (captchaSpeed ==null || captchaSpeed === "null" || captchaSpeed === ""){
 		window.captchaOpenedWindow = 1
 	}
 	else{	
@@ -16332,13 +16332,13 @@ function setGUIEvents() {
     window.SERVER_HOST = storedbotsRemoteIP;
     $('#botsRemoteIP').val(storedbotsRemoteIP)
     var storedbotsname = localStorage.getItem("localStoredBotsName");
-    if (storedbotsname === null || storedbotsname === "") {
+    if (storedbotsname ==null || storedbotsname === "") {
         storedbotsname = "Legendmod|ml";
     }
     window.bots.nameLM = storedbotsname;
     $('#botsNameLM').val(storedbotsname)
     var storedbotsamount = localStorage.getItem("localStoredBotsAmount");
-    if (storedbotsamount === null || storedbotsamount === "") {
+    if (storedbotsamount ==null || storedbotsamount === "") {
         storedbotsamount = 50;
 
     }
