@@ -7742,8 +7742,8 @@ window.MouseClicks=[];
                     break;
             }
         },
-        SLGSimpleHandler(message) {
-            //console.log("recieve", message);
+        SLGSimpleHandler(message ) {
+            console.log("SLGSimpleHandler recieve", message);
             if (message === null) {
                 return;
             } else {
