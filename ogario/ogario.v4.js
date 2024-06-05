@@ -1,4 +1,4 @@
-window.OgVer=3.307;
+window.OgVer=3.308;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -247,7 +247,7 @@ function deleteGamemode(temp) {
         $('#gamemode').append(new Option(el.text, el.value));
     });
     $('#gamemode').change(function() {
-        if ($('#region').val() === "Private") {
+        if ($('#region').val() == "Private") {
             /*
             var now = new Date();
             var now2 = now.getUTCHours();
@@ -264,105 +264,105 @@ function deleteGamemode(temp) {
             }
 			*/
         } else {}
-        if ($('#gamemode').val() === 6) {
+        if ($('#gamemode').val() == 6) {
             core.connect('wss://imsolo.pro:2109/');
-        } else if ($('#gamemode').val() === 7) {
+        } else if ($('#gamemode').val() == 7) {
             core.connect('wss://imsolo.pro:2108/'); //beta megasplit
-        } else if ($('#gamemode').val() === 12) {
+        } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
-        } else if ($('#gamemode').val() === 14) {
+        } else if ($('#gamemode').val() == 14) {
             core.connect('wss://imsolo.pro:2104/');
-        } else if ($('#gamemode').val() === 15) {
+        } else if ($('#gamemode').val() == 15) {
             core.connect('wss://imsolo.pro:2105/');
-        } else if ($('#gamemode').val() === 16) {
+        } else if ($('#gamemode').val() == 16) {
             core.connect('wss://imsolo.pro:2107/');
-        } else if ($('#gamemode').val() === 17) {
+        } else if ($('#gamemode').val() == 17) {
             core.connect('wss://imsolo.pro:2110/'); //beta partymode
-        } else if ($('#gamemode').val() === 18) {
+        } else if ($('#gamemode').val() == 18) {
             core.connect('wss://imsolo.pro:2111/');
-        } else if ($('#gamemode').val() === 19) {
+        } else if ($('#gamemode').val() == 19) {
             core.connect('wss://imsolo.pro:4110');
-        } else if ($('#gamemode').val() === 20) {
+        } else if ($('#gamemode').val() == 20) {
             core.connect('wss://imsolo.pro:4101');
-        } else if ($('#gamemode').val() === 21) {
+        } else if ($('#gamemode').val() == 21) {
             core.connect('wss://eatcells.com/api/~');
-        } else if ($('#gamemode').val() === 22) {
+        } else if ($('#gamemode').val() == 22) {
             core.connect('wss://ogar.eatcells.com/api/~');
-        } else if ($('#gamemode').val() === 23) {
+        } else if ($('#gamemode').val() == 23) {
             core.connect('wss://imsolo.pro:4102');
-        } else if ($('#gamemode').val() === 24) {
+        } else if ($('#gamemode').val() == 24) {
             core.connect('wss://imsolo.pro:4104');
-        } else if ($('#gamemode').val() === 25) {
+        } else if ($('#gamemode').val() == 25) {
             core.connect('wss://imsolo.pro:4105');
-        } else if ($('#gamemode').val() === 26) {
+        } else if ($('#gamemode').val() == 26) {
             core.connect('wss://imsolo.pro:4111');
-        } else if ($('#gamemode').val() === 27) {
+        } else if ($('#gamemode').val() == 27) {
             core.connect('wss://imsolo.pro:4112');
-        } else if ($('#gamemode').val() === 28) {
+        } else if ($('#gamemode').val() == 28) {
             core.connect('wss://imsolo.pro:4113');
-        } else if ($('#gamemode').val() === 29) {
+        } else if ($('#gamemode').val() == 29) {
             core.connect('wss://imsolo.pro:4103');
-        } else if ($('#gamemode').val() === 30) {
+        } else if ($('#gamemode').val() == 30) {
             core.connect('wss://imsolo.pro:4109');
-        } else if ($('#gamemode').val() === 31) {
+        } else if ($('#gamemode').val() == 31) {
             core.connect('wss://delta-selffeed.glitch.me');
-        } else if ($('#gamemode').val() === 32) {
+        } else if ($('#gamemode').val() == 32) {
             core.connect('wss://imsolo.pro:2100');
-        } else if ($('#gamemode').val() === 33) {
+        } else if ($('#gamemode').val() == 33) {
             core.connect('wss://lm-bots-ps.glitch.me');
-        } else if ($('#gamemode').val() === 34) {
+        } else if ($('#gamemode').val() == 34) {
             core.connect('wss://imsolo.pro:2102');
-        } else if ($('#gamemode').val() === 35) {
+        } else if ($('#gamemode').val() == 35) {
             core.connect('wss://delta-server.glitch.me');
-        } else if ($('#gamemode').val() === 36) {
+        } else if ($('#gamemode').val() == 36) {
             core.connect('wss://mkserv5.herokuapp.com/');
-        } else if ($('#gamemode').val() === 37) {
+        } else if ($('#gamemode').val() == 37) {
             core.connect('wss://agar.mkchat.net/');
-        } else if ($('#gamemode').val() === 38) {
+        } else if ($('#gamemode').val() == 38) {
             core.connect('wss://teamworkmk.herokuapp.com/');
             setTimeout(function() {
                 legendmod.gameMode = ":teams";
             }, 500)
-        } else if ($('#gamemode').val() === 39) {
+        } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
-        } else if ($('#gamemode').val() === 42) {
+        } else if ($('#gamemode').val() == 42) {
 			core.connect('wss://eatcells.com/api/');			
-        } else if ($('#gamemode').val() === 41) {
+        } else if ($('#gamemode').val() == 41) {
             //core.connect('wss://distrustfurryserver.herokuapp.com/');
 			core.connect('ws://localhost:443');
-        } else if ($('#gamemode').val() === 43) {
+        } else if ($('#gamemode').val() == 43) {
 			core.connect('wss://cellshub.ga:3100');
-        } else if ($('#gamemode').val() === 44) {
+        } else if ($('#gamemode').val() == 44) {
 			core.connect('wss://cellshub.ga:3101');
-        } else if ($('#gamemode').val() === 45) {
+        } else if ($('#gamemode').val() == 45) {
 			core.connect('wss://cellshub.ga:3103');
-        } else if ($('#gamemode').val() === 46) {
+        } else if ($('#gamemode').val() == 46) {
 			core.connect('wss://cellshub.ga:3104');
-        } else if ($('#gamemode').val() === 47) {
+        } else if ($('#gamemode').val() == 47) {
 			core.connect('wss://cellshub.ga:3105');
-        } else if ($('#gamemode').val() === 48) {
+        } else if ($('#gamemode').val() == 48) {
 			core.connect('wss://cellshub.ga:3107');
-        } else if ($('#gamemode').val() === 49) {
+        } else if ($('#gamemode').val() == 49) {
 			core.connect('wss://agariohub.ga:3100');
-        } else if ($('#gamemode').val() === 50) {
+        } else if ($('#gamemode').val() == 50) {
 			core.connect('wss://agariohub.ga:3101');
-        } else if ($('#gamemode').val() === 51) {
+        } else if ($('#gamemode').val() == 51) {
 			core.connect('wss://agariohub.ga:3103');
-        } else if ($('#gamemode').val() === 52) {
+        } else if ($('#gamemode').val() == 52) {
 			core.connect('wss://agariohub.ga:3104');
-        } else if ($('#gamemode').val() === 53) {
+        } else if ($('#gamemode').val() == 53) {
 			core.connect('wss://agariohub.ga:3105');
-        } else if ($('#gamemode').val() === 54) {
+        } else if ($('#gamemode').val() == 54) {
 			core.connect('wss://agariohub.ga:3107');			
-        } else if ($('#gamemode').val() === 102) {
+        } else if ($('#gamemode').val() == 102) {
 			core.connect('ws://m16ogar.al.gl:2052/');
-        } else if ($('#gamemode').val() === 103) {
+        } else if ($('#gamemode').val() == 103) {
 			core.connect('ws://na.agarios.org:443/');
         }
-	else if ($('#gamemode').val() === 4001) {
+	else if ($('#gamemode').val() == 4001) {
 			core.connect('wss://delta-ffa.glitch.me');
         }
-	else if ($('#gamemode').val() === 4002) {
+	else if ($('#gamemode').val() == 4002) {
 			core.connect('wss://delta-server.fly.dev');
         }
 
@@ -7743,7 +7743,7 @@ window.MouseClicks=[];
             }
         },
         SLGSimpleHandler(message ) {
-            console.log("SLGSimpleHandler recieve", message);
+            //console.log("SLGSimpleHandler recieve", message);
             if (message == null) {
                 return;
             } else {
