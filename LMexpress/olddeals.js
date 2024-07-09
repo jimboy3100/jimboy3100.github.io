@@ -1,5 +1,5 @@
 //OLD DEALS
-//v2.21
+//v2.22
 //for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
 
 /* you will need this
@@ -132,102 +132,7 @@ function SpecialDeals() {
                 /*
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal15") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Hot_Dog.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal17") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Comet.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal18") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Comet.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal21") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Jar_Brain.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal22") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Jar_Brain.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal25") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Laika.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal26") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Laika.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal27") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'pig.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal36") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'UFO.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal41") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'zombie.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal42") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'zombie.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal52") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Tiger_Pattern.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal53") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'toon.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal54") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'toon.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack3") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'pig.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack4") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack6") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Tomato_Face.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack7") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Comet.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.boosterpromo3") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'monthly_web_husky.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack1") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack2") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_red_fiend.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack3") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/moonlight_red_fiend.png); background-size: cover; border-color: #7c0001"></div>');
-                     $(".xpmt-money-stack").text("1800 DNA");
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack4") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'anime_skull_bow.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack5") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'anime_skull_bow.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack7") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'anime_power_ninja.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack10") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/moonlight_night_hunter.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack11") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'samurai_war_mask.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/samurai_skull_samurai.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack12") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'birthday_2017_2_rabid.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/birthday_2017_2_delighted.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack13") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'pet_balls_elephant.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack14") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'samurai_war_mask.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack15") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'samurai_rogue_samurai.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack16") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'samurai_war_mask.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/samurai_rogue_samurai.png); background-size: cover; border-color: #7c0001"></div>');
-                     $(".xpmt-money-stack").text("1800 DNA");
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.zodiacpromo") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'zodiac_2017_skin_scorpio.png ")');
-                     $(".xpmt-money-stack").text("800 DNA");
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.zodiacpromoweb") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'zodiac_2017_skin_scorpio.png ")');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.collector2") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'birthday_sir.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/ChilliPepper.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.collector4") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Rooster.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/birthday_doge.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack17") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'anime_skull_bow.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/anime_giant_human.png); background-size: cover; border-color: #7c0001"></div>');
-                     $(".xpmt-money-stack").text("1800 DNA");
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack18") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'anime_skull_bow.png ")');
-                     $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v15/2230/anime_giant_human.png); background-size: cover; border-color: #7c0001"></div>');
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.potionpromo3") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
-                     $(".xpmt-money-stack").text("16000 C+ 1800 DNA");
-                 } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.potionpromo6") {
-                     $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
-                     $(".xpmt-money-stack").text("7000 C+ 800 DNA");
-                 }
+                 } 
 				 */
                 $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped2 + '")');
                 $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped1 + '")');
@@ -252,11 +157,8 @@ function buydeals() {
         window.open(buytoken, "PopupWindow", "width=600,height=600,scrollbars=yes,resizable=no");
     }, 3000);
 }
-
-function populateSD() {
-
-    var select = document.getElementById("ss-select-purchases");
-    for (i = 0; i < GameConfiguration.gameConfig["Wallet - In-App Purchases"].length; i++) {
+function populateSDlines(select,i){
+	    
         if (GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].priceTier == "2") {
             select.options[select.options.length] = new Option(GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].bundleId + " = 1.99 $",GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].id,GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].id);
         } else if (GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].priceTier == "5") {
@@ -272,8 +174,37 @@ function populateSD() {
         } else {
             select.options[select.options.length] = new Option(GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].bundleId,GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].id,GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].id);
         }
-    }
+    
+}
+function populateSD() {
+    var agarVersionSelect = document.getElementById("ss-select-agarVersionDestinations");
 
+    var select = document.getElementById("ss-select-purchases");
+    if (agarVersionSelect.options && agarVersionSelect.options[0] && agarVersionSelect.value !== agarVersionSelect.options[0].value) {
+        // Check if an option with the same text already exists
+        
+		for (var ik = 0; ik < GameConfiguration.gameConfig["Wallet - In-App Purchases"].length; ik++) {
+			var optionExists = false;
+			for (var j = 0; j < window.selectVariable.length; j++) { 
+				if (window.selectVariable[j].value == GameConfiguration.gameConfig["Wallet - In-App Purchases"][ik].id) {
+					optionExists = true;
+				}
+			}
+			if (optionExists == false) {
+				populateSDlines(select,ik);
+			}
+			else console.log("no " + GameConfiguration.gameConfig["Wallet - In-App Purchases"][ik].bundleId)
+			
+		}
+    }
+	else{ //if selected value of #ss-select-agarVersionDestinations is the latest
+	if (!window.selectVariable) window.selectVariable = select.options;
+	for (var iq = 0; iq < GameConfiguration.gameConfig["Wallet - In-App Purchases"].length; iq++) {
+		populateSDlines(select,iq);
+	}
+	}
+	if ($('#ss-select-purchases').children().length==0)
+		$('#ss-select-purchases').append('<option value="" selected>Nothing found that is not already on latest version</option>');
 }
 
 function findSDescription() {
