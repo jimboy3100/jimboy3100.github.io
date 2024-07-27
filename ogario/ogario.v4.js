@@ -1,4 +1,4 @@
-window.OgVer=3.308;
+window.OgVer=3.309;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11081,7 +11081,16 @@ window.MouseClicks=[];
             }
             var x = null;
             var suggestedValue = 1540483477;
-            var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+			//var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+			
+			//28/7/2024
+           
+			console.log(ip);
+			var urlMatch = ip.match(/^(ws+:\/\/)([^:\/]+)(\/[^:]*)?(?::\d+)?/);
+			var ipCheck = urlMatch[2] + (urlMatch[3] ? urlMatch[3].replace(/\/$/, '') : '');
+			//end of new code
+			
+			
             var newLength = ipCheck.length + options.byteLength;
             var uint8Arr = new Uint8Array(newLength);
             var value = 0;
