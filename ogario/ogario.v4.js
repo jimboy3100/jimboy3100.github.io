@@ -1,4 +1,4 @@
-window.OgVer=3.310;
+window.OgVer=3.312;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -7305,7 +7305,8 @@ window.MouseClicks=[];
                 this.ws = ws;
                 this.createServerToken();
                 this.updateServerInfo();
-                if (-1 === this.ws.indexOf('agar.io')) {
+                //if (-1 === this.ws.indexOf('agar.io')) {
+				if (-1 === this.ws.indexOf('agario.miniclippt')) { //2024
                     // fix disconnect?
                     //this.closeConnection();
                 }
@@ -10427,7 +10428,8 @@ window.MouseClicks=[];
             this.mapOffsetFixed = false;
             this.leaderboard = [];
             this.ws = t;
-            this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
+            //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
+			this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
