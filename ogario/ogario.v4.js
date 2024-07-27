@@ -1,4 +1,4 @@
-window.OgVer=3.309;
+window.OgVer=3.310;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11081,15 +11081,22 @@ window.MouseClicks=[];
             }
             var x = null;
             var suggestedValue = 1540483477;
-			//var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+            //var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
 			
-			//28/7/2024
-           
-			console.log(ip);
-			var urlMatch = ip.match(/^(ws+:\/\/)([^:\/]+)(\/[^:]*)?(?::\d+)?/);
-			var ipCheck = urlMatch[2] + (urlMatch[3] ? urlMatch[3].replace(/\/$/, '') : '');
-			//end of new code
-			
+    // Fix here: manually extract the hostname
+			var ipCheck;
+			try {
+				// Remove protocol prefix
+				ipCheck = ip.replace(/^(ws+:\/\/|wss+:\/\/)/, ''); // Handles both ws:// and wss://
+
+				// Remove path suffix if present
+				ipCheck = ipCheck.split('/')[0];
+				console.log("ipCheck:", ipCheck);
+				} catch (e) {
+				console.error("Invalid IP format", e);
+				return null;
+			}
+			// End of new code
 			
             var newLength = ipCheck.length + options.byteLength;
             var uint8Arr = new Uint8Array(newLength);
