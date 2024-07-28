@@ -1,4 +1,4 @@
-window.OgVer=3.315;
+window.OgVer=3.316;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11084,9 +11084,10 @@ window.MouseClicks=[];
             var x = null;
             var suggestedValue = 1540483477;
             //var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
-			
+			var parsedUrl = new URL(ip);
+			var ipCheck = parsedUrl.hostname + parsedUrl.pathname.replace(/\/$/g, '');
     // Fix here: manually extract the hostname
-			var ipCheck;
+			/*var ipCheck;
 			try {
 				// Remove protocol prefix
 				ipCheck = ip.replace(/^(ws+:\/\/|wss+:\/\/)/, ''); // Handles both ws:// and wss://
@@ -11098,7 +11099,7 @@ window.MouseClicks=[];
 				} catch (e) {
 				console.error("Invalid IP format", e);
 				return null;
-			}
+			}*/
 			// End of new code
 			
             var newLength = ipCheck.length + options.byteLength;
@@ -12212,7 +12213,7 @@ window.MouseClicks=[];
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
-					console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
+					//console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
                     this.clientKey = this.generateClientKey(this.ws, key);
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
                     if (window.master && window.master.login) {
