@@ -1,4 +1,4 @@
-window.OgVer=3.314;
+window.OgVer=3.315;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11094,6 +11094,7 @@ window.MouseClicks=[];
 				// Remove path suffix if present
 				ipCheck = ipCheck.split('/')[0];
 				console.log("ipCheck:", ipCheck);
+				console.log("server version2:", options);
 				} catch (e) {
 				console.error("Invalid IP format", e);
 				return null;
