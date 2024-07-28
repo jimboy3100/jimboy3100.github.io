@@ -7395,7 +7395,7 @@ window.MouseClicks=[];
             }
             if (!text && matchNew3) {
                 this.serverArena = this.ws.split('/')[3];
-				
+				//HERE I THINK
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
             }
