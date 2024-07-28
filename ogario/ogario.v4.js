@@ -1,4 +1,4 @@
-window.OgVer=3.312;
+window.OgVer=3.313;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -12207,7 +12207,7 @@ window.MouseClicks=[];
                     window.testobjectsOpcode241 = data;
                     this.protocolKey = data.getUint32(s, true);
                     //window.testobjectsOpcode241.getUint32(1, true);
-                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
+                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
                     this.clientKey = this.generateClientKey(this.ws, key);
