@@ -1,4 +1,4 @@
-window.OgVer=3.316;
+window.OgVer=3.315;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11084,10 +11084,9 @@ window.MouseClicks=[];
             var x = null;
             var suggestedValue = 1540483477;
             //var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
-			var parsedUrl = new URL(ip);
-			var ipCheck = parsedUrl.hostname + parsedUrl.pathname.replace(/\/$/g, '');
+			
     // Fix here: manually extract the hostname
-			/*var ipCheck;
+			var ipCheck;
 			try {
 				// Remove protocol prefix
 				ipCheck = ip.replace(/^(ws+:\/\/|wss+:\/\/)/, ''); // Handles both ws:// and wss://
@@ -11099,7 +11098,7 @@ window.MouseClicks=[];
 				} catch (e) {
 				console.error("Invalid IP format", e);
 				return null;
-			}*/
+			}
 			// End of new code
 			
             var newLength = ipCheck.length + options.byteLength;
