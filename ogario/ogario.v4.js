@@ -1,4 +1,4 @@
-window.OgVer=3.313;
+window.OgVer=3.314;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -12206,10 +12206,12 @@ window.MouseClicks=[];
                 case 241:
                     window.testobjectsOpcode241 = data;
                     this.protocolKey = data.getUint32(s, true);
+					
                     //window.testobjectsOpcode241.getUint32(1, true);
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
+					console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
                     this.clientKey = this.generateClientKey(this.ws, key);
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
                     if (window.master && window.master.login) {
