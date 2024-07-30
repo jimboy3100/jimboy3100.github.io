@@ -30,7 +30,60 @@ window.LMscore=0;
 var isMobile = false;
 if (jQuery && jQuery.browser && jQuery.browser.mobile) isMobile = true;
 
+function toLong(ip) {
+    const c_precision = 256.0;
+    const c_precisionp1 = c_precision + 1.0;
 
+    let result = 0;
+    for (let i = 0; i < 5; i++) {
+        result += ~~((ip[i] / 255) * c_precision + 0.5) * Math.pow(c_precisionp1, i);
+    }
+    return result;
+}
+
+function fromLong(packed) {
+    const c_precision = 256.0;
+    const c_precisionp1 = c_precision + 1.0;
+    const arr = new Array(5).fill(0);
+    for (let i = arr.length; i--; ) {
+        const ip = Math.floor(packed / Math.pow(c_precisionp1, i));
+        packed -= ip * Math.pow(c_precisionp1, i);
+        arr[i] = Math.round((ip / c_precision) * 255);
+    }
+    return arr;
+}
+
+const regions = [
+    'us-east-2',
+    'us-east-1',
+    'us-west-1',
+    'us-west-2',
+    'af-south-1',
+    'ap-east-1',
+    'ap-south-2',
+    'ap-southeast-3',
+    'ap-southeast-4',
+    'ap-south-1',
+    'ap-northeast-3',
+    'ap-northeast-2',
+    'ap-southeast-1',
+    'ap-southeast-2',
+    'ap-northeast-1',
+    'ca-central-1',
+    'ca-west-1',
+    'eu-central-1',
+    'eu-west-1',
+    'eu-west-2',
+    'eu-south-1',
+    'eu-west-3',
+    'eu-south-2',
+    'eu-north-1',
+    'eu-central-2',
+    'il-central-1',
+    'me-south-1',
+    'me-central-1',
+    'sa-east-1'
+];
 
 function changeregion() {
     if ($('#region').val() === "Private") {
@@ -7314,6 +7367,7 @@ window.MouseClicks=[];
         },
         recreateWS(token) {
             if (!token) return null;
+			const serverFormat30072024 = /web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/
             this.tokenNeedToBtoa = false
             var text = null;
             if (token.includes("replay")) {
@@ -7354,11 +7408,11 @@ window.MouseClicks=[];
                 }
             } 
 			else if (!text && /^[a-z0-9]{5,}$/.test(token)) {
-                //console.log("recreateWS case 3:" + text);
-                //text = 'wss://live-arena-' + token + '.tech.agar.io:80';
-                //text = 'wss://live-arena-' + token + '.agar.io:80';
-                text = 'wss://live-arena-' + token + '.agar.io:443'
-				//console.log("!text && /^[a-z0-9]{5,}$/.test(token)" + token);
+                // text = 'wss://live-arena-' + token + '.agar.io:443'
+				const parts = fromLong(parseInt(token, 16));
+	            const server = parts.slice(0, 4).join('-');
+	            const region = regions[parts[4]];
+	            text = `wss://web-arenas-live-v25-0-${region}.agario.miniclippt.com/${server}`;
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
                 text = 'wss://' + token; //private servers
@@ -7376,6 +7430,7 @@ window.MouseClicks=[];
             var matchNew = this.ws.match(/live-arena-([\w\d]+(\.tech)?)\.agar\.io/);
             var matchNew2 = this.ws.match(/livec-arena-([\w\d]+(\.tech)?)\.agar\.io\:[\w\d]+/); //original private servers
 			var matchNew3 = this.ws.includes('agario.miniclippt.com'); //original agario servers 2024
+			const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/)
             var text = null;
             if (matchOld) {
                 matchOld = this.ws.replace('.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
@@ -7386,12 +7441,23 @@ window.MouseClicks=[];
                     //text = btoa(this.serverIP);
                 }
             }
-            if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) === -1) {
+            if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) === -1 && this.ws.search(/agario/) === -1) {
                 text = this.ws.match(/wss?:\/\/(.+)/)[1]
                 this.tokenNeedToBtoa = true
                 this.serverIP = text;
                 //text = btoa(text);
                 //console.log("createServerToken case 1:" + text);
+            }
+			if (!text && serverFormat30072024) {
+				const [, region, ip] = serverFormat30072024;
+	            const arr = ip
+	                .split('-')
+	                .map((n) => parseInt(n))
+	                .concat(regions.indexOf(region));
+	            this.serverArena = toLong(arr).toString(16);
+				//HERE I THINK
+                text = this.serverArena;
+                //console.log("createServerToken case 2:" + text);
             }
             if (!text && matchNew3) {
                 this.serverArena = this.ws.split('/')[3];
