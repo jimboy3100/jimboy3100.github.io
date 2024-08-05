@@ -5,6 +5,10 @@ ProLicenceUsersTable = {
             "reason": "LMauthor",
             "notes": "Jimboy3100"
         },
+        "250fa1e6-625f-4243-9e62-3d9647c4c588": {
+            "reason": "Discord582024",
+            "notes": "SkyView"
+        },		
         "2f9c0723-d7a4-4e2b-8973-bef9fc7826ed": {
             "reason": "Moderator",
             "notes": "Darkspace"
