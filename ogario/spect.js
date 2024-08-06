@@ -1,4 +1,4 @@
-//SPECS v4.11 chatgpt enhanced
+//SPECS v4.12 chatgpt enhanced
 
 function loadMultiCellSkin() {
 
@@ -555,7 +555,9 @@ class Spect {
          let offset;
 //view.getStringUTF8();
         let temp;
-        const encode = () => {
+		
+		
+        /*const encode = () => {
             let text;
             for (text = ''; ;) {
                 const string = view.getUint8(offset++);
@@ -565,8 +567,23 @@ class Spect {
                 text += String.fromCharCode(string);
             }
             return text;
-        };
+        };*/
+		let offset2 = 0; // Initialize offset2
 
+    // Function to read a UTF-8 encoded string from the view
+		const encode = () => {
+			let text = '';
+			while (offset2 < view.byteLength) { // Ensure we don't read beyond the buffer length
+				const charCode = view.getUint8(offset2++);
+				if (charCode === 0) { // Null terminator indicates end of string
+					break;
+				}
+				text += String.fromCharCode(charCode);
+			}
+			return text;
+		};
+		
+		
         offset = 0;
         let opCode = view.getUint8(offset++);
         if (opCode === 54) {
