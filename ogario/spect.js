@@ -1,4 +1,4 @@
-//SPECS v4.8 WORKS UNTIL HERE
+//SPECS v4.9 chatgpt enhanced
 
 function loadMultiCellSkin() {
 
@@ -555,7 +555,7 @@ class Spect {
          let offset;
 //view.getStringUTF8();
         let temp;
-        const encode = () => {
+        /*const encode = () => {
             let text;
             for (text = ''; ;) {
                 const string = view.getUint8(offset++);
@@ -565,7 +565,18 @@ class Spect {
                 text += String.fromCharCode(string);
             }
             return text;
-        };
+        };*/
+		const encode = () => {
+    let text = '';
+    while (offset < view.byteLength) { // Ensure offset is within bounds
+        const charCode = view.readUInt8(offset++);
+        if (charCode === 0) { // Null terminator found
+            break;
+        }
+        text += String.fromCharCode(charCode);
+    }
+    return text;
+};
         offset = 0;
         let opCode = view.getUint8(offset++);
         if (opCode === 54) {
@@ -1216,11 +1227,14 @@ class Spect {
             }
         }
         for (length = 0; ;) {
+			if (offset + 4 > view.byteLength) break; // Check buffer bounds before reading
             id = view.readUInt32LE(offset);
             offset += 4;
             if (id === 0) {
                 break;
             }
+			
+			if (offset + 14 > view.byteLength) break; // Ensure enough bytes to read x, y, size, and flags
             let x = view.readInt32LE(offset);
             offset += 4;
             let y = view.readInt32LE(offset);
@@ -1267,6 +1281,7 @@ class Spect {
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
             if (flags && 128) {
+				if (offset + 1 > view.byteLength) break; // Prevent buffer overflow
                 extendedFlags = view.readUInt8(offset++);
             }
             let color = null
@@ -1274,6 +1289,7 @@ class Spect {
             let name = '';
             let accountID = null;
             if (flags && 2) {
+			    if (offset + 3 > view.byteLength) break; // Ensure enough bytes for r, g, b
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
