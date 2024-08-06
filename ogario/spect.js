@@ -1,4 +1,4 @@
-//SPECS v4.9 chatgpt enhanced
+//SPECS v4.10 chatgpt enhanced
 
 function loadMultiCellSkin() {
 
@@ -566,17 +566,12 @@ class Spect {
             }
             return text;
         };*/
-		const encode = () => {
-    let text = '';
-    while (offset < view.byteLength) { // Ensure offset is within bounds
-        const charCode = view.readUInt8(offset++);
-        if (charCode === 0) { // Null terminator found
-            break;
+    var encode = function(str) {
+        bytes.push(str.length);
+        for (var i = 0; i < str.length; i++) {
+            bytes.push(str.charCodeAt(i));
         }
-        text += String.fromCharCode(charCode);
-    }
-    return text;
-};
+    };
         offset = 0;
         let opCode = view.getUint8(offset++);
         if (opCode === 54) {
