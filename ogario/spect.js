@@ -1,4 +1,4 @@
-//SPECS v4.7 WORKS UNTIL HERE
+//SPECS v4.8 WORKS UNTIL HERE
 
 function loadMultiCellSkin() {
 
@@ -472,7 +472,12 @@ class Spect {
         }
         let x = null;
         const Length = 1540483477;
-        const ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+		
+        //const ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+		// new code 6/8/2024
+		var parsedUrl = new URL(ip);
+		var ipCheck = parsedUrl.hostname + parsedUrl.pathname.replace(/\/$/g, '');
+		
         const newLength = ipCheck.length + options.byteLength;
         const uint8Arr = new Uint8Array(newLength);
         for (let length = 0; length < ipCheck.length; length++) {
