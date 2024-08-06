@@ -1,4 +1,4 @@
-//SPECS v4.13 chatgpt enhanced
+//SPECS v4.15 totaly crap
 
 function loadMultiCellSkin() {
 
@@ -555,16 +555,28 @@ class Spect {
          let offset;
 //view.getStringUTF8();
         let temp;
-		
-            var encode = function() {
-                for (var text = '';;) {
-                    var i = data.getUint8(s++);
-                    if (0 === i) break;
-                    text += String.fromCharCode(i);
+        /*const encode = () => {
+            let text;
+            for (text = ''; ;) {
+                const string = view.getUint8(offset++);
+                if (string === 0) {
+                    break;
                 }
-                return text;
-            };
-		
+                text += String.fromCharCode(string);
+            }
+            return text;
+        };*/
+		const encode = () => {
+    let text = '';
+    while (offset < view.byteLength) { // Ensure offset is within bounds
+        const charCode = view.readUInt8(offset++);
+        if (charCode === 0) { // Null terminator found
+            break;
+        }
+        text += String.fromCharCode(charCode);
+    }
+    return text;
+};
         offset = 0;
         let opCode = view.getUint8(offset++);
         if (opCode === 54) {
@@ -1170,14 +1182,17 @@ class Spect {
         let cell;
         let length;
         let id;
-            var encode = function() {
-                for (var text = '';;) {
-                    var i = data.getUint8(s++);
-                    if (0 === i) break;
-                    text += String.fromCharCode(i);
+        const encode = () => {
+            let text;
+            for (text = ''; ;) {
+                const string = view.readUInt8(offset++);
+                if (string === 0) {
+                    break;
                 }
-                return text;
-            };
+                text += String.fromCharCode(string);
+            }
+            return text;
+        };
         //
         if (this.time) this.timerDifference = Date.now() - this.time
         //
