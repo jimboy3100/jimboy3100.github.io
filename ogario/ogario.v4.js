@@ -1,4 +1,4 @@
-window.OgVer=3.321;
+window.OgVer=3.322;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -11718,6 +11718,10 @@ window.MouseClicks=[];
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
+                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
+                            window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; 
+                        }						
+						
                     }
 
 
