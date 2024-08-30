@@ -1,4 +1,4 @@
-window.OgVer=3.322;
+window.OgVer=3.323;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -7368,7 +7368,7 @@ window.MouseClicks=[];
         },
         recreateWS(token) {
             if (!token) return null;
-			const serverFormat30072024 = /web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/
+			//const serverFormat30072024 = /web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/            // 30/8/2024 
             this.tokenNeedToBtoa = false
             var text = null;
             if (token.includes("replay")) {
@@ -7413,7 +7413,8 @@ window.MouseClicks=[];
 				const parts = fromLong(parseInt(token, 36));
 	            const server = parts.slice(1, 5).join('-');
 	            const region = awsRegions[parts[0]];
-	            text = `wss://web-arenas-live-v25-0-${region}.agario.miniclippt.com/${server}`;
+	            //text = `wss://web-arenas-live-v25-0-${region}.agario.miniclippt.com/${server}`;
+				text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
                 text = 'wss://' + token; //private servers
@@ -7431,7 +7432,8 @@ window.MouseClicks=[];
             var matchNew = this.ws.match(/live-arena-([\w\d]+(\.tech)?)\.agar\.io/);
             var matchNew2 = this.ws.match(/livec-arena-([\w\d]+(\.tech)?)\.agar\.io\:[\w\d]+/); //original private servers
 			var matchNew3 = this.ws.includes('agario.miniclippt.com'); //original agario servers 2024
-			const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/)
+			//const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/)
+			const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0\.agario\.miniclippt\.com\/(.+)\/(\d+-\d+-\d+-\d+)/); // 30/8/2024 
             var text = null;
             if (matchOld) {
                 matchOld = this.ws.replace('.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
