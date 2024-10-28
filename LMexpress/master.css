@@ -228,7 +228,7 @@ td,th {
 }
 
 @font-face {
-	font-family:'Glyphicons Halflings';src:url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.eot);src:url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.eot#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.woff) format('woff'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg');
+	font-family:'Glyphicons Halflings';src:url(https://www.legendmod.ml/fonts/glyphicons-halflings-regular.eot);src:url(https://www.legendmod.ml/fonts/glyphicons-halflings-regular.eot#iefix) format('embedded-opentype'),url(https://www.legendmod.ml/fonts/glyphicons-halflings-regular.woff) format('woff'),url(https://www.legendmod.ml/fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(https://www.legendmod.ml/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg');
 }
 
 .glyphicon {
@@ -6620,7 +6620,7 @@ button.close {
 }
 
 @font-face {
-	font-family:'Glyphicons Social';src:url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.eot);src:url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.eot#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.woff2) format('woff2'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.woff) format('woff'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.ttf) format('truetype'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.svg#glyphicons_socialregular) format('svg');
+	font-family:'Glyphicons Social';src:url(https://www.legendmod.ml/fonts/glyphicons-social-regular.eot);src:url(https://www.legendmod.ml/fonts/glyphicons-social-regular.eot#iefix) format('embedded-opentype'),url(https://www.legendmod.ml/fonts/glyphicons-social-regular.woff2) format('woff2'),url(https://www.legendmod.ml/fonts/glyphicons-social-regular.woff) format('woff'),url(https://www.legendmod.ml/fonts/glyphicons-social-regular.ttf) format('truetype'),url(https://www.legendmod.ml/fonts/glyphicons-social-regular.svg#glyphicons_socialregular) format('svg');
 }
 
 .social {
@@ -10842,11 +10842,11 @@ img.mfp-img {
 }
 
 @font-face {
-	font-family:'Oxygen Bold';src:url(https://jimboy3100.github.io/fonts/OpenSans-Light-webfont.eot);src:url(https://jimboy3100.github.io/fonts/OpenSans-Light-webfont.eot#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/OpenSans-Light-webfont.svg#my-font-family) format('svg'),url(https://jimboy3100.github.io/fonts/OpenSans-Light-webfont.woff) format('woff'),url(https://jimboy3100.github.io/fonts/OpenSans-Light-webfont.ttf) format('truetype');font-weight:400;font-style:normal;
+	font-family:'Oxygen Bold';src:url(https://www.legendmod.ml/fonts/OpenSans-Light-webfont.eot);src:url(https://www.legendmod.ml/fonts/OpenSans-Light-webfont.eot#iefix) format('embedded-opentype'),url(https://www.legendmod.ml/fonts/OpenSans-Light-webfont.svg#my-font-family) format('svg'),url(https://www.legendmod.ml/fonts/OpenSans-Light-webfont.woff) format('woff'),url(https://www.legendmod.ml/fonts/OpenSans-Light-webfont.ttf) format('truetype');font-weight:400;font-style:normal;
 }
 
 @font-face {
-	font-family:'Oxygen Regular';src:url(https://jimboy3100.github.io/fonts/ogicomoon.eot);src:url(https://jimboy3100.github.io/fonts/ogicomoon.eot#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/ogicomoon.svg#my-font-family) format('svg'),url(https://jimboy3100.github.io/fonts/ogicomoon.woff) format('woff'),url(https://jimboy3100.github.io/fonts/ogicomoon.ttf) format('truetype');font-weight:400;font-style:normal;
+	font-family:'Oxygen Regular';src:url(https://www.legendmod.ml/fonts/ogicomoon.eot);src:url(https://www.legendmod.ml/fonts/ogicomoon.eot#iefix) format('embedded-opentype'),url(https://www.legendmod.ml/fonts/ogicomoon.svg#my-font-family) format('svg'),url(https://www.legendmod.ml/fonts/ogicomoon.woff) format('woff'),url(https://www.legendmod.ml/fonts/ogicomoon.ttf) format('truetype');font-weight:400;font-style:normal;
 }
 
 body {
@@ -11332,7 +11332,7 @@ form {
 	right: -16px;
 	width: 50px;
 	height: 50px;
-	background-image: url(https://jimboy3100.github.io/img/star.png);
+	background-image: url(https://www.legendmod.ml/img/star.png);
 	background-size: cover;
 	-webkit-transform: rotate3d(0,0,1,10deg);
 	transform: rotate3d(0,0,1,10deg);
