@@ -81,7 +81,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://jimboy3100.github.io/play.html?' + version;
+        modwebsite = 'https://www.legendmod.ml/play.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://jimboy3100.github.io/ExampleScripts/Neoprivate.js';
@@ -89,19 +89,19 @@ switch (mode) {
 		}, 5000);
 	break;	
     case 'mobile': 
-        modwebsite = 'https://jimboy3100.github.io/play.html';
+        modwebsite = 'https://www.legendmod.ml/play.html';
         Htmlscript(modwebsite);
 		setTimeout(function() {		
-			modwebsite = 'https://jimboy3100.github.io/ExampleScripts/gamepad.user.js';
+			modwebsite = 'https://www.legendmod.ml/ExampleScripts/gamepad.user.js';
 			Userscript(modwebsite);
 		}, 5000);
 	break;		
     case 'captcha':
-        modwebsite = 'https://jimboy3100.github.io/ogario/captcha.html'
+        modwebsite = 'https://www.legendmod.ml/ogario/captcha.html'
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://jimboy3100.github.io/play.html?' + version;
+        modwebsite = 'https://www.legendmod.ml/play.html?' + version;
         Htmlscript(modwebsite);
         break;
 }
