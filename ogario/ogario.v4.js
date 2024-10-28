@@ -1,4 +1,4 @@
-window.OgVer=3.323;
+window.OgVer=3.324;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -1463,7 +1463,7 @@ var displayText = {
     pl: {
         start: 'Start',
         settings: 'Ustawienia',
-        restoreSettings: 'Przywróc ustawienia domyślne',
+        restoreSettings: 'Przywroc ustawienia domyslne',
         animationGroup: 'Animacja',
         graphics: 'Graphics',
         reverseTrick: 'Reverse trick (On development)',
@@ -1475,22 +1475,22 @@ var displayText = {
         massGroup: 'Masa',
         skinsGroup: 'Skiny',
         foodGroup: 'Pokarm',
-        transparencyGroup: 'Przezroczystość / kolory',
+        transparencyGroup: 'Przezroczystosc / kolory',
         gridGroup: 'Siatka / sektory',
         miniMapGroup: 'Minimapa',
         helpersGroup: 'Wspomagacze',
-        mouseGroup: 'Sterowanie myszką',
+        mouseGroup: 'Sterowanie myszka',
         hudGroup: 'HUD',
         multiBox: 'Multibox',
         chatGroup: 'Czat',
         statsGroup: 'Statystyki',
         extrasGroup: 'Dodatkowe',
         macroGroup: 'Macros',
-        noSkins: 'Wyłącz skiny',
+        noSkins: 'Wylacz skiny',
         cellContours: 'Only cells contours',
-        noNames: 'Wyłącz nazwy',
-        noColors: 'Wyłącz kolory',
-        showMass: 'Pokaż masę',
+        noNames: 'Wylacz nazwy',
+        noColors: 'Wylacz kolory',
+        showMass: 'Pokaz mase',
         showChat: 'Show chat on cells',
         showChatMyOwn: 'Show chat on my cells',
         oneColoredSpectator: 'Multibox less render cells',
@@ -1498,11 +1498,11 @@ var displayText = {
         multiKeepMoving: 'Inactive keep moving',
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
-        skipStats: 'Pomiń statystyki po śmierci',
-        showQuest: 'Pokaż zadanie (quest)',
+        skipStats: 'Pomin statystyki po smierci',
+        showQuest: 'Pokaz zadanie (quest)',
         autoZoom: 'Auto zoom',
         unlockedFPS: 'Frames per sec',
-        animation: 'Opóźnienie animacji',
+        animation: 'Opoznienie animacji',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
         profileNumber: 'Profiles Number',
@@ -1510,7 +1510,7 @@ var displayText = {
 		virusSpikes: 'Virus spikes',
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
-        zoomSpeedValue2: 'Szybkość zoomu',
+        zoomSpeedValue2: 'Szybkosc zoomu',
         videoSkinSoundLevel: 'Video skin sound level',
         leaderboardlimit: 'Leaderboard Players',
         teamboardlimit: 'Team Players',
@@ -1524,22 +1524,22 @@ var displayText = {
         autoHideFood: 'Autoukrywanie pokarmu - masa',
         autoHideFoodOnZoom: 'Autoukrywanie pokarmu - zoom',
         optimizedNames: 'Zoptymalizowane nazwy',
-        hideMyName: 'Ukryj własną nazwę',
+        hideMyName: 'Ukryj wlasna nazwe',
         hideTeammatesNames: 'Ukryj nazwy graczy teamu',
         optimizedMass: 'Optimized mass (+/-2%) OR Merge timer (BETA)',
-        shortMass: 'Skrócona masa (k)',
-        virMassShots: 'Licznik strzałów (wirusy)',
-        hideMyMass: 'Ukryj własną masę',
-        hideEnemiesMass: 'Ukryj masę przeciwników',
+        shortMass: 'Skrocona masa (k)',
+        virMassShots: 'Licznik strzalow (wirusy)',
+        hideMyMass: 'Ukryj wlasna mase',
+        hideEnemiesMass: 'Ukryj mase przeciwnikow',
         vanillaSkins: 'Podstawowe skiny',
         universalChat: 'Universal chat',
-        customSkins: 'Własne skiny',
+        customSkins: 'Wlasne skiny',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
         videoDestorted: 'Video destorted to fit cells',
         videoSkinsMusic2: 'Sound from other\'s Video skins when visible',
         videoOthersSkinSoundLevelproportion: 'Other\'s VS sound level proportional to their mass',
-        myTransparentSkin: 'Mój przezroczysty skin',
-        myCustomColor: 'Mój własny kolor',
+        myTransparentSkin: 'Moj przezroczysty skin',
+        myCustomColor: 'Moj wlasny kolor',
         transparentCells: 'Przezroczyste kulki',
         transparentViruses: 'Przezroczyste wirusy',
         transparentSkins: 'Przezroczyste skiny',
@@ -1551,27 +1551,27 @@ var displayText = {
 		stickyCell: 'Sticky cells (left button, hold right button)',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
-        showMiniMap: 'Pokaż minimapę',
-        showMiniMapGrid: 'Pokaż siatkę minimapy',
-        showMiniMapGuides: 'Pokaż prowadnice na minimapie',
+        showMiniMap: 'Pokaz minimape',
+        showMiniMapGrid: 'Pokaz siatke minimapy',
+        showMiniMapGuides: 'Pokaz prowadnice na minimapie',
         showExtraMiniMapGuides: 'Show extra minimap guides',
-        showMiniMapGhostCells: 'Pokaż duchy kulek na minimapie',
+        showMiniMapGhostCells: 'Pokaz duchy kulek na minimapie',
         oneColoredTeammates: 'Jednokolorowi gracze',
         //optimizedFood: 'Zoptymalizowany pokarm',
         rainbowFood: 'Kolorowy pokarm',
-        oppColors: 'Kolory przeciwników',
-        oppRings: 'Ringi przeciwników',
-        virColors: 'Kolory wirusów',
-        splitRange: 'Zasięg podziału',
-        virusesRange: 'Zasięg wirusów',
+        oppColors: 'Kolory przeciwnikow',
+        oppRings: 'Ringi przeciwnikow',
+        virColors: 'Kolory wirusow',
+        splitRange: 'Zasieg podzialu',
+        virusesRange: 'Zasieg wirusow',
 		showOptimisedGrid: 'Icon as grid (fps increase)',
-        textStroke: 'Obwódki nazw i masy',
-        namesStroke: 'Obwódki nazw',
-        massStroke: 'Obwódki masy',
+        textStroke: 'Obwodki nazw i masy',
+        namesStroke: 'Obwodki nazw',
+        massStroke: 'Obwodki masy',
         bubbleCursorTracker: 'Bubble tracker (disables cursor tracking)',
         bubbleInd: 'Bubble indicators (disables opponent rings)',
-        cursorTracking: 'Śledzenie kursora',
-        teammatesInd: 'Wskaźniki graczy teamu',
+        cursorTracking: 'Sledzenie kursora',
+        teammatesInd: 'Wskazniki graczy teamu',
         FBTracking: 'Facebook bubble tracker',
 		indicators: 'Indicator',
         mouseSplit: 'Left mouse button',
@@ -1579,39 +1579,39 @@ var displayText = {
 		mouseCommand4: 'Mouse button 4',
 		mouseCommand5: 'Mouse button 5',
         mouseWheelClick: 'Mouse wheel click',
-        mouseInvert: 'Odwróć klawisze myszki',
-        disableChat: 'Wyłącz czat',
+        mouseInvert: 'Odwroc klawisze myszki',
+        disableChat: 'Wylacz czat',
         coloredNicks: 'Colored nicknames',
         hideChat: 'Ukryj czat',
-        chatSounds: 'Powiadomienia dźwiękowe',
+        chatSounds: 'Powiadomienia dzwiekowe',
         chatEmoticons: 'Emotikony',
-        showChatImages: 'Pokaż obrazki na czacie',
-        showChatVideos: 'Pokaż filmiki na czacie',
-        showChatBox: 'Czatbox zamiast wyskakujących wiadomości',
+        showChatImages: 'Pokaz obrazki na czacie',
+        showChatVideos: 'Pokaz filmiki na czacie',
+        showChatBox: 'Czatbox zamiast wyskakujacych wiadomosci',
         showChatTranslation: 'Translate chatbox (Scroll bug)',
         hidecountry: 'Hide my country',
-        messageSound: 'Dźwięk powiadomienia o wiadomości',
-        commandSound: 'Dźwięk powiadomienia o komendzie',
+        messageSound: 'Dzwiek powiadomienia o wiadomosci',
+        commandSound: 'Dzwiek powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
         potionsDrinker: 'Randomly drink Potions',
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-        showTop5: 'Pokaż top 5 teamu',
-        showTargeting: 'Pokaż namierzanie',
-        showTime: 'Pokaż aktualny czas',
+        showTop5: 'Pokaz top 5 teamu',
+        showTargeting: 'Pokaz namierzanie',
+        showTime: 'Pokaz aktualny czas',
 		showDevConsole:'Show developer console',
-        showLbData: 'Pokaż masę w topce',
-        //normalLb: 'Nagłówek \"Topka\"',
-        centeredLb: 'Wyśrodkowana topka',
-        fpsAtTop: 'Statystyki na górze',
+        showLbData: 'Pokaz mase w topce',
+        //normalLb: 'Naglowek \"Topka\"',
+        centeredLb: 'Wysrodkowana topka',
+        fpsAtTop: 'Statystyki na gorze',
         tweenMaxEffect: 'Tween max effect',
         top5skins: 'Skins on teamboard',
-        showStats: 'Pokaż statystyki',
+        showStats: 'Pokaz statystyki',
 		
         showStatsMass: 'Statystyki: Masa',
-        //showStatsSTE: 'Statystyki: Przedziały Masy',
+        //showStatsSTE: 'Statystyki: Przedzialy Masy',
         showStatsESTE: 'BSTE: Enemy\'s minimal mass to splt & eat',
         showStatsEMTE: 'BMTE: Enemy\'s minimal mass to move & eat',
         showStatsMTE: 'MTE: Enemy\'s maximal mass to be eaten by our move',
@@ -1624,10 +1624,10 @@ var displayText = {
         showStatsRender: 'Time percentage % consumed for Drawing',
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
-        hotkeys: 'Skróty klawiszowe',
-        'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
-        'hk-inst-delete': 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
-        'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
+        hotkeys: 'Skroty klawiszowe',
+        'hk-inst-assign': 'Aby ustawic skrot klawiszowy kliknij na polu skrotu i nacisnij wybrany klawisz.',
+        'hk-inst-delete': 'Aby usunac skrot klawiszowy kliknij na polu skrotu i nacisnij klawisz DELETE.',
+        'hk-inst-keys': 'Mozliwe kombinacje skrotow klawiszowych z uzyciem klawiszy CTRL oraz ALT.',
         'hk-bots-split': 'Bots split',
         'hk-bots-feed': 'Bots feed',
 		'hk-bots-macrofeed': 'Bots Macro feed',
@@ -1635,59 +1635,59 @@ var displayText = {
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Szybki feed',
 		'hk-macroFeedPerm': 'Permanent feed',
-        'hk-split': 'Podział',
-        'hk-doubleSplit': 'Podwójny podział',
+        'hk-split': 'Podzial',
+        'hk-doubleSplit': 'Podwojny podzial',
         'hk-tripleSplit': 'Triple split',
-        'hk-split16': 'Podział na 16',
+        'hk-split16': 'Podzial na 16',
         'hk-crazyDoubleSplit': 'Crazy double split',
         'hk-pause': 'Pauza kulki',
         'hk-multiboxswap': 'Multibox Swap',
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
-        'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
+        'hk-showTop5': 'Pokaz/ukryj top 5 teamu',
         'hk-dance': 'Dance',
 		'hk-limitposition': 'Macro position to limits',
-        'hk-showTime': 'Pokaż/ukryj aktualny czas',
+        'hk-showTime': 'Pokaz/ukryj aktualny czas',
 		'hk-showDevConsole': 'Show developer console',
-        'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
-        'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
-        'hk-showTeammatesInd': 'Pokaż/ukryj wskaźniki graczy teamu',
-        'hk-showOppColors': 'Pokaż/ukryj kolory przeciwników',
-        'hk-toggleSkins': 'Przełącz skiny (własne/standardowe)',
-        'hk-showSkins': 'Pokaż/ukryj skiny',
-        'hk-transparentSkins': 'Włącz/wyłącz przezroczyste skiny',
-        'hk-showStats': 'Pokaż/ukryj statystyki gry',
-        'hk-toggleCells': 'Przełącz kulkę (najmniejsza/największa)',
-        'hk-showFood': 'Pokaż/ukryj pokarm',
-        'hk-showGrid': 'Pokaż/ukryj siatkę',
-        'hk-showMiniMapGuides': 'Pokaż/ukryj prowadnice na minimapie',
-        'hk-hideChat': 'Pokaż/ukryj czat',
-        'hk-showHUD': 'Pokaż/ukryj HUD',
-        'hk-copyLb': 'Kopiuj topkę',
-        'hk-showLb': 'Pokaż/ukryj topkę',
-        'hk-toggleAutoZoom': 'Włącz/wyłącz auto zoom',
+        'hk-showSplitRange': 'Pokaz/ukryj zasieg podzialu',
+        'hk-showSplitInd': 'Pokaz/ukryj zasieg podzialu z ringami',
+        'hk-showTeammatesInd': 'Pokaz/ukryj wskazniki graczy teamu',
+        'hk-showOppColors': 'Pokaz/ukryj kolory przeciwnikow',
+        'hk-toggleSkins': 'Przelacz skiny (wlasne/standardowe)',
+        'hk-showSkins': 'Pokaz/ukryj skiny',
+        'hk-transparentSkins': 'Wlacz/wylacz przezroczyste skiny',
+        'hk-showStats': 'Pokaz/ukryj statystyki gry',
+        'hk-toggleCells': 'Przelacz kulke (najmniejsza/najwieksza)',
+        'hk-showFood': 'Pokaz/ukryj pokarm',
+        'hk-showGrid': 'Pokaz/ukryj siatke',
+        'hk-showMiniMapGuides': 'Pokaz/ukryj prowadnice na minimapie',
+        'hk-hideChat': 'Pokaz/ukryj czat',
+        'hk-showHUD': 'Pokaz/ukryj HUD',
+        'hk-copyLb': 'Kopiuj topke',
+        'hk-showLb': 'Pokaz/ukryj topke',
+        'hk-toggleAutoZoom': 'Wlacz/wylacz auto zoom',
         'hk-resetZoom': 'Reset zoomu',
         'hk-zoomLevel': 'Zoom - poziom',
-        'hk-toggleDeath': 'Przełącz miejsce śmierci',
-        'hk-clearChat': 'Pokaż historię czatu / Czyść czat',
-        'hk-showBgSectors': 'Pokaż/ukryj sektory w tle',
-        'hk-hideBots': 'Pokaż/ukryj małe boty',
-        'hk-showNames': 'Pokaż/ukryj nazwy',
-        'hk-hideTeammatesNames': 'Pokaż/ukryj nazwy graczy teamu',
-        'hk-showMass': 'Pokaż/ukryj masę',
-        'hk-showMiniMap': 'Pokaż/ukryj minimapę',
-        'hk-chatMessage': 'Napisz wiadomość na czacie',
+        'hk-toggleDeath': 'Przelacz miejsce smierci',
+        'hk-clearChat': 'Pokaz historie czatu / Czysc czat',
+        'hk-showBgSectors': 'Pokaz/ukryj sektory w tle',
+        'hk-hideBots': 'Pokaz/ukryj male boty',
+        'hk-showNames': 'Pokaz/ukryj nazwy',
+        'hk-hideTeammatesNames': 'Pokaz/ukryj nazwy graczy teamu',
+        'hk-showMass': 'Pokaz/ukryj mase',
+        'hk-showMiniMap': 'Pokaz/ukryj minimape',
+        'hk-chatMessage': 'Napisz wiadomosc na czacie',
         'hk-quickResp': 'Szybkie odrodzenie (respawn)',
-        'hk-autoResp': 'Włącz/wyłacz auto odrodzenie',
-        'hk-switchServerMode': 'Przełącz serwer [publiczny/prywatny]',
-        'hk-showTargeting': 'Pokaż/ukryj panel namierzania',
-        'hk-voiceChat': 'Głos do tekstu',
+        'hk-autoResp': 'Wlacz/wylacz auto odrodzenie',
+        'hk-switchServerMode': 'Przelacz serwer [publiczny/prywatny]',
+        'hk-showTargeting': 'Pokaz/ukryj panel namierzania',
+        'hk-voiceChat': 'Glos do tekstu',
         'hk-GhostCellsInfo': 'Show ghost cells information',
         'hk-Autoplay': 'Auto Play',
-        'hk-setTargeting': 'Włącz/wyłącz namierzanie (śledzenie)',
+        'hk-setTargeting': 'Wlacz/wylacz namierzanie (sledzenie)',
         'hk-cancelTargeting': 'Zatrzymaj namierzanie',
-        'hk-changeTarget': 'Zmień cel',
-        'hk-privateMiniMap': 'Pokaż cel na minimapie',
-        'hk-showQuest': 'Pokaż/ukryj zadanie',
+        'hk-changeTarget': 'Zmien cel',
+        'hk-privateMiniMap': 'Pokaz cel na minimapie',
+        'hk-showQuest': 'Pokaz/ukryj zadanie',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
         'hk-doubleBotSplit': 'Bots double split (Private servers)',
@@ -1695,20 +1695,20 @@ var displayText = {
 
         commands: 'Komendy',
         comm1: 'Feeduj!',
-        comm2: 'Dziel się!',
+        comm2: 'Dziel sie!',
         comm3: 'Pomocy na %currentSector%!',
-        comm4: 'Wróg na %currentSector%!',
+        comm4: 'Wrog na %currentSector%!',
         comm5: 'Zabij pomocnika!',
         comm6: 'Strzel z wirusa!',
         comm7: 'Zjedz wirusa!',
-        comm8: 'Zjebałem, wybacz.',
-        comm9: 'Ja pierdolę...',
-        comm0: 'Kurwa mać!',
+        comm8: 'Zjebalem, wybacz.',
+        comm9: 'Ja pierdole...',
+        comm0: 'Kurwa mac!',
         comm10: 'Trick!',
         comm11: 'Lewo!',
-        comm12: 'Góra!',
+        comm12: 'Gora!',
         comm13: 'Prawo!',
-        comm14: 'Dół!',
+        comm14: 'Dol!',
         comm15: 'Fake Tricksplit',
         comm16: 'Popsplit',
         comm17: 'Double Popsplit',
@@ -1746,25 +1746,25 @@ var displayText = {
 		comm49: 'HotKey command',
 		comm50: 'HotKey command',		
         saveComm: 'Zapisz komendy',
-        theme: 'Wygląd',
-        restoreThemeSettings: 'Przywróc ustawienia domyślne wyglądu',
+        theme: 'Wyglad',
+        restoreThemeSettings: 'Przywroc ustawienia domyslne wygladu',
         basicTheming: 'Podstawowy',
         themePreset: 'Motyw',
         chatPosition: 'Chat Position',
         themeType: 'Typ motywu',
         darkTheme: 'Ciemny motyw',
         lightTheme: 'Jasny motyw',
-        mainColor: 'Kolor główny',
-        bgColor: 'Tło',
+        mainColor: 'Kolor glowny',
+        bgColor: 'Tlo',
         bordersColor: 'Granice mapy',
         gridColor: 'Siatka',
-        sectorsColor: 'Czcionka sektorów',
+        sectorsColor: 'Czcionka sektorow',
         namesColor: 'Nazwy',
-        namesStrokeColor: 'Obwódki nazw',
+        namesStrokeColor: 'Obwodki nazw',
         massColor: 'Masa',
-        massStrokeColor: 'Obwódki masy',
+        massStrokeColor: 'Obwodki masy',
         virusColor: 'Wirusy',
-        virusStrokeColor: 'Obwódki wirusów',
+        virusStrokeColor: 'Obwodki wirusow',
         virusGlowColor: "Virus Glow",
         borderGlowColor: "Border Glow",
         mVirusColor: 'Mothercell',
@@ -1774,44 +1774,44 @@ var displayText = {
         foodColor: 'Pokarm',
         namesFont: 'Czcionka nazw',
         massFont: 'Czcionka masy',
-        sectorsFont: 'Czcionka sektorów',
+        sectorsFont: 'Czcionka sektorow',
         namesScale: 'Skala nazw',
         massScale: 'Skala masy',
-        virMassScale: 'Skala masy wirusów',
-        strokeScale: 'Skala obwódek tekstu',
-        foodSize: 'Wielkość pokarmu',
-        bordersWidth: 'Grubość granic mapy',
-        sectorsWidth: 'Grubość siatki sektorów',
-        sectorsFontSize: 'Rozmiar czcionki sektorów',
+        virMassScale: 'Skala masy wirusow',
+        strokeScale: 'Skala obwodek tekstu',
+        foodSize: 'Wielkosc pokarmu',
+        bordersWidth: 'Grubosc granic mapy',
+        sectorsWidth: 'Grubosc siatki sektorow',
+        sectorsFontSize: 'Rozmiar czcionki sektorow',
         sectorsX: 'Sectors X',
         sectorsY: 'Sectors Y',
 		virusSpikesRatio: 'Virus spikes ratio',
 		virusSpikesSize: 'Virus spikes size',
-        cellsAlpha: 'Przezroczystość kulek',
-        skinsAlpha: 'Przezroczystość skinów',
-        virusAlpha: 'Przezroczystość wirusów',
-        textAlpha: 'Przezroczystość nazw i masy',
-        backgroundAlpha: 'Przezroczystość background',
-        virusStrokeSize: 'Grubość obwódki wirusów',
+        cellsAlpha: 'Przezroczystosc kulek',
+        skinsAlpha: 'Przezroczystosc skinow',
+        virusAlpha: 'Przezroczystosc wirusow',
+        textAlpha: 'Przezroczystosc nazw i masy',
+        backgroundAlpha: 'Przezroczystosc background',
+        virusStrokeSize: 'Grubosc obwodki wirusow',
         virusGlowSize: "Virus Glow Size",
-        teammatesIndColor: 'Wskaźnik gracza',
-        cursorTrackingColor: 'Śledzenie kursora',
-        splitRangeColor: 'Zasięg podziału',
-        qdsplitRange: 'Zasięg szybkiego podwójnego podziału', //Sonia2
-        sdsplitRange: 'Zasięg powolnego podwójnego podziału', //Sonia2
+        teammatesIndColor: 'Wskaznik gracza',
+        cursorTrackingColor: 'Sledzenie kursora',
+        splitRangeColor: 'Zasieg podzialu',
+        qdsplitRange: 'Zasieg szybkiego podwojnego podzialu', //Sonia2
+        sdsplitRange: 'Zasieg powolnego podwojnego podzialu', //Sonia2
         enemyBSTEDColor: 'Kolor W2STE wroga', //Sonia2
         enemyBSTEColor: 'Kolor WSTE wroga', //Sonia2
-        enemyBColor: 'Kolor większego wroga', //Sonia2
+        enemyBColor: 'Kolor wiekszego wroga', //Sonia2
         enemySColor: 'Kolor mniejszego wroga', //Sonia2
         enemySSTEColor: 'Kolor MSTE wroga', //Sonia2
         enemySSTEDColor: 'Kolor M2STE wroga', //Sonia2
         safeAreaColor: 'Bezpieczna strefa',
-        dangerAreaColor: 'Strefa zagrożenia',
+        dangerAreaColor: 'Strefa zagrozenia',
         ghostCellsColor: 'Duchy kulek',
-        ghostCellsAlpha: 'Przezroczystość duchów kulek',
+        ghostCellsAlpha: 'Przezroczystosc duchow kulek',
         menuTheming: 'Menu',
         menuPreset: 'Motyw menu',
-        menuMainColor: 'Kolor główny',
+        menuMainColor: 'Kolor glowny',
         menuBtnTextColor: 'Tekst przycisku',
         menuPanelColor: 'Panel',
         menuPanelColor2: 'Panel (2)',
@@ -1825,11 +1825,11 @@ var displayText = {
         btn3Color2: 'Przycisk #3 (2)',
         btn4Color: 'Przycisk #4',
         btn4Color2: 'Przycisk #4 (2)',
-        menuBg: 'Grafika tła panelu',
-        menuOpacity: 'Przezroczystość',
+        menuBg: 'Grafika tla panelu',
+        menuOpacity: 'Przezroczystosc',
         hudTheming: 'HUD',
-        hudMainColor: 'Kolor główny',
-        hudColor: 'Tło',
+        hudMainColor: 'Kolor glowny',
+        hudColor: 'Tlo',
         hudTextColor: 'Tekst',
         statsHudColor: 'Statystyki',
         timeHudColor: 'Czas',
@@ -1840,96 +1840,96 @@ var displayText = {
         hudFont: 'Czcionka HUD',
         hudScale: 'Skala HUD',
         chatTheming: 'Czat',
-        messageColor: 'Tło wiadomości',
-        messageTextColor: 'Tekst wiadomości',
-        messageTimeColor: 'Czas wiadomości',
-        messageNickColor: 'Nick wiadomości',
-        commandsColor: 'Tło komendy',
+        messageColor: 'Tlo wiadomosci',
+        messageTextColor: 'Tekst wiadomosci',
+        messageTimeColor: 'Czas wiadomosci',
+        messageNickColor: 'Nick wiadomosci',
+        commandsColor: 'Tlo komendy',
         commandsTextColor: 'Tekst komendy',
         commandsTimeColor: 'Czas komendy',
         commandsNickColor: 'Nick komendy',
-        chatBoxColor: 'Tło czatboxu',
+        chatBoxColor: 'Tlo czatboxu',
         chatScale: 'Skala czatu',
         miniMapTheming: 'Minimapa',
         miniMapSectorsColor: 'Sektory',
         miniMapSectorColor: 'Aktualny sektor',
         miniMapGuidesColor: 'Prowadnice',
         miniMapNickColor: 'Nick',
-        miniMapNickStrokeColor: 'Obwódka nicku',
+        miniMapNickStrokeColor: 'Obwodka nicku',
         miniMapMyCellColor: 'Moja kulka',
-        miniMapMyCellStrokeColor: 'Obwódka mojej kulki',
+        miniMapMyCellStrokeColor: 'Obwodka mojej kulki',
         miniMapTeammatesColor: 'Gracze',
-        miniMapDeathLocationColor: 'Miejsce śmierci',
+        miniMapDeathLocationColor: 'Miejsce smierci',
         miniMapFont: 'Czcionka minimapy',
         miniMapNickFont: 'Czcionka nicku',
-        miniMapWidth: 'Szerokość minimapy',
-        miniMapSectorsOpacity: 'Przezroczystość sektorów',
+        miniMapWidth: 'Szerokosc minimapy',
+        miniMapSectorsOpacity: 'Przezroczystosc sektorow',
         miniMapNickSize: 'Rozmiar nicku',
-        miniMapNickStrokeSize: 'Grubość obwódki nicku',
-        miniMapMyCellSize: 'Wielkość mojej kulki',
-        miniMapMyCellStrokeSize: 'Grubość obwódki mojej kulki',
-        miniMapTeammatesSize: 'Wielkość graczy',
+        miniMapNickStrokeSize: 'Grubosc obwodki nicku',
+        miniMapMyCellSize: 'Wielkosc mojej kulki',
+        miniMapMyCellStrokeSize: 'Grubosc obwodki mojej kulki',
+        miniMapTeammatesSize: 'Wielkosc graczy',
         miniMapGhostCellsColor: 'Duchy kulek',
-        miniMapGhostCellsAlpha: 'Przezroczystość duchów kulek',
+        miniMapGhostCellsAlpha: 'Przezroczystosc duchow kulek',
         imagesTheming: 'Grafika / kursory',
-        customBackground: 'Grafika tła',
+        customBackground: 'Grafika tla',
         customCursor: 'Grafika kursora',
-        hideChatMsgA: 'Czat został włączony!',
-        hideChatMsgB: 'Czat został ukryty!',
-        showSkinsMsgA: 'Skiny zostały włączone!',
-        showSkinsMsgB: 'Skiny zostały ukryte!',
-        hideSmallBotsMsgA: 'Małe boty stały się widoczne!',
-        hideSmallBotsMsgB: 'Małe boty zostały ukryte!',
-        autoRespMsgA: 'Auto odrodzenie zostało włączone!',
-        autoRespMsgB: 'Auto odrodzenie zostało wyłączone!',
-        autoZoomMsgA: 'Auto zoom został włączony!',
-        autoZoomMsgB: 'Auto zoom został wyłączony!',
+        hideChatMsgA: 'Czat zostal wlaczony!',
+        hideChatMsgB: 'Czat zostal ukryty!',
+        showSkinsMsgA: 'Skiny zostaly wlaczone!',
+        showSkinsMsgB: 'Skiny zostaly ukryte!',
+        hideSmallBotsMsgA: 'Male boty staly sie widoczne!',
+        hideSmallBotsMsgB: 'Male boty zostaly ukryte!',
+        autoRespMsgA: 'Auto odrodzenie zostalo wlaczone!',
+        autoRespMsgB: 'Auto odrodzenie zostalo wylaczone!',
+        autoZoomMsgA: 'Auto zoom zostal wlaczony!',
+        autoZoomMsgB: 'Auto zoom zostal wylaczony!',
         //                   targetNotSet: 'Brak celu',
         targetNotSet: '',
-        targetDead: 'Nie żyje',
+        targetDead: 'Nie zyje',
         targetDistance: 'Dystans',
         targetMass: 'Masa razem',
         totalPartyPlayers: '',
         totalPartyMass: '',
-        exportImport: 'Eksport / import ustawień',
+        exportImport: 'Eksport / import ustawien',
         exportSettings: 'Eksportuj ustawienia',
-        exportInfo: 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+        exportInfo: 'Aby wyeksportowac wybrane ustawienia skopiuj ponizszy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
         importSettings: 'Importuj ustawienia',
-        importInfo: 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
+        importInfo: 'Aby zaimportowac wybrane ustawienia wklej ponizej wyeksportowany wczesniej kod i nacisnij przycisk \"Importuj ustawienia\".',
         profile: 'Profil',
         profiles: 'Profile',
         skins: 'Skiny',
         moreSkins: 'Dodaj skiny',
-        thanks: 'Dzięki Awesome!',
+        thanks: 'Dzieki Awesome!',
         saveSett: 'Zapisz ustawienia',
         saved: 'Zapisano!',
         resetSett: 'Resetuj ustawienia',
         close: 'Zamknij',
-        enterChatMsg: 'Napisz wiadomość',
+        enterChatMsg: 'Napisz wiadomosc',
         activeParties: 'Aktywne party',
         noActiveParties: 'Brak aktywnych party ;(',
         playlist: 'Playlista',
         pause: 'PAUZA!',
-        visit: 'Odwiedź',
-        exit: 'Czy na pewno chcesz opuścic grę?',
-        blockWarn: 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
+        visit: 'Odwiedz',
+        exit: 'Czy na pewno chcesz opuscic gre?',
+        blockWarn: 'UWAGA! Popupy zostaly zablokowane w ustawieniach.',
         unblockPopups: 'Odblokuj tymczasowo',
         mass: 'Masa',
         score: 'Top',
         leaderboard: 'Topka',
-        user: 'Użytkownik',
-        userMuted: 'Użytkownik %user% został wyciszony.',
-        userUnmuted: 'Wyłączono wyciszenie użytkownika %user%.',
+        user: 'Uzytkownik',
+        userMuted: 'Uzytkownik %user% zostal wyciszony.',
+        userUnmuted: 'Wylaczono wyciszenie uzytkownika %user%.',
         mute: 'Wycisz',
-        unmute: 'Wyłącz wyciszenie',
-        mutedUsers: 'Wyciszeni użytkownicy',
-        activeUsers: 'Aktywni użytkownicy',
-        showActiveUsers: 'Pokaż aktywnych użytkowników',
+        unmute: 'Wylacz wyciszenie',
+        mutedUsers: 'Wyciszeni uzytkownicy',
+        activeUsers: 'Aktywni uzytkownicy',
+        showActiveUsers: 'Pokaz aktywnych uzytkownikow',
         none: 'Brak',
         sounds: 'Youtube & Sounds',
-        page_back_button: 'Wróć',
-        page_create_party: 'Stwórz party',
-        page_join_party: 'Dołącz',
+        page_back_button: 'Wroc',
+        page_create_party: 'Stworz party',
+        page_join_party: 'Dolacz',
         page_login_and_play: 'Zaloguj',
         page_logout: 'Wyloguj',
         page_menu_login_facebook: 'Zaloguj z Facebook',
@@ -1937,9 +1937,9 @@ var displayText = {
         page_menu_main_free_coins: 'Darmowe Monety',
         page_menu_main_gifts: 'Prezenty',
         page_menu_main_dailyquests: 'Zadania',
-        page_party_join_error: 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
+        page_party_join_error: 'Nie mozna dolaczyc do tego party. Upewnij sie, ze token jest prawidlowy lub stworz nowy.',
         page_play: 'Graj',
-        page_play_as_guest: 'Graj jako gość',
+        page_play_as_guest: 'Graj jako gosc',
         page_shop: 'Sklep',
         page_spectate: 'Obserwuj',
         page_stats: 'Statystyki'
@@ -2497,7 +2497,7 @@ var themePresets = {
         btn3Color2: '#814ee3',
         btn4Color: '#bf00aa',
         btn4Color2: '#a80096',
-        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
         menuOpacity: 0.96,
         hudMainColor: '#01d9cc',
         hudColor: 'rgba(0,0,0,0.4)',
@@ -2540,7 +2540,7 @@ var themePresets = {
         miniMapMyCellStrokeSize: 4,
         miniMapTeammatesSize: 5.5,
         customBackground: '',
-        customCursor: 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+        customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur'
     },
     legendv1: {
         name: 'Legend v1',
@@ -2662,7 +2662,7 @@ var themePresets = {
         btn3Color2: '#80063b',
         btn4Color: '#aa084e',
         btn4Color2: '#8a063f',
-        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
         menuOpacity: 1,
         hudMainColor: '#5974ff',
         hudColor: 'rgba(36,36,36,0.49)',
@@ -2701,7 +2701,7 @@ var themePresets = {
         miniMapMyCellStrokeSize: 0,
         miniMapTeammatesSize: 5,
         customBackground: '',
-        customCursor: 'https://jimboy3100.github.io/cursors/cursor_01.cur'
+        customCursor: 'https://www.legendmod.ml/cursors/cursor_01.cur'
     },
     crazystyle: {
         name: 'Crazy Style 1',
@@ -2823,7 +2823,7 @@ var themeMenus = {
         btn3Color2: '#814ee3',
         btn4Color: '#f300d8',
         btn4Color2: '#df00c6',
-        menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png'
+        menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png'
     },
     legendv1: {
         name: 'Legend v1',
@@ -2975,7 +2975,7 @@ var defaultSettings = {
     btn3Color2: '#814ee3',
     btn4Color: '#bf00aa',
     btn4Color2: '#a80096',
-    menuBg: 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+    menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
     menuOpacity: 0.96,
     hudMainColor: '#01d9cc',
     hudColor: 'rgba(0,0,0,0.4)',
@@ -3013,16 +3013,16 @@ var defaultSettings = {
     ////
     color: "#fff",
     //commanderImage : "https://i.imgur.com/wQKUDB3.png",
-    //customServerImage1: "https://jimboy3100.github.io/banners/IconCustomServer1.png",
-    commanderImage: "https://jimboy3100.github.io/banners/drawCommander.png",
-    commanderImage1: "https://jimboy3100.github.io/banners/drawCommander1.png",
-    commanderImage2: "https://jimboy3100.github.io/banners/drawCommander2.png",
-    commanderImage3: "https://jimboy3100.github.io/banners/drawCommander3.png",
-    commanderImage4: "https://jimboy3100.github.io/banners/drawCommander4.png",
-    commanderImage5: "https://jimboy3100.github.io/banners/drawCommander5.png",
-    commanderImage6: "https://jimboy3100.github.io/banners/iconJustWatchPro.png",
-    commanderImageDyingLight: "https://jimboy3100.github.io/banners/icondyinglightzombie.png",
-    commanderImageDyingLightvirus: "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
+    //customServerImage1: "https://www.legendmod.ml/banners/IconCustomServer1.png",
+    commanderImage: "https://www.legendmod.ml/banners/drawCommander.png",
+    commanderImage1: "https://www.legendmod.ml/banners/drawCommander1.png",
+    commanderImage2: "https://www.legendmod.ml/banners/drawCommander2.png",
+    commanderImage3: "https://www.legendmod.ml/banners/drawCommander3.png",
+    commanderImage4: "https://www.legendmod.ml/banners/drawCommander4.png",
+    commanderImage5: "https://www.legendmod.ml/banners/drawCommander5.png",
+    commanderImage6: "https://www.legendmod.ml/banners/iconJustWatchPro.png",
+    commanderImageDyingLight: "https://www.legendmod.ml/banners/icondyinglightzombie.png",
+    commanderImageDyingLightvirus: "https://www.legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
     miniMapFont: 'ubuntu-bold',
@@ -3041,7 +3041,7 @@ var defaultSettings = {
     miniMapTeammatesSize: 5.5,
     miniMapGhostCellsAlpha: 0.15,
     customBackground: '',
-    customCursor: 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+    customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur'
 }
 
 cimg2 = new Image;
@@ -3051,122 +3051,122 @@ cimg5.src = defaultSettings.commanderImage5;
 cimg6 = new Image;
 cimg6.src = defaultSettings.commanderImage6;
 //cimg7 = new Image;
-//cimg7.src = 'https://jimboy3100.github.io/banners/iconLcForCanvas.png';
+//cimg7.src = 'https://www.legendmod.ml/banners/iconLcForCanvas.png';
 function loadIconSpecialSkins(val){
 	eval('window.' + val + ' = new Image');
-	eval('window.' + val + '.src = "https://jimboy3100.github.io/banners/' + val + '.png"')
+	eval('window.' + val + '.src = "https://www.legendmod.ml/banners/' + val + '.png"')
 }
 /*
 iconSpecialSkinEffectsCrown = new Image;
-iconSpecialSkinEffectsCrown.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsCrown.png';
+iconSpecialSkinEffectsCrown.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsCrown.png';
 iconSpecialSkinEffectsMask = new Image;
-iconSpecialSkinEffectsMask.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMask.png';
+iconSpecialSkinEffectsMask.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsMask.png';
 iconSpecialSkinEffectsHat3 = new Image;
-iconSpecialSkinEffectsHat3.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHat3.png';
+iconSpecialSkinEffectsHat3.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsHat3.png';
 iconSpecialSkinEffectsVip = new Image;
-iconSpecialSkinEffectsVip.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsVip.png';
+iconSpecialSkinEffectsVip.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsVip.png';
 iconSpecialSkinEffectsDdev = new Image;
-iconSpecialSkinEffectsDdev.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDdev.png';
+iconSpecialSkinEffectsDdev.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsDdev.png';
 iconSpecialSkinEffectsSunGlasses = new Image;
-iconSpecialSkinEffectsSunGlasses.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSunGlasses.png';
+iconSpecialSkinEffectsSunGlasses.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png';
 iconSpecialSkinEffectsYoutube = new Image;
-iconSpecialSkinEffectsYoutube.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsYoutube.png';
+iconSpecialSkinEffectsYoutube.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
 iconSpecialSkinEffectsJellyFish = new Image;
-iconSpecialSkinEffectsJellyFish.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJellyFish.png';
+iconSpecialSkinEffectsJellyFish.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png';
 iconSpecialSkinEffectsModerator = new Image;
-iconSpecialSkinEffectsModerator.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsModerator.png';
+iconSpecialSkinEffectsModerator.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsModerator.png';
 iconSpecialSkinEffectsUSA = new Image;
-iconSpecialSkinEffectsUSA.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSA.png';
+iconSpecialSkinEffectsUSA.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsUSA.png';
 iconSpecialSkinEffectsHeart = new Image;
-iconSpecialSkinEffectsHeart.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHeart.png';
+iconSpecialSkinEffectsHeart.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsHeart.png';
 iconSpecialSkinEffectsSword = new Image;
-iconSpecialSkinEffectsSword.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSword.png';
+iconSpecialSkinEffectsSword.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsSword.png';
 iconSpecialSkinEffectsSmoke = new Image;
-iconSpecialSkinEffectsSmoke.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSmoke.png';
+iconSpecialSkinEffectsSmoke.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png';
 iconSpecialSkinEffectsLegendclan = new Image;
-iconSpecialSkinEffectsLegendclan.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan.png';
+iconSpecialSkinEffectsLegendclan.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png';
 iconSpecialSkinEffectsLegendclan2 = new Image;
-iconSpecialSkinEffectsLegendclan2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan2.png';
+iconSpecialSkinEffectsLegendclan2.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png';
 iconSpecialSkinEffectsShiro = new Image;
-iconSpecialSkinEffectsShiro.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsShiro.png';
+iconSpecialSkinEffectsShiro.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsShiro.png';
 iconSpecialSkinEffectsBird = new Image;
-iconSpecialSkinEffectsBird.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBird.png';
+iconSpecialSkinEffectsBird.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsBird.png';
 iconSpecialSkinEffectsButterfly = new Image;
-iconSpecialSkinEffectsButterfly.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsButterfly.png';
+iconSpecialSkinEffectsButterfly.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png';
 iconSpecialSkinEffectsMouse = new Image;
-iconSpecialSkinEffectsMouse.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMouse.png';
+iconSpecialSkinEffectsMouse.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsMouse.png';
 iconSpecialSkinEffectsTurtle = new Image;
-iconSpecialSkinEffectsTurtle.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTurtle.png';
+iconSpecialSkinEffectsTurtle.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png';
 iconSpecialSkinEffectsAbsolutVodka = new Image;
-iconSpecialSkinEffectsAbsolutVodka.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsAbsolutVodka.png';
+iconSpecialSkinEffectsAbsolutVodka.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png';
 iconSpecialSkinEffectsChemistry = new Image;
-iconSpecialSkinEffectsChemistry.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsChemistry.png';
+iconSpecialSkinEffectsChemistry.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png';
 iconSpecialSkinEffectsJapan = new Image;
-iconSpecialSkinEffectsJapan.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan.png';
+iconSpecialSkinEffectsJapan.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsJapan.png';
 iconSpecialSkinEffectsJapan2 = new Image;
-iconSpecialSkinEffectsJapan2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan2.png';
+iconSpecialSkinEffectsJapan2.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png';
 iconSpecialSkinEffectsKebab = new Image;
-iconSpecialSkinEffectsKebab.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKebab.png';
+iconSpecialSkinEffectsKebab.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsKebab.png';
 iconSpecialSkinEffectsMeditation = new Image;
-iconSpecialSkinEffectsMeditation.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMeditation.png';
+iconSpecialSkinEffectsMeditation.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png';
 iconSpecialSkinEffectsSplash = new Image;
-iconSpecialSkinEffectsSplash.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSplash.png';
+iconSpecialSkinEffectsSplash.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsSplash.png';
 iconSpecialSkinEffectsByzantium = new Image;
-iconSpecialSkinEffectsByzantium.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsByzantium.png';
+iconSpecialSkinEffectsByzantium.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png';
 iconSpecialSkinEffectsClose = new Image;
-iconSpecialSkinEffectsClose.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsClose.png';
+iconSpecialSkinEffectsClose.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsClose.png';
 iconSpecialSkinEffectsEarth = new Image;
-iconSpecialSkinEffectsEarth.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEarth.png';
+iconSpecialSkinEffectsEarth.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsEarth.png';
 iconSpecialSkinEffectsFootStep = new Image;
-iconSpecialSkinEffectsFootStep.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFootStep.png';
+iconSpecialSkinEffectsFootStep.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png';
 iconSpecialSkinEffectsForward = new Image;
-iconSpecialSkinEffectsForward.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsForward.png';
+iconSpecialSkinEffectsForward.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsForward.png';
 iconSpecialSkinEffectsFriendsForever = new Image;
-iconSpecialSkinEffectsFriendsForever.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever.png';
+iconSpecialSkinEffectsFriendsForever.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png';
 iconSpecialSkinEffectsFriendsForever2 = new Image;
-iconSpecialSkinEffectsFriendsForever2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever2.png';
+iconSpecialSkinEffectsFriendsForever2.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png';
 iconSpecialSkinEffectsFriendsForever3 = new Image;
-iconSpecialSkinEffectsFriendsForever3.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever3.png';
+iconSpecialSkinEffectsFriendsForever3.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png';
 iconSpecialSkinEffectsPolice = new Image;
-iconSpecialSkinEffectsPolice.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice.png';
+iconSpecialSkinEffectsPolice.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPolice.png';
 iconSpecialSkinEffectsPolice2 = new Image;
-iconSpecialSkinEffectsPolice2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice2.png';
+iconSpecialSkinEffectsPolice2.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png';
 iconSpecialSkinEffectsUnrest = new Image;
-iconSpecialSkinEffectsUnrest.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUnrest.png';
+iconSpecialSkinEffectsUnrest.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png';
 iconSpecialSkinEffectsEagle = new Image;
-iconSpecialSkinEffectsEagle.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEagle.png';
+iconSpecialSkinEffectsEagle.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsEagle.png';
 iconSpecialSkinEffectsBobMarley = new Image;
-iconSpecialSkinEffectsBobMarley.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBobMarley.png';
+iconSpecialSkinEffectsBobMarley.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsBobMarley.png';
 iconSpecialSkinEffectsEinstein = new Image;
-iconSpecialSkinEffectsEinstein.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEinstein.png';
+iconSpecialSkinEffectsEinstein.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png';
 iconSpecialSkinEffectsDeadTable = new Image;
-iconSpecialSkinEffectsDeadTable.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDeadTable.png';
+iconSpecialSkinEffectsDeadTable.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png';
 
 
 iconSpecialSkinEffectsBabyBoss = new Image;
-iconSpecialSkinEffectsBabyBoss.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss.png';
+iconSpecialSkinEffectsBabyBoss.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png';
 iconSpecialSkinEffectsBabyBoss1 = new Image;
-iconSpecialSkinEffectsBabyBoss1.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss1.png';
+iconSpecialSkinEffectsBabyBoss1.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss1.png';
 iconSpecialSkinEffectsGladiator = new Image;
-iconSpecialSkinEffectsGladiator.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsGladiator.png';
+iconSpecialSkinEffectsGladiator.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png';
 iconSpecialSkinEffectsHero = new Image;
-iconSpecialSkinEffectsHero.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero.png';
+iconSpecialSkinEffectsHero.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero.png';
 iconSpecialSkinEffectsHero1 = new Image;
-iconSpecialSkinEffectsHero1.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero1.png';
+iconSpecialSkinEffectsHero1.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero1.png';
 iconSpecialSkinEffectsHero2 = new Image;
-iconSpecialSkinEffectsHero2.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero2.png';
+iconSpecialSkinEffectsHero2.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero2.png';
 iconSpecialSkinEffectsKey = new Image;
-iconSpecialSkinEffectsKey.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKey.png';
+iconSpecialSkinEffectsKey.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsKey.png';
 iconSpecialSkinEffectsMetalOfHonor = new Image;
-iconSpecialSkinEffectsMetalOfHonor.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMetalOfHonor.png';
+iconSpecialSkinEffectsMetalOfHonor.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png';
 iconSpecialSkinEffectsPeaceMaker = new Image;
-iconSpecialSkinEffectsPeaceMaker.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPeaceMaker.png';
+iconSpecialSkinEffectsPeaceMaker.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png';
 iconSpecialSkinEffectsSurvivor = new Image;
-iconSpecialSkinEffectsSurvivor.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSurvivor.png';
+iconSpecialSkinEffectsSurvivor.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png';
 iconSpecialSkinEffectsTiger = new Image;
-iconSpecialSkinEffectsTiger.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTiger.png';
+iconSpecialSkinEffectsTiger.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsTiger.png';
 iconSpecialSkinEffectsPanicAtDisco = new Image;
-iconSpecialSkinEffectsPanicAtDisco.src = 'https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPanicAtDisco.png';
+iconSpecialSkinEffectsPanicAtDisco.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 */
 if (dyinglight1load === "yes") {
     cimgDyingLight = new Image;
@@ -3176,17 +3176,17 @@ if (dyinglight1load === "yes") {
 }
 /*
                 cimgDyingLight1 = new Image;
-                cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';
+                cimgDyingLight1.src = 'https://www.legendmod.ml/banners/icondyinglightzombie2.png';
                 cimgDyingLight2 = new Image;
-                cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';
+                cimgDyingLight2.src = 'https://www.legendmod.ml/banners/icondyinglightzombie3.png';
                 cimgDyingLight3 = new Image;
-                cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';
+                cimgDyingLight3.src = 'https://www.legendmod.ml/banners/icondyinglightzombie4.png';
                 cimgDyingLight4 = new Image;
-                cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';
+                cimgDyingLight4.src = 'https://www.legendmod.ml/banners/icondyinglightzombie5.png';
                 cimgDyingLight5 = new Image;
-                cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';
+                cimgDyingLight5.src = 'https://www.legendmod.ml/banners/icondyinglightzombiebig.png';
                 cimgDyingLight6 = new Image;
-                cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';
+                cimgDyingLight6.src = 'https://www.legendmod.ml/banners/icondyinglightvolaltile.png';
 				*/
 
 
@@ -3358,10 +3358,10 @@ var defaultmapsettings = {
     videoSkinSoundLevel: 1,
     leaderboardlimit: 20,
     teamboardlimit: 20,
-    messageSound: 'https://jimboy3100.github.io/sounds/notification_01.mp3',
-    //                commandSound: 'https://jimboy3100.github.io/sounds/notification_02.mp3'
-    commandSound: 'https://jimboy3100.github.io/sounds/chat-message.mp3',
-    virusSoundurl: 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
+    messageSound: 'https://www.legendmod.ml/sounds/notification_01.mp3',
+    //                commandSound: 'https://www.legendmod.ml/sounds/notification_02.mp3'
+    commandSound: 'https://www.legendmod.ml/sounds/chat-message.mp3',
+    virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
 	//
 	leftClick: 'hk-macroFeed',
@@ -3375,7 +3375,7 @@ var defaultmapsettings = {
 var profiles = [];
 var ogarcopythelb = {
     nick: 'I<3Legendmod',
-    clanTag: '℄',
+    clanTag: '?',
     skinURL: '',
     color: defaultSettings.mainColor
 };
@@ -3821,7 +3821,7 @@ window.MouseClicks=[];
             this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
             this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
             /*this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);*/
-            for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
+            for (var e = 'https://www.legendmod.ml/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
             $(document).on('click', '#theme-images .cursor-box a', function(e) {
                     e.preventDefault();
                     var i = $('img', this).attr('src');
@@ -4243,7 +4243,7 @@ window.MouseClicks=[];
         },
         //for SPECT
         getghostX() {
-            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych координати призраков или игрока если он топ1
+            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych ?????????? ????????? ??? ?????? ???? ?? ???1
                 this.ghostX = legendmod.playerX + legendmod.mapOffsetX;
             } else { //Yahnych
                 this.ghostX = legendmod.ghostCells[0].x + legendmod.mapOffsetX;
@@ -4251,7 +4251,7 @@ window.MouseClicks=[];
             return this.ghostX;
         },
         getghostY() {
-            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych координати призраков или игрока если он топ1
+            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych ?????????? ????????? ??? ?????? ???? ?? ???1
                 this.ghostY = legendmod.playerY + legendmod.mapOffsetY;
             } else { //Yahnych
                 this.ghostY = legendmod.ghostCells[0].y + legendmod.mapOffsetY;
@@ -4824,22 +4824,22 @@ window.MouseClicks=[];
                         t += ' | ' + spects[window.multiboxPlayerEnabled - 1].playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled - 1].BSTE) {
-                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
+                        t += ' | ????: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled - 1].BMTE) {
-                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
+                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled - 1].MTE) {
-                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
+                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled - 1].STE) {
-                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
+                        t += ' | ????: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled - 1].TTE) {
-                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
+                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled - 1].PTE) {
-                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
+                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -4857,22 +4857,22 @@ window.MouseClicks=[];
                         t += ' | ' + ogario.playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && ogario.BSTE) {
-                        t += ' | ◎◎➛◉: ' + ogario.BSTE //Sonia6
+                        t += ' | ????: ' + ogario.BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && ogario.BMTE) {
-                        t += ' | ◎➛◉: ' + ogario.BMTE //Sonia6
+                        t += ' | ???: ' + ogario.BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && ogario.MTE) {
-                        t += ' | ◉➛◎: ' + ogario.MTE //Sonia6
+                        t += ' | ???: ' + ogario.MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && ogario.STE) {
-                        t += ' | ◉◉➛◎: ' + ogario.STE //Sonia6
+                        t += ' | ????: ' + ogario.STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && ogario.TTE) {
-                        t += ' | ◉➚◉: ' + ogario.TTE //Sonia6
+                        t += ' | ???: ' + ogario.TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && ogario.PTE) {
-                        t += ' | ➚◎➘: ' + ogario.PTE //Sonia6
+                        t += ' | ???: ' + ogario.PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -4883,7 +4883,7 @@ window.MouseClicks=[];
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
                     else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
                     else if (drawRender.averageRenderTime <= 50) color = 'color:green'
-                    t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
+                    t += '??: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
@@ -4951,7 +4951,7 @@ window.MouseClicks=[];
                     for (; entityType < PL$29; entityType++) {
                       bufferString = bufferString + this.top5[entityType].mass;
                       if (!(entityType >= defaultmapsettings["limTP"])) {
-                        pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' +
+                        pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + '" alt=""> ' +
         				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
                         this.shortMassFormat(this.top5[entityType].mass) + '</span></li>');
                       }
@@ -5053,12 +5053,12 @@ window.MouseClicks=[];
                             /*
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
 								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
-								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
+								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
                             var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
                             if (!teamboardskin) {
                                 teamboardskin = new Image();
                                 teamboardskin.crossOrigin = 'anonymous';
-                                teamboardskin.src = "https://jimboy3100.github.io/banners/icon32croped.ico.gif";
+                                teamboardskin.src = "https://www.legendmod.ml/banners/icon32croped.ico.gif";
                             }
 							t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + this.top5[o].id + '" style="background-color: ' + this.top5[o].color +
 							'; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
@@ -5744,7 +5744,7 @@ window.MouseClicks=[];
             $("#statsContinue").attr("id", "statsContinue2");
             $("#mainPanel").empty().remove();
             $(".center-container").addClass("ogario-menu");
-            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://jimboy3100.github.io" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://jimboy3100.github.io" class="release ogicon-info" target="_blank"></a></div>');
+            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://www.legendmod.ml" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://www.legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
@@ -5754,9 +5754,9 @@ window.MouseClicks=[];
             $("#tags-container").appendTo($("#profile"));
             //$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
             //$(".btn-logout").appendTo($("#profile"));
-            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
+            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://www.legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
                 //'<a href="https://www.youtube.com/watch?v=CnIfNSpCf70" class="quick-yt ogicon-youtube2" id="legendid" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Legend Promo Video"></a>' +
-                '<a id= "themesBtn" target="_blank" href="https://jimboy3100.github.io/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
+                '<a id= "themesBtn" target="_blank" href="https://www.legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
                 '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>');
@@ -5802,7 +5802,7 @@ window.MouseClicks=[];
             $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel");
             $(".agario-party h4, #cancel-party-btn").remove();
             $(".agario-party .btn").addClass("btn-sm");
-            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://jimboy3100.github.io/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
+            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://www.legendmod.ml/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
             $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none");
             $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
@@ -5888,8 +5888,8 @@ window.MouseClicks=[];
             $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color" style="font-size: 19px">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                 textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                 textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
-                //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">jimboy3100.github.io</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
-                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">jimboy3100.github.io</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                 textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">' +
                 '<a href="#" id="set-debug" class="ogicon-location"></a>' +
                 '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
@@ -5922,7 +5922,7 @@ window.MouseClicks=[];
 			/*
 			for (const emoji in emoticonicons) {
                 if (emoticonicons.hasOwnProperty(emoji)) {
-                    $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
+                    $("#chat-emoticons").append('<img src="https://www.legendmod.ml/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
                 }
             }*/
             $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>');
@@ -6673,7 +6673,7 @@ window.MouseClicks=[];
         findOwnedVanillaSkin() {
             let player;
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
-                core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
+                core.registerSkin(ogarcopythelb.nick, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
@@ -6798,14 +6798,14 @@ window.MouseClicks=[];
                     img[url].onerror = function() {
                         //console.log("error loading image: "+ url);
                         if (url && url.includes(window.EnvConfig.config_url)) {
-                            url = "https://jimboy3100.github.io/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            url = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
                             application.customSkinsMap[window.lastusednameforskin] = url;
                             application.loadSkin(img, url);
                             return url;
 
-                        } else if (url && url.includes("https://jimboy3100.github.io/vanillaskins/")) {
-                            url = "https://jimboy3100.github.io/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                        } else if (url && url.includes("https://www.legendmod.ml/vanillaskins/")) {
+                            url = "https://www.legendmod.ml/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
                             application.customSkinsMap[window.lastusednameforskin] = url;
                             application.loadSkin(img, url);
@@ -7170,10 +7170,10 @@ window.MouseClicks=[];
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        this.miniMapCtx.strokeText('??' + LM.arrowFB[0].nick + '??', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    this.miniMapCtx.fillText('??' + LM.arrowFB[0].nick + '??', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     this.miniMapCtx.restore();
                     //}
                 }
@@ -8474,7 +8474,7 @@ window.MouseClicks=[];
                     }
                     var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
                     var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
+                    var pattern3 = "??????????.????";
                     //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
@@ -8574,12 +8574,12 @@ window.MouseClicks=[];
         },
         parseEmoticons(string) {
             /*return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(string) {
-                return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
+                return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });*/
-            //return String(string).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
+            //return String(string).replace(/\&lt\;3/g, '<3').replace(/?/g, '? Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
             return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
                 //console.log(d[string]);
-                return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
+                return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });
 
         },
@@ -8860,7 +8860,7 @@ window.MouseClicks=[];
                         $('#target-skin img').css('border', '2px solid' + color);
                         this.targetSkinURL = skinUrl;
                     } else {
-                        $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')
+                        $('#target-skin img').attr('src', 'https://www.legendmod.ml/banners/static/img/blank.png')
                     }
                 }
             }
@@ -9234,9 +9234,9 @@ window.MouseClicks=[];
                 curRl += this.pointsVel[i];
                 curRl = Math.max(curRl, 0);
 
-                curRl = (9 * curRl + this.size) / 10; //собака
+                curRl = (9 * curRl + this.size) / 10; //??????
 
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //собака
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
 
                 //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
 
@@ -10794,7 +10794,7 @@ window.MouseClicks=[];
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
 				
                 var pos = 1
-                //"℄🌀".codePointAt(length)
+                //"???".codePointAt(length)
                 for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
                 //for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
@@ -11720,8 +11720,8 @@ window.MouseClicks=[];
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
-                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
-                            window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; 
+                        else if (window.testobjects2.split('"?\x01')[1]) { //6/8/2024 fix
+                            window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
                         }						
 						
                     }
@@ -12620,11 +12620,11 @@ window.MouseClicks=[];
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`💰` + this.user.coins);
+                                $("#coins").html(`??` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`💊` + this.user.dna);
+                                $("#dna").html(`??` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -12689,7 +12689,7 @@ window.MouseClicks=[];
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`🏆` + this.user.trophy);
+                        $("#trophy").html(`??` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -12794,7 +12794,7 @@ window.MouseClicks=[];
                 expires: time,
                 slot: s.slot
             };
-            $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/${t}.png`);
+            $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/${t}.png`);
             if (s.status === 1) {
                 if (defaultmapsettings.autobrewing && this.user.brewingEnd < Date.now()) window.brewPotion(s.slot);
                 $(`#${potion} img`).css("border-color", "red");
@@ -12826,7 +12826,7 @@ window.MouseClicks=[];
                     expires: time,
                     slot: s.slot
                 };
-                $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/${t}.png`);
+                $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/${t}.png`);
                 if (s.status === 1) {
                     $(`#${potion} img`).css("border-color", "red");
                     $(`#${potion} div`).css("border-color", "red");
@@ -12849,7 +12849,7 @@ window.MouseClicks=[];
             }
             this.user.emptySlots = empty.length;
             empty.forEach((potion) => {
-                $(`#${potion} img`).attr('src', `https://jimboy3100.github.io/banners/potion_empty.png`);
+                $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/potion_empty.png`);
                 $(`#${potion} img`).css("border-color", "grey");
                 $(`#${potion} div`).css("border-color", "grey");
                 $(`#${potion} div`).text('empty');
@@ -12942,7 +12942,7 @@ window.MouseClicks=[];
             img.onerror = function() {
                 //console.log("error loading image: "+ url);
                 if (url.includes('configs-web.agario.miniclippt')) {
-                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + url.split('/').pop();
+                    var newURL = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop();
                     app.urlReplaces[url] = newURL;
                     //console.log("new destination is: " + newURL);
                     app.user.skins[url].url = newURL;
@@ -13395,7 +13395,7 @@ Game name     : ${i.displayName}<br/>
             
         },
         addSpect() {
-            if (($("#nick").val().includes('℄') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
+            if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
                 $('#set-fullSpectator').show();
                 $('#set-ingameSpectator').show();
                 if (window.fullSpectator && spects.length === 0) {
@@ -13426,7 +13426,7 @@ Game name     : ${i.displayName}<br/>
                 }
                 //console.log(g)		
                 if (legendflags.includes(LowerCase(y))) {
-                    core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
+                    core.registerSkin(y, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
                 } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
                         if (LowerCase(y) === window.FreeSkins[player].id) {
@@ -13523,7 +13523,7 @@ Game name     : ${i.displayName}<br/>
                         //tempdateNow2 = "last day"
                     }
                     tempdateNow2 += "th";
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
                 }
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
@@ -13722,9 +13722,9 @@ Game name     : ${i.displayName}<br/>
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
-                if (name === "℄🌀JustWatchPro" || name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") {
-                    if (name === "℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
-                    if (name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
+                if (name === "???JustWatchPro" || name === "??????????????") {
+                    if (name === "???JustWatchPro") cellUpdateCells.targetNick = "???Let\'s fight for glory. Let\'s fight for our kids";
+                    if (name === "??????????????") cellUpdateCells.targetNick = "???Avoid (Anti ,Corners, Random)";
                     if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]) {
                         application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
                         application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);
@@ -14426,8 +14426,8 @@ Game name     : ${i.displayName}<br/>
 		drawCustomNewGrid(grid) {	
 					if (!legendmod.gridPic){
 		            legendmod.gridPic = new Image;
-                    legendmod.gridPic.src = "https://jimboy3100.github.io/banners/grid3.png";
-					//legendmod.gridPic.src = "https://jimboy3100.github.io/banners/grid5.png";
+                    legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid3.png";
+					//legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid5.png";
 					}
 					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
 					/*this.ctx.drawImage(legendmod.gridPic,			
@@ -16488,7 +16488,7 @@ function setGUIEvents() {
     })
     document.getElementById('startBots').addEventListener('click', () => {
         if (legendmod.ws && window.EnvConfig.configVersion && window.master.clientVersion && !window.userBots.startedBots) {
-            if (legendmod.gameMode === ":party" || $("#nick").val().includes('℄') && $("#clantag").val() === window.clanTagLc || window.AdminRights === 1 || window.IamNeo === true) {
+            if (legendmod.gameMode === ":party" || $("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc || window.AdminRights === 1 || window.IamNeo === true) {
                 if (window.bots.amount) {
                     if (window.bots.amount + legendmod.leaderboard.length > 197) window.bots.amount = 197 - legendmod.leaderboard.length;
                     //if (window.bots.nameLM && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') {
@@ -16861,7 +16861,7 @@ function PreLcCelebration() {
 function LcCelebration() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/LcHistory/LcHistoryBanner.js";
+    s.src = "https://www.legendmod.ml/extras/LcHistory/LcHistoryBanner.js";
     $("body").append(s);
     defaultSettings.checkonetimeLc2 = true;
 }
@@ -16873,7 +16873,7 @@ var stylesLegendModConsole2 = [
 ].join(';');
 
 function consoleNotice() {
-    console.groupCollapsed('%cLegend express%c  %chttp://www.jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat', stylesLegendModConsole1);
+    console.groupCollapsed('%cLegend express%c  %chttp://www.jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
     console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
@@ -17103,7 +17103,7 @@ function repeatSendingSpecialSkins() {
     temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
     //var temp= temp.split(';')
 
-    if (temp && temp != "null" && (($("#nick").val().includes('℄') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID || temp === "Byzantium" || window.tempAnimatedCoolArray.includes(temp))) {
+    if (temp && temp != "null" && (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID || temp === "Byzantium" || window.tempAnimatedCoolArray.includes(temp))) {
         if (application.lastSentNick === "") application.lastSentNick = $("#nick").val()
         SpecialEffectPlayers[application.lastSentNick] = temp
         //
@@ -17116,28 +17116,28 @@ function repeatSendingSpecialSkins() {
 function preUserLeaguesInfoRequest() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LMexpress/userLeaguesInfoRequest.js";
+    s.src = "https://www.legendmod.ml/LMexpress/userLeaguesInfoRequest.js";
     $("body").append(s);
 }
 
 function openhelper() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendhelper.js";
+    s.src = "https://www.legendmod.ml/legendhelper.js";
     $("body").append(s);
 }
 
 function opennamechars() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/nicks/nicknamechars.js";
+    s.src = "https://www.legendmod.ml/nicks/nicknamechars.js";
     $("body").append(s);
 }
 
 function legendformIframe() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendformIframe.js";
+    s.src = "https://www.legendmod.ml/legendformIframe.js";
     $("body").append(s);
 }
 
@@ -17331,10 +17331,10 @@ function LMadvertisement2020() {
         '<div class="modal-backdrop fade in"></div>' +
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
         '</div>' +
-        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
+        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -17344,7 +17344,7 @@ function LMadvertisement2020() {
         $("#LMPromo").remove();
     });
     $("#FAQLMPromo").click(function() {
-        window.open('https://jimboy3100.github.io/', '_blank');
+        window.open('https://www.legendmod.ml/', '_blank');
     });
 }
 
