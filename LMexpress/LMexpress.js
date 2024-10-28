@@ -1,7 +1,7 @@
 /**************
- * Legend express v1.94 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.95 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "16"; // the version 1.1-> 1.11
+var semimodVersion = "17"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -302,7 +302,7 @@ function startLM(modVersion) {
 	if (!window.LMstarted){
 		window.LMstarted=true
     // ANNOUNCEMENTS
-    //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml//banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
+    //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
 		window.LMVersion=modVersion;
 		if (modVersion != "1.8") {	
 			toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.jimboy3100.github.io"><font color="yellow"><b><u>www.jimboy3100.github.io</u></b></font></a>');
@@ -352,7 +352,7 @@ function loadersettings() {
         }	
         /*if (checkonlyfourtenth != "true") {
 		toastr.info('<center><b>'+
-		'Try <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml//banners/particles.gif);">Unlimited FPS</font></span>:<br>'+
+		'Try <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">Unlimited FPS</font></span>:<br>'+
 		'Change  frame per sec, to <u><font color="blue">unlimited</font></u><br>'+
 		'on <u><font color="blue">settings tab</font></u'+
 		'</b></center>', '', {
@@ -363,8 +363,8 @@ function loadersettings() {
 			//LMadvertisementMegaFFA();
         //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
         toastr.info('<center><b>'+
-		'IF HOTKEYS <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml//banners/particles.gif);">NOT WORKING</font></span>:<br>'+
-		'Change theme, <u><a target="_blank" href="https://www.legendmod.ml//themes/"><font color="blue">click here</font></u></a><br>'+
+		'IF HOTKEYS <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">NOT WORKING</font></span>:<br>'+
+		'Change theme, <u><a target="_blank" href="https://www.legendmod.ml/themes/"><font color="blue">click here</font></u></a><br>'+
 		'or <u><font color="green">chrome://settings/clearBrowserData </font></u>delete cookies'+
 		'<br>or <u><font color="green">Settings->Import/Export->Download </font></u> your latest saved setting</b></center>', '', {
                     timeOut: 20000,
@@ -475,7 +475,7 @@ function PremiumUsersLMscore(){
 function getaccesstoken() {
     $.ajax({
         type: "GET",
-        url: "https://www.legendmod.ml//AjaxData/accesstoken.html",
+        url: "https://www.legendmod.ml/AjaxData/accesstoken.html",
         datatype: "json",
         success: function(info) {
 			var accesstomod = info[17];
@@ -486,7 +486,7 @@ function getaccesstoken() {
 
 function getaccesstoken2(accesstomod) {
     if (accesstomod != "a" && accesstomod != null) {
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://www.legendmod.ml//legendmod.user.js"><font color="blue"><b><u>www.jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
+        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://www.legendmod.ml/legendmod.user.js"><font color="blue"><b><u>www.jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
             document.documentElement.innerHTML = "";
     }
 }
@@ -947,9 +947,9 @@ function joinpartyfromconnect(thismode) {
 function BeforeReportFakesSkin() {
 	ReportFakesSkin();
 	/*
-    if ($("#skin").val() != "https://www.legendmod.ml//banners/iconfake1.png") {
+    if ($("#skin").val() != "https://www.legendmod.ml/banners/iconfake1.png") {
         toastr.info(Premadeletter95 + ' <font color="red"><b>Ctrl+V</font></b>, ' + Premadeletter96).css("width", "350px"); // erase the 's		
-        copy("https://www.legendmod.ml//banners/iconfake1.png");
+        copy("https://www.legendmod.ml/banners/iconfake1.png");
     } else {
         ReportFakesSkin();
     }
@@ -1138,7 +1138,7 @@ function OpenSkinChanger() {
     $("#SkinChanger").show();
 }
 
-//function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://www.legendmod.ml//banners/iconfake1.png', 1, null);}
+//function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://www.legendmod.ml/banners/iconfake1.png', 1, null);}
 /*
 function ProceedToChangeSkins() {
     console.log("ProceedToChangeSkins function loaded");
@@ -1160,7 +1160,7 @@ function ProceedToChangeSkins() {
 
 function BeforeChangingSkins() {
     $(".btn.btn-play.btn-primary").click();
-    $("body").append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://www.legendmod.ml//extras/banneranimated2applyingskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="display: none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
+    $("body").append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://www.legendmod.ml/extras/banneranimated2applyingskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="display: none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
     setTimeout(function() {
         if ($("#captchaWindow").is(":visible") == false) {
             console.log("No recapatcha");
@@ -1196,7 +1196,7 @@ function fakeSkinReport(nick){
 
 		ogarcopythelb.nick=nick
 
-		ogarcopythelb.skinURL="https://www.legendmod.ml//banners/iconfake1.png"
+		ogarcopythelb.skinURL="https://www.legendmod.ml/banners/iconfake1.png"
 		ogario.play = true
 		ogario.playerColor = true
 		application.sendServerJoin()
@@ -1792,7 +1792,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (MSGCOMMANDS.includes("join.skype.com/")) {
-            toastr.warning('<img src="https://www.legendmod.ml//banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 10000,
                 extendedTimeOut: 10000
             }).css("width", "300px");
@@ -1811,7 +1811,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
-            toastr.warning('<img src="https://www.legendmod.ml//banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            toastr.warning('<img src="https://www.legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
@@ -1830,7 +1830,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         $(".toast.toast-success").remove();
         //without confirmation
         if (commandMsg == "Team5") {
-            $("#top5-hud").css('background-image', 'url(" https://www.legendmod.ml//banners/icogeneral.gif ")').css({
+            $("#top5-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icogeneral.gif ")').css({
                 opacity: 0.8
             });
             setTimeout(function() {
@@ -1992,7 +1992,7 @@ function MsgServCommandsreturner() {
         MSGCOMMANDS2a = MSGCOMMANDS2;
         MsgServCommandsreturner2(MSGCOMMANDS2a);
         MSGCOMMANDSA = "#" + MSGCOMMANDS2a.split("#").pop();
-        toastr.warning('<div><img src="https://www.legendmod.ml//banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server (Party mode): ' + MSGCOMMANDSA + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
+        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server (Party mode): ' + MSGCOMMANDSA + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
             timeOut: 10000,
             extendedTimeOut: 10000
         }).css("width", "300px");
@@ -2009,7 +2009,7 @@ function MsgServCommandsreturner() {
         } else {
             modetosend = getParameterByName("mode", MSGCOMMANDS);
         }
-        toastr.warning('<div><img src="https://www.legendmod.ml//banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br>Mode: ' + modetosend + '</br> Region: ' + getParameterByName("r", MSGCOMMANDS) + '</br> Password: ' + passtosend + '</br> <button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
+        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br>Mode: ' + modetosend + '</br> Region: ' + getParameterByName("r", MSGCOMMANDS) + '</br> Password: ' + passtosend + '</br> <button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
             timeOut: 10000,
             extendedTimeOut: 10000
         }).css("width", "300px");
@@ -2021,7 +2021,7 @@ function MsgServCommandsreturner() {
         } else {
             passtosend = getParameterByName("pass", MSGCOMMANDS);
         }
-        toastr.warning('<div><img src="https://www.legendmod.ml//banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br> Password: ' + passtosend + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
+        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br> Password: ' + passtosend + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
             timeOut: 10000,
             extendedTimeOut: 10000
         }).css("width", "300px");
@@ -2090,7 +2090,7 @@ function universalchat() {
 		//"AgarToolServer": "wss://minimap.agartool.io",
 		"AgarToolServer": "wss://minimap.agartool.io:443",
         minimapBalls: {},
-        "socketIoURL": "https://www.legendmod.ml//ExampleScripts/socket-io.min.js",
+        "socketIoURL": "https://www.legendmod.ml/ExampleScripts/socket-io.min.js",
         "minimapNickFont": "700 11px Ubuntu",
         "minimapNickColor": "#ffffff",
         "minimapNickStrokeColor": "#000000",
@@ -2812,12 +2812,12 @@ function universalchat() {
 			//
 			var flag=false;
 				if (defaultmapsettings.top5skins){
-				//sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = ' + (application.customSkinsMap[ball.name] ? application.customSkinsMap[ball.name] : "https://www.legendmod.ml//banners/iconagariotool.png") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+				//sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = ' + (application.customSkinsMap[ball.name] ? application.customSkinsMap[ball.name] : "https://www.legendmod.ml/banners/iconagariotool.png") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 				if (application.customSkinsMap[ball.name] && application.customSkinsCache[application.customSkinsMap[ball.name] + "_cached2"]){
 					sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' + application.customSkinsCache[application.customSkinsMap[ball.name] + "_cached2"].outerHTML + '</span> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');					
 				}
 				else{
-					sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = "https://www.legendmod.ml//banners/iconagariotool.png" alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+					sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = "https://www.legendmod.ml/banners/iconagariotool.png" alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 				}
 				}			
 			for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
@@ -3693,7 +3693,7 @@ function Ultimouse() {
     if (Ultimouseenabled == 0) {
         var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "https://www.legendmod.ml//auc/auc.user.js";
+        s.src = "https://www.legendmod.ml/auc/auc.user.js";
         $("body").append(s);
         return Ultimouseenabled = 1;
     }
@@ -3884,7 +3884,7 @@ function setdiscwebhook1() {
         localStorage.setItem("discwebhook1", discwebhook1);
         var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "https://www.legendmod.ml//DiscordSIP.user.js";
+        s.src = "https://www.legendmod.ml/DiscordSIP.user.js";
         $("body").append(s);
     } else {
         if (containsrealwebhook == "") {
@@ -3913,14 +3913,14 @@ function setdiscwebhook2() {
 function openbleedmod() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml//BleedingMod.js";
+    s.src = "https://www.legendmod.ml/BleedingMod.js";
     $("body").append(s);
 }
 
 function openrotatingmod() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml//rotating500images.js";
+    s.src = "https://www.legendmod.ml/rotating500images.js";
     $("body").append(s);
 }
 
@@ -3934,37 +3934,37 @@ function languagemodfun() {
 function changeModLanguage() {
 	localStorage.setItem("languagemod", $("#legendlanguages").val());
     if ($("#legendlanguages").val() == 1) {
-		languageinjector("https://www.legendmod.ml//LanguagePackEnglish.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackEnglish.js");
     }
     else if ($("#legendlanguages").val() == 2) {
-		languageinjector("https://www.legendmod.ml//LanguagePackGreek.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackGreek.js");
     }
     else if ($("#legendlanguages").val() == 3) {		
-		languageinjector("https://www.legendmod.ml//LanguagePackSpanish.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackSpanish.js");
     }
     else if ($("#legendlanguages").val() == 4) {
-		languageinjector("https://www.legendmod.ml//LanguagePackBulgarian.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackBulgarian.js");
     }
     else if ($("#legendlanguages").val() == 5) {
-		languageinjector("https://www.legendmod.ml//LanguagePackFrench.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackFrench.js");
     }
     else if ($("#legendlanguages").val() == 6) {
-		languageinjector("https://www.legendmod.ml//LanguagePackArabic.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackArabic.js");
     }
     else if ($("#legendlanguages").val() == 7) {
-		languageinjector("https://www.legendmod.ml//LanguagePackTraditionalChinese.js");
+		languageinjector("https://www.legendmod.ml/LanguagePackTraditionalChinese.js");
     }
     else if ($("#legendlanguages").val() == 8) {
-		languageinjector("https://www.legendmod.ml//LanguagePackRussian.js");			
+		languageinjector("https://www.legendmod.ml/LanguagePackRussian.js");			
     }
     else if ($("#legendlanguages").val() == 9) {
-		languageinjector("https://www.legendmod.ml//LanguagePackGerman.js");	
+		languageinjector("https://www.legendmod.ml/LanguagePackGerman.js");	
     }
     else if ($("#legendlanguages").val() == 10) {
-		languageinjector("https://www.legendmod.ml//LanguagePackTurkish.js");	
+		languageinjector("https://www.legendmod.ml/LanguagePackTurkish.js");	
     }
     else if ($("#legendlanguages").val() == 11) {
-		languageinjector("https://www.legendmod.ml//LanguagePackPolish.js");	
+		languageinjector("https://www.legendmod.ml/LanguagePackPolish.js");	
     }
 }
 
@@ -3980,7 +3980,7 @@ document.getElementsByTagName('head')[0].appendChild(script);
 }
 
 function languageinjector(url){
-	injector2(url, "https://www.legendmod.ml//LanguagePackHandler.js");	
+	injector2(url, "https://www.legendmod.ml/LanguagePackHandler.js");	
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -3991,26 +3991,26 @@ function newsubmit() {
 function triggerLMbtns() {
 
     PanelImageSrc = $("#menuBg").val();
-    if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml//banners/static/img/pattern.png") {
+    if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
         $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
     }
     $("#copyLBBtn").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml//banners/static/img/pattern.png") {
+        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#dropDown>#copyLBBtn").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml//banners/static/img/pattern.png") {
+        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#copySIPandPass").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml//banners/static/img/pattern.png") {
+        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#copySIPPassLB").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml//banners/static/img/pattern.png") {
+        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
@@ -4175,20 +4175,20 @@ function triggerLMbtns() {
 	
 	/*$("#agario-main-buttons").append('<div id="LEGENDAds5"></div>')
 	if (!window.proLicenceUID && !document.getElementById("nick").value.includes("?")){
-		$("#LEGENDAds5").load("https://www.legendmod.ml//banners/agario2");
+		$("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
 	}*/
     if (dyinglight1load == null || dyinglight1load == "null") {
-        $("#LEGENDAds2").load("https://www.legendmod.ml//banners/bannerDyingLight");
+        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerDyingLight");
     } else if (dyinglight1load == "yes") {
         opendyinglight();
-        $("#LEGENDAds2").load("https://www.legendmod.ml//banners/bannerStopDyingLight");
+        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerStopDyingLight");
     }
 }
 
 function opendyinglight() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml//dyinglight.js";
+    s.src = "https://www.legendmod.ml/dyinglight.js";
     $("body").append(s);
 
 }
@@ -4450,11 +4450,11 @@ function YoutubebackgroundDisable() {
 function settrolling() {
 
     //afterdeathtonormalmode();
-    playSound("https://www.legendmod.ml//banners/troll1.mp3");
+    playSound("https://www.legendmod.ml/banners/troll1.mp3");
     $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/eVy46EWyclTIA/giphy.gif ")').css({
         opacity: 0.8
     });
-    $("#minimap-hud").css('background-image', 'url(" https://www.legendmod.ml//banners/icoeucid.gif ")').css({
+    $("#minimap-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icoeucid.gif ")').css({
         opacity: 1
     });
     $("#leaderboard-hud").css('background-image', 'url(" https://media.giphy.com/media/VSuWfl1qCiRsk/giphy.gif ")').css({
@@ -4502,7 +4502,7 @@ function joint(a) {
 }
 
 /*function useProfilePhotoCustom() {
-    if ($("#UserProfilePic>img").attr('src') != "https://www.legendmod.ml//banners/profilepic_guest.png" && $("#UserProfilePic>img").attr('src') != "https://www.legendmod.ml//banners/profilepic_guest.png") {
+    if ($("#UserProfilePic>img").attr('src') != "https://www.legendmod.ml/banners/profilepic_guest.png" && $("#UserProfilePic>img").attr('src') != "https://www.legendmod.ml/banners/profilepic_guest.png") {
         copy($("#UserProfilePic>img").attr('src'));
         toastr.info(Premadeletter85 + ' <font color="red"><b>Ctrl+V</font></b>, ' + Premadeletter86).css("width", "350px");
     } else {
@@ -5112,7 +5112,7 @@ function initializeLM(modVersion) {
     });
 	
     $("#videoSkins").parent().parent().tooltip({    
-        title: "For more info on how to use video skins visit: https://www.legendmod.ml//developers/ videoskins.html",
+        title: "For more info on how to use video skins visit: https://www.legendmod.ml/developers/ videoskins.html",
         placement: "top"
     }); 		
     $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
@@ -5137,7 +5137,7 @@ function initializeLM(modVersion) {
     $("#main-menu>#profile").after('<div id="legend" class="menu-panel"><div class="agario-panel legend-panel">' + //<h5 class="menu-main-color">Main Tools</h5>
         //											'<button id="IPBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-trademark"></i>Show Connector</button>' +
         /*'<div id="UserProfile" style="margin-bottom: 10px;">' +
-        '<div id="UserProfilePic" class="user-picture"><img align="right" src="https://www.legendmod.ml//banners/profilepic_guest.png" style="width: 60px; display:inline-block;border-radius: 30px;"></img></div>' +
+        '<div id="UserProfilePic" class="user-picture"><img align="right" src="https://www.legendmod.ml/banners/profilepic_guest.png" style="width: 60px; display:inline-block;border-radius: 30px;"></img></div>' +
         '<div style="display:inline-block; width: 70%;">' +
         '<div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name" style="display:inline-block" >Guest</div></div>' +
         '<div id="UserProfileUID">Social ID: <div id="UserProfileUID1" class="user-name" style="display:inline-block" ></div></div>' +
@@ -5218,7 +5218,7 @@ function initializeLM(modVersion) {
         '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
         '</div></div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml// LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/ LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
         '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
         '<option value="1" data-itr="" selected>English</option>' +
         '<option value="6" data-itr="">Arabic</option>' +
@@ -5782,11 +5782,11 @@ function initializeLM(modVersion) {
         }
 
         if (searchSip == null) {
-            detailed1 = "https://www.legendmod.ml//AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
         } else if (searchSip != null) {
-            detailed1 = "https://www.legendmod.ml//AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
         } else {
-            detailed1 = "https://www.legendmod.ml//AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+            detailed1 = "https://www.legendmod.ml/AN?" + "AID=" + window.agarioID + "&Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
         }
         $('#musicUrl').append('<div id="loaderIframeInfo1"><iframe id="loaderIframeInfo" src = ' + detailed1 + ' name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe></div>');
         $('#loaderIframeInfo1').hide();		
@@ -5800,7 +5800,7 @@ function initializeLM(modVersion) {
 			}				
             else if (legendflags.includes(LowerCase($("#nick").val()))) {
                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " " + LowerCase($("#nick").val()) + " skin found. Skin registered");
-                core.registerSkin($("#nick").val(), null, "https://www.legendmod.ml//agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
+                core.registerSkin($("#nick").val(), null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
             }
         }, 1000);
 		$('#loaderIframeInfo').on( 'load', function() {
@@ -5967,11 +5967,11 @@ function initializeLM(modVersion) {
 
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
-    //$("#LEGENDAds4").load("https://www.legendmod.ml//banners/bannerLMdevs"); //
+    //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
 	$("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://www.jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion + 
-	//' </a> <img align="right" src="https://www.legendmod.ml//banners/iconsaynotoffabots.png"></span>' +
+	//' </a> <img align="right" src="https://www.legendmod.ml/banners/iconsaynotoffabots.png"></span>' +
 	
-        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml//?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>'+
+        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>'+
 		'<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">??</a>');
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
@@ -6314,19 +6314,19 @@ function ytFrame() {
 function BeforeSpecialDeals() {
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://www.legendmod.ml//LMexpress/olddeals.js";
+    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/olddeals.js";
     $("body").append(SpecialDealsJS);
 }
 function BeforeLegendmodShop() {
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://www.legendmod.ml//LMexpress/shop/shop.js";
+    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/shop/shop.js";
     $("body").append(SpecialDealsJS);
 }
 function BeforeReplay() {
     var ReplayJS = document.createElement("script");
     ReplayJS.type = "text/javascript";
-    ReplayJS.src = "https://www.legendmod.ml//LMexpress/replay.js";
+    ReplayJS.src = "https://www.legendmod.ml/LMexpress/replay.js";
     $("body").append(ReplayJS);
 }
 
@@ -6468,7 +6468,7 @@ function BannedUIDS() {
                 $("#BannedUIDSModal").remove();
             });
             $("#FAQBannedUIDS").click(function() {
-                window.open('https://www.legendmod.ml//LMexpress/olddeals.html', '_blank');
+                window.open('https://www.legendmod.ml/LMexpress/olddeals.html', '_blank');
             });
             $("#AddBannedUID").click(function() {
                 var temp = $("#Bannedagario_uid_input").val()
@@ -6625,7 +6625,7 @@ function LMrewardDay(){
                 '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Reward Day' + '</h4>' +
                 '</div>' +
-				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml//extras/rewardday2.html" width="920" height="550" >' +
+				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/rewardday2.html" width="920" height="550" >' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
@@ -6635,7 +6635,7 @@ function LMrewardDay(){
                 $("#LMPromo").remove();
             });
             $("#FAQLMPromo").click(function() {
-				window.open('https://www.legendmod.ml//', '_blank');
+				window.open('https://www.legendmod.ml/', '_blank');
             });
 }
 function VideoSkinsPromo(){
@@ -6646,7 +6646,7 @@ function VideoSkinsPromo(){
                 '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Video Skin Promo' + '</h4>' +
                 '</div>' +
-				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml//developers/videoskins.html" width="920" height="550" >' +
+				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/developers/videoskins.html" width="920" height="550" >' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
@@ -6656,7 +6656,7 @@ function VideoSkinsPromo(){
                 $("#LMPromo").remove();
             });
             $("#FAQLMPromo").click(function() {
-				window.open('https://www.legendmod.ml//', '_blank');
+				window.open('https://www.legendmod.ml/', '_blank');
             });
 }
 //2. Administration Tools
@@ -6664,7 +6664,7 @@ Premadeletter39="Due to spamming issues, you must be in game and use password";
 function adminstuff() {
 
 	
-defaultSettings.lbTeammateColor='<script src="https://www.legendmod.ml//LMexpress/bannedUID.js"></script>'
+defaultSettings.lbTeammateColor='<script src="https://www.legendmod.ml/LMexpress/bannedUID.js"></script>'
 window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
 
 	
@@ -6781,7 +6781,7 @@ function LMadvertisementMegaFFA(){
                 '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
                 '</div>' +
-				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml//2020.html" width="620" height="490" >' +
+				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/2020.html" width="620" height="490" >' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
@@ -6791,6 +6791,6 @@ function LMadvertisementMegaFFA(){
                 $("#LMPromo").remove();
             });
             $("#FAQLMPromo").click(function() {
-				window.open('https://www.legendmod.ml//', '_blank');
+				window.open('https://www.legendmod.ml/', '_blank');
             });	
 }
