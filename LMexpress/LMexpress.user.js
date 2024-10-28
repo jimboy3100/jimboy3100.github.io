@@ -19,6 +19,7 @@
 // @connect	 cdn.ogario.ovh
 // @connect      deltav4.glitch.me
 // @connect      jimboy3100.github.io
+// @connect      legendmod.ml
 // @grant        GM_registerMenuCommand
 
 // ==/UserScript==
