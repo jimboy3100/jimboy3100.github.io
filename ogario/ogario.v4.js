@@ -1,4 +1,4 @@
-window.OgVer=3.325;
+window.OgVer=3.326;
 /* Source script
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -4243,7 +4243,7 @@ window.MouseClicks=[];
         },
         //for SPECT
         getghostX() {
-            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych ?????????? ????????? ??? ?????? ???? ?? ???1
+            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych
                 this.ghostX = legendmod.playerX + legendmod.mapOffsetX;
             } else { //Yahnych
                 this.ghostX = legendmod.ghostCells[0].x + legendmod.mapOffsetX;
@@ -4251,7 +4251,7 @@ window.MouseClicks=[];
             return this.ghostX;
         },
         getghostY() {
-            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych ?????????? ????????? ??? ?????? ???? ?? ???1
+            if (legendmod.playerPosition === 1 || legendmod.ghostCells.length === 0) { //Yahnych
                 this.ghostY = legendmod.playerY + legendmod.mapOffsetY;
             } else { //Yahnych
                 this.ghostY = legendmod.ghostCells[0].y + legendmod.mapOffsetY;
@@ -4824,22 +4824,22 @@ window.MouseClicks=[];
                         t += ' | ' + spects[window.multiboxPlayerEnabled - 1].playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled - 1].BSTE) {
-                        t += ' | ????: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled - 1].BMTE) {
-                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled - 1].MTE) {
-                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
+                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled - 1].STE) {
-                        t += ' | ????: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled - 1].TTE) {
-                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
+                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled - 1].PTE) {
-                        t += ' | ???: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
+                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -4857,22 +4857,22 @@ window.MouseClicks=[];
                         t += ' | ' + ogario.playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && ogario.BSTE) {
-                        t += ' | ????: ' + ogario.BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + ogario.BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && ogario.BMTE) {
-                        t += ' | ???: ' + ogario.BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + ogario.BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && ogario.MTE) {
-                        t += ' | ???: ' + ogario.MTE //Sonia6
+                        t += ' | ◉➛◎: ' + ogario.MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && ogario.STE) {
-                        t += ' | ????: ' + ogario.STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + ogario.STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && ogario.TTE) {
-                        t += ' | ???: ' + ogario.TTE //Sonia6
+                        t += ' | ◉➚◉: ' + ogario.TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && ogario.PTE) {
-                        t += ' | ???: ' + ogario.PTE //Sonia6
+                        t += ' | ➚◎➘: ' + ogario.PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -4883,7 +4883,7 @@ window.MouseClicks=[];
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
                     else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
                     else if (drawRender.averageRenderTime <= 50) color = 'color:green'
-                    t += '??: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
+                    t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
@@ -7170,10 +7170,10 @@ window.MouseClicks=[];
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                        this.miniMapCtx.strokeText('??' + LM.arrowFB[0].nick + '??', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                    this.miniMapCtx.fillText('??' + LM.arrowFB[0].nick + '??', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     this.miniMapCtx.restore();
                     //}
                 }
@@ -8474,7 +8474,7 @@ window.MouseClicks=[];
                     }
                     var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
                     var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    var pattern3 = "??????????.????";
+                    var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
                     //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
@@ -11720,7 +11720,7 @@ window.MouseClicks=[];
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
-                        else if (window.testobjects2.split('"?\x01')[1]) { //6/8/2024 fix
+                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
                             //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
 							window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
                         }						
@@ -12621,11 +12621,11 @@ window.MouseClicks=[];
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`??` + this.user.coins);
+                                $("#coins").html(`💰` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`??` + this.user.dna);
+                                $("#dna").html(`🧬` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -12690,7 +12690,7 @@ window.MouseClicks=[];
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`??` + this.user.trophy);
+                        $("#trophy").html(`🏅` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -13723,9 +13723,9 @@ Game name     : ${i.displayName}<br/>
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
-                if (name === "???JustWatchPro" || name === "??????????????") {
-                    if (name === "???JustWatchPro") cellUpdateCells.targetNick = "???Let\'s fight for glory. Let\'s fight for our kids";
-                    if (name === "??????????????") cellUpdateCells.targetNick = "???Avoid (Anti ,Corners, Random)";
+                if (name === "℄🌀JustWatchPro" || name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") {
+                    if (name === "℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
+                    if (name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
                     if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]) {
                         application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
                         application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);
