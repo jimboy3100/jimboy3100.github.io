@@ -1,7 +1,7 @@
 /**************
- * Legend express v1.95 by Jimboy3100   email:jimboy3100@hotmail.com
+ * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "17"; // the version 1.1-> 1.11
+var semimodVersion = "18"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -5972,7 +5972,7 @@ function initializeLM(modVersion) {
 	//' </a> <img align="right" src="https://www.legendmod.ml/banners/iconsaynotoffabots.png"></span>' +
 	
         '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>'+
-		'<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">??</a>');
+		'<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
     $("#time-hud").hide();
@@ -6720,7 +6720,7 @@ $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="admini
 //setTimeout(function () {	
 	$("#nick").blur(function(){
 		if ($('#administrationtool-hud').is(':hidden') || $('#administrationtool-hud').length == 0) {
-			if($("#nick").val()=="???Jimboy3100"||$("#nick").val()=="???JustWatchPro"||$("#nick").val()=="???       ?????"||$("#nick").val()=="??? ????????"){
+			if($("#nick").val()=="℄🌀Jimboy3100"||$("#nick").val()=="℄🌀JustWatchPro"){
 			$("#main-menu").hide();
 			$("#skins-panel").hide();
 			$("#quick-menu").hide();
