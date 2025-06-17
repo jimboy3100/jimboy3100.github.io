@@ -5547,6 +5547,8 @@ window.MouseClicks=[];
                     var app = this;
                     o = new Video();
                     o.crossOrigin = 'anonymous';
+                    o.referrerPolicy = 'no-referrer';
+                    o.referrer = 'no-referrer';
                     o.src = t;
 					//o.style.width = "100%";
 					//o.style.height = "100%";
@@ -5570,9 +5572,11 @@ window.MouseClicks=[];
                 if ($('#' + e).empty().addClass('default'), t && 0 !== t.length) {
                     //console.log("stage 1 images/videos: " + t);
                     var app = this,
-                        o = checktypeImgVid;
-                    o.crossOrigin = 'anonymous',
-                        o.src = t;
+                    o = checktypeImgVid;
+                    o.crossOrigin = 'anonymous';
+                    o.referrerPolicy = 'no-referrer';
+                    o.referrer = 'no-referrer';
+                    o.src = t;
                     // o = new Image();
 
                     o.onload = function() {
