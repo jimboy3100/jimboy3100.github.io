@@ -6751,6 +6751,8 @@ window.MouseClicks=[];
                 }
 
                 img[url].crossOrigin = 'anonymous';
+                img[url].referrerPolicy = "no-referrer";
+                img[url].referrer = "no-referrer";
                 img[url].onload = function() {
                         if (this.complete &&
                             this.width &&
