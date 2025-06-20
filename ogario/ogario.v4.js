@@ -30,6 +30,11 @@ window.LMscore=0;
 var isMobile = false;
 if (jQuery && jQuery.browser && jQuery.browser.mobile) isMobile = true;
 
+// make sure the page doesn't send referrer information to imgur for image message to work
+$(function() {
+    $('head').append('<meta name="referrer" content="no-referrer">');
+});
+
 const ranges = [10, 255, 255, 255, 255];
 function toLong(ip) {
     let result = 0;
@@ -6751,8 +6756,8 @@ window.MouseClicks=[];
                 }
 
                 img[url].crossOrigin = 'anonymous';
-                img[url].referrerPolicy = "no-referrer";
-                img[url].referrer = "no-referrer";
+                img[url].referrerPolicy = 'no-referrer';
+                img[url].referrer = 'no-referrer';
                 img[url].onload = function() {
                         if (this.complete &&
                             this.width &&
