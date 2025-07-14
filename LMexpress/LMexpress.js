@@ -1,7 +1,7 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "18"; // the version 1.1-> 1.11
+var semimodVersion = "19"; // the version 1.1-> 1.11
 
 
 loadericon();
