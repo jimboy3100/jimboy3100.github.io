@@ -8,6 +8,7 @@
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
+// @match        https://agar.io/
 // @match        https://play.google.com/*
 // @downloadURL  https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @updateURL    https://jimboy3100.github.io/LMexpress/LMexpress.user.js
@@ -147,3 +148,4 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
