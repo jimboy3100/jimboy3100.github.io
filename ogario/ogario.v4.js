@@ -5720,7 +5720,7 @@ window.MouseClicks=[];
 			'<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy" style="display: none;"></a>' +
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
@@ -8952,18 +8952,18 @@ window.MouseClicks=[];
             window.core.proxyMobileData(Array.from(finalBuffer));
         },
         setupSkinUploadInterface() {
-            // 1. Identify the Trigger Button (You added this manually in HTML)
+            // 1. Identify the Trigger Button
             const openBtn = $('.quick-custom-skin');
 
             // 2. Create the Floating Panel (Only if it doesn't exist)
             if ($('#custom-skin-uploader').length === 0) {
                 const panelHTML = `
-                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
+                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; border-radius: 8px;">
                         
                         <!-- Header with Close 'X' -->
                         <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #ff4d4d; padding: 0 5px; font-size: 16px;">✕</div>
-                            <h5 class="menu-main-color" style="margin: 0; display: inline-block;">Upload Custom Skin</h5>
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; padding: 0 5px; font-size: 16px;">✕</div>
+                            <center><h5 class="menu-main-color" style="margin: 0; display: inline-block; font-size: 16px;">Upload Custom Skin</h5></center>
                         </div>
 
                         <!-- Name & Color Inputs -->
@@ -8971,7 +8971,7 @@ window.MouseClicks=[];
                             <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
                             <div class="input-group color-picker" style="width: 30%;">
                                 <input id="legendSkinColor" type="hidden" value="#FFFF00">
-                                <span class="input-group-addon" style="border: 1px solid rgba(255,255,255,0.2);"><i style="background-color: #FFFF00;"></i></span>
+                                <span class="input-group-addon" style="border: 1px solid rgba(255,255,255,0.2); cursor:pointer;"><i style="background-color: #FFFF00;"></i></span>
                             </div>
                         </div>
 
@@ -8987,17 +8987,15 @@ window.MouseClicks=[];
                         <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
                         
                         <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold; opacity: 0.5; cursor: not-allowed;">
-                            Upload & Buy (90 DNA)
+                            Upload & Buy (90 🧬 DNA)
                         </button>
                         <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;"></div>
 
                     </div>
                 `;
 
-                // Append to body to ensure it floats above everything
                 $('body').append(panelHTML);
 
-                // Initialize Color Picker
                 $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
                     $('#legendSkinColor').val(e.color.toHex());
                     $('#legendCanvas').css('border-color', e.color.toHex());
@@ -9017,7 +9015,7 @@ window.MouseClicks=[];
             // --- Helper: Process Image (URL or File) ---
             const processImage = (src) => {
                 const img = new Image();
-                img.crossOrigin = "Anonymous"; // Attempt to handle CORS for URLs
+                img.crossOrigin = "Anonymous";
                 img.onload = () => {
                     ctx.clearRect(0, 0, 512, 512);
                     ctx.drawImage(img, 0, 0, 512, 512);
@@ -9028,6 +9026,7 @@ window.MouseClicks=[];
                             processedBuffer = new Uint8Array(reader.result);
                             status.text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`).css('color', '#ccc');
                             saveBtn.css({ opacity: 1, cursor: 'pointer' });
+                            saveBtn.prop('disabled', false);
                         };
                         reader.readAsArrayBuffer(blob);
                     }, 'image/png');
@@ -9043,19 +9042,19 @@ window.MouseClicks=[];
                 e.preventDefault();
 
                 // Hide Quick Menu (as requested)
-                //$('#quick-menu').fadeOut(200);
+                // $('#quick-menu').fadeOut(200);
 
                 // Show Panel
                 panel.fadeIn(200);
 
-                // Auto-fill Data from current settings
+                // Auto-fill Data
                 $('#legendSkinName').val($('#nick').val() || "LM Skin");
                 const curColor = $('#color').val() || "#FFDD00";
                 $('#legendSkinColor').val(curColor);
                 $('#custom-skin-uploader .input-group-addon i').css('background-color', curColor);
                 $('#legendCanvas').css('border-color', curColor);
 
-                // Pre-select Image from #skin URL if available
+                // Pre-select Image
                 const currentUrl = $('#skin').val();
                 if (currentUrl && currentUrl.length > 4) {
                     status.text("Loading skin from URL...").css('color', 'yellow');
@@ -9069,11 +9068,11 @@ window.MouseClicks=[];
             closeBtn.off('click').on('click', () => {
                 panel.fadeOut(200);
                 // Show Quick Menu again (as requested)
-                //$('#quick-menu').fadeIn(200);
+                // $('#quick-menu').fadeIn(200);
             });
 
             // --- File Input Change ---
-            $('#legendUploadInput').on('change', (e) => {
+            $('#legendUploadInput').off('change').on('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
                 processImage(URL.createObjectURL(file));
@@ -9081,6 +9080,12 @@ window.MouseClicks=[];
 
             // --- Save Button Action ---
             saveBtn.off('click').on('click', () => {
+                // SAFETY CHECK: Ensure user is logged in / played once
+                if (window.agarioEncodedUID == null) {
+                    toastr["warning"]('<b>[SERVER]: </b>Please play the game before you can use that feature');
+                    return;
+                }
+
                 if (!processedBuffer) return;
                 const name = $('#legendSkinName').val();
                 const color = $('#legendSkinColor').val();
@@ -9094,7 +9099,7 @@ window.MouseClicks=[];
 
                     setTimeout(() => {
                         panel.fadeOut();
-                        //$('#quick-menu').fadeIn(); // Restore menu
+                        // $('#quick-menu').fadeIn(); // Restore menu
                         saveBtn.prop('disabled', false);
                     }, 2500);
                 } catch (err) {
