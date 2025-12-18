@@ -8860,7 +8860,6 @@ window.MouseClicks=[];
             }
         },
         // --- 1. PROTOCOL HELPERS (FIXED) ---
-        // --- LEGEND MOD SKIN UPLOADER (VERSION 4.0 - FIXED) ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8872,7 +8871,9 @@ window.MouseClicks=[];
         },
 
         generateFooter(name, colorHex) {
+            // Clean name: remove non-ASCII and limit length
             let safeName = name.replace(/[^\x00-\x7F]/g, "").substring(0, 15) || "Skin";
+            // Color must be decimal integer
             const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 16776960;
             const timestamp = Math.floor(Date.now() / 1000);
 
@@ -8884,19 +8885,71 @@ window.MouseClicks=[];
     <string>${safeName}</string>
     <key>color</key>
     <integer>${colorInt}</integer>
-    <key>indexedSubscriptions</key>
-    <array/>
+    <key>indexedSubscriptions</key>    <array/>
     <key>creationDate</key>
     <integer>${timestamp}</integer>
 </dict>
 </plist>`;
+
             const xmlBytes = new TextEncoder().encode(xml);
             const xmlLenVarint = this.writeVarint(xmlBytes.length);
+
+            // Tag 18 = Field 2 (XML Metadata)
             const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
             footer.set([18], 0);
             footer.set(xmlLenVarint, 1);
             footer.set(xmlBytes, 1 + xmlLenVarint.length);
             return footer;
+        },
+
+        uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
+            // 1. Prepare sub-components
+            const footer = this.generateFooter(skinName, skinColorHex);
+            const imageLenVarint = this.writeVarint(imageUint8Array.length);
+
+            // 2. Build the Skin Object (Tag 10 for Image + Tag 18 for XML)
+            // Field 1 (Image): [Tag 10][Len][Data]
+            // Field 2 (XML):   [Tag 18][Len][Data] (already in footer)
+            const skinObjContentSize = (1 + imageLenVarint.length + imageUint8Array.length) + footer.length;
+            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
+
+            // 3. Build the Message 150 Payload
+            // Tag 8 (Field 1): Request ID 150
+            // Tag 178, 9 (Field 150): The Skin Object
+            const payloadSize = 3 + (2 + skinObjLenVarint.length + skinObjContentSize);
+            const payloadSizeVarint = this.writeVarint(payloadSize);
+
+            console.log(`[LM] Uploading Skin: "${skinName}" (${imageUint8Array.length} bytes)`);
+
+            // --- CONSTRUCT FINAL PACKET ---
+            let packet = [];
+
+            // A. Outer Wrapper (Field 1 = 1, Field 2 = Length Delimited)
+            packet.push(8, 1);
+            packet.push(18);
+            packet.push(...payloadSizeVarint);
+
+            // B. Message ID (Field 1 = 150)
+            packet.push(8, 150, 1);
+
+            // C. Skin Object Wrapper (Field 150 = 178, 9 in Varint)
+            packet.push(178, 9);
+            packet.push(...skinObjLenVarint);
+
+            // D. Image Field (Field 1 inside Skin Object)
+            packet.push(10);
+            packet.push(...imageLenVarint);
+
+            // Assemble everything into a Buffer
+            const headerPart = new Uint8Array(packet);
+            const finalBuffer = new Uint8Array(headerPart.length + imageUint8Array.length + footer.length);
+
+            finalBuffer.set(headerPart, 0);
+            finalBuffer.set(imageUint8Array, headerPart.length);
+            finalBuffer.set(footer, headerPart.length + imageUint8Array.length);
+
+            // Send via the core proxy (which adds the 102 opcode and encryption)
+            window.core.proxyMobileData(Array.from(finalBuffer));
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
