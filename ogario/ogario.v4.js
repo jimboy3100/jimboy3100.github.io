@@ -3949,107 +3949,7 @@ window.MouseClicks=[];
             this.setMenuButtons();
             this.setMenuBg();
         },
-        // --- UI & IMAGE PROCESSING FOR UPLOAD ---
-        setupSkinUploadInterface() {
-            // 1. Inject the UI into the existing Skins Panel
-            const html = `
-                <div class="custom-skin-upload-section" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; padding-top: 10px; text-align: center;">
-                    <h5 class="menu-main-color">Create Custom Skin (90 DNA)</h5>
-                    
-                    <!-- Skin Name Input -->
-                    <input id="custom-skin-name" class="form-control" placeholder="Skin Name" maxlength="20" style="margin-bottom: 5px;">
-                    
-                    <!-- Color Picker Input -->
-                    <div class="input-group" style="margin-bottom: 5px;">
-                        <input id="custom-skin-color" class="form-control" value="#FFDD00" placeholder="Skin Color Hex">
-                        <span class="input-group-addon"><i style="background-color: #FFDD00;"></i></span>
-                    </div>
 
-                    <!-- Hidden File Input -->
-                    <input type="file" id="custom-skin-file" accept="image/*" style="display: none;">
-                    
-                    <!-- Trigger Button -->
-                    <button id="btn-select-skin" class="btn btn-primary btn-block">1. Select Image</button>
-                    <button id="btn-upload-skin" class="btn btn-success btn-block" style="display: none; margin-top: 5px;">2. Upload & Buy</button>
-                    <div id="upload-status" style="margin-top: 5px; font-size: 12px; color: #aaa;"></div>
-                </div>
-            `;
-
-            $('#skins-panel').append(html);
-
-            // 2. Initialize Color Picker for the new input
-            $('#custom-skin-color').colorpicker({ format: 'hex' });
-
-            // 3. Handle File Selection
-            $('#btn-select-skin').click(() => {
-                $('#custom-skin-file').click();
-            });
-
-            // 4. Handle File Processing (Resize & Convert)
-            $('#custom-skin-file').change((e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                $('#upload-status').text("Processing image...");
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        // Create a canvas to normalize image (512x512 PNG)
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 512;
-                        canvas.height = 512;
-                        const ctx = canvas.getContext('2d');
-
-                        // Clear and Draw (Fit to center)
-                        ctx.clearRect(0,0, 512, 512);
-
-                        // Simple fit logic (cover or contain)
-                        // This scales it to fit 512x512
-                        ctx.drawImage(img, 0, 0, 512, 512);
-
-                        // Convert to Blob -> ArrayBuffer
-                        canvas.toBlob((blob) => {
-                            const bufReader = new FileReader();
-                            bufReader.onload = () => {
-                                // We now have the raw Uint8Array of the PNG
-                                window.tempSkinBuffer = new Uint8Array(bufReader.result);
-
-                                // Update UI
-                                $('#upload-status').text("Ready to upload! (" + Math.round(window.tempSkinBuffer.length/1024) + "KB)");
-                                $('#btn-select-skin').hide();
-                                $('#btn-upload-skin').show();
-                            };
-                            bufReader.readAsArrayBuffer(blob);
-                        }, 'image/png');
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            // 5. Handle Upload Click
-            $('#btn-upload-skin').click(() => {
-                if (!window.tempSkinBuffer) return;
-
-                const name = $('#custom-skin-name').val() || "LM Skin";
-                const color = $('#custom-skin-color').val() || "#FFDD00";
-
-                $('#upload-status').text("Sending to server...");
-
-                // CALL THE PROTOCOL FUNCTION
-                this.uploadCustomSkin(window.tempSkinBuffer, name, color);
-
-                // Reset UI
-                setTimeout(() => {
-                    $('#upload-status').text("Sent! Check your skin inventory.");
-                    $('#btn-upload-skin').hide();
-                    $('#btn-select-skin').show();
-                    window.tempSkinBuffer = null;
-                }, 2000);
-            });
-        },
 		changeIndicators(value) {},	
         changeMenuPreset(name) {
             this.changePreset(name, themeMenus);
@@ -5820,7 +5720,7 @@ window.MouseClicks=[];
 			'<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick-custom-skin ogicon-trophy"></a>' +
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
@@ -9051,7 +8951,7 @@ window.MouseClicks=[];
                 e.preventDefault();
 
                 // Hide Quick Menu (as requested)
-                $('#quick-menu').fadeOut(200);
+                //$('#quick-menu').fadeOut(200);
 
                 // Show Panel
                 panel.fadeIn(200);
@@ -9077,7 +8977,7 @@ window.MouseClicks=[];
             closeBtn.off('click').on('click', () => {
                 panel.fadeOut(200);
                 // Show Quick Menu again (as requested)
-                $('#quick-menu').fadeIn(200);
+                //$('#quick-menu').fadeIn(200);
             });
 
             // --- File Input Change ---
@@ -9102,7 +9002,7 @@ window.MouseClicks=[];
 
                     setTimeout(() => {
                         panel.fadeOut();
-                        $('#quick-menu').fadeIn(); // Restore menu
+                        //$('#quick-menu').fadeIn(); // Restore menu
                         saveBtn.prop('disabled', false);
                     }, 2500);
                 } catch (err) {

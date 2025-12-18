@@ -624,6 +624,10 @@ input.hide-url::selection,input.stream-mode::selection{
     background-color:#002f52;
     transition:all .2s linear 
 }
+#quick-custom-skin a:hover,.quick{
+    background-color:#002f52;
+    transition:all .2s linear
+}
 #exp-bar .progress-bar-text, #exp-bar .progress-bar-text2{
     color:#fff;
     font-size:11px;
@@ -691,9 +695,14 @@ input.hide-url::selection,input.stream-mode::selection{
     left:15px 
 }
 .quick-bots{
-    left:60px 
+    left:60px
 }
-
+.quick-custom-skin{
+    left:60px
+}
+.quick-customskin{
+    left: 60px;
+}
 .quick-replay {
     right: 60px;
 }
@@ -943,7 +952,7 @@ input.hide-url::selection,input.stream-mode::selection{
 .cursor-box{
     width:50px;
     height:50px;
-    float:left 
+    float:left
 }
 .cursor-box img{
     width:32px;
@@ -1779,7 +1788,6 @@ input.hide-url::selection,input.stream-mode::selection{
  
 .potion div{
  display:block;
- width:50px
  height:30px;
  border-radius: 5px;
  border-color: #CCC;
