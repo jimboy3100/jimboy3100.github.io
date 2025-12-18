@@ -1,4 +1,4 @@
-window.OgVer=3.332;
+window.OgVer=3.333;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8859,7 +8859,7 @@ window.MouseClicks=[];
                 this.setTargetStatus(0);
             }
         },
-        // --- 1. PROTOCOL HELPERS (FIXED) ---
+// --- FIXED PROTOCOL HELPERS FOR UPLOAD ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8871,30 +8871,24 @@ window.MouseClicks=[];
         },
 
         generateFooter(name, colorHex) {
-            // Clean name: remove non-ASCII and limit length
-            let safeName = name.replace(/[^\x00-\x7F]/g, "").substring(0, 15) || "Skin";
-            // Color must be decimal integer
             const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 16776960;
             const timestamp = Math.floor(Date.now() / 1000);
+            const safeName = name.substring(0, 15) || "Skin";
 
             const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>name</key>
-    <string>${safeName}</string>
-    <key>color</key>
-    <integer>${colorInt}</integer>
-    <key>indexedSubscriptions</key>    <array/>
-    <key>creationDate</key>
-    <integer>${timestamp}</integer>
+    <key>name</key><string>${safeName}</string>
+    <key>color</key><integer>${colorInt}</integer>
+    <key>indexedSubscriptions</key><array/>
+    <key>creationDate</key><integer>${timestamp}</integer>
 </dict>
 </plist>`;
-
             const xmlBytes = new TextEncoder().encode(xml);
             const xmlLenVarint = this.writeVarint(xmlBytes.length);
 
-            // Tag 18 = Field 2 (XML Metadata)
+            // Tag 18 (Field 2) + Length + XML
             const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
             footer.set([18], 0);
             footer.set(xmlLenVarint, 1);
@@ -8903,53 +8897,57 @@ window.MouseClicks=[];
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
-            // 1. Prepare sub-components
+            console.log(`[LM] Attempting Upload: ${skinName}`);
+
+            // 1. Generate XML Metadata
             const footer = this.generateFooter(skinName, skinColorHex);
+
+            // 2. Prepare Image Field (Tag 10, Field 1)
             const imageLenVarint = this.writeVarint(imageUint8Array.length);
 
-            // 2. Build the Skin Object (Tag 10 for Image + Tag 18 for XML)
-            // Field 1 (Image): [Tag 10][Len][Data]
-            // Field 2 (XML):   [Tag 18][Len][Data] (already in footer)
+            // 3. Calculate Skin Object Size (Image Field + XML Field)
+            // Skin Object = [10][ImageLen][ImageData] + [18][XmlLen][XmlData]
             const skinObjContentSize = (1 + imageLenVarint.length + imageUint8Array.length) + footer.length;
             const skinObjLenVarint = this.writeVarint(skinObjContentSize);
 
-            // 3. Build the Message 150 Payload
-            // Tag 8 (Field 1): Request ID 150
-            // Tag 178, 9 (Field 150): The Skin Object
-            const payloadSize = 3 + (2 + skinObjLenVarint.length + skinObjContentSize);
-            const payloadSizeVarint = this.writeVarint(payloadSize);
+            // 4. Calculate Total Payload Size (Message ID 150 + Skin Object)
+            // Tag 8, 150, 1 is 3 bytes. Tag 178, 9 is 2 bytes.
+            const totalPayloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
+            const totalPayloadVarint = this.writeVarint(totalPayloadSize);
 
-            console.log(`[LM] Uploading Skin: "${skinName}" (${imageUint8Array.length} bytes)`);
-
-            // --- CONSTRUCT FINAL PACKET ---
+            // 5. Construct the full byte array (Plain Array for proxyMobileData)
             let packet = [];
 
-            // A. Outer Wrapper (Field 1 = 1, Field 2 = Length Delimited)
-            packet.push(8, 1);
-            packet.push(18);
-            packet.push(...payloadSizeVarint);
+            // --- A. WRAPPER ---
+            packet.push(8, 1);                  // Wrapper Header
+            packet.push(18);                    // Field 2 (Payload Tag)
+            packet.push(...totalPayloadVarint); // Payload Length
 
-            // B. Message ID (Field 1 = 150)
-            packet.push(8, 150, 1);
+            // --- B. MESSAGE ID ---
+            packet.push(8, 150, 1);             // Request ID 150
 
-            // C. Skin Object Wrapper (Field 150 = 178, 9 in Varint)
-            packet.push(178, 9);
-            packet.push(...skinObjLenVarint);
+            // --- C. SKIN OBJECT TAG ---
+            packet.push(178, 9);                // Field 1202 (Skin Object)
+            packet.push(...skinObjLenVarint);   // Skin Object Length
 
-            // D. Image Field (Field 1 inside Skin Object)
-            packet.push(10);
-            packet.push(...imageLenVarint);
+            // --- D. IMAGE TAG ---
+            packet.push(10);                    // Field 1 (Image)
+            packet.push(...imageLenVarint);     // Image Length
 
-            // Assemble everything into a Buffer
-            const headerPart = new Uint8Array(packet);
-            const finalBuffer = new Uint8Array(headerPart.length + imageUint8Array.length + footer.length);
+            // --- E. DATA MERGE ---
+            // Merge image data into the array
+            for (let i = 0; i < imageUint8Array.length; i++) {
+                packet.push(imageUint8Array[i]);
+            }
+            // Merge footer (XML) into the array
+            for (let i = 0; i < footer.length; i++) {
+                packet.push(footer[i]);
+            }
 
-            finalBuffer.set(headerPart, 0);
-            finalBuffer.set(imageUint8Array, headerPart.length);
-            finalBuffer.set(footer, headerPart.length + imageUint8Array.length);
-
-            // Send via the core proxy (which adds the 102 opcode and encryption)
-            window.core.proxyMobileData(Array.from(finalBuffer));
+            // FINAL STEP: Use the proxy.
+            // We pass it as a regular Array so proxyMobileData unshifts 102.
+            window.core.proxyMobileData(packet);
+            console.log("[LM] Packet sent to server via Proxy (102 prepended).");
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
