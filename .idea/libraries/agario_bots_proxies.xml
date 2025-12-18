@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="agario-bots-proxies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ExampleScripts/agario-bots2/agario-bots-proxies/agar-bot-proxies.zip!/" />
+      <root url="jar://$PROJECT_DIR$/ExampleScripts/agario-bots2/agario-bots-proxies/Gather_Proxy_9.0_Premium.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

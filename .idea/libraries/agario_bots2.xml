@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="agario-bots2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ExampleScripts/agario-bots2/old-agario-bots.zip!/" />
+      <root url="jar://$PROJECT_DIR$/ExampleScripts/agario-bots2/agario-bots.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

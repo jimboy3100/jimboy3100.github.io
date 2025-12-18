@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="vrrr">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ogario/vrrr.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
