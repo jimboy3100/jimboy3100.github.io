@@ -1,4 +1,4 @@
-window.OgVer=3.328;
+window.OgVer=3.329;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -5820,7 +5820,7 @@ window.MouseClicks=[];
 			'<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a>' +
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick-custom-skin ogicon-trophy"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
@@ -8959,117 +8959,53 @@ window.MouseClicks=[];
                 this.setTargetStatus(0);
             }
         },
-        updateTarget(nick, skinUrl, x, y, mass, color, f) {
-            ogario.setTargetPosition(x, y);
-            if (this.targetNick !== nick) {
-                this.targetNick = nick;
-                $('#target-nick').html(this.escapeHTML(nick))
-            }
-            if (skinUrl) {
-                if (this.targetSkinURL !== skinUrl) {
-                    if (this.customSkinsCache.hasOwnProperty(skinUrl + '_cached')) {
-                        $('#target-skin img').attr('src', skinUrl);
-                        $('#target-skin img').css('border', '2px solid' + color);
-                        this.targetSkinURL = skinUrl;
-                    } else {
-                        $('#target-skin img').attr('src', 'https://www.legendmod.ml/banners/static/img/blank.png')
-                    }
-                }
-            }
-            $('#target-status').text('[' + this.shortMassFormat(mass) + ']');
-            var l = this.calculateMapSector(x, y);
-            var text;
-            html = textLanguage.targetDistance + ': <span class=\"hud-main-color\">' + ogario.targetDistance + ' [' + l + ']</span>';
-            var flag = false;
-            for (var j = 0; j < legendmod.ghostCells.length; j++) {
-                if (legendmod.leaderboard[j] && this.targetNick === legendmod.leaderboard[j].nick) {
-
-                    if (flag === false) {
-                        text = application.calculateMapSector(window.predictedGhostCells[j].x + legendmod.mapOffsetX, window.predictedGhostCells[j].y + legendmod.mapOffsetY)
-                        flag = true;
-                    }
-                }
-            };
-            if (flag === false && f >= 0) {
-                text = this.calculateMapSector(x, y);
-            } else if (flag === false && (this.calculateMapSector(x, y) === "C3" || legendmod.gameMode === ":party")) {
-                text = this.calculateMapSector(x, y);
-            } else if (flag === false) {
-                text = "Unknown";
-            };
-            html = Languageletter367 + ': <span class=\"hud-main-color\">' + ogario.targetDistance + ' [' + text + ']</span>';
-            if (ogario.play) {
-                html += ' | ' + textLanguage.targetMass + ': <span class=\"hud-main-color\">' + this.shortMassFormat(mass + ogario.playerMass) + '</span>'
-            }
-            $('#target-summary').html(html);
-            if (1 != this.targetStatus) {
-                this.setTargetStatus(1);
-            }
-        },
-        updateQuest() {
-            if (!this.showQuest || this.gameMode !== ':ffa') {
-                return;
-            }
-            if (window.MC && window.MC.getQuestProgressLabel) {
-                this.questHUD.textContent = window.MC.getQuestProgressLabel();
-            }
-        },
         setupSkinUploadInterface() {
-            // 1. Add Trigger Icon to Left Menu (Quick Menu)
-            if ($('.quick-custom-skin').length === 0) {
-                // We append it to #quick-menu so it sits vertically with other icons
-                $('#quick-menu').append(`
-                    <a href="#" class="quick quick-custom-skin fa fa-camera" 
-                       data-toggle="tab-tooltip" data-placement="left" 
-                       title="Upload Custom Skin" 
-                       style="color: #00c6ff;">
-                    </a>
-                `);
-            }
+            // 1. Identify the Trigger Button (You added this manually in HTML)
+            const openBtn = $('.quick-custom-skin');
 
-            // 2. Create the Floating Panel
+            // 2. Create the Floating Panel (Only if it doesn't exist)
             if ($('#custom-skin-uploader').length === 0) {
                 const panelHTML = `
-                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px;">
+                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999;">
                         
                         <!-- Header with Close 'X' -->
                         <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #ff4d4d; padding: 0 5px;">X</div>
-                            <h5 class="menu-main-color" style="margin: 0; display: inline-block;">Upload Skin</h5>
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #ff4d4d; padding: 0 5px; font-size: 16px;">✕</div>
+                            <h5 class="menu-main-color" style="margin: 0; display: inline-block;">Upload Custom Skin</h5>
                         </div>
 
                         <!-- Name & Color Inputs -->
-                        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
                             <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
                             <div class="input-group color-picker" style="width: 30%;">
                                 <input id="legendSkinColor" type="hidden" value="#FFFF00">
-                                <span class="input-group-addon"><i style="background-color: #FFFF00;"></i></span>
+                                <span class="input-group-addon" style="border: 1px solid rgba(255,255,255,0.2);"><i style="background-color: #FFFF00;"></i></span>
                             </div>
                         </div>
 
-                        <!-- File Input Button -->
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px; background: linear-gradient(90deg,#00c6ff,#0072ff); border:none;">
+                        <!-- Preview Area (Wider/Bigger) -->
+                        <div id="legendPreviewWrapper" style="text-align: center; margin-bottom: 15px;">
+                            <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; margin: 0 auto; background-color: #000; box-shadow: 0 0 15px rgba(0,0,0,0.5);"></canvas>
+                        </div>
+
+                        <!-- Buttons -->
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px; background: linear-gradient(90deg,#00c6ff,#0072ff); border:none; font-weight:bold;">
                             📂 Choose Image
                         </label>
                         <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
                         
-                        <!-- Preview & Save Area -->
-                        <div id="legendPreviewWrapper" style="display:none; text-align: center;">
-                            <canvas id="legendCanvas" width="512" height="512" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #333; margin: 0 auto 10px auto; background-color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></canvas>
-                            
-                            <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold;">
-                                Upload (90 DNA)
-                            </button>
-                            <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa;"></div>
-                        </div>
+                        <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold; opacity: 0.5; cursor: not-allowed;">
+                            Upload & Buy (90 DNA)
+                        </button>
+                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;"></div>
 
                     </div>
                 `;
 
-                // Append to left container (where bot panel/skins panel live)
-                $('.left-container').append(panelHTML);
+                // Append to body to ensure it floats above everything
+                $('body').append(panelHTML);
 
-                // Initialize the Color Picker for this specific panel
+                // Initialize Color Picker
                 $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
                     $('#legendSkinColor').val(e.color.toHex());
                     $('#legendCanvas').css('border-color', e.color.toHex());
@@ -9077,89 +9013,104 @@ window.MouseClicks=[];
             }
 
             // 3. Logic & Event Listeners
-            const openBtn = $('.quick-custom-skin');
             const panel = $('#custom-skin-uploader');
             const closeBtn = $('#close-custom-skin');
-            var app = this; // Preserve context
+            const saveBtn = $('#legendSaveBtn');
+            const status = $('#legendStatus');
+            const canvas = document.getElementById("legendCanvas");
+            const ctx = canvas ? canvas.getContext("2d") : null;
+            let processedBuffer = null;
+            const app = this;
 
-            // Toggle Open/Close
+            // --- Helper: Process Image (URL or File) ---
+            const processImage = (src) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; // Attempt to handle CORS for URLs
+                img.onload = () => {
+                    ctx.clearRect(0, 0, 512, 512);
+                    ctx.drawImage(img, 0, 0, 512, 512);
+
+                    canvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            processedBuffer = new Uint8Array(reader.result);
+                            status.text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`).css('color', '#ccc');
+                            saveBtn.css({ opacity: 1, cursor: 'pointer' });
+                        };
+                        reader.readAsArrayBuffer(blob);
+                    }, 'image/png');
+                };
+                img.onerror = () => {
+                    status.text("Error loading image (CORS or Invalid URL)").css('color', 'red');
+                };
+                img.src = src;
+            };
+
+            // --- Toggle Open ---
             openBtn.off('click').on('click', (e) => {
                 e.preventDefault();
-                // Close other side panels to keep UI clean
-                $('.agario-side-panel').not(panel).not('#quick-menu').hide();
 
-                if (panel.is(':visible')) {
-                    panel.fadeOut(200);
+                // Hide Quick Menu (as requested)
+                $('#quick-menu').fadeOut(200);
+
+                // Show Panel
+                panel.fadeIn(200);
+
+                // Auto-fill Data from current settings
+                $('#legendSkinName').val($('#nick').val() || "LM Skin");
+                const curColor = $('#color').val() || "#FFDD00";
+                $('#legendSkinColor').val(curColor);
+                $('#custom-skin-uploader .input-group-addon i').css('background-color', curColor);
+                $('#legendCanvas').css('border-color', curColor);
+
+                // Pre-select Image from #skin URL if available
+                const currentUrl = $('#skin').val();
+                if (currentUrl && currentUrl.length > 4) {
+                    status.text("Loading skin from URL...").css('color', 'yellow');
+                    processImage(currentUrl);
                 } else {
-                    // Sync inputs with current user settings
-                    $('#legendSkinName').val($('#nick').val() || "LM Skin");
-                    const curColor = $('#color').val() || "#FFDD00";
-                    $('#legendSkinColor').val(curColor);
-                    $('#custom-skin-uploader .input-group-addon i').css('background-color', curColor);
-
-                    panel.fadeIn(200);
+                    status.text("Select an image to start").css('color', '#aaa');
                 }
             });
 
+            // --- Toggle Close ---
             closeBtn.off('click').on('click', () => {
                 panel.fadeOut(200);
+                // Show Quick Menu again (as requested)
+                $('#quick-menu').fadeIn(200);
             });
 
-            // File Processing
-            const input = document.getElementById("legendUploadInput");
-            const canvas = document.getElementById("legendCanvas");
-            const ctx = canvas ? canvas.getContext("2d") : null;
-            const saveBtn = document.getElementById("legendSaveBtn");
-            let processedBuffer = null;
+            // --- File Input Change ---
+            $('#legendUploadInput').on('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                processImage(URL.createObjectURL(file));
+            });
 
-            if (input) {
-                input.addEventListener("change", e => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const img = new Image();
-                    img.onload = () => {
-                        // Resize to 512x512
-                        ctx.clearRect(0, 0, 512, 512);
-                        ctx.drawImage(img, 0, 0, 512, 512);
-                        canvas.toBlob((blob) => {
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                                processedBuffer = new Uint8Array(reader.result);
-                                $('#legendPreviewWrapper').slideDown(200);
-                                $('#legendStatus').text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`).css('color', '#ccc');
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        }, 'image/png');
-                    };
-                    img.src = URL.createObjectURL(file);
-                });
-            }
+            // --- Save Button Action ---
+            saveBtn.off('click').on('click', () => {
+                if (!processedBuffer) return;
+                const name = $('#legendSkinName').val();
+                const color = $('#legendSkinColor').val();
 
-            // Save Action
-            if (saveBtn) {
-                saveBtn.addEventListener("click", () => {
-                    if (!processedBuffer) return;
-                    const name = $('#legendSkinName').val();
-                    const color = $('#legendSkinColor').val();
+                status.text("Sending to server...").css('color', 'yellow');
+                saveBtn.prop('disabled', true);
 
-                    $('#legendStatus').text("Sending...").css('color', 'yellow');
-                    saveBtn.disabled = true;
+                try {
+                    app.uploadCustomSkin(processedBuffer, name, color);
+                    status.text("✅ Sent! Check 'Owned' tab.").css('color', '#0f0');
 
-                    try {
-                        app.uploadCustomSkin(processedBuffer, name, color);
-                        $('#legendStatus').text("✅ Sent! Check 'Owned' tab.").css('color', '#0f0');
-
-                        setTimeout(() => {
-                            panel.fadeOut();
-                            saveBtn.disabled = false;
-                        }, 2500);
-                    } catch (err) {
-                        console.error(err);
-                        $('#legendStatus').text("❌ Error sending.").css('color', 'red');
-                        saveBtn.disabled = false;
-                    }
-                });
-            }
+                    setTimeout(() => {
+                        panel.fadeOut();
+                        $('#quick-menu').fadeIn(); // Restore menu
+                        saveBtn.prop('disabled', false);
+                    }, 2500);
+                } catch (err) {
+                    console.error(err);
+                    status.text("❌ Error sending.").css('color', 'red');
+                    saveBtn.prop('disabled', false);
+                }
+            });
         },
         init() {
             this.loadSettings();
