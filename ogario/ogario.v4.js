@@ -1,4 +1,4 @@
-window.OgVer=3.329;
+window.OgVer=3.330;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8858,6 +8858,70 @@ window.MouseClicks=[];
             } else {
                 this.setTargetStatus(0);
             }
+        },
+        writeVarint(value) {
+            let bytes = [];
+            while (value > 127) {
+                bytes.push((value & 127) | 128);
+                value >>>= 7;
+            }
+            bytes.push(value);
+            return bytes;
+        },
+
+        generateFooter(name, colorHex) {
+            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16);
+            const timestamp = Math.floor(Date.now() / 1000);
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>name</key>
+    <string>${name}</string>
+    <key>color</key>
+    <integer>${colorInt}</integer>
+    <key>indexedSubscriptions</key>
+    <array/>
+    <key>creationDate</key>
+    <integer>${timestamp}</integer>
+  </dict>
+</plist>`;
+            const xmlBytes = new TextEncoder().encode(xml);
+            const xmlLenVarint = this.writeVarint(xmlBytes.length);
+            const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
+            footer.set([18], 0);
+            footer.set(xmlLenVarint, 1);
+            footer.set(xmlBytes, 1 + xmlLenVarint.length);
+            return footer;
+        },
+
+        uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
+            if (!skinName) skinName = "LM Skin";
+            if (!skinColorHex) skinColorHex = "#FFDD00";
+
+            console.log(`[LM] Uploading Skin: Name="${skinName}", Color=${skinColorHex}`);
+            const footer = this.generateFooter(skinName, skinColorHex);
+            const imageLen = imageUint8Array.length;
+            const footerLen = footer.length;
+
+            const imageLenVarint = this.writeVarint(imageLen);
+            const skinObjContentSize = 1 + imageLenVarint.length + imageLen + footerLen;
+            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
+            const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
+
+            let packet = [];
+            packet.push(8, 1); packet.push(18); packet.push(...this.writeVarint(payloadSize));
+            packet.push(8, 150, 1); packet.push(178, 9); packet.push(...skinObjLenVarint);
+            packet.push(10); packet.push(...imageLenVarint);
+
+            const headerPart = new Uint8Array(packet);
+            const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
+
+            finalBuffer.set(headerPart, 0);
+            finalBuffer.set(imageUint8Array, headerPart.length);
+            finalBuffer.set(footer, headerPart.length + imageLen);
+
+            window.core.proxyMobileData(finalBuffer);
         },
         setupSkinUploadInterface() {
             // 1. Identify the Trigger Button (You added this manually in HTML)
