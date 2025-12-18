@@ -8869,7 +8869,6 @@ window.MouseClicks=[];
             bytes.push(value);
             return bytes;
         },
-
         generateStrictFooter(name, colorHex) {
             const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 14703104;
             const timestamp = 1766099274; // Matches your sniffer
@@ -8904,7 +8903,6 @@ window.MouseClicks=[];
             footerField.push(...xmlBytes);
             return footerField; // This is a standard Array
         },
-
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
             console.log("[LM] Upload Started. Name: " + skinName + " Image Size: " + imageUint8Array.length + " bytes");
 
@@ -8969,8 +8967,8 @@ window.MouseClicks=[];
             const panel = $('#custom-skin-uploader');
             const saveBtn = $('#legendSaveBtn');
             const status = $('#legendStatus');
-            const canvas = document.getElementById("legendCanvas");
-            const ctx = canvas.getContext("2d");
+            // REMOVED the canvas/ctx lines from here to prevent the crash
+
             let processedBuffer = null;
             const app = this;
 
@@ -8978,6 +8976,14 @@ window.MouseClicks=[];
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = () => {
+                    // MOVE canvas/ctx here so they are only grabbed when needed
+                    const canvas = document.getElementById("legendCanvas");
+                    if (!canvas) {
+                        console.error("legendCanvas not found in DOM!");
+                        return;
+                    }
+                    const ctx = canvas.getContext("2d");
+
                     // FORCE 512x512 RESOLUTION
                     ctx.clearRect(0, 0, 512, 512);
                     ctx.drawImage(img, 0, 0, 512, 512);
@@ -9018,10 +9024,11 @@ window.MouseClicks=[];
                 if (file) processAndFormat(URL.createObjectURL(file));
             });
 
-            $('.quick-custom-skin').on('click', () => {
+            $('.quick-custom-skin').on('click', (e) => {
+                e.preventDefault();
                 panel.fadeIn(200);
                 const currentUrl = $('#skin').val();
-                if (currentUrl) processAndFormat(currentUrl);
+                if (currentUrl && currentUrl.length > 5) processAndFormat(currentUrl);
             });
 
             $('#close-custom-skin').on('click', () => panel.fadeOut(200));
