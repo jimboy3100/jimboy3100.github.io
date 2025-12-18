@@ -7980,6 +7980,105 @@ window.MouseClicks=[];
             this.sendServerRegion();
             this.sendServerGameMode();
         },
+// --- 1. Helper: Write Protobuf Varint ---
+        writeVarint(value) {
+            let bytes = [];
+            while (value > 127) {
+                bytes.push((value & 127) | 128);
+                value >>>= 7;
+            }
+            bytes.push(value);
+            return bytes;
+        },
+
+        // --- 2. Helper: Convert Strings/Colors to Protocol Bytes ---
+        generateFooter(name, colorHex) {
+            // 1. Convert Hex Color (#FF0000) to Integer (16711680)
+            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16);
+
+            // 2. Get Current Timestamp
+            const timestamp = Math.floor(Date.now() / 1000);
+
+            // 3. Generate the XML Metadata
+            // This matches the exact format Agar.io expects
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>name</key>
+    <string>${name}</string>
+    <key>color</key>
+    <integer>${colorInt}</integer>
+    <key>indexedSubscriptions</key>
+    <array/>
+    <key>creationDate</key>
+    <integer>${timestamp}</integer>
+  </dict>
+</plist>`;
+
+            // 4. Encode XML to Bytes (UTF-8)
+            const xmlBytes = new TextEncoder().encode(xml);
+
+            // 5. Wrap in Protobuf Field 2 (Tag 18)
+            const xmlLenVarint = this.writeVarint(xmlBytes.length);
+
+            const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
+            footer.set([18], 0); // Field 2 Tag
+            footer.set(xmlLenVarint, 1);
+            footer.set(xmlBytes, 1 + xmlLenVarint.length);
+
+            return footer;
+        },
+
+        // --- 3. The Main Upload Function (Dynamic) ---
+        uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
+            // Defaults
+            if (!skinName) skinName = "LM Skin";
+            if (!skinColorHex) skinColorHex = "#FFDD00"; // Default Yellow
+
+            console.log(`[LM] Uploading Skin: Name="${skinName}", Color=${skinColorHex}`);
+
+            // A. Generate Metadata
+            const footer = this.generateFooter(skinName, skinColorHex);
+
+            // B. Calculate Sizes
+            const imageLen = imageUint8Array.length;
+            const footerLen = footer.length;
+
+            // Skin Object: Tag(10) + Varint + Image + Footer
+            const imageLenVarint = this.writeVarint(imageLen);
+            const skinObjContentSize = 1 + imageLenVarint.length + imageLen + footerLen;
+
+            // Wrapper: ReqID(3) + FieldTag(2) + FieldLenVarint + SkinObject
+            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
+            const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
+
+            // C. Build Header
+            let packet = [];
+            packet.push(8, 1);          // Wrapper Type
+            packet.push(18);            // Wrapper Payload Tag
+            packet.push(...this.writeVarint(payloadSize));
+
+            packet.push(8, 150, 1);     // Request ID 150
+            packet.push(178, 9);        // Field 1202 Tag
+            packet.push(...skinObjLenVarint); // Length of Skin Object
+
+            packet.push(10);            // Image Data Tag (Field 1)
+            packet.push(...imageLenVarint);   // Image Length
+
+            // D. Combine (Header + Image + Dynamic Footer)
+            const headerPart = new Uint8Array(packet);
+            const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
+
+            finalBuffer.set(headerPart, 0);
+            finalBuffer.set(imageUint8Array, headerPart.length);
+            finalBuffer.set(footer, headerPart.length + imageLen);
+
+            console.log(`[LM] Sending Skin Packet (${finalBuffer.length} bytes)`);
+
+            // E. Send
+            window.core.proxyMobileData(finalBuffer);
+        },
         sendPartyData() {
             this.sendPlayerClanTag();
 			
