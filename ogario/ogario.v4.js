@@ -1,4 +1,4 @@
-window.OgVer=3.331;
+window.OgVer=3.332;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8860,6 +8860,7 @@ window.MouseClicks=[];
             }
         },
         // --- 1. PROTOCOL HELPERS (FIXED) ---
+        // --- LEGEND MOD SKIN UPLOADER (VERSION 4.0 - FIXED) ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8871,17 +8872,10 @@ window.MouseClicks=[];
         },
 
         generateFooter(name, colorHex) {
-            // Safety: Ensure name is safe and not empty
-            let safeName = name.trim();
-            if(!safeName || safeName.length === 0) safeName = "Skin";
-            // Escape XML special chars to prevent protocol errors
-            safeName = safeName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
+            let safeName = name.replace(/[^\x00-\x7F]/g, "").substring(0, 15) || "Skin";
             const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 16776960;
             const timestamp = Math.floor(Date.now() / 1000);
 
-            // STRICT XML FORMATTING (Do not change spaces/indentation)
-            // This matches the official client output byte-for-byte structure
             const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -8896,58 +8890,57 @@ window.MouseClicks=[];
     <integer>${timestamp}</integer>
 </dict>
 </plist>`;
-
             const xmlBytes = new TextEncoder().encode(xml);
             const xmlLenVarint = this.writeVarint(xmlBytes.length);
-
-            // Construct Field 2 (Tag 18)
             const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
-            footer.set([18], 0); // Tag 18 (Field 2)
+            footer.set([18], 0);
             footer.set(xmlLenVarint, 1);
             footer.set(xmlBytes, 1 + xmlLenVarint.length);
             return footer;
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
-            console.log(`[LM] Generating Skin Packet: "${skinName}"...`);
-
             const footer = this.generateFooter(skinName, skinColorHex);
             const imageLen = imageUint8Array.length;
             const footerLen = footer.length;
 
-            // --- CALCULATE SIZES ---
-
-            // 1. Skin Object (Field 1202) Content
-            // Contains: Field 1 (Image) + Field 2 (Footer)
-            // Image Field = Tag(1) + Varint + Data
+            // 1. Skin Object (Field 1202)
             const imageLenVarint = this.writeVarint(imageLen);
             const skinObjContentSize = (1 + imageLenVarint.length + imageLen) + footerLen;
-
-            // 2. Main Payload (Request 150) Content
-            // Contains: ReqID(3) + Field 1202 Tag(2) + Field 1202 Length + Skin Object Content
             const skinObjLenVarint = this.writeVarint(skinObjContentSize);
-            const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
+
+            // 2. Client Version String (Dynamic from LegendMod)
+            // Uses the variable we found in your code: legendmod.clientVersionString
+            const verStr = legendmod.clientVersionString || "3.11.11";
+            const verBytes = new TextEncoder().encode(verStr);
+
+            console.log(`[LM] Uploading Skin: "${skinName}" using version: ${verStr}`);
+
+            // 3. Main Message (150) Payload size calculation
+            const payloadSize = 3 + 1 + 1 + verBytes.length + 2 + skinObjLenVarint.length + skinObjContentSize;
 
             // --- BUILD PACKET ---
             let packet = [];
 
-            // Wrapper (Opcode 102/8)
+            // Wrapper (Field 1: Type 8, Field 2: Length)
             packet.push(8, 1);
-            packet.push(18); // Payload Tag
+            packet.push(18);
             packet.push(...this.writeVarint(payloadSize));
 
             // Request ID 150
             packet.push(8, 150, 1);
 
-            // Field 1202 (Skin Object)
-            packet.push(178, 9); // Tag
-            packet.push(...skinObjLenVarint); // Length
+            // Client Version Field (Tag 18 = Field 2)
+            packet.push(18, verBytes.length, ...verBytes);
 
-            // Field 1 (Image)
-            packet.push(10); // Tag
-            packet.push(...imageLenVarint); // Length
+            // Skin Object Field (Tag 9618 -> Field 1202 -> 178, 9)
+            packet.push(178, 9);
+            packet.push(...skinObjLenVarint);
 
-            // --- COMBINE ---
+            // Image Data Field (Tag 10 = Field 1)
+            packet.push(10);
+            packet.push(...imageLenVarint);
+
             const headerPart = new Uint8Array(packet);
             const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
 
@@ -8955,8 +8948,8 @@ window.MouseClicks=[];
             finalBuffer.set(imageUint8Array, headerPart.length);
             finalBuffer.set(footer, headerPart.length + imageLen);
 
-            console.log(`[LM] Sending ${finalBuffer.length} bytes...`);
-            window.core.proxyMobileData(finalBuffer);
+            // Convert to Array for proxyMobileData to handle the 102 opcode correctly
+            window.core.proxyMobileData(Array.from(finalBuffer));
         },
         setupSkinUploadInterface() {
             // 1. Identify the Trigger Button (You added this manually in HTML)
