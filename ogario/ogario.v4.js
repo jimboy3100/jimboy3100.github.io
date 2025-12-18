@@ -9015,139 +9015,151 @@ window.MouseClicks=[];
             }
         },
         setupSkinUploadInterface() {
-            const targetPanel = $('#skins-panel');
-            if (targetPanel.find("#legendUIContainer").length) return;
+            // 1. Add Trigger Icon to Left Menu (Quick Menu)
+            if ($('.quick-custom-skin').length === 0) {
+                // We append it to #quick-menu so it sits vertically with other icons
+                $('#quick-menu').append(`
+                    <a href="#" class="quick quick-custom-skin fa fa-camera" 
+                       data-toggle="tab-tooltip" data-placement="left" 
+                       title="Upload Custom Skin" 
+                       style="color: #00c6ff;">
+                    </a>
+                `);
+            }
 
-            // Container to hold Button + Panel
-            const container = document.createElement("div");
-            container.id = "legendUIContainer";
-            // Match standard spacing
-            container.style.marginBottom = "15px";
-
-            container.innerHTML = `
-                <!-- 1. The Toggle Button -->
-                <button id="legendOpenBtn" class="btn btn-primary btn-block" style="background: linear-gradient(90deg, #00c6ff, #0072ff); border: none; font-weight: bold; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                   📸 Make your skin visual to all
-                </button>
-
-                <!-- 2. The Hidden Upload Panel -->
-                <!-- CHANGED: Added 'agario-panel' class and removed hardcoded background colors -->
-                <div id="legendUploadPanel" class="agario-panel" style="display: none; margin-top: 10px; padding: 15px; text-align: center; position: relative; border-radius: 5px;">
-                    
-                    <!-- Close Button -->
-                    <div id="legendCloseBtn" style="position: absolute; top: 5px; right: 10px; cursor: pointer; color: #ff4d4d; font-weight: bold; font-size: 16px;">✕</div>
-
-                    <h5 style="margin: 0 0 10px 0; font-family: 'Ubuntu', sans-serif; font-weight: bold; background: linear-gradient(90deg,#00c6ff,#0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        Upload Skin
-                    </h5>
-                    
-                    <!-- Display Current Settings -->
-                    <div style="font-size: 11px; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">
-                        Name: <span id="dispName" style="color:white; font-weight:bold;">-</span><br>
-                        Color: <span id="dispColor" style="font-weight:bold;">-</span>
-                    </div>
-
-                    <!-- File Input -->
-                    <label for="legendUploadInput" class="btn btn-primary btn-block" style="border: 1px dashed rgba(255,255,255,0.2);">📂 Select Image</label>
-                    <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
-                    
-                    <!-- Preview Area -->
-                    <div id="legendPreviewWrapper" style="margin-top:12px; display:none;">
-                        <canvas id="legendCanvas" width="512" height="512" style="width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 5px auto; display: block; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></canvas>
+            // 2. Create the Floating Panel
+            if ($('#custom-skin-uploader').length === 0) {
+                const panelHTML = `
+                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px;">
                         
-                        <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold;">✔ Upload (90 🧬 DNA)</button>
-                        <div id="legendStatus" style="font-size: 10px; color: #aaa; margin-top: 5px;"></div>
+                        <!-- Header with Close 'X' -->
+                        <div class="clearfix" style="margin-bottom: 10px;">
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #ff4d4d; padding: 0 5px;">X</div>
+                            <h5 class="menu-main-color" style="margin: 0; display: inline-block;">Upload Skin</h5>
+                        </div>
+
+                        <!-- Name & Color Inputs -->
+                        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                            <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
+                            <div class="input-group color-picker" style="width: 30%;">
+                                <input id="legendSkinColor" type="hidden" value="#FFFF00">
+                                <span class="input-group-addon"><i style="background-color: #FFFF00;"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- File Input Button -->
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px; background: linear-gradient(90deg,#00c6ff,#0072ff); border:none;">
+                            📂 Choose Image
+                        </label>
+                        <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
+                        
+                        <!-- Preview & Save Area -->
+                        <div id="legendPreviewWrapper" style="display:none; text-align: center;">
+                            <canvas id="legendCanvas" width="512" height="512" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #333; margin: 0 auto 10px auto; background-color: #000; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></canvas>
+                            
+                            <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold;">
+                                Upload (90 DNA)
+                            </button>
+                            <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa;"></div>
+                        </div>
+
                     </div>
-                </div>
-            `;
+                `;
 
-            targetPanel.prepend(container);
+                // Append to left container (where bot panel/skins panel live)
+                $('.left-container').append(panelHTML);
 
-            // -- Logic --
-            const openBtn = container.querySelector("#legendOpenBtn");
-            const panel = container.querySelector("#legendUploadPanel");
-            const closeBtn = container.querySelector("#legendCloseBtn");
-            const input = container.querySelector("#legendUploadInput");
-            const canvas = container.querySelector("#legendCanvas");
-            const ctx = canvas.getContext("2d");
-            const saveBtn = container.querySelector("#legendSaveBtn");
-            const status = container.querySelector("#legendStatus");
-            const dispName = container.querySelector("#dispName");
-            const dispColor = container.querySelector("#dispColor");
+                // Initialize the Color Picker for this specific panel
+                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
+                    $('#legendSkinColor').val(e.color.toHex());
+                    $('#legendCanvas').css('border-color', e.color.toHex());
+                });
+            }
 
-            let processedBuffer = null;
-            var app = this;
+            // 3. Logic & Event Listeners
+            const openBtn = $('.quick-custom-skin');
+            const panel = $('#custom-skin-uploader');
+            const closeBtn = $('#close-custom-skin');
+            var app = this; // Preserve context
 
-            // Toggle Open
-            openBtn.onclick = () => {
-                const currentNick = $('#nick').val() || "LM Skin";
-                const currentColor = $('#color').val() || "#FFDD00";
+            // Toggle Open/Close
+            openBtn.off('click').on('click', (e) => {
+                e.preventDefault();
+                // Close other side panels to keep UI clean
+                $('.agario-side-panel').not(panel).not('#quick-menu').hide();
 
-                dispName.innerText = currentNick;
-                dispColor.innerText = currentColor;
-                dispColor.style.color = currentColor;
+                if (panel.is(':visible')) {
+                    panel.fadeOut(200);
+                } else {
+                    // Sync inputs with current user settings
+                    $('#legendSkinName').val($('#nick').val() || "LM Skin");
+                    const curColor = $('#color').val() || "#FFDD00";
+                    $('#legendSkinColor').val(curColor);
+                    $('#custom-skin-uploader .input-group-addon i').css('background-color', curColor);
 
-                $(openBtn).hide();
-                $(panel).fadeIn(200);
-            };
-
-            // Toggle Close
-            closeBtn.onclick = () => {
-                $(panel).hide();
-                $(openBtn).fadeIn(200);
-                $(container.querySelector("#legendPreviewWrapper")).hide();
-                processedBuffer = null;
-            };
-
-            // Image Processing
-            input.addEventListener("change", e => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const img = new Image();
-                img.onload = () => {
-                    ctx.clearRect(0, 0, 512, 512);
-                    ctx.drawImage(img, 0, 0, 512, 512);
-                    canvas.toBlob((blob) => {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            processedBuffer = new Uint8Array(reader.result);
-                            $('#legendPreviewWrapper').slideDown(200);
-                            status.innerText = `Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`;
-                            status.style.color = "#ccc";
-                        };
-                        reader.readAsArrayBuffer(blob);
-                    }, 'image/png');
-                };
-                img.src = URL.createObjectURL(file);
+                    panel.fadeIn(200);
+                }
             });
 
-            // Upload Action
-            saveBtn.onclick = () => {
-                if (!processedBuffer) return;
-                const name = $('#nick').val() || "LM Skin";
-                const color = $('#color').val() || "#FFDD00";
+            closeBtn.off('click').on('click', () => {
+                panel.fadeOut(200);
+            });
 
-                status.innerText = "Sending...";
-                status.style.color = "yellow";
-                saveBtn.disabled = true;
+            // File Processing
+            const input = document.getElementById("legendUploadInput");
+            const canvas = document.getElementById("legendCanvas");
+            const ctx = canvas ? canvas.getContext("2d") : null;
+            const saveBtn = document.getElementById("legendSaveBtn");
+            let processedBuffer = null;
 
-                try {
-                    app.uploadCustomSkin(processedBuffer, name, color);
-                    status.innerText = "✅ Sent! Check 'Owned' skins.";
-                    status.style.color = "#0f0";
+            if (input) {
+                input.addEventListener("change", e => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const img = new Image();
+                    img.onload = () => {
+                        // Resize to 512x512
+                        ctx.clearRect(0, 0, 512, 512);
+                        ctx.drawImage(img, 0, 0, 512, 512);
+                        canvas.toBlob((blob) => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                processedBuffer = new Uint8Array(reader.result);
+                                $('#legendPreviewWrapper').slideDown(200);
+                                $('#legendStatus').text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`).css('color', '#ccc');
+                            };
+                            reader.readAsArrayBuffer(blob);
+                        }, 'image/png');
+                    };
+                    img.src = URL.createObjectURL(file);
+                });
+            }
 
-                    setTimeout(() => {
-                        closeBtn.click();
+            // Save Action
+            if (saveBtn) {
+                saveBtn.addEventListener("click", () => {
+                    if (!processedBuffer) return;
+                    const name = $('#legendSkinName').val();
+                    const color = $('#legendSkinColor').val();
+
+                    $('#legendStatus').text("Sending...").css('color', 'yellow');
+                    saveBtn.disabled = true;
+
+                    try {
+                        app.uploadCustomSkin(processedBuffer, name, color);
+                        $('#legendStatus').text("✅ Sent! Check 'Owned' tab.").css('color', '#0f0');
+
+                        setTimeout(() => {
+                            panel.fadeOut();
+                            saveBtn.disabled = false;
+                        }, 2500);
+                    } catch (err) {
+                        console.error(err);
+                        $('#legendStatus').text("❌ Error sending.").css('color', 'red');
                         saveBtn.disabled = false;
-                        status.innerText = "";
-                    }, 2000);
-                } catch(e) {
-                    console.error(e);
-                    status.innerText = "❌ Error sending.";
-                    status.style.color = "red";
-                    saveBtn.disabled = false;
-                }
-            };
+                    }
+                });
+            }
         },
         init() {
             this.loadSettings();
