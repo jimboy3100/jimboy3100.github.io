@@ -13200,3 +13200,11 @@ select.form-control {
 #cc-modal #cc-modal-wrapper li strong {
 	width: auto!important;
 }
+#legendUploadLabel:hover {
+	background: linear-gradient(90deg,#3aa0ff,#00c6ff);
+	transform: scale(1.05);
+}
+#legendPreview:hover {
+	transform: scale(1.02);
+	filter: brightness(1.05);
+}
