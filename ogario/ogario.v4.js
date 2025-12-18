@@ -1,4 +1,4 @@
-window.OgVer=3.333;
+window.OgVer=3.334;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8964,39 +8964,64 @@ window.MouseClicks=[];
             }
         },
         setupSkinUploadInterface() {
+            // 1. INJECT THE HTML PANEL (If it doesn't exist)
+            if ($('#custom-skin-uploader').length === 0) {
+                const panelHTML = `
+                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; border-radius: 8px; background-color: #00243e; border: 2px solid #01d9cc;">
+                        <div class="clearfix" style="margin-bottom: 10px;">
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">✕</div>
+                            <center><h5 class="menu-main-color" style="margin: 0; font-size: 16px;">Custom Skin Uploader</h5></center>
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                            <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
+                            <div class="input-group color-picker" style="width: 30%;">
+                                <input id="legendSkinColor" type="hidden" value="#FFFF00">
+                                <span class="input-group-addon" style="cursor:pointer;"><i style="background-color: #FFFF00;"></i></span>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; background-color: #000;"></canvas>
+                        </div>
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose Image</label>
+                        <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
+                        <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
+                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">Ready</div>
+                    </div>`;
+                $('body').append(panelHTML);
+
+                // Initialize Color Picker for the new panel
+                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
+                    $('#legendSkinColor').val(e.color.toHex());
+                    $('#legendCanvas').css('border-color', e.color.toHex());
+                });
+            }
+
+            // 2. DEFINE VARIABLES
             const panel = $('#custom-skin-uploader');
             const saveBtn = $('#legendSaveBtn');
             const status = $('#legendStatus');
-            // REMOVED the canvas/ctx lines from here to prevent the crash
-
-            let processedBuffer = null;
             const app = this;
+            let processedBuffer = null;
 
+            // 3. IMAGE PROCESSING LOGIC
             const processAndFormat = (src) => {
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = () => {
-                    // MOVE canvas/ctx here so they are only grabbed when needed
                     const canvas = document.getElementById("legendCanvas");
-                    if (!canvas) {
-                        console.error("legendCanvas not found in DOM!");
-                        return;
-                    }
                     const ctx = canvas.getContext("2d");
 
-                    // FORCE 512x512 RESOLUTION
+                    // FORCE 512x512 PNG
                     ctx.clearRect(0, 0, 512, 512);
                     ctx.drawImage(img, 0, 0, 512, 512);
 
-                    // FORCE PNG FORMAT
                     canvas.toBlob((blob) => {
                         const reader = new FileReader();
                         reader.onload = () => {
                             processedBuffer = new Uint8Array(reader.result);
                             const kb = (processedBuffer.length / 1024).toFixed(1);
 
-                            // SIZE RESTRICTION CHECK
-                            if (processedBuffer.length > 100000) {
+                            if (processedBuffer.length > 102400) {
                                 status.text("Too Big: " + kb + "KB (Limit 100KB)").css('color', 'red');
                                 saveBtn.prop('disabled', true).css('opacity', 0.5);
                             } else {
@@ -9010,7 +9035,7 @@ window.MouseClicks=[];
                 img.src = src;
             };
 
-            // Link the UI button to the protocol function
+            // 4. EVENT LISTENERS
             saveBtn.off('click').on('click', () => {
                 const name = $('#legendSkinName').val() || "test";
                 const color = $('#legendSkinColor').val() || "#FFFF00";
@@ -10918,7 +10943,7 @@ window.MouseClicks=[];
             this.playerNick = nick;
 
             var sendSpawn = function(token) {
-				console.log(token);
+				//console.log(token);
                 //var token = grecaptcha.getResponse();
 				//console.log(self.playerNick);
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
