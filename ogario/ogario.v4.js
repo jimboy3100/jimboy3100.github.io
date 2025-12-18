@@ -1,4 +1,4 @@
-window.OgVer=3.330;
+window.OgVer=3.331;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8859,6 +8859,7 @@ window.MouseClicks=[];
                 this.setTargetStatus(0);
             }
         },
+        // --- 1. PROTOCOL HELPERS (FIXED) ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8870,50 +8871,83 @@ window.MouseClicks=[];
         },
 
         generateFooter(name, colorHex) {
-            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16);
+            // Safety: Ensure name is safe and not empty
+            let safeName = name.trim();
+            if(!safeName || safeName.length === 0) safeName = "Skin";
+            // Escape XML special chars to prevent protocol errors
+            safeName = safeName.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 16776960;
             const timestamp = Math.floor(Date.now() / 1000);
+
+            // STRICT XML FORMATTING (Do not change spaces/indentation)
+            // This matches the official client output byte-for-byte structure
             const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-  <dict>
+<dict>
     <key>name</key>
-    <string>${name}</string>
+    <string>${safeName}</string>
     <key>color</key>
     <integer>${colorInt}</integer>
     <key>indexedSubscriptions</key>
     <array/>
     <key>creationDate</key>
     <integer>${timestamp}</integer>
-  </dict>
+</dict>
 </plist>`;
+
             const xmlBytes = new TextEncoder().encode(xml);
             const xmlLenVarint = this.writeVarint(xmlBytes.length);
+
+            // Construct Field 2 (Tag 18)
             const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
-            footer.set([18], 0);
+            footer.set([18], 0); // Tag 18 (Field 2)
             footer.set(xmlLenVarint, 1);
             footer.set(xmlBytes, 1 + xmlLenVarint.length);
             return footer;
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
-            if (!skinName) skinName = "LM Skin";
-            if (!skinColorHex) skinColorHex = "#FFDD00";
+            console.log(`[LM] Generating Skin Packet: "${skinName}"...`);
 
-            console.log(`[LM] Uploading Skin: Name="${skinName}", Color=${skinColorHex}`);
             const footer = this.generateFooter(skinName, skinColorHex);
             const imageLen = imageUint8Array.length;
             const footerLen = footer.length;
 
+            // --- CALCULATE SIZES ---
+
+            // 1. Skin Object (Field 1202) Content
+            // Contains: Field 1 (Image) + Field 2 (Footer)
+            // Image Field = Tag(1) + Varint + Data
             const imageLenVarint = this.writeVarint(imageLen);
-            const skinObjContentSize = 1 + imageLenVarint.length + imageLen + footerLen;
+            const skinObjContentSize = (1 + imageLenVarint.length + imageLen) + footerLen;
+
+            // 2. Main Payload (Request 150) Content
+            // Contains: ReqID(3) + Field 1202 Tag(2) + Field 1202 Length + Skin Object Content
             const skinObjLenVarint = this.writeVarint(skinObjContentSize);
             const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
 
+            // --- BUILD PACKET ---
             let packet = [];
-            packet.push(8, 1); packet.push(18); packet.push(...this.writeVarint(payloadSize));
-            packet.push(8, 150, 1); packet.push(178, 9); packet.push(...skinObjLenVarint);
-            packet.push(10); packet.push(...imageLenVarint);
 
+            // Wrapper (Opcode 102/8)
+            packet.push(8, 1);
+            packet.push(18); // Payload Tag
+            packet.push(...this.writeVarint(payloadSize));
+
+            // Request ID 150
+            packet.push(8, 150, 1);
+
+            // Field 1202 (Skin Object)
+            packet.push(178, 9); // Tag
+            packet.push(...skinObjLenVarint); // Length
+
+            // Field 1 (Image)
+            packet.push(10); // Tag
+            packet.push(...imageLenVarint); // Length
+
+            // --- COMBINE ---
             const headerPart = new Uint8Array(packet);
             const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
 
@@ -8921,6 +8955,7 @@ window.MouseClicks=[];
             finalBuffer.set(imageUint8Array, headerPart.length);
             finalBuffer.set(footer, headerPart.length + imageLen);
 
+            console.log(`[LM] Sending ${finalBuffer.length} bytes...`);
             window.core.proxyMobileData(finalBuffer);
         },
         setupSkinUploadInterface() {
