@@ -8859,7 +8859,7 @@ window.MouseClicks=[];
                 this.setTargetStatus(0);
             }
         },
-// --- 1. PROTOCOL HELPERS (STRICT MATCH) ---
+// --- 1. STRICT PROTOCOL HANDLER (VER 4.4 - FINAL) ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8870,245 +8870,161 @@ window.MouseClicks=[];
             return bytes;
         },
 
-        generateFooter(name, colorHex) {
-            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 16776960;
-            // Use a future-dated timestamp similar to the one in your screenshot
-            const timestamp = 1766099274;
-            const safeName = name || "test";
+        generateStrictFooter(name, colorHex) {
+            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16) || 14703104;
+            const timestamp = 1766099274; // Matches your sniffer
+            const safeName = name.replace(/[^\x20-\x7E]/g, "").substring(0, 15) || "test";
 
-            // STRICT XML FORMATTING (Matching the sniffer's indentation exactly)
-            const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>name</key>
-	<string>${safeName}</string>
-	<key>color</key>
-	<integer>${colorInt}</integer>
-	<key>indexedSubscriptions</key>
-	<array/>
-	<key>creationDate</key>
-	<integer>${timestamp}</integer>
-</dict>
-</plist>`;
+            // BUILDING XML EXACTLY AS SNIFFED (DO NOT ADD EXTRA SPACES)
+            const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+                '<plist version="1.0">\n' +
+                '<dict>\n' +
+                '\t<key>name</key>\n' +
+                '\t<string>' + safeName + '</string>\n' +
+                '\t<key>color</key>\n' +
+                '\t<integer>' + colorInt + '</integer>\n' +
+                '\t<key>indexedSubscriptions</key>\n' +
+                '\t<array/>\n' +
+                '\t<key>creationDate</key>\n' +
+                '\t<integer>' + timestamp + '</integer>\n' +
+                '</dict>\n' +
+                '</plist>';
 
-            const xmlBytes = new TextEncoder().encode(xml);
+            let xmlBytes = [];
+            for (let i = 0; i < xml.length; i++) {
+                xmlBytes.push(xml.charCodeAt(i) & 0xFF);
+            }
+
             const xmlLenVarint = this.writeVarint(xmlBytes.length);
 
-            // Tag 18 (Field 2) + Length + Data
-            const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
-            footer.set([18], 0);
-            footer.set(xmlLenVarint, 1);
-            footer.set(xmlBytes, 1 + xmlLenVarint.length);
-            return footer;
+            // Result is [Tag 18][Length][XML Data]
+            let footerField = [18];
+            footerField.push(...xmlLenVarint);
+            footerField.push(...xmlBytes);
+            return footerField; // This is a standard Array
         },
 
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
-            console.log(`[LM] Strict Protocol Upload: ${skinName}`);
+            console.log("[LM] Upload Started. Name: " + skinName + " Image Size: " + imageUint8Array.length + " bytes");
 
-            const footer = this.generateFooter(skinName, skinColorHex);
+            // 1. SIZE LIMIT GUARD
+            if (imageUint8Array.length > 102400) {
+                toastr.error("<b>[STRICT]:</b> Image is over 100KB! Disconnect risk too high.");
+                return;
+            }
+
+            // 2. GENERATE XML COMPONENT
+            const xmlPart = this.generateStrictFooter(skinName, skinColorHex);
+
+            // 3. PREPARE IMAGE COMPONENT (Tag 10, Field 1)
             const imageLenVarint = this.writeVarint(imageUint8Array.length);
+            const imagePart = [10];
+            imagePart.push(...imageLenVarint);
+            // We will push the actual image data later during assembly
 
-            // 1. Calculate Skin Object Content (Field 1: Image + Field 2: XML)
-            // [Tag 10][ImageLen][ImageData] + [Tag 18][XmlLen][XmlData]
-            const skinObjContentSize = (1 + imageLenVarint.length + imageUint8Array.length) + footer.length;
+            // 4. CALCULATE SKIN OBJECT SIZE (Image Field + XML Field)
+            // Object = [Tag 10 + Len + Data] + [Tag 18 + Len + XML]
+            const skinObjContentSize = imagePart.length + imageUint8Array.length + xmlPart.length;
             const skinObjLenVarint = this.writeVarint(skinObjContentSize);
 
-            // 2. Calculate Total Payload (Message ID 150 + Skin Object Field)
-            // [Tag 8, 150, 1] + [Tag 178, 9][SkinObjLen][SkinObjContent]
+            // 5. CALCULATE TOTAL PAYLOAD SIZE (Request ID 150 + Skin Object)
+            // Payload = [Tag 8, 150, 1] + [Tag 178, 9] + [SkinObjLen] + [SkinObjContent]
             const totalPayloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
             const totalPayloadVarint = this.writeVarint(totalPayloadSize);
 
-            // 3. Assemble Packet as a standard Array (to allow proxyMobileData to handle unshift 102)
+            // 6. ASSEMBLE FULL PACKET (Plain Array for 102 proxy)
             let packet = [];
 
-            // Outer Envelope
-            packet.push(8, 1);
-            packet.push(18);
+            // A. The Wrapper Header
+            packet.push(8, 1, 18);
             packet.push(...totalPayloadVarint);
 
-            // Request ID 150
+            // B. The Request ID (Field 1 = 150)
             packet.push(8, 150, 1);
 
-            // Skin Object Field (1202)
+            // C. The Skin Object Field (Field 1202 -> 178, 9)
             packet.push(178, 9);
             packet.push(...skinObjLenVarint);
 
-            // Image Field (1)
-            packet.push(10);
-            packet.push(...imageLenVarint);
-
-            // Push Image Bytes
+            // D. Append Image Part [10][Len][Data]
+            packet.push(...imagePart);
             for (let i = 0; i < imageUint8Array.length; i++) {
                 packet.push(imageUint8Array[i]);
             }
 
-            // Push Footer (XML Bytes already prefixed with tag 18)
-            for (let i = 0; i < footer.length; i++) {
-                packet.push(footer[i]);
-            }
+            // E. Append XML Part [18][Len][Data]
+            packet.push(...xmlPart);
 
-            // Send via the existing proxy logic
-            window.core.proxyMobileData(packet);
-            console.log("[LM] Skin Save Packet Sent.");
+            // 7. SEND TO CORE PROXY
+            if (window.core && window.core.proxyMobileData) {
+                window.core.proxyMobileData(packet);
+                console.log("%c[LM] SUCCESS: Sent " + packet.length + " bytes to 102 Proxy.", "color: #00FF00;");
+                toastr.success("<b>[SERVER]:</b> Skin Data Uploaded! Account Deduct: 90 DNA.");
+            } else {
+                console.error("Mod internal error: proxyMobileData missing.");
+            }
         },
         setupSkinUploadInterface() {
-            // 1. Identify the Trigger Button
-            const openBtn = $('.quick-custom-skin');
-
-            // 2. Create the Floating Panel (Only if it doesn't exist)
-            if ($('#custom-skin-uploader').length === 0) {
-                const panelHTML = `
-                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; border-radius: 8px;">
-                        
-                        <!-- Header with Close 'X' -->
-                        <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; padding: 0 5px; font-size: 16px;">✕</div>
-                            <center><h5 class="menu-main-color" style="margin: 0; display: inline-block; font-size: 16px;">Upload Custom Skin</h5></center>
-                        </div>
-
-                        <!-- Name & Color Inputs -->
-                        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-                            <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
-                            <div class="input-group color-picker" style="width: 30%;">
-                                <input id="legendSkinColor" type="hidden" value="#FFFF00">
-                                <span class="input-group-addon" style="border: 1px solid rgba(255,255,255,0.2); cursor:pointer;"><i style="background-color: #FFFF00;"></i></span>
-                            </div>
-                        </div>
-
-                        <!-- Preview Area (Wider/Bigger) -->
-                        <div id="legendPreviewWrapper" style="text-align: center; margin-bottom: 15px;">
-                            <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; margin: 0 auto; background-color: #000; box-shadow: 0 0 15px rgba(0,0,0,0.5);"></canvas>
-                        </div>
-
-                        <!-- Buttons -->
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px; background: linear-gradient(90deg,#00c6ff,#0072ff); border:none; font-weight:bold;">
-                            📂 Choose Image
-                        </label>
-                        <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
-                        
-                        <button id="legendSaveBtn" class="btn btn-success btn-block" style="font-weight:bold; opacity: 0.5; cursor: not-allowed;">
-                            Upload & Buy (90 🧬 DNA)
-                        </button>
-                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;"></div>
-
-                    </div>
-                `;
-
-                $('body').append(panelHTML);
-
-                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
-                    $('#legendSkinColor').val(e.color.toHex());
-                    $('#legendCanvas').css('border-color', e.color.toHex());
-                });
-            }
-
-            // 3. Logic & Event Listeners
             const panel = $('#custom-skin-uploader');
-            const closeBtn = $('#close-custom-skin');
             const saveBtn = $('#legendSaveBtn');
             const status = $('#legendStatus');
             const canvas = document.getElementById("legendCanvas");
-            const ctx = canvas ? canvas.getContext("2d") : null;
+            const ctx = canvas.getContext("2d");
             let processedBuffer = null;
             const app = this;
 
-            // --- Helper: Process Image (URL or File) ---
-            const processImage = (src) => {
+            const processAndFormat = (src) => {
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = () => {
+                    // FORCE 512x512 RESOLUTION
                     ctx.clearRect(0, 0, 512, 512);
                     ctx.drawImage(img, 0, 0, 512, 512);
 
+                    // FORCE PNG FORMAT
                     canvas.toBlob((blob) => {
                         const reader = new FileReader();
                         reader.onload = () => {
                             processedBuffer = new Uint8Array(reader.result);
-                            status.text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`).css('color', '#ccc');
-                            saveBtn.css({ opacity: 1, cursor: 'pointer' });
-                            saveBtn.prop('disabled', false);
+                            const kb = (processedBuffer.length / 1024).toFixed(1);
+
+                            // SIZE RESTRICTION CHECK
+                            if (processedBuffer.length > 100000) {
+                                status.text("Too Big: " + kb + "KB (Limit 100KB)").css('color', 'red');
+                                saveBtn.prop('disabled', true).css('opacity', 0.5);
+                            } else {
+                                status.text("PNG Ready: " + kb + "KB").css('color', '#0f0');
+                                saveBtn.prop('disabled', false).css({opacity: 1, cursor: 'pointer'});
+                            }
                         };
                         reader.readAsArrayBuffer(blob);
                     }, 'image/png');
                 };
-                img.onerror = () => {
-                    status.text("Error loading image (CORS or Invalid URL)").css('color', 'red');
-                };
                 img.src = src;
             };
 
-            // --- Toggle Open ---
-            openBtn.off('click').on('click', (e) => {
-                e.preventDefault();
-
-                // Hide Quick Menu (as requested)
-                // $('#quick-menu').fadeOut(200);
-
-                // Show Panel
-                panel.fadeIn(200);
-
-                // Auto-fill Data
-                $('#legendSkinName').val($('#nick').val() || "LM Skin");
-                const curColor = $('#color').val() || "#FFDD00";
-                $('#legendSkinColor').val(curColor);
-                $('#custom-skin-uploader .input-group-addon i').css('background-color', curColor);
-                $('#legendCanvas').css('border-color', curColor);
-
-                // Pre-select Image
-                const currentUrl = $('#skin').val();
-                if (currentUrl && currentUrl.length > 4) {
-                    status.text("Loading skin from URL...").css('color', 'yellow');
-                    processImage(currentUrl);
-                } else {
-                    status.text("Select an image to start").css('color', '#aaa');
-                }
-            });
-
-            // --- Toggle Close ---
-            closeBtn.off('click').on('click', () => {
-                panel.fadeOut(200);
-                // Show Quick Menu again (as requested)
-                // $('#quick-menu').fadeIn(200);
-            });
-
-            // --- File Input Change ---
-            $('#legendUploadInput').off('change').on('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                processImage(URL.createObjectURL(file));
-            });
-
-            // --- Save Button Action ---
+            // Link the UI button to the protocol function
             saveBtn.off('click').on('click', () => {
-                // SAFETY CHECK: Ensure user is logged in / played once
-                if (window.agarioEncodedUID == null) {
-                    toastr["warning"]('<b>[SERVER]: </b>Please play the game before you can use that feature');
-                    return;
-                }
-
-                if (!processedBuffer) return;
-                const name = $('#legendSkinName').val();
-                const color = $('#legendSkinColor').val();
-
-                status.text("Sending to server...").css('color', 'yellow');
-                saveBtn.prop('disabled', true);
-
-                try {
+                const name = $('#legendSkinName').val() || "test";
+                const color = $('#legendSkinColor').val() || "#FFFF00";
+                if (processedBuffer) {
                     app.uploadCustomSkin(processedBuffer, name, color);
-                    status.text("✅ Sent! Check 'Owned' tab.").css('color', '#0f0');
-
-                    setTimeout(() => {
-                        panel.fadeOut();
-                        // $('#quick-menu').fadeIn(); // Restore menu
-                        saveBtn.prop('disabled', false);
-                    }, 2500);
-                } catch (err) {
-                    console.error(err);
-                    status.text("❌ Error sending.").css('color', 'red');
-                    saveBtn.prop('disabled', false);
                 }
             });
+
+            $('#legendUploadInput').on('change', (e) => {
+                const file = e.target.files[0];
+                if (file) processAndFormat(URL.createObjectURL(file));
+            });
+
+            $('.quick-custom-skin').on('click', () => {
+                panel.fadeIn(200);
+                const currentUrl = $('#skin').val();
+                if (currentUrl) processAndFormat(currentUrl);
+            });
+
+            $('#close-custom-skin').on('click', () => panel.fadeOut(200));
         },
         init() {
             this.loadSettings();
