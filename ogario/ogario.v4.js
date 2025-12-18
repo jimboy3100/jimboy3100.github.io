@@ -1,4 +1,4 @@
-window.OgVer=3.327;
+window.OgVer=3.328;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -8081,105 +8081,6 @@ window.MouseClicks=[];
             this.sendServerRegion();
             this.sendServerGameMode();
         },
-// --- 1. Helper: Write Protobuf Varint ---
-        writeVarint(value) {
-            let bytes = [];
-            while (value > 127) {
-                bytes.push((value & 127) | 128);
-                value >>>= 7;
-            }
-            bytes.push(value);
-            return bytes;
-        },
-
-        // --- 2. Helper: Convert Strings/Colors to Protocol Bytes ---
-        generateFooter(name, colorHex) {
-            // 1. Convert Hex Color (#FF0000) to Integer (16711680)
-            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16);
-
-            // 2. Get Current Timestamp
-            const timestamp = Math.floor(Date.now() / 1000);
-
-            // 3. Generate the XML Metadata
-            // This matches the exact format Agar.io expects
-            const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>name</key>
-    <string>${name}</string>
-    <key>color</key>
-    <integer>${colorInt}</integer>
-    <key>indexedSubscriptions</key>
-    <array/>
-    <key>creationDate</key>
-    <integer>${timestamp}</integer>
-  </dict>
-</plist>`;
-
-            // 4. Encode XML to Bytes (UTF-8)
-            const xmlBytes = new TextEncoder().encode(xml);
-
-            // 5. Wrap in Protobuf Field 2 (Tag 18)
-            const xmlLenVarint = this.writeVarint(xmlBytes.length);
-
-            const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
-            footer.set([18], 0); // Field 2 Tag
-            footer.set(xmlLenVarint, 1);
-            footer.set(xmlBytes, 1 + xmlLenVarint.length);
-
-            return footer;
-        },
-
-        // --- 3. The Main Upload Function (Dynamic) ---
-        uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
-            // Defaults
-            if (!skinName) skinName = "LM Skin";
-            if (!skinColorHex) skinColorHex = "#FFDD00"; // Default Yellow
-
-            console.log(`[LM] Uploading Skin: Name="${skinName}", Color=${skinColorHex}`);
-
-            // A. Generate Metadata
-            const footer = this.generateFooter(skinName, skinColorHex);
-
-            // B. Calculate Sizes
-            const imageLen = imageUint8Array.length;
-            const footerLen = footer.length;
-
-            // Skin Object: Tag(10) + Varint + Image + Footer
-            const imageLenVarint = this.writeVarint(imageLen);
-            const skinObjContentSize = 1 + imageLenVarint.length + imageLen + footerLen;
-
-            // Wrapper: ReqID(3) + FieldTag(2) + FieldLenVarint + SkinObject
-            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
-            const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
-
-            // C. Build Header
-            let packet = [];
-            packet.push(8, 1);          // Wrapper Type
-            packet.push(18);            // Wrapper Payload Tag
-            packet.push(...this.writeVarint(payloadSize));
-
-            packet.push(8, 150, 1);     // Request ID 150
-            packet.push(178, 9);        // Field 1202 Tag
-            packet.push(...skinObjLenVarint); // Length of Skin Object
-
-            packet.push(10);            // Image Data Tag (Field 1)
-            packet.push(...imageLenVarint);   // Image Length
-
-            // D. Combine (Header + Image + Dynamic Footer)
-            const headerPart = new Uint8Array(packet);
-            const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
-
-            finalBuffer.set(headerPart, 0);
-            finalBuffer.set(imageUint8Array, headerPart.length);
-            finalBuffer.set(footer, headerPart.length + imageLen);
-
-            console.log(`[LM] Sending Skin Packet (${finalBuffer.length} bytes)`);
-
-            // E. Send
-            window.core.proxyMobileData(finalBuffer);
-        },
         sendPartyData() {
             this.sendPlayerClanTag();
 			
@@ -9112,6 +9013,143 @@ window.MouseClicks=[];
             if (window.MC && window.MC.getQuestProgressLabel) {
                 this.questHUD.textContent = window.MC.getQuestProgressLabel();
             }
+        },
+        // --- LEGEND MOD SKIN UPLOADER ---
+        writeVarint(value) {
+            let bytes = [];
+            while (value > 127) {
+                bytes.push((value & 127) | 128);
+                value >>>= 7;
+            }
+            bytes.push(value);
+            return bytes;
+        },
+
+        generateFooter(name, colorHex) {
+            const colorInt = parseInt(colorHex.replace(/^#/, ''), 16);
+            const timestamp = Math.floor(Date.now() / 1000);
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>name</key>
+    <string>${name}</string>
+    <key>color</key>
+    <integer>${colorInt}</integer>
+    <key>indexedSubscriptions</key>
+    <array/>
+    <key>creationDate</key>
+    <integer>${timestamp}</integer>
+  </dict>
+</plist>`;
+            const xmlBytes = new TextEncoder().encode(xml);
+            const xmlLenVarint = this.writeVarint(xmlBytes.length);
+            const footer = new Uint8Array(1 + xmlLenVarint.length + xmlBytes.length);
+            footer.set([18], 0);
+            footer.set(xmlLenVarint, 1);
+            footer.set(xmlBytes, 1 + xmlLenVarint.length);
+            return footer;
+        },
+
+        uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
+            if (!skinName) skinName = "LM Skin";
+            if (!skinColorHex) skinColorHex = "#FFDD00";
+
+            console.log(`[LM] Uploading Skin: Name="${skinName}", Color=${skinColorHex}`);
+            const footer = this.generateFooter(skinName, skinColorHex);
+            const imageLen = imageUint8Array.length;
+            const footerLen = footer.length;
+
+            const imageLenVarint = this.writeVarint(imageLen);
+            const skinObjContentSize = 1 + imageLenVarint.length + imageLen + footerLen;
+            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
+            const payloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
+
+            let packet = [];
+            packet.push(8, 1); packet.push(18); packet.push(...this.writeVarint(payloadSize));
+            packet.push(8, 150, 1); packet.push(178, 9); packet.push(...skinObjLenVarint);
+            packet.push(10); packet.push(...imageLenVarint);
+
+            const headerPart = new Uint8Array(packet);
+            const finalBuffer = new Uint8Array(headerPart.length + imageLen + footerLen);
+
+            finalBuffer.set(headerPart, 0);
+            finalBuffer.set(imageUint8Array, headerPart.length);
+            finalBuffer.set(footer, headerPart.length + imageLen);
+
+            window.core.proxyMobileData(finalBuffer);
+        },
+
+        setupSkinUploadInterface() {
+            const targetPanel = $('#skins-panel');
+            if (targetPanel.find("#legendUploadSection").length) return;
+
+            const html = `
+                <div id="legendUploadSection" style="background: rgba(20, 20, 20, 0.95); border-radius: 12px; margin: 10px 0; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); text-align: center; color: white;">
+                    <h4 style="font-family: 'Ubuntu', sans-serif; letter-spacing: 0.5px; margin: 0 0 10px 0; background: linear-gradient(90deg,#00c6ff,#0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">
+                        🎨 Legend Custom Skin
+                    </h4>
+                    <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                        <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
+                        <div class="input-group color-picker" style="width: 30%;">
+                            <input id="legendSkinColor" type="hidden" value="#FFFF00">
+                            <span class="input-group-addon"><i style="background-color: #FFFF00;"></i></span>
+                        </div>
+                    </div>
+                    <label for="legendUploadInput" class="btn btn-primary btn-block">📂 Choose Image</label>
+                    <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
+                    
+                    <div id="legendPreviewWrapper" style="margin-top:12px; display:none;">
+                        <canvas id="legendCanvas" width="512" height="512" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #0072ff; margin-bottom: 5px;"></canvas>
+                        <button id="legendSaveBtn" class="btn btn-success btn-block">✔ Upload (90 DNA)</button>
+                        <div id="legendStatus" style="font-size: 10px; color: #aaa; margin-top: 5px;"></div>
+                    </div>
+                </div>`;
+
+            targetPanel.prepend(html);
+
+            // Hook up Color Picker
+            $('#legendUploadSection .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
+                $('#legendSkinColor').val(e.color.toHex());
+            });
+
+            const input = document.getElementById("legendUploadInput");
+            const canvas = document.getElementById("legendCanvas");
+            const ctx = canvas.getContext("2d");
+            let processedBuffer = null;
+            var app = this;
+
+            input.addEventListener("change", e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const img = new Image();
+                img.onload = () => {
+                    ctx.clearRect(0, 0, 512, 512);
+                    ctx.drawImage(img, 0, 0, 512, 512);
+                    canvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            processedBuffer = new Uint8Array(reader.result);
+                            $('#legendPreviewWrapper').show();
+                            $('#legendStatus').text(`Ready: ${(processedBuffer.length / 1024).toFixed(1)} KB`);
+                        };
+                        reader.readAsArrayBuffer(blob);
+                    }, 'image/png');
+                };
+                img.src = URL.createObjectURL(file);
+            });
+
+            $('#legendSaveBtn').click(() => {
+                if (!processedBuffer) return;
+                const name = $('#legendSkinName').val() || "LM Skin";
+                const color = $('#legendSkinColor').val();
+
+                $('#legendStatus').text("Sending...");
+                app.uploadCustomSkin(processedBuffer, name, color);
+
+                $('#legendStatus').text("✅ Sent! Check inventory.");
+                setTimeout(() => { $('#legendPreviewWrapper').hide(); }, 3000);
+            });
         },
         init() {
             this.loadSettings();
