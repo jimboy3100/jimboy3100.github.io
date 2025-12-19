@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         LmAddonForDelta
 // @namespace    Jimboy3100 LegendMod
-// @version      101.1
-// @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, and Discord "Play" Trigger.
+// @version      101.5
+// @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Avatar Support.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
 // @match        https://agar.io/*
@@ -31,7 +31,7 @@
     };
 
     // ==========================================================================
-    // [2. THE IMMUTABLE VAULT - CAPTURES URL BEFORE DELTA CLEANS IT]
+    // [2. THE IMMUTABLE VAULT]
     // ==========================================================================
     const START_URL = window.location.href;
     if (START_URL.includes('sip=')) {
@@ -74,20 +74,30 @@
         const nick = document.querySelector('input[name="nickA"]')?.value || "Guest";
         const region = customRegion || document.querySelector('select[name="region"]')?.value || "Unknown";
         const mode = customMode || document.querySelector('select[name="gamemode"]')?.value || ":ffa";
+        
+        // DETECT AVATAR ICON FROM DELTA UI
+        const avatarIcon = document.querySelector('img.avatar')?.src || "https://www.legendmod.ml/banners/icon48.png";
+
         if (!sip) return;
         const lmSip = sip.includes(".") ? sip : `live-arena-${sip}.agar.io`;
         const joinLink = `${window.location.origin}${window.location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
 
         const payload = {
             embeds: [{
+                author: {
+                    name: `${nick} is entering the game!`,
+                    icon_url: avatarIcon
+                },
                 title: "🎮 Server Invite via Legend Mod",
-                description: `**${nick}** is entering the game!`,
                 color: 121150,
+                thumbnail: {
+                    url: avatarIcon
+                },
                 fields: [
                     { name: "Server", value: `\`${sip}\``, inline: true },
                     { name: "Region", value: region, inline: true },
                     { name: "Mode", value: mode, inline: true },
-                    { name: "Tag/Pass", value: `\`${tag}\``, inline: true },
+                    { name: "Tag/Pass", value: tag ? `\`${tag}\`` : "`None`" , inline: true },
                     { name: "Link", value: `[👉 Instant Join](${joinLink})` }
                 ],
                 footer: { text: "LM Imperial Overlord | Delta Mod Addon" },
@@ -164,7 +174,7 @@
         const css = `
             <style>
                 #lm-over-root { font-family: 'Ubuntu', sans-serif; pointer-events: none; font-size: 13px; }
-                .lm-win { background: ${THEME.dark}; border: ${THEME.border}; color: #fff; pointer-events: auto; border-radius: 8px; position: fixed; z-index: 10020; box-shadow: 0 0 40px #000; overflow: hidden; width: 600px; }
+                .lm-win { background: ${THEME.dark}; border: 1px solid ${THEME.border}; color: #fff; pointer-events: auto; border-radius: 8px; position: fixed; z-index: 10020; box-shadow: 0 0 40px #000; overflow: hidden; width: 600px; }
                 .lm-bar { background: rgba(1, 217, 204, 0.1); padding: 10px; cursor: move; text-align: center; font-weight: bold; border-bottom: 1px solid #222; position: relative; }
                 .lm-stats { background: #000; font-size: 10px; color: ${THEME.cyan}; padding: 3px; text-align: center; }
                 .lm-main { padding: 15px; }
@@ -177,7 +187,6 @@
                 .lm-row:hover { background: rgba(1, 217, 204, 0.1); }
                 .lm-ds-icon { color: ${THEME.discord}; font-size: 18px; cursor: pointer; margin-left: 8px; }
 
-                /* Footer Flexbox Fix */
                 .lm-footer { padding: 12px 15px; border-top: 1px solid #222; background: #050505; display: flex; flex-direction: column; gap: 8px; }
                 .lm-wh-row { display: flex; align-items: center; gap: 10px; width: 100%; }
                 .lm-wh-in { flex-grow: 1; background: #000; border: 1px solid #333; color: ${THEME.discord}; padding: 6px; font-size: 11px; border-radius: 3px; outline: none; }
@@ -185,7 +194,7 @@
                 .lm-help-btn { color: ${THEME.gold}; font-weight: bold; font-size: 18px; cursor: pointer; user-select: none; width: 20px; text-align: center; }
 
                 .lm-x { position: absolute; right: 10px; top: 8px; cursor: pointer; color: ${THEME.red}; font-size: 20px; }
-                .lm-help-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; }
+                .lm-h-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; }
             </style>
         `;
 
@@ -277,7 +286,7 @@
                         <div><b>${p.nickname}</b><br><small style="color:#666;">${region} • ${mode}</small></div>
                     </div>
                     <div style="text-align:right; display:flex; align-items:center;">
-                        <div><b style="color:${THEME.gold}; font-family:monospace;">${token}</b><br><small style="color:#444;">Lvl ${p.agarioLEVEL || '?'}</small></div>
+                        <div><b style="color:${THEME.gold}; font-family:monospace; font-size:15px;">${token}</b><br><small style="color:#444;">Lvl ${p.agarioLEVEL || '?'}</small></div>
                         <i class="fa fa-discord lm-ds-icon"></i>
                     </div>
                 `;
