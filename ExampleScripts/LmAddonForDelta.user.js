@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         LmAddonForDelta
 // @namespace    Jimboy3100 LegendMod
-// @version      101.5
-// @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Avatar Support.
+// @version      101.6
+// @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Custom Skin Thumbnail.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
 // @match        https://agar.io/*
@@ -20,6 +20,7 @@
     const SNEZ_WS_URL = "wss://agar.snez.org:63051/";
     const FLAG_CSS_LIB = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css";
     const LOG_TAG = "[LM-OVERLORD] ";
+    const FALLBACK_ICON = "https://deltav4.gitlab.io/v7/assets/map-logo-old.png";
 
     const THEME = {
         cyan: "#01d9cc",
@@ -31,7 +32,7 @@
     };
 
     // ==========================================================================
-    // [2. THE IMMUTABLE VAULT]
+    // [2. THE IMMUTABLE VAULT - CAPTURES URL BEFORE DELTA CLEANS IT]
     // ==========================================================================
     const START_URL = window.location.href;
     if (START_URL.includes('sip=')) {
@@ -75,8 +76,15 @@
         const region = customRegion || document.querySelector('select[name="region"]')?.value || "Unknown";
         const mode = customMode || document.querySelector('select[name="gamemode"]')?.value || ":ffa";
         
-        // DETECT AVATAR ICON FROM DELTA UI
-        const avatarIcon = document.querySelector('img.avatar')?.src || "https://www.legendmod.ml/banners/icon48.png";
+        // 1. Detect Profile Avatar (Left Icon) or use Fallback
+        const avatarIcon = document.querySelector('img.avatar')?.src || FALLBACK_ICON;
+        
+        // 2. Detect Manual Skin URL (Top Right Icon)
+        const manualSkin = document.querySelector('input[name="skinA"]')?.value || 
+                           document.querySelector('input[name="skinB"]')?.value;
+        
+        // If manual skin is empty or too short, use the avatar for the thumbnail too
+        const thumbnailIcon = (manualSkin && manualSkin.length > 10) ? manualSkin : avatarIcon;
 
         if (!sip) return;
         const lmSip = sip.includes(".") ? sip : `live-arena-${sip}.agar.io`;
@@ -91,7 +99,7 @@
                 title: "🎮 Server Invite via Legend Mod",
                 color: 121150,
                 thumbnail: {
-                    url: avatarIcon
+                    url: thumbnailIcon
                 },
                 fields: [
                     { name: "Server", value: `\`${sip}\``, inline: true },
