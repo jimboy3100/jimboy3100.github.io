@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LmAddonForDelta
 // @namespace    Jimboy3100 LegendMod
-// @version      101.0
+// @version      101.1
 // @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, and Discord "Play" Trigger.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
@@ -70,7 +70,7 @@
 
     window.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
         const sip = customToken || document.querySelector('input[name="serverToken"]')?.value;
-        const tag = document.querySelector('input[name="clantag"]')?.value || "None";
+        const tag = document.querySelector('input[name="clantag"]')?.value || "";
         const nick = document.querySelector('input[name="nickA"]')?.value || "Guest";
         const region = customRegion || document.querySelector('select[name="region"]')?.value || "Unknown";
         const mode = customMode || document.querySelector('select[name="gamemode"]')?.value || ":ffa";
