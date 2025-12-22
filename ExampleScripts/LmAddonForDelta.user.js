@@ -185,20 +185,20 @@ win.injectHistoryButton = function() {
     const URL_VAULT = sessionStorage.getItem('LM_OVERLORD_VAULT_FINAL') || START_URL;
 
     win
-.originalURL = URL_VAULT;
+        .originalURL = URL_VAULT;
     try {
         Object.defineProperty(win
-, 'url', { get: () => URL_VAULT, configurable: false });
+            , 'url', { get: () => URL_VAULT, configurable: false });
         Object.defineProperty(win
-, 'originalURL', { get: () => URL_VAULT, configurable: false });
+            , 'originalURL', { get: () => URL_VAULT, configurable: false });
     } catch (e) { win
-.url = URL_VAULT; }
+        .url = URL_VAULT; }
 
     // ==========================================================================
     // [3. MASTER STATE]
     // ==========================================================================
     win
-.LM_MASTER = {
+        .LM_MASTER = {
         socket: null,
         playerCache: [],
         lastBroadcast: "",
@@ -219,7 +219,7 @@ win.injectHistoryButton = function() {
     function isValidWebhook(url) { return /^(https?):\/\/(discord|discordapp)\.com\/api\/webhooks\/[^\s]+$/.test(url); }
 
     win
-.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
+        .sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
         // If manual skin is empty or too short, use the avatar for the thumbnail too
         const sip = customToken || document.querySelector('input[name="serverToken"]')?.value;
         const tag = document.querySelector('input[name="clantag"]')?.value || "";
@@ -240,8 +240,8 @@ win.injectHistoryButton = function() {
         if (!sip) return;
         const lmSip = sip.includes(".") ? sip : `live-arena-${sip}.agar.io`;
         const joinLink = `${win
-.location.origin}${win
-.location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
+            .location.origin}${win
+            .location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
 
         const payload = {
             embeds: [{
@@ -301,8 +301,8 @@ win.injectHistoryButton = function() {
         if (!el) return false;
         const isSelect = el instanceof HTMLSelectElement;
         const setter = Object.getOwnPropertyDescriptor(isSelect ? win
-.HTMLSelectElement.prototype : win
-.HTMLInputElement.prototype, "value").set;
+            .HTMLSelectElement.prototype : win
+            .HTMLInputElement.prototype, "value").set;
         setter.call(el, value);
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
@@ -311,7 +311,7 @@ win.injectHistoryButton = function() {
     }
 
     win
-.startSovereignJoin = async function(region, mode, token) {
+        .startSovereignJoin = async function(region, mode, token) {
         if (LM_MASTER.joinInProgress) return;
         LM_MASTER.joinInProgress = true;
         hijackUI('select[name="region"]', region);
@@ -358,7 +358,7 @@ win.injectHistoryButton = function() {
                 .lm-help-btn { color: ${THEME.gold}; font-weight: bold; font-size: 18px; cursor: pointer; user-select: none; width: 20px; text-align: center; }
 
                 .lm-x { position: absolute; right: 10px; top: 8px; cursor: pointer; color: ${THEME.red}; font-size: 20px; }
-.lm-h-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; font-size: 13px; }         
+.lm-h-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; font-size: 13px; }
 </style>
         `;
 
@@ -455,7 +455,7 @@ win.injectHistoryButton = function() {
                     </div>
                 `;
                 row.querySelector('.lm-ds-icon').onclick = (e) => { e.stopPropagation(); win
-.sendServerToDiscord(token, region, mode); };
+                    .sendServerToDiscord(token, region, mode); };
                 row.onclick = () => { hideUI(); startSovereignJoin(region, mode, token); };
                 log.appendChild(row);
             }
@@ -480,7 +480,7 @@ win.injectHistoryButton = function() {
                         server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
                         tag: document.querySelector('input[name="clantag"]')?.value || "",
                         agarioLEVEL: win
-.agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
+                            .agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
                     }};
                 LM_MASTER.socket.send(JSON.stringify(payload));
             }, 10000);
@@ -502,18 +502,18 @@ win.injectHistoryButton = function() {
     // [8. STARTUP & ADRES SYNC]
     // ==========================================================================
     win
-.syncAdres = function() {
+        .syncAdres = function() {
         const t = document.querySelector('input[name="serverToken"]')?.value;
         const g = document.querySelector('input[name="clantag"]')?.value;
         const r = document.querySelector('select[name="region"]')?.value;
         const m = document.querySelector('select[name="gamemode"]')?.value;
         if (!t || t.length < 3 || LM_MASTER.joinInProgress) return;
         const u = win
-.location.origin + win
-.location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g?"&pass="+g:"") + (r?"&?r="+r:"") + (m?"&?m="+m:"");
+            .location.origin + win
+            .location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g?"&pass="+g:"") + (r?"&?r="+r:"") + (m?"&?m="+m:"");
         if (win
-.location.href !== u) win
-.history.replaceState(null, "", u);
+            .location.href !== u) win
+            .history.replaceState(null, "", u);
     };
 
     const boot = setInterval(() => {
@@ -522,7 +522,7 @@ win.injectHistoryButton = function() {
             clearInterval(boot);
             injectHUD();
             win
-.injectHistoryButton();
+                .injectHistoryButton();
             runGeo().then(() => {
                 setTimeout(() => {
                     const sip = (new RegExp('[\\?&]\\??sip=([^&#]*)').exec(URL_VAULT)?.[1]) || "";
@@ -581,15 +581,15 @@ win.injectHistoryButton = function() {
                             if (LM_MASTER.discord.autoSend) {
                                 console.log(win.LOG_TAG + "Triggering Discord...");
                                 win
-.sendServerToDiscord();
+                                    .sendServerToDiscord();
                             }
                         }
                     }, true);
 
                     document.addEventListener('change', (e) => { if (['region', 'gamemode', 'clantag', 'serverToken'].includes(e.target.name)) setTimeout(win
-.syncAdres, 100); }, true);
+                        .syncAdres, 100); }, true);
                     setInterval(win
-.syncAdres, 3500);
+                        .syncAdres, 3500);
                 }, 1200);
             });
 
