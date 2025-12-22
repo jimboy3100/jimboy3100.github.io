@@ -11,16 +11,160 @@
 // @run-at       document-start
 // ==/UserScript==
 
+const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
+win.LOG_TAG = "[LM-OVERLORD] ";
+win.FALLBACK_ICON = "https://deltav4.gitlab.io/v7/assets/map-logo-old.png";
+win.SNEZ_WS_URL = "wss://agar.snez.org:63051/";
+win.FLAG_CSS_LIB = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css";
+// 1. Initializer (Put this near the top of your script)
+win
+    .LM_Session = {
+    current: { nick: "", tag: "", server: "", region: "", mode: "" },
+    history: JSON.parse(localStorage.getItem("LM_Server_History") || "[]")
+};
+// 2. Listener (Put this inside your listeners section)
+document.addEventListener('click', (e) => {
+    const target = e.target.closest('.btn-layer');
+    if (target && target.innerText.trim() === "Play") {
+        const sipVal = document.querySelector('input[name="serverToken"]')?.value;
+        const tagVal = document.querySelector('input[name="clantag"]')?.value || "";
+        const nickVal = document.querySelector('input[name="nickA"]')?.value || "Guest";
+        const regVal = document.querySelector('select[name="region"]')?.value || "Unknown";
+        const modVal = document.querySelector('select[name="gamemode"]')?.value || ":ffa";
+
+        // Logic: Same server only updates current data. New server pushes old current to history.
+        if (win
+            .LM_Session.current.server === sipVal) {
+            win
+                .LM_Session.current.nick = nickVal;
+            win
+                .LM_Session.current.tag = tagVal;
+        } else {
+            if (win
+                .LM_Session.current.server) {
+                win
+                    .LM_Session.history.unshift({...win
+                        .LM_Session.current});
+                if (win
+                    .LM_Session.history.length > 10) win
+                    .LM_Session.history.pop();
+            }
+            win
+                .LM_Session.current = { nick: nickVal, tag: tagVal, server: sipVal, region: regVal, mode: modVal, time: new Date().toLocaleString() };
+        }
+
+        localStorage.setItem("LM_Server_History", JSON.stringify(win
+            .LM_Session.history));
+
+        if (typeof LM_MASTER !== 'undefined' && LM_MASTER.discord.autoSend) {
+            win
+                .sendServerToDiscord();
+        }
+    }
+}, true);
+
+win.rejoinLastServer = function() {
+    // Check if Delta app exists and get the real connected token, otherwise empty string
+    const realConnectedToken = win.app && win.app.server ? win.app.server.serverToken : "";
+
+    // Check against our stored session (Corrected structure to LM_Session.current.server)
+    if (realConnectedToken !== win.LM_Session.current.server) {
+        const history = win.LM_Session.history;
+
+        if (history && history.length > 0) {
+            const last = history[0]; // Get the first element of history
+
+            console.log(win.LOG_TAG + "Restoring Session from History: " + last.server);
+
+            // 1. Make the history item the 'current' session
+            win.LM_Session.current = {
+                nick: last.nick,
+                tag: last.tag,
+                server: last.server,
+                region: last.region,
+                mode: last.mode,
+                time: new Date().toLocaleString()
+            };
+
+            // 2. Visually update Nickname and Tag inputs (since startSovereignJoin doesn't handle these)
+            // We use the hijackUI helper function defined in your script
+            if (typeof hijackUI === 'function') {
+                hijackUI('input[name="nickA"]', last.nick);
+                hijackUI('input[name="clantag"]', last.tag);
+            }
+
+            // 3. Connect using the Region, Mode, and Server from history
+            if (typeof win.startSovereignJoin === 'function') {
+                win.startSovereignJoin(last.region, last.mode, last.server);
+            } else if (typeof startSovereignJoin === 'function') {
+                startSovereignJoin(last.region, last.mode, last.server);
+            }
+
+            if (win.toastr) win.toastr.success("[LM] Session restored from history.");
+        } else {
+            if (win.toastr) win.toastr.warning("[LM] No history found to restore.");
+        }
+    } else {
+        // Fallback: If tokens match, just rejoin the last history item normally
+        const history = win.LM_Session.history;
+        if (history && history.length > 0) {
+            const last = history[0];
+            if (typeof win.startSovereignJoin === 'function') {
+                win.startSovereignJoin(last.region, last.mode, last.server);
+            }
+        }
+    }
+};
+win.injectHistoryButton = function() {
+    const serverInput = document.querySelector('input[name="serverToken"]');
+    if (!serverInput || document.getElementById('lm-rejoin-btn')) return;
+
+    // Direct path: input -> input-box -> column (w-8/12)
+    const inputCol = serverInput.parentElement.parentElement;
+    const btnCol = inputCol?.nextElementSibling; // column (w-4/12)
+
+    if (!inputCol || !btnCol) return;
+
+    // Force widths using style.width to stay inside the border
+    inputCol.style.setProperty('width', '58%', 'important');
+    btnCol.style.setProperty('width', '42%', 'important');
+    btnCol.style.display = 'flex';
+    btnCol.style.gap = '4px';
+
+    const connectBtn = btnCol.querySelector('button');
+    if (connectBtn) {
+        connectBtn.style.flex = "2";
+        connectBtn.style.width = "auto";
+        connectBtn.style.padding = "0px";
+    }
+
+    const rejoinBtn = document.createElement('button');
+    rejoinBtn.id = 'lm-rejoin-btn';
+    rejoinBtn.className = connectBtn ? connectBtn.className : "btn";
+    rejoinBtn.style.flex = "1";
+    rejoinBtn.style.minWidth = "35px";
+    rejoinBtn.style.cursor = "pointer";
+    rejoinBtn.style.pointerEvents = "auto"; // Fixes "unclickable" issue
+    rejoinBtn.innerHTML = '<i class="fas fa-history"></i>';
+    rejoinBtn.title = "Rejoin Last Played Server";
+
+    // Re-linking the click event properly
+    rejoinBtn.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        win.rejoinLastServer();
+    };
+
+    btnCol.appendChild(rejoinBtn);
+};
 (function() {
     'use strict';
 
     // ==========================================================================
     // [1. GLOBAL CONSTANTS & PALETTE]
     // ==========================================================================
-    const SNEZ_WS_URL = "wss://agar.snez.org:63051/";
-    const FLAG_CSS_LIB = "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css";
-    const LOG_TAG = "[LM-OVERLORD] ";
-    const FALLBACK_ICON = "https://deltav4.gitlab.io/v7/assets/map-logo-old.png";
+
+
 
     const THEME = {
         cyan: "#01d9cc",
@@ -40,16 +184,21 @@
     }
     const URL_VAULT = sessionStorage.getItem('LM_OVERLORD_VAULT_FINAL') || START_URL;
 
-    window.originalURL = URL_VAULT;
+    win
+.originalURL = URL_VAULT;
     try {
-        Object.defineProperty(window, 'url', { get: () => URL_VAULT, configurable: false });
-        Object.defineProperty(window, 'originalURL', { get: () => URL_VAULT, configurable: false });
-    } catch (e) { window.url = URL_VAULT; }
+        Object.defineProperty(win
+, 'url', { get: () => URL_VAULT, configurable: false });
+        Object.defineProperty(win
+, 'originalURL', { get: () => URL_VAULT, configurable: false });
+    } catch (e) { win
+.url = URL_VAULT; }
 
     // ==========================================================================
     // [3. MASTER STATE]
     // ==========================================================================
-    const LM_MASTER = {
+    win
+.LM_MASTER = {
         socket: null,
         playerCache: [],
         lastBroadcast: "",
@@ -69,26 +218,30 @@
     // ==========================================================================
     function isValidWebhook(url) { return /^(https?):\/\/(discord|discordapp)\.com\/api\/webhooks\/[^\s]+$/.test(url); }
 
-    window.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
+    win
+.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
+        // If manual skin is empty or too short, use the avatar for the thumbnail too
         const sip = customToken || document.querySelector('input[name="serverToken"]')?.value;
         const tag = document.querySelector('input[name="clantag"]')?.value || "";
         const nick = document.querySelector('input[name="nickA"]')?.value || "Guest";
         const region = customRegion || document.querySelector('select[name="region"]')?.value || "Unknown";
         const mode = customMode || document.querySelector('select[name="gamemode"]')?.value || ":ffa";
-        
-        // 1. Detect Profile Avatar (Left Icon) or use Fallback
-        const avatarIcon = document.querySelector('img.avatar')?.src || FALLBACK_ICON;
-        
-        // 2. Detect Manual Skin URL (Top Right Icon)
-        const manualSkin = document.querySelector('input[name="skinA"]')?.value || 
-                           document.querySelector('input[name="skinB"]')?.value;
-        
         // If manual skin is empty or too short, use the avatar for the thumbnail too
+
+        // 1. Detect Profile Avatar (Left Icon) or use Fallback
+        const avatarIcon = document.querySelector('img.avatar')?.src || win.FALLBACK_ICON;
+
+        // 2. Detect Manual Skin URL (Top Right Icon)
+        const manualSkin = document.querySelector('input[name="skinA"]')?.value ||
+            document.querySelector('input[name="skinB"]')?.value;
+
         const thumbnailIcon = (manualSkin && manualSkin.length > 10) ? manualSkin : avatarIcon;
 
         if (!sip) return;
         const lmSip = sip.includes(".") ? sip : `live-arena-${sip}.agar.io`;
-        const joinLink = `${window.location.origin}${window.location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
+        const joinLink = `${win
+.location.origin}${win
+.location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
 
         const payload = {
             embeds: [{
@@ -147,7 +300,9 @@
         const el = document.querySelector(selector);
         if (!el) return false;
         const isSelect = el instanceof HTMLSelectElement;
-        const setter = Object.getOwnPropertyDescriptor(isSelect ? window.HTMLSelectElement.prototype : window.HTMLInputElement.prototype, "value").set;
+        const setter = Object.getOwnPropertyDescriptor(isSelect ? win
+.HTMLSelectElement.prototype : win
+.HTMLInputElement.prototype, "value").set;
         setter.call(el, value);
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
@@ -155,7 +310,8 @@
         return true;
     }
 
-    async function startSovereignJoin(region, mode, token) {
+    win
+.startSovereignJoin = async function(region, mode, token) {
         if (LM_MASTER.joinInProgress) return;
         LM_MASTER.joinInProgress = true;
         hijackUI('select[name="region"]', region);
@@ -166,7 +322,7 @@
         hijackUI('input[name="serverToken"]', token);
         setTimeout(() => {
             const btn = document.querySelector('input[name="serverToken"]')?.closest('.flex.items-stretch')?.querySelector('button') ||
-                        Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Connect'));
+                Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Connect'));
             if (btn) btn.click();
             LM_MASTER.joinInProgress = false;
         }, 500);
@@ -177,7 +333,7 @@
     // ==========================================================================
     function injectHUD() {
         if (document.getElementById('lm-over-root')) return;
-        const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = FLAG_CSS_LIB; document.head.appendChild(link);
+        const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = win.FLAG_CSS_LIB; document.head.appendChild(link);
 
         const css = `
             <style>
@@ -202,8 +358,8 @@
                 .lm-help-btn { color: ${THEME.gold}; font-weight: bold; font-size: 18px; cursor: pointer; user-select: none; width: 20px; text-align: center; }
 
                 .lm-x { position: absolute; right: 10px; top: 8px; cursor: pointer; color: ${THEME.red}; font-size: 20px; }
-                .lm-h-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; }
-            </style>
+.lm-h-panel { position: absolute; top: 40px; left: 10px; right: 10px; bottom: 10px; background: ${THEME.dark}; border: 1px solid ${THEME.gold}; padding: 15px; z-index: 10025; display: none; overflow-y: auto; text-shadow:none; font-size: 13px; }         
+</style>
         `;
 
         const html = `
@@ -298,7 +454,8 @@
                         <i class="fa fa-discord lm-ds-icon"></i>
                     </div>
                 `;
-                row.querySelector('.lm-ds-icon').onclick = (e) => { e.stopPropagation(); window.sendServerToDiscord(token, region, mode); };
+                row.querySelector('.lm-ds-icon').onclick = (e) => { e.stopPropagation(); win
+.sendServerToDiscord(token, region, mode); };
                 row.onclick = () => { hideUI(); startSovereignJoin(region, mode, token); };
                 log.appendChild(row);
             }
@@ -313,17 +470,18 @@
     // ==========================================================================
     function initNetwork() {
         if (LM_MASTER.socket?.readyState === 1) return;
-        LM_MASTER.socket = new WebSocket(SNEZ_WS_URL);
+        LM_MASTER.socket = new WebSocket(win.SNEZ_WS_URL);
         LM_MASTER.socket.onopen = () => {
             setInterval(() => {
                 const sip = document.querySelector('input[name="serverToken"]')?.value;
                 if (!sip) return;
                 const payload = { type: "update_details", data: {
-                    nickname: (document.querySelector('input[name="nickA"]')?.value || "Unnamed") + " (DM)",
-                    server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
-                    tag: document.querySelector('input[name="clantag"]')?.value || "",
-                    agarioLEVEL: window.agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
-                }};
+                        nickname: (document.querySelector('input[name="nickA"]')?.value || "Unnamed") + " (DM)",
+                        server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
+                        tag: document.querySelector('input[name="clantag"]')?.value || "",
+                        agarioLEVEL: win
+.agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
+                    }};
                 LM_MASTER.socket.send(JSON.stringify(payload));
             }, 10000);
             LM_MASTER.socket.send(JSON.stringify({ type: "get_players" }));
@@ -343,19 +501,29 @@
     // ==========================================================================
     // [8. STARTUP & ADRES SYNC]
     // ==========================================================================
-    window.syncAdres = function() {
+    win
+.syncAdres = function() {
         const t = document.querySelector('input[name="serverToken"]')?.value;
         const g = document.querySelector('input[name="clantag"]')?.value;
         const r = document.querySelector('select[name="region"]')?.value;
         const m = document.querySelector('select[name="gamemode"]')?.value;
         if (!t || t.length < 3 || LM_MASTER.joinInProgress) return;
-        const u = window.location.origin + window.location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g?"&pass="+g:"") + (r?"&?r="+r:"") + (m?"&?m="+m:"");
-        if (window.location.href !== u) window.history.replaceState(null, "", u);
+        const u = win
+.location.origin + win
+.location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g?"&pass="+g:"") + (r?"&?r="+r:"") + (m?"&?m="+m:"");
+        if (win
+.location.href !== u) win
+.history.replaceState(null, "", u);
     };
 
     const boot = setInterval(() => {
+
         if (document.querySelector('select[name="region"]') && document.querySelector('input[name="serverToken"]')) {
-            clearInterval(boot); injectHUD(); runGeo().then(() => {
+            clearInterval(boot);
+            injectHUD();
+            win
+.injectHistoryButton();
+            runGeo().then(() => {
                 setTimeout(() => {
                     const sip = (new RegExp('[\\?&]\\??sip=([^&#]*)').exec(URL_VAULT)?.[1]) || "";
                     const reg = (new RegExp('[\\?&]\\??r=([^&#]*)').exec(URL_VAULT)?.[1]) || "";
@@ -373,20 +541,58 @@
                     });
 
                     // THE PLAY BUTTON TRIGGER
-                    document.addEventListener('click', (e) => {
-                        const target = e.target.closest('.btn-layer');
-                        if (target && target.innerText.trim() === "Play") {
+                    document.addEventListener('mousedown', (e) => {
+                        const playBtn = e.target.closest('.btn-layer');
+                        if (playBtn && playBtn.innerText.trim() === "Play") {
+
+                            // Helper to find the input that actually has text (handles Delta hidden inputs)
+                            const getVal = (name) => {
+                                const inputs = Array.from(document.querySelectorAll(`input[name="${name}"]`));
+                                const found = inputs.find(i => i.value.length > 0);
+                                return found ? found.value : (document.querySelector(`input[name="${name}"]`)?.value || "");
+                            };
+
+                            let s = getVal("serverToken");
+                            if (!s) s = document.querySelector('.list-style .active')?.innerText.split(' ').pop();
+                            if (!s) return;
+
+                            const n = getVal("nickA") || "Guest";
+                            const t = getVal("clantag") || "";
+                            const r = document.querySelector('select[name="region"]')?.value || "Unknown";
+                            const m = document.querySelector('select[name="gamemode"]')?.value || ":ffa";
+
+                            const session = win.LM_Session;
+
+                            // Same server: just update identity. New server: push to history.
+                            if (session.current.server === s) {
+                                session.current.nick = n;
+                                session.current.tag = t;
+                            } else {
+                                if (session.current.server && session.current.server !== "") {
+                                    session.history.unshift({...session.current});
+                                    if (session.history.length > 10) session.history.pop();
+                                }
+                                session.current = { nick: n, tag: t, server: s, region: r, mode: m, time: new Date().toLocaleString() };
+                            }
+
+                            localStorage.setItem("LM_Server_History", JSON.stringify(session.history));
+                            console.log(win.LOG_TAG + "Session Object Updated.");
+
                             if (LM_MASTER.discord.autoSend) {
-                                console.log(LOG_TAG + "Play clicked. Sending to Discord...");
-                                window.sendServerToDiscord();
+                                console.log(win.LOG_TAG + "Triggering Discord...");
+                                win
+.sendServerToDiscord();
                             }
                         }
                     }, true);
 
-                    document.addEventListener('change', (e) => { if (['region', 'gamemode', 'clantag', 'serverToken'].includes(e.target.name)) setTimeout(window.syncAdres, 100); }, true);
-                    setInterval(window.syncAdres, 3500);
+                    document.addEventListener('change', (e) => { if (['region', 'gamemode', 'clantag', 'serverToken'].includes(e.target.name)) setTimeout(win
+.syncAdres, 100); }, true);
+                    setInterval(win
+.syncAdres, 3500);
                 }, 1200);
             });
+
         }
     }, 500);
 })();
