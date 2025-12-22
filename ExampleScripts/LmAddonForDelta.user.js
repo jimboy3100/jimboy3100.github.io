@@ -8,6 +8,11 @@
 // @match        https://agar.io/*
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
+// @connect      lmsettings.snez.org
+// @connect      agar.snez.org
+// @connect      discord.com
+// @connect      discordapp.com
+// @connect      ipapi.co
 // @run-at       document-start
 // ==/UserScript==
 
@@ -595,4 +600,389 @@ win.injectHistoryButton = function() {
 
         }
     }, 500);
+})();
+// ==========================================================================
+// [SNEZ CLOUD] Delta full bundle Export/Import + UI buttons
+// Upload/Download must talk to SNEZ server (NO file pickers)
+// Endpoint: https://lmsettings.snez.org/
+// Auth headers: username=<uid>, password=LMSettings
+// ==========================================================================
+
+(function () {
+    'use strict';
+
+    // IMPORTANT: use the same unsafeWindow-backed reference as the rest of your script
+    const win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+
+    const ENDPOINT = "https://lmsettings.snez.org/";
+    const PASS = "LMSettings";
+
+    // -------------------------
+    // STRICT helper to verify login and get an ID
+    // (your earlier logic: app.accountManager.tokens.all keys)
+    // -------------------------
+    function checkLoginAndGetID() {
+        try {
+            const all = win?.app?.accountManager?.tokens?.all;
+            if (all && typeof all === "object") {
+                const keys = Object.keys(all);
+                if (keys.length > 0 && keys[0]) return keys[0] + "DM";
+            }
+        } catch (e) {
+            console.error((win.LOG_TAG || "[LM] ") + "Token check error", e);
+        }
+
+        if (win.toastr) win.toastr.error("<b>[LM]:</b> Login Required!<br>Please login with Google/Facebook first.");
+        return null;
+    }
+
+    // -------------------------
+    // Robust "wait for Delta API"
+    // -------------------------
+    function waitForDeltaApi(timeoutMs = 20000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const t = setInterval(() => {
+                const ok =
+                    !!win.keyMaster && typeof win.keyMaster.export === "function" && typeof win.keyMaster.import === "function" &&
+                    !!win.profiles  && typeof win.profiles.export  === "function" && typeof win.profiles.import  === "function" &&
+                    !!win.settings  && typeof win.settings.export  === "function" && typeof win.settings.import  === "function" &&
+                    !!win.theme     && typeof win.theme.export     === "function" && typeof win.theme.import     === "function";
+
+                if (ok) { clearInterval(t); resolve(true); return; }
+                if (Date.now() - start > timeoutMs) { clearInterval(t); reject(new Error("Delta API not ready: keyMaster/profiles/settings/theme")); }
+            }, 120);
+        });
+    }
+
+    // -------------------------
+    // Build / Apply bundle
+    // -------------------------
+    function buildDeltaBundle() {
+        return {
+            version: 1,
+            deltaHotkeys: win.keyMaster.export(),
+            ogarioPlayerProfiles: win.profiles.export(),
+            settings: win.settings.export(),
+            ogarioThemeSettings: win.theme.export(),
+        };
+    }
+
+    function applyDeltaBundle(bundle) {
+        if (!bundle || typeof bundle !== "object") throw new Error("Invalid bundle object");
+        if (!bundle.deltaHotkeys || !bundle.settings || !bundle.ogarioThemeSettings) {
+            throw new Error("Bundle missing required keys: deltaHotkeys/settings/ogarioThemeSettings");
+        }
+
+        win.keyMaster.import(bundle.deltaHotkeys);
+        win.profiles.import(bundle.ogarioPlayerProfiles || []);
+        win.settings.import(bundle.settings);
+        win.theme.import(bundle.ogarioThemeSettings);
+
+        // Do NOT invent methods. Best-effort: click APPLY/SAVE/OK if Delta UI provides one.
+        try {
+            const btns = Array.from(document.querySelectorAll("button"));
+            const hit = btns.find(b => {
+                const t = (b.innerText || "").trim().toUpperCase();
+                return t === "APPLY" || t === "SAVE" || t === "OK";
+            });
+            if (hit) { try { hit.click(); } catch (_) {} }
+        } catch (_) {}
+        setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+    }
+
+    // -------------------------
+    // SNEZ requests
+    // -------------------------
+    function snezPost(uid, payloadObj) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "POST",
+                url: ENDPOINT,
+                headers: { username: uid, password: PASS },
+                // Keep escape/unescape since your server already uses it
+                data: escape(JSON.stringify(payloadObj)),
+                onload: (res) => resolve(res),
+                onerror: (err) => reject(err),
+            });
+        });
+    }
+
+    function snezGet(uid) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: ENDPOINT,
+                headers: { username: uid, password: PASS },
+                onload: (res) => resolve(res),
+                onerror: (err) => reject(err),
+            });
+        });
+    }
+
+    // -------------------------
+    // Exposed functions (your buttons call these)
+    // -------------------------
+    win.SNEZDeltaUpload = async function () {
+        const uid = checkLoginAndGetID();
+        if (!uid) return;
+
+        try {
+            await waitForDeltaApi();
+
+            const bundle = buildDeltaBundle();
+
+            if (win.toastr) win.toastr.info("<b>[LM]:</b> Uploading full Delta bundle...");
+            const res = await snezPost(uid, bundle);
+
+            if (res && res.status === 200) {
+                if (win.toastr) win.toastr.success(`<b>[LM]:</b> Bundle saved to cloud!<br>ID: <span style="color:yellow">${uid}</span>`);
+                console.log((win.LOG_TAG || "[LM] ") + "Cloud upload OK", uid);
+            } else {
+                if (win.toastr) win.toastr.error("<b>[LM]:</b> Cloud upload failed (server error).");
+                console.error((win.LOG_TAG || "[LM] ") + "Cloud upload failed", res);
+            }
+        } catch (e) {
+            if (win.toastr) win.toastr.error(`<b>[LM]:</b> Upload failed: ${String(e && e.message ? e.message : e)}`);
+            console.error((win.LOG_TAG || "[LM] ") + "Upload failed", e);
+        }
+    };
+
+    win.SNEZDeltaDownload = async function () {
+        const uid = checkLoginAndGetID();
+        if (!uid) return;
+
+        try {
+            await waitForDeltaApi();
+
+            if (win.toastr) win.toastr.info("<b>[LM]:</b> Downloading full Delta bundle...");
+            const res = await snezGet(uid);
+
+            if (!res || res.status !== 200 || !res.responseText) {
+                if (win.toastr) win.toastr.warning("<b>[LM]:</b> No cloud data found for this ID.");
+                console.warn((win.LOG_TAG || "[LM] ") + "Cloud download: empty", res);
+                return;
+            }
+
+            const raw = unescape(res.responseText);
+            const bundle = JSON.parse(raw);
+
+            applyDeltaBundle(bundle);
+
+            if (win.toastr) win.toastr.success("<b>[LM]:</b> Cloud bundle loaded! Save theme/profile/hotkeys... you like to from their own menu tab");
+            console.log((win.LOG_TAG || "[LM] ") + "Cloud download+import OK", uid);
+        } catch (e) {
+            if (win.toastr) win.toastr.error("<b>[LM]:</b> Corrupt cloud data or import failed.");
+            console.error((win.LOG_TAG || "[LM] ") + "Cloud data parse/import failed", e);
+        }
+    };
+
+    // ========================================================================
+    // UI injection: add UPLOAD under EXPORT, DOWNLOAD under IMPORT
+    // ========================================================================
+    function injectSettingsButtons() {
+        try {
+            const LOG = (win.LOG_TAG || "[LM] ");
+
+            // ------------------------------------------------------------
+            // Helper: find & "technical click" the Delta Save button
+            // ------------------------------------------------------------
+            function findSaveButton(root = document) {
+                // Fast: icon-based
+                const iconBtn = root.querySelector(".btn-icon.fas.fa-save")?.closest("button");
+                if (iconBtn) return iconBtn;
+
+                // Text-based fallback
+                const buttons = Array.from(root.querySelectorAll("button"));
+                return buttons.find(b => {
+                    const info = b.querySelector(".btn-info");
+                    if (info && (info.textContent || "").trim().toLowerCase() === "save") return true;
+                    const t = (b.innerText || "").trim().toLowerCase();
+                    return t === "save";
+                }) || null;
+            }
+
+            function technicalClick(el) {
+                if (!el) return false;
+
+                // Ensure interactable
+                try { el.style.pointerEvents = "auto"; } catch (_) {}
+
+                const opts = { bubbles: true, cancelable: true, composed: true };
+
+                // Pointer events (some UIs prefer this)
+                try {
+                    el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+                    el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+                } catch (_) {}
+
+                // Mouse events (React-style delegation)
+                el.dispatchEvent(new MouseEvent("mousedown", opts));
+                el.dispatchEvent(new MouseEvent("mouseup", opts));
+                el.dispatchEvent(new MouseEvent("click", opts));
+
+                return true;
+            }
+
+            async function clickSaveAfterDownload(retries = 10, gapMs = 250) {
+                for (let i = 0; i < retries; i++) {
+                    const saveBtn = findSaveButton(document);
+                    if (saveBtn) {
+                        const ok = technicalClick(saveBtn);
+
+                        // Extra fallback: submit containing form if they wired it that way
+                        try {
+                            const form = saveBtn.closest("form");
+                            if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+                        } catch (_) {}
+
+                        console.log(LOG + "Triggered Save after cloud download.", { ok, attempt: i + 1 });
+                        return true;
+                    }
+                    await new Promise(r => setTimeout(r, gapMs));
+                }
+                console.warn(LOG + "Save button not found to persist after cloud download.");
+                return false;
+            }
+
+            // ------------------------------------------------------------
+            // Locate the Export/Import settings form + existing buttons
+            // ------------------------------------------------------------
+            const forms = Array.from(document.querySelectorAll("form"));
+            const settingsForm = forms.find(f => (f.textContent || "").includes("Export / import settings"));
+            if (!settingsForm) return;
+
+            const buttons = Array.from(settingsForm.querySelectorAll("button"));
+            const exportBtn = buttons.find(b => (b.innerText || "").trim() === "EXPORT");
+            const importBtn = buttons.find(b => (b.innerText || "").trim() === "IMPORT");
+            if (!exportBtn || !importBtn) return;
+
+            const exportCol = exportBtn.closest('div[class*="w-1/3"]') || exportBtn.parentElement;
+            const importCol = importBtn.closest('div[class*="w-1/3"]') || importBtn.parentElement;
+            if (!exportCol || !importCol) return;
+
+            const alreadyUpload = exportCol.querySelector("#lm-cloud-upload-btn");
+            const alreadyDownload = importCol.querySelector("#lm-cloud-download-btn");
+            if (alreadyUpload && alreadyDownload) return;
+
+            const makeBtn = (id, iconClass, text, onClick) => {
+                const b = document.createElement("button");
+                b.id = id;
+                b.className = exportBtn.className;
+
+                b.style.width = "100%";
+                b.style.marginTop = "6px";
+                b.style.height = "28px";
+                b.style.padding = "0 10px";
+                b.style.opacity = "0.95";
+                b.type = "button";
+
+                b.innerHTML = `
+                <div class="btn-layer">
+                    <div class="btn-logo">
+                        <div class="btn-icon fas ${iconClass}"></div>
+                    </div>
+                    <div class="btn-info">${text}</div>
+                </div>
+            `;
+
+                b.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Promise.resolve()
+                        .then(onClick)
+                        .catch(err => console.error(LOG + "Cloud button error:", err));
+                });
+
+                return b;
+            };
+
+            if (!alreadyUpload) {
+                exportCol.appendChild(
+                    makeBtn("lm-cloud-upload-btn", "fa-cloud-upload-alt", "UPLOAD", () => win.SNEZDeltaUpload())
+                );
+            }
+
+            if (!alreadyDownload) {
+                importCol.appendChild(
+                    makeBtn("lm-cloud-download-btn", "fa-cloud-download-alt", "DOWNLOAD", async () => {
+                        await win.SNEZDeltaDownload();      // download + import
+                        await clickSaveAfterDownload();     // now persist by clicking Save
+                    })
+                );
+            }
+
+            console.log(LOG + "Cloud buttons injected under EXPORT/IMPORT.");
+        } catch (e) {
+            console.error((win.LOG_TAG || "[LM] ") + "injectSettingsButtons failed:", e);
+        }
+    }
+
+    const settingsObserver = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+            if (m.addedNodes && m.addedNodes.length > 0) { injectSettingsButtons(); break; }
+        }
+    });
+// -------------------------
+// Force-click Delta "Save" (the floppy icon) to persist imported settings
+// -------------------------
+    function findDeltaSaveButton() {
+        // 1) Icon-based (best, matches your screenshot DOM)
+        const byIcon = document.querySelector('.btn-icon.fas.fa-save')?.closest('button');
+        if (byIcon) return byIcon;
+
+        // 2) Text-based fallback: btn-info "Save"
+        const buttons = Array.from(document.querySelectorAll('button'));
+        return buttons.find(b => {
+            const info = b.querySelector('.btn-info');
+            if (info && (info.textContent || "").trim().toLowerCase() === "save") return true;
+            const t = (b.innerText || "").trim().toLowerCase();
+            return t === "save";
+        }) || null;
+    }
+
+    function technicalClick(el) {
+        if (!el) return false;
+
+        // Make sure it can receive input (some Delta elements use pointer-events tricks)
+        try { el.style.pointerEvents = "auto"; } catch (_) {}
+
+        const opts = { bubbles: true, cancelable: true, composed: true };
+
+        // Pointer events (some frameworks listen here)
+        try {
+            el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+            el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+        } catch (_) {}
+
+        // Mouse events (React-style delegation)
+        el.dispatchEvent(new MouseEvent("mousedown", opts));
+        el.dispatchEvent(new MouseEvent("mouseup", opts));
+        el.dispatchEvent(new MouseEvent("click", opts));
+
+        return true;
+    }
+
+    async function clickDeltaSaveWithRetry(retries = 12, delayMs = 250) {
+        for (let i = 0; i < retries; i++) {
+            const saveBtn = findDeltaSaveButton();
+            if (saveBtn) {
+                technicalClick(saveBtn);
+
+                // extra: if Save is wired via form submit, request it too (safe/no-op if not)
+                try {
+                    const form = saveBtn.closest("form");
+                    if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+                } catch (_) {}
+
+                return true;
+            }
+            await new Promise(r => setTimeout(r, delayMs));
+        }
+        return false;
+    }
+    settingsObserver.observe(document.body, { childList: true, subtree: true });
+    setInterval(injectSettingsButtons, 2500);
+    setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+
 })();
