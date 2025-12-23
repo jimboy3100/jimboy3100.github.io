@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LmAddonForDelta
 // @namespace    Jimboy3100 LegendMod
-// @version      101.8
+// @version      101.9
 // @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Custom Skin Thumbnail.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
@@ -137,17 +137,32 @@ win.injectHistoryButton = function() {
     btnCol.style.display = 'flex';
     btnCol.style.gap = '4px';
 
-    const connectBtn = btnCol.querySelector('button');
+    const buttons = Array.from(btnCol.querySelectorAll('button'));
+
+    const connectBtn = buttons.find(b =>
+        (b.textContent || '').trim().toLowerCase() === 'connect'
+    );
+
     if (connectBtn) {
-        connectBtn.style.flex = "2";
-        connectBtn.style.width = "auto";
-        connectBtn.style.padding = "0px";
+        // replace label with icon
+        connectBtn.innerHTML = '<i class="fas fa-plug"></i>';
+        connectBtn.title = 'Connect';
+
+        // keep layout tight
+        connectBtn.style.flex = "1 1 0";
+        connectBtn.style.minWidth = "32px";
+        connectBtn.style.padding = "0";
+        connectBtn.style.boxSizing = "border-box";
     }
+
 
     const rejoinBtn = document.createElement('button');
     rejoinBtn.id = 'lm-rejoin-btn';
     rejoinBtn.className = connectBtn ? connectBtn.className : "btn";
-    rejoinBtn.style.flex = "1";
+    rejoinBtn.style.flex = "0 0 36px";
+    rejoinBtn.style.minWidth = "36px";
+    rejoinBtn.style.padding = "0";
+    rejoinBtn.style.boxSizing = "border-box";
     rejoinBtn.style.minWidth = "35px";
     rejoinBtn.style.cursor = "pointer";
     rejoinBtn.style.pointerEvents = "auto"; // Fixes "unclickable" issue
@@ -881,6 +896,69 @@ win.injectHistoryButton = function() {
             const forms = Array.from(document.querySelectorAll("form"));
             const settingsForm = forms.find(f => (f.textContent || "").includes("Export / import settings"));
             if (!settingsForm) return;
+// -------------------------
+// Extras row: 50% mobile devtools (left) + 50% Themes website (right)
+// -------------------------
+            (function addThemesButtonNextToMobileDevtools() {
+                const THEMES_URL = "https://www.legendmod.ml/themes/";
+
+                // Find the "Extras" header inside THIS settingsForm
+                const extrasHeader = Array.from(settingsForm.querySelectorAll("div"))
+                    .find(d => (d.textContent || "").trim() === "Extras");
+                if (!extrasHeader) return;
+
+                // The row is usually the next sibling: <div class="row"><div class="col-auto">...</div></div>
+                const extrasRow = extrasHeader.nextElementSibling;
+                if (!extrasRow || !extrasRow.classList.contains("row")) return;
+
+                // Make row 2 columns
+                extrasRow.style.display = "flex";
+                extrasRow.style.gap = "6px";
+                extrasRow.style.alignItems = "center";
+
+                const leftCol = extrasRow.querySelector(":scope > .col-auto");
+                if (!leftCol) return;
+
+                // Left col = 50%
+                leftCol.style.flex = "1 1 50%";
+                leftCol.style.maxWidth = "50%";
+
+                const mobileBtn = leftCol.querySelector("button");
+                if (mobileBtn) mobileBtn.style.width = "100%";
+
+                // Right col + button only once
+                if (extrasRow.querySelector("#lm-themes-site-btn")) return;
+
+                const rightCol = document.createElement("div");
+                rightCol.className = "col-auto";
+                rightCol.style.flex = "1 1 50%";
+                rightCol.style.maxWidth = "50%";
+
+                const btn = document.createElement("button");
+                btn.id = "lm-themes-site-btn";
+                btn.type = "button";
+                btn.className = mobileBtn ? mobileBtn.className : "btn";
+                btn.style.width = "100%";
+
+                btn.innerHTML = `
+    <div class="btn-layer px-3" style="justify-content: center;">
+        <div class="btn-logo">
+            <div class="btn-icon fas fa-palette"></div>
+        </div>
+        <div class="btn-info">Themes website</div>
+    </div>
+`;
+
+
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(THEMES_URL, "_blank", "noreferrer");
+                });
+
+                rightCol.appendChild(btn);
+                extrasRow.appendChild(rightCol);
+            })();
 
             const buttons = Array.from(settingsForm.querySelectorAll("button"));
             const exportBtn = buttons.find(b => (b.innerText || "").trim() === "EXPORT");
@@ -961,6 +1039,8 @@ win.injectHistoryButton = function() {
         } catch (e) {
             console.error((win.LOG_TAG || "[LM] ") + "injectSettingsButtons failed:", e);
         }
+
+
     }
 
     const settingsObserver = new MutationObserver((mutations) => {
@@ -1548,6 +1628,88 @@ win.injectHistoryButton = function() {
             hookToastrIfPresent();
         }
     }, 300);
-
 })();
 
+
+(function () {
+    'use strict';
+
+    const INTERVAL = setInterval(function () {
+        try {
+            // 1) Find the existing "Hide" button
+            const hideBtn = Array.from(document.querySelectorAll("button"))
+                .find(function (b) { return (b.textContent || "").trim() === "Hide"; });
+
+            if (!hideBtn) return;
+            if (hideBtn.dataset.lmHideIcon === "1") { clearInterval(INTERVAL); return; }
+
+            const parent = hideBtn.parentElement;
+            if (!parent) return;
+
+            // 2) Prevent double patching
+            hideBtn.dataset.lmHideIcon = "1";
+
+            // 3) Ensure parent is horizontal layout
+            parent.style.display = "flex";
+            parent.style.gap = "4px";
+            parent.style.alignItems = "stretch";
+
+            // 4) Force 50/50 width
+            hideBtn.style.flex = "1 1 50%";
+            hideBtn.style.width = "50%";
+
+            // 5) Turn existing Hide button into ICON button (keep its click handler)
+            hideBtn.innerHTML = ""; // replace the text
+            const hideLayer = document.createElement("div");
+            hideLayer.className = "btn-layer";
+            hideLayer.style.justifyContent = "center";
+            hideLayer.style.width = "100%";
+
+            // Choose an icon you want for hide (eye-slash is typical)
+            const hideIcon = document.createElement("i");
+            hideIcon.className = "fas fa-eye-slash";
+            hideLayer.appendChild(hideIcon);
+            hideBtn.appendChild(hideLayer);
+
+            // 6) Add Skins icon button on the LEFT (only once)
+            let skinsBtn = parent.querySelector('button[data-lm-skins-btn="1"]');
+            if (!skinsBtn) {
+                skinsBtn = document.createElement("button");
+                skinsBtn.dataset.lmSkinsBtn = "1";
+
+                // Copy classes from Hide so it matches styling
+                skinsBtn.className = hideBtn.className;
+
+                skinsBtn.style.flex = "1 1 50%";
+                skinsBtn.style.width = "50%";
+
+                const skinsLayer = document.createElement("div");
+                skinsLayer.className = "btn-layer";
+                skinsLayer.style.justifyContent = "center";
+                skinsLayer.style.width = "100%";
+
+                // Icon for skins (palette is typical)
+                const skinsIcon = document.createElement("i");
+                skinsIcon.className = "fas fa-palette";
+                skinsLayer.appendChild(skinsIcon);
+
+                skinsBtn.appendChild(skinsLayer);
+
+                skinsBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open("https://www.legendmod.ml/skins", "_blank", "noopener");
+                });
+
+                // Insert Skins button BEFORE Hide button (left)
+                parent.insertBefore(skinsBtn, hideBtn);
+            }
+
+            // Done
+            clearInterval(INTERVAL);
+
+        } catch (e) {
+            // keep waiting; UI may still be hydrating
+        }
+    }, 300);
+})();
