@@ -239,60 +239,76 @@ win.injectHistoryButton = function() {
     // ==========================================================================
     function isValidWebhook(url) { return /^(https?):\/\/(discord|discordapp)\.com\/api\/webhooks\/[^\s]+$/.test(url); }
 
-    win
-        .sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
-        // If manual skin is empty or too short, use the avatar for the thumbnail too
+    win.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
         const sip = customToken || document.querySelector('input[name="serverToken"]')?.value;
         const tag = document.querySelector('input[name="clantag"]')?.value || "";
         const nick = document.querySelector('input[name="nickA"]')?.value || "Guest";
         const region = customRegion || document.querySelector('select[name="region"]')?.value || "Unknown";
         const mode = customMode || document.querySelector('select[name="gamemode"]')?.value || ":ffa";
-        // If manual skin is empty or too short, use the avatar for the thumbnail too
 
-        // 1. Detect Profile Avatar (Left Icon) or use Fallback
         const avatarIcon = document.querySelector('img.avatar')?.src || win.FALLBACK_ICON;
 
-        // 2. Detect Manual Skin URL (Top Right Icon)
-        const manualSkin = document.querySelector('input[name="skinA"]')?.value ||
+        const manualSkin =
+            document.querySelector('input[name="skinA"]')?.value ||
             document.querySelector('input[name="skinB"]')?.value;
 
-        const thumbnailIcon = (manualSkin && manualSkin.length > 10) ? manualSkin : avatarIcon;
+        const thumbnailIcon = (manualSkin && manualSkin.length > 10)
+            ? manualSkin
+            : avatarIcon;
 
         if (!sip) return;
+
         const lmSip = sip.includes(".") ? sip : `live-arena-${sip}.agar.io`;
-        const joinLink = `${win
-            .location.origin}${win
-            .location.pathname}?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
+        const joinLink =
+            `${win.location.origin}${win.location.pathname}` +
+            `?sip=${lmSip}&pass=${tag}&?r=${region}&?m=${mode}`;
+
+        // format HH:MM (local time)
+        const now = new Date();
+        const time =
+            now.getHours().toString().padStart(2, "0") +
+            ":" +
+            now.getMinutes().toString().padStart(2, "0");
+
+        const fields = [
+            { name: "🖥️", value: `[\`${sip}\`](${joinLink})`, inline: true },
+            { name: "🌍", value: `\`${region}\``, inline: true },
+            { name: "🎮", value: `\`${mode}\``, inline: true }
+        ];
+
+        if (tag) {
+            fields.push(
+                { name: "🏷️", value: `\`${tag}\``, inline: true },
+                { name: "⠀", value: "⠀", inline: true }
+            );
+        }
 
         const payload = {
             embeds: [{
                 author: {
-                    name: `${nick} is entering the game!`,
+                    name: `${nick} joined – ${time}`,
                     icon_url: avatarIcon
                 },
-                title: "🎮 Server Invite via Legend Mod",
-                color: 121150,
+                color: 5763719,
                 thumbnail: {
                     url: thumbnailIcon
                 },
-                fields: [
-                    { name: "Server", value: `\`${sip}\``, inline: true },
-                    { name: "Region", value: region, inline: true },
-                    { name: "Mode", value: mode, inline: true },
-                    { name: "Tag/Pass", value: tag ? `\`${tag}\`` : "`None`" , inline: true },
-                    { name: "Link", value: `[👉 Instant Join](${joinLink})` }
-                ],
-                footer: { text: "LM Imperial Overlord | Delta Mod Addon" },
-                timestamp: new Date()
+                fields
+                // ❌ timestamp REMOVED → no "Today at ..."
             }]
         };
 
         [LM_MASTER.discord.webhook1, LM_MASTER.discord.webhook2].forEach(wh => {
             if (isValidWebhook(wh)) {
-                fetch(wh, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                fetch(wh, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
             }
         });
     };
+
 
     function getISO(code) {
         if (!code) return "un";
@@ -389,7 +405,7 @@ win.injectHistoryButton = function() {
                 <div id="lm-main-win" class="lm-win" style="display:none; top: 15%; left: 50%; transform: translateX(-50%);">
                     <div class="lm-bar" id="lm-drag">
                         <span class="lm-x" id="lm-quit">×</span>
-                        Legend Mod Empire Overlord
+                        Search Players Across the Network
                     </div>
                     <div class="lm-stats" id="lm-st-online">Network Online...</div>
                     <div class="lm-main">
@@ -416,7 +432,7 @@ win.injectHistoryButton = function() {
                             <input id="lm-wh1" class="lm-wh-in" placeholder="Discord Webhook URL 1" value="${LM_MASTER.discord.webhook1}">
                         </div>
                         <input id="lm-wh2" class="lm-wh-in" style="margin-left: 30px; width: calc(100% - 30px);" placeholder="Discord Webhook URL 2" value="${LM_MASTER.discord.webhook2}">
-                        <label style="font-size:10px; color:#666; margin-left: 30px;"><input type="checkbox" id="lm-auto-d" ${LM_MASTER.discord.autoSend ? 'checked' : ''}> Auto-post to Discord on "Play"</label>
+                        <label style="font-size:10px;color:#9aa0a6;margin-left:30px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer;"><input type="checkbox" id="lm-auto-d" ${LM_MASTER.discord.autoSend ? 'checked' : ''} style="margin:0;width:13px;height:13px;accent-color:#5865F2;"> Auto-post to Discord on "Play"</label>
                     </div>
                 </div>
             </div>
