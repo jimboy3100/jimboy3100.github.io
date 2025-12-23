@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         LmAddonForDelta
-// @namespace    Jimboy3100 LegendMod
-// @version      102.0
-// @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Custom Skin Thumbnail.
+// @namespace    Legend addon for Delta mod agar.io
+// @version      102.1
+// @description  Agar.io PC addon for Delta (deltio / delt.io) and LegendMod. Discord webhook invites, Play auto-post, rich embeds, server join URLs, SNEZ broadcaster, server history & instant rejoin, cloud save/load, themes, skins, custom skin URLs, clan tags, macro & feed coordination, party play, bot reduction helpers, UI enhancements. Works with Legend, Ogario style play, Agar.io desktop, Discord, YouTube.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
 // @match        https://agar.io/*
