@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         LmAddonForDelta
+// @name         Legend Delta agar.io
 // @namespace    Legend addon for Delta mod agar.io
-// @version      102.1
+// @version      1.0
 // @description  Agar.io PC addon for Delta (deltio / delt.io) and LegendMod. Discord webhook invites, Play auto-post, rich embeds, server join URLs, SNEZ broadcaster, server history & instant rejoin, cloud save/load, themes, skins, custom skin URLs, clan tags, macro & feed coordination, party play, bot reduction helpers, UI enhancements. Works with Legend, Ogario style play, Agar.io desktop, Discord, YouTube.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
