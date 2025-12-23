@@ -8,6 +8,11 @@
 // @match        https://agar.io/*
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
+// @connect      lmsettings.snez.org
+// @connect      agar.snez.org
+// @connect      discord.com
+// @connect      discordapp.com
+// @connect      ipapi.co
 // @run-at       document-start
 // ==/UserScript==
 
@@ -22,6 +27,7 @@ win
     current: { nick: "", tag: "", server: "", region: "", mode: "" },
     history: JSON.parse(localStorage.getItem("LM_Server_History") || "[]")
 };
+win.REMOVE_CHAT_MESSAGE_AFTER_PARSE = true;
 // 2. Listener (Put this inside your listeners section)
 document.addEventListener('click', (e) => {
     const target = e.target.closest('.btn-layer');
@@ -596,3 +602,908 @@ win.injectHistoryButton = function() {
         }
     }, 500);
 })();
+// ==========================================================================
+// [SNEZ CLOUD] Delta full bundle Export/Import + UI buttons
+// Upload/Download must talk to SNEZ server (NO file pickers)
+// Endpoint: https://lmsettings.snez.org/
+// Auth headers: username=<uid>, password=LMSettings
+// ==========================================================================
+
+(function () {
+    'use strict';
+
+    // IMPORTANT: use the same unsafeWindow-backed reference as the rest of your script
+    const win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+
+    const ENDPOINT = "https://lmsettings.snez.org/";
+    const PASS = "LMSettings";
+
+    // -------------------------
+    // STRICT helper to verify login and get an ID
+    // (your earlier logic: app.accountManager.tokens.all keys)
+    // -------------------------
+    function checkLoginAndGetID() {
+        try {
+            const all = win?.app?.accountManager?.tokens?.all;
+            if (all && typeof all === "object") {
+                const keys = Object.keys(all);
+                if (keys.length > 0 && keys[0]) return keys[0] + "DM";
+            }
+        } catch (e) {
+            console.error((win.LOG_TAG || "[LM] ") + "Token check error", e);
+        }
+
+        if (win.toastr) win.toastr.error("<b>[LM]:</b> Login Required!<br>Please login with Google/Facebook first.");
+        return null;
+    }
+
+    // -------------------------
+    // Robust "wait for Delta API"
+    // -------------------------
+    function waitForDeltaApi(timeoutMs = 20000) {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+            const t = setInterval(() => {
+                const ok =
+                    !!win.keyMaster && typeof win.keyMaster.export === "function" && typeof win.keyMaster.import === "function" &&
+                    !!win.profiles  && typeof win.profiles.export  === "function" && typeof win.profiles.import  === "function" &&
+                    !!win.settings  && typeof win.settings.export  === "function" && typeof win.settings.import  === "function" &&
+                    !!win.theme     && typeof win.theme.export     === "function" && typeof win.theme.import     === "function";
+
+                if (ok) { clearInterval(t); resolve(true); return; }
+                if (Date.now() - start > timeoutMs) { clearInterval(t); reject(new Error("Delta API not ready: keyMaster/profiles/settings/theme")); }
+            }, 120);
+        });
+    }
+
+    // -------------------------
+    // Build / Apply bundle
+    // -------------------------
+    function buildDeltaBundle() {
+        return {
+            version: 1,
+            deltaHotkeys: win.keyMaster.export(),
+            ogarioPlayerProfiles: win.profiles.export(),
+            settings: win.settings.export(),
+            ogarioThemeSettings: win.theme.export(),
+        };
+    }
+
+    function applyDeltaBundle(bundle) {
+        if (!bundle || typeof bundle !== "object") throw new Error("Invalid bundle object");
+        if (!bundle.deltaHotkeys || !bundle.settings || !bundle.ogarioThemeSettings) {
+            throw new Error("Bundle missing required keys: deltaHotkeys/settings/ogarioThemeSettings");
+        }
+
+        win.keyMaster.import(bundle.deltaHotkeys);
+        win.profiles.import(bundle.ogarioPlayerProfiles || []);
+        win.settings.import(bundle.settings);
+        win.theme.import(bundle.ogarioThemeSettings);
+
+        // Do NOT invent methods. Best-effort: click APPLY/SAVE/OK if Delta UI provides one.
+        try {
+            const btns = Array.from(document.querySelectorAll("button"));
+            const hit = btns.find(b => {
+                const t = (b.innerText || "").trim().toUpperCase();
+                return t === "APPLY" || t === "SAVE" || t === "OK";
+            });
+            if (hit) { try { hit.click(); } catch (_) {} }
+        } catch (_) {}
+        setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+    }
+
+    // -------------------------
+    // SNEZ requests
+    // -------------------------
+    function snezPost(uid, payloadObj) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "POST",
+                url: ENDPOINT,
+                headers: { username: uid, password: PASS },
+                // Keep escape/unescape since your server already uses it
+                data: escape(JSON.stringify(payloadObj)),
+                onload: (res) => resolve(res),
+                onerror: (err) => reject(err),
+            });
+        });
+    }
+
+    function snezGet(uid) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: ENDPOINT,
+                headers: { username: uid, password: PASS },
+                onload: (res) => resolve(res),
+                onerror: (err) => reject(err),
+            });
+        });
+    }
+
+    // -------------------------
+    // Exposed functions (your buttons call these)
+    // -------------------------
+    win.SNEZDeltaUpload = async function () {
+        const uid = checkLoginAndGetID();
+        if (!uid) return;
+
+        try {
+            await waitForDeltaApi();
+
+            const bundle = buildDeltaBundle();
+
+            if (win.toastr) win.toastr.info("<b>[LM]:</b> Uploading full Delta bundle...");
+            const res = await snezPost(uid, bundle);
+
+            if (res && res.status === 200) {
+                if (win.toastr) win.toastr.success(`<b>[LM]:</b> Bundle saved to cloud!<br>ID: <span style="color:yellow">${uid}</span>`);
+                console.log((win.LOG_TAG || "[LM] ") + "Cloud upload OK", uid);
+            } else {
+                if (win.toastr) win.toastr.error("<b>[LM]:</b> Cloud upload failed (server error).");
+                console.error((win.LOG_TAG || "[LM] ") + "Cloud upload failed", res);
+            }
+        } catch (e) {
+            if (win.toastr) win.toastr.error(`<b>[LM]:</b> Upload failed: ${String(e && e.message ? e.message : e)}`);
+            console.error((win.LOG_TAG || "[LM] ") + "Upload failed", e);
+        }
+    };
+
+    win.SNEZDeltaDownload = async function () {
+        const uid = checkLoginAndGetID();
+        if (!uid) return;
+
+        try {
+            await waitForDeltaApi();
+
+            if (win.toastr) win.toastr.info("<b>[LM]:</b> Downloading full Delta bundle...");
+            const res = await snezGet(uid);
+
+            if (!res || res.status !== 200 || !res.responseText) {
+                if (win.toastr) win.toastr.warning("<b>[LM]:</b> No cloud data found for this ID.");
+                console.warn((win.LOG_TAG || "[LM] ") + "Cloud download: empty", res);
+                return;
+            }
+
+            const raw = unescape(res.responseText);
+            const bundle = JSON.parse(raw);
+
+            applyDeltaBundle(bundle);
+
+            if (win.toastr) win.toastr.success("<b>[LM]:</b> Cloud bundle loaded! Save theme/profile/hotkeys... you like to from their own menu tab");
+            console.log((win.LOG_TAG || "[LM] ") + "Cloud download+import OK", uid);
+        } catch (e) {
+            if (win.toastr) win.toastr.error("<b>[LM]:</b> Corrupt cloud data or import failed.");
+            console.error((win.LOG_TAG || "[LM] ") + "Cloud data parse/import failed", e);
+        }
+    };
+
+    // ========================================================================
+    // UI injection: add UPLOAD under EXPORT, DOWNLOAD under IMPORT
+    // ========================================================================
+    function injectSettingsButtons() {
+        try {
+            const LOG = (win.LOG_TAG || "[LM] ");
+
+            // ------------------------------------------------------------
+            // Helper: find & "technical click" the Delta Save button
+            // ------------------------------------------------------------
+            function findSaveButton(root = document) {
+                // Fast: icon-based
+                const iconBtn = root.querySelector(".btn-icon.fas.fa-save")?.closest("button");
+                if (iconBtn) return iconBtn;
+
+                // Text-based fallback
+                const buttons = Array.from(root.querySelectorAll("button"));
+                return buttons.find(b => {
+                    const info = b.querySelector(".btn-info");
+                    if (info && (info.textContent || "").trim().toLowerCase() === "save") return true;
+                    const t = (b.innerText || "").trim().toLowerCase();
+                    return t === "save";
+                }) || null;
+            }
+
+            function technicalClick(el) {
+                if (!el) return false;
+
+                // Ensure interactable
+                try { el.style.pointerEvents = "auto"; } catch (_) {}
+
+                const opts = { bubbles: true, cancelable: true, composed: true };
+
+                // Pointer events (some UIs prefer this)
+                try {
+                    el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+                    el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+                } catch (_) {}
+
+                // Mouse events (React-style delegation)
+                el.dispatchEvent(new MouseEvent("mousedown", opts));
+                el.dispatchEvent(new MouseEvent("mouseup", opts));
+                el.dispatchEvent(new MouseEvent("click", opts));
+
+                return true;
+            }
+
+            async function clickSaveAfterDownload(retries = 10, gapMs = 250) {
+                for (let i = 0; i < retries; i++) {
+                    const saveBtn = findSaveButton(document);
+                    if (saveBtn) {
+                        const ok = technicalClick(saveBtn);
+
+                        // Extra fallback: submit containing form if they wired it that way
+                        try {
+                            const form = saveBtn.closest("form");
+                            if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+                        } catch (_) {}
+
+                        console.log(LOG + "Triggered Save after cloud download.", { ok, attempt: i + 1 });
+                        return true;
+                    }
+                    await new Promise(r => setTimeout(r, gapMs));
+                }
+                console.warn(LOG + "Save button not found to persist after cloud download.");
+                return false;
+            }
+
+            // ------------------------------------------------------------
+            // Locate the Export/Import settings form + existing buttons
+            // ------------------------------------------------------------
+            const forms = Array.from(document.querySelectorAll("form"));
+            const settingsForm = forms.find(f => (f.textContent || "").includes("Export / import settings"));
+            if (!settingsForm) return;
+
+            const buttons = Array.from(settingsForm.querySelectorAll("button"));
+            const exportBtn = buttons.find(b => (b.innerText || "").trim() === "EXPORT");
+            const importBtn = buttons.find(b => (b.innerText || "").trim() === "IMPORT");
+            if (!exportBtn || !importBtn) return;
+
+            const exportCol = exportBtn.closest('div[class*="w-1/3"]') || exportBtn.parentElement;
+            const importCol = importBtn.closest('div[class*="w-1/3"]') || importBtn.parentElement;
+            if (!exportCol || !importCol) return;
+
+            const alreadyUpload = exportCol.querySelector("#lm-cloud-upload-btn");
+            const alreadyDownload = importCol.querySelector("#lm-cloud-download-btn");
+            if (alreadyUpload && alreadyDownload) return;
+
+            const makeBtn = (id, iconClass, text, onClick) => {
+                const b = document.createElement("button");
+                b.id = id;
+                b.className = exportBtn.className;
+
+                b.style.width = "100%";
+                b.style.marginTop = "6px";
+                b.style.height = "28px";
+                b.style.padding = "0 10px";
+                b.style.opacity = "0.95";
+                b.type = "button";
+
+                b.innerHTML = `
+                <div class="btn-layer">
+                    <div class="btn-logo">
+                        <div class="btn-icon fas ${iconClass}"></div>
+                    </div>
+                    <div class="btn-info">${text}</div>
+                </div>
+            `;
+
+                b.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Promise.resolve()
+                        .then(onClick)
+                        .catch(err => console.error(LOG + "Cloud button error:", err));
+                });
+
+                return b;
+            };
+
+            if (!alreadyUpload) {
+                exportCol.appendChild(
+                    makeBtn("lm-cloud-upload-btn", "fa-cloud-upload-alt", "UPLOAD", () => win.SNEZDeltaUpload())
+                );
+            }
+
+            if (!alreadyDownload) {
+                importCol.appendChild(
+                    makeBtn("lm-cloud-download-btn", "fa-cloud-download-alt", "DOWNLOAD", async () => {
+                        await win.SNEZDeltaDownload();      // download + import
+                        await clickSaveAfterDownload();     // now persist by clicking Save
+                    })
+                );
+            }
+
+            console.log(LOG + "Cloud buttons injected under EXPORT/IMPORT.");
+        } catch (e) {
+            console.error((win.LOG_TAG || "[LM] ") + "injectSettingsButtons failed:", e);
+        }
+    }
+
+    const settingsObserver = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+            if (m.addedNodes && m.addedNodes.length > 0) { injectSettingsButtons(); break; }
+        }
+    });
+// -------------------------
+// Force-click Delta "Save" (the floppy icon) to persist imported settings
+// -------------------------
+    function findDeltaSaveButton() {
+        // 1) Icon-based (best, matches your screenshot DOM)
+        const byIcon = document.querySelector('.btn-icon.fas.fa-save')?.closest('button');
+        if (byIcon) return byIcon;
+
+        // 2) Text-based fallback: btn-info "Save"
+        const buttons = Array.from(document.querySelectorAll('button'));
+        return buttons.find(b => {
+            const info = b.querySelector('.btn-info');
+            if (info && (info.textContent || "").trim().toLowerCase() === "save") return true;
+            const t = (b.innerText || "").trim().toLowerCase();
+            return t === "save";
+        }) || null;
+    }
+
+    function technicalClick(el) {
+        if (!el) return false;
+
+        // Make sure it can receive input (some Delta elements use pointer-events tricks)
+        try { el.style.pointerEvents = "auto"; } catch (_) {}
+
+        const opts = { bubbles: true, cancelable: true, composed: true };
+
+        // Pointer events (some frameworks listen here)
+        try {
+            el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+            el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+        } catch (_) {}
+
+        // Mouse events (React-style delegation)
+        el.dispatchEvent(new MouseEvent("mousedown", opts));
+        el.dispatchEvent(new MouseEvent("mouseup", opts));
+        el.dispatchEvent(new MouseEvent("click", opts));
+
+        return true;
+    }
+
+    async function clickDeltaSaveWithRetry(retries = 12, delayMs = 250) {
+        for (let i = 0; i < retries; i++) {
+            const saveBtn = findDeltaSaveButton();
+            if (saveBtn) {
+                technicalClick(saveBtn);
+
+                // extra: if Save is wired via form submit, request it too (safe/no-op if not)
+                try {
+                    const form = saveBtn.closest("form");
+                    if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+                } catch (_) {}
+
+                return true;
+            }
+            await new Promise(r => setTimeout(r, delayMs));
+        }
+        return false;
+    }
+    settingsObserver.observe(document.body, { childList: true, subtree: true });
+    setInterval(injectSettingsButtons, 2500);
+    setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+
+})();
+
+/* ============================================================================
+   [LM] Delta Chat Commands (IIFE)
+   - Delta chat DOM: .chat-messages-container ul.chatmessages li.message
+   - Optional: also parse toastr.* content
+   - Commands: [url], [tag], [yut], [img], [discord], [skype]
+   - [yut] => embedded YouTube iframe (no Play button)
+   - Close (✕) => removes the toast itself
+   - FIXES:
+     1) No double toasts (Delta re-hydrates same <li> multiple times)
+     2) Works on characterData (Text node) mutations
+     3) Dedup between chat parsing and toastr-hook
+     4) Prevent multiple observers if IIFE runs twice
+   ============================================================================ */
+(function () {
+    'use strict';
+
+    // IMPORTANT: Delta addon uses unsafeWindow in many places; keep compatibility
+    const win = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : window;
+
+    const LOG = (win.LOG_TAG || "[LM] ") + "ChatCmd: ";
+
+    // Toggle: remove the original chat line after we handle a command
+    // win.REMOVE_CHAT_MESSAGE_AFTER_PARSE = true;
+
+    const TAGS = ["url","tag","yut","img","discord","skype"];
+    const CMD_OPEN_RE  = new RegExp("\\[(" + TAGS.join("|") + ")\\]", "i");
+    const CMD_CLOSE_RE = new RegExp("\\[\\/(" + TAGS.join("|") + ")\\]", "i");
+
+    // --------- cross-source dedup (chat + toastr hook) ----------
+    const __LM_TOAST_DEDUP__ = new Map();
+    function lmToastDedupHit(key, ttlMs = 1500) {
+        const now = Date.now();
+        const exp = __LM_TOAST_DEDUP__.get(key) || 0;
+        if (exp > now) return true;
+        __LM_TOAST_DEDUP__.set(key, now + ttlMs);
+        return false;
+    }
+
+    // ---------- helpers ----------
+    function shouldParse(text) {
+        if (!text) return false;
+        return CMD_OPEN_RE.test(text) && CMD_CLOSE_RE.test(text);
+    }
+
+    function stripHtmlToText(el) {
+        return (el && el.textContent) ? el.textContent : "";
+    }
+
+    function getNickFromLi(li) {
+        const n = li?.querySelector?.(".nick");
+        return (n?.textContent || "").trim().replace(/:\s*$/, "") || "Unknown";
+    }
+
+    function getTextEl(li) {
+        return li?.querySelector?.(".text") || null;
+    }
+
+    function extractBetween(text, openTag, closeTag) {
+        const low = String(text).toLowerCase();
+        const a = low.indexOf(openTag);
+        if (a === -1) return null;
+        const b = low.indexOf(closeTag, a + openTag.length);
+        if (b === -1) return null;
+        return String(text).substring(a + openTag.length, b);
+    }
+
+    function normalizeUrl(u) {
+        if (!u) return null;
+        u = String(u).trim();
+        if (!u) return null;
+        if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+        return u;
+    }
+
+    function extractUrlPreferAnchor(textEl, fallbackText) {
+        const a = textEl?.querySelector?.("a[href]");
+        if (a?.href) return a.href;
+        const m = String(fallbackText || "").match(/https?:\/\/[^\s\]]+/i);
+        return m ? m[0] : null;
+    }
+
+    function makeToastId() {
+        return "lm_toast_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    }
+
+    function toast(type, html, timeoutMs) {
+        if (!win.toastr) {
+            console.warn(LOG + "toastr not found; cannot show popup.");
+            return null;
+        }
+        const fn = win.toastr[type] || win.toastr.info;
+        fn.call(win.toastr, html, "", {
+            timeOut: timeoutMs || 20000,
+            extendedTimeOut: timeoutMs || 20000
+        });
+        return true;
+    }
+
+    function bindCloseForToastRoot(toastRootId) {
+        // Bind once after toast inserts into DOM
+        setTimeout(() => {
+            const root = document.getElementById(toastRootId);
+            if (!root) return;
+
+            const closeBtn = root.querySelector('[data-lm-close="1"]');
+            if (!closeBtn || closeBtn.__lm_bound) return;
+            closeBtn.__lm_bound = true;
+
+            closeBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const toastEl = root.closest(".toast");
+                if (toastEl) toastEl.remove();
+            });
+        }, 0);
+    }
+
+    // ---------- youtube helpers ----------
+    function extractYoutubeId(url) {
+        const u = String(url || "");
+        // watch?v=VIDEOID
+        let m = u.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
+        if (m && m[1]) return m[1];
+        // youtu.be/VIDEOID
+        m = u.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/);
+        if (m && m[1]) return m[1];
+        // shorts/VIDEOID
+        m = u.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/);
+        if (m && m[1]) return m[1];
+        // embed/VIDEOID
+        m = u.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
+        if (m && m[1]) return m[1];
+        return null;
+    }
+
+    // ---------- command actions ----------
+    function handleUrlCommand(payload, nick) {
+        const url = normalizeUrl(payload);
+        if (!url) return;
+
+        const tid = makeToastId();
+        toast("warning",
+            `<div id="${tid}">
+               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                 <div><b>${nick}</b> shared a link</div>
+                 <button data-lm-close="1"
+                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+               </div>
+               <div style="margin-top:8px;">
+                 <a href="${url}" target="_blank" rel="noreferrer" style="color:#3aa0ff">${url}</a>
+               </div>
+             </div>`,
+            20000
+        );
+        bindCloseForToastRoot(tid);
+    }
+
+    function handleTagCommand(payload, nick) {
+        const tag = String(payload || "").trim();
+        const tid = makeToastId();
+
+        toast("warning",
+            `<div id="${tid}">
+               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                 <div><b>${nick}</b> shared a tag</div>
+                 <button data-lm-close="1"
+                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+               </div>
+
+               <div style="margin-top:8px;color:#f1c40f;font-family:monospace;">
+                 ${tag || "(empty)"}
+               </div>
+
+               <button data-lm-apply-tag="1"
+                 style="margin-top:10px;width:100%;cursor:pointer;background:#0b74ff;border:1px solid #0b74ff;color:#fff;border-radius:6px;padding:6px 10px;">
+                 Apply Tag
+               </button>
+             </div>`,
+            20000
+        );
+
+        setTimeout(() => {
+            const root = document.getElementById(tid);
+            if (!root) return;
+
+            const apply = root.querySelector('[data-lm-apply-tag="1"]');
+            if (apply && !apply.__lm_bound) {
+                apply.__lm_bound = true;
+                apply.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const el = document.querySelector('input[name="clantag"]') || document.getElementById("clantag");
+                    if (el) {
+                        el.value = tag;
+                        el.dispatchEvent(new Event("input", { bubbles: true }));
+                        el.dispatchEvent(new Event("change", { bubbles: true }));
+                        el.style.backgroundColor = "#ff6347";
+                        window.prevBg = el.style.backgroundColor;
+                        el.style.backgroundColor = "#ff6347";
+                        setTimeout(() => { el.style.backgroundColor = window.prevBg; }, 3000);
+                    }
+                });
+            }
+        }, 0);
+
+        bindCloseForToastRoot(tid);
+    }
+
+    function handleDiscordCommand(payload, nick) {
+        const url = normalizeUrl(payload);
+        if (!url) return;
+
+        if (!/(discord(app)?\.com\/invite|discord\.gg|discord\.com)/i.test(url)) return;
+
+        const tid = makeToastId();
+        toast("warning",
+            `<div id="${tid}">
+               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                 <div><b>${nick}</b> shared Discord</div>
+                 <button data-lm-close="1"
+                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+               </div>
+               <div style="margin-top:8px;">
+                 <a href="${url}" target="_blank" rel="noreferrer" style="color:#7289da">${url}</a>
+               </div>
+             </div>`,
+            20000
+        );
+        bindCloseForToastRoot(tid);
+    }
+
+    function handleSkypeCommand(payload, nick) {
+        const url = normalizeUrl(payload);
+        if (!url) return;
+
+        if (!/join\.skype\.com\//i.test(url)) return;
+
+        const tid = makeToastId();
+        toast("warning",
+            `<div id="${tid}">
+               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                 <div><b>${nick}</b> shared Skype</div>
+                 <button data-lm-close="1"
+                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+               </div>
+               <div style="margin-top:8px;">
+                 <a href="${url}" target="_blank" rel="noreferrer" style="color:#3aa0ff">${url}</a>
+               </div>
+             </div>`,
+            20000
+        );
+        bindCloseForToastRoot(tid);
+    }
+
+    function handleImgCommand(payload, nick) {
+        const url = normalizeUrl(payload);
+        if (!url) return;
+
+        const tid = makeToastId();
+        const p = previewImageUrl(url);
+
+        toast("warning",
+            `<div id="${tid}">
+           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+             <div><b>${nick}</b> shared image</div>
+             <button data-lm-close="1"
+               style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+           </div>
+
+           <center><img
+             src="${p.direct}"
+             referrerpolicy="no-referrer"
+             loading="lazy"
+             decoding="async"
+             style="max-width:100%;margin-top:8px;border:1px solid #222;border-radius:8px;"
+             onerror="this.onerror=null; this.src='${p.proxy}';"
+           ></center>
+         </div>`,
+            20000
+        );
+
+        bindCloseForToastRoot(tid);
+    }
+
+
+    // [yut] => embed instead of Play button
+    function handleYoutubeCommand(payload, nick) {
+        const url = normalizeUrl(payload);
+        if (!url) return;
+
+        const vid = extractYoutubeId(url);
+        if (!vid) {
+            // not a recognizable youtube link; just show as url
+            handleUrlCommand(url, nick);
+            return;
+        }
+
+        const tid = makeToastId();
+        toast("warning",
+            `<div id="${tid}">
+               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                 <div><b>${nick}</b> shared YouTube</div>
+                 <button data-lm-close="1"
+                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
+               </div>
+
+               <div style="margin-top:8px;">
+                 <iframe
+                   width="100%"
+                   style="aspect-ratio:16/9;border:0;border-radius:8px;overflow:hidden;"
+                   src="https://www.youtube.com/embed/${vid}?autoplay=1&mute=0&vq=tiny"
+                   title="YouTube video player"
+                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                   allowfullscreen></iframe>
+               </div>
+
+               <div style="margin-top:8px;font-size:12px;">
+                 <a href="${url}" target="_blank" rel="noreferrer" style="color:#e74c3c">${url}</a>
+               </div>
+             </div>`,
+            20000
+        );
+        bindCloseForToastRoot(tid);
+    }
+
+    // ---------- main parser ----------
+    function LM_ParseChatCommand(rawText, nick, textEl, liToOptionallyRemove) {
+        const text = String(rawText || "");
+        if (!shouldParse(text)) return false;
+
+        // [url]
+        if (/\[url\]/i.test(text) && /\[\/url\]/i.test(text)) {
+            const payload = extractBetween(text, "[url]", "[/url]");
+            const url = extractUrlPreferAnchor(textEl, payload || "");
+            handleUrlCommand(url || payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        // [tag]
+        if (/\[tag\]/i.test(text) && /\[\/tag\]/i.test(text)) {
+            const payload = extractBetween(text, "[tag]", "[/tag]");
+            handleTagCommand(payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        // [yut]
+        if (/\[yut\]/i.test(text) && /\[\/yut\]/i.test(text)) {
+            const payload = extractBetween(text, "[yut]", "[/yut]");
+            const url = extractUrlPreferAnchor(textEl, payload || "");
+            handleYoutubeCommand(url || payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        // [img]
+        if (/\[img\]/i.test(text) && /\[\/img\]/i.test(text)) {
+            const payload = extractBetween(text, "[img]", "[/img]");
+            const url = extractUrlPreferAnchor(textEl, payload || "");
+            handleImgCommand(url || payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        // [skype]
+        if (/\[skype\]/i.test(text) && /\[\/skype\]/i.test(text)) {
+            const payload = extractBetween(text, "[skype]", "[/skype]");
+            const url = extractUrlPreferAnchor(textEl, payload || "");
+            handleSkypeCommand(url || payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        // [discord]
+        if (/\[discord\]/i.test(text) && /\[\/discord\]/i.test(text)) {
+            const payload = extractBetween(text, "[discord]", "[/discord]");
+            const url = extractUrlPreferAnchor(textEl, payload || "");
+            handleDiscordCommand(url || payload, nick);
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            return true;
+        }
+
+        return false;
+    }
+
+    // ---------- Delta chat observer ----------
+    function attachDeltaChatObserver() {
+        const container = document.querySelector(".chat-messages-container ul.chatmessages");
+        if (!container) return false;
+
+        const parseMessageLi = (li) => {
+            if (!li || !(li instanceof HTMLElement)) return;
+            if (!li.classList.contains("message")) return;
+
+            const textEl = getTextEl(li);
+            if (!textEl) return;
+
+            const nick = getNickFromLi(li);
+            const text = stripHtmlToText(textEl);
+
+            // Delta hydrates: same li gets updated multiple times.
+            // Prevent duplicate handling for the same final text.
+            const sig = nick + "||" + text;
+            if (li.dataset && li.dataset.lmCmdSig === sig) return;
+            if (li.dataset) li.dataset.lmCmdSig = sig;
+
+            // Dedup between chat parsing + toastr-hook (short TTL)
+            if (lmToastDedupHit("chat::" + sig)) return;
+
+            if (shouldParse(text)) {
+                LM_ParseChatCommand(text, nick, textEl, li);
+            }
+        };
+
+        // Parse existing
+        Array.from(container.querySelectorAll("li.message")).forEach(parseMessageLi);
+
+        const obs = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                // A) new nodes added
+                if (m.addedNodes && m.addedNodes.length) {
+                    m.addedNodes.forEach((n) => {
+                        if (!(n instanceof HTMLElement)) return;
+
+                        if (n.matches?.("li.message")) parseMessageLi(n);
+                        n.querySelectorAll?.("li.message")?.forEach(parseMessageLi);
+
+                        // Sometimes only .text gets replaced, not the li
+                        const li = n.closest?.("li.message");
+                        if (li) parseMessageLi(li);
+                    });
+                }
+
+                // B) text/html updates inside existing nodes
+                // Delta often mutates Text nodes => m.target is NOT HTMLElement
+                if (m.type === "characterData") {
+                    const p = m.target && m.target.parentElement ? m.target.parentElement : null;
+                    const li = p && p.closest ? p.closest("li.message") : null;
+                    if (li) parseMessageLi(li);
+                } else if (m.target && m.target instanceof HTMLElement) {
+                    const li = m.target.closest?.("li.message");
+                    if (li) parseMessageLi(li);
+                }
+            }
+        });
+
+        obs.observe(container, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+
+        console.log(LOG + "Delta chat observer attached.");
+        return true;
+    }
+    function previewImageUrl(url) {
+        const u = String(url || "").trim();
+
+        // If user pasted an imgur PAGE link, convert to direct CDN where possible
+        // (best effort; if it already is i.imgur.com, keep it)
+        let direct = u;
+        if (/^https?:\/\/imgur\.com\/\w+/i.test(u) && !/\/gallery\//i.test(u)) {
+            const id = u.split("/").pop().split(/[?#]/)[0];
+            direct = "https://i.imgur.com/" + id + ".png";
+        }
+
+        // Proxy fallback (bypasses referrer/hotlink blocks)
+        // weserv expects URL without protocol
+        const noProto = direct.replace(/^https?:\/\//i, "");
+        return {
+            direct,
+            proxy: "https://images.weserv.nl/?url=" + encodeURIComponent(noProto)
+        };
+    }
+    // ---------- Optional: Hook toastr so commands inside toast messages also work ----------
+    function hookToastrIfPresent() {
+        if (!win.toastr || win.toastr.__LM_CHATCMD_HOOKED__) return;
+        win.toastr.__LM_CHATCMD_HOOKED__ = true;
+
+        ["info", "warning", "error", "success"].forEach((type) => {
+            const orig = win.toastr[type];
+            if (typeof orig !== "function") return;
+
+            win.toastr[type] = function (msg, title, opts) {
+                try {
+                    if (typeof msg === "string" && shouldParse(msg)) {
+                        const t = String(msg);
+                        const sig = ((title || "").trim() || "System") + "||" + t;
+
+                        // If chat already processed it very recently, skip.
+                        if (!lmToastDedupHit("toastr::" + sig)) {
+                            LM_ParseChatCommand(t, (title || "").trim() || "System", null, null);
+                        }
+                    }
+                } catch (_) {}
+                return orig.call(this, msg, title, opts);
+            };
+        });
+
+        console.log(LOG + "toastr hook attached.");
+    }
+
+    // ---------- boot ----------
+    const wait = setInterval(() => {
+        // If this IIFE runs twice (hot reload / duplicate injection), do not attach twice.
+        if (win.__LM_DELTA_CHAT_OBS__) return;
+
+        const ok = attachDeltaChatObserver();
+        if (ok) {
+            win.__LM_DELTA_CHAT_OBS__ = true;
+            clearInterval(wait);
+            hookToastrIfPresent();
+        }
+    }, 300);
+
+})();
+
