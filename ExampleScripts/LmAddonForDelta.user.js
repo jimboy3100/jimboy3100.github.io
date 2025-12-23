@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LmAddonForDelta
 // @namespace    Jimboy3100 LegendMod
-// @version      101.6
+// @version      101.8
 // @description  Imperial Overlord Elite: Integrated Flags, SNEZ Broadcaster (DM), Sovereign Join, Discord "Play" Trigger with Custom Skin Thumbnail.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
