@@ -636,6 +636,35 @@ win.injectHistoryButton = function() {
         if (win.toastr) win.toastr.error("<b>[LM]:</b> Login Required!<br>Please login with Google/Facebook first.");
         return null;
     }
+    function replaceButtonWithUidTextarea(btn) {
+        const uid = checkLoginAndGetID();
+        if (!uid) return;
+
+        const ta = document.createElement("textarea");
+        ta.id = "lm-uid-textarea";
+        ta.value = uid;
+        ta.readOnly = true;
+        ta.spellcheck = false;
+
+        // match your injected button sizing
+        ta.style.width = "100%";
+        ta.style.marginTop = "6px";
+        ta.style.height = "28px";
+        ta.style.padding = "4px 8px";
+        ta.style.resize = "none";
+        ta.style.borderRadius = "6px";
+        ta.style.border = "1px solid rgba(255,255,255,.25)";
+        ta.style.background = "rgba(0,0,0,.25)";
+        ta.style.color = "#fff";
+        ta.style.outline = "none";
+
+        btn.replaceWith(ta);
+
+        setTimeout(() => {
+            ta.focus();
+            ta.select();
+        }, 0);
+    }
 
     // -------------------------
     // Robust "wait for Delta API"
@@ -912,7 +941,22 @@ win.injectHistoryButton = function() {
                     })
                 );
             }
+// REVEAL UID should be under RESET (3rd column), not under IMPORT
+            if (!document.getElementById("lm-reveal-uid-btn") && !document.getElementById("lm-uid-textarea")) {
+                const resetBtn = buttons.find(b => (b.innerText || "").trim() === "RESET");
+                const resetCol = resetBtn?.closest('div[class*="w-1/3"]') || resetBtn?.parentElement;
+                if (resetCol) {
+                    resetCol.appendChild(
+                        makeBtn("lm-reveal-uid-btn", "fa-id-badge", "REVEAL UID", () => {
+                            const b = document.getElementById("lm-reveal-uid-btn");
+                            if (b) replaceButtonWithUidTextarea(b);
+                        })
+                    );
+                }
+            }
 
+            const resetBtn = buttons.find(b => (b.innerText || "").trim() === "RESET");
+            const resetCol = resetBtn?.closest('div[class*="w-1/3"]') || resetBtn?.parentElement;
             console.log(LOG + "Cloud buttons injected under EXPORT/IMPORT.");
         } catch (e) {
             console.error((win.LOG_TAG || "[LM] ") + "injectSettingsButtons failed:", e);
