@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" class="-webkit-">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="apple-touch-icon" type="image/png" href="https://jimboy3100.github.io/banners/CropedImage128.gif">
+    <meta name="apple-mobile-web-app-title" content="The Legend Mod Project">
+    <link rel="shortcut icon" type="image/x-icon" href="https://jimboy3100.github.io/banners/CropedImage128.gif">
+    <link rel="mask-icon" href="https://jimboy3100.github.io/banners/CropedImage128.gif" color="#111">
+
+    <title>The Legend Mod Project - No Bots / No Crashers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- normalize (same vibe as rewardday2.html) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+    <!-- fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton|Oswald">
+
+    <style>
+        body{
+            font: 400 1em/1.5 "Neuton", sans-serif;
+            background:#090d00;
+            color: rgba(255,255,255,.75);
+            text-align:center;
+            margin:0;
+            overflow-x:hidden;
+        }
+
+        /* main panel (same layout idea) */
+        .panel{
+            text-transform:uppercase;
+            letter-spacing:.35em;
+            display:inline-block;
+            border:4px double rgba(255,255,255,.25);
+            border-width:4px 0;
+            padding:1.5em 1.5em;
+            position:relative;
+            margin:28px auto 40px;
+            width:min(980px, calc(100% - 24px));
+            box-sizing:border-box;
+        }
+
+        /* animated headline text fill */
+        .brand, .headline{
+            font: 700 4em/1 "Oswald", sans-serif;
+            letter-spacing:0;
+            padding:.25em 0 .325em;
+            display:block;
+            margin:0 auto;
+            text-shadow:0 0 80px rgba(255,255,255,.5);
+            background: url("https://jimboy3100.github.io/banners/animated_text_fill.png") repeat-y;
+            -webkit-background-clip:text;
+            background-clip:text;
+            -webkit-text-fill-color:transparent;
+            -webkit-animation: aitf 80s linear infinite;
+            -webkit-transform: translate3d(0,0,0);
+            -webkit-backface-visibility:hidden;
+        }
+        @-webkit-keyframes aitf{
+            0%{ background-position:0% 50%; }
+            100%{ background-position:100% 50%; }
+        }
+
+        .sub{
+            font:700 1.15em/1.2 "Oswald", sans-serif;
+            letter-spacing:.18em;
+            margin-top:10px;
+            opacity:.95;
+        }
+
+        .row{
+            display:flex;
+            gap:18px;
+            justify-content:center;
+            align-items:flex-start;
+            flex-wrap:wrap;
+            margin:18px auto 10px;
+            letter-spacing:0;
+            text-transform:none;
+        }
+
+        .card{
+            width:min(460px, 100%);
+            border:1px solid rgba(255,255,255,.18);
+            background: rgba(0,0,0,.25);
+            box-shadow: 0 0 60px rgba(0,0,0,.35);
+            border-radius:12px;
+            padding:14px 16px 16px;
+            box-sizing:border-box;
+            text-align:left;
+        }
+
+        .card h3{
+            font:700 1.25em/1.2 "Oswald", sans-serif;
+            letter-spacing:.12em;
+            margin:0 0 10px;
+            text-transform:uppercase;
+            color: rgba(255,255,255,.95);
+        }
+
+        .card p, .card li{
+            margin:0;
+            font:400 1em/1.55 "Neuton", sans-serif;
+            color: rgba(255,255,255,.85);
+            text-transform:none;
+            letter-spacing:.02em;
+        }
+
+        .card ul{
+            margin:10px 0 0 18px;
+            padding:0;
+        }
+
+        .strong{
+            color:#fff;
+            font-weight:700;
+        }
+
+        .warn{
+            color:#ff4d4d;
+            font-weight:700;
+        }
+
+        .link{
+            color:#8bd3ff;
+            text-decoration:none;
+            border-bottom:1px dotted rgba(139,211,255,.55);
+        }
+        .link:hover{ border-bottom-color:rgba(139,211,255,1); }
+
+        .quote{
+            margin-top:12px;
+            border-left:4px solid rgba(255,255,255,.18);
+            padding:10px 12px;
+            background: rgba(255,255,255,.05);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size:.92em;
+            white-space:pre-wrap;
+            text-transform:none;
+            letter-spacing:0;
+            border-radius:8px;
+        }
+
+        .imgs{
+            display:flex;
+            justify-content:center;
+            gap:16px;
+            flex-wrap:wrap;
+            margin:10px 0 18px;
+            letter-spacing:0;
+            text-transform:none;
+        }
+        .imgs img{
+            width: min(440px, calc(100% - 10px));
+            border-radius:14px;
+            border:1px solid rgba(255,255,255,.14);
+            box-shadow: 0 0 60px rgba(0,0,0,.45);
+        }
+
+        .footer{
+            margin-top:14px;
+            opacity:.9;
+            letter-spacing:.18em;
+            text-transform:uppercase;
+            font:700 1.05em/1.2 "Oswald", sans-serif;
+        }
+
+        .stamp{
+            margin-top:6px;
+            opacity:.6;
+            text-transform:uppercase;
+            letter-spacing:.25em;
+            font-size:.9em;
+        }
+
+        .divider{
+            height:1px;
+            background: rgba(255,255,255,.12);
+            margin:14px 0;
+        }
+
+        .tiny{
+            opacity:.75;
+            font-size:.95em;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <script>
+        window.console = window.console || function() {};
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate="no">
+
+<div class="panel">
+
+    <div class="brand">THE LEGEND MOD PROJECT</div>
+    <div class="headline">NO BOTS • NO CRASHERS</div>
+    <div class="sub">Respect the game we played for free. Keep it fair.</div>
+
+    <div class="imgs">
+        <img src="https://jimboy3100.github.io/banners/noBots.jpeg" alt="No Bots">
+        <img src="https://jimboy3100.github.io/banners/noCrashers.jpeg" alt="No Crashers">
+    </div>
+
+    <div class="row">
+
+        <div class="card">
+            <h3>Report YouTube Videos</h3>
+            <p>
+                If you see any YouTube video (especially from the last <span class="strong">2 years</span>)
+                showing or advertising <span class="warn">bots</span> or <span class="warn">server crashers</span>:
+            </p>
+            <ul>
+                <li>Click the <span class="strong">⋯</span> (More) button</li>
+                <li>Select <span class="strong">Report</span></li>
+                <li>Choose the closest reason (cheating/exploits/circumvention/spam)</li>
+            </ul>
+            <div class="divider"></div>
+            <p class="tiny">
+                Do not engage. Do not share. Report and move on.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Report Websites to Google</h3>
+            <p>
+                If you see a website distributing or promoting bots/crashers, report it here:
+                <br>
+                <a class="link" href="https://safebrowsing.google.com/safebrowsing/report_phish/" target="_blank" rel="noopener">
+                    https://safebrowsing.google.com/safebrowsing/report_phish/
+                </a>
+            </p>
+
+            <div class="divider"></div>
+
+            <p class="strong">Copy-paste this text in the report:</p>
+            <div class="quote">Website distributes scripts and tools designed to exploit an online service (Agar.io), enabling automated abuse, cheating, and service disruption. Content circumvents service safeguards and promotes harmful activity.</div>
+
+            <div class="divider"></div>
+            <p class="tiny">
+                This can trigger browser warnings and search removal. It is the fastest way to hit exploit sites.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="card" style="width:min(940px, 100%);">
+            <h3>Why This Matters</h3>
+            <ul>
+                <li><span class="warn">Bots</span> ruin fair play and destroy real competition.</li>
+                <li><span class="warn">Crashers</span> are pure sabotage: they disrupt servers and kill lobbies.</li>
+                <li>People leave. The game dies. That is the whole chain reaction.</li>
+            </ul>
+            <div class="divider"></div>
+            <p>
+                If you want automated gameplay, go play something built for it.
+                <span class="strong">Do not trash Agar.io for everyone else.</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="footer">KEEP IT FAIR • REAL PLAYERS ONLY</div>
+    <div class="stamp">Legend Mod Community Notice</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</body>
+</html>
