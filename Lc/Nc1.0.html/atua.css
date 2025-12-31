@@ -1,0 +1,23 @@
+.aIM {
+    border: 1px solid red;
+
+}
+
+.aRG {
+    border: 1px solid blue;
+
+}
+
+.aIM p {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.aRG p {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
