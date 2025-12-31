@@ -53,7 +53,7 @@ var previousMode = localStorage.getItem("gamemode");
 var checkonlyonce = localStorage.getItem("checkonlyonce");
 var checkonlyfourtenth = localStorage.getItem("checkonlyfourtenth");
 var checkonlyeleventh = localStorage.getItem("checkonlyeleventh");
-var checkonlyrewardday2 = localStorage.getItem("checkonlyrewardday2");
+var checkonlyrewardday3 = localStorage.getItem("checkonlyrewardday3");
 var defaultMusicUrl = "https://www.youtube.com/watch?v=nj33MArNjC8";
 var musicPlayer;
 
@@ -377,10 +377,11 @@ function loadersettings() {
        // }					
 		}
 */		
-		if(checkonlyrewardday2 != "true"){
-			LMrewardDay();
-			checkonlyrewardday2 = "true";
-			localStorage.setItem("checkonlyrewardday2", checkonlyrewardday2);					
+		if(checkonlyrewardday3 != "true"){
+			//LMrewardDay();
+            LMnoBotsPromo();
+			checkonlyrewardday3 = "true";
+			localStorage.setItem("checkonlyrewardday3", checkonlyrewardday3);					
 		}
         if (checkonlyeleventh!= "true") {
 			//VideoSkinsPromo();		
@@ -6615,6 +6616,50 @@ function changeFrameWorkStart() {
 	else if (defaultmapsettings.unlockedFPS==false) {
 		defaultmapsettings.unlockedFPS=4
 	}
+}
+function LMnoBotsPromo() {
+    $('#helloContainer').after(
+        '<div class="modal fade in" id="LMPromoNoBots" aria-hidden="false" style="display: block;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
+        '<div class="modal-content">' +
+
+        '<div id="CloseLMPromoNoBots2" class="modal-header">' +
+
+        '<button id="CloseLMPromoNoBots" type="button" class="close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        '</button>' +
+
+        '<button id="FAQNoBotsPromo" type="button" class="close">' +
+        '<span aria-hidden="true">?</span>' +
+        '</button>' +
+
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
+        'No Bots • No Crashers' +
+        '</h4>' +
+
+        '</div>' +
+
+        '<div id="LMadvertisementNoBots">' +
+        '<iframe id="noBotsIframe" ' +
+        'src="https://www.legendmod.ml/extras/nobots.html" ' +
+        'width="920" height="550" style="border:none;"></iframe>' +
+        '</div>' +
+
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+
+    $(".modal-dialog").draggable();
+
+    $("#CloseLMPromoNoBots").on("click", function () {
+        $("#LMPromoNoBots").remove();
+    });
+
+    $("#FAQNoBotsPromo").on("click", function () {
+        window.open('https://www.legendmod.ml/', '_blank');
+    });
 }
 
 function LMrewardDay() {
