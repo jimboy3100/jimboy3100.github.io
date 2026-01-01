@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+.main_footer          { 
+
+ background-color: black; 
+ color:#fff; 
+ font-size:0.9em; 
+ font-family: 'Orbitron', Arial, sans-serif; /* gamer font */
+ text-transform: uppercase;
+ letter-spacing: 0.8px;
+}
+
+.main_footer .content { float:left; width:90%; margin:0 5%; padding: 5em 0; }
+.container { float:left; width:100%; }
+
+.colfooter { 
+
+ width:100%; 
+ height:auto; 
+ float:left; 
+ margin-bottom:2em;
+
+}
+
+.colfooter ul        { width:100%; float:left; }
+.colfooter ul li     { padding:0.2em 0em; }
+.colfooter ul li a   { text-decoration:none; color:#ffffff; font-size:1em; }
+.colfooter ul li a i { font-size:0.5em; }
+.colfooter ul li a:hover { text-decoration:underline; }
+
+.colfooter .titleFooter   { 
+ font-family: 'Orbitron', Arial, sans-serif;
+ font-size:1.2em;
+ color:#e6f7ff;
+ padding-bottom: 0.6em; 
+ margin-bottom:0.6em; 
+ border-bottom:1px solid rgba(78,192,219,0.18);
+ text-shadow: 0 2px 12px rgba(0,180,255,0.07);
+}
+
+.colfooter p  { 
+  font-family: 'Orbitron', Arial, sans-serif;
+  color:#dfefff; 
+  font-size:0.95em; 
+  height:25px;
+  cursor: default;
+}
+
+
+
+
+.botao{
+
+  padding: 10px 12px;
+  color: #fff;
+  font-family: 'Orbitron', Arial, sans-serif;
+  letter-spacing:1.6px;
+  text-align: center;
+  position: relative;
+  text-decoration: none;
+  display:inline-block;
+  margin-right:7px;
+  
+}
+.botao::before {
+  
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: 0px;
+  width: 100%;
+  height: 1px;
+  background: #6098FF;
+  display: block;
+  -webkit-transform-origin: left top;
+  -ms-transform-origin: left top;
+  transform-origin: left top;
+  -webkit-transform: scale(0, 1);
+  -ms-transform: scale(0, 1);
+  transform: scale(0, 1);
+  -webkit-transition: transform 0.4s cubic-bezier(1, 0, 0, 1);
+  transition: transform 0.4s cubic-bezier(1, 0, 0, 1)
+}
+.botao:hover::before {
+  
+  -webkit-transform-origin: right top;
+  -ms-transform-origin: right top;
+  transform-origin: right top;
+  -webkit-transform: scale(1, 1);
+  -ms-transform: scale(1, 1);
+  transform: scale(1, 1)
+}
+.botao{
+
+    font-size:1em;
+    color:#ffffff;
+    text-align:center;
+    font-family:'open_sansregular';
+    border:1px solid #ffffff;
+    border-radius:3px;
+    overflow: hidden!important;
+    -webkit-transition: all .4s ease-in-out;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    background: transparent!important;
+    z-index:10;
+    
+}
+.botao:hover{
+
+    border: 1px solid #262626;
+    color: #2adee3!important;
+}
+.botao::before {
+    content: '';
+    width: 0%;
+    height: 100%;
+    display: block;
+    background: #000000;
+    position: absolute;
+    -ms-transform: skewX(-15deg);
+    -webkit-transform: skewX(-15deg); 
+    transform: skewX(-15deg);   
+    left: -10%;
+    opacity: 1;
+    top: 0;
+    z-index: -12;
+    -moz-transition: all .7s cubic-bezier(0.77, 0, 0.175, 1);
+    -o-transition: all .7s cubic-bezier(0.77, 0, 0.175, 1);
+    -webkit-transition: all .7s cubic-bezier(0.77, 0, 0.175, 1);
+    transition: all .7s cubic-bezier(0.77, 0, 0.175, 1);
+    box-shadow:2px 0px 14px rgba(0,0,0,.6);
+} 
+.botao::after {
+ 
+    content: '';
+    width: 0%;
+    height: 100%;
+    display: block;
+    background: #2adee3;
+    position: absolute;
+    -ms-transform: skewX(-15deg);
+    -webkit-transform: skewX(-15deg); 
+    transform: skewX(-15deg);   
+    left: -10%;
+    opacity: 0;
+    top: 0;
+    z-index: -15;
+    -webkit-transition: all .94s cubic-bezier(.2,.95,.57,.99);
+    -moz-transition: all .4s cubic-bezier(.2,.95,.57,.99);
+    -o-transition: all .4s cubic-bezier(.2,.95,.57,.99);
+    transition: all .4s cubic-bezier(.2,.95,.57,.99);
+    box-shadow: 2px 0px 14px rgba(0,0,0,.6);
+}
+.botao:hover::before, .botao:hover::before{
+   
+    opacity:1;
+    width: 120%;
+
+}
+.botao:hover::after, .botao:hover::after{
+
+    opacity:1;
+    width: 150%;
+
+}
+
+.main_footer_copy { background-color:#000000; width:100%; float:left; text-align:center; padding:1.6em 0em; }
+.main_footer_copy p { font-family: 'Orbitron', Arial, sans-serif; font-size:0.95em; color:#dbeeff; height:20px; }
+.main_footer_copy .m-b-footer   { margin-bottom:0.5em; }
+.main_footer_copy .by   { font-size:0.98em; }
+.main_footer_copy .by a       { color: #cfeeff; text-decoration:none; position: relative; z-index:2; }
+.main_footer_copy .by a:hover { text-decoration:none; }
+.main_footer_copy .by i { font-size:0.96em; margin-right:6px; color:#2ad4ff; }
+
+/* Special effect for Developer name (applied to .dev-name) */
+.main_footer_copy .by a .dev-name {
+  display: inline-block;
+  background: linear-gradient(90deg, #00d4ff 0%, #00a3ff 30%, #4ec0db 60%, #5af0ff 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  font-size: 1.05em;
+  text-shadow: 0 6px 18px rgba(0,160,255,0.12), 0 2px 6px rgba(0,120,255,0.08);
+  animation: devGradientShift 4s linear infinite;
+}
+
+@keyframes devGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* neon glow pulse */
+.main_footer_copy .by a::after{
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 110%;
+  height: 140%;
+  border-radius: 8px;
+  filter: blur(18px);
+  background: radial-gradient(circle at center, rgba(0,200,255,0.28), rgba(0,150,255,0.08) 40%, rgba(0,0,0,0) 60%);
+  opacity: 0.9;
+  z-index:1;
+}
+
+@keyframes neonPulse {
+  0% { transform: translate(-50%,-50%) scale(0.95); opacity: 0.7; }
+  50% { transform: translate(-50%,-50%) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(0.95); opacity: 0.7; }
+}
+.main_footer_copy .by a::after{ animation: neonPulse 2.6s ease-in-out infinite; }
+
+/*Responsivo*/
+/*768PX BREAKPOINT*/
+@media (min-width:48em){
+
+.colfooter  { width:30%; margin-right:5%; margin-bottom:0; }
+.colfooter:nth-of-type(3n+0){ margin-right:0; border-right:0;}
+
+}

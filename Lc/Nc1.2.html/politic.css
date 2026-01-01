@@ -1,0 +1,70 @@
+/* Estilos para a seção Políticas: transformar textos em lista não ordenada */
+#policies {
+	padding: 20px 16px;
+}
+
+/* Transformar parágrafos e subtítulos em itens de lista visualmente */
+#policies p,
+#policies h4,
+#policies .fa {
+	display: list-item;
+	list-style-type: disc;
+	list-style-position: outside;
+	margin-left: 1.2rem;
+	margin-bottom: 0.8rem;
+	line-height: 1.45;
+}
+
+/* Normalizar espaçamentos e remover margens que conflitam */
+#policies p { margin: 0.2rem 0 0.6rem 0; }
+#policies h4 { margin: 0.4rem 0 0.6rem 0; font-weight: 700; }
+
+/* Tornar links mais visíveis dentro da lista */
+#policies a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+/* Efeito bonito para o título "Políticas" */
+#policies h2 {
+	font-size: clamp(20px, 4vw, 36px);
+	margin-bottom: 12px;
+	position: relative;
+	font-weight: 900;
+	background: linear-gradient(90deg, #ff8a00, #e52e71, #8a2be2, #00c2ff);
+	background-size: 200% 200%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	animation: politic-title-glow 6s linear infinite;
+}
+
+/* Linha decorativa animada abaixo do título */
+#policies h2::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -8px;
+	height: 4px;
+	width: 60px;
+	border-radius: 4px;
+	background: linear-gradient(90deg, rgba(255,138,0,0.9), rgba(229,46,113,0.9));
+	box-shadow: 0 6px 18px rgba(229,46,113,0.12);
+}
+
+@keyframes politic-title-glow {
+	0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+	50% { background-position: 100% 50%; filter: hue-rotate(10deg); }
+	100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+
+/* Em telas pequenas, reduzir indent e garantir leitura */
+@media (max-width: 720px) {
+	#policies p,
+	#policies h4 {
+		margin-left: 0.6rem;
+		font-size: 15px;
+	}
+	#policies h2::after { left: 0; width: 48px; }
+}
+

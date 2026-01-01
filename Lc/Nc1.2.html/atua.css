@@ -1,0 +1,228 @@
+:root {
+    --corFundo: #f4f4f4;
+    --corTexto: #001d36;
+    --corPrimaria: #00325e;
+    --corDestaque: #ff6347;
+    --corBranca: #fff;
+    --cinzaClaro: #ebebeb;
+    --sombraPadrao: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --sombraReforcada: 0px 0px 10px rgba(7, 11, 253, 0.801);
+    --bordaArredondada: 12px;
+}
+
+
+.divPai {
+    width: 75%;
+    padding-right: 3%;
+}
+
+#Mt{
+    font-size: clamp(18px, 4.5vw ,36px);
+    font-weight: bold;
+    margin-left: 20px;
+    
+}
+
+#Rolo{
+    border-radius: 12px;
+    width: 100%;
+    max-width: 750px;
+    height: 1000px;
+    box-shadow: var(--sombraReforcada);
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.pTitrec {
+    font-size: clamp(16px, 2.8vw, 22px);
+    font-weight: bold;
+    color: var(--corBranca);
+}
+
+
+.divRec {
+    width: 25%;
+    max-width: 250px; 
+    padding-left: 3%;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.divRec:hover {
+    background-color: var(--cinzaClaro);
+    box-shadow: var(--sombraReforcada);
+}
+/* New layout for Rolo + info box */
+.rolo-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 8px;
+}
+
+.divRec.info-box {
+    flex: 0 0 300px;
+    max-width: 320px;
+    padding: 14px;
+    border-left: 1px solid rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.10); /* fundo mais visível */
+    border-radius: 8px;
+}
+
+.pTextrec {
+    font-size: clamp(14px, 2.4vw, 16px);
+    margin-top: 8px;
+    line-height: 1.45;
+    color: var(--corBranca);
+}
+
+/* Responsive: stack the iframe and info box on small screens */
+@media (max-width: 800px) {
+    .rolo-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #Rolo {
+        width: 100%;
+        height: 500px;
+        margin-left: 0;
+    }
+
+    .divRec.info-box {
+        width: 100%;
+        max-width: none;
+        border-left: none;
+        border-top: 1px solid rgba(0,0,0,0.06);
+        margin-top: 8px;
+    }
+}
+
+/* Grid com 3 caixas adicionais (lado a lado) */
+.info-grid {
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    margin: 24px 0 8px 0;
+    align-items: stretch;
+}
+
+.info-grid .info-box {
+    flex: 1 1 calc(33.333% - 12px);
+    min-width: 200px;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.10); /* fundo mais visível */
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Different colored box-shadows for visual distinction */
+.info-box.variant-1 { box-shadow: 0 8px 24px rgba(255,99,71,0.26); }
+.info-box.variant-2 { box-shadow: 0 8px 24px rgba(54,162,235,0.26); }
+.info-box.variant-3 { box-shadow: 0 8px 24px rgba(60,179,113,0.26); }
+
+.info-box .pTitrec { margin: 0 0 8px 0; color: var(--corBranca); }
+
+@media (max-width: 800px) {
+    .info-grid { flex-direction: column; }
+    .info-grid .info-box { width: 100%; }
+}
+
+/* Texto de descrição com cor padrão do site */
+.pTextrec {
+    color: var(--corTexto);
+}
+
+/* Animated gradient inside title letters for #clan h1 */
+#clan h1 {
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff7a18, #ff0066 25%, #7f00ff 50%, #00d4ff 75%, #00b894);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gradient-move 6s linear infinite;
+}
+
+@keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .aIM {
+    border: 1px solid red;
+
+}
+
+.aRG {
+    border: 1px solid blue;
+
+}
+
+.aIM p {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.aRG p {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+} */
