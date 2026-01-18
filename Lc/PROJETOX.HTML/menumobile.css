@@ -1,0 +1,29 @@
+/* Botão hamburguer */
+.menutoggle {
+  display: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.menutoggle:hover {
+  color: #00f6ff;
+}
+  
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .menu {
+    display: none; /* menu escondido */
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: #000;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .menu.active {
+    display: flex; /* menu aparece quando ativo */
+  }
+}

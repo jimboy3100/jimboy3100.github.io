@@ -1,0 +1,181 @@
+form {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 400px; /* mantém desktop */
+  padding: 1em;
+  border: 2px solid #00a2ff;
+  border-radius: 1em;
+  box-shadow: 0px 0px 40px aqua;
+}
+
+.section-form {
+  padding: 0 12px;
+}
+
+
+
+
+.section-form h2{
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 900;
+	font-size: clamp(22px, 4.2vw, 36px);
+	background: linear-gradient(90deg, #06ffff, #1ce9cd 30%, #002fff 60%, #00d4ff 90%);
+	background-size: 200% 200%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+	animation: marquee-title 6s linear infinite;
+    
+}
+
+
+
+
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: azure;
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    padding: 12px;
+    background: none;
+    border: 1px solid aqua;
+    border-radius: 6px;
+    color: azure;
+    font-size: 15px;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+}
+
+
+.section-form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #0000ff, #00ffff);
+    color: black;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0px 8px 20px rgba(0, 255, 255, 0.4);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.section-form {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+button:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0px 15px 35px rgba(0, 255, 255, 0.8);
+}
+
+/* Esconde o input real */
+#Arquivo {
+    display: none;
+}
+
+/* Botão customizado */
+.arquivo-custom {
+    width: 100%;
+    max-width: 300px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(90deg, #0047ff, #00ffff);
+    color: black;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    border-radius: 10px;
+    cursor: pointer;
+
+    box-shadow: 0 0 15px #00ffff;
+    transition: 0.3s;
+}
+
+/* Hover */
+.arquivo-custom:hover {
+    box-shadow: 0 0 25px #00ffff;
+    transform: scale(1.03);
+}
+
+/* Nome do arquivo */
+#nome-arquivo {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #00ffff;
+    text-align: center;
+}
+
+
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@media (max-width: 480px) {
+
+  form {
+    padding: 0.8em;
+    border-radius: 0.8em;
+  }
+
+  .section-form h2 {
+    font-size: 22px;
+  }
+
+  .input-group input,
+  .input-group textarea {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .section-form button {
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .arquivo-custom {
+    max-width: 100%;
+    height: 42px;
+    font-size: 15px;
+  }
+
+  #nome-arquivo {
+    font-size: 13px;
+  }
+}
+

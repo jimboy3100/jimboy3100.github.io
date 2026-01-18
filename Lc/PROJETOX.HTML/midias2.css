@@ -1,0 +1,26 @@
+#midia h2 {
+  text-align: center;
+  padding: 40px 12px;
+}
+
+.media-marquee {
+  overflow: hidden;
+  width: 100%;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 16px;
+  animation: scroll linear infinite;
+}
+
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track img {
+  flex-shrink: 0;
+  pointer-events: none; /* evita qualquer interação */
+  user-select: none;
+}

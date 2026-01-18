@@ -1,0 +1,139 @@
+
+section[id="Atualizações"] .aIM {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 8px 0 18px 0;
+	position: relative; /* permite centralizar o h2 */
+}
+
+section[id="Atualizações"] .aIM img {
+	order: -1; /* move a imagem para a esquerda */
+	width: 180px; /* aumentado */
+	height: auto;
+	border-radius: 8px;
+	box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+	margin-left: -22px; /* aproxima da borda da página */
+}
+
+section[id="Atualizações"] .aIM h2 {
+	flex: 1 1 auto;
+	text-align: center; /* título no meio */
+	margin: 0;
+	position: absolute; /* centraliza em relação ao container */
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 2;
+}
+
+section[id="Atualizações"] .aRG {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+
+section[id="Atualizações"] .aRG > div {
+	/* usar grid para ter: título | data (centralizada) | botão */
+	display: grid;
+	grid-template-columns: 1fr 140px auto;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 6px;
+	border: 1px solid rgba(255,255,255,0.08); /* borda 1px por container */
+	border-radius: 8px;
+	background-clip: padding-box;
+}
+
+section[id="Atualizações"] .aRG > div p { margin: 0; }
+
+/* centralizar a data (2º <p>) */
+section[id="Atualizações"] .aRG > div p:nth-child(2) {
+    text-align: center;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.88);
+}
+
+/* aplicar mesmo estilo de botão usado em #informacoes */
+section[id="Atualizações"] .magic-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: unset;
+	padding: 10px 22px;
+	box-sizing: border-box;
+}
+
+
+@media (max-width: 600px) {
+
+	section[id="Atualizações"] {
+		padding: 0 12px;
+	}
+
+	/* Cabeçalho */
+	section[id="Atualizações"] .aIM {
+		flex-direction: column;
+		gap: 10px;
+		text-align: center;
+	}
+
+	section[id="Atualizações"] .aIM h2 {
+		position: static;
+		transform: none;
+	}
+
+	section[id="Atualizações"] .aIM img {
+		order: 0;
+		width: 120px;
+		margin-left: 0;
+	}
+
+	/* Cards */
+	section[id="Atualizações"] .aRG > div {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 6px;
+		padding: 12px;
+	}
+
+	/* Título */
+	section[id="Atualizações"] .aRG > div p:first-child {
+		font-size: 1rem;
+		font-weight: 600;
+	}
+
+	/* Data */
+	section[id="Atualizações"] .aRG > div p:nth-child(2) {
+		text-align: left;
+		font-size: 0.85rem;
+		opacity: 0.8;
+	}
+
+	/* Botão */
+	section[id="Atualizações"] .magic-btn {
+		width: 100%;
+		margin-top: 6px;
+		text-align: center;
+	}
+}
+
+@media (max-width: 900px) {
+	section[id="Atualizações"] .aIM img { width: 110px; }
+	section[id="Atualizações"] .magic-btn { min-width: 260px; }
+	section[id="Atualizações"] .aRG > div { grid-template-columns: 1fr 110px auto; }
+}
+
+@media (max-width: 600px) {
+	section[id="Atualizações"] .aIM { flex-direction: column; text-align: center; }
+	section[id="Atualizações"] .aIM img { order: 0; width: 120px; margin-left: 0; }
+	section[id="Atualizações"] .aRG > div { display: flex; flex-direction: column; align-items: flex-start; border-radius: 6px; }
+	section[id="Atualizações"] .magic-btn { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 600px) {
+	section[id="Atualizações"] .aRG > div {
+		box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+	}
+}

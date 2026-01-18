@@ -1,0 +1,99 @@
+  /* Aumenta o header e alinha logo à esquerda e menu à direita */
+      #header2 {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 20px 40px 60px;  /* topo | lados | baixo */
+        box-sizing: border-box;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 220px;
+        z-index: 1000;
+        background-color: #05070e;
+      }
+      /* canvas do efeito por baixo dos elementos */
+      #header2 > canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      #header2 .logo {
+        position: relative;
+        z-index: 2;
+        max-height: 100px;
+        width: auto;
+        margin: 0;
+      }
+
+      #header2 .menu {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        gap: 18px;
+        align-items: center;
+      }
+
+      /* Gradient text for menu links and red on hover */
+      #header2 .logo { box-shadow: 0 18px 48px rgba(0,150,255,0.38); }
+
+      #header2 .menu a {
+        font-weight: 700;
+        font-size: 18px; /* slightly larger */
+        text-decoration: none;
+        display: inline-block;
+        padding: 6px 8px;
+        /* blue / piscina gradient */
+        background: linear-gradient(90deg, #0066ff 0%, #00b8d4 50%, #00d4ff 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        transition: -webkit-text-fill-color 220ms ease, color 220ms ease, transform 200ms ease;
+        will-change: transform;
+      }
+
+      #header2 .menu a:hover,
+      #header2 .menu a:focus {
+        -webkit-text-fill-color: #ff2b2b; /* keep existing hover red */
+        color: #ff2b2b;
+        transform: translateY(-2px);
+        outline: none;
+      }
+
+      /* subtle animated gradient movement when not hovered */
+      @keyframes header-menu-gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      #header2 .menu a { animation: header-menu-gradient 6s ease-in-out infinite; }
+
+      @media (max-width: 800px) {
+        #header2 {
+          padding: 12px 16px;
+          min-height: 90px;
+          overflow: visible; /* allow menu to extend below header */
+        }
+        #header2 .menu {
+          display: none;
+        }
+        #header2 .menu.active {
+          display: flex;
+          position: absolute;
+          left: 0;
+          top: 100%;
+          width: 100%;
+          z-index: 50; /* ensure above main */
+        }
+        .menutoggle {
+          display: block;
+        }
+      }
