@@ -13,6 +13,80 @@
         autoDensity: true
     });
 
+    // Compatibility Shim for Legacy UI/Minimap (allows ogario.js UI to function if legacy renderer is disabled)
+    window.drawRender = window.drawRender || {
+        fps: 0,
+        getTheme: function () { return window.theme || {}; }, // Helper
+        drawSectors: function (ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
+            // Ported from ogario.js for Minimap support
+            if (!mapOffset && type) return;
+            // Simplified sector drawing for minimap context
+            var posX = ~~((maxX - minX) / x);
+            var posY = ~~((maxY - minY) / y);
+            ctx.strokeStyle = stroke;
+            ctx.fillStyle = color;
+            ctx.lineWidth = width;
+
+            // For minimap grid
+            ctx.beginPath();
+            for (var i = 0; i < x + 1; i++) {
+                var rePosX = minX + posX * i;
+                ctx.moveTo(i == x ? maxX : rePosX, minY);
+                ctx.lineTo(i == x ? maxX : rePosX, maxY);
+            }
+            for (var j = 0; j < y + 1; j++) {
+                var rePosY = minY + posY * j;
+                ctx.moveTo(minX - width / 2, j == y ? maxY : rePosY);
+                ctx.lineTo(maxX + width / 2, j == y ? maxY : rePosY);
+            }
+            ctx.stroke();
+
+            if (!type) { // MiniMap text
+                ctx.font = (window.gameSetupTheme && window.gameSetupTheme.miniMapFontWeight || '700') + ' ' + ~~(0.4 * posY) + 'px ' + (window.gameSetupTheme && window.gameSetupTheme.miniMapFontFamily || 'Ubuntu');
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (var j = 0; j < y; j++) {
+                    for (var i = 0; i < x; i++) {
+                        var text = String.fromCharCode(65 + j) + (i + 1);
+                        var rx = ~~(minX + posX / 2 + i * posX);
+                        var ry = ~~(minY + posY / 2 + j * posY);
+                        ctx.fillText(text, rx, ry);
+                    }
+                }
+            }
+        },
+        drawBattleAreaOnMinimap: function (ctx, width, heigth, newWidth, offsetX, offsetY) {
+            if (!window.Connection || !window.Connection.battleRoyale || !window.Connection.battleRoyale.state) return;
+            // Basic Safe/Danger Area draw on minimap context
+            var br = window.Connection.battleRoyale;
+            var newX = (br.x + offsetX) * newWidth;
+            var newY = (br.y + offsetY) * newWidth;
+            var newRadius = br.radius * newWidth;
+
+            // Danger
+            ctx.save();
+            ctx.fillStyle = (window.gameSetupTheme && window.gameSetupTheme.dangerAreaColor) || '#FF0000';
+            ctx.globalAlpha = 0.25;
+            ctx.fillRect(0, 0, width, heigth); // Fill all
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.globalAlpha = 1;
+            ctx.beginPath();
+            ctx.arc(newX, newY, newRadius, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.restore();
+
+            // Safe
+            var tx = ~~((br.targetX + offsetX) * newWidth);
+            var ty = ~~((br.targetY + offsetY) * newWidth);
+            var tr = ~~(br.targetRadius * newWidth);
+            ctx.strokeStyle = (window.gameSetupTheme && window.gameSetupTheme.safeAreaColor) || '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(tx, ty, tr, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+    };
+
     var oldCanvas = document.getElementById('canvas');
     if (oldCanvas) {
         oldCanvas.style.opacity = '0'; // Hide legacy canvas but keep layout
@@ -141,6 +215,9 @@
                 // Ensure settings object is available
                 var settings = window.settings || window.defaultmapsettings || {};
 
+                // Update Shim FPS
+                if (window.drawRender) window.drawRender.fps = LM.fps || 0;
+
                 // Camera & Scale
                 // LM.viewX/Y are the target coordinates
                 this.camX = LM.viewX || 0;
@@ -202,6 +279,11 @@
                 }
                 if (settings.cursorTracking && LM.playerCells) {
                     this.drawCursorTracking(this.indicatorGraphics, LM, theme);
+                }
+
+                // Teammate Indicators
+                if (settings.teammatesInd && LM.teamPlayers && LM.teamPlayers.length) {
+                    this.drawTeammatesInd(this.indicatorGraphics, LM, theme);
                 }
 
                 // Waves (Shockwaves)
@@ -315,6 +397,30 @@
                 g.moveTo(players[i].x, players[i].y);
                 g.lineTo(LM.cursorX, LM.cursorY);
             }
+        },
+
+        drawTeammatesInd: function (g, LM, theme) {
+            var players = LM.teamPlayers;
+            if (!players || !players.length) return;
+
+            var color = parseInt((theme.teammatesIndColor || '#FFFFFF').replace('#', '0x'));
+
+            g.beginFill(color);
+            g.lineStyle(1, 0x000000);
+
+            for (var i = 0; i < players.length; i++) {
+                var p = players[i];
+                if (!p) continue;
+                var tx = p.x;
+                var ty = p.y - p.size - 50;
+
+                // Triangle
+                g.moveTo(tx, ty);
+                g.lineTo(tx - 20, ty - 40);
+                g.lineTo(tx + 20, ty - 40);
+                g.lineTo(tx, ty);
+            }
+            g.endFill();
         },
 
 
@@ -638,6 +744,13 @@
                 massText.resolution = 2;
                 container.addChild(massText);
 
+                // --- TRANSPARENCY SUPPORT ---
+                if (settings.transparentCells) {
+                    container.alpha = settings.cellsAlpha || 0.4;
+                } else {
+                    container.alpha = 1;
+                }
+
                 // Effects Container
                 var effects = new PIXI.Container();
                 container.addChild(effects);
@@ -691,9 +804,25 @@
                 }
                 d.virusG.visible = true;
                 d.virusG.clear();
+
+                // Dynamic Virus Color/Stroke
                 var vColor = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
-                d.virusG.lineStyle(4, vColor);
-                d.virusG.beginFill(vColor, 0.6);
+                var vStrokeColor = parseInt((theme.virusStrokeColor || '#000000').replace('#', '0x'));
+                var vStrokeSize = theme.virusStrokeSize || 4;
+
+                // Ogario Logic for Stroke Color (e.g. if dangerous to player)
+                if (window.ogario && window.ogario.play && window.ogario.playerMaxMass) {
+                    var floor = cell.size * cell.size / 100; // mass
+                    var biggest = floor / (window.ogario.selectBiggestCell ? window.ogario.playerMaxMass : window.ogario.playerMinMass);
+                    if (biggest > 0.76) {
+                        vStrokeColor = 0xFFDC00; // Gold/Warning
+                    } else {
+                        vStrokeColor = 0xC80000; // Red/Danger
+                    }
+                }
+
+                d.virusG.lineStyle(vStrokeSize, vStrokeColor);
+                d.virusG.beginFill(vColor, theme.virusAlpha || 0.6);
                 var points = 20;
                 var outer = cell.size;
                 var inner = cell.size * 0.9;
