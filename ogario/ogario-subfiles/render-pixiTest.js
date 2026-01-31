@@ -884,350 +884,353 @@
                                     source.play().catch(e => { });
                                 }
                             } catch (e) { }
-                        } else if (settings.showSkins) {
-                            // 2. getCustomSkin
-                            if (window.application && window.application.getCustomSkin) {
-                                try {
-                                    var skinObj = window.application.getCustomSkin(cell.name, cell.color);
-                                    if (skinObj) skinTexture = PIXI.Texture.from(skinObj);
-                                } catch (e) { }
+                        } else {
+                            // Default showSkins to true if undefined
+                            var showSkins = settings.showSkins !== undefined ? settings.showSkins : true;
+                            if (showSkins) {
+                                // 2. getCustomSkin
+                                if (window.application && window.application.getCustomSkin) {
+                                    try {
+                                        var skinObj = window.application.getCustomSkin(cell.name, cell.color);
+                                        if (skinObj) skinTexture = PIXI.Texture.from(skinObj);
+                                    } catch (e) { }
+                                }
+                                // 3. Fallback
+                                if (!skinTexture && cell.skinURL) {
+                                    skinTexture = PIXI.Texture.from(cell.skinURL);
+                                }
                             }
-                            // 3. Fallback
-                            if (!skinTexture && cell.skinURL) {
-                                skinTexture = PIXI.Texture.from(cell.skinURL);
+
+                            if (skinTexture && skinTexture.valid !== false) {
+                                d.skin.visible = true;
+                                d.skin.texture = skinTexture;
+                                d.skin.width = size2;
+                                d.skin.height = size2;
+
+                                if (!settings.transparentSkins) {
+                                    d.skinMask.visible = true;
+                                    d.skinMask.width = size2;
+                                    d.skinMask.height = size2;
+                                } else {
+                                    d.skinMask.visible = false;
+                                    d.skin.mask = null;
+                                }
+                            } else {
+                                d.skin.visible = false;
+                                d.skinMask.visible = false;
                             }
                         }
 
-                        if (skinTexture && skinTexture.valid !== false) {
-                            d.skin.visible = true;
-                            d.skin.texture = skinTexture;
-                            d.skin.width = size2;
-                            d.skin.height = size2;
-
-                            if (!settings.transparentSkins) {
-                                d.skinMask.visible = true;
-                                d.skinMask.width = size2;
-                                d.skinMask.height = size2;
-                            } else {
-                                d.skinMask.visible = false;
-                                d.skin.mask = null;
+                        // Name
+                        // Default to true if undefined (parity with Ogario defaults)
+                        var showNames = settings.showNames !== undefined ? settings.showNames : true;
+                        if (showNames && cell.name) {
+                            d.name.visible = true;
+                            if (d.name.text !== cell.name) d.name.text = cell.name;
+                            var fSize = Math.max(10, cell.size / 2.5);
+                            if (d.name.style.fontSize !== fSize) {
+                                d.name.style.fontSize = fSize;
+                                d.name.style.strokeThickness = Math.max(3, cell.size / 8);
                             }
                         } else {
-                            d.skin.visible = false;
-                            d.skinMask.visible = false;
+                            d.name.visible = false;
                         }
-                    }
 
-                    // Name
-                    // Default to true if undefined (parity with Ogario defaults)
-                    var showNames = settings.showNames !== undefined ? settings.showNames : true;
-                    if (showNames && cell.name) {
-                        d.name.visible = true;
-                        if (d.name.text !== cell.name) d.name.text = cell.name;
-                        var fSize = Math.max(10, cell.size / 2.5);
-                        if (d.name.style.fontSize !== fSize) {
-                            d.name.style.fontSize = fSize;
-                            d.name.style.strokeThickness = Math.max(3, cell.size / 8);
+                        // Mass
+                        // Default to true if undefined
+                        var showMass = settings.showMass !== undefined ? settings.showMass : true;
+                        if (showMass) {
+                            d.mass.visible = true;
+                            var massVal = Math.floor(cell.mass || cell.size * cell.size / 100).toString();
+                            if (d.mass.text !== massVal) d.mass.text = massVal;
+                            var fmSize = Math.max(10, cell.size / 3.5);
+                            if (d.mass.style.fontSize !== fmSize) d.mass.style.fontSize = fmSize;
+                            d.mass.y = cell.name ? cell.size / 2 : 0;
+                        } else {
+                            d.mass.visible = false;
                         }
-                    } else {
-                        d.name.visible = false;
-                    }
 
-                    // Mass
-                    // Default to true if undefined
-                    var showMass = settings.showMass !== undefined ? settings.showMass : true;
-                    if (showMass) {
-                        d.mass.visible = true;
-                        var massVal = Math.floor(cell.mass || cell.size * cell.size / 100).toString();
-                        if (d.mass.text !== massVal) d.mass.text = massVal;
-                        var fmSize = Math.max(10, cell.size / 3.5);
-                        if (d.mass.style.fontSize !== fmSize) d.mass.style.fontSize = fmSize;
-                        d.mass.y = cell.name ? cell.size / 2 : 0;
-                    } else {
-                        d.mass.visible = false;
-                    }
+                        // Special Effects (Simple redraw for now)
+                        d.effects.removeChildren();
+                        this.drawSpecialEffects(d.effects, cell, theme, settings);
 
-                    // Special Effects (Simple redraw for now)
-                    d.effects.removeChildren();
-                    this.drawSpecialEffects(d.effects, cell, theme, settings);
+                        // Chat
+                        if (window.application && window.application.chatHistory && window.application.chatHistory.length) {
+                            // Same logic as before but targeting d.chat
+                            // To minimize logic, I'll allow drawChat to update d.chat. 
+                            // Wait, drawChat expects to CREATE a Text.
+                            // Refactor drawChat to UPDATE d.chat or hide it.
+                            // I will inline the simple check here or call a modified drawChat.
+                            // Let's inline logic to update d.chat.
 
-                    // Chat
-                    if (window.application && window.application.chatHistory && window.application.chatHistory.length) {
-                        // Same logic as before but targeting d.chat
-                        // To minimize logic, I'll allow drawChat to update d.chat. 
-                        // Wait, drawChat expects to CREATE a Text.
-                        // Refactor drawChat to UPDATE d.chat or hide it.
-                        // I will inline the simple check here or call a modified drawChat.
-                        // Let's inline logic to update d.chat.
+                            var customTxt = null;
+                            var temp = 0;
+                            var chatHistory = window.application.chatHistory;
+                            var now = Date.now();
+                            for (var i = chatHistory.length - 1; i >= 0; i--) {
+                                var entry = chatHistory[i];
+                                if (entry.nick === cell.name && (now - entry.time < 15000)) {
+                                    if (entry.nick === window.nick_val || entry.nick === window.application.lastSentNick) {
+                                        if (settings.showChatMyOwn) { customTxt = entry.message; temp = now - entry.time; break; }
+                                    } else {
+                                        customTxt = entry.message; temp = now - entry.time; break;
+                                    }
+                                }
+                            }
 
+                            if (customTxt) {
+                                d.chat.visible = true;
+                                d.chat.text = customTxt;
+                                d.chat.style.wordWrapWidth = cell.size * 3;
+                                d.chat.style.fontSize = Math.max(10, cell.size / 2);
+                                d.chat.y = -cell.size - 10;
+                                if (temp < 2000) d.chat.alpha = temp / 2000;
+                                else if (temp > 13000) d.chat.alpha = (15000 - temp) / 2000;
+                                else d.chat.alpha = 1;
+                            } else {
+                                d.chat.visible = false;
+                            }
+                        } else {
+                            d.chat.visible = false;
+                        }
+
+                    },
+
+
+                    drawChat: function (container, cell, settings) {
+                        if (!window.application || !window.application.chatHistory) return;
+
+                        // Look for recent message
                         var customTxt = null;
                         var temp = 0;
                         var chatHistory = window.application.chatHistory;
                         var now = Date.now();
+
                         for (var i = chatHistory.length - 1; i >= 0; i--) {
                             var entry = chatHistory[i];
                             if (entry.nick === cell.name && (now - entry.time < 15000)) {
+                                // Filtering logic from legacy
+                                // ... (simplified for Pixi)
                                 if (entry.nick === window.nick_val || entry.nick === window.application.lastSentNick) {
-                                    if (settings.showChatMyOwn) { customTxt = entry.message; temp = now - entry.time; break; }
+                                    if (settings.showChatMyOwn) {
+                                        customTxt = entry.message;
+                                        temp = now - entry.time;
+                                        break; // Found recent
+                                    }
                                 } else {
-                                    customTxt = entry.message; temp = now - entry.time; break;
-                                }
-                            }
-                        }
-
-                        if (customTxt) {
-                            d.chat.visible = true;
-                            d.chat.text = customTxt;
-                            d.chat.style.wordWrapWidth = cell.size * 3;
-                            d.chat.style.fontSize = Math.max(10, cell.size / 2);
-                            d.chat.y = -cell.size - 10;
-                            if (temp < 2000) d.chat.alpha = temp / 2000;
-                            else if (temp > 13000) d.chat.alpha = (15000 - temp) / 2000;
-                            else d.chat.alpha = 1;
-                        } else {
-                            d.chat.visible = false;
-                        }
-                    } else {
-                        d.chat.visible = false;
-                    }
-
-                },
-
-
-                drawChat: function (container, cell, settings) {
-                    if (!window.application || !window.application.chatHistory) return;
-
-                    // Look for recent message
-                    var customTxt = null;
-                    var temp = 0;
-                    var chatHistory = window.application.chatHistory;
-                    var now = Date.now();
-
-                    for (var i = chatHistory.length - 1; i >= 0; i--) {
-                        var entry = chatHistory[i];
-                        if (entry.nick === cell.name && (now - entry.time < 15000)) {
-                            // Filtering logic from legacy
-                            // ... (simplified for Pixi)
-                            if (entry.nick === window.nick_val || entry.nick === window.application.lastSentNick) {
-                                if (settings.showChatMyOwn) {
                                     customTxt = entry.message;
                                     temp = now - entry.time;
-                                    break; // Found recent
+                                    break;
                                 }
-                            } else {
-                                customTxt = entry.message;
-                                temp = now - entry.time;
-                                break;
                             }
                         }
-                    }
 
-                    if (!customTxt) return;
+                        if (!customTxt) return;
 
-                    var fontSize = Math.max(10, cell.size / 2);
-                    var style = new PIXI.TextStyle({
-                        fontFamily: 'Ubuntu, Arial',
-                        fontSize: fontSize,
-                        fill: '#FFFFFF',
-                        stroke: '#000000',
-                        strokeThickness: 3,
-                        wordWrap: true,
-                        wordWrapWidth: cell.size * 3,
-                        align: 'center'
-                    });
+                        var fontSize = Math.max(10, cell.size / 2);
+                        var style = new PIXI.TextStyle({
+                            fontFamily: 'Ubuntu, Arial',
+                            fontSize: fontSize,
+                            fill: '#FFFFFF',
+                            stroke: '#000000',
+                            strokeThickness: 3,
+                            wordWrap: true,
+                            wordWrapWidth: cell.size * 3,
+                            align: 'center'
+                        });
 
-                    var text = new PIXI.Text(customTxt, style);
-                    text.resolution = 2;
-                    text.anchor.set(0.5, 1);
-                    text.y = -cell.size - 10;
+                        var text = new PIXI.Text(customTxt, style);
+                        text.resolution = 2;
+                        text.anchor.set(0.5, 1);
+                        text.y = -cell.size - 10;
 
-                    // Alpha fading
-                    if (temp < 2000) {
-                        text.alpha = temp / 2000;
-                    } else if (temp > 13000) {
-                        text.alpha = (15000 - temp) / 2000;
-                    } else {
-                        text.alpha = 1;
-                    }
-
-                    container.addChild(text);
-                },
-
-
-                drawSpecialEffects: function (container, cell, theme, settings) {
-                    var effectToCheck = null;
-                    var effectToCheck2 = null;
-
-                    if (window.SpecialEffectPlayers && window.SpecialEffectPlayers[cell.name]) {
-                        var effects = window.SpecialEffectPlayers[cell.name].split(';');
-                        if (effects[0]) effectToCheck = effects[0];
-                        if (effects.length > 1) {
-                            for (var i = 0; i < effects.length; i++) {
-                                if (effects[i] !== effectToCheck) effectToCheck2 = effects[i];
-                            }
-                        }
-                    }
-
-                    if (cell.SpecialEffect) effectToCheck = cell.SpecialEffect;
-                    if (cell.SpecialEffect2) effectToCheck2 = cell.SpecialEffect2;
-
-                    if (!effectToCheck && !effectToCheck2 && !cell.targetNick) return;
-
-                    var draw = (name) => {
-                        if (!name) return;
-                        var config = this.getSpecialEffectConfig(name);
-                        if (!config) return;
-
-                        if (name === "BabyBoss" || name === "BabyBoss1") {
-                            if (cell.mass < 3000) config = this.getSpecialEffectConfig("BabyBoss");
-                            else config = this.getSpecialEffectConfig("BabyBoss1");
+                        // Alpha fading
+                        if (temp < 2000) {
+                            text.alpha = temp / 2000;
+                        } else if (temp > 13000) {
+                            text.alpha = (15000 - temp) / 2000;
+                        } else {
+                            text.alpha = 1;
                         }
 
-                        var url = "https://www.legendmod.ml/banners/" + config.icon + ".png";
+                        container.addChild(text);
+                    },
 
-                        try {
-                            var texture = PIXI.Texture.from(url);
-                            if (texture.valid) {
-                                var sprite = new PIXI.Sprite(texture);
-                                sprite.anchor.set(0);
-                                sprite.x = config.x * cell.size;
-                                sprite.y = config.y * cell.size;
-                                sprite.width = config.w * cell.size;
-                                sprite.height = config.h * cell.size;
 
-                                if (name === "Gladiator") {
-                                    var d = new Date();
-                                    var n = d.getSeconds();
-                                    var hue = n / 60 * 360;
-                                    var filter = new PIXI.filters.ColorMatrixFilter();
-                                    filter.hue(hue, false);
-                                    sprite.filters = [filter];
+                    drawSpecialEffects: function (container, cell, theme, settings) {
+                        var effectToCheck = null;
+                        var effectToCheck2 = null;
+
+                        if (window.SpecialEffectPlayers && window.SpecialEffectPlayers[cell.name]) {
+                            var effects = window.SpecialEffectPlayers[cell.name].split(';');
+                            if (effects[0]) effectToCheck = effects[0];
+                            if (effects.length > 1) {
+                                for (var i = 0; i < effects.length; i++) {
+                                    if (effects[i] !== effectToCheck) effectToCheck2 = effects[i];
                                 }
-                                if (name === "Hero1") {
-                                    var d = new Date();
-                                    var n = d.getSeconds();
-                                    var alphaObj = (n < 30) ? n / 30 : (60 - n) / 30;
-                                    sprite.alpha = alphaObj;
-                                }
-
-                                container.addChild(sprite);
-                            } else {
-                                texture.once('update', () => {
-                                    // Redraw? For now, next frame will catch it if texture is valid.
-                                });
                             }
-                        } catch (e) { }
-                    };
+                        }
 
-                    if (effectToCheck) draw(effectToCheck);
-                    if (effectToCheck2) draw(effectToCheck2);
-                },
+                        if (cell.SpecialEffect) effectToCheck = cell.SpecialEffect;
+                        if (cell.SpecialEffect2) effectToCheck2 = cell.SpecialEffect2;
 
-                getSpecialEffectConfig: function (name) {
-                    var map = {
-                        "Hat": { icon: "iconSpecialSkinEffectsHat3", x: -0.5, y: -1.5, w: 1, h: 1 },
-                        "JellyFish": { icon: "iconSpecialSkinEffectsJellyFish", x: -1 / 3, y: -1.5, w: 1, h: 1 },
-                        "King": { icon: "iconSpecialSkinEffectsCrown", x: -0.25, y: -1.325, w: 0.5, h: 0.5 },
-                        "Smoke": { icon: "iconSpecialSkinEffectsSmoke", x: -2 / 3, y: -1.333, w: 1, h: 1 },
-                        "USA": { icon: "iconSpecialSkinEffectsUSA", x: -0.714, y: -0.5, w: 2, h: 2 },
-                        "SunGlasses": { icon: "iconSpecialSkinEffectsSunGlasses", x: -0.85, y: -1.1, w: 1.7, h: 1.4 },
-                        "Moderator": { icon: "iconSpecialSkinEffectsModerator", x: -0.333, y: -1.325, w: 0.666, h: 0.166 },
-                        "Turtle": { icon: "iconSpecialSkinEffectsTurtle", x: -0.999, y: -0.81, w: 2, h: 2 },
-                        "Shiro": { icon: "iconSpecialSkinEffectsShiro", x: 0.05, y: -1.2, w: 1, h: 1 },
-                        "Bird": { icon: "iconSpecialSkinEffectsBird", x: 0, y: -1.3, w: 1, h: 1 },
-                        "AbsolutVodka": { icon: "iconSpecialSkinEffectsAbsolutVodka", x: 0.1, y: 0.15, w: 0.666, h: 1 },
-                        "Chemistry": { icon: "iconSpecialSkinEffectsChemistry", x: 0.3, y: -1.1, w: 0.5, h: 0.5 },
-                        "Japan": { icon: "iconSpecialSkinEffectsJapan", x: -0.8, y: -1, w: 2, h: 2 },
-                        "Japan2": { icon: "iconSpecialSkinEffectsJapan2", x: -0.5, y: 0.47, w: 1, h: 1 },
-                        "Byzantium": { icon: "iconSpecialSkinEffectsByzantium", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
-                        "Close": { icon: "iconSpecialSkinEffectsClose", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
-                        "Earth": { icon: "iconSpecialSkinEffectsEarth", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "FootStep": { icon: "iconSpecialSkinEffectsFootStep", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
-                        "Forward": { icon: "iconSpecialSkinEffectsForward", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Forever": { icon: "iconSpecialSkinEffectsFriendsForever", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Forever2": { icon: "iconSpecialSkinEffectsFriendsForever2", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
-                        "Forever3": { icon: "iconSpecialSkinEffectsFriendsForever3", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Police": { icon: "iconSpecialSkinEffectsPolice", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Police2": { icon: "iconSpecialSkinEffectsPolice2", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Unrest": { icon: "iconSpecialSkinEffectsUnrest", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "Eagle": { icon: "iconSpecialSkinEffectsEagle", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
-                        "BobMarley": { icon: "iconSpecialSkinEffectsBobMarley", x: 0.6, y: 0.6, w: 0.333, h: 0.333 },
-                        "Einstein": { icon: "iconSpecialSkinEffectsEinstein", x: 0.65, y: 0.65, w: 0.4, h: 0.4 },
-                        "DeadTable": { icon: "iconSpecialSkinEffectsDeadTable", x: 0.7, y: 0.7, w: 0.333, h: 0.333 },
-                        "Kebab": { icon: "iconSpecialSkinEffectsKebab", x: 0.4, y: -1, w: 0.5, h: 0.5 },
-                        "Meditation": { icon: "iconSpecialSkinEffectsMeditation", x: 0.4, y: -1, w: 0.5, h: 0.5 },
-                        "Splash": { icon: "iconSpecialSkinEffectsSplash", x: -1.15, y: -1.3, w: 2.77, h: 2.77 },
-                        "Butterfly": { icon: "iconSpecialSkinEffectsButterfly", x: -1, y: -0.6, w: 0.5, h: 0.25 },
-                        "Mouse": { icon: "iconSpecialSkinEffectsMouse", x: 0.5, y: -0.1, w: 0.333, h: 1 },
-                        "Sword": { icon: "iconSpecialSkinEffectsSword", x: -0.8, y: -0.6, w: 1.6, h: 1.6 },
-                        "Mask": { icon: "iconSpecialSkinEffectsMask", x: -0.5, y: 0.25, w: 1, h: 1 },
-                        "Heart": { icon: "iconSpecialSkinEffectsHeart", x: -0.5, y: 0.333, w: 1, h: 1 },
-                        "Vip": { icon: "iconSpecialSkinEffectsVip", x: -0.125, y: -1.325, w: 0.2, h: 0.2 },
-                        "Ddev": { icon: "iconSpecialSkinEffectsDdev", x: -0.125, y: -1.15, w: 0.333, h: 0.2 },
-                        "Youtube": { icon: "iconSpecialSkinEffectsYoutube", x: -0.166, y: -1.325, w: 0.333, h: 0.333 },
-                        "LegendHeroes": { icon: "iconSpecialSkinEffectsLegendclan", x: -0.95, y: -1.325, w: 2, h: 0.25 },
-                        "LegendClan": { icon: "iconSpecialSkinEffectsLegendclan2", x: -0.333, y: -1.325, w: 0.666, h: 0.166 },
-                        "BabyBoss": { icon: "iconSpecialSkinEffectsBabyBoss", x: -0.95, y: -1.2, w: 0.666, h: 0.666 },
-                        "BabyBoss1": { icon: "iconSpecialSkinEffectsBabyBoss1", x: -0.95, y: -1.2, w: 0.666, h: 0.666 },
-                        "Gladiator": { icon: "iconSpecialSkinEffectsGladiator", x: -0.85, y: -1.2, w: 0.666, h: 0.666 },
-                        "Hero": { icon: "iconSpecialSkinEffectsHero", x: -0.35, y: -1.35, w: 0.666, h: 0.666 },
-                        "Hero1": { icon: "iconSpecialSkinEffectsHero1", x: -0.1, y: -1.35, w: 1, h: 1 },
-                        "Hero2": { icon: "iconSpecialSkinEffectsHero2", x: -0.3, y: -1.48, w: 0.5, h: 0.5 },
-                        "Key": { icon: "iconSpecialSkinEffectsKey", x: 0.4, y: -1.15, w: 0.5, h: 0.5 },
-                        "MetalOfHonor": { icon: "iconSpecialSkinEffectsMetalOfHonor", x: -0.25, y: 0.8, w: 0.5, h: 0.5 },
-                        "PeaceMaker": { icon: "iconSpecialSkinEffectsPeaceMaker", x: -0.6, y: -1.2, w: 0.5, h: 0.5 },
-                        "Survivor": { icon: "iconSpecialSkinEffectsSurvivor", x: -0.6, y: -1.2, w: 0.5, h: 0.666 },
-                        "Tiger": { icon: "iconSpecialSkinEffectsTiger", x: -1.1, y: -1.3, w: 0.666, h: 0.666 },
-                        "PanicAtDisco": { icon: "iconSpecialSkinEffectsPanicAtDisco", x: -1, y: -1, w: 1, h: 0.25 },
-                        "RedArrow": { icon: "iconSpecialSkinEffectsRedArrow", x: -0.5, y: -1.5, w: 1, h: 1 },
-                    };
-                    return map[name];
-                }
-            };
+                        if (!effectToCheck && !effectToCheck2 && !cell.targetNick) return;
+
+                        var draw = (name) => {
+                            if (!name) return;
+                            var config = this.getSpecialEffectConfig(name);
+                            if (!config) return;
+
+                            if (name === "BabyBoss" || name === "BabyBoss1") {
+                                if (cell.mass < 3000) config = this.getSpecialEffectConfig("BabyBoss");
+                                else config = this.getSpecialEffectConfig("BabyBoss1");
+                            }
+
+                            var url = "https://www.legendmod.ml/banners/" + config.icon + ".png";
+
+                            try {
+                                var texture = PIXI.Texture.from(url);
+                                if (texture.valid) {
+                                    var sprite = new PIXI.Sprite(texture);
+                                    sprite.anchor.set(0);
+                                    sprite.x = config.x * cell.size;
+                                    sprite.y = config.y * cell.size;
+                                    sprite.width = config.w * cell.size;
+                                    sprite.height = config.h * cell.size;
+
+                                    if (name === "Gladiator") {
+                                        var d = new Date();
+                                        var n = d.getSeconds();
+                                        var hue = n / 60 * 360;
+                                        var filter = new PIXI.filters.ColorMatrixFilter();
+                                        filter.hue(hue, false);
+                                        sprite.filters = [filter];
+                                    }
+                                    if (name === "Hero1") {
+                                        var d = new Date();
+                                        var n = d.getSeconds();
+                                        var alphaObj = (n < 30) ? n / 30 : (60 - n) / 30;
+                                        sprite.alpha = alphaObj;
+                                    }
+
+                                    container.addChild(sprite);
+                                } else {
+                                    texture.once('update', () => {
+                                        // Redraw? For now, next frame will catch it if texture is valid.
+                                    });
+                                }
+                            } catch (e) { }
+                        };
+
+                        if (effectToCheck) draw(effectToCheck);
+                        if (effectToCheck2) draw(effectToCheck2);
+                    },
+
+                    getSpecialEffectConfig: function (name) {
+                        var map = {
+                            "Hat": { icon: "iconSpecialSkinEffectsHat3", x: -0.5, y: -1.5, w: 1, h: 1 },
+                            "JellyFish": { icon: "iconSpecialSkinEffectsJellyFish", x: -1 / 3, y: -1.5, w: 1, h: 1 },
+                            "King": { icon: "iconSpecialSkinEffectsCrown", x: -0.25, y: -1.325, w: 0.5, h: 0.5 },
+                            "Smoke": { icon: "iconSpecialSkinEffectsSmoke", x: -2 / 3, y: -1.333, w: 1, h: 1 },
+                            "USA": { icon: "iconSpecialSkinEffectsUSA", x: -0.714, y: -0.5, w: 2, h: 2 },
+                            "SunGlasses": { icon: "iconSpecialSkinEffectsSunGlasses", x: -0.85, y: -1.1, w: 1.7, h: 1.4 },
+                            "Moderator": { icon: "iconSpecialSkinEffectsModerator", x: -0.333, y: -1.325, w: 0.666, h: 0.166 },
+                            "Turtle": { icon: "iconSpecialSkinEffectsTurtle", x: -0.999, y: -0.81, w: 2, h: 2 },
+                            "Shiro": { icon: "iconSpecialSkinEffectsShiro", x: 0.05, y: -1.2, w: 1, h: 1 },
+                            "Bird": { icon: "iconSpecialSkinEffectsBird", x: 0, y: -1.3, w: 1, h: 1 },
+                            "AbsolutVodka": { icon: "iconSpecialSkinEffectsAbsolutVodka", x: 0.1, y: 0.15, w: 0.666, h: 1 },
+                            "Chemistry": { icon: "iconSpecialSkinEffectsChemistry", x: 0.3, y: -1.1, w: 0.5, h: 0.5 },
+                            "Japan": { icon: "iconSpecialSkinEffectsJapan", x: -0.8, y: -1, w: 2, h: 2 },
+                            "Japan2": { icon: "iconSpecialSkinEffectsJapan2", x: -0.5, y: 0.47, w: 1, h: 1 },
+                            "Byzantium": { icon: "iconSpecialSkinEffectsByzantium", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
+                            "Close": { icon: "iconSpecialSkinEffectsClose", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
+                            "Earth": { icon: "iconSpecialSkinEffectsEarth", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "FootStep": { icon: "iconSpecialSkinEffectsFootStep", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
+                            "Forward": { icon: "iconSpecialSkinEffectsForward", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Forever": { icon: "iconSpecialSkinEffectsFriendsForever", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Forever2": { icon: "iconSpecialSkinEffectsFriendsForever2", x: 0.6, y: 0.7, w: 0.333, h: 0.333 },
+                            "Forever3": { icon: "iconSpecialSkinEffectsFriendsForever3", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Police": { icon: "iconSpecialSkinEffectsPolice", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Police2": { icon: "iconSpecialSkinEffectsPolice2", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Unrest": { icon: "iconSpecialSkinEffectsUnrest", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "Eagle": { icon: "iconSpecialSkinEffectsEagle", x: 0.65, y: 0.7, w: 0.333, h: 0.333 },
+                            "BobMarley": { icon: "iconSpecialSkinEffectsBobMarley", x: 0.6, y: 0.6, w: 0.333, h: 0.333 },
+                            "Einstein": { icon: "iconSpecialSkinEffectsEinstein", x: 0.65, y: 0.65, w: 0.4, h: 0.4 },
+                            "DeadTable": { icon: "iconSpecialSkinEffectsDeadTable", x: 0.7, y: 0.7, w: 0.333, h: 0.333 },
+                            "Kebab": { icon: "iconSpecialSkinEffectsKebab", x: 0.4, y: -1, w: 0.5, h: 0.5 },
+                            "Meditation": { icon: "iconSpecialSkinEffectsMeditation", x: 0.4, y: -1, w: 0.5, h: 0.5 },
+                            "Splash": { icon: "iconSpecialSkinEffectsSplash", x: -1.15, y: -1.3, w: 2.77, h: 2.77 },
+                            "Butterfly": { icon: "iconSpecialSkinEffectsButterfly", x: -1, y: -0.6, w: 0.5, h: 0.25 },
+                            "Mouse": { icon: "iconSpecialSkinEffectsMouse", x: 0.5, y: -0.1, w: 0.333, h: 1 },
+                            "Sword": { icon: "iconSpecialSkinEffectsSword", x: -0.8, y: -0.6, w: 1.6, h: 1.6 },
+                            "Mask": { icon: "iconSpecialSkinEffectsMask", x: -0.5, y: 0.25, w: 1, h: 1 },
+                            "Heart": { icon: "iconSpecialSkinEffectsHeart", x: -0.5, y: 0.333, w: 1, h: 1 },
+                            "Vip": { icon: "iconSpecialSkinEffectsVip", x: -0.125, y: -1.325, w: 0.2, h: 0.2 },
+                            "Ddev": { icon: "iconSpecialSkinEffectsDdev", x: -0.125, y: -1.15, w: 0.333, h: 0.2 },
+                            "Youtube": { icon: "iconSpecialSkinEffectsYoutube", x: -0.166, y: -1.325, w: 0.333, h: 0.333 },
+                            "LegendHeroes": { icon: "iconSpecialSkinEffectsLegendclan", x: -0.95, y: -1.325, w: 2, h: 0.25 },
+                            "LegendClan": { icon: "iconSpecialSkinEffectsLegendclan2", x: -0.333, y: -1.325, w: 0.666, h: 0.166 },
+                            "BabyBoss": { icon: "iconSpecialSkinEffectsBabyBoss", x: -0.95, y: -1.2, w: 0.666, h: 0.666 },
+                            "BabyBoss1": { icon: "iconSpecialSkinEffectsBabyBoss1", x: -0.95, y: -1.2, w: 0.666, h: 0.666 },
+                            "Gladiator": { icon: "iconSpecialSkinEffectsGladiator", x: -0.85, y: -1.2, w: 0.666, h: 0.666 },
+                            "Hero": { icon: "iconSpecialSkinEffectsHero", x: -0.35, y: -1.35, w: 0.666, h: 0.666 },
+                            "Hero1": { icon: "iconSpecialSkinEffectsHero1", x: -0.1, y: -1.35, w: 1, h: 1 },
+                            "Hero2": { icon: "iconSpecialSkinEffectsHero2", x: -0.3, y: -1.48, w: 0.5, h: 0.5 },
+                            "Key": { icon: "iconSpecialSkinEffectsKey", x: 0.4, y: -1.15, w: 0.5, h: 0.5 },
+                            "MetalOfHonor": { icon: "iconSpecialSkinEffectsMetalOfHonor", x: -0.25, y: 0.8, w: 0.5, h: 0.5 },
+                            "PeaceMaker": { icon: "iconSpecialSkinEffectsPeaceMaker", x: -0.6, y: -1.2, w: 0.5, h: 0.5 },
+                            "Survivor": { icon: "iconSpecialSkinEffectsSurvivor", x: -0.6, y: -1.2, w: 0.5, h: 0.666 },
+                            "Tiger": { icon: "iconSpecialSkinEffectsTiger", x: -1.1, y: -1.3, w: 0.666, h: 0.666 },
+                            "PanicAtDisco": { icon: "iconSpecialSkinEffectsPanicAtDisco", x: -1, y: -1, w: 1, h: 0.25 },
+                            "RedArrow": { icon: "iconSpecialSkinEffectsRedArrow", x: -0.5, y: -1.5, w: 1, h: 1 },
+                        };
+                        return map[name];
+                    }
+                };
 
 
-            PixiRender.init();
+                PixiRender.init();
 
-            // Hook
-            var _originalReq = window.requestAnimationFrame;
-            window.requestAnimationFrame = function (callback) {
-                PixiRender.renderFrame();
-                return _originalReq(callback);
-            };
+                // Hook
+                var _originalReq = window.requestAnimationFrame;
+                window.requestAnimationFrame = function (callback) {
+                    PixiRender.renderFrame();
+                    return _originalReq(callback);
+                };
 
-            if (window.PIXI) {
-                console.log("%c PixiJS " + PIXI.VERSION + " - " + "WebGL 2" + " %c https://pixijs.com", "background: #E72264; padding:5px; border-radius: 2px; color: #ffffff", "background: #fff; color: #E72264; padding:5px");
+                if(window.PIXI) {
+                    console.log("%c PixiJS " + PIXI.VERSION + " - " + "WebGL 2" + " %c https://pixijs.com", "background: #E72264; padding:5px; border-radius: 2px; color: #ffffff", "background: #fff; color: #E72264; padding:5px");
+        } else {
+            console.error("PIXI is not defined! Make sure pixi.js is loaded before this script.");
+        }
+        console.log("Full PixiRender loaded");
+
+        // Debug helper
+        setInterval(function () {
+            if (window.legendmod) {
+                // logic
             } else {
-                console.error("PIXI is not defined! Make sure pixi.js is loaded before this script.");
+                // console.log("Pixi Debug - Waiting for legendmod...");
             }
-            console.log("Full PixiRender loaded");
+        }, 5000);
 
-            // Debug helper
-            setInterval(function () {
-                if (window.legendmod) {
-                    // logic
-                } else {
-                    // console.log("Pixi Debug - Waiting for legendmod...");
-                }
-            }, 5000);
-
-        })(); // End async function
-    } // End initPixiRenderer
+    }) (); // End async function
+} // End initPixiRenderer
 
     // Check for PIXI and load if missing
     if (typeof PIXI === 'undefined') {
-        console.warn("PixiJS not found. Auto-loading from CDN...");
-        var script = document.createElement('script');
-        script.src = "https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js";
-        script.onload = function () {
-            console.log("PixiJS Auto-loaded.");
-            initPixiRenderer();
-        };
-        script.onerror = function () {
-            console.error("Failed to auto-load PixiJS from CDN.");
-        };
-        document.head.appendChild(script);
-    } else {
+    console.warn("PixiJS not found. Auto-loading from CDN...");
+    var script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/pixi.js@8.6.6/dist/pixi.min.js";
+    script.onload = function () {
+        console.log("PixiJS Auto-loaded.");
         initPixiRenderer();
-    }
-})();
+    };
+    script.onerror = function () {
+        console.error("Failed to auto-load PixiJS from CDN.");
+    };
+    document.head.appendChild(script);
+} else {
+    initPixiRenderer();
+}
+}) ();
