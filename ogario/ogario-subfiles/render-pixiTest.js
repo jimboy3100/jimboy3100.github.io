@@ -44,10 +44,12 @@
                 fontWeight: 'bold',
                 fill: color || '#FFFFFF',
                 stroke: '#000000',
-                strokeThickness: Math.max(2, size / 10),
-                align: 'center'
+                strokeThickness: Math.max(3, size / 8), // Thicker stroke for visibility
+                align: 'center',
+                lineJoin: 'round'
             });
             var text = new PIXI.Text(nick, style);
+            text.resolution = 2; // High DPI rendering for sharp text
             text.anchor.set(0.5);
             // Cache it (in a real app we'd need cleanup/LRU)
             this.nickCaches.set(key, text);
@@ -163,6 +165,11 @@
                     this.drawVirusesRange(this.gridGraphics, LM, theme, settings);
                 }
 
+                // Battle Royale Safe Zone
+                if (LM.gameMode === ':battleroyale') {
+                    this.drawBattleArea(this.gridGraphics, LM, theme); // Draw on grid layer
+                }
+
                 // Draw Indicators (Before cells)
                 if (settings.splitRange && LM.playerCells) {
                     this.drawSplitRange(this.indicatorGraphics, LM, theme);
@@ -180,6 +187,14 @@
                 // Waves (Shockwaves)
                 if (LM.Waves && LM.Waves.length) {
                     this.drawWaves(this.indicatorGraphics, LM);
+                }
+
+                // Commanders (Special effects)
+                if (LM.drawCommander) {
+                    this.drawCommander(this.indicatorGraphics, LM, theme, 1);
+                }
+                if (LM.drawCommander2) {
+                    this.drawCommander(this.indicatorGraphics, LM, theme, 2);
                 }
 
                 // Draw Entities
@@ -386,6 +401,40 @@
             }
         },
 
+        drawBattleArea: function (g, LM, theme) {
+            // Ported from ogarioTest.js logic (drawViewport)
+            // Draws the safe zone boundaries
+            // We need a way to get the safe zone coordinates. 
+            // ogarioTest.js uses LM.mapMinX etc for the VIEWPORT, but for BR it likely uses a specific obj.
+            // Looking at ogarioTest.js: this.drawViewport(ctx, 'Viewport', LM.camMinX...)
+            // But drawBattleArea(ctx) call in ogarioTest.js is empty? No, checking logic.
+            // It calls this.drawBattleArea(this.ctx);
+            // It seems to rely on global/settings?
+
+            // Simplified BR Zone (Red Border)
+            if (typeof LM.mapMinX !== 'number') return;
+            // Assuming the map boundaries shrink in BR? Or is it a separate overlay?
+            // Usually, mapMinX/MaxX ARE the safe zone.
+
+            g.lineStyle(15, 0xFF0000, 0.5); // Red border
+            g.drawRect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
+        },
+
+        drawCommander: function (g, LM, theme, type) {
+            // Placeholder for Commander visuals (rotating images)
+            // Implementing full rotation/animation logic might be overkill for this pass 
+            // unless user explicitly provided assets.
+            // Using simple indicator for now.
+
+            var x = (type === 1) ? (window.ogario && window.ogario.spawnX) : window.targetingLeadX;
+            var y = (type === 1) ? (window.ogario && window.ogario.spawnY) : window.targetingLeadY;
+
+            if (!x || !y) return;
+
+            g.lineStyle(5, 0xFFFF00, 0.8);
+            g.drawCircle(x, y, 50); // Simple indicator
+        },
+
         drawFood: function (LM, theme) {
             if (!LM.food) return;
             var g = new PIXI.Graphics();
@@ -410,19 +459,41 @@
             var color = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
 
             // Skins
+            // Skins
             if (cell.skinURL && settings.showSkins) {
                 try {
-                    var sprite = PIXI.Sprite.from(cell.skinURL);
+                    // Check if skin is already cached or load it
+                    // TODO: Implement proper Skin Manager for performance
+
+                    var sprite = new PIXI.Sprite();
+                    var texture = PIXI.Texture.from(cell.skinURL);
+
+                    if (texture.valid) {
+                        sprite.texture = texture;
+                    } else {
+                        // Wait for load
+                        texture.on('update', () => { sprite.texture = texture; });
+                        texture.on('error', () => {
+                            //console.warn("Skin load error:", cell.skinURL);
+                            container.removeChild(sprite); // Remove if failed
+                        });
+                    }
+
+                    sprite.anchor.set(0.5);
                     sprite.width = cell.size * 2;
                     sprite.height = cell.size * 2;
-                    sprite.anchor.set(0.5);
 
-                    var mask = new PIXI.Graphics();
-                    mask.beginFill(0xFFFFFF);
-                    mask.drawCircle(0, 0, cell.size);
-                    mask.endFill();
-                    sprite.mask = mask;
-                    container.addChild(mask);
+                    // Masking (Circular skin)
+                    // If skin is not transparent (or user setting), apply mask
+                    if (!settings.transparentSkins) {
+                        var mask = new PIXI.Graphics();
+                        mask.beginFill(0xFFFFFF);
+                        mask.drawCircle(0, 0, cell.size);
+                        mask.endFill();
+                        sprite.mask = mask;
+                        container.addChild(mask);
+                    }
+
                     container.addChild(sprite);
                 } catch (e) { }
             }
