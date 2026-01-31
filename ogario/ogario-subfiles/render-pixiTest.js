@@ -504,6 +504,7 @@
                     drawSet(LM.STEDCellsCache, settings.enemySSTEDColor);
                 },
 
+
                 drawBackground: function (g, LM, settings, theme) {
                     if (!settings.showGrid && !settings.showSectors) return;
 
@@ -513,7 +514,9 @@
 
                     // Grid Lines
                     if (settings.showGrid) {
-                        g.stroke({ width: 1, color: parseInt((theme.gridColor || '#111111').replace('#', '0x')), alpha: theme.gridAlpha || 0.5 });
+                        var gridColor = theme.gridColor ? parseInt(theme.gridColor.replace('#', '0x')) : 0x111111;
+                        var gridAlpha = theme.gridAlpha || 0.5; // If not in theme, default
+                        g.stroke({ width: 1, color: gridColor, alpha: gridAlpha });
                         var step = 500; // Standard block size
                         g.beginPath();
                         for (var x = minX; x <= maxX; x += step) {
@@ -534,7 +537,14 @@
                         var secW = width / cols;
                         var secH = height / rows;
 
-                        g.stroke({ width: 2, color: 0x333333, alpha: 0.3 }); // Sector borders
+                        var sectColor = theme.sectorsColor ? parseInt(theme.sectorsColor.replace('#', '0x')) : 0x333333;
+                        var sectWidth = theme.sectorsWidth || 40; // Default ogario value
+                        // Scale width down because 40 is likely for large canvas/minimap. Pixi lines are pixels.
+                        // Let's assume theme.sectorsWidth is "logical" and needs scaling or direct usage.
+                        // Actually, standard Ogario slider is 2-200. Let's use it directly but maybe clamped.
+                        var drawSecW = Math.max(1, (theme.sectorsWidth || 2) * 0.5);
+
+                        g.stroke({ width: drawSecW, color: sectColor, alpha: 0.3 }); // Sector borders
                         g.beginPath();
                         for (var i = 1; i < cols; i++) {
                             g.moveTo(minX + i * secW, minY);
@@ -547,7 +557,20 @@
                         g.stroke();
 
                         // Sector Labels
-                        var labelStyle = { fontFamily: 'Ubuntu', fontWeight: 'bold', fontSize: 200, fill: 0x333333, align: 'center' };
+                        var fontSize = theme.sectorsFontSize || 1000; // Ogario default is huge? Slider 200-2000.
+                        // Pixi Text fontSize is pixels. 1000 is huge.
+                        // Let's use the value directly, usually ~400-500 is readable on map.
+                        var fontName = theme.sectorsFontFamily || 'Ubuntu';
+                        var fontWeight = theme.sectorsFontWeight || 'bold';
+
+                        var labelStyle = {
+                            fontFamily: fontName,
+                            fontWeight: fontWeight,
+                            fontSize: fontSize,
+                            fill: sectColor,
+                            align: 'center'
+                        };
+
                         for (var r = 0; r < rows; r++) {
                             for (var c = 0; c < cols; c++) {
                                 var labelText = String.fromCharCode(65 + r) + (c + 1); // Row A-E, Col 1-5
@@ -737,12 +760,15 @@
                         // Animation Logic
                         var now = Date.now();
                         var pulse = 1 + Math.sin(now / 300) * 0.1; // Oscillate ±10% size
+                        var baseSize = settings.foodSize ? settings.foodSize : 0; // 0 means use f.size
 
                         for (var j = 0; j < LM.food.length; j++) {
                             var f = LM.food[j];
                             if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                             if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
-                            g.circle(f.x, f.y, f.size * pulse);
+
+                            var radius = baseSize > 0 ? baseSize : f.size;
+                            g.circle(f.x, f.y, radius * pulse);
                         }
                         g.fill({ color: color });
                     } else {
@@ -1000,30 +1026,46 @@
                         }
 
                         // Name
-                        // Default to true if undefined (parity with Ogario defaults)
                         var showNames = settings.showNames !== undefined ? settings.showNames : true;
                         if (showNames && cell.name) {
                             d.name.visible = true;
                             if (d.name.text !== cell.name) d.name.text = cell.name;
-                            var fSize = Math.max(10, cell.size / 2.5);
+
+                            // Dynamic Settings
+                            var nScale = settings.namesScale || 1;
+                            var fSize = Math.max(10, (cell.size / 2.5) * nScale);
+                            var strokeScale = theme.strokeScale || 1; // Default 1
+
                             if (d.name.style.fontSize !== fSize) {
                                 d.name.style.fontSize = fSize;
-                                d.name.style.strokeThickness = Math.max(3, cell.size / 8);
+                                d.name.style.strokeThickness = Math.max(3, (cell.size / 8) * strokeScale);
                             }
+                            d.name.alpha = settings.textAlpha !== undefined ? settings.textAlpha : 1;
                         } else {
                             d.name.visible = false;
                         }
 
                         // Mass
-                        // Default to true if undefined
                         var showMass = settings.showMass !== undefined ? settings.showMass : true;
                         if (showMass) {
                             d.mass.visible = true;
                             var massVal = Math.floor(cell.mass || cell.size * cell.size / 100).toString();
                             if (d.mass.text !== massVal) d.mass.text = massVal;
-                            var fmSize = Math.max(10, cell.size / 3.5);
-                            if (d.mass.style.fontSize !== fmSize) d.mass.style.fontSize = fmSize;
+
+                            var mScale = settings.massScale || 1;
+                            var fmSize = Math.max(10, (cell.size / 3.5) * mScale);
+                            // Virus mass scale
+                            if (cell.isVirus) {
+                                var vScale = settings.virMassScale || 1; // Default 1
+                                fmSize *= vScale;
+                            }
+
+                            if (d.mass.style.fontSize !== fmSize) {
+                                d.mass.style.fontSize = fmSize;
+                                d.mass.style.strokeThickness = Math.max(3, (cell.size / 9) * (theme.strokeScale || 1));
+                            }
                             d.mass.y = cell.name ? cell.size / 2 : 0;
+                            d.mass.alpha = settings.textAlpha !== undefined ? settings.textAlpha : 1;
                         } else {
                             d.mass.visible = false;
                         }
@@ -1311,4 +1353,4 @@
 } else {
     initPixiRenderer();
 }
-}) ();
+    }) ();
