@@ -62,6 +62,7 @@
         cellContainer: null,
         foodContainer: null,
         gridGraphics: null,
+        indicatorGraphics: null, // For split ranges, cursors
         scale: 1,
         camX: 0,
         camY: 0,
@@ -79,7 +80,10 @@
                 bordersWidth: 40,
                 foodColor: '#FFFFFF',
                 foodSize: 10,
-                virusColor: '#33FF33'
+                virusColor: '#33FF33',
+                splitRangeColor: '#FFFFFF',
+                cursorTrackingColor: '#FFFFFF',
+                cursorTrackingSize: 5
             };
         },
 
@@ -92,6 +96,9 @@
 
             this.foodContainer = new PIXI.Container();
             this.container.addChild(this.foodContainer);
+
+            this.indicatorGraphics = new PIXI.Graphics(); // Below cells
+            this.container.addChild(this.indicatorGraphics);
 
             this.cellContainer = new PIXI.Container();
             this.container.addChild(this.cellContainer);
@@ -124,7 +131,8 @@
 
                 // Clear
                 this.gridGraphics.clear();
-                this.foodContainer.removeChildren(); // Optimize: Don't remove if static, but Ogario food moves/eaten
+                this.indicatorGraphics.clear();
+                this.foodContainer.removeChildren();
                 this.cellContainer.removeChildren();
 
                 // Draw Background Elements
@@ -132,11 +140,18 @@
                     this.drawGrid(this.gridGraphics, activeTab, theme);
                 }
                 if (window.settings && window.settings.showBgSectors) {
-                    // Assuming standard 5x5 grid for sectors if not defined
                     this.drawSectors(this.gridGraphics, activeTab, theme, 5, 5);
                 }
                 if (window.settings && window.settings.showMapBorders) {
                     this.drawBorders(this.gridGraphics, activeTab, theme);
+                }
+
+                // Draw Indicators (Before cells)
+                if (window.settings && window.settings.splitRange && activeTab.playerCells) {
+                    this.drawSplitRange(this.indicatorGraphics, activeTab, theme);
+                }
+                if (window.settings && window.settings.cursorTracking && activeTab.playerCells) {
+                    this.drawCursorTracking(this.indicatorGraphics, activeTab, theme);
                 }
 
                 // Draw Entities
@@ -147,6 +162,9 @@
                         if (tab) {
                             if (window.settings && window.settings.showFood) {
                                 this.drawFood(tab, theme);
+                            }
+                            if (window.settings && window.settings.showGhostCells) {
+                                this.drawGhostCells(tab, theme);
                             }
                             if (tab.cells) {
                                 for (var j = 0; j < tab.cells.length; j++) {
@@ -181,7 +199,6 @@
             var secW = w / cols;
             var secH = h / rows;
 
-            // Draw sector lines
             g.lineStyle(theme.sectorsWidth || 40, parseInt(theme.sectorsColor.replace('#', '0x')), 0.2);
             for (var i = 1; i < cols; i++) {
                 g.moveTo(tab.mapMinX + i * secW, tab.mapMinY);
@@ -199,6 +216,38 @@
             g.drawRect(tab.mapMinX, tab.mapMinY, tab.mapMaxX - tab.mapMinX, tab.mapMaxY - tab.mapMinY);
         },
 
+        drawSplitRange: function (g, tab, theme) {
+            var players = tab.playerCells;
+            if (!players || !players.length) return;
+            var current = 0; // Simplified to 0
+            if (players[current]) {
+                g.lineStyle(6, parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF), 0.3);
+                g.drawCircle(players[current].x, players[current].y, players[current].size + 760); // 760 is standard split range
+            }
+        },
+
+        drawCursorTracking: function (g, tab, theme) {
+            var players = tab.playerCells;
+            if (!players || !players.length) return;
+            g.lineStyle(theme.cursorTrackingSize || 5, parseInt(theme.cursorTrackingColor ? theme.cursorTrackingColor.replace('#', '0x') : 0xFFFFFF), 0.3);
+            for (var i = 0; i < players.length; i++) {
+                g.moveTo(players[i].x, players[i].y);
+                g.lineTo(tab.cursorX, tab.cursorY);
+            }
+        },
+
+        drawGhostCells: function (tab, theme) {
+            if (!tab.ghostCells) return;
+            var g = this.indicatorGraphics; // Use indicator graphics or make new container layer
+            g.lineStyle(0);
+            g.beginFill(parseInt((theme.ghostCellsColor || '#FFFFFF').replace('#', '0x')), 0.3);
+            for (var i = 0; i < tab.ghostCells.length; i++) {
+                var ghost = tab.ghostCells[i];
+                g.drawCircle(ghost.x, ghost.y, ghost.size);
+            }
+            g.endFill();
+        },
+
         drawFood: function (tab, theme) {
             if (!tab.food) return;
             var g = new PIXI.Graphics();
@@ -206,10 +255,8 @@
             g.beginFill(color);
             for (var j = 0; j < tab.food.length; j++) {
                 var f = tab.food[j];
-                // Basic optimization: don't draw if off screen
                 if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                 if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
-
                 g.drawCircle(f.x, f.y, f.size);
             }
             g.endFill();
@@ -232,7 +279,6 @@
                     sprite.height = cell.size * 2;
                     sprite.anchor.set(0.5);
 
-                    // Masking to circle
                     var mask = new PIXI.Graphics();
                     mask.beginFill(0xFFFFFF);
                     mask.drawCircle(0, 0, cell.size);
@@ -245,9 +291,9 @@
 
             // Body
             if (cell.isVirus) {
-                g.lineStyle(4, parseInt((theme.virusColor || '#33FF33').replace('#', '0x')));
-                g.beginFill(parseInt((theme.virusColor || '#33FF33').replace('#', '0x')), 0.6);
-                // Draw Jagged Edge
+                var vColor = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
+                g.lineStyle(4, vColor);
+                g.beginFill(vColor, 0.6);
                 var points = 20;
                 var outer = cell.size;
                 var inner = cell.size * 0.9;
@@ -259,7 +305,6 @@
                 }
                 g.closePath();
             } else {
-                // Standard Cell
                 g.beginFill(color);
                 g.lineStyle(2, 0x000000);
                 g.drawCircle(0, 0, cell.size);
@@ -277,7 +322,7 @@
             if (window.settings && window.settings.showMass) {
                 var mass = Math.floor(cell.mass || cell.size * cell.size / 100);
                 var mt = Texts.getNickText(mass.toString(), Math.max(10, cell.size / 3.5), '#FFFFFF');
-                mt.y = cell.name ? cell.size / 2 : 0; // Offset if name exists
+                mt.y = cell.name ? cell.size / 2 : 0;
                 container.addChild(mt);
             }
 
