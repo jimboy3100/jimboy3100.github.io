@@ -919,7 +919,9 @@
                     }
 
                     // Name
-                    if (settings.showNames && cell.name) {
+                    // Default to true if undefined (parity with Ogario defaults)
+                    var showNames = settings.showNames !== undefined ? settings.showNames : true;
+                    if (showNames && cell.name) {
                         d.name.visible = true;
                         if (d.name.text !== cell.name) d.name.text = cell.name;
                         var fSize = Math.max(10, cell.size / 2.5);
@@ -932,7 +934,9 @@
                     }
 
                     // Mass
-                    if (settings.showMass) {
+                    // Default to true if undefined
+                    var showMass = settings.showMass !== undefined ? settings.showMass : true;
+                    if (showMass) {
                         d.mass.visible = true;
                         var massVal = Math.floor(cell.mass || cell.size * cell.size / 100).toString();
                         if (d.mass.text !== massVal) d.mass.text = massVal;
