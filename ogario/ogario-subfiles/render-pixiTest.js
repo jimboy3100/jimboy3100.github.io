@@ -112,18 +112,19 @@
 
         renderFrame: function () {
             try {
-                if (!window.application || !window.application.tab || !window.application.tab.master) return;
-                var activeTab = window.application.tab.master;
+                // Ensure we have the game object
+                if (!window.legendmod) return;
+                var LM = window.legendmod;
                 var theme = this.getTheme();
 
                 // Camera & Scale
-                this.camX = activeTab.viewX || 0;
-                this.camY = activeTab.viewY || 0;
+                // LM.viewX/Y are the target coordinates
+                this.camX = LM.viewX || 0;
+                this.camY = LM.viewY || 0;
 
-                this.scale = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
-                if (activeTab.playerSize) {
-                    this.scale *= Math.min(64 / activeTab.playerSize, 1) ** 0.2;
-                }
+                // Calculate scale similar to original: Math.max(width / 1920, height / 1080) * zoom
+                // LM.viewScale seems to be the scale factor used in original
+                this.scale = LM.viewScale || Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
 
                 this.container.scale.set(this.scale);
                 this.container.position.set(window.innerWidth / 2, window.innerHeight / 2);
@@ -137,87 +138,85 @@
 
                 // Draw Background Elements
                 if (window.settings && window.settings.showGrid) {
-                    this.drawGrid(this.gridGraphics, activeTab, theme);
+                    this.drawGrid(this.gridGraphics, LM, theme);
                 }
                 if (window.settings && window.settings.showBgSectors) {
-                    this.drawSectors(this.gridGraphics, activeTab, theme, 5, 5);
+                    this.drawSectors(this.gridGraphics, LM, theme, 5, 5);
                 }
                 if (window.settings && window.settings.showMapBorders) {
-                    this.drawBorders(this.gridGraphics, activeTab, theme);
+                    this.drawBorders(this.gridGraphics, LM, theme);
                 }
 
                 // Draw Indicators (Before cells)
-                if (window.settings && window.settings.splitRange && activeTab.playerCells) {
-                    this.drawSplitRange(this.indicatorGraphics, activeTab, theme);
+                if (window.settings && window.settings.splitRange && LM.playerCells) {
+                    this.drawSplitRange(this.indicatorGraphics, LM, theme);
                 }
-                if (window.settings && window.settings.cursorTracking && activeTab.playerCells) {
-                    this.drawCursorTracking(this.indicatorGraphics, activeTab, theme);
+                if (window.settings && window.settings.cursorTracking && LM.playerCells) {
+                    this.drawCursorTracking(this.indicatorGraphics, LM, theme);
                 }
 
                 // Draw Entities
-                var tabs = window.application.tabs;
-                if (tabs) {
-                    for (var i = 0; i < tabs.length; i++) {
-                        var tab = tabs[i];
-                        if (tab) {
-                            if (window.settings && window.settings.showFood) {
-                                this.drawFood(tab, theme);
-                            }
-                            if (window.settings && window.settings.showGhostCells) {
-                                this.drawGhostCells(tab, theme);
-                            }
-                            if (tab.cells) {
-                                for (var j = 0; j < tab.cells.length; j++) {
-                                    this.drawCell(tab.cells[j], theme);
-                                }
-                            }
-                        }
+                // Food
+                if (window.settings && window.settings.showFood && LM.food) {
+                    this.drawFood(LM, theme);
+                }
+
+                // Ghost Cells
+                if (window.settings && window.settings.showGhostCells) {
+                    this.drawGhostCells(LM, theme);
+                }
+
+                // Cells
+                if (LM.cells) {
+                    for (var i = 0; i < LM.cells.length; i++) {
+                        this.drawCell(LM.cells[i], theme);
                     }
                 }
+
             } catch (e) {
                 console.error("PixiRender Frame Error", e);
             }
         },
 
-        drawGrid: function (g, tab, theme) {
-            if (!tab || typeof tab.mapMinX !== 'number') return;
+        drawGrid: function (g, LM, theme) {
+            if (typeof LM.mapMinX !== 'number') return;
             g.lineStyle(1 / this.scale, parseInt(theme.gridColor.replace('#', '0x')), 0.5);
-            for (var x = tab.mapMinX; x <= tab.mapMaxX; x += 50) {
-                g.moveTo(x, tab.mapMinY);
-                g.lineTo(x, tab.mapMaxY);
+            for (var x = LM.mapMinX; x <= LM.mapMaxX; x += 50) {
+                g.moveTo(x, LM.mapMinY);
+                g.lineTo(x, LM.mapMaxY);
             }
-            for (var y = tab.mapMinY; y <= tab.mapMaxY; y += 50) {
-                g.moveTo(tab.mapMinX, y);
-                g.lineTo(tab.mapMaxX, y);
+            for (var y = LM.mapMinY; y <= LM.mapMaxY; y += 50) {
+                g.moveTo(LM.mapMinX, y);
+                g.lineTo(LM.mapMaxX, y);
             }
         },
 
-        drawSectors: function (g, tab, theme, cols, rows) {
-            if (!tab || typeof tab.mapMinX !== 'number') return;
-            var w = tab.mapMaxX - tab.mapMinX;
-            var h = tab.mapMaxY - tab.mapMinY;
+        drawSectors: function (g, LM, theme, cols, rows) {
+            if (typeof LM.mapMinX !== 'number') return;
+            var w = LM.mapMaxX - LM.mapMinX;
+            var h = LM.mapMaxY - LM.mapMinY;
             var secW = w / cols;
             var secH = h / rows;
 
             g.lineStyle(theme.sectorsWidth || 40, parseInt(theme.sectorsColor.replace('#', '0x')), 0.2);
             for (var i = 1; i < cols; i++) {
-                g.moveTo(tab.mapMinX + i * secW, tab.mapMinY);
-                g.lineTo(tab.mapMinX + i * secW, tab.mapMaxY);
+                g.moveTo(LM.mapMinX + i * secW, LM.mapMinY);
+                g.lineTo(LM.mapMinX + i * secW, LM.mapMaxY);
             }
             for (var i = 1; i < rows; i++) {
-                g.moveTo(tab.mapMinX, tab.mapMinY + i * secH);
-                g.lineTo(tab.mapMaxX, tab.mapMinY + i * secH);
+                g.moveTo(LM.mapMinX, LM.mapMinY + i * secH);
+                g.lineTo(LM.mapMaxX, LM.mapMinY + i * secH);
             }
         },
 
-        drawBorders: function (g, tab, theme) {
-            if (!tab || typeof tab.mapMinX !== 'number') return;
+        drawBorders: function (g, LM, theme) {
+            if (typeof LM.mapMinX !== 'number') return;
             g.lineStyle(theme.bordersWidth || 40, parseInt(theme.bordersColor.replace('#', '0x')), 1);
-            g.drawRect(tab.mapMinX, tab.mapMinY, tab.mapMaxX - tab.mapMinX, tab.mapMaxY - tab.mapMinY);
+            g.drawRect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
         },
 
-        drawSplitRange: function (g, tab, theme) {
-            var players = tab.playerCells;
+        drawSplitRange: function (g, LM, theme) {
+            var players = LM.playerCells;
             if (!players || !players.length) return;
             var current = 0; // Simplified to 0
             if (players[current]) {
@@ -226,35 +225,35 @@
             }
         },
 
-        drawCursorTracking: function (g, tab, theme) {
-            var players = tab.playerCells;
+        drawCursorTracking: function (g, LM, theme) {
+            var players = LM.playerCells;
             if (!players || !players.length) return;
             g.lineStyle(theme.cursorTrackingSize || 5, parseInt(theme.cursorTrackingColor ? theme.cursorTrackingColor.replace('#', '0x') : 0xFFFFFF), 0.3);
             for (var i = 0; i < players.length; i++) {
                 g.moveTo(players[i].x, players[i].y);
-                g.lineTo(tab.cursorX, tab.cursorY);
+                g.lineTo(LM.cursorX, LM.cursorY);
             }
         },
 
-        drawGhostCells: function (tab, theme) {
-            if (!tab.ghostCells) return;
+        drawGhostCells: function (LM, theme) {
+            if (!LM.ghostCells) return;
             var g = this.indicatorGraphics; // Use indicator graphics or make new container layer
             g.lineStyle(0);
             g.beginFill(parseInt((theme.ghostCellsColor || '#FFFFFF').replace('#', '0x')), 0.3);
-            for (var i = 0; i < tab.ghostCells.length; i++) {
-                var ghost = tab.ghostCells[i];
+            for (var i = 0; i < LM.ghostCells.length; i++) {
+                var ghost = LM.ghostCells[i];
                 g.drawCircle(ghost.x, ghost.y, ghost.size);
             }
             g.endFill();
         },
 
-        drawFood: function (tab, theme) {
-            if (!tab.food) return;
+        drawFood: function (LM, theme) {
+            if (!LM.food) return;
             var g = new PIXI.Graphics();
             var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
             g.beginFill(color);
-            for (var j = 0; j < tab.food.length; j++) {
-                var f = tab.food[j];
+            for (var j = 0; j < LM.food.length; j++) {
+                var f = LM.food[j];
                 if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                 if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
                 g.drawCircle(f.x, f.y, f.size);
