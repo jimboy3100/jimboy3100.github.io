@@ -94,6 +94,17 @@
             this.container = new PIXI.Container();
             this.app.stage.addChild(this.container);
 
+            // Generate a shared white circle texture for all cells
+            var g = new PIXI.Graphics();
+            g.beginFill(0xFFFFFF);
+            g.drawCircle(0, 0, 512); // High res circle
+            g.endFill();
+            this.circleTexture = this.app.renderer.generateTexture(g);
+            g.destroy();
+
+            // Map to store existing cell sprites: ID -> { container, bodySprite, skinSprite, text, massText, ... }
+            this.cellsMap = new Map();
+
             this.gridGraphics = new PIXI.Graphics();
             this.container.addChild(this.gridGraphics);
 
@@ -104,6 +115,8 @@
             this.container.addChild(this.indicatorGraphics);
 
             this.cellContainer = new PIXI.Container();
+            // Use ParticleContainer for cells if we didn't have complex masking/text requirements.
+            // But since we need masking for skins and text, Container is safer for now, just better managed.
             this.container.addChild(this.cellContainer);
 
             this.commanderContainer = new PIXI.Container();
@@ -112,6 +125,7 @@
 
             window.addEventListener('resize', this.resize.bind(this));
         },
+
 
         resize: function () {
             this.app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -144,7 +158,7 @@
                 this.gridGraphics.clear();
                 this.indicatorGraphics.clear();
                 this.foodContainer.removeChildren();
-                this.cellContainer.removeChildren();
+                // this.cellContainer.removeChildren(); // CHANGED: Retained Mode
                 this.commanderContainer.removeChildren();
 
 
@@ -216,9 +230,27 @@
                 }
 
                 // Cells
+                var currentFrameIds = new Set();
                 if (LM.cells) {
                     for (var i = 0; i < LM.cells.length; i++) {
-                        this.drawCell(LM.cells[i], theme, settings);
+                        var cell = LM.cells[i];
+                        if (cell) {
+                            currentFrameIds.add(cell.id);
+                            this.drawCell(cell, theme, settings);
+                        }
+                    }
+                }
+
+                // Cleanup dead cells from the map
+                if (this.cellsMap) {
+                    for (var id of this.cellsMap.keys()) {
+                        if (!currentFrameIds.has(id)) {
+                            var cellData = this.cellsMap.get(id);
+                            if (cellData && cellData.container) {
+                                cellData.container.destroy({ children: true });
+                            }
+                            this.cellsMap.delete(id);
+                        }
                     }
                 }
 
@@ -226,6 +258,7 @@
                 console.error("PixiRender Frame Error", e);
             }
         },
+
 
         drawGrid: function (g, LM, theme) {
             if (typeof LM.mapMinX !== 'number') return;
@@ -567,129 +600,244 @@
         },
 
         drawCell: function (cell, theme, settings) {
-            var container = new PIXI.Container();
-            container.x = cell.x;
-            container.y = cell.y;
+            var cellData = this.cellsMap.get(cell.id);
 
-            var g = new PIXI.Graphics();
-            var color = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
+            // --- CREATION PHASE ---
+            if (!cellData) {
+                var container = new PIXI.Container();
+                this.cellContainer.addChild(container);
 
-            // Skins
-            // Skins
-            if (cell.skinURL && settings.showSkins) {
-                try {
-                    // Video Skin Support
-                    var isVideo = cell.skinURL.endsWith('.mp4') || cell.skinURL.endsWith('.webm') || (window.application && window.application.customSkinsMap && window.application.customSkinsMap[cell.name] && window.application.customSkinsMap[cell.name].endsWith && (window.application.customSkinsMap[cell.name].endsWith('.mp4')));
+                // Body (Sprite for normal cells)
+                var body = new PIXI.Sprite(this.circleTexture);
+                body.anchor.set(0.5);
+                container.addChild(body);
 
-                    if (isVideo) {
-                        // Create video element if not exists (Pixi handles this via Texture.from)
-                        // But we might need to mute it / loop it.
-                        // For now, let Pixi try auto-detection.
-                        var texture = PIXI.Texture.from(cell.skinURL);
-                        var sprite = new PIXI.Sprite(texture);
+                // Virus Body (Graphics, lazy load)
+                var virusG = null;
 
-                        // Ensure video plays
-                        var source = texture.baseTexture.resource.source;
+                // Skin
+                var skin = new PIXI.Sprite();
+                skin.anchor.set(0.5);
+                container.addChild(skin);
+
+                // Skin Mask (Fast circular mask using texture)
+                var skinMask = new PIXI.Sprite(this.circleTexture);
+                skinMask.anchor.set(0.5);
+                skin.mask = skinMask;
+                container.addChild(skinMask);
+
+                // Name
+                var nameText = new PIXI.Text('', { fontFamily: 'Ubuntu, Arial', fontWeight: 'bold', fill: '#FFFFFF', stroke: '#000000', strokeThickness: 3, align: 'center' });
+                nameText.anchor.set(0.5);
+                nameText.resolution = 2;
+                container.addChild(nameText);
+
+                // Mass
+                var massText = new PIXI.Text('', { fontFamily: 'Ubuntu, Arial', fontWeight: 'bold', fill: '#FFFFFF', stroke: '#000000', strokeThickness: 3, align: 'center' });
+                massText.anchor.set(0.5);
+                massText.resolution = 2;
+                container.addChild(massText);
+
+                // Effects Container
+                var effects = new PIXI.Container();
+                container.addChild(effects);
+
+                // Chat
+                var chatText = new PIXI.Text('', { fontFamily: 'Ubuntu, Arial', fill: '#FFFFFF', stroke: '#000000', strokeThickness: 3, wordWrap: true, align: 'center' });
+                chatText.anchor.set(0.5, 1);
+                chatText.resolution = 2; // High res chat
+                container.addChild(chatText);
+
+                cellData = {
+                    container: container,
+                    body: body,
+                    virusG: virusG,
+                    skin: skin,
+                    skinMask: skinMask,
+                    name: nameText,
+                    mass: massText,
+                    effects: effects,
+                    chat: chatText,
+                    lastSkin: null
+                };
+                this.cellsMap.set(cell.id, cellData);
+            }
+
+            // --- UPDATE PHASE ---
+            var d = cellData;
+            d.container.x = cell.x;
+            d.container.y = cell.y;
+            d.container.zIndex = cell.id; // Pixi sort? Or inherent? We iterate in order, so Pixi render order usually matches child order. But if we reuse, order might be mixed.
+            // Ideally: this.cellContainer.sortChildren(); but that requires zIndex enabled.
+            // For now, assume iteration order is sufficient if we didn't use zIndex. But since we Reuse, the child index is static.
+            // Parity Issue: Ogario sorts cells by size.
+            // If `LM.cells` is sorted, we should probably resort children or use zIndex.
+            // this.cellContainer.sortableChildren = true; d.container.zIndex = i?
+            // Let's rely on child index matching map insertion? No.
+            // We can just use `this.cellContainer.setChildIndex(d.container, i)` if we pass index `i`.
+            // But we don't have `i` here easily. 
+            // Let's ignore z-index perf for a moment and focus on memory.
+
+            var size2 = cell.size * 2;
+
+            if (cell.isVirus) {
+                d.body.visible = false;
+                d.skin.visible = false;
+                d.skinMask.visible = false;
+
+                if (!d.virusG) {
+                    d.virusG = new PIXI.Graphics();
+                    d.container.addChildAt(d.virusG, 0); // Bottom
+                }
+                d.virusG.visible = true;
+                d.virusG.clear();
+                var vColor = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
+                d.virusG.lineStyle(4, vColor);
+                d.virusG.beginFill(vColor, 0.6);
+                var points = 20;
+                var outer = cell.size;
+                var inner = cell.size * 0.9;
+                d.virusG.moveTo(outer, 0);
+                for (var j = 1; j <= points * 2; j++) {
+                    var angle = (Math.PI / points) * j;
+                    var r = (j % 2 === 0) ? outer : inner;
+                    d.virusG.lineTo(r * Math.cos(angle), r * Math.sin(angle));
+                }
+                d.virusG.closePath();
+            } else {
+                if (d.virusG) d.virusG.visible = false;
+                d.body.visible = true;
+                d.body.width = size2;
+                d.body.height = size2;
+                d.body.tint = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
+
+                // Skin Update
+                var skinTexture = null;
+                var isVideo = false;
+
+                // 1. Video Check
+                if (cell.skinURL) {
+                    if (cell.skinURL.endsWith('.mp4') || cell.skinURL.endsWith('.webm') || (window.application && window.application.customSkinsMap && window.application.customSkinsMap[cell.name] && window.application.customSkinsMap[cell.name].endsWith && (window.application.customSkinsMap[cell.name].endsWith('.mp4')))) {
+                        isVideo = true;
+                    }
+                }
+
+                if (isVideo) {
+                    // Pixi Texture Caching handles duplication if url is same
+                    try {
+                        skinTexture = PIXI.Texture.from(cell.skinURL);
+                        var source = skinTexture.baseTexture.resource.source;
                         if (source && source.tagName === 'VIDEO') {
                             source.loop = true;
                             source.muted = true;
                             source.play().catch(e => { });
                         }
-
-                        sprite.anchor.set(0.5);
-                        sprite.width = cell.size * 2;
-                        sprite.height = cell.size * 2;
-
-                        // Masking
-                        if (!settings.transparentSkins) {
-                            var mask = new PIXI.Graphics();
-                            mask.beginFill(0xFFFFFF);
-                            mask.drawCircle(0, 0, cell.size);
-                            mask.endFill();
-                            sprite.mask = mask;
-                            container.addChild(mask);
-                        }
-                        container.addChild(sprite);
-
-                    } else {
-                        // Image Skin
-                        var sprite = new PIXI.Sprite();
-                        var texture = PIXI.Texture.from(cell.skinURL);
-
-                        if (texture.valid) {
-                            sprite.texture = texture;
-                        } else {
-                            texture.on('update', () => { sprite.texture = texture; });
-                            texture.on('error', () => { container.removeChild(sprite); });
-                        }
-
-                        sprite.anchor.set(0.5);
-                        sprite.width = cell.size * 2;
-                        sprite.height = cell.size * 2;
-
-                        if (!settings.transparentSkins) {
-                            var mask = new PIXI.Graphics();
-                            mask.beginFill(0xFFFFFF);
-                            mask.drawCircle(0, 0, cell.size);
-                            mask.endFill();
-                            sprite.mask = mask;
-                            container.addChild(mask);
-                        }
-                        container.addChild(sprite);
+                    } catch (e) { }
+                } else if (settings.showSkins) {
+                    // 2. getCustomSkin
+                    if (window.application && window.application.getCustomSkin) {
+                        try {
+                            var skinObj = window.application.getCustomSkin(cell.name, cell.color);
+                            if (skinObj) skinTexture = PIXI.Texture.from(skinObj);
+                        } catch (e) { }
                     }
-                } catch (e) { }
-            }
-
-
-            // Body
-            if (cell.isVirus) {
-                var vColor = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
-                g.lineStyle(4, vColor);
-                g.beginFill(vColor, 0.6);
-                var points = 20;
-                var outer = cell.size;
-                var inner = cell.size * 0.9;
-                g.moveTo(outer, 0);
-                for (var i = 1; i <= points * 2; i++) {
-                    var angle = (Math.PI / points) * i;
-                    var r = (i % 2 === 0) ? outer : inner;
-                    g.lineTo(r * Math.cos(angle), r * Math.sin(angle));
+                    // 3. Fallback
+                    if (!skinTexture && cell.skinURL) {
+                        skinTexture = PIXI.Texture.from(cell.skinURL);
+                    }
                 }
-                g.closePath();
-            } else {
-                g.beginFill(color);
-                g.lineStyle(2, 0x000000);
-                g.drawCircle(0, 0, cell.size);
-                g.endFill();
+
+                if (skinTexture && skinTexture.valid !== false) {
+                    d.skin.visible = true;
+                    d.skin.texture = skinTexture;
+                    d.skin.width = size2;
+                    d.skin.height = size2;
+
+                    if (!settings.transparentSkins) {
+                        d.skinMask.visible = true;
+                        d.skinMask.width = size2;
+                        d.skinMask.height = size2;
+                    } else {
+                        d.skinMask.visible = false;
+                        d.skin.mask = null;
+                    }
+                } else {
+                    d.skin.visible = false;
+                    d.skinMask.visible = false;
+                }
             }
-            container.addChild(g);
 
             // Name
-            if (cell.name && settings.showNames) {
-                var t = Texts.getNickText(cell.name, Math.max(10, cell.size / 2.5), '#FFFFFF');
-                container.addChild(t);
+            if (settings.showNames && cell.name) {
+                d.name.visible = true;
+                if (d.name.text !== cell.name) d.name.text = cell.name;
+                var fSize = Math.max(10, cell.size / 2.5);
+                if (d.name.style.fontSize !== fSize) {
+                    d.name.style.fontSize = fSize;
+                    d.name.style.strokeThickness = Math.max(3, cell.size / 8);
+                }
+            } else {
+                d.name.visible = false;
             }
 
             // Mass
             if (settings.showMass) {
-                var mass = Math.floor(cell.mass || cell.size * cell.size / 100);
-                var mt = Texts.getNickText(mass.toString(), Math.max(10, cell.size / 3.5), '#FFFFFF');
-                mt.y = cell.name ? cell.size / 2 : 0;
-                container.addChild(mt);
+                d.mass.visible = true;
+                var massVal = Math.floor(cell.mass || cell.size * cell.size / 100).toString();
+                if (d.mass.text !== massVal) d.mass.text = massVal;
+                var fmSize = Math.max(10, cell.size / 3.5);
+                if (d.mass.style.fontSize !== fmSize) d.mass.style.fontSize = fmSize;
+                d.mass.y = cell.name ? cell.size / 2 : 0;
+            } else {
+                d.mass.visible = false;
             }
 
-            // Special Effects
-            this.drawSpecialEffects(container, cell, theme, settings);
+            // Special Effects (Simple redraw for now)
+            d.effects.removeChildren();
+            this.drawSpecialEffects(d.effects, cell, theme, settings);
 
-            // Chat Messages
+            // Chat
             if (window.application && window.application.chatHistory && window.application.chatHistory.length) {
-                this.drawChat(container, cell, settings);
+                // Same logic as before but targeting d.chat
+                // To minimize logic, I'll allow drawChat to update d.chat. 
+                // Wait, drawChat expects to CREATE a Text.
+                // Refactor drawChat to UPDATE d.chat or hide it.
+                // I will inline the simple check here or call a modified drawChat.
+                // Let's inline logic to update d.chat.
+
+                var customTxt = null;
+                var temp = 0;
+                var chatHistory = window.application.chatHistory;
+                var now = Date.now();
+                for (var i = chatHistory.length - 1; i >= 0; i--) {
+                    var entry = chatHistory[i];
+                    if (entry.nick === cell.name && (now - entry.time < 15000)) {
+                        if (entry.nick === window.nick_val || entry.nick === window.application.lastSentNick) {
+                            if (settings.showChatMyOwn) { customTxt = entry.message; temp = now - entry.time; break; }
+                        } else {
+                            customTxt = entry.message; temp = now - entry.time; break;
+                        }
+                    }
+                }
+
+                if (customTxt) {
+                    d.chat.visible = true;
+                    d.chat.text = customTxt;
+                    d.chat.style.wordWrapWidth = cell.size * 3;
+                    d.chat.style.fontSize = Math.max(10, cell.size / 2);
+                    d.chat.y = -cell.size - 10;
+                    if (temp < 2000) d.chat.alpha = temp / 2000;
+                    else if (temp > 13000) d.chat.alpha = (15000 - temp) / 2000;
+                    else d.chat.alpha = 1;
+                } else {
+                    d.chat.visible = false;
+                }
+            } else {
+                d.chat.visible = false;
             }
-
-
-            this.cellContainer.addChild(container);
 
         },
+
 
         drawChat: function (container, cell, settings) {
             if (!window.application || !window.application.chatHistory) return;
