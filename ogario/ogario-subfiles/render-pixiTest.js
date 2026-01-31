@@ -191,13 +191,17 @@
                     this.gridGraphics = new PIXI.Graphics();
                     this.container.addChild(this.gridGraphics);
 
-                    this.foodContainer = new PIXI.Container();
-                    this.container.addChild(this.foodContainer);
+                    this.foodGraphics = new PIXI.Graphics();
+                    this.container.addChild(this.foodGraphics);
 
                     this.indicatorGraphics = new PIXI.Graphics(); // Below cells
                     this.container.addChild(this.indicatorGraphics);
 
+                    this.ghostContainer = new PIXI.Container();
+                    this.container.addChild(this.ghostContainer);
+
                     this.cellContainer = new PIXI.Container();
+                    this.cellContainer.sortableChildren = true;
                     // Use ParticleContainer for cells if we didn't have complex masking/text requirements.
                     // But since we need masking for skins and text, Container is safer for now, just better managed.
                     this.container.addChild(this.cellContainer);
@@ -243,7 +247,9 @@
                         // Clear
                         this.gridGraphics.clear();
                         this.indicatorGraphics.clear();
-                        this.foodContainer.removeChildren();
+                        this.foodGraphics.clear();
+                        // this.foodContainer.removeChildren();
+                        this.ghostContainer.removeChildren();
                         // this.cellContainer.removeChildren(); // CHANGED: Retained Mode
                         this.commanderContainer.removeChildren();
 
@@ -327,7 +333,7 @@
                                 var cell = LM.cells[i];
                                 if (cell) {
                                     currentFrameIds.add(cell.id);
-                                    this.drawCell(cell, theme, settings);
+                                    this.drawCell(cell, theme, settings, i);
                                 }
                             }
                         }
@@ -670,19 +676,15 @@
                                 sprite.height = cell.size * 2;
                                 sprite.anchor.set(0.5);
                                 var mask = new PIXI.Graphics();
-                                mask.beginFill(0xFFFFFF);
-                                mask.drawCircle(0, 0, cell.size);
-                                mask.endFill();
+                                mask.circle(0, 0, cell.size);
+                                mask.fill({ color: 0xFFFFFF });
                                 sprite.mask = mask;
                                 container.addChild(mask);
                                 container.addChild(sprite);
                             } catch (e) { }
                         }
 
-                        this.cellContainer.addChild(container); // Add to main cell layer? Or separate?
-                        // Issues: overlapping live cells. 
-                        // Ideally, ghosts are drawn BEFORE live cells. 
-                        // We should probably add a ghostContainer to PixiRender.
+                        this.ghostContainer.addChild(container);
                     }
                 },
 
@@ -692,7 +694,7 @@
                     // Check settings (passed from renderFrame)
                     var rainbow = settings && settings.rainbowFood;
 
-                    var g = new PIXI.Graphics();
+                    var g = this.foodGraphics;
 
                     if (!rainbow) {
                         var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
@@ -715,10 +717,10 @@
                             g.fill({ color: color });
                         }
                     }
-                    this.foodContainer.addChild(g);
+                    // this.foodContainer.addChild(g);
                 },
 
-                drawCell: function (cell, theme, settings) {
+                drawCell: function (cell, theme, settings, index) {
                     var cellData = this.cellsMap.get(cell.id);
 
                     // --- CREATION PHASE ---
@@ -793,7 +795,7 @@
                     var d = cellData;
                     d.container.x = cell.x;
                     d.container.y = cell.y;
-                    d.container.zIndex = cell.id; // Pixi sort? Or inherent? We iterate in order, so Pixi render order usually matches child order. But if we reuse, order might be mixed.
+                    d.container.zIndex = index || 0; // Use iteration order for correct stacking (Ogario logic)
                     // Ideally: this.cellContainer.sortChildren(); but that requires zIndex enabled.
                     // For now, assume iteration order is sufficient if we didn't use zIndex. But since we Reuse, the child index is static.
                     // Parity Issue: Ogario sorts cells by size.
