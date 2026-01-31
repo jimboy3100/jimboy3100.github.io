@@ -23,7 +23,7 @@
     app.view.style.position = "absolute";
     app.view.style.top = "0";
     app.view.style.left = "0";
-    app.view.style.zIndex = "100";
+    app.view.style.zIndex = "1"; // Lower z-index so HUD (z=11+) stays on top
     app.view.style.pointerEvents = "none";
 
     // --- Advanced Helpers ---
@@ -69,6 +69,7 @@
 
         // Settings from window.theme or defaults
         getTheme: function () {
+            // Fallback to defaults if theme is missing
             return window.theme || {
                 gridColor: '#111111',
                 sectorsColor: '#333333',
@@ -117,6 +118,9 @@
                 var LM = window.legendmod;
                 var theme = this.getTheme();
 
+                // Ensure settings object is available
+                var settings = window.settings || window.defaultmapsettings || {};
+
                 // Camera & Scale
                 // LM.viewX/Y are the target coordinates
                 this.camX = LM.viewX || 0;
@@ -137,39 +141,39 @@
                 this.cellContainer.removeChildren();
 
                 // Draw Background Elements
-                if (window.settings && window.settings.showGrid) {
+                if (settings.showGrid) {
                     this.drawGrid(this.gridGraphics, LM, theme);
                 }
-                if (window.settings && window.settings.showBgSectors) {
+                if (settings.showBgSectors) {
                     this.drawSectors(this.gridGraphics, LM, theme, 5, 5);
                 }
-                if (window.settings && window.settings.showMapBorders) {
+                if (settings.showMapBorders) {
                     this.drawBorders(this.gridGraphics, LM, theme);
                 }
 
                 // Draw Indicators (Before cells)
-                if (window.settings && window.settings.splitRange && LM.playerCells) {
+                if (settings.splitRange && LM.playerCells) {
                     this.drawSplitRange(this.indicatorGraphics, LM, theme);
                 }
-                if (window.settings && window.settings.cursorTracking && LM.playerCells) {
+                if (settings.cursorTracking && LM.playerCells) {
                     this.drawCursorTracking(this.indicatorGraphics, LM, theme);
                 }
 
                 // Draw Entities
                 // Food
-                if (window.settings && window.settings.showFood && LM.food) {
+                if (settings.showFood && LM.food) {
                     this.drawFood(LM, theme);
                 }
 
                 // Ghost Cells
-                if (window.settings && window.settings.showGhostCells) {
+                if (settings.showGhostCells) {
                     this.drawGhostCells(LM, theme);
                 }
 
                 // Cells
                 if (LM.cells) {
                     for (var i = 0; i < LM.cells.length; i++) {
-                        this.drawCell(LM.cells[i], theme);
+                        this.drawCell(LM.cells[i], theme, settings);
                     }
                 }
 
@@ -262,7 +266,7 @@
             this.foodContainer.addChild(g);
         },
 
-        drawCell: function (cell, theme) {
+        drawCell: function (cell, theme, settings) {
             var container = new PIXI.Container();
             container.x = cell.x;
             container.y = cell.y;
@@ -271,7 +275,7 @@
             var color = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
 
             // Skins
-            if (cell.skinURL && window.settings && window.settings.showSkins) {
+            if (cell.skinURL && settings.showSkins) {
                 try {
                     var sprite = PIXI.Sprite.from(cell.skinURL);
                     sprite.width = cell.size * 2;
@@ -312,13 +316,13 @@
             container.addChild(g);
 
             // Name
-            if (cell.name && window.settings && window.settings.showNames) {
+            if (cell.name && settings.showNames) {
                 var t = Texts.getNickText(cell.name, Math.max(10, cell.size / 2.5), '#FFFFFF');
                 container.addChild(t);
             }
 
             // Mass
-            if (window.settings && window.settings.showMass) {
+            if (settings.showMass) {
                 var mass = Math.floor(cell.mass || cell.size * cell.size / 100);
                 var mt = Texts.getNickText(mass.toString(), Math.max(10, cell.size / 3.5), '#FFFFFF');
                 mt.y = cell.name ? cell.size / 2 : 0;
