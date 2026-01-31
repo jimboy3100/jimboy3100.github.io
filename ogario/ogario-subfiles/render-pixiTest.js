@@ -258,21 +258,15 @@
                         this.commanderContainer.removeChildren();
 
 
-                        // Draw Background Elements
+
+                        // Draw Background Elements (Grid & Sectors)
                         if (settings.customBackground) {
                             this.drawCustomBackgrounds(LM, settings);
                         }
 
-                        if (settings.showGrid) {
-                            if (settings.showOptimisedGrid) {
-                                this.drawCustomNewGrid(LM, settings); // Image-based grid
-                            } else {
-                                this.drawGrid(this.gridGraphics, LM, theme); // Line-based grid
-                            }
-                        }
-                        if (settings.showBgSectors) {
-                            this.drawSectors(this.gridGraphics, LM, theme, 5, 5);
-                        }
+                        // Unified Grid & Sectors (Visual Parity)
+                        this.drawBackground(this.gridGraphics, LM, settings, theme);
+
                         if (settings.showMapBorders) {
                             this.drawBorders(this.gridGraphics, LM, theme);
                         }
@@ -510,24 +504,61 @@
                     drawSet(LM.STEDCellsCache, settings.enemySSTEDColor);
                 },
 
-                drawCustomNewGrid: function (LM, settings) {
-                    if (!this.gridSprite) {
-                        // Use the URL from ogarioTest.js
-                        this.gridSprite = PIXI.Sprite.from("https://www.legendmod.ml/banners/grid3.png");
-                        this.gridSprite.anchor.set(0);
-                        // Insert after background (index 1 if bg exists, else 0)
-                        var idx = this.backgroundSprite ? 1 : 0;
-                        this.container.addChildAt(this.gridSprite, idx);
+                drawBackground: function (g, LM, settings, theme) {
+                    if (!settings.showGrid && !settings.showSectors) return;
+
+                    var minX = LM.mapMinX, minY = LM.mapMinY, maxX = LM.mapMaxX, maxY = LM.mapMaxY;
+                    var width = maxX - minX;
+                    var height = maxY - minY;
+
+                    // Grid Lines
+                    if (settings.showGrid) {
+                        g.stroke({ width: 1, color: parseInt((theme.gridColor || '#111111').replace('#', '0x')), alpha: theme.gridAlpha || 0.5 });
+                        var step = 500; // Standard block size
+                        g.beginPath();
+                        for (var x = minX; x <= maxX; x += step) {
+                            g.moveTo(x, minY);
+                            g.lineTo(x, maxY);
+                        }
+                        for (var y = minY; y <= maxY; y += step) {
+                            g.moveTo(minX, y);
+                            g.lineTo(maxX, y);
+                        }
+                        g.stroke(); // Draw all lines
                     }
 
-                    if (this.gridSprite && this.gridSprite.texture.baseTexture.valid) {
-                        // Map the grid image to the map bounds logic
-                        // Original logic suggests the grid image corresponds to the map size
-                        this.gridSprite.x = LM.mapMinX;
-                        this.gridSprite.y = LM.mapMinY;
-                        this.gridSprite.width = LM.mapMaxX - LM.mapMinX;
-                        this.gridSprite.height = LM.mapMaxY - LM.mapMinY;
-                        this.gridSprite.alpha = 0.5; // Visual tweak
+                    // Sectors (A1, A2, B1, B2...)
+                    if (settings.showSectors) {
+                        var cols = 5; // Standard Agar 5x5 layout
+                        var rows = 5;
+                        var secW = width / cols;
+                        var secH = height / rows;
+
+                        g.stroke({ width: 2, color: 0x333333, alpha: 0.3 }); // Sector borders
+                        g.beginPath();
+                        for (var i = 1; i < cols; i++) {
+                            g.moveTo(minX + i * secW, minY);
+                            g.lineTo(minX + i * secW, maxY);
+                        }
+                        for (var j = 1; j < rows; j++) {
+                            g.moveTo(minX, minY + j * secH);
+                            g.lineTo(maxX, minY + j * secH);
+                        }
+                        g.stroke();
+
+                        // Sector Labels
+                        var labelStyle = { fontFamily: 'Ubuntu', fontWeight: 'bold', fontSize: 200, fill: 0x333333, align: 'center' };
+                        for (var r = 0; r < rows; r++) {
+                            for (var c = 0; c < cols; c++) {
+                                var labelText = String.fromCharCode(65 + r) + (c + 1); // Row A-E, Col 1-5
+                                var label = new PIXI.Text(labelText, labelStyle);
+                                label.anchor.set(0.5);
+                                label.x = minX + (c + 0.5) * secW;
+                                label.y = minY + (r + 0.5) * secH;
+                                label.alpha = 0.2; // Faint labels
+                                g.addChild(label);
+                            }
+                        }
                     }
                 },
 
@@ -702,11 +733,16 @@
 
                     if (!rainbow) {
                         var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
+
+                        // Animation Logic
+                        var now = Date.now();
+                        var pulse = 1 + Math.sin(now / 300) * 0.1; // Oscillate ±10% size
+
                         for (var j = 0; j < LM.food.length; j++) {
                             var f = LM.food[j];
                             if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                             if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
-                            g.circle(f.x, f.y, f.size);
+                            g.circle(f.x, f.y, f.size * pulse);
                         }
                         g.fill({ color: color });
                     } else {
@@ -732,10 +768,21 @@
                         var container = new PIXI.Container();
                         this.cellContainer.addChild(container);
 
+                        // --- GLOW & BORDERS ---
+                        // Glow Container (Behind Body)
+                        var glow = new PIXI.Graphics();
+                        this.cellContainer.addChild(glow); // Add glow to MAIN container, z-index managed separately?
+                        // No, glow should be part of the individual cell container for ease of transform
+                        container.addChild(glow);
+
                         // Body (Sprite for normal cells)
                         var body = new PIXI.Sprite(this.circleTexture);
                         body.anchor.set(0.5);
                         container.addChild(body);
+
+                        // Multilayer Border (Outer Stroke)
+                        var border = new PIXI.Graphics();
+                        container.addChild(border);
 
                         // Virus Body (Graphics, lazy load)
                         var virusG = null;
@@ -790,6 +837,8 @@
                             mass: massText,
                             effects: effects,
                             chat: chatText,
+                            glow: glow,     // Store ref
+                            border: border, // Store ref
                             lastSkin: null
                         };
                         this.cellsMap.set(cell.id, cellData);
@@ -856,11 +905,40 @@
                         d.virusG.fill({ color: vColor, alpha: theme.virusAlpha || 0.6 });
                         d.virusG.stroke({ width: vStrokeSize, color: vStrokeColor });
                     } else {
+                        // Standard Cell Rendering (Body + Glow + Border)
                         if (d.virusG) d.virusG.visible = false;
+
                         d.body.visible = true;
                         d.body.width = size2;
                         d.body.height = size2;
                         d.body.tint = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
+
+                        // Glow Logic
+                        if (settings.showGlow) { // Ensure settings.showGlow is handled (default to true elsewhere if needed)
+                            d.glow.visible = true;
+                            d.glow.clear();
+                            var glowColor = d.body.tint;
+                            // Draw a soft glow behind
+                            d.glow.circle(0, 0, cell.size + 20); // Slightly larger
+                            d.glow.fill({ color: glowColor, alpha: 0.3 }); // Soft alpha
+                            // Optional: Add blur filter if performant, but simple graphics is faster
+                        } else {
+                            d.glow.visible = false;
+                        }
+
+                        // Multilayer Border Logic
+                        if (settings.showBorders) { // Assume setting exists
+                            d.border.visible = true;
+                            d.border.clear();
+                            d.border.circle(0, 0, cell.size); // Match body size
+                            // Draw stroke: White inner, Color outer? Or just thickened color?
+                            // Ogario style: Darker border or specific theme
+                            var borderColor = parseInt((theme.borderColor || '#000000').replace('#', '0x'));
+                            // If dark theme, maybe white border?
+                            d.border.stroke({ width: 4, color: borderColor, alpha: 1 });
+                        } else {
+                            d.border.visible = false;
+                        }
 
                         // Skin Update
                         var skinTexture = null;
