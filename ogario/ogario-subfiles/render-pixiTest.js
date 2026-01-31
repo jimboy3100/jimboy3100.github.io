@@ -339,6 +339,26 @@
         return _originalReq(callback);
     };
 
+    if (window.PIXI) {
+        console.log("PixiJS Version:", PIXI.VERSION);
+        if (PIXI.utils && PIXI.utils.sayHello) {
+            PIXI.utils.sayHello('WebGL 2');
+        }
+    }
     console.log("Full PixiRender loaded");
+
+    // Debug helper
+    setInterval(function () {
+        if (window.legendmod) {
+            console.log("Pixi Debug - LM State:", {
+                cells: window.legendmod.cells ? window.legendmod.cells.length : 0,
+                viewX: window.legendmod.viewX,
+                viewY: window.legendmod.viewY,
+                fps: window.legendmod.fps
+            });
+        } else {
+            console.log("Pixi Debug - Waiting for legendmod...");
+        }
+    }, 5000);
 
 })();
