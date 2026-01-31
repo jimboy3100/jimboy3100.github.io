@@ -205,7 +205,7 @@
 
                 // Ghost Cells
                 if (settings.showGhostCells) {
-                    this.drawGhostCells(LM, theme);
+                    this.drawGhostCells(LM, theme, settings);
                 }
 
                 // Cells
@@ -277,17 +277,7 @@
             }
         },
 
-        drawGhostCells: function (LM, theme) {
-            if (!LM.ghostCells) return;
-            var g = this.indicatorGraphics; // Use indicator graphics or make new container layer
-            g.lineStyle(0);
-            g.beginFill(parseInt((theme.ghostCellsColor || '#FFFFFF').replace('#', '0x')), 0.3);
-            for (var i = 0; i < LM.ghostCells.length; i++) {
-                var ghost = LM.ghostCells[i];
-                g.drawCircle(ghost.x, ghost.y, ghost.size);
-            }
-            g.endFill();
-        },
+
 
         drawCustomBackgrounds: function (LM, settings) {
             if (!this.backgroundSprite && settings.customBackground) {
@@ -435,18 +425,99 @@
             g.drawCircle(x, y, 50); // Simple indicator
         },
 
+        drawGhostCells: function (LM, theme, settings) {
+            if (!LM.ghostCells) return;
+            // Ghost cells should look like normal cells but transparent
+            for (var i = 0; i < LM.ghostCells.length; i++) {
+                var cell = LM.ghostCells[i];
+                // Use the main drawCell logic but force transparency
+                // We mock a settings object to force transparency for ghosts
+                var ghostSettings = Object.assign({}, settings, {
+                    showNames: settings.showNames,
+                    showMass: settings.showMass,
+                    showSkins: settings.showSkins // Ghosts often show skins
+                });
+
+                // Draw into the main cell container or a separate ghost layer?
+                // Using cellContainer might mess up z-index with live cells. 
+                // Let's use indicatorGraphics for now or a new container.
+                // Actually, reusing drawCell requires it to be added to a container.
+                // For simplicity/parity, we can iterate and draw them semi-transparently.
+
+                var container = new PIXI.Container();
+                container.x = cell.x;
+                container.y = cell.y;
+                container.alpha = 0.3; // Ghost transparency
+
+                // ... (simplified drawCell logic for ghost)
+                var g = new PIXI.Graphics();
+                var color = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
+                g.beginFill(color);
+                g.lineStyle(2, 0x000000);
+                g.drawCircle(0, 0, cell.size);
+                g.endFill();
+                container.addChild(g);
+
+                if (cell.skinURL && settings.showSkins) {
+                    // Basic skin for ghost
+                    try {
+                        var sprite = PIXI.Sprite.from(cell.skinURL);
+                        sprite.width = cell.size * 2;
+                        sprite.height = cell.size * 2;
+                        sprite.anchor.set(0.5);
+                        var mask = new PIXI.Graphics();
+                        mask.beginFill(0xFFFFFF);
+                        mask.drawCircle(0, 0, cell.size);
+                        mask.endFill();
+                        sprite.mask = mask;
+                        container.addChild(mask);
+                        container.addChild(sprite);
+                    } catch (e) { }
+                }
+
+                this.cellContainer.addChild(container); // Add to main cell layer? Or separate?
+                // Issues: overlapping live cells. 
+                // Ideally, ghosts are drawn BEFORE live cells. 
+                // We should probably add a ghostContainer to PixiRender.
+            }
+        },
+
         drawFood: function (LM, theme) {
             if (!LM.food) return;
+            // Food batching is efficient, but for "Rainbow Food" we need individual colors.
+            // If rainbowFood is OFF, strict batching works.
+            // If ON, we need to draw distinct colors.
+
+            // Check settings (assuming window.settings or passed settings)
+            // We need to access 'settings.rainbowFood'
+            var rainbow = window.settings && window.settings.rainbowFood;
+
             var g = new PIXI.Graphics();
-            var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
-            g.beginFill(color);
-            for (var j = 0; j < LM.food.length; j++) {
-                var f = LM.food[j];
-                if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
-                if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
-                g.drawCircle(f.x, f.y, f.size);
+
+            if (!rainbow) {
+                var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
+                g.beginFill(color);
+                for (var j = 0; j < LM.food.length; j++) {
+                    var f = LM.food[j];
+                    if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
+                    if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
+                    g.drawCircle(f.x, f.y, f.size);
+                }
+                g.endFill();
+            } else {
+                // Rainbow mode: Draw individual colored circles
+                // This is slower than batching same-color, but necessary for parity.
+                for (var j = 0; j < LM.food.length; j++) {
+                    var f = LM.food[j];
+                    if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
+                    if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
+
+                    var color = f.color ? parseInt(f.color.replace('#', '0x')) : 0xFFFFFF;
+                    g.beginFill(color);
+                    g.drawCircle(f.x, f.y, f.size);
+                    g.endFill();
+                }
             }
-            g.endFill();
             this.foodContainer.addChild(g);
         },
 
