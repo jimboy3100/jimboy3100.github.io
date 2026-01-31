@@ -533,41 +533,68 @@
             // Skins
             if (cell.skinURL && settings.showSkins) {
                 try {
-                    // Check if skin is already cached or load it
-                    // TODO: Implement proper Skin Manager for performance
+                    // Video Skin Support
+                    var isVideo = cell.skinURL.endsWith('.mp4') || cell.skinURL.endsWith('.webm') || (window.application && window.application.customSkinsMap && window.application.customSkinsMap[cell.name] && window.application.customSkinsMap[cell.name].endsWith && (window.application.customSkinsMap[cell.name].endsWith('.mp4')));
 
-                    var sprite = new PIXI.Sprite();
-                    var texture = PIXI.Texture.from(cell.skinURL);
+                    if (isVideo) {
+                        // Create video element if not exists (Pixi handles this via Texture.from)
+                        // But we might need to mute it / loop it.
+                        // For now, let Pixi try auto-detection.
+                        var texture = PIXI.Texture.from(cell.skinURL);
+                        var sprite = new PIXI.Sprite(texture);
 
-                    if (texture.valid) {
-                        sprite.texture = texture;
+                        // Ensure video plays
+                        var source = texture.baseTexture.resource.source;
+                        if (source && source.tagName === 'VIDEO') {
+                            source.loop = true;
+                            source.muted = true;
+                            source.play().catch(e => { });
+                        }
+
+                        sprite.anchor.set(0.5);
+                        sprite.width = cell.size * 2;
+                        sprite.height = cell.size * 2;
+
+                        // Masking
+                        if (!settings.transparentSkins) {
+                            var mask = new PIXI.Graphics();
+                            mask.beginFill(0xFFFFFF);
+                            mask.drawCircle(0, 0, cell.size);
+                            mask.endFill();
+                            sprite.mask = mask;
+                            container.addChild(mask);
+                        }
+                        container.addChild(sprite);
+
                     } else {
-                        // Wait for load
-                        texture.on('update', () => { sprite.texture = texture; });
-                        texture.on('error', () => {
-                            //console.warn("Skin load error:", cell.skinURL);
-                            container.removeChild(sprite); // Remove if failed
-                        });
+                        // Image Skin
+                        var sprite = new PIXI.Sprite();
+                        var texture = PIXI.Texture.from(cell.skinURL);
+
+                        if (texture.valid) {
+                            sprite.texture = texture;
+                        } else {
+                            texture.on('update', () => { sprite.texture = texture; });
+                            texture.on('error', () => { container.removeChild(sprite); });
+                        }
+
+                        sprite.anchor.set(0.5);
+                        sprite.width = cell.size * 2;
+                        sprite.height = cell.size * 2;
+
+                        if (!settings.transparentSkins) {
+                            var mask = new PIXI.Graphics();
+                            mask.beginFill(0xFFFFFF);
+                            mask.drawCircle(0, 0, cell.size);
+                            mask.endFill();
+                            sprite.mask = mask;
+                            container.addChild(mask);
+                        }
+                        container.addChild(sprite);
                     }
-
-                    sprite.anchor.set(0.5);
-                    sprite.width = cell.size * 2;
-                    sprite.height = cell.size * 2;
-
-                    // Masking (Circular skin)
-                    // If skin is not transparent (or user setting), apply mask
-                    if (!settings.transparentSkins) {
-                        var mask = new PIXI.Graphics();
-                        mask.beginFill(0xFFFFFF);
-                        mask.drawCircle(0, 0, cell.size);
-                        mask.endFill();
-                        sprite.mask = mask;
-                        container.addChild(mask);
-                    }
-
-                    container.addChild(sprite);
                 } catch (e) { }
             }
+
 
             // Body
             if (cell.isVirus) {
@@ -609,9 +636,75 @@
             // Special Effects
             this.drawSpecialEffects(container, cell, theme, settings);
 
+            // Chat Messages
+            if (window.application && window.application.chatHistory && window.application.chatHistory.length) {
+                this.drawChat(container, cell, settings);
+            }
+
+
             this.cellContainer.addChild(container);
 
         },
+
+        drawChat: function (container, cell, settings) {
+            if (!window.application || !window.application.chatHistory) return;
+
+            // Look for recent message
+            var customTxt = null;
+            var temp = 0;
+            var chatHistory = window.application.chatHistory;
+            var now = Date.now();
+
+            for (var i = chatHistory.length - 1; i >= 0; i--) {
+                var entry = chatHistory[i];
+                if (entry.nick === cell.name && (now - entry.time < 15000)) {
+                    // Filtering logic from legacy
+                    // ... (simplified for Pixi)
+                    if (entry.nick === window.nick_val || entry.nick === window.application.lastSentNick) {
+                        if (settings.showChatMyOwn) {
+                            customTxt = entry.message;
+                            temp = now - entry.time;
+                            break; // Found recent
+                        }
+                    } else {
+                        customTxt = entry.message;
+                        temp = now - entry.time;
+                        break;
+                    }
+                }
+            }
+
+            if (!customTxt) return;
+
+            var fontSize = Math.max(10, cell.size / 2);
+            var style = new PIXI.TextStyle({
+                fontFamily: 'Ubuntu, Arial',
+                fontSize: fontSize,
+                fill: '#FFFFFF',
+                stroke: '#000000',
+                strokeThickness: 3,
+                wordWrap: true,
+                wordWrapWidth: cell.size * 3,
+                align: 'center'
+            });
+
+            var text = new PIXI.Text(customTxt, style);
+            text.resolution = 2;
+            text.anchor.set(0.5, 1);
+            text.y = -cell.size - 10;
+
+            // Alpha fading
+            if (temp < 2000) {
+                text.alpha = temp / 2000;
+            } else if (temp > 13000) {
+                text.alpha = (15000 - temp) / 2000;
+            } else {
+                text.alpha = 1;
+            }
+
+            container.addChild(text);
+        },
+
 
         drawSpecialEffects: function (container, cell, theme, settings) {
             var effectToCheck = null;
