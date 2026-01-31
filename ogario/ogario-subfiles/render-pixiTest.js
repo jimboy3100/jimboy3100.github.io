@@ -4,34 +4,33 @@
 */
 
 // Initialize Pixi Application
+// Initialize Pixi Application
+// We allow Pixi to create its own view (canvas)
 var app = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: 0x000000,
     antialias: true,
     resolution: window.devicePixelRatio || 1,
-    autoDensity: true,
-    view: document.getElementById('canvas') // We will replace the canvas or use a new one
+    autoDensity: true
 });
 
-// Since we want to disable the old canvas, we should probably append this View to the document
-// and hide the old one. But the user said "uses canvas or pixi.js".
-// If we use the existing canvas ID 'canvas', Pixi can take it over if we pass it in 'view' option.
-// However, the legacy code might still try to getContext('2d') on it.
-// Best approach: Create a NEW canvas for Pixi, overlay it, and hide the old 'canvas'.
-
+// Hide the legacy canvas
 var oldCanvas = document.getElementById('canvas');
 if (oldCanvas) {
     oldCanvas.style.display = 'none';
+    // Optional: We could remove it, but legacy code might query it. 
+    // display:none allows legacy getElementById to work but hides output.
 }
 
+// Append Pixi View to body
 document.body.appendChild(app.view);
 app.view.id = "pixi-canvas";
 app.view.style.position = "absolute";
 app.view.style.top = "0";
 app.view.style.left = "0";
-app.view.style.zIndex = "100"; // Ensure it's on top of background but maybe below UI overlays
-app.view.style.pointerEvents = "none"; // Let clicks pass through to game logic if needed
+app.view.style.zIndex = "100"; // Ensure it's on top
+app.view.style.pointerEvents = "none"; // Pass clicks through
 
 // We need to implement the drawing logic. 
 // We can use the CanvasRender object from the example as a starting point.
