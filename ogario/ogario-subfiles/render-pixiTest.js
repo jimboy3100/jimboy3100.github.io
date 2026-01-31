@@ -8,17 +8,6 @@
         (async function () {
             console.log("%c PixiJS " + PIXI.VERSION + " - " + "Loaded & Starting", "background: #E72264; color: #ffffff");
 
-            // Basic setup: Create Pixi App and overlay canvas
-            const app = new PIXI.Application();
-            await app.init({
-                width: window.innerWidth,
-                height: window.innerHeight,
-                backgroundColor: 0x000000,
-                antialias: true,
-                resolution: window.devicePixelRatio || 1,
-                autoDensity: true
-            });
-
             // Compatibility Shim for Legacy UI/Minimap (allows ogario.js UI to function if legacy renderer is disabled)
             window.drawRender = window.drawRender || {
                 fps: 0,
@@ -92,6 +81,19 @@
                     ctx.stroke();
                 }
             };
+
+            // Basic setup: Create Pixi App and overlay canvas
+            const app = new PIXI.Application();
+            await app.init({
+                width: window.innerWidth,
+                height: window.innerHeight,
+                backgroundColor: 0x000000,
+                antialias: true,
+                resolution: window.devicePixelRatio || 1,
+                autoDensity: true,
+                hello: false, // Disable banner to prevent crash in restricted environments
+                preference: 'webgl' // Prefer WebGL over WebGPU for stability
+            });
 
             var oldCanvas = document.getElementById('canvas');
             if (oldCanvas) {
@@ -220,8 +222,10 @@
 
                 renderFrame: function () {
                     try {
+
                         // Ensure we have the game object
                         if (!window.legendmod) return;
+                        if (!this.container) return; // Wait for async init
                         var LM = window.legendmod;
                         var theme = this.getTheme();
 
