@@ -18,9 +18,10 @@ var app = new PIXI.Application({
 // Hide the legacy canvas
 var oldCanvas = document.getElementById('canvas');
 if (oldCanvas) {
-    oldCanvas.style.display = 'none';
-    // Optional: We could remove it, but legacy code might query it. 
-    // display:none allows legacy getElementById to work but hides output.
+    // We cannot use display: none because the game logic might rely on canvas dimensions (width/height)
+    // which become 0 when display is none.
+    // Instead we just make it invisible.
+    oldCanvas.style.opacity = '0';
 }
 
 // Append Pixi View to body
@@ -66,51 +67,60 @@ var PixiRender = {
     renderFrame: function () {
         // This function will be called by the game loop
 
-        // 1. Update Camera/View
-        if (window.application && window.application.tab && window.application.tab.master) {
-            var activeTab = window.application.tab.master;
-            this.camX = activeTab.viewX;
-            this.camY = activeTab.viewY;
-            // Calculate Scale (simplified)
-            this.scale = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
-            if (activeTab.playerSize) {
-                this.scale *= Math.min(64 / activeTab.playerSize, 1) ** 0.2;
-                // Note: Actual zoom logic is more complex in ogario, reusing what we can.
+        try {
+            // 1. Update Camera/View
+            if (window.application && window.application.tab && window.application.tab.master) {
+                var activeTab = window.application.tab.master;
+                if (activeTab) {
+                    this.camX = activeTab.viewX || 0;
+                    this.camY = activeTab.viewY || 0;
+                    // Calculate Scale (simplified)
+                    this.scale = Math.max(window.innerWidth / 1920, window.innerHeight / 1080);
+                    if (activeTab.playerSize) {
+                        this.scale *= Math.min(64 / activeTab.playerSize, 1) ** 0.2;
+                    }
+                }
+            } else {
+                return; // Not ready
             }
-        }
 
-        this.container.scale.set(this.scale);
-        this.container.position.set(window.innerWidth / 2, window.innerHeight / 2);
-        this.container.pivot.set(this.camX, this.camY);
+            this.container.scale.set(this.scale);
+            this.container.position.set(window.innerWidth / 2, window.innerHeight / 2);
+            this.container.pivot.set(this.camX, this.camY);
 
-        // 2. Draw Grid/Borders (Simplified)
-        this.gridGraphics.clear();
-        this.gridGraphics.lineStyle(50, 0xFFFFFF, 0.5);
-        // Assuming map size roughly... need to get actual map boundaries
-        if (window.application && window.application.tab && window.application.tab.master) {
-            var m = window.application.tab.master;
-            this.gridGraphics.drawRect(m.mapMinX, m.mapMinY, m.mapMaxX - m.mapMinX, m.mapMaxY - m.mapMinY);
-        }
+            // 2. Draw Grid/Borders (Simplified)
+            this.gridGraphics.clear();
+            this.gridGraphics.lineStyle(50, 0xFFFFFF, 0.5);
+            // Assuming map size roughly... need to get actual map boundaries
+            if (window.application && window.application.tab && window.application.tab.master) {
+                var m = window.application.tab.master;
+                if (m && typeof m.mapMinX === 'number') {
+                    this.gridGraphics.drawRect(m.mapMinX, m.mapMinY, m.mapMaxX - m.mapMinX, m.mapMaxY - m.mapMinY);
+                }
+            }
 
-        // 3. Draw Cells
-        // We need to access the cells from the game state.
-        // In ogario, it seems to be application.tabs[i].cells
+            // 3. Draw Cells
+            // We need to access the cells from the game state.
+            // In ogario, it seems to be application.tabs[i].cells
 
-        // Use a simple pool or create/destroy sprites for now (inefficient but works for "precise" starting point)
-        // Optimization comes later.
+            // Use a simple pool or create/destroy sprites for now (inefficient but works for "precise" starting point)
+            // Optimization comes later.
 
-        this.cellContainer.removeChildren(); // clear previous frame
+            this.cellContainer.removeChildren(); // clear previous frame
 
-        if (window.application && window.application.tabs) {
-            for (var i = 0; i < window.application.tabs.length; i++) {
-                var tab = window.application.tabs[i];
-                if (tab && tab.cells) {
-                    for (var j = 0; j < tab.cells.length; j++) {
-                        var cell = tab.cells[j];
-                        this.drawCell(cell);
+            if (window.application && window.application.tabs) {
+                for (var i = 0; i < window.application.tabs.length; i++) {
+                    var tab = window.application.tabs[i];
+                    if (tab && tab.cells) {
+                        for (var j = 0; j < tab.cells.length; j++) {
+                            var cell = tab.cells[j];
+                            if (cell) this.drawCell(cell);
+                        }
                     }
                 }
             }
+        } catch (e) {
+            console.error("PixiRender Error:", e);
         }
     },
 
