@@ -106,6 +106,10 @@
             this.cellContainer = new PIXI.Container();
             this.container.addChild(this.cellContainer);
 
+            this.commanderContainer = new PIXI.Container();
+            this.container.addChild(this.commanderContainer);
+
+
             window.addEventListener('resize', this.resize.bind(this));
         },
 
@@ -141,6 +145,8 @@
                 this.indicatorGraphics.clear();
                 this.foodContainer.removeChildren();
                 this.cellContainer.removeChildren();
+                this.commanderContainer.removeChildren();
+
 
                 // Draw Background Elements
                 if (settings.customBackground) {
@@ -200,8 +206,9 @@
                 // Draw Entities
                 // Food
                 if (settings.showFood && LM.food) {
-                    this.drawFood(LM, theme);
+                    this.drawFood(LM, theme, settings);
                 }
+
 
                 // Ghost Cells
                 if (settings.showGhostCells) {
@@ -411,19 +418,61 @@
         },
 
         drawCommander: function (g, LM, theme, type) {
-            // Placeholder for Commander visuals (rotating images)
-            // Implementing full rotation/animation logic might be overkill for this pass 
-            // unless user explicitly provided assets.
-            // Using simple indicator for now.
+            // Type 1: Spawn Point (Commander 1)
+            // Type 2: Targeting Lead (Commander 2)
 
-            var x = (type === 1) ? (window.ogario && window.ogario.spawnX) : window.targetingLeadX;
-            var y = (type === 1) ? (window.ogario && window.ogario.spawnY) : window.targetingLeadY;
+            var x, y, angle, angle1, images = [];
 
-            if (!x || !y) return;
+            if (type === 1) {
+                if (!window.ogario || !window.ogario.spawnX) return;
+                x = window.ogario.spawnX;
+                y = window.ogario.spawnY;
+                angle = LM.cAngle;
+                angle1 = LM.cAngle1; // Usually negative/inverse
 
-            g.lineStyle(5, 0xFFFF00, 0.8);
-            g.drawCircle(x, y, 50); // Simple indicator
+                // Get Images (Settings or Defaults)
+                var s = window.defaultSettings || {};
+                images.push(s.commanderImage);  // Base
+                images.push(s.commanderImage1); // Mid
+                // images.push(s.commanderImage2); // Top? Legacy draws 3.
+            } else {
+                if (!window.targetingLeadX) return;
+                x = window.targetingLeadX;
+                y = window.targetingLeadY;
+                angle = LM.cAngle; // Reuse? Or cAngle2? Legacy uses same for animation usually
+                angle1 = LM.cAngle1;
+
+                var s = window.defaultSettings || {};
+                images.push(s.commanderImage3);
+                images.push(s.commanderImage4);
+                images.push(s.commanderImage5);
+            }
+
+            if (!x || !y || !LM.cRadius) return;
+
+            // Draw sprites
+            // Ideally we don't create new sprites every frame, but for now we follow the removeChildren/re-add pattern
+            // Optim: Cache textures.
+
+            var rotators = [angle, angle1, angle]; // Rotation for each layer
+
+            for (var i = 0; i < images.length; i++) {
+                if (!images[i]) continue;
+                try {
+                    var sprite = PIXI.Sprite.from(images[i]);
+                    sprite.anchor.set(0.5);
+                    sprite.x = x;
+                    sprite.y = y;
+                    sprite.width = LM.cRadius;
+                    sprite.height = LM.cRadius;
+                    sprite.rotation = rotators[i] || 0;
+                    sprite.alpha = LM.cAlpha || 0.5;
+
+                    this.commanderContainer.addChild(sprite);
+                } catch (e) { }
+            }
         },
+
 
         drawGhostCells: function (LM, theme, settings) {
             if (!LM.ghostCells) return;
@@ -482,15 +531,11 @@
             }
         },
 
-        drawFood: function (LM, theme) {
+        drawFood: function (LM, theme, settings) {
             if (!LM.food) return;
-            // Food batching is efficient, but for "Rainbow Food" we need individual colors.
-            // If rainbowFood is OFF, strict batching works.
-            // If ON, we need to draw distinct colors.
 
-            // Check settings (assuming window.settings or passed settings)
-            // We need to access 'settings.rainbowFood'
-            var rainbow = window.settings && window.settings.rainbowFood;
+            // Check settings (passed from renderFrame)
+            var rainbow = settings && settings.rainbowFood;
 
             var g = new PIXI.Graphics();
 
