@@ -2,9 +2,10 @@
 // Full PixiJS Renderer Implementation for Ogario Test Environment
 // Adapted from ExampleScripts/pixirenderer.js to work standalone with Pixi 7+
 
-(function () {
+(async function () {
     // Basic setup: Create Pixi App and overlay canvas
-    var app = new PIXI.Application({
+    const app = new PIXI.Application();
+    await app.init({
         width: window.innerWidth,
         height: window.innerHeight,
         backgroundColor: 0x000000,
@@ -92,13 +93,13 @@
         oldCanvas.style.opacity = '0'; // Hide legacy canvas but keep layout
     }
 
-    document.body.appendChild(app.view);
-    app.view.id = "pixi-canvas";
-    app.view.style.position = "absolute";
-    app.view.style.top = "0";
-    app.view.style.left = "0";
-    app.view.style.zIndex = "1"; // Lower z-index so HUD (z=11+) stays on top
-    app.view.style.pointerEvents = "none";
+    document.body.appendChild(app.canvas);
+    app.canvas.id = "pixi-canvas";
+    app.canvas.style.position = "absolute";
+    app.canvas.style.top = "0";
+    app.canvas.style.left = "0";
+    app.canvas.style.zIndex = "1"; // Lower z-index so HUD (z=11+) stays on top
+    app.canvas.style.pointerEvents = "none";
 
     // --- Advanced Helpers ---
 
@@ -169,12 +170,15 @@
             this.app.stage.addChild(this.container);
 
             // Generate a shared white circle texture for all cells
-            var g = new PIXI.Graphics();
-            g.beginFill(0xFFFFFF);
-            g.drawCircle(0, 0, 512); // High res circle
-            g.endFill();
-            this.circleTexture = this.app.renderer.generateTexture(g);
-            g.destroy();
+            // Usage: Canvas fallback for robustness across Pixi versions
+            var c = document.createElement('canvas');
+            c.width = 512; c.height = 512;
+            var ctx = c.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(256, 256, 256, 0, Math.PI * 2);
+            ctx.fill();
+            this.circleTexture = PIXI.Texture.from(c);
 
             // Map to store existing cell sprites: ID -> { container, bodySprite, skinSprite, text, massText, ... }
             this.cellsMap = new Map();
@@ -344,7 +348,11 @@
 
         drawGrid: function (g, LM, theme) {
             if (typeof LM.mapMinX !== 'number') return;
-            g.lineStyle(1 / this.scale, parseInt(theme.gridColor.replace('#', '0x')), 0.5);
+            // v8 Syntax: Build path then stroke
+            var color = parseInt(theme.gridColor.replace('#', '0x'));
+            var alpha = 0.5;
+            var width = 1 / this.scale;
+
             for (var x = LM.mapMinX; x <= LM.mapMaxX; x += 50) {
                 g.moveTo(x, LM.mapMinY);
                 g.lineTo(x, LM.mapMaxY);
@@ -353,6 +361,7 @@
                 g.moveTo(LM.mapMinX, y);
                 g.lineTo(LM.mapMaxX, y);
             }
+            g.stroke({ width: width, color: color, alpha: alpha });
         },
 
         drawSectors: function (g, LM, theme, cols, rows) {
@@ -362,7 +371,10 @@
             var secW = w / cols;
             var secH = h / rows;
 
-            g.lineStyle(theme.sectorsWidth || 40, parseInt(theme.sectorsColor.replace('#', '0x')), 0.2);
+            var width = theme.sectorsWidth || 40;
+            var color = parseInt(theme.sectorsColor.replace('#', '0x'));
+            var alpha = 0.2;
+
             for (var i = 1; i < cols; i++) {
                 g.moveTo(LM.mapMinX + i * secW, LM.mapMinY);
                 g.lineTo(LM.mapMinX + i * secW, LM.mapMaxY);
@@ -371,12 +383,17 @@
                 g.moveTo(LM.mapMinX, LM.mapMinY + i * secH);
                 g.lineTo(LM.mapMaxX, LM.mapMinY + i * secH);
             }
+            g.stroke({ width: width, color: color, alpha: alpha });
         },
 
         drawBorders: function (g, LM, theme) {
             if (typeof LM.mapMinX !== 'number') return;
-            g.lineStyle(theme.bordersWidth || 40, parseInt(theme.bordersColor.replace('#', '0x')), 1);
-            g.drawRect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
+            var width = theme.bordersWidth || 40;
+            var color = parseInt(theme.bordersColor.replace('#', '0x'));
+            var alpha = 1;
+
+            g.rect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
+            g.stroke({ width: width, color: color, alpha: alpha });
         },
 
         drawSplitRange: function (g, LM, theme) {
@@ -384,19 +401,26 @@
             if (!players || !players.length) return;
             var current = 0; // Simplified to 0
             if (players[current]) {
-                g.lineStyle(6, parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF), 0.3);
-                g.drawCircle(players[current].x, players[current].y, players[current].size + 760); // 760 is standard split range
+                var width = 6;
+                var color = parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF);
+                var alpha = 0.3;
+                g.circle(players[current].x, players[current].y, players[current].size + 760);
+                g.stroke({ width: width, color: color, alpha: alpha });
             }
         },
 
         drawCursorTracking: function (g, LM, theme) {
             var players = LM.playerCells;
             if (!players || !players.length) return;
-            g.lineStyle(theme.cursorTrackingSize || 5, parseInt(theme.cursorTrackingColor ? theme.cursorTrackingColor.replace('#', '0x') : 0xFFFFFF), 0.3);
+            var width = theme.cursorTrackingSize || 5;
+            var color = parseInt(theme.cursorTrackingColor ? theme.cursorTrackingColor.replace('#', '0x') : 0xFFFFFF);
+            var alpha = 0.3;
+
             for (var i = 0; i < players.length; i++) {
                 g.moveTo(players[i].x, players[i].y);
                 g.lineTo(LM.cursorX, LM.cursorY);
             }
+            g.stroke({ width: width, color: color, alpha: alpha });
         },
 
         drawTeammatesInd: function (g, LM, theme) {
@@ -405,9 +429,6 @@
 
             var color = parseInt((theme.teammatesIndColor || '#FFFFFF').replace('#', '0x'));
 
-            g.beginFill(color);
-            g.lineStyle(1, 0x000000);
-
             for (var i = 0; i < players.length; i++) {
                 var p = players[i];
                 if (!p) continue;
@@ -415,12 +436,10 @@
                 var ty = p.y - p.size - 50;
 
                 // Triangle
-                g.moveTo(tx, ty);
-                g.lineTo(tx - 20, ty - 40);
-                g.lineTo(tx + 20, ty - 40);
-                g.lineTo(tx, ty);
+                g.poly([tx, ty, tx - 20, ty - 40, tx + 20, ty - 40]);
             }
-            g.endFill();
+            g.fill({ color: color });
+            g.stroke({ width: 1, color: 0x000000 });
         },
 
 
@@ -456,13 +475,15 @@
 
             var width = 14 + 2 / this.scale;
             // Helper to draw a set of circles
-            var drawSet = (list, color) => {
+            var drawSet = (list, colorStr) => {
                 if (!list || !list.length) return;
-                g.lineStyle(width, parseInt((color || '#FFFFFF').replace('#', '0x')), 0.75); // 0.75 alpha hardcoded in original
+                var color = parseInt((colorStr || '#FFFFFF').replace('#', '0x'));
+
                 for (var i = 0; i < list.length; i++) {
                     var item = list[i];
-                    g.drawCircle(item.x, item.y, item.size); // Ring around the cell
+                    g.circle(item.x, item.y, item.size); // Ring around the cell
                 }
+                g.stroke({ width: width, color: color, alpha: 0.75 });
             };
 
             // Using simplified colors or from settings
@@ -498,17 +519,14 @@
         drawVirusesRange: function (g, LM, theme, settings) {
             if (!LM.viruses || !LM.viruses.length) return;
             var color = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
-            g.beginFill(color, 0.1);
-            g.lineStyle(0);
+
             for (var i = 0; i < LM.viruses.length; i++) {
                 var v = LM.viruses[i];
                 if (!v.invisible) {
-                    // Start Drawing arc logic from ogarioTest.js
-                    // size + 820
-                    g.drawCircle(v.x, v.y, v.size + 820);
+                    g.circle(v.x, v.y, v.size + 820);
                 }
             }
-            g.endFill();
+            g.fill({ color: color, alpha: 0.1 });
         },
 
         drawWaves: function (g, LM) {
@@ -521,8 +539,8 @@
                     if (alpha <= 0) continue;
 
                     var color = parseInt((wave.color || '#FFFFFF').replace('#', '0x'));
-                    g.lineStyle(10, color, alpha);
-                    g.drawCircle(wave.x, wave.y, r);
+                    g.circle(wave.x, wave.y, r);
+                    g.stroke({ width: 10, color: color, alpha: alpha });
                 }
             }
         },
@@ -532,28 +550,20 @@
             if (!players || !players.length) return;
             var current = 0;
             if (players[current]) {
-                g.lineStyle(2, parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF), 0.3);
-                g.drawCircle(players[current].x, players[current].y, players[current].size + 1520);
+                var width = 2;
+                var color = parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF);
+                var alpha = 0.3;
+                g.circle(players[current].x, players[current].y, players[current].size + 1520);
+                g.stroke({ width: width, color: color, alpha: alpha });
             }
         },
 
         drawBattleArea: function (g, LM, theme) {
-            // Ported from ogarioTest.js logic (drawViewport)
-            // Draws the safe zone boundaries
-            // We need a way to get the safe zone coordinates. 
-            // ogarioTest.js uses LM.mapMinX etc for the VIEWPORT, but for BR it likely uses a specific obj.
-            // Looking at ogarioTest.js: this.drawViewport(ctx, 'Viewport', LM.camMinX...)
-            // But drawBattleArea(ctx) call in ogarioTest.js is empty? No, checking logic.
-            // It calls this.drawBattleArea(this.ctx);
-            // It seems to rely on global/settings?
-
             // Simplified BR Zone (Red Border)
             if (typeof LM.mapMinX !== 'number') return;
-            // Assuming the map boundaries shrink in BR? Or is it a separate overlay?
-            // Usually, mapMinX/MaxX ARE the safe zone.
 
-            g.lineStyle(15, 0xFF0000, 0.5); // Red border
-            g.drawRect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
+            g.rect(LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY);
+            g.stroke({ width: 15, color: 0xFF0000, alpha: 0.5 });
         },
 
         drawCommander: function (g, LM, theme, type) {
@@ -640,10 +650,11 @@
                 // ... (simplified drawCell logic for ghost)
                 var g = new PIXI.Graphics();
                 var color = cell.color ? parseInt(cell.color.replace('#', '0x')) : 0xFFFFFF;
-                g.beginFill(color);
-                g.lineStyle(2, 0x000000);
-                g.drawCircle(0, 0, cell.size);
-                g.endFill();
+
+                g.circle(0, 0, cell.size);
+                g.fill({ color: color });
+                g.stroke({ width: 2, color: 0x000000 });
+
                 container.addChild(g);
 
                 if (cell.skinURL && settings.showSkins) {
@@ -680,26 +691,23 @@
 
             if (!rainbow) {
                 var color = parseInt((theme.foodColor || '#FFFFFF').replace('#', '0x'));
-                g.beginFill(color);
                 for (var j = 0; j < LM.food.length; j++) {
                     var f = LM.food[j];
                     if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                     if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
-                    g.drawCircle(f.x, f.y, f.size);
+                    g.circle(f.x, f.y, f.size);
                 }
-                g.endFill();
+                g.fill({ color: color });
             } else {
                 // Rainbow mode: Draw individual colored circles
-                // This is slower than batching same-color, but necessary for parity.
                 for (var j = 0; j < LM.food.length; j++) {
                     var f = LM.food[j];
                     if (Math.abs(f.x - this.camX) > window.innerWidth / this.scale / 2 + 50) continue;
                     if (Math.abs(f.y - this.camY) > window.innerHeight / this.scale / 2 + 50) continue;
 
                     var color = f.color ? parseInt(f.color.replace('#', '0x')) : 0xFFFFFF;
-                    g.beginFill(color);
-                    g.drawCircle(f.x, f.y, f.size);
-                    g.endFill();
+                    g.circle(f.x, f.y, f.size);
+                    g.fill({ color: color });
                 }
             }
             this.foodContainer.addChild(g);
@@ -821,8 +829,8 @@
                     }
                 }
 
-                d.virusG.lineStyle(vStrokeSize, vStrokeColor);
-                d.virusG.beginFill(vColor, theme.virusAlpha || 0.6);
+                // d.virusG.lineStyle(vStrokeSize, vStrokeColor);
+                // d.virusG.beginFill(vColor, theme.virusAlpha || 0.6);
                 var points = 20;
                 var outer = cell.size;
                 var inner = cell.size * 0.9;
@@ -833,6 +841,9 @@
                     d.virusG.lineTo(r * Math.cos(angle), r * Math.sin(angle));
                 }
                 d.virusG.closePath();
+
+                d.virusG.fill({ color: vColor, alpha: theme.virusAlpha || 0.6 });
+                d.virusG.stroke({ width: vStrokeSize, color: vStrokeColor });
             } else {
                 if (d.virusG) d.virusG.visible = false;
                 d.body.visible = true;
