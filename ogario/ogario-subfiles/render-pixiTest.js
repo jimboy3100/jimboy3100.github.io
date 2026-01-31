@@ -141,8 +141,16 @@
                 this.cellContainer.removeChildren();
 
                 // Draw Background Elements
+                if (settings.customBackground) {
+                    this.drawCustomBackgrounds(LM, settings);
+                }
+
                 if (settings.showGrid) {
-                    this.drawGrid(this.gridGraphics, LM, theme);
+                    if (settings.showOptimisedGrid) {
+                        this.drawCustomNewGrid(LM, settings); // Image-based grid
+                    } else {
+                        this.drawGrid(this.gridGraphics, LM, theme); // Line-based grid
+                    }
                 }
                 if (settings.showBgSectors) {
                     this.drawSectors(this.gridGraphics, LM, theme, 5, 5);
@@ -151,12 +159,27 @@
                     this.drawBorders(this.gridGraphics, LM, theme);
                 }
 
+                if (settings.virusesRange && LM.viruses) {
+                    this.drawVirusesRange(this.gridGraphics, LM, theme, settings);
+                }
+
                 // Draw Indicators (Before cells)
                 if (settings.splitRange && LM.playerCells) {
                     this.drawSplitRange(this.indicatorGraphics, LM, theme);
+                    // Double split range
+                    this.drawDoubleSplitRange(this.indicatorGraphics, LM, theme);
+                }
+
+                if (settings.oppRings && !settings.bubbleInd) {
+                    this.drawOppRings(this.indicatorGraphics, LM, theme, settings);
                 }
                 if (settings.cursorTracking && LM.playerCells) {
                     this.drawCursorTracking(this.indicatorGraphics, LM, theme);
+                }
+
+                // Waves (Shockwaves)
+                if (LM.Waves && LM.Waves.length) {
+                    this.drawWaves(this.indicatorGraphics, LM);
                 }
 
                 // Draw Entities
@@ -249,6 +272,118 @@
                 g.drawCircle(ghost.x, ghost.y, ghost.size);
             }
             g.endFill();
+        },
+
+        drawCustomBackgrounds: function (LM, settings) {
+            if (!this.backgroundSprite && settings.customBackground) {
+                this.backgroundSprite = PIXI.Sprite.from(settings.customBackground);
+                this.backgroundSprite.anchor.set(0);
+                this.container.addChildAt(this.backgroundSprite, 0); // Add to bottom
+            }
+
+            if (this.backgroundSprite) {
+                if (this.backgroundSprite.texture.baseTexture.valid) {
+                    // Scaling logic from ogarioTest.js
+                    var minX = this.camX - window.innerWidth / (2 * this.scale);
+                    var maxX = this.camX + window.innerWidth / (2 * this.scale);
+                    var minY = this.camY - window.innerHeight / (2 * this.scale);
+                    var maxY = this.camY + window.innerHeight / (2 * this.scale);
+
+                    // Simply fit map for now, logic in original is complex tiling/positioning
+                    this.backgroundSprite.x = LM.mapMinX;
+                    this.backgroundSprite.y = LM.mapMinY;
+                    this.backgroundSprite.width = LM.mapMaxX - LM.mapMinX;
+                    this.backgroundSprite.height = LM.mapMaxY - LM.mapMinY;
+                    this.backgroundSprite.alpha = settings.backgroundAlpha || 1;
+                }
+            }
+        },
+
+        drawOppRings: function (g, LM, theme, settings) {
+            // Arrays from LM logic: biggerSTEDCellsCache, biggerSTECellsCache, etc.
+            // Colors from defaultSettings/settings
+
+            var width = 14 + 2 / this.scale;
+            // Helper to draw a set of circles
+            var drawSet = (list, color) => {
+                if (!list || !list.length) return;
+                g.lineStyle(width, parseInt((color || '#FFFFFF').replace('#', '0x')), 0.75); // 0.75 alpha hardcoded in original
+                for (var i = 0; i < list.length; i++) {
+                    var item = list[i];
+                    g.drawCircle(item.x, item.y, item.size); // Ring around the cell
+                }
+            };
+
+            // Using simplified colors or from settings
+            drawSet(LM.biggerSTEDCellsCache, settings.enemyBSTEDColor);
+            drawSet(LM.biggerSTECellsCache, settings.enemyBSTEColor);
+            drawSet(LM.biggerCellsCache, settings.enemyBColor);
+            drawSet(LM.smallerCellsCache, settings.enemySColor);
+            drawSet(LM.STECellsCache, settings.enemySSTEColor);
+            drawSet(LM.STEDCellsCache, settings.enemySSTEDColor);
+        },
+
+        drawCustomNewGrid: function (LM, settings) {
+            if (!this.gridSprite) {
+                // Use the URL from ogarioTest.js
+                this.gridSprite = PIXI.Sprite.from("https://www.legendmod.ml/banners/grid3.png");
+                this.gridSprite.anchor.set(0);
+                // Insert after background (index 1 if bg exists, else 0)
+                var idx = this.backgroundSprite ? 1 : 0;
+                this.container.addChildAt(this.gridSprite, idx);
+            }
+
+            if (this.gridSprite && this.gridSprite.texture.baseTexture.valid) {
+                // Map the grid image to the map bounds logic
+                // Original logic suggests the grid image corresponds to the map size
+                this.gridSprite.x = LM.mapMinX;
+                this.gridSprite.y = LM.mapMinY;
+                this.gridSprite.width = LM.mapMaxX - LM.mapMinX;
+                this.gridSprite.height = LM.mapMaxY - LM.mapMinY;
+                this.gridSprite.alpha = 0.5; // Visual tweak
+            }
+        },
+
+        drawVirusesRange: function (g, LM, theme, settings) {
+            if (!LM.viruses || !LM.viruses.length) return;
+            var color = parseInt((theme.virusColor || '#33FF33').replace('#', '0x'));
+            g.beginFill(color, 0.1);
+            g.lineStyle(0);
+            for (var i = 0; i < LM.viruses.length; i++) {
+                var v = LM.viruses[i];
+                if (!v.invisible) {
+                    // Start Drawing arc logic from ogarioTest.js
+                    // size + 820
+                    g.drawCircle(v.x, v.y, v.size + 820);
+                }
+            }
+            g.endFill();
+        },
+
+        drawWaves: function (g, LM) {
+            if (!LM.Waves) return;
+            for (var i = 0; i < LM.Waves.length; i++) {
+                var wave = LM.Waves[i];
+                var r = (Date.now() - wave.time) / 2;
+                if (r > 0) {
+                    var alpha = Math.max(0, 1 - r / 1500); // 1.5s fade
+                    if (alpha <= 0) continue;
+
+                    var color = parseInt((wave.color || '#FFFFFF').replace('#', '0x'));
+                    g.lineStyle(10, color, alpha);
+                    g.drawCircle(wave.x, wave.y, r);
+                }
+            }
+        },
+
+        drawDoubleSplitRange: function (g, LM, theme) {
+            var players = LM.playerCells;
+            if (!players || !players.length) return;
+            var current = 0;
+            if (players[current]) {
+                g.lineStyle(2, parseInt(theme.splitRangeColor ? theme.splitRangeColor.replace('#', '0x') : 0xFFFFFF), 0.3);
+                g.drawCircle(players[current].x, players[current].y, players[current].size + 1520);
+            }
         },
 
         drawFood: function (LM, theme) {
