@@ -5235,6 +5235,7 @@ function initializeLM(modVersion) {
         '<option value="3" data-itr="">Spanish - Espanol</option>' +
         '<option value="7" data-itr="">Trad. Chinese</option>' +
         '<option value="10" data-itr="">Turkish - Turk</option>' +
+        '<option value="12" data-itr="">Dutch</option>' +
         '</select></div>' +
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">Discord Webhook Url (for sending TOKEN)  </span>' +
         '<input id="discwebhook1" class="form-control" placeholder="Discord Webhook 1 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Must be filled for function to work. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
