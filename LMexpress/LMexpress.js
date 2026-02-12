@@ -3967,6 +3967,9 @@ function changeModLanguage() {
     else if ($("#legendlanguages").val() == 11) {
 		languageinjector("https://www.legendmod.ml/LanguagePackPolish.js");	
     }
+    else if ($("#legendlanguages").val() == 12) {
+        languageinjector("https://www.legendmod.ml/LanguagePackDutch.js");
+    }
 }
 
 function injector2(url1, url2){
