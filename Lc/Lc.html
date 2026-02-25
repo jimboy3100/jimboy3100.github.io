@@ -494,6 +494,18 @@
 		.gallery-lightbox.active img {
 			transform: scale(1);
 		}
+
+		.gallery-item {
+			transition: transform 0.3s var(--ease), filter 0.3s var(--ease), box-shadow 0.3s var(--ease);
+			cursor: zoom-in;
+		}
+
+		.gallery-item:hover {
+			transform: scale(1.03) translateY(-4px);
+			filter: brightness(1.1);
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+			border-color: var(--accent-light) !important;
+		}
 	</style>
 	<title>Legend Clan | Legend Mod Project</title>
 	<link type="image/x-icon" rel="shortcut icon" href="https://jimboy3100.github.io/banners/iconLc32.png">
@@ -1102,13 +1114,13 @@
 			<div class="gallery-grid"
 				style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 32px;">
 				<img src="https://jimboy3100.github.io/banners/Lcclan5.gif" class="gallery-item"
-					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: zoom-in;">
+					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border);">
 				<img src="https://jimboy3100.github.io/banners/Lcclan6.png" class="gallery-item"
-					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: zoom-in;">
+					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border);">
 				<img src="https://jimboy3100.github.io/banners/Lcclan7.png" class="gallery-item"
-					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: zoom-in;">
+					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border);">
 				<img src="https://jimboy3100.github.io/banners/Lcclan8.png" class="gallery-item"
-					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border); cursor: zoom-in;">
+					style="width: 100%; border-radius: var(--radius-sm); border: 2px solid var(--border);">
 			</div>
 		</section>
 	</div>
@@ -1329,7 +1341,7 @@
 		});
 
 		// Gallery Image Viewer Logic
-		$(document).on('contextmenu', '.gallery-item', function (e) {
+		$(document).on('click', '.gallery-item', function (e) {
 			e.preventDefault();
 			const imgSrc = $(this).attr('src');
 			const lightbox = document.getElementById('gallery-lightbox');
