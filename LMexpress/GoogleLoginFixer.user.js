@@ -246,7 +246,7 @@
         // Create container for real GIS-rendered button
         var btnDiv = document.createElement('div');
         btnDiv.id = 'lf-google-btn';
-        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;transform:scale(0.7);transform-origin:left center;margin:0;vertical-align:middle;';
+        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;margin:0 2px;vertical-align:middle;overflow:hidden;';
 
         // Insert where original was
         if (origBtn && origBtn.parentElement) {
@@ -255,10 +255,9 @@
             document.body.appendChild(btnDiv);
         }
 
-        // Render REAL Google sign-in button (same as v6.0 — this actually works)
+        // Render REAL Google sign-in button — icon type = small square, fits next to FB
         google.accounts.id.renderButton(btnDiv, {
-            theme: 'filled_blue', size: 'medium', shape: 'rectangular',
-            text: 'signin_with', width: 150
+            type: 'icon', theme: 'filled_blue', size: 'medium', shape: 'rectangular'
         });
 
         // Restyle Facebook button to match Google button look
