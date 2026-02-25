@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      1.4
-// @description  Fixes Google Login 400 errors for Agar.io mods by bridging login through the root domain.
+// @version      1.5
+// @description  Fixes Google Login 400 errors for Agar.io mods by fixing CSP and bridging login through the root domain.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @match        https://deltio.pages.dev/*
@@ -12,26 +12,80 @@
 
 /* 
 ---------------------------------------------------------------------------------------------------
-TECHNICAL DIAGNOSIS & REPAIR (v1.4):
+TECHNICAL DIAGNOSIS & REPAIR (v1.5):
 
-1. THE COOP PROBLEM:
-   Agar.io uses "Cross-Origin-Opener-Policy: same-origin". This prevents a window on 
-   deltio.pages.dev from talking to a window on agar.io. Browser security blocks the link.
+1. THE CSP PROBLEM:
+   Delta Mod's page sets a Content Security Policy that only allows:
+     script-src 'unsafe-inline' 'unsafe-eval' blob: data:
+   This BLOCKS Google's login SDK from loading because it lives on:
+     https://www.gstatic.com/_/mss/boq-identity/...
+     https://accounts.google.com/...
+   Without these scripts, Google Login cannot function at all.
 
-2. THE "DUAL LOGIN" PROBLEM:
-   Delta Mod and this fixer script were both trying to click login at the same time. 
-   The Fixer was opening a good login, but Delta was opening a bad one (causing the 400 error).
+2. THE FIX - CSP NEUTRALIZER:
+   This script runs at document-start (before anything else loads) and:
+   a) Removes all <meta> CSP tags from the page
+   b) Watches for dynamically injected CSP tags and removes them instantly
+   c) Allows Google's identity scripts from gstatic.com and accounts.google.com to load
 
-3. THE v1.4 SOLUTION (STEALTH BRIDGE): 
-   - We now INTERCEPT the browser's "window.open" function. If any mod tries to open Google, 
-     we stop them and redirect the request through our secure agar.io bridge instead.
-   - We use "noopener" to satisfy COOP security, ensuring the browser doesn't block the bridge.
-   - We use a cleaner "Sync Bounce" that works even with the strictest browser settings.
+3. THE BRIDGE (unchanged from v1.4):
+   If the login still fails due to redirect_uri mismatch, the bridge opens 
+   a clean agar.io window for authentication and syncs the token back.
 ---------------------------------------------------------------------------------------------------
 -*/
 
 (function () {
     'use strict';
+
+    // =====================================================================
+    // PHASE 0: CSP NEUTRALIZER (Runs immediately at document-start)
+    // This MUST run before any other code to allow Google scripts to load.
+    // =====================================================================
+
+    function stripCSP() {
+        // Remove all existing CSP meta tags
+        const cspTags = document.querySelectorAll('meta[http-equiv="Content-Security-Policy"], meta[http-equiv="Content-Security-Policy-Report-Only"]');
+        cspTags.forEach(tag => {
+            console.log('[Login Fixer] Removed CSP meta tag:', tag.getAttribute('content'));
+            tag.remove();
+        });
+    }
+
+    // Run immediately
+    stripCSP();
+
+    // Watch for dynamically added CSP meta tags and remove them instantly
+    const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (node.nodeType === 1) { // Element node
+                    // Check if the added node itself is a CSP meta tag
+                    if (node.tagName === 'META' &&
+                        (node.httpEquiv === 'Content-Security-Policy' || node.httpEquiv === 'Content-Security-Policy-Report-Only')) {
+                        console.log('[Login Fixer] Blocked dynamic CSP injection:', node.content);
+                        node.remove();
+                    }
+                    // Check children (e.g. if a <head> fragment is inserted)
+                    const innerCSP = node.querySelectorAll ? node.querySelectorAll('meta[http-equiv="Content-Security-Policy"], meta[http-equiv="Content-Security-Policy-Report-Only"]') : [];
+                    innerCSP.forEach(tag => {
+                        console.log('[Login Fixer] Blocked nested CSP injection:', tag.content);
+                        tag.remove();
+                    });
+                }
+            }
+        }
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Stop observing after 10 seconds (CSP tags are always added early)
+    setTimeout(() => observer.disconnect(), 10000);
+
+    console.log('[Login Fixer] CSP Neutralizer Active.');
+
+    // =====================================================================
+    // PHASE 1-3: LOGIN BRIDGE LOGIC (same as v1.4)
+    // =====================================================================
 
     const ORIGIN = "https://agar.io";
     const urlParams = new URLSearchParams(window.location.search);
