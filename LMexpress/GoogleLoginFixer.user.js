@@ -1,13 +1,39 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      1.0
+// @version      1.1
 // @description  Fixes Google Login 400 errors for Agar.io mods by bridging login through the root domain.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
+
+/* 
+---------------------------------------------------------------------------------------------------
+TECHNICAL DIAGNOSIS: Why the "Google 400 Bad Request" occurs in mods (like Delta):
+
+1. ORIGIN MISMATCH: 
+   Google's OAuth 2.0 security protocol is extremely strict. It checks the "Origin" of the 
+   login request. The official Agar.io app is only authorized to login from "https://agar.io/".
+   If a mod moves the user to a sub-path (like agar.io/delta or agar.io/legendmod) and 
+   tries to login from there, Google sees the path mismatch and kills the request with a 400 error.
+
+2. REGISTERED REDIRECT URIs:
+   Agar.io has specific "Authorized redirect URIs" saved in their Google Developer Console.
+   If a script tries to return the user to a path that isn't on that list, Google blocks it.
+
+3. RECENT SECURITY UPDATES:
+   Google recently restricted "cross-origin" and "iframe-based" logins even further. 
+   Mods that worked for years by "masking" the URL or using helper frames are now failing 
+   because Google's servers now detect and block these unauthorized login environments.
+
+THE FIX:
+   This script fixes the issue by forcing the login to occur on the absolute ROOT domain 
+   (https://agar.io/) which Google trusts. Once the login is successful on the root, 
+   this script captures the token and "bridges" it back to the mod path automatically.
+---------------------------------------------------------------------------------------------------
+-*/
 
 (function () {
     'use strict';
