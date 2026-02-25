@@ -201,18 +201,46 @@
     }
 
     // ── v6.1 DESIGN CHANGE: hide original Google btn, put real GIS btn in its place ──
+    var _origHidden = false;
+
+    function findOriginalGoogleButton() {
+        // Method 1: look for .fa-google icon
+        var icons = document.querySelectorAll('.fa-google');
+        for (var i = 0; i < icons.length; i++) {
+            if (icons[i].closest('#lf-google-btn')) continue;
+            var el = icons[i];
+            while (el && (!el.classList || !el.classList.contains('btn-colored'))) el = el.parentElement;
+            if (el) return el;
+        }
+        // Method 2: look for btn-colored buttons — the Google one is typically the 2nd
+        var btns = document.querySelectorAll('.btn-colored.size-small');
+        for (var j = 0; j < btns.length; j++) {
+            var txt = btns[j].textContent.trim();
+            // Google button contains "G" or "google" (not "f" for Facebook)
+            if (txt === 'G' || txt.toLowerCase().indexOf('google') >= 0) return btns[j];
+        }
+        // Method 3: if there are exactly 2 btn-colored.size-small, second is Google
+        if (btns.length >= 2) return btns[1];
+        return null;
+    }
+
+    function hideOriginalGoogleButton() {
+        if (_origHidden) return;
+        var btn = findOriginalGoogleButton();
+        if (btn) {
+            btn.style.display = 'none';
+            _origHidden = true;
+            LOG('Original Google button hidden.');
+        }
+    }
+
     function showGISButton() {
         if (document.getElementById('lf-google-btn')) return;
 
-        // Find and hide original Google button (btn-colored with fa-google)
-        var origBtn = null;
-        var icons = document.querySelectorAll('.fa-google');
-        for (var i = 0; i < icons.length; i++) {
-            var el = icons[i];
-            while (el && (!el.classList || !el.classList.contains('btn-colored'))) {
-                el = el.parentElement;
-            }
-            if (el) { origBtn = el; el.style.display = 'none'; break; }
+        var origBtn = findOriginalGoogleButton();
+        if (origBtn) {
+            origBtn.style.display = 'none';
+            _origHidden = true;
         }
 
         // Create container for real GIS-rendered button
@@ -378,6 +406,13 @@
 
             // 3. Watch for reconnects
             watchForReconnects();
+
+            // 4. Keep trying to hide original Google button (it may render late)
+            var hideCheck = setInterval(function () {
+                if (_origHidden) { clearInterval(hideCheck); return; }
+                hideOriginalGoogleButton();
+            }, 500);
+            setTimeout(function () { clearInterval(hideCheck); }, 60000);
 
         }, 100);
         setTimeout(function () { clearInterval(bodyCheck); }, 30000);
