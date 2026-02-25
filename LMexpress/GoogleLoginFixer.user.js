@@ -200,7 +200,7 @@
         });
     }
 
-    // ── v6.1 DESIGN CHANGE: hide original Google btn, put smaller GIS btn in its place ──
+    // ── v6.1 DESIGN CHANGE: hide original Google btn, put real GIS btn in its place ──
     function showGISButton() {
         if (document.getElementById('lf-google-btn')) return;
 
@@ -215,25 +215,23 @@
             if (el) { origBtn = el; el.style.display = 'none'; break; }
         }
 
-        // Create small replacement button
-        var btn = document.createElement('button');
-        btn.id = 'lf-google-btn';
-        btn.innerHTML = '<i class="fa fa-google"></i>';
-        btn.style.cssText = 'display:inline-block;padding:4px 10px;font-size:12px;cursor:pointer;border:1px solid transparent;border-radius:4px;color:#fff;background-color:#dd4b39;border-color:#d43f2c;margin:2px;vertical-align:middle;position:relative;z-index:9999;pointer-events:auto;';
-        btn.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (_token) { deliverToken(); } else { initGIS(); }
-        };
+        // Create container for real GIS-rendered button
+        var btnDiv = document.createElement('div');
+        btnDiv.id = 'lf-google-btn';
+        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;transform:scale(0.7);transform-origin:left center;margin:0;';
 
         // Insert where original was
         if (origBtn && origBtn.parentElement) {
-            origBtn.parentElement.insertBefore(btn, origBtn);
+            origBtn.parentElement.insertBefore(btnDiv, origBtn);
         } else {
-            // Fallback: find flex-col w-1/2 container or body
-            var container = document.querySelector('.flex.flex-col.w-1\\/2');
-            if (container) { container.appendChild(btn); } else { document.body.appendChild(btn); }
+            document.body.appendChild(btnDiv);
         }
+
+        // Render REAL Google sign-in button (same as v6.0 — this actually works)
+        google.accounts.id.renderButton(btnDiv, {
+            theme: 'filled_blue', size: 'medium', shape: 'rectangular',
+            text: 'signin_with', width: 150
+        });
         LOG('GIS button placed.');
     }
 
