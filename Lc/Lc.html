@@ -102,6 +102,7 @@
 			height: auto !important;
 			padding: 10px 0;
 			box-shadow: var(--shadow-xs);
+			transition: background-color 0.4s var(--ease), border-color 0.4s var(--ease);
 		}
 
 		.dark-theme #navbar {
@@ -206,7 +207,7 @@
 			background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg) 100%) !important;
 			padding: 3rem 1.5rem !important;
 			border-radius: 0 0 24px 24px;
-			transition: background 0.4s var(--ease);
+			transition: background 0.4s var(--ease), border-color 0.4s var(--ease);
 		}
 
 		.hero-banner-lc {
@@ -236,6 +237,7 @@
 			max-width: var(--max-w) !important;
 			backdrop-filter: blur(12px);
 			-webkit-backdrop-filter: blur(12px);
+			transition: background-color 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
 		}
 
 		/* Lore Boxes */
@@ -1360,7 +1362,7 @@
 
 		$(document).ready(function () {
 			$('#theme-toggle').on('click', function () {
-				const isDark = document.body.classList.toggle('dark-theme');
+				const isDark = document.documentElement.classList.toggle('dark-theme');
 				localStorage.setItem('theme', isDark ? 'dark' : 'light');
 			});
 		});
