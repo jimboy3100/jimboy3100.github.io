@@ -171,8 +171,21 @@
         background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdfa 100%) !important;
         padding: 2rem 1.5rem !important; border-radius: 0 0 24px 24px;
     }
+
+    /* HERO BANNER — full width, visible iframe */
+    body > section:first-of-type {
+        max-width: 100% !important; padding: 0 !important;
+    }
+    body > section:first-of-type > section {
+        max-width: 100% !important; padding: 20px !important;
+    }
+    #animatedpromosIframe4 {
+        min-height: 200px; border: none !important;
+        border-radius: var(--radius) !important;
+        box-shadow: var(--shadow-lg);
+    }
     iframe.result-iframe { border-radius: var(--radius) !important;
-        box-shadow: var(--shadow-lg); border: 1px solid var(--border) !important; }
+        box-shadow: var(--shadow-lg); border: none !important; }
 
     /* SECTIONS — glass cards */
     section { max-width: var(--max-w) !important; margin: 0 auto !important;
@@ -199,9 +212,27 @@
         border-bottom: 2px solid var(--bg-subtle); letter-spacing: -0.01em;
     }
 
+    /* STEP BADGES — numbered rounded squares */
+    .skins-wrapper h2.project-tagline,
+    .skins-wrapper h3.project-tagline {
+        font-size: 1.15rem !important; font-weight: 700 !important;
+        display: flex; align-items: center; gap: 12px;
+        border-bottom: 2px solid var(--bg-subtle);
+        border-image: none;
+    }
+
+    /* Step number badges */
+    .step-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 36px; height: 36px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), #9333ea);
+        color: #fff !important; font-weight: 800; font-size: 1rem;
+        flex-shrink: 0; box-shadow: 0 2px 8px rgba(124,58,237,0.3);
+        letter-spacing: 0;
+    }
+
     /* IFRAMES */
-    iframe { max-width: 100% !important; border-radius: var(--radius-sm) !important;
-        border: 1px solid var(--border) !important; }
+    iframe { max-width: 100% !important; border-radius: var(--radius-sm) !important; }
     #animatedpromosIframe4, #customskinsIframe2 {
         border-radius: var(--radius) !important; box-shadow: var(--shadow-md); }
 
@@ -1090,6 +1121,15 @@
         });
     </script>
     <script>
+        // Inject step badges into "Step N" headings
+        $('h2.project-tagline, h3.project-tagline').each(function() {
+            var txt = $(this).text().trim();
+            var m = txt.match(/^Step\s+(\d+)/i);
+            if (m) {
+                var rest = $(this).html().replace(/Step\s+\d+[,:]?\s*/i, '');
+                $(this).html('<span class="step-badge">' + m[1] + '</span>' + rest);
+            }
+        });
         // Inject footer
         $('body').append('<div class="lm-footer">© 2026 Legend Mod Project · <a href="https://github.com/jimboy3100" target="_blank">GitHub</a> · <a href="https://jimboy3100.github.io/privacy.html">Privacy Policy</a></div>');
     </script>
