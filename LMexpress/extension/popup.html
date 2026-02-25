@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Legend Express</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .header img {
+            width: 48px;
+            height: 48px;
+            margin-right: 12px;
+            border-radius: 8px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
+            color: #00ffcc;
+        }
+
+        .description {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #cccccc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .links {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .link-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .link-button:hover {
+            background-color: #444;
+            color: #00ffcc;
+        }
+
+        .footer {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="icon48.png" alt="Legend Express Logo">
+        <h1>Legend Express</h1>
+    </div>
+    <div class="description">
+        Legend Express is a powerful extension for Agar.io, featuring Legend, Ogario, Kitty, and many advanced macros
+        and hotkeys for the ultimate gaming experience.
+    </div>
+    <div class="links">
+        <button id="website" class="link-button">Legend Mod Website</button>
+        <button id="library" class="link-button">Mod Library (GitHub)</button>
+        <button id="donate" class="link-button">Buy me a beer 🍺</button>
+    </div>
+    <div class="footer">
+        Created by Jimboy3100
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
