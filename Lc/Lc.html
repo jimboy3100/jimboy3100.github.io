@@ -21,48 +21,50 @@
 
 	<style>
 		:root {
-			--accent: #7c3aed;
-			--accent-light: #a78bfa;
-			--accent-dark: #5b21b6;
-			--accent-glow: rgba(124, 58, 237, 0.15);
-			--teal: #14b8a6;
+			--accent: #8b5cf6;
+			--accent-light: #c4b5fd;
+			--accent-dark: #6d28d9;
+			--accent-rgb: 139, 92, 246;
+			--accent-glow: rgba(139, 92, 246, 0.15);
+			--teal: #06b6d4;
 			--bg: #ffffff;
-			--bg-subtle: #f8fafc;
-			--bg-card: rgba(255, 255, 255, 0.7);
+			--bg-subtle: #fbfbfe;
+			--bg-card: rgba(255, 255, 255, 0.72);
 			--text: #0f172a;
 			--text-secondary: #334155;
 			--text-muted: #64748b;
-			--border: rgba(0, 0, 0, 0.06);
-			--border-strong: rgba(0, 0, 0, 0.10);
+			--border: rgba(0, 0, 0, 0.05);
+			--border-strong: rgba(0, 0, 0, 0.08);
 			--glass-bg: rgba(255, 255, 255, 0.6);
 			--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
 			--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-			--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-			--shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08);
-			--shadow-glow: 0 0 20px rgba(124, 58, 237, 0.12);
-			--radius: 14px;
-			--radius-sm: 10px;
-			--radius-xs: 6px;
-			--max-w: 880px;
+			--shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+			--shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+			--shadow-glow: 0 0 20px rgba(139, 92, 246, 0.1);
+			--radius: 20px;
+			--radius-lg: 24px;
+			--radius-sm: 12px;
+			--radius-xs: 8px;
+			--max-w: 1000px;
 			--font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 			--ease: cubic-bezier(0.4, 0, 0.2, 1);
 		}
 
 		.dark-theme {
-			--bg: #0f172a;
-			--bg-subtle: #1e293b;
-			--bg-card: rgba(30, 41, 59, 0.7);
-			--text: #f8fafc;
-			--text-secondary: #cbd5e1;
-			--text-muted: #94a3b8;
-			--border: rgba(255, 255, 255, 0.08);
-			--border-strong: rgba(255, 255, 255, 0.15);
-			--glass-bg: rgba(15, 23, 42, 0.65);
-			--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-			--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-			--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-			--shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
-			--shadow-glow: 0 0 20px rgba(124, 58, 237, 0.2);
+			--bg: #0b0f1a;
+			--bg-subtle: #131722;
+			--bg-card: rgba(22, 27, 42, 0.75);
+			--text: #f1f5f9;
+			--text-secondary: #94a3b8;
+			--text-muted: #64748b;
+			--border: rgba(255, 255, 255, 0.06);
+			--border-strong: rgba(255, 255, 255, 0.12);
+			--glass-bg: rgba(11, 15, 26, 0.8);
+			--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+			--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
+			--shadow-md: 0 12px 20px rgba(0, 0, 0, 0.5);
+			--shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+			--shadow-glow: 0 0 25px rgba(139, 92, 246, 0.2);
 		}
 
 		html {
@@ -95,26 +97,35 @@
 			position: sticky !important;
 			top: 0;
 			z-index: 1000;
-			background: rgba(255, 255, 255, 0.78) !important;
-			backdrop-filter: blur(20px) saturate(180%);
-			-webkit-backdrop-filter: blur(20px) saturate(180%);
+			background: rgba(255, 255, 255, 0.6) !important;
+			backdrop-filter: blur(24px) saturate(180%);
+			-webkit-backdrop-filter: blur(24px) saturate(180%);
 			border-bottom: 1px solid var(--border);
 			height: auto !important;
-			padding: 10px 0;
-			box-shadow: var(--shadow-xs);
+			padding: 12px 0;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 		}
 
 		.dark-theme #navbar {
-			background: rgba(15, 23, 42, 0.78) !important;
+			background: rgba(11, 15, 26, 0.6) !important;
 		}
 
 		#nav {
+			position: relative;
 			max-width: var(--max-w);
 			margin: 0 auto;
-			overflow-x: auto !important;
-			overflow-y: hidden;
-			-webkit-overflow-scrolling: touch;
-			scrollbar-width: none;
+			padding: 0 20px;
+		}
+
+		#nav-indicator {
+			position: absolute;
+			height: 38px;
+			background: linear-gradient(135deg, var(--accent), #9333ea);
+			border-radius: var(--radius-sm);
+			transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+			z-index: -1;
+			opacity: 0;
+			box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
 		}
 
 		#nav ul {
@@ -139,30 +150,27 @@
 		#nav a {
 			font-family: var(--font) !important;
 			font-size: 0.82rem !important;
-			font-weight: 600 !important;
-			letter-spacing: 0.02em;
+			font-weight: 700 !important;
+			letter-spacing: 0.05em;
 			text-transform: uppercase;
 			color: var(--text-muted) !important;
 			border: none !important;
 			border-radius: var(--radius-sm) !important;
-			padding: 9px 18px !important;
+			padding: 10px 20px !important;
 			margin: 0 !important;
-			transition: all 0.25s var(--ease) !important;
+			transition: color 0.3s ease !important;
 			display: block;
 			opacity: 1 !important;
 		}
 
 		#nav a:hover {
-			color: var(--accent) !important;
-			background: rgba(124, 58, 237, 0.06) !important;
+			color: var(--text) !important;
 		}
 
 		#nav .active,
 		#nav a.active {
 			color: #fff !important;
-			background: linear-gradient(135deg, var(--accent), #9333ea) !important;
 			border: none !important;
-			box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
 		}
 
 		/* THEME TOGGLE */
@@ -229,13 +237,65 @@
 		.skins-wrapper>section {
 			background: var(--bg-card) !important;
 			border: 1px solid var(--border);
-			border-radius: var(--radius);
-			margin: 32px auto !important;
+			border-radius: var(--radius-lg);
+			margin: 40px auto !important;
 			box-shadow: var(--shadow-sm);
-			padding: 40px !important;
+			padding: 48px !important;
 			max-width: var(--max-w) !important;
+			backdrop-filter: blur(16px);
+			-webkit-backdrop-filter: blur(16px);
+			animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+		}
+
+		/* UTILITIES */
+		.glass-card {
+			background: var(--bg-card);
+			border: 1px solid var(--border);
 			backdrop-filter: blur(12px);
 			-webkit-backdrop-filter: blur(12px);
+			border-radius: var(--radius);
+			transition: all 0.4s var(--ease);
+		}
+
+		.glass-card:hover {
+			border-color: var(--accent-light);
+			box-shadow: var(--shadow-md);
+			transform: translateY(-4px);
+		}
+
+		.gradient-text {
+			background: linear-gradient(135deg, var(--accent), var(--teal));
+			background-clip: text;
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			font-weight: 800;
+		}
+
+		/* ANIMATIONS */
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes glowPulse {
+			0% {
+				box-shadow: 0 0 5px var(--accent-glow);
+			}
+
+			50% {
+				box-shadow: 0 0 20px var(--accent-glow);
+			}
+
+			100% {
+				box-shadow: 0 0 5px var(--accent-glow);
+			}
 		}
 
 		/* Lore Boxes */
@@ -513,8 +573,16 @@
 
 <body>
 	<header class="page-header">
-		<div class="hero-banner-lc">
-			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;"
+		<div class="hero-banner-lc" style="position: relative;">
+			<div style="position: absolute; text-align: center; pointer-events: none; z-index: 10;">
+				<h1 class="gradient-text"
+					style="font-size: 3.5rem; letter-spacing: 0.15em; margin: 0; filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.3)); text-transform: uppercase;">
+					Legend Clan</h1>
+				<p
+					style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.4em; color: var(--text-muted); margin-top: -5px; font-weight: 500;">
+					Elite Agar.io Syndicate</p>
+			</div>
+			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none; opacity: 0.4;"
 				src="https://jimboy3100.github.io/extras/banneranimated2c.html" name="CodePen" width="700" height="80"
 				frameborder="0" scrolling="no"
 				sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms allow-popups-to-escape-sandbox"
@@ -523,6 +591,7 @@
 	</header>
 	<div id="navbar">
 		<div id="nav">
+			<div id="nav-indicator"></div>
 			<ul>
 				<li><a name="Clan" href="#Clan" class="active">Clan</a></li>
 				<li><a name="Members" href="#Members">Members</a></li>
@@ -597,196 +666,170 @@
 			<div style="margin: 40px 0;"></div>
 
 			<div
-				style="width: 100%; margin-top: 64px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-				<div class="custom span6"
-					style="padding: 0; background: none; border: none; overflow: hidden; border-radius: var(--radius-sm);">
-					<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc1.jpg"
-						alt="Clan Gathering"
-						style="width: 100%; height: 280px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); transition: transform 0.3s ease;">
-					<p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">Legend
-						Clan Gathering</p>
-				</div>
-				<div class="custom span6"
-					style="padding: 0; background: none; border: none; overflow: hidden; border-radius: var(--radius-sm);">
-					<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc2.jpg"
-						alt="Legend TakeOver"
-						style="width: 100%; height: 280px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); transition: transform 0.3s ease;">
-					<p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 8px;">
-						Legendary Takeover</p>
-				</div>
-			</div>
-
-			<div
-				style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-top: 40px; align-items: start;">
+				style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-top: 48px; align-items: start;">
 				<!-- Newsfeed Column -->
-				<div class="custom span6"
-					style="text-align: left; background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-					<h3 class="project-tagline"
-						style="margin-top: 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+				<div class="glass-card" style="padding: 32px;">
+					<h3 class="gradient-text"
+						style="margin-top: 0; margin-bottom: 24px; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 1.4rem;">
 						<i class="fas fa-rss" style="color: var(--accent);"></i> Clan Newsfeed
 					</h3>
 					<div
 						style="max-height: 600px; overflow-y: auto; padding-right: 12px; scrollbar-width: thin; overflow-x: hidden;">
 						<ul class="icons" style="list-style: none; padding: 0;">
-							<li
-								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
+							<li class="news-item"
+								style="margin-bottom: 16px; padding: 20px; background: rgba(var(--accent-rgb), 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.3s ease;">
+								<h4 style="font-size: 1.05rem; margin-bottom: 8px;">
 									<a onclick="pop('https://www.facebook.com/Lcclan/');"
-										style="color: var(--accent); font-weight: 600;">Stay tuned on Lc facebook</a>
+										style="color: var(--accent); font-weight: 700;">Stay tuned on Lc facebook</a>
 									<span
-										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">3/3/2020</span>
+										style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 400;">3/3/2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Legend clan
+								<p
+									style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+									Legend clan
 									facebook - a vivid community with the latest news about Lc and LM.</p>
 							</li>
-							<li
-								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
+							<li class="news-item"
+								style="margin-bottom: 16px; padding: 20px; background: rgba(var(--accent-rgb), 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.3s ease;">
+								<h4 style="font-size: 1.05rem; margin-bottom: 8px;">
 									<a onclick="pop('https://discord.com/invite/JUfpR9k');"
-										style="color: var(--accent); font-weight: 600;">Active users of Lc exceed 60</a>
+										style="color: var(--accent); font-weight: 700;">Active users of Lc exceed 60</a>
 									<span
-										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">3/3/2020</span>
+										style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 400;">3/3/2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc Discord is very
+								<p
+									style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+									Lc Discord is very
 									active. Lc players are everywhere.</p>
 							</li>
-							<li
-								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
+							<li class="news-item"
+								style="margin-bottom: 16px; padding: 20px; background: rgba(var(--accent-rgb), 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.3s ease;">
+								<h4 style="font-size: 1.05rem; margin-bottom: 8px;">
 									<a onclick="pop('https://jimboy3100.github.io/extras/banneranimatedLegendmod2020.html');"
-										style="color: var(--accent); font-weight: 600;">Legend mod upcoming updates</a>
-									<span style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Feb
+										style="color: var(--accent); font-weight: 700;">Legend mod upcoming updates</a>
+									<span
+										style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 400;">Feb
 										2020</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Click here for the
+								<p
+									style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+									Click here for the
 									updates of Legend mod that will take place on 2020.</p>
 							</li>
-							<li
-								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
+							<li class="news-item"
+								style="margin-bottom: 16px; padding: 20px; background: rgba(var(--accent-rgb), 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.3s ease;">
+								<h4 style="font-size: 1.05rem; margin-bottom: 8px;">
 									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/lc-abandons-discord.html');"
-										style="color: var(--accent); font-weight: 600;">Lc opens Discord again</a>
-									<span style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">Nov
+										style="color: var(--accent); font-weight: 700;">Lc opens Discord again</a>
+									<span
+										style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 400;">Nov
 										2019</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Lc opens Discord
+								<p
+									style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+									Lc opens Discord
 									again. Click here to join.</p>
 							</li>
-							<li
-								style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
+							<li class="news-item"
+								style="margin-bottom: 16px; padding: 20px; background: rgba(var(--accent-rgb), 0.03); border-radius: var(--radius-sm); border: 1px solid var(--border); transition: all 0.3s ease;">
+								<h4 style="font-size: 1.05rem; margin-bottom: 8px;">
 									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/whylc.html');"
-										style="color: var(--accent); font-weight: 600;">THE ETHICAL VALUES OF OUR
+										style="color: var(--accent); font-weight: 700;">THE ETHICAL VALUES OF OUR
 										CLAN</a>
 									<span
-										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
+										style="font-size: 0.85rem; color: var(--text-muted); margin-left: 8px; font-weight: 400;">24/9/2017</span>
 								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">What ℄ means to us,
+								<p
+									style="font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+									What ℄ means to us,
 									our mission and core principles.</p>
-							</li>
-							<li style="margin-bottom: 20px; padding-bottom: 16px;">
-								<h4 style="font-size: 1.125rem; margin-bottom: 6px;">
-									<a onclick="pop('https://jimboy3100.github.io/Lc/articles/article69legend.html');"
-										style="color: var(--accent); font-weight: 600;">℄ AND ✵ΕΛ✵ ARE OFFICIAL
-										BROTHERS</a>
-									<span
-										style="font-size: 0.9rem; color: var(--text-muted); margin-left: 8px;">24/9/2017</span>
-								</h4>
-								<p style="font-size: 1rem; color: var(--text-secondary); margin: 0;">Established
-									alliance with Greek Clan proved to be a real brotherhood.</p>
 							</li>
 						</ul>
 					</div>
 				</div>
 
 				<!-- Details Column -->
-				<div style="display: flex; flex-direction: column; gap: 24px;">
-					<h3 class="project-tagline" style="margin-top: 0; text-align: center;"><b
-							style="color:var(--accent);">Clan</b> <b
-							style="background-color:var(--accent); color:White; padding: 2px 8px; border-radius: 4px;">Details</b>
+				<div style="display: flex; flex-direction: column; gap: 32px;">
+					<h3 class="gradient-text" style="margin-top: 0; text-align: center; font-size: 1.4rem;">Clan Profile
 					</h3>
 
-					<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-						<!-- Row 1 -->
-						<div class="custom span4"
-							style="text-align: center; padding: 24px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center;">
-							<div style="width: 150px; height: 150px; background: rgba(var(--accent-rgb), 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 1px solid var(--border); transition: transform 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"
-								onmouseover="this.style.transform='scale(1.05)'"
-								onmouseout="this.style.transform='scale(1)'">
-								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc3.png"
-									style="width: 120px; height: 120px; object-fit: contain;">
-							</div>
-							<h4 style="margin-bottom: 12px; font-size: 1.125rem;">Who we are</h4>
-							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a
-									onclick="document.getElementsByName('History')[0].click();">Our Roots & Goals</a>
-							</p>
-							<p style="font-size: 1rem; line-height: 1.4;"><a
-									onclick="document.getElementsByName('Welcometolc')[0].click();">Welcome Message</a>
-							</p>
-						</div>
-
-						<div class="custom span4"
-							style="text-align: center; padding: 24px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center;">
-							<div style="width: 150px; height: 150px; background: rgba(var(--accent-rgb), 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 1px solid var(--border); transition: transform 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"
-								onmouseover="this.style.transform='scale(1.05)'"
-								onmouseout="this.style.transform='scale(1)'">
-								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc4.png"
-									style="width: 120px; height: 120px; object-fit: contain;">
-							</div>
-							<h4 style="margin-bottom: 12px; font-size: 1.125rem;">We Need</h4>
-							<p style="font-size: 1rem; line-height: 1.4; margin-bottom: 8px;"><a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/elite-players.html');">Elite
-									Players</a></p>
-							<p style="font-size: 1rem; line-height: 1.4;"><a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/assistants.html');">Recruiters
-									& Staff</a></p>
-						</div>
-
-						<!-- Row 2 -->
-						<div class="custom span4"
-							style="grid-column: 1 / -1; text-align: left; padding: 24px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+					<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+						<!-- Card 1 -->
+						<div class="glass-card"
+							style="padding: 32px; text-align: center; display: flex; flex-direction: column; align-items: center;">
 							<div
-								style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 24px;">
-								<div
-									style="width: 120px; height: 120px; background: rgba(var(--accent-rgb), 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-									<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLcForCanvas.png"
-										style="width: 100px; height: 100px; border-radius: 50%; object-fit: contain;">
-								</div>
-								<h4 style="margin: 0; font-size: 1.125rem; text-align: center;">Announcement Archive
-								</h4>
+								style="width: 140px; height: 140px; background: rgba(var(--accent-rgb), 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden;">
+								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc3.png"
+									style="width: 80%; height: 80%; object-fit: contain;">
 							</div>
-							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 1rem;">
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-29a-12-2025.html');">•
-									29.12.2025 (2)</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-29-12-2025.html');">•
-									29.12.2025 (1)</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-27-12-2025.html');">•
-									27.12.2025</a>
-								<a onclick="document.getElementsByName('BasicStrategy')[0].click();">• New Pro Room</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-24-2-2018.html');">•
-									24.2.2018</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-1-2-2018.html');">•
-									1.2.2018</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-4-12-2017.html');">•
-									4.12.2017</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement4-11-2017.html');">•
-									4.11.2017</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-26-10-2017.html');">•
-									26.10.2017</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-18-10-2017.html');">•
-									18.10.2017</a>
-								<a
-									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-5-10-2017.html');">•
-									5.10.2017</a>
+							<h4 style="margin-bottom: 12px; font-size: 1.1rem; color: var(--text);">Our Identity</h4>
+							<p style="font-size: 0.95rem; margin-bottom: 6px;"><a
+									onclick="document.getElementsByName('History')[0].click();">Origins & History</a>
+							</p>
+							<p style="font-size: 0.95rem;"><a
+									onclick="document.getElementsByName('Welcometolc')[0].click();">Core Mission</a></p>
+						</div>
+
+						<!-- Card 2 -->
+						<div class="glass-card"
+							style="padding: 32px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+							<div
+								style="width: 140px; height: 140px; background: rgba(var(--accent-rgb), 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden;">
+								<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc4.png"
+									style="width: 80%; height: 80%; object-fit: contain;">
+							</div>
+							<h4 style="margin-bottom: 12px; font-size: 1.1rem; color: var(--text);">Joining Us</h4>
+							<p style="font-size: 0.95rem; margin-bottom: 6px;"><a
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/elite-players.html');">Elite
+									Standards</a></p>
+							<p style="font-size: 0.95rem;"><a
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/assistants.html');">Staff
+									Positions</a></p>
+						</div>
+
+						<!-- Announcement Card -->
+						<div class="glass-card" style="grid-column: 1 / -1; padding: 32px;">
+							<div style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px;">
+								<div
+									style="width: 80px; height: 80px; background: rgba(var(--accent-rgb), 0.08); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); flex-shrink: 0;">
+									<img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLcForCanvas.png"
+										style="width: 70%; height: 70%; border-radius: 50%; object-fit: contain;">
+								</div>
+								<h4 style="margin: 0; font-size: 1.2rem;">Official Archives</h4>
+							</div>
+							<div
+								style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-29a-12-2025.html');">Dec
+									2025 (2)</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-29-12-2025.html');">Dec
+									2025 (1)</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-27-12-2025.html');">Dec
+									2025</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="document.getElementsByName('BasicStrategy')[0].click();">Pro Room</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-24-2-2018.html');">Feb
+									2018</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-1-2-2018.html');">Feb
+									2018</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement-4-12-2017.html');">Dec
+									2017</a>
+								<a class="news-item"
+									style="font-size: 0.9rem; padding: 8px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border); background: rgba(var(--accent-rgb), 0.02);"
+									onclick="pop('https://jimboy3100.github.io/Lc/articles/announcement4-11-2017.html');">Nov
+									2017</a>
 							</div>
 						</div>
 					</div>
@@ -810,38 +853,56 @@
 			</div>
 
 			<div
-				style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; text-align: left;">
-				<div class="custom span3"
-					style="background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-					<i class="fas fa-user-plus fa-2x"></i>
-					<h3>Recruits</h3>
-					<p style="font-size: 1rem; margin-bottom: 20px;">20 recruits following the path of Legends.</p>
-					<p style="margin-top: 8px;">
-						<strong style="font-size: 1.125rem; font-weight: 600;">SᗩᗰᗩᑎTᕼᗩ👻NL</strong><br>
-						<span style="font-size: 0.9rem; color: var(--text-muted);">Lead Recruiter</span>
-					</p>
+				style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; text-align: left;">
+				<div class="glass-card"
+					style="padding: 32px; display: flex; flex-direction: column; align-items: flex-start;">
+					<i class="fas fa-user-plus fa-2x" style="color: var(--accent); margin-bottom: 20px;"></i>
+					<h3 style="margin: 0 0 12px 0; font-size: 1.3rem;">Recruiters</h3>
+					<p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 24px;">Elite scouts for the
+						future of Legend Clan.</p>
+					<div style="margin-top: auto;">
+						<strong class="gradient-text" style="font-size: 1.15rem;">SᗩᗰᗩᑎTᕼᗩ👻NL</strong><br>
+						<span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Lead Recruiter &
+							Admin</span>
+					</div>
 				</div>
-				<div class="custom span3"
-					style="grid-column: span 2; background: var(--bg-card); padding: 24px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
-					<i class="fas fa-crown fa-2x"></i>
-					<h3>Admins</h3>
+				<div class="glass-card" style="grid-column: span 2; padding: 32px;">
+					<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+						<i class="fas fa-crown fa-2x" style="color: var(--accent);"></i>
+						<h3 style="margin: 0; font-size: 1.3rem;">Administrative Council</h3>
+					</div>
 					<ul
-						style="list-style: none; padding: 0; margin-top: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Jimboy3100</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Founder, Peripheral
-								support</span>
+						style="list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+						<li>
+							<strong
+								style="font-size: 1.1rem; color: var(--text); display: block; margin-bottom: 4px;">Jimboy3100</strong>
+							<span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Founder & Core
+								Engineering</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Hany ElGohary</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Counselor, Diplomat</span>
+						<li>
+							<strong
+								style="font-size: 1.1rem; color: var(--text); display: block; margin-bottom: 4px;">Hany
+								ElGohary</strong>
+							<span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Diplomacy &
+								Strategy</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">AnotherZoner</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Members</span>
+						<li>
+							<strong
+								style="font-size: 1.1rem; color: var(--text); display: block; margin-bottom: 4px;">AnotherZoner</strong>
+							<span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Personnel
+								Management</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Junky</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Candidates</span>
+						<li>
+							<strong
+								style="font-size: 1.1rem; color: var(--text); display: block; margin-bottom: 4px;">Junky</strong>
+							<span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Intelligence &
+								Recruitment</span>
 						</li>
-						<li><strong style="font-size: 1.125rem; font-weight: 600;">Andrea</strong><br>
-							<span style="font-size: 0.9rem; color: var(--text-muted);">Admin of Friendship</span>
+						<li>
+							<strong
+								style="font-size: 1.1rem; color: var(--text); display: block; margin-bottom: 4px;">Andrea</strong>
+							<span style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Ambassador of
+								Harmony</span>
 						</li>
 					</ul>
 				</div>
@@ -1249,7 +1310,33 @@
 		// Theme is now initialized in the head to prevent flickering
 		// initTheme(); 
 
+		function updateNavIndicator() {
+			const activeLink = $('#nav .active');
+			const indicator = $('#nav-indicator');
+			if (activeLink.length) {
+				const linkPos = activeLink.position();
+				const linkWidth = activeLink.outerWidth();
+				const linkHeight = activeLink.outerHeight();
+				indicator.css({
+					left: linkPos.left,
+					top: linkPos.top,
+					width: linkWidth,
+					height: linkHeight,
+					opacity: 1
+				});
+			}
+		}
+
 		$(document).ready(function () {
+			updateNavIndicator();
+			$(window).on('resize', updateNavIndicator);
+
+			$('#nav a').on('click', function () {
+				$('#nav a').removeClass('active');
+				$(this).addClass('active');
+				updateNavIndicator();
+			});
+
 			$('#theme-toggle').on('click', function () {
 				const isDark = document.body.classList.toggle('dark-theme');
 				localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -1258,6 +1345,7 @@
 
 		setTimeout(function () {
 			document.title = "Legend Clan | Legend Mod";
+			updateNavIndicator();
 			(function () {
 				var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
 				link.type = 'image/x-icon';
@@ -1267,14 +1355,12 @@
 			})();
 			var url = localStorage.getItem("url");
 			var nav = getParameterByName("nav", url);
-			if (nav == "Welcometolc") {
-				document.getElementsByName("Welcometolc")[0].click();
-			}
-			if (nav == "History") {
-				document.getElementsByName("History")[0].click();
-			}
-			if (nav == "Policies") {
-				document.getElementsByName("Policies")[0].click();
+			if (nav) {
+				const target = document.getElementsByName(nav)[0];
+				if (target) {
+					target.click();
+					setTimeout(updateNavIndicator, 100);
+				}
 			}
 		}, 2000);
 
@@ -1298,8 +1384,16 @@
 	</script>
 
 	<footer class="lm-footer">
-		© 2026 Legend Mod Project · <a href="https://github.com/jimboy3100" target="_blank">GitHub</a> · <a
-			href="https://jimboy3100.github.io/privacy.html">Privacy Policy</a>
+		<div style="margin-bottom: 12px; font-weight: 600; color: var(--text-secondary);">
+			Made with <i class="fas fa-heart" style="color: #ef4444; margin: 0 4px;"></i> by Legend Mod Team
+		</div>
+		<div style="display: flex; justify-content: center; gap: 20px; font-size: 0.9rem;">
+			<span>© 2026 Legend Mod Project</span>
+			<span style="color: var(--border-strong);">|</span>
+			<a href="https://github.com/jimboy3100" target="_blank" style="font-weight: 600;">GitHub Origin</a>
+			<span style="color: var(--border-strong);">|</span>
+			<a href="https://jimboy3100.github.io/privacy.html" style="font-weight: 600;">Legal & Privacy</a>
+		</div>
 	</footer>
 	</section>
 	</div>
