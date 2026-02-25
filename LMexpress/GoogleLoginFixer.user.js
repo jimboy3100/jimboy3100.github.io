@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.2
-// @description  Fixes Google Login for Delta v7. Replaces Delta's Google button with GIS-powered clone. Auto-login via One Tap.
+// @version      6.3
+// @description  Fixes Google Login for Delta v7. Intercepts Google button click, uses GIS instead of broken GAPI popup.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
@@ -15,14 +15,15 @@
 
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
-    LOG('v6.2 starting...');
+    LOG('v6.3 starting...');
 
     let _token = null;
     let _gisInitialized = false;
+    let _delivered = false;
 
-    // ────────────────────────────────────────
+    // ════════════════════════════════════════
     // GIS
-    // ────────────────────────────────────────
+    // ════════════════════════════════════════
 
     function loadGIS(cb) {
         if (window.google && window.google.accounts) { cb(); return; }
@@ -34,7 +35,8 @@
         (document.head || document.documentElement).appendChild(s);
     }
 
-    function initGIS(cb) {
+    function promptGIS() {
+        if (!window.google || !window.google.accounts) return;
         if (!_gisInitialized) {
             google.accounts.id.initialize({
                 client_id: CLIENT_ID,
@@ -47,38 +49,29 @@
             });
             _gisInitialized = true;
         }
-        if (cb) cb();
-    }
-
-    function promptGIS() {
-        initGIS();
-        LOG('Showing One Tap...');
+        LOG('Showing GIS prompt...');
         google.accounts.id.prompt(function (n) {
-            if (n.isNotDisplayed()) {
-                LOG('One Tap not shown:', n.getNotDisplayedReason());
-            } else if (n.isSkippedMoment()) {
-                LOG('One Tap skipped:', n.getSkippedReason());
-            }
+            if (n.isNotDisplayed()) LOG('One Tap not shown:', n.getNotDisplayedReason());
+            else if (n.isSkippedMoment()) LOG('One Tap skipped:', n.getSkippedReason());
         });
     }
 
-    // ────────────────────────────────────────
-    // TOKEN DELIVERY
-    // ────────────────────────────────────────
+    // ════════════════════════════════════════
+    // TOKEN
+    // ════════════════════════════════════════
 
     function onToken(idToken) {
         _token = idToken;
         var p = {};
         try { p = JSON.parse(atob(idToken.split('.')[1])); } catch (e) { }
-        LOG('✅ Token received! User:', p.name, '(' + p.email + ')');
-
+        LOG('✅ Token! User:', p.name, '(' + p.email + ')');
         deliverToken();
     }
 
     function deliverToken() {
         if (!_token) return;
 
-        // ── Delta v7: GlAccount ──
+        // Delta v7: GlAccount
         var gl = window.GlAccount;
         if (gl) {
             var p = {};
@@ -95,101 +88,87 @@
             gl.user.id = p.sub || '';
             gl.emit('user', gl);
             gl.emit('login', gl);
-            LOG('✅ GlAccount: token set + login emitted!');
-
-            // Update the cloned button to show active state
-            var fakeBtn = document.getElementById('lf-google-btn');
-            if (fakeBtn) fakeBtn.classList.add('active');
+            _delivered = true;
+            LOG('✅ GlAccount: token + login emitted!');
         }
 
-        // ── Legend Mod: master.doLoginWithGPlus ──
+        // Legend Mod
         if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
             window.master.doLoginWithGPlus(_token);
-            LOG('✅ LM: doLoginWithGPlus called!');
+            _delivered = true;
+            LOG('✅ LM: doLoginWithGPlus!');
         }
 
-        // If neither is ready, retry
-        if (!gl && !(window.master && window.master.doLoginWithGPlus)) {
-            setTimeout(deliverToken, 1000);
-        }
+        if (!_delivered) setTimeout(deliverToken, 1000);
     }
 
-    // Keep token alive on reconnects
-    function watchReconnects() {
-        setInterval(function () {
-            if (_token && window.GlAccount && !window.GlAccount.token) {
-                LOG('Token cleared — re-injecting...');
-                deliverToken();
+    // Re-inject on reconnects
+    setInterval(function () {
+        if (_token && window.GlAccount && !window.GlAccount.token) {
+            LOG('Re-injecting token...');
+            deliverToken();
+        }
+    }, 3000);
+
+    // ════════════════════════════════════════
+    // INTERCEPT GOOGLE BUTTON CLICKS
+    // Capture phase — fires BEFORE Delta's
+    // Preact onclick handler
+    // ════════════════════════════════════════
+
+    function isGoogleButton(el) {
+        // Walk up from click target to check if it's inside the Google button
+        var node = el;
+        while (node && node !== document.body) {
+            // Check for fa-google icon
+            if (node.classList && node.classList.contains('fa-google')) return true;
+            // Check for the btn-colored with Google's red color
+            if (node.classList && node.classList.contains('btn-colored')) {
+                // Check if this button contains fa-google
+                if (node.querySelector('.fa-google')) return true;
             }
-        }, 3000);
-    }
-
-    // ────────────────────────────────────────
-    // REPLACE DELTA'S GOOGLE BUTTON
-    // ────────────────────────────────────────
-
-    function replaceGoogleButton() {
-        // Find Delta's Google button: the one with fa-google icon
-        var icons = document.querySelectorAll('.btn-icon.fab.fa-google');
-        if (!icons.length) return false;
-
-        for (var i = 0; i < icons.length; i++) {
-            // Walk up to find the btn-colored container
-            var btn = icons[i];
-            while (btn && !btn.classList.contains('btn-colored')) {
-                btn = btn.parentElement;
-            }
-            if (!btn || btn.id === 'lf-google-btn') continue;
-
-            LOG('Found Delta Google button, replacing...');
-
-            // Clone it exactly
-            var clone = btn.cloneNode(true);
-            clone.id = 'lf-google-btn';
-
-            // If we already have a token, show active
-            if (_token) clone.classList.add('active');
-
-            // Remove all original event listeners by replacing
-            btn.parentNode.replaceChild(clone, btn);
-
-            // Add our GIS click handler
-            clone.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                if (_token) {
-                    // Already logged in — toggle logout
-                    LOG('Already logged in. Logging out...');
-                    _token = null;
-                    _gisInitialized = false;
-                    clone.classList.remove('active');
-                    if (window.GlAccount) {
-                        window.GlAccount.token = null;
-                        window.GlAccount.state.logged = false;
-                        window.GlAccount.user = {};
-                        window.GlAccount.emit('logout', window.GlAccount);
-                    }
-                    return;
-                }
-
-                // Not logged in — trigger GIS
-                LOG('Google button clicked → GIS prompt');
-                promptGIS();
-            });
-
-            LOG('✅ Google button replaced!');
+            // Check for tty/div with text "Google"
+            if (node.tagName === 'DIV' && node.textContent === 'Google' &&
+                (node.classList.contains('tty') || node.tagName === 'TTY')) return true;
+            node = node.parentElement;
         }
-        return true;
+        return false;
     }
 
-    // ────────────────────────────────────────
-    // PATCH GAPI — prevent broken popup
-    // ────────────────────────────────────────
+    document.addEventListener('click', function (e) {
+        if (!isGoogleButton(e.target)) return;
 
-    function patchGAPI() {
-        if (!window.gapi) return;
-        if (window.gapi._lf) return;
+        // Stop the click from reaching Delta's Preact handler
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        LOG('Google button click intercepted!');
+
+        if (_token) {
+            // Already logged in — log out
+            LOG('Logging out...');
+            _token = null;
+            _delivered = false;
+            _gisInitialized = false;
+            if (window.GlAccount) {
+                window.GlAccount.token = null;
+                window.GlAccount.state.logged = false;
+                window.GlAccount.user = {};
+                window.GlAccount.emit('logout', window.GlAccount);
+            }
+            return;
+        }
+
+        // Not logged in — trigger GIS
+        promptGIS();
+
+    }, true); // ← true = CAPTURE PHASE
+
+    // ════════════════════════════════════════
+    // BLOCK GAPI POPUP
+    // ════════════════════════════════════════
+
+    function blockGAPIPopup() {
+        if (!window.gapi || window.gapi._lf) return;
         window.gapi._lf = true;
 
         var origLoad = window.gapi.load;
@@ -203,17 +182,12 @@
                             if (inst && !inst._lf) {
                                 inst._lf = true;
                                 inst.signIn = function () {
-                                    LOG('GAPI.signIn() blocked');
+                                    LOG('GAPI.signIn() blocked.');
                                     return Promise.resolve();
                                 };
-                                inst.signOut = function () {
-                                    return Promise.resolve();
-                                };
-                                var origIsSignedIn = inst.isSignedIn.get;
-                                inst.isSignedIn.get = function () {
-                                    return !!(_token);
-                                };
-                                LOG('✅ GAPI instance patched.');
+                                inst.signOut = function () { return Promise.resolve(); };
+                                inst.isSignedIn.get = function () { return !!_token; };
+                                LOG('✅ GAPI blocked.');
                             }
                         } catch (e) { }
                     }, 100);
@@ -222,35 +196,22 @@
         };
     }
 
-    // ────────────────────────────────────────
+    // ════════════════════════════════════════
     // BOOT
-    // ────────────────────────────────────────
+    // ════════════════════════════════════════
 
-    function boot() {
-        var bodyCheck = setInterval(function () {
-            if (!document.body) return;
-            clearInterval(bodyCheck);
+    var bodyCheck = setInterval(function () {
+        if (!document.body) return;
+        clearInterval(bodyCheck);
 
-            // 1. Load GIS and auto-login via One Tap
-            loadGIS(function () { promptGIS(); });
+        // Auto One Tap login
+        loadGIS(function () { promptGIS(); });
 
-            // 2. Watch for Delta's Google button and replace it
-            var btnCheck = setInterval(function () {
-                if (replaceGoogleButton()) clearInterval(btnCheck);
-            }, 500);
-            setTimeout(function () { clearInterval(btnCheck); }, 60000);
+        // Block GAPI popup
+        var gapiCheck = setInterval(function () {
+            if (window.gapi) blockGAPIPopup();
+        }, 300);
+        setTimeout(function () { clearInterval(gapiCheck); }, 60000);
 
-            // 3. Watch for GAPI and patch it
-            var gapiCheck = setInterval(function () {
-                if (window.gapi) patchGAPI();
-            }, 300);
-            setTimeout(function () { clearInterval(gapiCheck); }, 60000);
-
-            // 4. Watch for reconnects
-            watchReconnects();
-
-        }, 50);
-    }
-
-    boot();
+    }, 50);
 })();
