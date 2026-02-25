@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.4
-// @description  Fixes Google Login for Delta v7. Uses GIS (Google Identity Services) to bypass GAPI's broken popup. Replaces Delta's Google button with GIS-powered clone.
+// @version      6.5
+// @description  Fixes Google Login for Delta v7. Uses GIS. Replaces Delta's Google button with a new one.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
@@ -16,10 +16,11 @@
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
 
-    LOG('v6.4 starting...');
+    LOG('v6.5 starting...');
 
     let _token = null;
     let _tokenDelivered = false;
+    let _buttonReplaced = false;
 
     // ────────────────────────────────────────
     // TOKEN DELIVERY (same as working v6.0)
@@ -39,7 +40,6 @@
         if (!_token) return;
         var delivered = false;
 
-        // Delta v7: GlAccount
         if (window.GlAccount) {
             LOG('Delivering to GlAccount...');
             window.GlAccount.token = _token;
@@ -63,7 +63,6 @@
             }
         }
 
-        // accs.realms.Google fallback
         if (!delivered && window.accs && window.accs.realms && window.accs.realms.Google) {
             var gl = window.accs.realms.Google;
             gl.token = _token;
@@ -77,7 +76,6 @@
             }
         }
 
-        // Legend Mod
         if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
             window.master.doLoginWithGPlus(_token);
             LOG('✅ master.doLoginWithGPlus() called!');
@@ -86,9 +84,7 @@
 
         if (delivered) {
             _tokenDelivered = true;
-            // Update our fake button to active
-            var fakeBtn = document.getElementById('lf-google-btn');
-            if (fakeBtn) fakeBtn.classList.add('active');
+            updateMyButton();
         } else {
             LOG('Not ready yet — retrying...');
             retryDelivery();
@@ -143,7 +139,6 @@
             cancel_on_tap_outside: false,
             itp_support: true
         });
-
         LOG('Showing One Tap...');
         google.accounts.id.prompt(function (notification) {
             if (notification.isNotDisplayed()) {
@@ -156,84 +151,96 @@
 
     // ────────────────────────────────────────
     // REPLACE DELTA'S GOOGLE BUTTON
-    // Hide original, insert identical clone
-    // that triggers GIS on click
+    // Uses MutationObserver to catch it the
+    // moment Preact renders it, then swaps it
+    // with our own button.
     // ────────────────────────────────────────
 
-    function replaceButton() {
-        // Already done?
-        if (document.getElementById('lf-google-btn')) return true;
-
-        // Find the original: look for the btn-colored that contains fa-google
-        var googleIcons = document.querySelectorAll('.fa-google');
-        if (!googleIcons.length) return false;
-
-        var originalBtn = null;
-        var originalWrapper = null;
-        for (var i = 0; i < googleIcons.length; i++) {
-            var node = googleIcons[i];
-            // Walk up to find btn-colored
-            while (node && !node.classList.contains('btn-colored')) {
-                node = node.parentElement;
-            }
-            if (node && node.classList.contains('btn-colored')) {
-                originalBtn = node;
-                // The wrapper is the parent (e.g. <div class="flex flex-col w-1/2"> or <div class="gy-1 col">)
-                originalWrapper = node.parentElement;
-                break;
-            }
+    function updateMyButton() {
+        var btn = document.querySelector('[data-lf-google]');
+        if (btn) {
+            if (_token) btn.classList.add('active');
+            else btn.classList.remove('active');
         }
+    }
 
-        if (!originalBtn || !originalWrapper) return false;
+    function tryReplaceButton() {
+        if (_buttonReplaced) return;
 
-        LOG('Found original Google button, hiding and inserting clone...');
+        // Find all fa-google icons
+        var icons = document.querySelectorAll('.fa-google');
+        for (var i = 0; i < icons.length; i++) {
+            var icon = icons[i];
+            // Skip our own button
+            if (icon.closest('[data-lf-google]')) continue;
 
-        // Hide original
-        originalBtn.style.display = 'none';
+            // Walk up to the btn-colored ancestor
+            var original = icon.closest('.btn-colored');
+            if (!original) continue;
 
-        // Create our clone — looks exactly the same
-        var clone = document.createElement('div');
-        clone.id = 'lf-google-btn';
-        clone.className = originalBtn.className; // "btn btn-colored size-small"
-        if (_token) clone.classList.add('active');
-        clone.setAttribute('style', '--data-background:#DB4437; cursor:pointer;');
+            LOG('Found original Google button! Replacing...');
 
-        clone.innerHTML =
-            '<div role="tooltip" data-microtip-position="bottom" class="btn-layer">' +
-            '<div class="tty">Google</div>' +
-            '<div class="btn-logo"><div class="btn-icon fab fa-google"></div></div>' +
-            '</div>';
+            // Create our new button — same visual design, different element
+            var myBtn = document.createElement('div');
+            myBtn.setAttribute('data-lf-google', 'true');
+            myBtn.className = 'btn btn-colored size-small';
+            if (_token) myBtn.classList.add('active');
+            myBtn.style.cssText = '--data-background:#DB4437; cursor:pointer;';
 
-        // Click handler
-        clone.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
+            myBtn.innerHTML =
+                '<div role="tooltip" data-microtip-position="bottom" class="btn-layer">' +
+                '<div class="tty">Google</div>' +
+                '<div class="btn-logo"><div class="btn-icon fab fa-google"></div></div>' +
+                '</div>';
 
-            if (_token) {
-                // Already logged in — logout
-                LOG('Logging out Google...');
-                _token = null;
-                _tokenDelivered = false;
-                clone.classList.remove('active');
-                if (window.GlAccount) {
-                    window.GlAccount.token = null;
-                    window.GlAccount.state.logged = false;
-                    window.GlAccount.user = {};
-                    window.GlAccount.emit('logout', window.GlAccount);
+            // Our click handler
+            myBtn.onclick = function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                if (_token) {
+                    LOG('Logging out Google...');
+                    _token = null;
+                    _tokenDelivered = false;
+                    myBtn.classList.remove('active');
+                    if (window.GlAccount) {
+                        window.GlAccount.token = null;
+                        window.GlAccount.state.logged = false;
+                        window.GlAccount.user = {};
+                        window.GlAccount.emit('logout', window.GlAccount);
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // Not logged in — trigger GIS
-            LOG('Google button clicked → GIS');
-            initGIS();
+                LOG('Google button clicked → GIS');
+                initGIS();
+            };
+
+            // Replace: put our button where the original was
+            original.parentNode.replaceChild(myBtn, original);
+            _buttonReplaced = true;
+            LOG('✅ Google button replaced!');
+            return;
+        }
+    }
+
+    // Watch for the button with MutationObserver
+    function watchForButton() {
+        tryReplaceButton(); // try immediately
+
+        var observer = new MutationObserver(function () {
+            if (_buttonReplaced) { observer.disconnect(); return; }
+            tryReplaceButton();
         });
 
-        // Insert clone right after the hidden original
-        originalWrapper.appendChild(clone);
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true
+        });
 
-        LOG('✅ Google button replaced!');
-        return true;
+        // Safety timeout
+        setTimeout(function () { observer.disconnect(); }, 120000);
     }
 
     // ────────────────────────────────────────
@@ -262,14 +269,12 @@
         if (!gapi.auth2) return;
         var origInit = gapi.auth2.init;
         if (origInit._lf) return;
-
         gapi.auth2.init = function () {
             var inst = origInit.apply(this, arguments);
             inst.then(function () { patchInstance(inst); });
             return inst;
         };
         gapi.auth2.init._lf = true;
-
         try {
             var existing = gapi.auth2.getAuthInstance();
             if (existing) patchInstance(existing);
@@ -280,22 +285,19 @@
     function patchInstance(auth2) {
         if (auth2._lf) return;
         auth2._lf = true;
-
         auth2.signIn = function () {
-            LOG('signIn() intercepted → using GIS.');
+            LOG('signIn() intercepted → GIS.');
             if (_token) { deliverToken(); return Promise.resolve(); }
             initGIS();
             return Promise.resolve();
         };
-
         if (auth2.attachClickHandler) {
-            auth2.attachClickHandler = function (el, opts, onSuccess, onFail) {
+            auth2.attachClickHandler = function () {
                 LOG('attachClickHandler intercepted (no-op).');
                 return auth2;
             };
         }
-
-        LOG('✅ Auth2 instance patched.');
+        LOG('✅ Auth2 patched.');
     }
 
     // ────────────────────────────────────────
@@ -307,16 +309,13 @@
             if (!document.body) return;
             clearInterval(bodyCheck);
 
-            // 1. Load GIS and show One Tap
+            // 1. Load GIS and auto One Tap
             loadGIS(function () { initGIS(); });
 
-            // 2. Watch for Delta's Google button and replace it
-            var btnCheck = setInterval(function () {
-                if (replaceButton()) clearInterval(btnCheck);
-            }, 500);
-            setTimeout(function () { clearInterval(btnCheck); }, 120000);
+            // 2. Replace Delta's Google button
+            watchForButton();
 
-            // 3. Watch for GAPI and patch it
+            // 3. Patch GAPI
             var gapiCheck = setInterval(function () {
                 if (window.gapi) {
                     patchGAPI();
