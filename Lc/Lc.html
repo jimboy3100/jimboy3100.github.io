@@ -239,25 +239,50 @@
 		}
 
 		/* Lore Boxes */
+		.boxes {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 16px;
+			margin: 24px 0 !important;
+		}
+
 		.custom.span3 {
-			padding: 24px !important;
-			background: var(--bg-subtle) !important;
+			padding: 20px !important;
+			background: var(--bg-card) !important;
 			border-radius: var(--radius-sm) !important;
 			border: 1px solid var(--border);
 			transition: all 0.3s var(--ease);
-			margin: 10px !important;
+			margin: 0 !important;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+			height: 100%;
 		}
 
 		.custom.span3:hover {
 			transform: translateY(-4px);
 			box-shadow: var(--shadow-md);
 			border-color: var(--accent-light);
+			background: var(--bg-subtle) !important;
 		}
 
 		.custom.span3 i,
 		.custom.span3 p.fa {
 			color: var(--accent);
-			margin-bottom: 16px;
+			margin-bottom: 12px;
+			font-size: 2rem !important;
+		}
+
+		.custom.span3 h3 {
+			font-size: 1.05rem !important;
+			margin: 8px 0 !important;
+		}
+
+		.custom.span3 p {
+			font-size: 0.85rem !important;
+			line-height: 1.4 !important;
+			color: var(--text-secondary);
 		}
 
 		h2.project-tagline {
@@ -525,7 +550,7 @@
 								rel="noopener noreferrer">12/11/2019 - 3 YEAR OF ℄ Legend clan</a></p>
 					</div>
 				</div>
-				<div style="width: 600px; float:left; display: inline-block;">
+				<div style="width: 600px; float:left;">
 					<div class="custom span4">
 						<p><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc4.png"
 								alt=""></p>
@@ -539,7 +564,7 @@
 						<p>&nbsp;</p>
 					</div>
 				</div>
-				<div style="width: 600px; float:left; display: inline-block;">
+				<div style="width: 600px; float:left;">
 					<div class="custom span4">
 						<h3><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc5.jpg"
 								alt=""></h3>
