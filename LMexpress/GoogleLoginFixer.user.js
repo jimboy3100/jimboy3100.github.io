@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.0
-// @description  Fixes Google Login for Delta v7. Uses GIS (Google Identity Services) to bypass GAPI's broken popup. Fully automatic — no manual buttons needed.
+// @version      6.1
+// @description  Fixes Google Login for Delta v7. Overrides GlAccount.connect() to use GIS instead of broken GAPI popup. Delta's own Google button works as intended.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
@@ -16,190 +16,95 @@
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
 
-    LOG('v6.0 starting...');
+    LOG('v6.1 starting...');
 
     // ══════════════════════════════════════════════════════════
-    // HOW LEGEND MOD DOES IT (ogario.v4.master.js lines 118-171):
+    // Delta v7 Google flow (Accs.js):
     //
-    //   setup():
-    //     gapi.auth2.init({ client_id, cookie_policy, scope, app_package_name })
-    //     api.attachClickHandler(gplusLoginButton)
-    //     api.currentUser.listen(transform)  ← fires when user signs in
-    //     api.then(get)                      ← auto sign-in if previous session
+    //   Button click → clickButton('Google')
+    //     → Accs.realms['Google'].connect()
+    //       → GAPI.signIn()          ← BROKEN (400 error)
+    //       → GAPI.currentUser.listen fires
+    //       → GlAccount.readUser(gapiUser)
+    //         → gapiUser.getAuthResponse().id_token
+    //         → gapiUser.getBasicProfile().getImageUrl() etc
+    //         → this.emit('login', this)
+    //           → initClientEvents listener
+    //           → sendAccessToken(token, 4)
+    //           → Auth UI updates button to .active
     //
-    //   transform(event):
-    //     idToken = event.getAuthResponse().id_token
-    //     master.doLoginWithGPlus(idToken)
-    //     → core.sendGplusToken(idToken)     ← sends over WebSocket
-    //
-    // PROBLEM: GAPI popup is broken (400 error from Google).
-    //          Both LM and Delta hit this same issue.
-    //
-    // FIX: Use Google Identity Services (GIS) to get the id_token
-    //      via One Tap (iframe, no popup needed), then inject into
-    //      Delta v7's GlAccount OR into the GAPI auth2 instance
-    //      so both LM and Delta flows work.
-    //
-    // FLOW:
-    //   1. Load GIS library at document-start
-    //   2. When page loads, show One Tap automatically
-    //   3. When token received, inject into Delta/LM
-    //   4. Patch GAPI signIn() to use GIS instead of popup
-    //   5. ZERO manual interaction beyond accepting One Tap
+    // FIX: Override GlAccount.connect() to use GIS.
+    //      When GIS returns token, call GlAccount.readUser()
+    //      with a fake GAPI-compatible user object.
+    //      This way ALL of Delta's internal handlers fire normally.
     // ══════════════════════════════════════════════════════════
 
-    let _token = null;
-    let _tokenDelivered = false;
+    let _gisReady = false;
+    let _gisInitialized = false;
 
     // ────────────────────────────────────────
-    // TOKEN DELIVERY
-    // ────────────────────────────────────────
-
-    function onTokenReceived(idToken) {
-        _token = idToken;
-        LOG('✅ Got id_token:', idToken.substring(0, 30) + '...');
-
-        // Decode JWT for user info
-        try {
-            var p = JSON.parse(atob(idToken.split('.')[1]));
-            LOG('User:', p.name, '(' + p.email + ')');
-        } catch (e) { }
-
-        deliverToken();
-    }
-
-    function deliverToken() {
-        if (!_token) return;
-        var delivered = false;
-
-        // ── Delta v7: GlAccount (from v7/js/Miniclip/Accs.js) ──
-        if (window.GlAccount) {
-            LOG('Delivering to GlAccount...');
-            window.GlAccount.token = _token;
-            window.GlAccount.state && (window.GlAccount.state.logged = true);
-            window.GlAccount.memory && (window.GlAccount.memory.enabled = true);
-
-            // Set user info from JWT
-            try {
-                var p = JSON.parse(atob(_token.split('.')[1]));
-                window.GlAccount.state.expiration = p.exp * 1000;
-                window.GlAccount.user = {
-                    first_name: p.given_name || '',
-                    last_name: p.family_name || '',
-                    picture: p.picture || '',
-                    id: p.sub || ''
-                };
-            } catch (e) { }
-
-            // Emit events → triggers sendAccessToken(token, 4)
-            if (typeof window.GlAccount.emit === 'function') {
-                window.GlAccount.emit('user', window.GlAccount);
-                window.GlAccount.emit('login', window.GlAccount);
-                LOG('✅ GlAccount login emitted!');
-                delivered = true;
-            }
-        }
-
-        // ── Also try via accs.realms.Google ──
-        if (!delivered && window.accs && window.accs.realms && window.accs.realms.Google) {
-            var gl = window.accs.realms.Google;
-            gl.token = _token;
-            if (gl.state) gl.state.logged = true;
-            if (gl.memory) gl.memory.enabled = true;
-            if (typeof gl.emit === 'function') {
-                gl.emit('user', gl);
-                gl.emit('login', gl);
-                LOG('✅ accs.realms.Google login emitted!');
-                delivered = true;
-            }
-        }
-
-        // ── Legend Mod: master.doLoginWithGPlus ──
-        if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
-            window.master.doLoginWithGPlus(_token);
-            LOG('✅ master.doLoginWithGPlus() called!');
-            delivered = true;
-        }
-
-        if (delivered) {
-            _tokenDelivered = true;
-            removeGISContainer();
-        } else {
-            // Not ready yet — retry when Delta/LM initializes
-            LOG('Delta/LM not ready yet — will retry...');
-            retryDelivery();
-        }
-    }
-
-    function retryDelivery() {
-        var n = 0;
-        var iv = setInterval(function () {
-            if (++n > 60 || _tokenDelivered) { clearInterval(iv); return; }
-            if (window.GlAccount || (window.master && window.master.doLoginWithGPlus)) {
-                clearInterval(iv);
-                deliverToken();
-            }
-        }, 1000);
-    }
-
-    // Re-deliver when WebSocket reconnects (Delta re-emits on new connection)
-    function watchForReconnects() {
-        // Delta v7 re-sends token on 'estabilished' event via initClientEvents
-        // We just need to make sure GlAccount.token stays set
-        setInterval(function () {
-            if (_token && window.GlAccount && !window.GlAccount.token) {
-                LOG('Token was cleared — re-injecting...');
-                window.GlAccount.token = _token;
-                if (window.GlAccount.state) window.GlAccount.state.logged = true;
-                if (typeof window.GlAccount.emit === 'function') {
-                    window.GlAccount.emit('login', window.GlAccount);
-                }
-            }
-        }, 3000);
-    }
-
-    // ────────────────────────────────────────
-    // GIS (Google Identity Services)
+    // LOAD GIS
     // ────────────────────────────────────────
 
     function loadGIS(cb) {
-        if (window.google && window.google.accounts) { cb(); return; }
+        if (window.google && window.google.accounts) {
+            _gisReady = true;
+            cb && cb();
+            return;
+        }
         var s = document.createElement('script');
         s.src = 'https://accounts.google.com/gsi/client';
         s.async = true;
-        s.onload = function () { LOG('GIS loaded.'); cb(); };
+        s.onload = function () {
+            LOG('GIS loaded.');
+            _gisReady = true;
+            cb && cb();
+        };
         s.onerror = function () { LOG('ERROR: Failed to load GIS.'); };
         (document.head || document.documentElement).appendChild(s);
     }
 
-    function initGIS() {
-        google.accounts.id.initialize({
-            client_id: CLIENT_ID,
-            callback: function (resp) {
-                if (resp.credential) onTokenReceived(resp.credential);
-            },
-            auto_select: true,
-            cancel_on_tap_outside: false,
-            itp_support: true
-        });
+    // ────────────────────────────────────────
+    // GIS LOGIN — returns token via callback
+    // ────────────────────────────────────────
 
-        // Show One Tap automatically
-        LOG('Showing One Tap...');
+    function doGISLogin(onToken) {
+        if (!_gisReady) {
+            LOG('GIS not ready, loading...');
+            loadGIS(function () { doGISLogin(onToken); });
+            return;
+        }
+
+        if (!_gisInitialized) {
+            google.accounts.id.initialize({
+                client_id: CLIENT_ID,
+                callback: function (resp) {
+                    if (resp.credential) {
+                        LOG('✅ GIS credential received!');
+                        onToken(resp.credential);
+                    }
+                },
+                auto_select: true,
+                cancel_on_tap_outside: false,
+                itp_support: true
+            });
+            _gisInitialized = true;
+        }
+
+        // Show One Tap prompt
+        LOG('Showing GIS prompt...');
         google.accounts.id.prompt(function (notification) {
             if (notification.isNotDisplayed()) {
                 LOG('One Tap not shown:', notification.getNotDisplayedReason());
-                // If One Tap can't show (e.g. user never signed into Google),
-                // render a sign-in button as fallback
-                showGISButton();
+                showGISButton(onToken);
             } else if (notification.isSkippedMoment()) {
                 LOG('One Tap skipped:', notification.getSkippedReason());
-                showGISButton();
+                showGISButton(onToken);
             }
-            // If displayed, user will see "Continue as..." and click it
         });
     }
 
-    function showGISButton() {
+    function showGISButton(onToken) {
         if (document.getElementById('gis-container')) return;
 
         var container = document.createElement('div');
@@ -234,6 +139,20 @@
         container.appendChild(btnDiv);
         document.body.appendChild(container);
 
+        // Re-init GIS with new callback if needed
+        google.accounts.id.initialize({
+            client_id: CLIENT_ID,
+            callback: function (resp) {
+                if (resp.credential) {
+                    LOG('✅ GIS credential from button!');
+                    container.remove();
+                    onToken(resp.credential);
+                }
+            },
+            auto_select: false,
+            cancel_on_tap_outside: false
+        });
+
         google.accounts.id.renderButton(btnDiv, {
             theme: 'filled_blue', size: 'large', shape: 'rectangular',
             text: 'signin_with', width: 280
@@ -241,119 +160,268 @@
         LOG('GIS sign-in button shown.');
     }
 
-    function removeGISContainer() {
-        var el = document.getElementById('gis-container');
-        if (el) el.remove();
+    // ────────────────────────────────────────
+    // BUILD FAKE GAPI USER OBJECT
+    // Compatible with GlAccount.readUser(data)
+    // which calls data.getAuthResponse() and
+    // data.getBasicProfile()
+    // ────────────────────────────────────────
+
+    function buildFakeGAPIUser(idToken) {
+        // Decode JWT payload
+        var payload = {};
+        try { payload = JSON.parse(atob(idToken.split('.')[1])); } catch (e) { }
+
+        LOG('User:', payload.name, '(' + payload.email + ')');
+
+        return {
+            getAuthResponse: function () {
+                return {
+                    id_token: idToken,
+                    access_token: idToken,
+                    expires_at: (payload.exp || 0) * 1000,
+                    expires_in: 3600
+                };
+            },
+            getBasicProfile: function () {
+                return {
+                    getImageUrl: function () { return payload.picture || ''; },
+                    getName: function () { return payload.name || ''; },
+                    getGivenName: function () { return payload.given_name || ''; },
+                    getFamilyName: function () { return payload.family_name || ''; },
+                    getId: function () { return payload.sub || ''; },
+                    getEmail: function () { return payload.email || ''; }
+                };
+            },
+            isSignedIn: function () { return true; }
+        };
     }
 
     // ────────────────────────────────────────
-    // GAPI PATCHES
-    // Intercept GAPI so Delta/LM's own Google
-    // button triggers GIS instead of popup
+    // PATCH DELTA V7
+    // Override GlAccount.connect() and GAPI
+    // ────────────────────────────────────────
+
+    function patchDelta() {
+        var gl = window.GlAccount;
+        if (!gl || gl._lf_patched) return false;
+        gl._lf_patched = true;
+
+        LOG('Patching GlAccount.connect()...');
+
+        // Save original connect
+        var origConnect = gl.connect.bind(gl);
+
+        // Override connect() — this is what clickButton('Google') calls
+        gl.connect = function () {
+            LOG('GlAccount.connect() intercepted → using GIS');
+            gl.memory.enabled = true;
+
+            doGISLogin(function (idToken) {
+                // Build fake GAPI user object that readUser() expects
+                var fakeUser = buildFakeGAPIUser(idToken);
+
+                // We need GAPI.isSignedIn.get() to return true
+                // for readUser() to proceed (line 57 of Accs.js)
+                ensureGAPISignedIn();
+
+                // Call Delta's own readUser — this does everything:
+                // sets token, user info, emits 'login' + 'user' events
+                gl.readUser(fakeUser);
+
+                // Remove GIS container if present
+                var gis = document.getElementById('gis-container');
+                if (gis) gis.remove();
+            });
+        };
+
+        // Also override start() which calls connect() when memory.enabled
+        var origStart = gl.start.bind(gl);
+        gl.start = function () {
+            LOG('GlAccount.start() called');
+            if (gl.memory.enabled) gl.connect();
+        };
+
+        LOG('✅ GlAccount patched!');
+        return true;
+    }
+
+    // Make GAPI.isSignedIn.get() return true
+    // GlAccount.readUser checks this at line 57
+    function ensureGAPISignedIn() {
+        // If GAPI exists, patch isSignedIn
+        try {
+            var auth2 = window.gapi && window.gapi.auth2 && window.gapi.auth2.getAuthInstance();
+            if (auth2 && auth2.isSignedIn) {
+                var origGet = auth2.isSignedIn.get;
+                auth2.isSignedIn.get = function () { return true; };
+                LOG('GAPI.isSignedIn patched to return true');
+            }
+        } catch (e) { }
+
+        // If GAPI doesn't exist yet, the variable GAPI in Accs.js is module-scoped
+        // We can't access it directly. But readUser checks it:
+        //   if (!data || !GAPI || !this.memory.enabled) return;
+        //   if (GAPI.isSignedIn.get()) { ... }
+        //
+        // Since GAPI is module-scoped, we need to either:
+        // 1. Wait for GAPI to init (via gapiAsyncInit) and then patch
+        // 2. Or bypass readUser entirely by calling the token directly
+        //
+        // Let's also set up a direct fallback:
+    }
+
+    // Direct token injection — bypasses readUser entirely
+    // Used when GAPI module-scoped variable isn't accessible
+    function directTokenInject(idToken) {
+        var gl = window.GlAccount;
+        if (!gl) return false;
+
+        var payload = {};
+        try { payload = JSON.parse(atob(idToken.split('.')[1])); } catch (e) { }
+
+        gl.token = idToken;
+        gl.state.expiration = (payload.exp || 0) * 1000;
+        gl.user.picture = payload.picture || '';
+        gl.user.first_name = payload.given_name || '';
+        gl.user.last_name = payload.family_name || '';
+        gl.user.id = payload.sub || '';
+        gl.emit('user', gl);
+        gl.emit('login', gl);
+        LOG('✅ Direct token injection + events emitted!');
+        return true;
+    }
+
+    // Auto-login on page load if user was previously logged in
+    function autoLogin() {
+        var gl = window.GlAccount;
+        if (!gl) return;
+
+        // Only auto-login if Delta remembers the user wanted Google
+        if (gl.memory && gl.memory.enabled) {
+            LOG('Auto-login: memory.enabled is true, starting GIS...');
+            gl.connect(); // This now uses our patched version
+        }
+    }
+
+    // ────────────────────────────────────────
+    // PATCH GAPI — prevent the broken popup
+    // Delta's gapiAsyncInit loads GAPI and sets
+    // GAPI = gapi.auth2.init(...)
+    // We intercept this to prevent popup attempts
     // ────────────────────────────────────────
 
     function patchGAPI() {
-        // Hook gapi.load to catch when auth2 module loads
-        if (!window.gapi) return;
-        if (window.gapi._lf) return;
+        if (!window.gapi || window.gapi._lf) return;
         window.gapi._lf = true;
 
-        var origLoad = gapi.load;
-        gapi.load = function (libs, cb) {
+        // Hook gapi.auth2.init to patch the instance
+        var origLoad = window.gapi.load;
+        window.gapi.load = function (libs, cb) {
             return origLoad.call(this, libs, function () {
                 if (typeof cb === 'function') cb();
                 if (typeof libs === 'string' && libs.indexOf('auth2') >= 0) {
-                    setTimeout(patchAuth2, 50);
+                    setTimeout(patchAuth2Instance, 100);
                 }
             });
         };
-        LOG('gapi.load hooked.');
 
-        // Check if auth2 already loaded
-        if (gapi.auth2) patchAuth2();
-    }
-
-    function patchAuth2() {
-        if (!gapi.auth2) return;
-
-        // Hook auth2.init
-        var origInit = gapi.auth2.init;
-        if (origInit._lf) return;
-
-        gapi.auth2.init = function () {
-            var inst = origInit.apply(this, arguments);
-            inst.then(function () { patchInstance(inst); });
-            return inst;
-        };
-        gapi.auth2.init._lf = true;
-
-        // Patch existing instance
-        try {
-            var existing = gapi.auth2.getAuthInstance();
-            if (existing) patchInstance(existing);
-        } catch (e) { }
-
-        LOG('auth2.init hooked.');
-    }
-
-    function patchInstance(auth2) {
-        if (auth2._lf) return;
-        auth2._lf = true;
-
-        // Patch signIn → use GIS instead
-        var origSignIn = auth2.signIn.bind(auth2);
-        auth2.signIn = function () {
-            LOG('signIn() intercepted → using GIS.');
-            if (_token) {
-                deliverToken();
-                return Promise.resolve();
-            }
-            // Show GIS prompt
-            initGIS();
-            return Promise.resolve();
-        };
-
-        // Patch attachClickHandler → intercept click with GIS
-        if (auth2.attachClickHandler) {
-            var origAttach = auth2.attachClickHandler.bind(auth2);
-            auth2.attachClickHandler = function (el, opts, onSuccess, onFail) {
-                LOG('attachClickHandler intercepted.');
-                // Don't register original — it would open the broken popup
-                // Instead, add our own click handler that uses GIS
-                var elem = typeof el === 'string' ? document.getElementById(el) : el;
-                if (elem) {
-                    elem.addEventListener('click', function (e) {
-                        e.stopImmediatePropagation();
-                        e.preventDefault();
-                        if (_token && onSuccess) {
-                            // Fake a GoogleUser-like object
-                            onSuccess({
-                                getAuthResponse: function () {
-                                    return { id_token: _token, expires_at: Date.now() + 3600000 };
-                                },
-                                getBasicProfile: function () {
-                                    var p = {};
-                                    try { p = JSON.parse(atob(_token.split('.')[1])); } catch (e) { }
-                                    return {
-                                        getImageUrl: function () { return p.picture || ''; },
-                                        getName: function () { return p.name || ''; },
-                                        getGivenName: function () { return p.given_name || ''; },
-                                        getFamilyName: function () { return p.family_name || ''; },
-                                        getId: function () { return p.sub || ''; },
-                                        getEmail: function () { return p.email || ''; }
-                                    };
-                                }
-                            });
-                        } else {
-                            initGIS();
-                        }
-                    }, true);
-                }
-                return auth2;
-            };
+        // If auth2 already loaded
+        if (window.gapi.auth2) {
+            patchAuth2Instance();
         }
 
-        LOG('✅ Auth2 instance patched.');
+        LOG('gapi.load hooked.');
+    }
+
+    function patchAuth2Instance() {
+        try {
+            var inst = window.gapi.auth2.getAuthInstance();
+            if (!inst || inst._lf) return;
+            inst._lf = true;
+
+            // Patch signIn to not open popup
+            inst.signIn = function () {
+                LOG('GAPI.signIn() blocked — GlAccount.connect() handles login via GIS');
+                return Promise.resolve();
+            };
+
+            // Make isSignedIn.get() return true when we have a token
+            var origIsSignedIn = inst.isSignedIn.get;
+            inst.isSignedIn.get = function () {
+                if (window.GlAccount && window.GlAccount.token) return true;
+                return origIsSignedIn.call(inst.isSignedIn);
+            };
+
+            // Patch signOut to be a no-op (Delta handles logout internally)
+            inst.signOut = function () {
+                LOG('GAPI.signOut() intercepted');
+                return Promise.resolve();
+            };
+
+            LOG('✅ GAPI auth2 instance patched.');
+        } catch (e) {
+            LOG('auth2 not ready yet');
+        }
+    }
+
+    // ── ALSO: Override GlAccount.readUser to work without
+    //    the module-scoped GAPI variable ──
+    function patchReadUser() {
+        var gl = window.GlAccount;
+        if (!gl || gl._lf_readUser) return;
+        gl._lf_readUser = true;
+
+        var origReadUser = gl.readUser.bind(gl);
+
+        gl.readUser = function (data) {
+            if (!data || !gl.memory.enabled) return;
+
+            // Try original first (works if GAPI is initialized)
+            try {
+                // Check if GAPI module var exists and isSignedIn
+                var auth2 = window.gapi && window.gapi.auth2 && window.gapi.auth2.getAuthInstance();
+                if (auth2 && auth2.isSignedIn.get()) {
+                    origReadUser(data);
+                    return;
+                }
+            } catch (e) { }
+
+            // Fallback: do what readUser does manually
+            // (lines 57-72 of Accs.js)
+            try {
+                var authResponse = data.getAuthResponse();
+                var basicProfile = data.getBasicProfile();
+                gl.state.expiration = authResponse.expires_at;
+                gl.token = authResponse.id_token;
+                gl.user.picture = basicProfile.getImageUrl();
+                gl.user.first_name = basicProfile.getGivenName();
+                gl.user.last_name = basicProfile.getFamilyName();
+                gl.user.id = basicProfile.getId();
+                gl.emit('user', gl);
+                gl.emit('login', gl);
+                LOG('✅ readUser fallback succeeded!');
+                if (typeof globalThis.umami?.track === 'function') {
+                    globalThis.umami.track('login', { provider: 'google' });
+                }
+            } catch (e) {
+                LOG('readUser fallback error:', e);
+                // Last resort: direct injection
+                if (data.getAuthResponse) {
+                    directTokenInject(data.getAuthResponse().id_token);
+                }
+            }
+        };
+
+        LOG('✅ readUser patched to work without module-scoped GAPI.');
+    }
+
+    // ── Also deliver to Legend Mod if present ──
+    function deliverToLM(idToken) {
+        if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
+            window.master.doLoginWithGPlus(idToken);
+            LOG('✅ LM: master.doLoginWithGPlus() called!');
+        }
     }
 
     // ────────────────────────────────────────
@@ -361,31 +429,36 @@
     // ────────────────────────────────────────
 
     function boot() {
-        // Wait for body
         var bodyCheck = setInterval(function () {
             if (!document.body) return;
             clearInterval(bodyCheck);
 
-            // 1. Load GIS and show One Tap
-            loadGIS(function () {
-                initGIS();
-            });
+            // Load GIS early
+            loadGIS(function () { LOG('GIS ready.'); });
 
-            // 2. Watch for GAPI loading and patch it
+            // Watch for GlAccount to appear and patch it
+            var deltaCheck = setInterval(function () {
+                if (window.GlAccount) {
+                    if (patchDelta()) {
+                        patchReadUser();
+                        clearInterval(deltaCheck);
+                        // Auto-login after small delay
+                        setTimeout(autoLogin, 1000);
+                    }
+                }
+            }, 200);
+            setTimeout(function () { clearInterval(deltaCheck); }, 60000);
+
+            // Watch for GAPI to appear and patch it
             var gapiCheck = setInterval(function () {
                 if (window.gapi) {
                     patchGAPI();
-                    if (window.gapi.auth2) {
-                        patchAuth2();
-                    }
+                    if (window.gapi.auth2) patchAuth2Instance();
                 }
-            }, 300);
+            }, 200);
             setTimeout(function () { clearInterval(gapiCheck); }, 60000);
 
-            // 3. Watch for reconnects
-            watchForReconnects();
-
-        }, 100);
+        }, 50);
         setTimeout(function () { clearInterval(bodyCheck); }, 30000);
     }
 
