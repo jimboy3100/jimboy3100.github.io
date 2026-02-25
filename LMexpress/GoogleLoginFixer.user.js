@@ -247,21 +247,22 @@
         var fbBtn = findFacebookButton();
         if (fbBtn) fbBtn.style.display = 'none';
 
-        // Find fcols container
-        var fcols = document.querySelector('.fcols');
-        if (!fcols) { LOG('fcols not found'); return; }
+        // Find the parent where the original buttons were
+        var parent = null;
+        if (origBtn && origBtn.parentElement) parent = origBtn.parentElement;
+        else if (fbBtn && fbBtn.parentElement) parent = fbBtn.parentElement;
+        if (!parent) parent = document.querySelector('.fcols') || document.body;
 
-        // Create row: FB left, Google right
+        // Create row: FB and Google side by side, compact
         var row = document.createElement('div');
         row.id = 'lf-btn-row';
-        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 0;gap:4px;';
+        row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:2px 0;';
 
-        // Facebook clone — same style as Google icon button
+        // Facebook button with "f"
         var fbClone = document.createElement('button');
-        fbClone.innerHTML = '<i class="fa fa-facebook"></i>';
-        fbClone.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;font-size:16px;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;';
+        fbClone.textContent = 'f';
+        fbClone.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;font-size:18px;font-weight:bold;font-family:Arial,sans-serif;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;';
         fbClone.onclick = function () {
-            // Trigger original FB login if available
             if (window.FB && window.FB.login) {
                 window.FB.login(function (r) { LOG('FB login response', r); }, { scope: 'public_profile,email' });
             } else if (fbBtn) {
@@ -271,18 +272,18 @@
             }
         };
 
-        // Google GIS button container
+        // Google GIS button container — same size as FB
         var gDiv = document.createElement('div');
-        gDiv.style.cssText = 'display:inline-block;height:40px;overflow:hidden;';
+        gDiv.style.cssText = 'display:inline-flex;align-items:center;';
         google.accounts.id.renderButton(gDiv, {
-            type: 'icon', theme: 'filled_blue', size: 'large', shape: 'rectangular'
+            type: 'icon', theme: 'filled_blue', size: 'medium', shape: 'square'
         });
 
         row.appendChild(fbClone);
         row.appendChild(gDiv);
-        fcols.insertBefore(row, fcols.firstChild);
+        parent.insertBefore(row, parent.firstChild);
 
-        LOG('Button row placed in fcols.');
+        LOG('Button row placed.');
     }
 
     function findFacebookButton() {
