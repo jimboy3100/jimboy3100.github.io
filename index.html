@@ -172,17 +172,24 @@
         padding: 2rem 1.5rem !important; border-radius: 0 0 24px 24px;
     }
 
-    /* HERO BANNER — full width, visible iframe */
+    /* HERO BANNER — centered, glassy */
     body > section:first-of-type {
         max-width: 100% !important; padding: 0 !important;
+        display: flex; flex-direction: column; align-items: center;
     }
     body > section:first-of-type > section {
-        max-width: 100% !important; padding: 20px !important;
+        max-width: 800px !important; width: 100%; padding: 24px !important;
+        display: flex; justify-content: center; align-items: center;
+        background-size: 60% !important;
+        background-position: center center !important;
     }
     #animatedpromosIframe4 {
-        min-height: 200px; border: none !important;
+        min-height: 180px; width: 80% !important; border: none !important;
         border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg);
+        background: rgba(255,255,255,0.5);
+        backdrop-filter: blur(8px) saturate(150%);
+        -webkit-backdrop-filter: blur(8px) saturate(150%);
     }
     iframe.result-iframe { border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg); border: none !important; }
@@ -531,7 +538,7 @@
                 </span>
             </a>
             <h2 class="project-tagline">
-                Step 3, Open extensions menu:
+                Step 3, Open extensions menu
                 <font size="3"><br>chrome://extensions/</font>
                 <font size="3"><br>Enable: Developer Mode (upper right corner)</font>
             </h2>
