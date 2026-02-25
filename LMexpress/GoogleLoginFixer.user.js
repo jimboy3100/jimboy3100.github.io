@@ -235,7 +235,7 @@
     }
 
     function showGISButton() {
-        if (document.getElementById('lf-google-btn')) return;
+        if (document.getElementById('lf-btn-row')) return;
 
         var origBtn = findOriginalGoogleButton();
         if (origBtn) {
@@ -243,51 +243,63 @@
             _origHidden = true;
         }
 
-        // Create container for real GIS-rendered button
-        var btnDiv = document.createElement('div');
-        btnDiv.id = 'lf-google-btn';
-        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;margin:0 2px;vertical-align:middle;overflow:hidden;';
+        // Find and hide original Facebook button too
+        var fbBtn = findFacebookButton();
+        if (fbBtn) fbBtn.style.display = 'none';
 
-        // Insert where original was
-        if (origBtn && origBtn.parentElement) {
-            origBtn.parentElement.insertBefore(btnDiv, origBtn);
-        } else {
-            document.body.appendChild(btnDiv);
-        }
+        // Find fcols container
+        var fcols = document.querySelector('.fcols');
+        if (!fcols) { LOG('fcols not found'); return; }
 
-        // Render REAL Google sign-in button — icon type = small square, fits next to FB
-        google.accounts.id.renderButton(btnDiv, {
-            type: 'icon', theme: 'filled_blue', size: 'medium', shape: 'rectangular'
+        // Create row: FB left, Google right
+        var row = document.createElement('div');
+        row.id = 'lf-btn-row';
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 0;gap:4px;';
+
+        // Facebook clone — same style as Google icon button
+        var fbClone = document.createElement('button');
+        fbClone.innerHTML = '<i class="fa fa-facebook"></i>';
+        fbClone.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;font-size:16px;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;';
+        fbClone.onclick = function () {
+            // Trigger original FB login if available
+            if (window.FB && window.FB.login) {
+                window.FB.login(function (r) { LOG('FB login response', r); }, { scope: 'public_profile,email' });
+            } else if (fbBtn) {
+                fbBtn.style.display = '';
+                fbBtn.click();
+                fbBtn.style.display = 'none';
+            }
+        };
+
+        // Google GIS button container
+        var gDiv = document.createElement('div');
+        gDiv.style.cssText = 'display:inline-block;height:40px;overflow:hidden;';
+        google.accounts.id.renderButton(gDiv, {
+            type: 'icon', theme: 'filled_blue', size: 'large', shape: 'rectangular'
         });
 
-        // Restyle Facebook button to match Google button look
-        styleFacebookButton();
+        row.appendChild(fbClone);
+        row.appendChild(gDiv);
+        fcols.insertBefore(row, fcols.firstChild);
 
-        LOG('GIS button placed.');
+        LOG('Button row placed in fcols.');
     }
 
-    function styleFacebookButton() {
-        // Find Facebook button (btn-colored with fa-facebook or first btn-colored)
-        var fbBtn = null;
+    function findFacebookButton() {
         var icons = document.querySelectorAll('.fa-facebook, .fa-facebook-f');
         for (var i = 0; i < icons.length; i++) {
+            if (icons[i].closest('#lf-btn-row')) continue;
             var el = icons[i];
             while (el && (!el.classList || !el.classList.contains('btn-colored'))) el = el.parentElement;
-            if (el) { fbBtn = el; break; }
+            if (el) return el;
         }
-        if (!fbBtn) {
-            var btns = document.querySelectorAll('.btn-colored.size-small');
-            if (btns.length > 0) fbBtn = btns[0]; // first is typically Facebook
-        }
-        if (!fbBtn) return;
-
-        // Restyle to match the GIS button height/shape — keep its original onclick
-        fbBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;font-size:14px;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;margin:2px;vertical-align:middle;height:36px;min-width:36px;';
-        LOG('Facebook button restyled.');
+        var btns = document.querySelectorAll('.btn-colored.size-small');
+        if (btns.length > 0) return btns[0];
+        return null;
     }
 
     function removeGISContainer() {
-        var el = document.getElementById('lf-google-btn');
+        var el = document.getElementById('lf-btn-row');
         if (el) el.remove();
     }
 
