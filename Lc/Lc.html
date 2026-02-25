@@ -7,6 +7,17 @@
 		media="screen">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	<script src="https://jimboy3100.github.io/skins/jquery.min.js"></script>
+	<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>
+	<script src="https://jimboy3100.github.io/skins/skins.js"></script>
+	<script>
+		(function () {
+			const savedTheme = localStorage.getItem('theme');
+			if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+				document.documentElement.classList.add('dark-theme');
+			}
+		})();
+	</script>
 
 	<style>
 		:root {
@@ -941,7 +952,8 @@
 						document.body.classList.add('dark-theme');
 					}
 				}
-				initTheme();
+				// Theme is now initialized in the head to prevent flickering
+				// initTheme(); 
 
 				$(document).ready(function () {
 					$('#theme-toggle').on('click', function () {
@@ -983,16 +995,14 @@
 				}	
 			</script>
 
-			<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-92655864-2"></script>
+			<script async src="https://www.googletagmanager.com/gtag/js?id=UA-92655864-2"></script>
 			<script>
 				window.dataLayer = window.dataLayer || [];
 				function gtag() { dataLayer.push(arguments); }
 				gtag('js', new Date());
-
 				gtag('config', 'UA-92655864-2');
 			</script>
-			<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>
-			<script src="https://jimboy3100.github.io/skins/skins.js"></script>
+
 			<footer class="lm-footer">
 				© 2026 Legend Mod Project · <a href="https://github.com/jimboy3100" target="_blank">GitHub</a> · <a
 					href="https://jimboy3100.github.io/privacy.html">Privacy Policy</a>
