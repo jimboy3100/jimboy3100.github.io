@@ -27,14 +27,22 @@ const GM_info = {
     }
 };
 
-// Check location and redirect
-if (location.host === "agar.io" && location.pathname === "/") {
-    const url = window.location.href;
-    localStorage.setItem("url", url);
-    location.href = "https://agar.io/legendmod" + location.hash;
-} else if (location.host === "agar.io" && location.pathname.startsWith("/legendmod")) {
-    runMod();
-}
+// Check enabled state before proceeding
+chrome.storage.local.get(['enabled'], (result) => {
+    if (result.enabled === false) {
+        console.log('Legend Express: Extension is disabled.');
+        return;
+    }
+
+    // Check location and redirect
+    if (location.host === "agar.io" && location.pathname === "/") {
+        const url = window.location.href;
+        localStorage.setItem("url", url);
+        location.href = "https://agar.io/legendmod" + location.hash;
+    } else if (location.host === "agar.io" && location.pathname.startsWith("/legendmod")) {
+        runMod();
+    }
+});
 
 function runMod() {
     document.documentElement.innerHTML = "";
