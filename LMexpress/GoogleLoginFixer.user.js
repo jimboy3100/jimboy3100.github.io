@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.6
-// @description  Fixes Google Login for Delta v7. Uses GIS. Deletes Delta's broken Google button, adds new one.
+// @version      6.7
+// @description  Fixes Google Login for Delta v7. Uses GIS. Embeds Google sign-in button in Delta's UI.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
@@ -16,7 +16,7 @@
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
 
-    LOG('v6.6 starting...');
+    LOG('v6.7 starting...');
 
     let _token = null;
     let _tokenDelivered = false;
@@ -83,10 +83,6 @@
 
         if (delivered) {
             _tokenDelivered = true;
-            removeGISContainer();
-            // Mark our new button as active
-            var myBtn = document.getElementById('lf-glogin');
-            if (myBtn) myBtn.style.outline = '2px solid #0f0';
         } else {
             LOG('Not ready yet — retrying...');
             retryDelivery();
@@ -145,121 +141,80 @@
         google.accounts.id.prompt(function (notification) {
             if (notification.isNotDisplayed()) {
                 LOG('One Tap not shown:', notification.getNotDisplayedReason());
-                showGISButton();
             } else if (notification.isSkippedMoment()) {
                 LOG('One Tap skipped:', notification.getSkippedReason());
-                showGISButton();
             }
         });
     }
 
-    function showGISButton() {
-        if (document.getElementById('gis-container')) return;
-        var container = document.createElement('div');
-        container.id = 'gis-container';
-        Object.assign(container.style, {
-            position: 'fixed', top: '10px', right: '10px', zIndex: '999999',
-            background: 'rgba(0,0,0,0.9)', padding: '12px 16px', borderRadius: '10px',
-            border: '1px solid rgba(0,255,204,0.3)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px'
-        });
-        var label = document.createElement('div');
-        label.textContent = 'Sign in to play with your account:';
-        Object.assign(label.style, { color: '#ccc', fontSize: '12px', fontFamily: 'Ubuntu, sans-serif' });
-        var btnDiv = document.createElement('div');
-        btnDiv.id = 'gis-btn';
-        var close = document.createElement('div');
-        close.textContent = '✕';
-        Object.assign(close.style, { position: 'absolute', top: '4px', right: '8px', color: '#666', cursor: 'pointer', fontSize: '12px' });
-        close.onclick = function () { container.remove(); };
-        container.appendChild(close);
-        container.appendChild(label);
-        container.appendChild(btnDiv);
-        document.body.appendChild(container);
-        google.accounts.id.renderButton(btnDiv, { theme: 'filled_blue', size: 'large', shape: 'rectangular', text: 'signin_with', width: 280 });
-        LOG('GIS sign-in button shown.');
-    }
-
-    function removeGISContainer() {
-        var el = document.getElementById('gis-container');
-        if (el) el.remove();
-    }
-
     // ────────────────────────────────────────
-    // DELETE DELTA'S GOOGLE BUTTON
-    // AND INSERT OUR NEW ONE IN ITS PLACE
+    // DELETE OLD GOOGLE BUTTON +
+    // EMBED GIS BUTTON IN DELTA'S UI
     // ────────────────────────────────────────
 
-    var _btnDone = false;
+    var _oldBtnDeleted = false;
+    var _gisBtnPlaced = false;
 
-    function swapGoogleButton() {
-        if (_btnDone) return;
-
-        // Find all fa-google icons in the page
+    function deleteOldGoogleButton() {
+        if (_oldBtnDeleted) return;
         var icons = document.querySelectorAll('.fa-google');
         for (var i = 0; i < icons.length; i++) {
-            // Skip our own button if it exists
-            var myExisting = document.getElementById('lf-glogin');
-            if (myExisting && myExisting.contains(icons[i])) continue;
+            // Skip our own embedded button
+            if (icons[i].closest('#lf-gis-embed')) continue;
 
-            // Walk up to find the wrapper div (flex flex-col w-1/2 or gy-1 col)
-            var wrapper = icons[i].parentElement;
-            while (wrapper) {
-                // Check if this is the column wrapper
-                if (wrapper.parentElement && wrapper.parentElement.id === 'realms') break;
-                if (wrapper.className && (
-                    wrapper.className.indexOf('w-1/2') >= 0 ||
-                    wrapper.className.indexOf('gy-1') >= 0 ||
-                    wrapper.className.indexOf('col') >= 0
-                )) break;
-                wrapper = wrapper.parentElement;
-            }
-
-            if (!wrapper) {
-                // Fallback: just use the btn-colored parent
-                wrapper = icons[i];
-                while (wrapper && (!wrapper.classList || !wrapper.classList.contains('btn-colored'))) {
-                    wrapper = wrapper.parentElement;
+            // Walk up to the wrapper (flex flex-col w-1/2, or gy-1 col, etc.)
+            var el = icons[i];
+            while (el) {
+                if (el.classList && el.classList.contains('btn-colored')) {
+                    // Found the button itself, now go up one more to its wrapper
+                    var wrapper = el.parentElement;
+                    if (wrapper) {
+                        LOG('Deleting old Google button wrapper...');
+                        wrapper.remove();
+                        _oldBtnDeleted = true;
+                        return;
+                    }
                 }
+                el = el.parentElement;
             }
-
-            if (!wrapper) continue;
-
-            LOG('Found Delta Google button wrapper! Deleting and replacing...');
-
-            // Create our new button — same visual look, completely new element
-            var newBtn = document.createElement('div');
-            newBtn.id = 'lf-glogin';
-            newBtn.style.cssText = 'cursor: pointer;';
-            // Copy the same wrapper class so it takes same space
-            newBtn.className = wrapper.className;
-
-            // Inner HTML — looks like Delta's button
-            newBtn.innerHTML =
-                '<div class="btn btn-colored size-small" style="--data-background:#DB4437">' +
-                '<div class="btn-layer" role="tooltip" data-microtip-position="bottom">' +
-                '<div class="tty">Google</div>' +
-                '<div class="btn-logo"><div class="btn-icon fab fa-google"></div></div>' +
-                '</div>' +
-                '</div>';
-
-            // Click → trigger GIS
-            newBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                LOG('Our Google button clicked → GIS');
-                initGIS();
-            });
-
-            // Replace: delete old, insert new in its place
-            var parent = wrapper.parentElement;
-            parent.replaceChild(newBtn, wrapper);
-
-            _btnDone = true;
-            LOG('✅ Old Google button deleted, new one inserted!');
-            return;
         }
+    }
+
+    function placeGISButton() {
+        if (_gisBtnPlaced) return;
+        if (!window.google || !window.google.accounts) return;
+
+        // Find div.fcols with width: 28%
+        var fcolsDivs = document.querySelectorAll('.fcols');
+        var target = null;
+        for (var i = 0; i < fcolsDivs.length; i++) {
+            if (fcolsDivs[i].style.width === '28%') {
+                target = fcolsDivs[i];
+                break;
+            }
+        }
+        if (!target) return;
+
+        LOG('Found fcols (28%), embedding GIS button...');
+
+        // Create container — small, no label, no HUD
+        var container = document.createElement('div');
+        container.id = 'lf-gis-embed';
+        container.style.cssText = 'margin: 4px 0; display: flex; justify-content: center; transform: scale(0.85); transform-origin: center;';
+
+        // Render the actual Google sign-in button
+        google.accounts.id.renderButton(container, {
+            theme: 'filled_blue',
+            size: 'medium',
+            shape: 'rectangular',
+            text: 'signin_with',
+            width: 200
+        });
+
+        // Insert at the top of fcols
+        target.insertBefore(container, target.firstChild);
+        _gisBtnPlaced = true;
+        LOG('✅ GIS button embedded in fcols!');
     }
 
     // ────────────────────────────────────────
@@ -310,7 +265,7 @@
             return Promise.resolve();
         };
         if (auth2.attachClickHandler) {
-            auth2.attachClickHandler = function (el, opts, onSuccess, onFail) {
+            auth2.attachClickHandler = function () {
                 LOG('attachClickHandler intercepted (no-op).');
                 return auth2;
             };
@@ -327,22 +282,24 @@
             if (!document.body) return;
             clearInterval(bodyCheck);
 
-            // 1. Load GIS and show One Tap
+            // 1. Load GIS and auto One Tap
             loadGIS(function () { initGIS(); });
 
-            // 2. Watch for Delta's Google button with MutationObserver
+            // 2. Watch DOM for Delta's Google button to delete + fcols to embed
             var observer = new MutationObserver(function () {
-                if (_btnDone) { observer.disconnect(); return; }
-                swapGoogleButton();
+                deleteOldGoogleButton();
+                placeGISButton();
+                if (_oldBtnDeleted && _gisBtnPlaced) observer.disconnect();
             });
             observer.observe(document.documentElement, { childList: true, subtree: true });
-            // Also try immediately and on interval as fallback
-            swapGoogleButton();
-            var btnCheck = setInterval(function () {
-                if (_btnDone) { clearInterval(btnCheck); return; }
-                swapGoogleButton();
+
+            // Fallback interval
+            var check = setInterval(function () {
+                deleteOldGoogleButton();
+                placeGISButton();
+                if (_oldBtnDeleted && _gisBtnPlaced) clearInterval(check);
             }, 500);
-            setTimeout(function () { clearInterval(btnCheck); observer.disconnect(); }, 120000);
+            setTimeout(function () { clearInterval(check); observer.disconnect(); }, 120000);
 
             // 3. Patch GAPI
             var gapiCheck = setInterval(function () {
