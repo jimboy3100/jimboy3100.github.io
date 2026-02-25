@@ -159,7 +159,7 @@
     /* NAVBAR — frosted uppercase */
     #navbar {
         position: sticky !important; top: 0; z-index: 1000;
-        background: rgba(255,255,255,0.78) !important;
+        background: var(--glass-bg) !important;
         backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
         border-bottom: 1px solid var(--border); height: auto !important;
         padding: 10px 0; box-shadow: var(--shadow-xs);
@@ -402,6 +402,10 @@
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
+    /* FORCE THEME OVERRIDES FOR LEGACY CONTENT */
+    .dark-theme [style*="color: black"], 
+    .dark-theme [style*="color:black"] { color: var(--text) !important; }
+    .dark-theme hr { border-color: var(--border) !important; }
     </style>
 </head>
 
@@ -507,7 +511,7 @@
                     target="_blank"><b>https://jimboy3100.github.io/play</b></a> <a style="font-size: 12px;"
                     href="https://jimboy3100.github.io/playWS.html" target="_blank"><b>No SSL servers</b></a></h3>
             <h3 class="project-tagline"></h3>
-            <span style="color: black;">LM <a href="https://github.com/jimboy3100/jimboy3100.github.io/"
+            <span>LM <a href="https://github.com/jimboy3100/jimboy3100.github.io/"
                     target="_blank"><b>Github</b></a> is 100% open source. <a
                     href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/server-side"
                     target="_blank"><b>Server side</b></a> directory added.
@@ -516,28 +520,28 @@
             <h3 class="project-tagline">Step 1, Install Script Manager</h3>
             <div>
 
-                <span style="color: black;">
+                <span>
                     For
                     <img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome">
                     <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>
                 </span>,
                 <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi">
                 <a href="https://vivaldi.com/" target="_blank">Vivaldi</a>:
-                <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
                     href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo"
                     target="_blank">
                     <img title="Chrome"
                         src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
-                        alt="Chrome" style="float: left; ;position: relative">
-                    <span style="position: relative;color: black;">Tampermonkey</span>
+                        alt="Chrome" style="float: left; position: relative">
+                    <span style="position: relative;">Tampermonkey</span>
                 </a>
                 <br>
-                <span style="color: black;"> For <img title="Opera"
+                <span> For <img title="Opera"
                         src="https://jimboy3100.github.io/banners/iconbrowseropera16.png" alt="Opera">
                     <a href="https://www.opera.com/" target="_blank">Opera</a>: </span>
-                <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
                     href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank">
-                    <span style="left;position: relative;color: black; position: relative">
+                    <span style="position: relative;">
                         <img title="Chrome"
                             src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
                             alt="Chrome" style="float: left; position: relative">
@@ -545,13 +549,13 @@
                     </span>
                 </a>
                 <br>
-                <span style="color: black;"> For <img title="Edge"
+                <span> For <img title="Edge"
                         src="https://jimboy3100.github.io/banners/iconbrowseredge16.png" alt="Opera">
                     <a href="https://www.microsoft.com/edge" target="_blank">Edge</a>: </span>
-                <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
                     href="https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd"
                     target="_blank">
-                    <span style="left;position: relative;color: black; position: relative">
+                    <span style="position: relative;">
                         <img title="Chrome"
                             src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
                             alt="Chrome" style="float: left; position: relative">
@@ -559,14 +563,14 @@
                     </span>
                 </a>
                 <br>
-                <span style="color: black;"> For <img title="Android / iOS Mozilla"
+                <span> For <img title="Android / iOS Mozilla"
                         src="https://jimboy3100.github.io/banners/iconMozzila32.png" width="16px"
                         alt="Android / iOS Mozilla">
                     <a href="https://www.mozilla.org/el/firefox/mobile/" target="_blank">Android / iOS Mozilla</a>:
                 </span>
-                <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
                     href="https://addons.mozilla.org/en/firefox/addon/tampermonkey/" target="_blank">
-                    <span style="left;position: relative;color: black; position: relative">
+                    <span style="position: relative;">
                         <img title="Chrome"
                             src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
                             alt="Chrome" style="float: left; position: relative">
@@ -578,10 +582,9 @@
                 Step 2, Install Script
                 <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font>
             </h2>
-            <span style="color: black;"></span>
-            <a align="center" style="cursor:pointer; max-width: 50%; min-width: 15%; border-color: black;" class="btn"
+            <a align="center" style="cursor:pointer; max-width: 50%; min-width: 15%;" class="btn"
                 onclick="JoinLcPartyMode()">
-                <span style="left;position: relative;color: black;"><img title="Chrome"
+                <span style="position: relative;"><img title="Chrome"
                         src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM"
                         style="float: left; position: relative">
                     Legend Express v1.8
@@ -596,29 +599,29 @@
             <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY"
                 target="_blank"><b>Watch video</b></a>
             <hr>
+            <hr>
             <h2 class="project-tagline">Legend mod addon for Delta mod</h2>
-            <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+            <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
                 href="https://greasyfork.org/en/scripts/559441-lmaddonfordelta" target="_blank"><span
-                    style="left;position: relative;color: black;"><img title="Chrome"
+                    style="position: relative;"><img title="Chrome"
                         src="https://jimboy3100.github.io/banners/icontinyAddon.png" height="26" width="26" alt="Agario"
                         style="float: left; position: relative"><img title="Chrome"
                         src="https://jimboy3100.github.io/banners/icontinyDelta.png" height="26" width="26" alt="Agario"
-                        style="float: left; position: relative">Delta addon</span></a> <span
-                style="color: black;"></span>
+                        style="float: left; position: relative">Delta addon</span></a> <span></span>
             <!--            <br><a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://affanfals.github.io/" target="_blank"><span-->
             <!--                style="left;position: relative;color: black;"><img title="Chrome"-->
             <!--                src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="Agario"-->
             <!--                style="float: left; position: relative">Affanfal's bots</span></a>-->
             <!--            <span style="color: black;"></span>-->
             <hr>
+            <hr>
             <h2 class="project-tagline">Other Main Products</h2>
-            <span style="color: black;"></span> <a align="center"
-                style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
+            <span></span> <a align="center"
+                style="max-width: 50%; min-width: 15%;" class="btn"
                 href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank"><span
-                    style="left;position: relative;color: black;"><img title="Chrome"
+                    style="position: relative;"><img title="Chrome"
                         src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM"
-                        style="float: left; position: relative">LM Tiny OpenSource</span></a> <span
-                style="color: black;">(A tiny Open Source Script)</span>
+                        style="float: left; position: relative">LM Tiny OpenSource</span></a> <span>(A tiny Open Source Script)</span>
             <br> <a align="center" style="max-width: 50%;min-width: 15%;border-color: black;" class="btn"
                 href="https://greasyfork.org/en/scripts/472009-skin-rotator-similar-to-legends-mod-for-deltaagario"
                 target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome"
@@ -717,7 +720,7 @@
         </div>
     </section>
     <div id="About" class="skins-wrapper" style="display: none;">
-        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="text-align: center;">
             <strong>Mod for Agar.io multiplayer action browsergame</strong>
             <br>
             <br>
@@ -764,7 +767,7 @@
         </section>
     </div>
     <div id="Features" class="skins-wrapper" style="display: none;">
-        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="text-align: center;">
             <strong>LME is the biggest and quickest mod for agario</strong>
             <br>
             <br>
@@ -880,7 +883,7 @@
     </section>
     </div>
     <div id="Changelog" class="skins-wrapper" style="display: none;">
-        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="text-align: center;">
             <strong>Stay up-to-date</strong>
             <br>
             <iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;"
