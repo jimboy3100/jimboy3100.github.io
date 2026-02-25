@@ -246,7 +246,7 @@
         // Create container for real GIS-rendered button
         var btnDiv = document.createElement('div');
         btnDiv.id = 'lf-google-btn';
-        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;transform:scale(0.7);transform-origin:left center;margin:0;';
+        btnDiv.style.cssText = 'display:inline-block;position:relative;z-index:9999;transform:scale(0.7);transform-origin:left center;margin:0;vertical-align:middle;';
 
         // Insert where original was
         if (origBtn && origBtn.parentElement) {
@@ -260,7 +260,31 @@
             theme: 'filled_blue', size: 'medium', shape: 'rectangular',
             text: 'signin_with', width: 150
         });
+
+        // Restyle Facebook button to match Google button look
+        styleFacebookButton();
+
         LOG('GIS button placed.');
+    }
+
+    function styleFacebookButton() {
+        // Find Facebook button (btn-colored with fa-facebook or first btn-colored)
+        var fbBtn = null;
+        var icons = document.querySelectorAll('.fa-facebook, .fa-facebook-f');
+        for (var i = 0; i < icons.length; i++) {
+            var el = icons[i];
+            while (el && (!el.classList || !el.classList.contains('btn-colored'))) el = el.parentElement;
+            if (el) { fbBtn = el; break; }
+        }
+        if (!fbBtn) {
+            var btns = document.querySelectorAll('.btn-colored.size-small');
+            if (btns.length > 0) fbBtn = btns[0]; // first is typically Facebook
+        }
+        if (!fbBtn) return;
+
+        // Restyle to match the GIS button height/shape — keep its original onclick
+        fbBtn.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;font-size:14px;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;margin:2px;vertical-align:middle;height:36px;min-width:36px;';
+        LOG('Facebook button restyled.');
     }
 
     function removeGISContainer() {
