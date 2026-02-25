@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.9
+// @version      6.1
 // @description  Fixes Google Login for Delta v7. Uses GIS (Google Identity Services) to bypass GAPI's broken popup. Fully automatic — no manual buttons needed.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
 // @grant        none
+// @downloadURL none
 // ==/UserScript==
 
 (function () {
@@ -16,7 +17,7 @@
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
 
-    LOG('v6.9 starting...');
+    LOG('v6.1 starting...');
 
     // ══════════════════════════════════════════════════════════
     // HOW LEGEND MOD DOES IT (ogario.v4.master.js lines 118-171):
@@ -123,7 +124,7 @@
 
         if (delivered) {
             _tokenDelivered = true;
-            removeGISUI();
+            removeGISContainer();
         } else {
             // Not ready yet — retry when Delta/LM initializes
             LOG('Delta/LM not ready yet — will retry...');
@@ -199,88 +200,44 @@
         });
     }
 
-    // ── v6.9: Hide original Google btn and insert a styled clone that triggers GIS ──
-    function hideOriginalGoogleButton() {
+    // ── v6.1 DESIGN CHANGE: hide original Google btn, put smaller GIS btn in its place ──
+    function showGISButton() {
+        if (document.getElementById('lf-google-btn')) return;
+
+        // Find and hide original Google button (btn-colored with fa-google)
+        var origBtn = null;
         var icons = document.querySelectorAll('.fa-google');
         for (var i = 0; i < icons.length; i++) {
-            // Skip our own button
-            if (icons[i].closest('#lf-google-btn')) continue;
-
-            // Walk up to find btn-colored ancestor
             var el = icons[i];
             while (el && (!el.classList || !el.classList.contains('btn-colored'))) {
                 el = el.parentElement;
             }
-            if (!el) continue;
-
-            el.style.display = 'none';
-            LOG('Original Google button hidden.');
-            return el; // return ref so we can insert our button nearby
+            if (el) { origBtn = el; el.style.display = 'none'; break; }
         }
-        return null;
-    }
 
-    function showGISButton() {
-        if (document.getElementById('lf-google-btn')) return;
-
-        // Try to hide the original and get its reference for positioning
-        var origBtn = hideOriginalGoogleButton();
-
-        // Create our replacement button — looks like btn btn-colored size-small
-        // but uses class "lf-btn lf-btn-google" so it doesn't interfere
+        // Create small replacement button
         var btn = document.createElement('button');
         btn.id = 'lf-google-btn';
-        btn.className = 'lf-btn lf-btn-google';
         btn.innerHTML = '<i class="fa fa-google"></i>';
-
-        // Copy the exact style of btn btn-colored size-small
-        btn.style.cssText = [
-            'display: inline-block',
-            'padding: 6px 12px',
-            'font-size: 14px',
-            'font-weight: 400',
-            'line-height: 1.42857',
-            'text-align: center',
-            'white-space: nowrap',
-            'vertical-align: middle',
-            'cursor: pointer',
-            'border: 1px solid transparent',
-            'border-radius: 4px',
-            'color: #fff',
-            'background-color: #dd4b39',
-            'border-color: #d43f2c',
-            'margin: 2px'
-        ].join(';');
-
-        btn.addEventListener('click', function (e) {
+        btn.style.cssText = 'display:inline-block;padding:4px 10px;font-size:12px;cursor:pointer;border:1px solid transparent;border-radius:4px;color:#fff;background-color:#dd4b39;border-color:#d43f2c;margin:2px;vertical-align:middle;';
+        btn.onclick = function (e) {
             e.preventDefault();
             e.stopPropagation();
-            LOG('GIS button clicked → triggering GIS prompt...');
-            if (_token) {
-                deliverToken();
-            } else {
-                initGIS();
-            }
-        });
+            if (_token) { deliverToken(); } else { initGIS(); }
+        };
 
-        // Insert near original button if found, otherwise append to body
+        // Insert where original was
         if (origBtn && origBtn.parentElement) {
             origBtn.parentElement.insertBefore(btn, origBtn);
-            LOG('GIS button inserted next to original (hidden) button.');
         } else {
-            // Fallback: try to find fcols or just append
-            var fcols = document.querySelector('.fcols');
-            if (fcols) {
-                fcols.appendChild(btn);
-                LOG('GIS button appended to fcols.');
-            } else {
-                document.body.appendChild(btn);
-                LOG('GIS button appended to body (fallback).');
-            }
+            // Fallback: find flex-col w-1/2 container or body
+            var container = document.querySelector('.flex.flex-col.w-1\\/2');
+            if (container) { container.appendChild(btn); } else { document.body.appendChild(btn); }
         }
+        LOG('GIS button placed.');
     }
 
-    function removeGISUI() {
+    function removeGISContainer() {
         var el = document.getElementById('lf-google-btn');
         if (el) el.remove();
     }
