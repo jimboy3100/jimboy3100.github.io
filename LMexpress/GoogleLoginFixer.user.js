@@ -219,7 +219,7 @@
         var btn = document.createElement('button');
         btn.id = 'lf-google-btn';
         btn.innerHTML = '<i class="fa fa-google"></i>';
-        btn.style.cssText = 'display:inline-block;padding:4px 10px;font-size:12px;cursor:pointer;border:1px solid transparent;border-radius:4px;color:#fff;background-color:#dd4b39;border-color:#d43f2c;margin:2px;vertical-align:middle;';
+        btn.style.cssText = 'display:inline-block;padding:4px 10px;font-size:12px;cursor:pointer;border:1px solid transparent;border-radius:4px;color:#fff;background-color:#dd4b39;border-color:#d43f2c;margin:2px;vertical-align:middle;position:relative;z-index:9999;pointer-events:auto;';
         btn.onclick = function (e) {
             e.preventDefault();
             e.stopPropagation();
