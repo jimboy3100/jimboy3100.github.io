@@ -95,7 +95,7 @@
     }
     html { scroll-behavior: smooth; }
     body {
-        font-family: var(--font) !important; background: transparent !important;
+        font-family: var(--font) !important; background: var(--bg) !important;
         color: var(--text) !important; overflow-x: hidden !important;
         line-height: 1.75 !important; font-size: 15px !important;
         -webkit-font-smoothing: antialiased;
@@ -206,20 +206,6 @@
         transition: background 0.4s var(--ease);
     }
 
-    /* BACKGROUND VIDEO */
-    .bg-video {
-        position: fixed; top: 0; left: 0; min-width: 100%; min-height: 100%;
-        width: auto; height: auto; z-index: -2; object-fit: cover;
-        pointer-events: none;
-    }
-    .video-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        z-index: -1; pointer-events: none;
-        background: var(--bg); opacity: 0.88;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        transition: background 0.4s var(--ease), opacity 0.4s var(--ease);
-    }
-    .dark-theme .video-overlay { opacity: 0.82; }
 
     /* HERO BANNER — centered, glassy */
     body > section:first-of-type {
@@ -425,10 +411,6 @@
 </head>
 
 <body>
-    <video class="bg-video" autoplay muted loop playsinline>
-        <source src="https://dkyriak.github.io/VideoJapaneseTypeBeatOrochi.mp4" type="video/mp4">
-    </video>
-    <div class="video-overlay"></div>
 
 
     <script>
