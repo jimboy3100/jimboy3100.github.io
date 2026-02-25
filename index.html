@@ -190,30 +190,31 @@
         box-shadow: var(--shadow-lg);
     }
 
-    /* HERO SOCIAL ICONS — centered overlay */
+    /* HERO SOCIAL ICONS — 3D animated, centered */
     .hero-banner-wrap {
         position: relative; display: flex; justify-content: center;
-        align-items: center; width: 100%;
+        align-items: center; width: 100%; min-height: 120px;
     }
-    .hero-social {
-        position: absolute; top: 20%; left: 50%;
-        transform: translate(-50%, -50%); z-index: 10;
-        display: flex; align-items: center; justify-content: center;
-        gap: 20px; padding: 12px 24px;
-        background: rgba(0,0,0,0.45);
-        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.15);
+    .hero-banner-wrap .flex-center {
+        display: flex; justify-content: center; align-items: center;
+        gap: 0; padding: 10px; width: 100%; min-height: 100px;
     }
-    .hero-social a {
-        color: #fff !important; font-size: 1.6rem;
-        transition: transform 0.25s var(--ease), color 0.25s var(--ease) !important;
+    .hero-banner-wrap .icon-3d {
+        padding: 10px; color: #fff;
+        animation: icon3d 200ms 10;
+    }
+    .hero-banner-wrap .icon-3d:hover {
+        animation: icon3d 200ms infinite;
+    }
+    .hero-banner-wrap a {
         background-image: none !important;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        opacity: 0.9;
     }
-    .hero-social a:hover {
-        color: var(--accent-light) !important; transform: scale(1.2);
-        opacity: 1; background-image: none !important;
+    @keyframes icon3d {
+        0%   { text-shadow: 5px 4px #f44336, -5px -6px #2196f3; }
+        25%  { text-shadow: -5px -6px #f44336, 5px 4px #2196f3; }
+        50%  { text-shadow: 5px -4px #f44336, -8px 4px #2196f3; }
+        75%  { text-shadow: -8px -4px #f44336, -5px -4px #2196f3; }
+        100% { text-shadow: -5px 0 #f44336, 5px -4px #2196f3; }
     }
     iframe.result-iframe { border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg); border: none !important; }
@@ -438,18 +439,13 @@
         <section
             style="background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 70%; object-fit: fill; color: black;text-align: center;">
             <div class="hero-banner-wrap">
-                <iframe id="animatedpromosIframe4" class="result-iframe" style="border: none; margin-top: 10px;"
-                    src="extras/banneranimated4.html" name="CodePen" width="70%"
-                    frameborder="0" scrolling="no"
-                    sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms"
-                    allowfullscreen="allowfullscreen"></iframe>
-                <div class="hero-social">
-                    <a target="_blank" href="https://www.youtube.com/watch?v=CnIfNSpCf70" title="YouTube"><i class="fa fa-youtube"></i></a>
-                    <a target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/" title="GitHub"><i class="fa fa-github"></i></a>
-                    <a target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend" title="GreasyFork"><i class="fa fa-code-fork"></i></a>
-                    <a target="_blank" href="https://www.facebook.com/Lcclan/" title="Facebook"><i class="fa fa-facebook"></i></a>
-                    <a target="_blank" href="http://legendclan.ml" title="℄ Legend Clan"><i class="fa fa-skype"></i></a>
-                    <a target="_blank" href="https://www.buymeacoffee.com/legendmod" title="Donate"><i class="fa fa-cc-paypal"></i></a>
+                <div class="flex-center">
+                    <a target="_blank" href="https://www.youtube.com/watch?v=CnIfNSpCf70"><i id="legendyoutube" class="fa fa-youtube fa-3x icon-3d"></i></a>
+                    <a target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/"><i id="legendgithub" class="fa fa-github fa-3x icon-3d"></i></a>
+                    <a target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend"><i id="legendgreasyfork" class="fa fa-code-fork fa-3x icon-3d"></i></a>
+                    <a target="_blank" href="https://www.facebook.com/Lcclan/"><i id="legendfacebook" class="fa fa-facebook fa-3x icon-3d"></i></a>
+                    <a target="_blank" href="http://legendclan.ml"><i id="legendskype" class="fa fa-skype fa-3x icon-3d" title="℄ Legend Clan"></i></a>
+                    <a target="_blank" href="https://www.buymeacoffee.com/legendmod" data-toggle="tooltip" style="color: transparent;" title="Donate"><i id="legendpaypal" class="fa fa-cc-paypal fa-3x icon-3d"></i></a>
                 </div>
             </div>
         </section>
