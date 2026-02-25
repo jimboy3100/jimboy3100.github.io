@@ -47,6 +47,7 @@
         }
     </script>
     <title>Legend Mod for agar.io | By ℄ Clan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- MODERN DESIGN SYSTEM v2 -->
     <style>
@@ -187,6 +188,32 @@
         min-height: 180px; width: 80% !important; border: none !important;
         border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg);
+    }
+
+    /* HERO SOCIAL ICONS — centered overlay */
+    .hero-banner-wrap {
+        position: relative; display: flex; justify-content: center;
+        align-items: center; width: 100%;
+    }
+    .hero-social {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%); z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        gap: 20px; padding: 12px 24px;
+        background: rgba(0,0,0,0.45);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.15);
+    }
+    .hero-social a {
+        color: #fff !important; font-size: 1.6rem;
+        transition: transform 0.25s var(--ease), color 0.25s var(--ease) !important;
+        background-image: none !important;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        opacity: 0.9;
+    }
+    .hero-social a:hover {
+        color: var(--accent-light) !important; transform: scale(1.2);
+        opacity: 1; background-image: none !important;
     }
     iframe.result-iframe { border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg); border: none !important; }
@@ -410,11 +437,21 @@
     <section style="text-align: center;color: black;">
         <section
             style="background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 70%; object-fit: fill; color: black;text-align: center;">
-            <iframe id="animatedpromosIframe4" class="result-iframe" style="border: none; margin-top: 10px;"
-                src="https://jimboy3100.github.io/extras/banneranimated4.html" name="CodePen" width="70%"
-                frameborder="0" scrolling="no"
-                sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms"
-                allowfullscreen="allowfullscreen"></iframe>
+            <div class="hero-banner-wrap">
+                <iframe id="animatedpromosIframe4" class="result-iframe" style="border: none; margin-top: 10px;"
+                    src="https://jimboy3100.github.io/extras/banneranimated4.html" name="CodePen" width="70%"
+                    frameborder="0" scrolling="no"
+                    sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms"
+                    allowfullscreen="allowfullscreen"></iframe>
+                <div class="hero-social">
+                    <a target="_blank" href="https://www.youtube.com/watch?v=CnIfNSpCf70" title="YouTube"><i class="fa fa-youtube"></i></a>
+                    <a target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/" title="GitHub"><i class="fa fa-github"></i></a>
+                    <a target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend" title="GreasyFork"><i class="fa fa-code-fork"></i></a>
+                    <a target="_blank" href="https://www.facebook.com/Lcclan/" title="Facebook"><i class="fa fa-facebook"></i></a>
+                    <a target="_blank" href="http://legendclan.ml" title="℄ Legend Clan"><i class="fa fa-skype"></i></a>
+                    <a target="_blank" href="https://www.buymeacoffee.com/legendmod" title="Donate"><i class="fa fa-cc-paypal"></i></a>
+                </div>
+            </div>
         </section>
         <div id="navbar">
             <div id="nav">
