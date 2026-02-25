@@ -139,13 +139,25 @@
 
 
   <style>
-    @import 'https://fonts.googleapis.com/css?family=Roboto+Mono:100';
+    @import 'https://fonts.googleapis.com/css?family=Roboto+Mono:300,400';
+
+    :root {
+      --text: #212121;
+      --dud: #757575;
+    }
+
+    body.dark-theme {
+      --text: #f8fafc;
+      --dud: #94a3b8;
+    }
 
     html,
     body {
       font-family: 'Roboto Mono', monospace;
-
       height: 100%;
+      background: transparent !important;
+      overflow: hidden;
+      transition: color 0.4s ease;
     }
 
     .container {
@@ -157,15 +169,34 @@
     }
 
     .text {
-      font-weight: 100;
-      font-size: 28px;
-      color: #212121;
+      font-weight: 400;
+      font-size: 24px;
+      color: var(--text);
+      letter-spacing: -0.02em;
     }
 
     .dud {
-      color: #757575;
+      color: var(--dud);
+      opacity: 0.7;
     }
   </style>
+
+  <script>
+    (function () {
+      function syncTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.body.classList.toggle('dark-theme', isDark);
+      }
+      syncTheme();
+      // Listen for theme changes from the parent
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') syncTheme();
+      });
+      // Check every second as a fallback for same-origin iframe communication
+      setInterval(syncTheme, 1000);
+    })();
+  </script>
 
   <script>
     window.console = window.console || function (t) { };
