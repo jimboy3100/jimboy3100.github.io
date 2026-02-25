@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle toggle changes
     toggle.addEventListener('change', () => {
-        chrome.storage.local.set({ enabled: toggle.checked });
+        chrome.storage.local.set({ enabled: toggle.checked }, () => {
+            console.log('Legend Express: Enabled set to', toggle.checked);
+        });
     });
 
     // Links

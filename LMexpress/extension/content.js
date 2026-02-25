@@ -28,9 +28,16 @@ const GM_info = {
 };
 
 // Check enabled state before proceeding
-chrome.storage.local.get(['enabled'], (result) => {
-    if (result.enabled === false) {
-        console.log('Legend Express: Extension is disabled.');
+chrome.storage.local.get({ enabled: true }, (result) => {
+    const isEnabled = result.enabled !== false;
+    console.log('[Legend Express] Extension status:', isEnabled ? 'Enabled' : 'Disabled');
+
+    if (!isEnabled) {
+        // If we are on a mod-redirected page but extension is disabled, go back to vanilla agar.io
+        if (location.pathname.startsWith("/legendmod")) {
+            console.log('[Legend Express] Redirecting to vanilla agar.io...');
+            location.href = "https://agar.io/" + location.hash;
+        }
         return;
     }
 
