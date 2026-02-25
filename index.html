@@ -76,12 +76,30 @@
         --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         --ease: cubic-bezier(0.4,0,0.2,1);
     }
+    .dark-theme {
+        --bg: #0f172a;
+        --bg-subtle: #1e293b;
+        --bg-card: rgba(30, 41, 59, 0.7);
+        --text: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.15);
+        --glass-bg: rgba(15, 23, 42, 0.65);
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+        --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.5);
+        --shadow-glow: 0 0 20px rgba(124,58,237,0.2);
+        --accent-glow: rgba(124,58,237,0.25);
+    }
     html { scroll-behavior: smooth; }
     body {
         font-family: var(--font) !important; background: var(--bg) !important;
         color: var(--text) !important; overflow-x: hidden !important;
         line-height: 1.75 !important; font-size: 15px !important;
         -webkit-font-smoothing: antialiased;
+        transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
     }
     ::selection { background: var(--accent-light); color: #fff; }
 
@@ -167,10 +185,25 @@
         border: none !important; box-shadow: 0 2px 8px rgba(124,58,237,0.3); }
     #nav .active:hover { color: #fff !important; opacity: 0.92; }
 
+    /* THEME TOGGLE */
+    .theme-toggle {
+        background: none !important; border: none !important; color: var(--text-muted) !important;
+        cursor: pointer; padding: 10px 16px !important; font-size: 1rem !important;
+        transition: all 0.25s var(--ease) !important; display: inline-flex !important; align-items: center;
+        margin: 0 !important; border-radius: var(--radius-sm) !important;
+    }
+    .theme-toggle:hover { color: var(--accent) !important; background: rgba(124,58,237,0.06) !important; }
+    .dark-theme .theme-toggle:hover { background: rgba(167,139,250,0.06) !important; }
+    .theme-toggle i { font-size: 1.1rem; }
+    .dark-theme-icon { display: none !important; }
+    .dark-theme .light-theme-icon { display: none !important; }
+    .dark-theme .dark-theme-icon { display: inline-block !important; }
+
     /* HERO */
     .page-header {
-        background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdfa 100%) !important;
+        background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg) 100%) !important;
         padding: 2rem 1.5rem !important; border-radius: 0 0 24px 24px;
+        transition: background 0.4s var(--ease);
     }
 
     /* HERO BANNER — centered, glassy */
@@ -460,6 +493,12 @@
                     <li><a name="FPS" href="#FPS">FPS</a></li>
                     <li><a name="Developers" href="#Developers">Devs</a></li>
                     <li><a name="LMmobile" href="#LMmobile" style="display: none;">LMmobile</a></li>
+                    <li>
+                        <button id="theme-toggle" class="theme-toggle" title="Toggle Theme">
+                            <i class="fas fa-sun light-theme-icon"></i>
+                            <i class="fas fa-moon dark-theme-icon"></i>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -1108,6 +1147,26 @@
                 document.getElementsByName("FPS")[0].click();
             }
         }, 2000);
+
+        // THEME LOGIC
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+            }
+        }
+
+        // Initialize theme immediately to prevent flash
+        initTheme();
+
+        $(document).ready(function() {
+            $('#theme-toggle').on('click', toggleTheme);
+        });
 
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
