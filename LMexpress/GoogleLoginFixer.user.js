@@ -235,72 +235,29 @@
     }
 
     function showGISButton() {
-        if (document.getElementById('lf-btn-row')) return;
-
+        if (document.getElementById('lf-google-btn')) return;
         var origBtn = findOriginalGoogleButton();
-        if (origBtn) {
-            origBtn.style.display = 'none';
-            _origHidden = true;
-        }
-
-        // Find and hide original Facebook button too
-        var fbBtn = findFacebookButton();
-        if (fbBtn) fbBtn.style.display = 'none';
-
-        // Find the parent where the original buttons were
-        var parent = null;
-        if (origBtn && origBtn.parentElement) parent = origBtn.parentElement;
-        else if (fbBtn && fbBtn.parentElement) parent = fbBtn.parentElement;
-        if (!parent) parent = document.querySelector('.fcols') || document.body;
-
-        // Create row: FB and Google side by side, compact
-        var row = document.createElement('div');
-        row.id = 'lf-btn-row';
-        row.style.cssText = 'display:flex;align-items:center;gap:4px;padding:2px 0;';
-
-        // Facebook button with "f"
-        var fbClone = document.createElement('button');
-        fbClone.textContent = 'f';
-        fbClone.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;font-size:18px;font-weight:bold;font-family:Arial,sans-serif;cursor:pointer;border:none;border-radius:4px;color:#fff;background-color:#1877f2;';
-        fbClone.onclick = function () {
-            if (window.FB && window.FB.login) {
-                window.FB.login(function (r) { LOG('FB login response', r); }, { scope: 'public_profile,email' });
-            } else if (fbBtn) {
-                fbBtn.style.display = '';
-                fbBtn.click();
-                fbBtn.style.display = 'none';
-            }
-        };
-
-        // Google GIS button container — same size as FB
-        var gDiv = document.createElement('div');
-        gDiv.style.cssText = 'display:inline-flex;align-items:center;';
-        google.accounts.id.renderButton(gDiv, {
-            type: 'icon', theme: 'filled_blue', size: 'medium', shape: 'square'
-        });
-
-        row.appendChild(fbClone);
-        row.appendChild(gDiv);
-        parent.insertBefore(row, parent.firstChild);
-
-        LOG('Button row placed.');
-    }
-
-    function findFacebookButton() {
-        var icons = document.querySelectorAll('.fa-facebook, .fa-facebook-f');
-        for (var i = 0; i < icons.length; i++) {
-            if (icons[i].closest('#lf-btn-row')) continue;
-            var el = icons[i];
-            while (el && (!el.classList || !el.classList.contains('btn-colored'))) el = el.parentElement;
-            if (el) return el;
-        }
-        var btns = document.querySelectorAll('.btn-colored.size-small');
-        if (btns.length > 0) return btns[0];
-        return null;
+        if (origBtn) { origBtn.style.display = 'none'; _origHidden = true; }
+        var wrap = document.createElement('div');
+        wrap.id = 'lf-google-btn';
+        wrap.style.cssText = 'position:relative;display:inline-block;width:36px;height:30px;margin:2px;vertical-align:middle;overflow:hidden;cursor:pointer;';
+        var label = document.createElement('div');
+        label.textContent = 'G';
+        label.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;color:#fff;background:#dd4b39;border-radius:4px;pointer-events:none;z-index:1;';
+        var real = document.createElement('div');
+        real.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.01;z-index:2;';
+        google.accounts.id.renderButton(real, { theme: 'filled_blue', size: 'large', shape: 'rectangular', text: 'signin_with', width: 200 });
+        wrap.appendChild(label);
+        wrap.appendChild(real);
+        var inserted = false;
+        if (origBtn && origBtn.parentElement) { origBtn.parentElement.insertBefore(wrap, origBtn); inserted = true; }
+        if (!inserted) { var fb = document.querySelector('.btn-colored.size-small'); if (fb && fb.parentElement) { fb.parentElement.insertBefore(wrap, fb.nextSibling); inserted = true; } }
+        if (!inserted) { (document.querySelector('.fcols') || document.body).appendChild(wrap); }
+        LOG('GIS button shown.');
     }
 
     function removeGISContainer() {
-        var el = document.getElementById('lf-btn-row');
+        var el = document.getElementById('lf-google-btn');
         if (el) el.remove();
     }
 
