@@ -266,7 +266,9 @@
     /* IFRAMES */
     iframe { max-width: 100% !important; border-radius: var(--radius-sm) !important; }
     #animatedpromosIframe4, #customskinsIframe2 {
-        border-radius: var(--radius) !important; box-shadow: var(--shadow-md); }
+        border-radius: var(--radius) !important; box-shadow: var(--shadow-md);
+        pointer-events: auto !important; position: relative; z-index: 10;
+    }
 
     /* TEXT */
     span[style*="color: black"], span[style*="color:black"] { color: var(--text-secondary) !important; font-size: 0.92rem; }
@@ -434,7 +436,6 @@
                     */
         //# sourceURL=pen.js
     </script>
-    </div>
     <section style="text-align: center;color: black;">
         <section
             style="background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 70%; object-fit: fill; color: black;text-align: center;">
@@ -697,7 +698,7 @@
         </div>
     </section>
     <div id="About" class="skins-wrapper" style="display: none;">
-        <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
             <strong>Mod for Agar.io multiplayer action browsergame</strong>
             <br>
             <br>
@@ -744,7 +745,7 @@
         </section>
     </div>
     <div id="Features" class="skins-wrapper" style="display: none;">
-        <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
             <strong>LME is the biggest and quickest mod for agario</strong>
             <br>
             <br>
@@ -866,7 +867,7 @@
     </section>
     </div>
     <div id="Changelog" class="skins-wrapper" style="display: none;">
-        <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
             <strong>Stay up-to-date</strong>
             <br>
             <iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;"
@@ -907,7 +908,7 @@
         </section>
     </div>
     <div id="FPS" class="skins-wrapper" style="display: none;">
-        <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
             <color style="color:red"><strong>READ AND APPLY! THESE ARE IMPORTANT</strong></color>
             <br>
             <h2 class="project-tagline">Best Performance values</h2>
@@ -987,7 +988,7 @@
         </section>
     </div>
     <div id="Developers" class="skins-wrapper" style="display: none;">
-        <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
+        <section style="background-image: url();background-size: 100%; color: black;text-align: center;">
             <strong>Do more...</strong>
             <br>
             <br>
