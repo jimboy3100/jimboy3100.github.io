@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Universal Agar.io Google Login Fixer
 // @namespace    http://jimboy3100.github.io/
-// @version      6.3
-// @description  Fixes Google Login for Delta v7. Intercepts Google button click, uses GIS instead of broken GAPI popup.
+// @version      6.4
+// @description  Fixes Google Login for Delta v7. Uses GIS (Google Identity Services) to bypass GAPI's broken popup. Replaces Delta's Google button with GIS-powered clone.
 // @author       Jimboy3100
 // @match        https://agar.io/*
 // @run-at       document-start
@@ -15,15 +15,113 @@
 
     const CLIENT_ID = "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com";
     const LOG = (msg, ...a) => console.log('[LoginFix]', msg, ...a);
-    LOG('v6.3 starting...');
+
+    LOG('v6.4 starting...');
 
     let _token = null;
-    let _gisInitialized = false;
-    let _delivered = false;
+    let _tokenDelivered = false;
 
-    // ════════════════════════════════════════
-    // GIS
-    // ════════════════════════════════════════
+    // ────────────────────────────────────────
+    // TOKEN DELIVERY (same as working v6.0)
+    // ────────────────────────────────────────
+
+    function onTokenReceived(idToken) {
+        _token = idToken;
+        LOG('✅ Got id_token:', idToken.substring(0, 30) + '...');
+        try {
+            var p = JSON.parse(atob(idToken.split('.')[1]));
+            LOG('User:', p.name, '(' + p.email + ')');
+        } catch (e) { }
+        deliverToken();
+    }
+
+    function deliverToken() {
+        if (!_token) return;
+        var delivered = false;
+
+        // Delta v7: GlAccount
+        if (window.GlAccount) {
+            LOG('Delivering to GlAccount...');
+            window.GlAccount.token = _token;
+            window.GlAccount.state && (window.GlAccount.state.logged = true);
+            window.GlAccount.memory && (window.GlAccount.memory.enabled = true);
+            try {
+                var p = JSON.parse(atob(_token.split('.')[1]));
+                window.GlAccount.state.expiration = p.exp * 1000;
+                window.GlAccount.user = {
+                    first_name: p.given_name || '',
+                    last_name: p.family_name || '',
+                    picture: p.picture || '',
+                    id: p.sub || ''
+                };
+            } catch (e) { }
+            if (typeof window.GlAccount.emit === 'function') {
+                window.GlAccount.emit('user', window.GlAccount);
+                window.GlAccount.emit('login', window.GlAccount);
+                LOG('✅ GlAccount login emitted!');
+                delivered = true;
+            }
+        }
+
+        // accs.realms.Google fallback
+        if (!delivered && window.accs && window.accs.realms && window.accs.realms.Google) {
+            var gl = window.accs.realms.Google;
+            gl.token = _token;
+            if (gl.state) gl.state.logged = true;
+            if (gl.memory) gl.memory.enabled = true;
+            if (typeof gl.emit === 'function') {
+                gl.emit('user', gl);
+                gl.emit('login', gl);
+                LOG('✅ accs.realms.Google login emitted!');
+                delivered = true;
+            }
+        }
+
+        // Legend Mod
+        if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
+            window.master.doLoginWithGPlus(_token);
+            LOG('✅ master.doLoginWithGPlus() called!');
+            delivered = true;
+        }
+
+        if (delivered) {
+            _tokenDelivered = true;
+            // Update our fake button to active
+            var fakeBtn = document.getElementById('lf-google-btn');
+            if (fakeBtn) fakeBtn.classList.add('active');
+        } else {
+            LOG('Not ready yet — retrying...');
+            retryDelivery();
+        }
+    }
+
+    function retryDelivery() {
+        var n = 0;
+        var iv = setInterval(function () {
+            if (++n > 60 || _tokenDelivered) { clearInterval(iv); return; }
+            if (window.GlAccount || (window.master && window.master.doLoginWithGPlus)) {
+                clearInterval(iv);
+                deliverToken();
+            }
+        }, 1000);
+    }
+
+    function watchForReconnects() {
+        setInterval(function () {
+            if (_token && window.GlAccount && !window.GlAccount.token) {
+                LOG('Token cleared — re-injecting...');
+                window.GlAccount.token = _token;
+                if (window.GlAccount.state) window.GlAccount.state.logged = true;
+                if (typeof window.GlAccount.emit === 'function') {
+                    window.GlAccount.emit('login', window.GlAccount);
+                }
+            }
+        }, 3000);
+    }
+
+    // ────────────────────────────────────────
+    // GIS (Google Identity Services)
+    // ────────────────────────────────────────
 
     function loadGIS(cb) {
         if (window.google && window.google.accounts) { cb(); return; }
@@ -35,183 +133,204 @@
         (document.head || document.documentElement).appendChild(s);
     }
 
-    function promptGIS() {
-        if (!window.google || !window.google.accounts) return;
-        if (!_gisInitialized) {
-            google.accounts.id.initialize({
-                client_id: CLIENT_ID,
-                callback: function (resp) {
-                    if (resp.credential) onToken(resp.credential);
-                },
-                auto_select: true,
-                cancel_on_tap_outside: false,
-                itp_support: true
-            });
-            _gisInitialized = true;
-        }
-        LOG('Showing GIS prompt...');
-        google.accounts.id.prompt(function (n) {
-            if (n.isNotDisplayed()) LOG('One Tap not shown:', n.getNotDisplayedReason());
-            else if (n.isSkippedMoment()) LOG('One Tap skipped:', n.getSkippedReason());
+    function initGIS() {
+        google.accounts.id.initialize({
+            client_id: CLIENT_ID,
+            callback: function (resp) {
+                if (resp.credential) onTokenReceived(resp.credential);
+            },
+            auto_select: true,
+            cancel_on_tap_outside: false,
+            itp_support: true
+        });
+
+        LOG('Showing One Tap...');
+        google.accounts.id.prompt(function (notification) {
+            if (notification.isNotDisplayed()) {
+                LOG('One Tap not shown:', notification.getNotDisplayedReason());
+            } else if (notification.isSkippedMoment()) {
+                LOG('One Tap skipped:', notification.getSkippedReason());
+            }
         });
     }
 
-    // ════════════════════════════════════════
-    // TOKEN
-    // ════════════════════════════════════════
+    // ────────────────────────────────────────
+    // REPLACE DELTA'S GOOGLE BUTTON
+    // Hide original, insert identical clone
+    // that triggers GIS on click
+    // ────────────────────────────────────────
 
-    function onToken(idToken) {
-        _token = idToken;
-        var p = {};
-        try { p = JSON.parse(atob(idToken.split('.')[1])); } catch (e) { }
-        LOG('✅ Token! User:', p.name, '(' + p.email + ')');
-        deliverToken();
-    }
+    function replaceButton() {
+        // Already done?
+        if (document.getElementById('lf-google-btn')) return true;
 
-    function deliverToken() {
-        if (!_token) return;
+        // Find the original: look for the btn-colored that contains fa-google
+        var googleIcons = document.querySelectorAll('.fa-google');
+        if (!googleIcons.length) return false;
 
-        // Delta v7: GlAccount
-        var gl = window.GlAccount;
-        if (gl) {
-            var p = {};
-            try { p = JSON.parse(atob(_token.split('.')[1])); } catch (e) { }
-
-            gl.token = _token;
-            gl.state.expiration = (p.exp || 0) * 1000;
-            gl.state.logged = true;
-            gl.memory.enabled = true;
-            gl.user = gl.user || {};
-            gl.user.picture = p.picture || '';
-            gl.user.first_name = p.given_name || '';
-            gl.user.last_name = p.family_name || '';
-            gl.user.id = p.sub || '';
-            gl.emit('user', gl);
-            gl.emit('login', gl);
-            _delivered = true;
-            LOG('✅ GlAccount: token + login emitted!');
-        }
-
-        // Legend Mod
-        if (window.master && typeof window.master.doLoginWithGPlus === 'function') {
-            window.master.doLoginWithGPlus(_token);
-            _delivered = true;
-            LOG('✅ LM: doLoginWithGPlus!');
-        }
-
-        if (!_delivered) setTimeout(deliverToken, 1000);
-    }
-
-    // Re-inject on reconnects
-    setInterval(function () {
-        if (_token && window.GlAccount && !window.GlAccount.token) {
-            LOG('Re-injecting token...');
-            deliverToken();
-        }
-    }, 3000);
-
-    // ════════════════════════════════════════
-    // INTERCEPT GOOGLE BUTTON CLICKS
-    // Capture phase — fires BEFORE Delta's
-    // Preact onclick handler
-    // ════════════════════════════════════════
-
-    function isGoogleButton(el) {
-        // Walk up from click target to check if it's inside the Google button
-        var node = el;
-        while (node && node !== document.body) {
-            // Check for fa-google icon
-            if (node.classList && node.classList.contains('fa-google')) return true;
-            // Check for the btn-colored with Google's red color
-            if (node.classList && node.classList.contains('btn-colored')) {
-                // Check if this button contains fa-google
-                if (node.querySelector('.fa-google')) return true;
+        var originalBtn = null;
+        var originalWrapper = null;
+        for (var i = 0; i < googleIcons.length; i++) {
+            var node = googleIcons[i];
+            // Walk up to find btn-colored
+            while (node && !node.classList.contains('btn-colored')) {
+                node = node.parentElement;
             }
-            // Check for tty/div with text "Google"
-            if (node.tagName === 'DIV' && node.textContent === 'Google' &&
-                (node.classList.contains('tty') || node.tagName === 'TTY')) return true;
-            node = node.parentElement;
+            if (node && node.classList.contains('btn-colored')) {
+                originalBtn = node;
+                // The wrapper is the parent (e.g. <div class="flex flex-col w-1/2"> or <div class="gy-1 col">)
+                originalWrapper = node.parentElement;
+                break;
+            }
         }
-        return false;
+
+        if (!originalBtn || !originalWrapper) return false;
+
+        LOG('Found original Google button, hiding and inserting clone...');
+
+        // Hide original
+        originalBtn.style.display = 'none';
+
+        // Create our clone — looks exactly the same
+        var clone = document.createElement('div');
+        clone.id = 'lf-google-btn';
+        clone.className = originalBtn.className; // "btn btn-colored size-small"
+        if (_token) clone.classList.add('active');
+        clone.setAttribute('style', '--data-background:#DB4437; cursor:pointer;');
+
+        clone.innerHTML =
+            '<div role="tooltip" data-microtip-position="bottom" class="btn-layer">' +
+            '<div class="tty">Google</div>' +
+            '<div class="btn-logo"><div class="btn-icon fab fa-google"></div></div>' +
+            '</div>';
+
+        // Click handler
+        clone.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (_token) {
+                // Already logged in — logout
+                LOG('Logging out Google...');
+                _token = null;
+                _tokenDelivered = false;
+                clone.classList.remove('active');
+                if (window.GlAccount) {
+                    window.GlAccount.token = null;
+                    window.GlAccount.state.logged = false;
+                    window.GlAccount.user = {};
+                    window.GlAccount.emit('logout', window.GlAccount);
+                }
+                return;
+            }
+
+            // Not logged in — trigger GIS
+            LOG('Google button clicked → GIS');
+            initGIS();
+        });
+
+        // Insert clone right after the hidden original
+        originalWrapper.appendChild(clone);
+
+        LOG('✅ Google button replaced!');
+        return true;
     }
 
-    document.addEventListener('click', function (e) {
-        if (!isGoogleButton(e.target)) return;
+    // ────────────────────────────────────────
+    // GAPI PATCHES (same as v6.0)
+    // ────────────────────────────────────────
 
-        // Stop the click from reaching Delta's Preact handler
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        LOG('Google button click intercepted!');
-
-        if (_token) {
-            // Already logged in — log out
-            LOG('Logging out...');
-            _token = null;
-            _delivered = false;
-            _gisInitialized = false;
-            if (window.GlAccount) {
-                window.GlAccount.token = null;
-                window.GlAccount.state.logged = false;
-                window.GlAccount.user = {};
-                window.GlAccount.emit('logout', window.GlAccount);
-            }
-            return;
-        }
-
-        // Not logged in — trigger GIS
-        promptGIS();
-
-    }, true); // ← true = CAPTURE PHASE
-
-    // ════════════════════════════════════════
-    // BLOCK GAPI POPUP
-    // ════════════════════════════════════════
-
-    function blockGAPIPopup() {
-        if (!window.gapi || window.gapi._lf) return;
+    function patchGAPI() {
+        if (!window.gapi) return;
+        if (window.gapi._lf) return;
         window.gapi._lf = true;
 
-        var origLoad = window.gapi.load;
-        window.gapi.load = function (libs, cb) {
+        var origLoad = gapi.load;
+        gapi.load = function (libs, cb) {
             return origLoad.call(this, libs, function () {
                 if (typeof cb === 'function') cb();
                 if (typeof libs === 'string' && libs.indexOf('auth2') >= 0) {
-                    setTimeout(function () {
-                        try {
-                            var inst = window.gapi.auth2.getAuthInstance();
-                            if (inst && !inst._lf) {
-                                inst._lf = true;
-                                inst.signIn = function () {
-                                    LOG('GAPI.signIn() blocked.');
-                                    return Promise.resolve();
-                                };
-                                inst.signOut = function () { return Promise.resolve(); };
-                                inst.isSignedIn.get = function () { return !!_token; };
-                                LOG('✅ GAPI blocked.');
-                            }
-                        } catch (e) { }
-                    }, 100);
+                    setTimeout(patchAuth2, 50);
                 }
             });
         };
+        LOG('gapi.load hooked.');
+        if (gapi.auth2) patchAuth2();
     }
 
-    // ════════════════════════════════════════
+    function patchAuth2() {
+        if (!gapi.auth2) return;
+        var origInit = gapi.auth2.init;
+        if (origInit._lf) return;
+
+        gapi.auth2.init = function () {
+            var inst = origInit.apply(this, arguments);
+            inst.then(function () { patchInstance(inst); });
+            return inst;
+        };
+        gapi.auth2.init._lf = true;
+
+        try {
+            var existing = gapi.auth2.getAuthInstance();
+            if (existing) patchInstance(existing);
+        } catch (e) { }
+        LOG('auth2.init hooked.');
+    }
+
+    function patchInstance(auth2) {
+        if (auth2._lf) return;
+        auth2._lf = true;
+
+        auth2.signIn = function () {
+            LOG('signIn() intercepted → using GIS.');
+            if (_token) { deliverToken(); return Promise.resolve(); }
+            initGIS();
+            return Promise.resolve();
+        };
+
+        if (auth2.attachClickHandler) {
+            auth2.attachClickHandler = function (el, opts, onSuccess, onFail) {
+                LOG('attachClickHandler intercepted (no-op).');
+                return auth2;
+            };
+        }
+
+        LOG('✅ Auth2 instance patched.');
+    }
+
+    // ────────────────────────────────────────
     // BOOT
-    // ════════════════════════════════════════
+    // ────────────────────────────────────────
 
-    var bodyCheck = setInterval(function () {
-        if (!document.body) return;
-        clearInterval(bodyCheck);
+    function boot() {
+        var bodyCheck = setInterval(function () {
+            if (!document.body) return;
+            clearInterval(bodyCheck);
 
-        // Auto One Tap login
-        loadGIS(function () { promptGIS(); });
+            // 1. Load GIS and show One Tap
+            loadGIS(function () { initGIS(); });
 
-        // Block GAPI popup
-        var gapiCheck = setInterval(function () {
-            if (window.gapi) blockGAPIPopup();
-        }, 300);
-        setTimeout(function () { clearInterval(gapiCheck); }, 60000);
+            // 2. Watch for Delta's Google button and replace it
+            var btnCheck = setInterval(function () {
+                if (replaceButton()) clearInterval(btnCheck);
+            }, 500);
+            setTimeout(function () { clearInterval(btnCheck); }, 120000);
 
-    }, 50);
+            // 3. Watch for GAPI and patch it
+            var gapiCheck = setInterval(function () {
+                if (window.gapi) {
+                    patchGAPI();
+                    if (window.gapi.auth2) patchAuth2();
+                }
+            }, 300);
+            setTimeout(function () { clearInterval(gapiCheck); }, 60000);
+
+            // 4. Watch for reconnects
+            watchForReconnects();
+
+        }, 100);
+        setTimeout(function () { clearInterval(bodyCheck); }, 30000);
+    }
+
+    boot();
 })();
