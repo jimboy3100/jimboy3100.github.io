@@ -55,47 +55,54 @@
         --accent: #7c3aed;
         --accent-light: #a78bfa;
         --accent-dark: #5b21b6;
-        --accent-glow: rgba(124,58,237,0.15);
+        --accent-glow: rgba(124,58,237,0.18);
         --teal: #14b8a6;
-        --bg: #ffffff;
-        --bg-subtle: #f8fafc;
-        --bg-card: rgba(255,255,255,0.7);
+        --bg: #f4f2f7;
+        --bg-subtle: #eae7f0;
+        --bg-card: rgba(255,255,255,0.85);
         --text: #0f172a;
         --text-secondary: #334155;
         --text-muted: #64748b;
-        --border: rgba(0,0,0,0.06);
-        --border-strong: rgba(0,0,0,0.10);
-        --glass-bg: rgba(255,255,255,0.6);
-        --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
-        --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
-        --shadow-glow: 0 0 20px rgba(124,58,237,0.12);
+        --border: rgba(0,0,0,0.09);
+        --border-strong: rgba(0,0,0,0.16);
+        --glass-bg: rgba(255,255,255,0.75);
+        --btn-bg: rgba(124,58,237,0.06);
+        --btn-border: rgba(124,58,237,0.22);
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.07);
+        --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.12);
+        --shadow-glow: 0 0 20px rgba(124,58,237,0.15);
         --radius: 14px; --radius-sm: 10px; --radius-xs: 6px;
         --max-w: 880px;
         --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         --ease: cubic-bezier(0.4,0,0.2,1);
     }
     .dark-theme {
-        --bg: #0f172a;
-        --bg-subtle: #1e293b;
-        --bg-card: rgba(30, 41, 59, 0.7);
+        --bg: #0c1222;
+        --bg-subtle: #162036;
+        --bg-card: rgba(22, 32, 54, 0.85);
         --text: #f8fafc;
         --text-secondary: #cbd5e1;
         --text-muted: #94a3b8;
-        --border: rgba(255, 255, 255, 0.08);
-        --border-strong: rgba(255, 255, 255, 0.15);
-        --glass-bg: rgba(15, 23, 42, 0.65);
-        --shadow-xs: 0 1px 2px rgba(0,0,0,0.2);
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
-        --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.5);
-        --shadow-glow: 0 0 20px rgba(124,58,237,0.2);
-        --accent-glow: rgba(124,58,237,0.25);
+        --border: rgba(255, 255, 255, 0.10);
+        --border-strong: rgba(255, 255, 255, 0.18);
+        --glass-bg: rgba(12, 18, 34, 0.8);
+        --btn-bg: rgba(124,58,237,0.12);
+        --btn-border: rgba(167,139,250,0.3);
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5);
+        --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.6);
+        --shadow-glow: 0 0 20px rgba(124,58,237,0.25);
+        --accent-glow: rgba(124,58,237,0.3);
     }
     html { scroll-behavior: smooth; }
     body {
-        font-family: var(--font) !important; background: var(--bg) !important;
+        font-family: var(--font) !important;
+        background: var(--bg) !important;
+        background-image: radial-gradient(ellipse at 20% 0%, rgba(124,58,237,0.06) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 100%, rgba(20,184,166,0.04) 0%, transparent 50%) !important;
         color: var(--text) !important; overflow-x: hidden !important;
         line-height: 1.75 !important; font-size: 15px !important;
         -webkit-font-smoothing: antialiased;
@@ -104,8 +111,8 @@
     ::selection { background: var(--accent-light); color: #fff; }
 
     /* LINKS — animated underline */
-    a, a:visited, section a, div a, span a,
-    .skins-wrapper a:not(.btn), section span a {
+    a:not(.cta-primary), a:visited:not(.cta-primary), section a:not(.cta-primary), div a:not(.cta-primary), span a:not(.cta-primary),
+    .skins-wrapper a:not(.btn):not(.cta-primary), section span a:not(.cta-primary) {
         color: var(--accent) !important; text-decoration: none !important; font-weight: 500;
         background-image: linear-gradient(var(--accent-light), var(--accent-light)) !important;
         background-size: 0% 2px !important; background-position: 0 100% !important;
@@ -113,24 +120,24 @@
         transition: background-size 0.3s var(--ease), color 0.2s var(--ease) !important;
         padding-bottom: 1px;
     }
-    a:hover, section a:hover, div a:hover, span a:hover {
+    a:hover:not(.cta-primary), section a:hover:not(.cta-primary), div a:hover:not(.cta-primary), span a:hover:not(.cta-primary) {
         color: var(--accent-dark) !important; background-size: 100% 2px !important;
         text-decoration: none !important; opacity: 1 !important;
     }
     a.btn, a.btn:hover, a[href*="buymeacoffee"], a[href*="buymeacoffee"]:hover,
-    #nav a, #nav a:hover { background-image: none !important; background-size: unset !important; }
+    #nav a, #nav a:hover,
+    a.cta-primary, a.cta-primary:hover, a.cta-primary:visited { background-image: none !important; background-size: unset !important; }
 
-    /* BUTTONS — glass + glow */
+    /* BUTTONS — solid tinted with accent border */
     .btn, a.btn {
         display: inline-flex !important; align-items: center; gap: 10px;
         padding: 13px 24px !important; margin: 5px !important;
         font-family: var(--font) !important; font-size: 0.88rem !important;
         font-weight: 600 !important; letter-spacing: -0.01em;
-        color: var(--text) !important; background: var(--glass-bg) !important;
-        border: 1px solid var(--border-strong) !important;
+        color: var(--text) !important; background: var(--btn-bg) !important;
+        border: 1.5px solid var(--btn-border) !important;
         border-radius: var(--radius) !important;
-        backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%);
-        box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.7);
+        box-shadow: var(--shadow-sm);
         transition: all 0.3s var(--ease) !important; cursor: pointer;
         text-decoration: none !important; max-width: 100% !important;
         min-width: auto !important; width: auto !important;
@@ -143,9 +150,10 @@
     }
     .btn:hover::before { opacity: 1; }
     .btn:hover, a.btn:hover {
-        border-color: var(--accent-light) !important;
-        box-shadow: var(--shadow-md), var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,0.7) !important;
+        border-color: var(--accent) !important;
+        box-shadow: var(--shadow-md), var(--shadow-glow) !important;
         transform: translateY(-2px); color: var(--accent-dark) !important;
+        background: rgba(124,58,237,0.10) !important;
         text-decoration: none !important;
     }
     .btn:active { transform: translateY(0) scale(0.98); }
@@ -156,13 +164,12 @@
         z-index: 1; position: relative; }
     .btn b { z-index: 1; position: relative; }
 
-    /* NAVBAR — frosted uppercase */
+    /* NAVBAR — frosted solid bar */
     #navbar {
         position: sticky !important; top: 0; z-index: 1000;
-        background: var(--glass-bg) !important;
-        backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border-bottom: 1px solid var(--border); height: auto !important;
-        padding: 10px 0; box-shadow: var(--shadow-xs);
+        background: var(--bg) !important;
+        border-bottom: 1px solid var(--border-strong); height: auto !important;
+        padding: 10px 0; box-shadow: var(--shadow-sm);
     }
     #nav { max-width: var(--max-w); margin: 0 auto; overflow-x: auto !important;
         overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -407,6 +414,78 @@
     .dark-theme [style*="color: black"], 
     .dark-theme [style*="color:black"] { color: var(--text) !important; }
     .dark-theme hr { border-color: var(--border) !important; }
+
+    /* CHROME EXTENSION PRIMARY CTA — override generic .btn and link styles */
+    a.cta-primary, a.cta-primary:visited, a.cta-primary:hover, a.cta-primary:active,
+    .cta-primary, .cta-primary:visited {
+        display: inline-flex !important; align-items: center; gap: 14px;
+        padding: 18px 36px !important; margin: 12px auto !important;
+        font-family: var(--font) !important; font-size: 1.05rem !important;
+        font-weight: 700 !important; letter-spacing: -0.01em;
+        color: #fff !important;
+        background: linear-gradient(135deg, var(--accent), #9333ea, #7c3aed) !important;
+        background-image: linear-gradient(135deg, var(--accent), #9333ea, #7c3aed) !important;
+        background-size: 100% 100% !important;
+        border: none !important; border-radius: var(--radius) !important;
+        box-shadow: 0 4px 15px rgba(124,58,237,0.4), 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s var(--ease) !important; cursor: pointer;
+        text-decoration: none !important; position: relative; overflow: hidden;
+        backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    }
+    a.cta-primary::before, .cta-primary::before {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 60%) !important;
+        border-radius: inherit; opacity: 1;
+    }
+    a.cta-primary:hover, .cta-primary:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(124,58,237,0.5), 0 2px 6px rgba(0,0,0,0.15) !important;
+        color: #fff !important; text-decoration: none !important;
+        background: linear-gradient(135deg, #9333ea, var(--accent), #7c3aed) !important;
+        background-image: linear-gradient(135deg, #9333ea, var(--accent), #7c3aed) !important;
+        background-size: 100% 100% !important;
+        border-color: transparent !important;
+    }
+    .cta-primary:active { transform: translateY(0) scale(0.98); }
+    a.cta-primary img, .cta-primary img { width: 26px !important; height: 26px !important; border-radius: 4px; position: relative; z-index: 1; }
+    a.cta-primary span, .cta-primary span { color: #fff !important; position: relative; z-index: 1; display: inline !important; float: none !important; }
+    .cta-subtitle {
+        display: block; font-size: 0.82rem; color: var(--text-muted);
+        margin-top: 6px; font-weight: 500;
+    }
+    .cta-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(20,184,166,0.1); color: var(--teal);
+        padding: 4px 12px; border-radius: 20px; font-size: 0.78rem;
+        font-weight: 600; margin-top: 10px;
+    }
+    .cta-badge i { font-size: 0.7rem; }
+
+    /* FALLBACK COLLAPSIBLE */
+    .fallback-toggle {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: none; border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm); padding: 10px 20px;
+        font-family: var(--font); font-size: 0.88rem; font-weight: 600;
+        color: var(--text-muted); cursor: pointer;
+        transition: all 0.25s var(--ease); margin: 12px auto;
+    }
+    .fallback-toggle:hover {
+        color: var(--accent); border-color: var(--accent-light);
+        background: rgba(124,58,237,0.04);
+    }
+    .fallback-toggle i { transition: transform 0.3s var(--ease); font-size: 0.8rem; }
+    .fallback-toggle.open i { transform: rotate(180deg); }
+    .fallback-content {
+        max-height: 0; overflow: hidden;
+        transition: max-height 0.5s var(--ease), opacity 0.4s var(--ease);
+        opacity: 0;
+    }
+    .fallback-content.open { max-height: 2000px; opacity: 1; }
+
+    @media (max-width: 768px) {
+        .cta-primary { padding: 16px 24px !important; font-size: 0.95rem !important; width: 100% !important; justify-content: center; }
+    }
     </style>
 </head>
 
@@ -482,6 +561,7 @@
                     <a target="_blank" href="https://www.youtube.com/watch?v=CN5-RFGsqcY&list=PL5ieCNyP97uduCS_zVmr9BWiwm48zxg0Y"><i id="legendyoutube" class="fab fa-youtube fa-3x icon-3d"></i></a>
                     <a target="_blank" href="https://github.com/jimboy3100/jimboy3100.github.io/"><i id="legendgithub" class="fab fa-github fa-3x icon-3d"></i></a>
                     <a target="_blank" href="https://greasyfork.org/el/users/128990-iamlegend"><i id="legendgreasyfork" class="fas fa-code-branch fa-3x icon-3d"></i></a>
+                    <a target="_blank" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" title="Chrome Web Store"><i id="legendchromestore" class="fab fa-chrome fa-3x icon-3d"></i></a>
                     <a target="_blank" href="https://www.facebook.com/Lcclan/"><i id="legendfacebook" class="fab fa-facebook fa-3x icon-3d"></i></a>
                     <a target="_blank" href="https://discord.com/invite/JUfpR9k"><i id="legenddiscord" class="fab fa-discord fa-3x icon-3d" title="℄ Legend Clan Discord"></i></a>
                     <a target="_blank" href="https://www.buymeacoffee.com/legendmod" data-toggle="tooltip" style="color: transparent;" title="Donate"><i id="legendpaypal" class="fab fa-cc-paypal fa-3x icon-3d"></i></a>
@@ -518,87 +598,103 @@
                     target="_blank"><b>Server side</b></a> directory added.
                 <br>Visit Devs section. Feel free to make your <a
                     href="https://jimboy3100.github.io/developers/index.html" target="_blank"><b>own mod</b></a></span>.
-            <h3 class="project-tagline">Step 1, Install Script Manager</h3>
-            <div>
-
-                <span>
-                    For
-                    <img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome">
-                    <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>
-                </span>,
-                <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi">
-                <a href="https://vivaldi.com/" target="_blank">Vivaldi</a>:
-                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
-                    href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo"
-                    target="_blank">
-                    <img title="Chrome"
-                        src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
-                        alt="Chrome" style="float: left; position: relative">
-                    <span style="position: relative;">Tampermonkey</span>
+            <h2 class="project-tagline">Step 1, Install Chrome Extension</h2>
+            <div style="margin: 16px 0;">
+                <a class="cta-primary" style="background: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; color: #fff !important; background-image: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; background-size: 100% 100% !important;" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" target="_blank">
+                    <img title="Legend Express" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM">
+                    <span style="color: #fff !important;">Add Legend Express to Chrome</span>
                 </a>
-                <br>
-                <span> For <img title="Opera"
-                        src="https://jimboy3100.github.io/banners/iconbrowseropera16.png" alt="Opera">
-                    <a href="https://www.opera.com/" target="_blank">Opera</a>: </span>
-                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
-                    href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank">
-                    <span style="position: relative;">
-                        <img title="Chrome"
-                            src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
-                            alt="Chrome" style="float: left; position: relative">
-                        Tampermonkey
-                    </span>
-                </a>
-                <br>
-                <span> For <img title="Edge"
-                        src="https://jimboy3100.github.io/banners/iconbrowseredge16.png" alt="Opera">
-                    <a href="https://www.microsoft.com/edge" target="_blank">Edge</a>: </span>
-                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
-                    href="https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd"
-                    target="_blank">
-                    <span style="position: relative;">
-                        <img title="Chrome"
-                            src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
-                            alt="Chrome" style="float: left; position: relative">
-                        Tampermonkey
-                    </span>
-                </a>
-                <br>
-                <span> For <img title="Android / iOS Mozilla"
-                        src="https://jimboy3100.github.io/banners/iconMozzila32.png" width="16px"
-                        alt="Android / iOS Mozilla">
-                    <a href="https://www.mozilla.org/el/firefox/mobile/" target="_blank">Android / iOS Mozilla</a>:
-                </span>
-                <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
-                    href="https://addons.mozilla.org/en/firefox/addon/tampermonkey/" target="_blank">
-                    <span style="position: relative;">
-                        <img title="Chrome"
-                            src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
-                            alt="Chrome" style="float: left; position: relative">
-                        Tampermonkey
-                    </span>
-                </a> (Open agar.io on desktop mode)
+                <span class="cta-subtitle">Works on Chrome, Edge, Vivaldi, Brave & other Chromium browsers</span>
+                <div class="cta-badge"><i class="fas fa-shield-alt"></i> Verified on Chrome Web Store</div>
             </div>
-            <h2 class="project-tagline">
-                Step 2, Install Script
-                <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font>
-            </h2>
-            <a align="center" style="cursor:pointer; max-width: 50%; min-width: 15%;" class="btn"
-                onclick="JoinLcPartyMode()">
-                <span style="position: relative;"><img title="Chrome"
-                        src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM"
-                        style="float: left; position: relative">
-                    Legend Express v1.8
-                </span>
-            </a>
-            <h2 class="project-tagline">
-                Step 3, Open extensions menu
-                <font size="3"><br>chrome://extensions/</font>
-                <font size="3"><br>Enable: Developer Mode (upper right corner)</font>
-            </h2>
-            <span style="color: black;"></span>
-            <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY"
-                target="_blank"><b>Watch video</b></a>
+
+            <hr>
+
+            <button class="fallback-toggle" onclick="this.classList.toggle('open'); document.getElementById('fallbackSteps').classList.toggle('open');">
+                <i class="fas fa-chevron-down"></i> Cannot install? Use Tampermonkey instead
+            </button>
+            <div id="fallbackSteps" class="fallback-content">
+                <h3 class="project-tagline">Step 1, Install Script Manager</h3>
+                <div>
+                    <span>
+                        For
+                        <img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome">
+                        <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>
+                    </span>,
+                    <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi">
+                    <a href="https://vivaldi.com/" target="_blank">Vivaldi</a>:
+                    <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
+                        href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo"
+                        target="_blank">
+                        <img title="Chrome"
+                            src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
+                            alt="Chrome" style="float: left; position: relative">
+                        <span style="position: relative;">Tampermonkey</span>
+                    </a>
+                    <br>
+                    <span> For <img title="Opera"
+                            src="https://jimboy3100.github.io/banners/iconbrowseropera16.png" alt="Opera">
+                        <a href="https://www.opera.com/" target="_blank">Opera</a>: </span>
+                    <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
+                        href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank">
+                        <span style="position: relative;">
+                            <img title="Chrome"
+                                src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
+                                alt="Chrome" style="float: left; position: relative">
+                            Tampermonkey
+                        </span>
+                    </a>
+                    <br>
+                    <span> For <img title="Edge"
+                            src="https://jimboy3100.github.io/banners/iconbrowseredge16.png" alt="Opera">
+                        <a href="https://www.microsoft.com/edge" target="_blank">Edge</a>: </span>
+                    <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
+                        href="https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd"
+                        target="_blank">
+                        <span style="position: relative;">
+                            <img title="Chrome"
+                                src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
+                                alt="Chrome" style="float: left; position: relative">
+                            Tampermonkey
+                        </span>
+                    </a>
+                    <br>
+                    <span> For <img title="Android / iOS Mozilla"
+                            src="https://jimboy3100.github.io/banners/iconMozzila32.png" width="16px"
+                            alt="Android / iOS Mozilla">
+                        <a href="https://www.mozilla.org/el/firefox/mobile/" target="_blank">Android / iOS Mozilla</a>:
+                    </span>
+                    <a align="center" style="max-width: 50%; min-width: 15%;" class="btn"
+                        href="https://addons.mozilla.org/en/firefox/addon/tampermonkey/" target="_blank">
+                        <span style="position: relative;">
+                            <img title="Chrome"
+                                src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png"
+                                alt="Chrome" style="float: left; position: relative">
+                            Tampermonkey
+                        </span>
+                    </a> (Open agar.io on desktop mode)
+                </div>
+                <h2 class="project-tagline">
+                    Step 2, Install Script
+                    <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font>
+                </h2>
+                <a align="center" style="cursor:pointer; max-width: 50%; min-width: 15%;" class="btn"
+                    onclick="JoinLcPartyMode()">
+                    <span style="position: relative;"><img title="Chrome"
+                            src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM"
+                            style="float: left; position: relative">
+                        Legend Express v1.8
+                    </span>
+                </a>
+                <h2 class="project-tagline">
+                    Step 3, Open extensions menu
+                    <font size="3"><br>chrome://extensions/</font>
+                    <font size="3"><br>Enable: Developer Mode (upper right corner)</font>
+                </h2>
+                <span style="color: black;"></span>
+                <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY"
+                    target="_blank"><b>Watch video</b></a>
+            </div>
             <hr>
             <hr>
             <h2 class="project-tagline">Legend mod addon for Delta mod</h2>
