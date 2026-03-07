@@ -1,4 +1,4 @@
-window.OgVer=3.334;
+window.OgVer = 3.335;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -24,14 +24,14 @@ window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
 window.chatLimit = 15;
-window.LMscore=0;
+window.LMscore = 0;
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
 var isMobile = false;
 if (jQuery && jQuery.browser && jQuery.browser.mobile) isMobile = true;
 
 // make sure the page doesn't send referrer information to imgur for image message to work
-$(function() {
+$(function () {
     $('head').append('<meta name="referrer" content="no-referrer">');
 });
 
@@ -48,7 +48,7 @@ function toLong(ip) {
 }
 function fromLong(packed) {
     const arr = new Array(ranges.length).fill(0);
-    for (let i = ranges.length; i--; ) {
+    for (let i = ranges.length; i--;) {
         let divisor = 1;
         for (let j = 0; j < i; j++) divisor *= ranges[j] + 2;
         const value = Math.floor(packed / divisor);
@@ -106,18 +106,18 @@ function changeregion() {
 }
 
 function deleteGamemode(temp) {
-	var privateModOptions
+    var privateModOptions
 
-	privateModOptions = [
-	{
+    privateModOptions = [
+        {
             text: 'Delta FFA',
             value: 4001
         },
-	/*{
-            text: 'Delta Party',
-            value: 4002
-        },*/
-	{
+        /*{
+                text: 'Delta Party',
+                value: 4002
+            },*/
+        {
             text: 'FeelForeverAlone',
             value: 34
         }, {
@@ -176,10 +176,10 @@ function deleteGamemode(temp) {
             text: 'Crazy NA',
             value: 54
         }*/
-		, /*{			
+        , /*{			
             text: 'Instant Merging',
             value: 16
-        },*/ {			
+        },*/ {
             text: 'Party MegaSplit',
             value: 19
         }, {
@@ -236,7 +236,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'MK Bots WIP',
             value: 39
-        }, 							
+        },
 
             /*
         text: 'MK Disturb Furry',
@@ -266,8 +266,8 @@ function deleteGamemode(temp) {
 */		{
             text: 'FPS Test',
             value: 12
-        }, 
-		/*{
+        },
+        /*{
             text: 'ws://localhost:443',
             value: 41
         }
@@ -289,23 +289,23 @@ function deleteGamemode(temp) {
     }*/
     ];
     if (location.protocol !== 'https:') {
-		privateModOptions.unshift({
-			text: 'agarios.org NA',
-			value: 103
-		})	
-		privateModOptions.unshift({
-			text: 'M16 Korea',
-			value: 102
-		})		
-	}	
+        privateModOptions.unshift({
+            text: 'agarios.org NA',
+            value: 103
+        })
+        privateModOptions.unshift({
+            text: 'M16 Korea',
+            value: 102
+        })
+    }
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
     $('#gamemode').empty();
-    $.each(privateModOptions, function(i, el) {
+    $.each(privateModOptions, function (i, el) {
         $('#gamemode').append(new Option(el.text, el.value));
     });
-    $('#gamemode').change(function() {
+    $('#gamemode').change(function () {
         if ($('#region').val() == "Private") {
             /*
             var now = new Date();
@@ -316,13 +316,13 @@ function deleteGamemode(temp) {
                     document.getElementById("gamemode").options[i].title = "OPEN 18:00-6:00 UTC";
                 }
             } 
-			else { //06:00-18:00 UTC closed 07:00-19:00 Germany time
+            else { //06:00-18:00 UTC closed 07:00-19:00 Germany time
                 for (var i = 2; i < 7; i++) {
                     //document.getElementById("gamemode").options[i].disabled = false;					
                 }
             }
-			*/
-        } else {}
+            */
+        } else { }
         if ($('#gamemode').val() == 6) {
             core.connect('wss://imsolo.pro:2109/');
         } else if ($('#gamemode').val() == 7) {
@@ -379,66 +379,66 @@ function deleteGamemode(temp) {
             core.connect('wss://agar.mkchat.net/');
         } else if ($('#gamemode').val() == 38) {
             core.connect('wss://teamworkmk.herokuapp.com/');
-            setTimeout(function() {
+            setTimeout(function () {
                 legendmod.gameMode = ":teams";
             }, 500)
         } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
         } else if ($('#gamemode').val() == 42) {
-			core.connect('wss://eatcells.com/api/');			
+            core.connect('wss://eatcells.com/api/');
         } else if ($('#gamemode').val() == 41) {
             //core.connect('wss://distrustfurryserver.herokuapp.com/');
-			core.connect('ws://localhost:443');
+            core.connect('ws://localhost:443');
         } else if ($('#gamemode').val() == 43) {
-			core.connect('wss://cellshub.ga:3100');
+            core.connect('wss://cellshub.ga:3100');
         } else if ($('#gamemode').val() == 44) {
-			core.connect('wss://cellshub.ga:3101');
+            core.connect('wss://cellshub.ga:3101');
         } else if ($('#gamemode').val() == 45) {
-			core.connect('wss://cellshub.ga:3103');
+            core.connect('wss://cellshub.ga:3103');
         } else if ($('#gamemode').val() == 46) {
-			core.connect('wss://cellshub.ga:3104');
+            core.connect('wss://cellshub.ga:3104');
         } else if ($('#gamemode').val() == 47) {
-			core.connect('wss://cellshub.ga:3105');
+            core.connect('wss://cellshub.ga:3105');
         } else if ($('#gamemode').val() == 48) {
-			core.connect('wss://cellshub.ga:3107');
+            core.connect('wss://cellshub.ga:3107');
         } else if ($('#gamemode').val() == 49) {
-			core.connect('wss://agariohub.ga:3100');
+            core.connect('wss://agariohub.ga:3100');
         } else if ($('#gamemode').val() == 50) {
-			core.connect('wss://agariohub.ga:3101');
+            core.connect('wss://agariohub.ga:3101');
         } else if ($('#gamemode').val() == 51) {
-			core.connect('wss://agariohub.ga:3103');
+            core.connect('wss://agariohub.ga:3103');
         } else if ($('#gamemode').val() == 52) {
-			core.connect('wss://agariohub.ga:3104');
+            core.connect('wss://agariohub.ga:3104');
         } else if ($('#gamemode').val() == 53) {
-			core.connect('wss://agariohub.ga:3105');
+            core.connect('wss://agariohub.ga:3105');
         } else if ($('#gamemode').val() == 54) {
-			core.connect('wss://agariohub.ga:3107');			
+            core.connect('wss://agariohub.ga:3107');
         } else if ($('#gamemode').val() == 102) {
-			core.connect('ws://m16ogar.al.gl:2052/');
+            core.connect('ws://m16ogar.al.gl:2052/');
         } else if ($('#gamemode').val() == 103) {
-			core.connect('ws://na.agarios.org:443/');
+            core.connect('ws://na.agarios.org:443/');
         }
-	else if ($('#gamemode').val() == 4001) {
-			core.connect('wss://delta-ffa.glitch.me');
+        else if ($('#gamemode').val() == 4001) {
+            core.connect('wss://delta-ffa.glitch.me');
         }
-	else if ($('#gamemode').val() == 4002) {
-			core.connect('wss://delta-server.fly.dev');
+        else if ($('#gamemode').val() == 4002) {
+            core.connect('wss://delta-server.fly.dev');
         }
 
-//wss://eatcells.com/api/~ EatCells FFA 1
-//wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
+        //wss://eatcells.com/api/~ EatCells FFA 1
+        //wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
 
         /*
-		else if ($('#gamemode').val() == 42) {
+        else if ($('#gamemode').val() == 42) {
             core.connect('ws://dummyserver.glitch.me/');
         }			
-		else if ($('#gamemode').val() == 43) {
+        else if ($('#gamemode').val() == 43) {
             core.connect('wss://dummyserver-rainbow.glitch.me/');
         }	
-		else if ($('#gamemode').val() == 44) {
+        else if ($('#gamemode').val() == 44) {
             core.connect('wss://dummyserver-instant.glitch.me/');
         }	
-		else if ($('#gamemode').val() == 45) {
+        else if ($('#gamemode').val() == 45) {
             core.connect('wss://dummyserver-instant.glitch.me/');
         }
 sxparty.glitch.me Party
@@ -449,38 +449,38 @@ ws://ahmetcantest.glitch.me/ Ahmetcan
 wss://myagar.pro:1443/ minions
 wss://myagar.pro:1444/ instant
 wss://myagar.pro:1445/ crazy		
-		*/
+        */
         //ac-clan.glitch.me
         /*		
-        		else if ($('#gamemode').val() == 34) {
+                else if ($('#gamemode').val() == 34) {
                     core.connect('wss://proxy.cellz.io/4600');
                 }		
-        		else if ($('#gamemode').val() == 35) {
+                else if ($('#gamemode').val() == 35) {
                     core.connect('wss://proxy.cellz.io/4400');
                 }	
-        		else if ($('#gamemode').val() == 36) {
+                else if ($('#gamemode').val() == 36) {
                     core.connect('wss://proxy.cellz.io/4801');
                 }	
-        		else if ($('#gamemode').val() == 37) {
+                else if ($('#gamemode').val() == 37) {
                     core.connect('wss://proxy.cellz.io/5203');
                 }	
-        		else if ($('#gamemode').val() == 38) {
+                else if ($('#gamemode').val() == 38) {
                     core.connect('wss://proxy.cellz.io/4201');
                 }	
-        		else if ($('#gamemode').val() == 39) {
+                else if ($('#gamemode').val() == 39) {
                     core.connect('wss://proxy.cellz.io/6003');
                 }		
-        		else if ($('#gamemode').val() == 40) {
+                else if ($('#gamemode').val() == 40) {
                     core.connect('wss://reverse.krunt.io/7301');
                 }	
-        		*/
+                */
 
         /*		
-		else if ($('#gamemode').val() == 18) {
+        else if ($('#gamemode').val() == 18) {
             core.connect('wss://imsolo.pro:2111/');
             legendmod.gameMode = ":ffa";
         }			
-		else if ($('#gamemode').val() == 8) {
+        else if ($('#gamemode').val() == 8) {
             logoutPSArenas();
             core.connect(agarTesterArena + ':1500/'); //ffa
             legendmod.gameMode = ":ffa";
@@ -508,7 +508,7 @@ wss://myagar.pro:1445/ crazy
             legendmod.gameMode = ":party";
             //application.connect('wss://private1:443')
         }
-		*/
+        */
     });
     if (temp === true) {
         $('#gamemode option[value=34]').prop('selected', 'selected').change();
@@ -535,13 +535,13 @@ function removeEmojis(string) {
 }
 
 function makeUpperCaseAfterUnderline(str) {
-    return str.replace(/_\s*([a-z])/g, function(d, e) {
+    return str.replace(/_\s*([a-z])/g, function (d, e) {
         return "_" + e.toUpperCase()
     });
 }
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
-    get: function() {
+    get: function () {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
 });
@@ -557,7 +557,7 @@ function Video(src, append) {
     return v;
 }
 
-window.changeOnline = function(option) {
+window.changeOnline = function (option) {
     //console.log("online switcher")
     //8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, 0
     var bytes = [8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, option];
@@ -566,25 +566,25 @@ window.changeOnline = function(option) {
 
 
 function autocoins(slot) {
-	if (legendmod.integrity && window.loggedIn){
-		//var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
-		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-		let massBoostName = "hourlyBonus";
-		for (let i = 0; i < massBoostName.length; i++) {
-			bytes.push(massBoostName.charCodeAt(i));
-		}
-		window.core.proxyMobileData(bytes);
-		if (defaultmapsettings.potionsDrinker) {
-			autoRandomPotionDigger();
-		}
-	}
+    if (legendmod.integrity && window.loggedIn) {
+        //var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
+        var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+        let massBoostName = "hourlyBonus";
+        for (let i = 0; i < massBoostName.length; i++) {
+            bytes.push(massBoostName.charCodeAt(i));
+        }
+        window.core.proxyMobileData(bytes);
+        if (defaultmapsettings.potionsDrinker) {
+            autoRandomPotionDigger();
+        }
+    }
     //console.log(String.fromCharCode.apply(String, bytes));
 }
 
 window.autoRandomPotion = 0;
 
 function autoRandomPotionDigger() {
-    setTimeout(function() {
+    setTimeout(function () {
         window.autoRandomPotion++;
         //if (window.autoRandomPotion==7) window.autoRandomPotion=1
         if (window.autoRandomPotion === 1) brewPotion(1)
@@ -614,31 +614,31 @@ function genericVideoAdRewardTokenRequest(slot) {
     window.core.proxyMobileData(bytes); //response 186
 }
 
-window.openPotion = function(slot) {
+window.openPotion = function (slot) {
     //console.log("open pot", slot)
     //8, 1, 18, 7, 8, 124, 226, 7, 2, 8, 1
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
     window.core.proxyMobileData(bytes);
 }
 
-window.brewPotion = function(slot) {
+window.brewPotion = function (slot) {
     //console.log("drew pot", slot)
     var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot]
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
 }
-window.questActivationReq = function() {
+window.questActivationReq = function () {
     //console.log("quest req")
     var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116]; //agario_proto_Activate_$timed_$event_$request {eventId: "dailyQuest"}
     //8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116
     window.core.proxyMobileData(bytes);
 }
-window.activateQuest = function() {
+window.activateQuest = function () {
     //console.log("quest act")
     var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]; //agario_proto_Activate_$quest_$request {productId: "quest_activation_24h"}
     //8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104
     window.core.proxyMobileData(bytes);
 }
-window.changeSkin = function(productID) {
+window.changeSkin = function (productID) {
     //console.log("quchange skin", productID)
 
     if (productID == null) return
@@ -650,7 +650,7 @@ window.changeSkin = function(productID) {
     //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_custom_50b62972-d334-4878-b4c8-8ea5f3fade18_4b5dadc9-2543-4401-8ce5-1cf220dba247"}
     //8, 1, 18, 98, 8, 80, 130, 5, 93, 10, 91, 8, 1, 16, 1, 26, 85, 115, 107, 105, 110, 95, 99, 117, 115, 116, 111, 109, 95, 53, 48, 98, 54, 50, 57, 55, 50, 45, 100, 51, 51, 52, 45, 52, 56, 55, 56, 45, 98, 52, 99, 56, 45, 56, 101, 97, 53, 102, 51, 102, 97, 100, 101, 49, 56, 95, 52, 98, 53, 100, 97, 100, 99, 57, 45, 50, 53, 52, 51, 45, 52, 52, 48, 49, 45, 56, 99, 101, 53, 45, 49, 99, 102, 50, 50, 48, 100, 98, 97, 50, 52, 55
 
-    var encode = function(str) {
+    var encode = function (str) {
         bytes.push(str.length);
         for (var i = 0; i < str.length; i++) {
             bytes.push(str.charCodeAt(i));
@@ -668,33 +668,33 @@ window.changeSkin = function(productID) {
 var root = protobuf.parse(proto, { keepCase: true }).root;
 window.mesega = root.lookupType("Data");
 var compressed = root.lookupType("uncompressedData");
-function decodeMobileData(data){
-		return window.mesega.decode(data)
+function decodeMobileData(data) {
+    return window.mesega.decode(data)
 }
 /*function autocoinsAsPing(slot) {
-	if (false && legendmod.integrity && window.loggedIn){
-		window.agarpingstarted = Date.now()
-		var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-		let massBoostName = "hourlyBonus";
-		for (let i = 0; i < massBoostName.length; i++) {
-			bytes.push(massBoostName.charCodeAt(i));
-		}
-		window.core.proxyMobileData(bytes);
-	}
+    if (false && legendmod.integrity && window.loggedIn){
+        window.agarpingstarted = Date.now()
+        var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+        let massBoostName = "hourlyBonus";
+        for (let i = 0; i < massBoostName.length; i++) {
+            bytes.push(massBoostName.charCodeAt(i));
+        }
+        window.core.proxyMobileData(bytes);
+    }
 }*/
-function ReqPing(){
-	if (legendmod.integrity){
-		//console.log('ping');
-		const pingId = ~~(Math.random()*127);
-		const pingId3 = ~~(Math.random()*999999);
-		var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId]; 
-		//var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
-		window.agarpingstarted = Date.now();
-		window.core.proxyMobileData(bytes);
-		
-	
-		/*const pingId = ~~(Math.random()*1000);const ping = Date.now();
-		const buffer = mesega.encode({
+function ReqPing() {
+    if (legendmod.integrity) {
+        //console.log('ping');
+        const pingId = ~~(Math.random() * 127);
+        const pingId3 = ~~(Math.random() * 999999);
+        var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId];
+        //var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
+        window.agarpingstarted = Date.now();
+        window.core.proxyMobileData(bytes);
+
+
+        /*const pingId = ~~(Math.random()*1000);const ping = Date.now();
+        const buffer = mesega.encode({
             contentType: 1,
             uncompressedData: {
                 type: 30,
@@ -703,30 +703,30 @@ function ReqPing(){
                     previousRoundtrip: 1
                 }
             }
-		}).finish()
+        }).finish()
 
-		window.core.proxyMobileData(buffer);
-		this.once('pongField',(pongField)=>{
-			const pong = Date.now()
-			this.client.ping = pong - ping
-			this.client.emit('ping')
-		})*/
-	}		
+        window.core.proxyMobileData(buffer);
+        this.once('pongField',(pongField)=>{
+            const pong = Date.now()
+            this.client.ping = pong - ping
+            this.client.emit('ping')
+        })*/
+    }
 }
 function openPotionForSlotRequest(slot) {
-        console.log('Trying to open potion for slot' + slot);
-        const buffer = mesega.encode({
-            contentType: 1,
-            uncompressedData: {
-                type: 124,
-                openPotionForSlotRequestField: {
-                    slot: slot
-                }
+    console.log('Trying to open potion for slot' + slot);
+    const buffer = mesega.encode({
+        contentType: 1,
+        uncompressedData: {
+            type: 124,
+            openPotionForSlotRequestField: {
+                slot: slot
             }
-		}).finish()
-        setTimeout(() => {
-            window.core.proxyMobileData(buffer);
-        }, 1000);
+        }
+    }).finish()
+    setTimeout(() => {
+        window.core.proxyMobileData(buffer);
+    }, 1000);
 
 }
 
@@ -821,44 +821,44 @@ function useBoost(type) {
 /*
 function massx21hour(slot) {
     var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED				
-	//var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
-	//let massBoostName = "mass_boost_2x_1h"; 
-	//for (let i = 0; i < massBoostName.length; i++) { 
-	//bytes.push(massBoostName.charCodeAt(i));
-	//}
-	window.core.proxyMobileData(bytes);
+    //var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
+    //let massBoostName = "mass_boost_2x_1h"; 
+    //for (let i = 0; i < massBoostName.length; i++) { 
+    //bytes.push(massBoostName.charCodeAt(i));
+    //}
+    window.core.proxyMobileData(bytes);
     setTimeout(function() {
         var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] 
-		window.core.proxyMobileData(bytes);
+        window.core.proxyMobileData(bytes);
     }, 100); 		
 }
 function QuestActivation24h(slot) {
-	var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]
-	window.core.proxyMobileData(bytes);
+    var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]
+    window.core.proxyMobileData(bytes);
 }
 function massx224hour(slot) {
     var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
 
-	window.core.proxyMobileData(bytes);	
+    window.core.proxyMobileData(bytes);	
     setTimeout(function() {
         var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
-		window.core.proxyMobileData(bytes);
+        window.core.proxyMobileData(bytes);
     }, 100); 		
 }
 function massx31hour(slot) {
     var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104] //WORKED
-	window.core.proxyMobileData(bytes);
+    window.core.proxyMobileData(bytes);
     setTimeout(function() {
         var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]
-		window.core.proxyMobileData(bytes);
+        window.core.proxyMobileData(bytes);
     }, 100); 	
 }
 function massx324hour(slot) {
     var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
-	window.core.proxyMobileData(bytes);	
+    window.core.proxyMobileData(bytes);	
     setTimeout(function() {
         var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
-		window.core.proxyMobileData(bytes);
+        window.core.proxyMobileData(bytes);
     }, 100); 		
 }
 */
@@ -868,7 +868,7 @@ function callEveryFullHourCoinDigger() {
     var now = new Date();
     var nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, now.getSeconds() + 10, 0);
     var difference = nextHour - now;
-    window.setTimeout(function() {
+    window.setTimeout(function () {
         console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Dig 20 coins")
         callEveryFullHourCoinDigger();
     }, difference);
@@ -876,7 +876,7 @@ function callEveryFullHourCoinDigger() {
 
 function initTilt() {
     //TweenMax.set([$pContent], { transformStyle: "preserve-3d" });
-    $('body').mousemove(function(e) {
+    $('body').mousemove(function (e) {
         var sxPos = e.pageX / $(canvas).width() * 100 - 100;
         var syPos = e.pageY / $(canvas).height() * 100 - 100;
         TweenMaxLM($('#leaderboard-hud'), sxPos, syPos)
@@ -915,9 +915,9 @@ function setLevelProgressBar() {
         "transition": "5s",
         "width": window.LMscore + "%"
     });
-	$('.progress-bar-star3').text(window.agarioLEVEL); $('.progress-bar-star').text(window.agarioLEVEL);	
-	$('.progress-bar-star2').text(window.LMscore);	
-	
+    $('.progress-bar-star3').text(window.agarioLEVEL); $('.progress-bar-star').text(window.agarioLEVEL);
+    $('.progress-bar-star2').text(window.LMscore);
+
 }
 
 function resetLevelProgressBar() {
@@ -929,7 +929,7 @@ function resetLevelProgressBar() {
     $('.progress-bar.progress-bar-striped2').css({
         "transition": "5s",
         "width": "0%"
-    });	
+    });
 }
 /*
 const standardDeviation = (arr, usePopulation = false) => {
@@ -1008,7 +1008,7 @@ window.buffers = {
         return writer.dataView.buffer
     }
 }
-window.addEventListener('beforeunload', function(e) {
+window.addEventListener('beforeunload', function (e) {
     for (i = 0; i < window.captchaOpenedWindow; i++) {
         if (window.capthaWindow[i]) {
             window.capthaWindow[i].close()
@@ -1059,7 +1059,7 @@ window.connectionBots = {
 
         if (!window.capthaWindowOpened) {
             window.capthaWindowOpened = true;
-            window.addEventListener("message", function(event) {
+            window.addEventListener("message", function (event) {
                 //if (event.data.includes('captcha-')){
                 //event.data.replace('captcha-','');	
                 if (legendmod.integrity) {
@@ -1069,18 +1069,18 @@ window.connectionBots = {
                 }
                 //}
                 /*else if (event.data.includes('sendTimeOutTokenBots-')){
-                	event.data.replace('sendTimeOutTokenBots-','');
-                	if (event.data=="true") window.sendTimeOutTokenBots = true;
+                    event.data.replace('sendTimeOutTokenBots-','');
+                    if (event.data=="true") window.sendTimeOutTokenBots = true;
                 }
                 else if (event.data.includes('cookieCaptchaOK-')){
-                	event.data.replace('cookieCaptchaOK-','');
-                	if (event.data=="true") window.cookieCaptchaOK = true;
+                    event.data.replace('cookieCaptchaOK-','');
+                    if (event.data=="true") window.cookieCaptchaOK = true;
                 }*/
             });
         }
 
         toastr.info("<b>[" + Premadeletter123 + "]:</b> In case of captcha, change IP by <b>rebooting rooter</b> or use <b>VPN</b>");
-        setTimeout(function() { //
+        setTimeout(function () { //
             legendmod.sendTokenForBots();
         }, 4000); //
 
@@ -1260,7 +1260,7 @@ function checkVideos2(a, b) {
     if (window.videoSkinPlayer[a]) {
         if (!window.videoSkinPlayerflag3[a]) {
             window.videoSkinPlayerflag3[a] = true;
-            window.timerVideoSkinsInterval[a] = setInterval(function() {
+            window.timerVideoSkinsInterval[a] = setInterval(function () {
                 checkVideos2(a, b);
             }, 500);
         }
@@ -1331,8 +1331,8 @@ if (window.getLatestID != null && window.getLatestconfigVersion != null && windo
 }
 
 function pauseVideos() {
-    setTimeout(function() {
-        Object.getOwnPropertyNames(window.videoSkinPlayer).forEach(function(element) {
+    setTimeout(function () {
+        Object.getOwnPropertyNames(window.videoSkinPlayer).forEach(function (element) {
             if (window.videoSkinPlayer[element] && window.videoSkinPlayer[element].playing) {
                 window.videoSkinPlayer[element].pause();
             }
@@ -1343,7 +1343,7 @@ function pauseVideos() {
 
 //functions for mods
 
-function LegendModSpawn() {};
+function LegendModSpawn() { };
 
 function LegendModDeath() {
     localStorage.setItem("totalPlayerMass", legendmod.totalPlayerMass);
@@ -1355,13 +1355,13 @@ function LegendModDeath() {
 //window.disableIntegrity=false;
 window.lastejected = false;
 
-function calcTarget() {}
+function calcTarget() { }
 
-function CellTimerTrigger() {}
+function CellTimerTrigger() { }
 
 //function historystate(){};
 
-setTimeout(function() {
+setTimeout(function () {
     if (window.LMGameConfiguration !== undefined) {
         window.LMAgarGameConfiguration = window.LMGameConfiguration;
         window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
@@ -1374,7 +1374,7 @@ setTimeout(function() {
     }
 }, 5000);
 
-function userLeaguesInfoResponse() {}
+function userLeaguesInfoResponse() { }
 window.predictedGhostCells = [];
 //set values outside ogario
 window.playerCellsId = [];
@@ -1387,8 +1387,8 @@ window.customskinsarray = [];
 
 /*core.registerSkin('fly', null, 'https://i.imgur.com/poFMdZd.png', 1, null)
 core.registerSkin = function(a, b, c, d, e){
-	window.customskinsname=a;
-	window.customskinsurl=c;
+    window.customskinsname=a;
+    window.customskinsurl=c;
 }
 */
 
@@ -1512,7 +1512,7 @@ var displayText = {
         //hideSizes: 'Hide everything with size smaller than',
         profileNumber: 'Profiles Number',
         suckAnimation: 'Cell Eat [Sucking] Animation',
-		virusSpikes: 'Virus spikes',
+        virusSpikes: 'Virus spikes',
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Szybkosc zoomu',
@@ -1553,7 +1553,7 @@ var displayText = {
         showMapBorders: 'Granice mapy',
         showGhostCells: 'Duchy kulek (fps drop)',
         showGhostCellsInfo: 'Ghost cells info (confusing)',
-		stickyCell: 'Sticky cells (left button, hold right button)',
+        stickyCell: 'Sticky cells (left button, hold right button)',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Pokaz minimape',
@@ -1569,7 +1569,7 @@ var displayText = {
         virColors: 'Kolory wirusow',
         splitRange: 'Zasieg podzialu',
         virusesRange: 'Zasieg wirusow',
-		showOptimisedGrid: 'Icon as grid (fps increase)',
+        showOptimisedGrid: 'Icon as grid (fps increase)',
         textStroke: 'Obwodki nazw i masy',
         namesStroke: 'Obwodki nazw',
         massStroke: 'Obwodki masy',
@@ -1578,11 +1578,11 @@ var displayText = {
         cursorTracking: 'Sledzenie kursora',
         teammatesInd: 'Wskazniki graczy teamu',
         FBTracking: 'Facebook bubble tracker',
-		indicators: 'Indicator',
+        indicators: 'Indicator',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
-		mouseCommand4: 'Mouse button 4',
-		mouseCommand5: 'Mouse button 5',
+        mouseCommand4: 'Mouse button 4',
+        mouseCommand5: 'Mouse button 5',
         mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Odwroc klawisze myszki',
         disableChat: 'Wylacz czat',
@@ -1606,7 +1606,7 @@ var displayText = {
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
-		showDevConsole:'Show developer console',
+        showDevConsole: 'Show developer console',
         showLbData: 'Pokaz mase w topce',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
@@ -1614,7 +1614,7 @@ var displayText = {
         tweenMaxEffect: 'Tween max effect',
         top5skins: 'Skins on teamboard',
         showStats: 'Pokaz statystyki',
-		
+
         showStatsMass: 'Statystyki: Masa',
         //showStatsSTE: 'Statystyki: Przedzialy Masy',
         showStatsESTE: 'BSTE: Enemy\'s minimal mass to splt & eat',
@@ -1635,11 +1635,11 @@ var displayText = {
         'hk-inst-keys': 'Mozliwe kombinacje skrotow klawiszowych z uzyciem klawiszy CTRL oraz ALT.',
         'hk-bots-split': 'Bots split',
         'hk-bots-feed': 'Bots feed',
-		'hk-bots-macrofeed': 'Bots Macro feed',
+        'hk-bots-macrofeed': 'Bots Macro feed',
         //'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Szybki feed',
-		'hk-macroFeedPerm': 'Permanent feed',
+        'hk-macroFeedPerm': 'Permanent feed',
         'hk-split': 'Podzial',
         'hk-doubleSplit': 'Podwojny podzial',
         'hk-tripleSplit': 'Triple split',
@@ -1650,9 +1650,9 @@ var displayText = {
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Pokaz/ukryj top 5 teamu',
         'hk-dance': 'Dance',
-		'hk-limitposition': 'Macro position to limits',
+        'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Pokaz/ukryj aktualny czas',
-		'hk-showDevConsole': 'Show developer console',
+        'hk-showDevConsole': 'Show developer console',
         'hk-showSplitRange': 'Pokaz/ukryj zasieg podzialu',
         'hk-showSplitInd': 'Pokaz/ukryj zasieg podzialu z ringami',
         'hk-showTeammatesInd': 'Pokaz/ukryj wskazniki graczy teamu',
@@ -1730,26 +1730,26 @@ var displayText = {
         comm28: 'ANTI alarm stage 5',
         comm29: 'Presplit',
         comm30: 'Party Run tricks',
-		comm31: 'HotKey command',
-		comm32: 'HotKey command',	
-		comm33: 'HotKey command',
-		comm34: 'HotKey command',
-		comm35: 'HotKey command',
-		comm36: 'HotKey command',
-		comm37: 'HotKey command',
-		comm38: 'HotKey command',
-		comm39: 'HotKey command',
-		comm40: 'HotKey command',
-		comm41: 'HotKey command',
-		comm42: 'HotKey command',	
-		comm43: 'HotKey command',
-		comm44: 'HotKey command',
-		comm45: 'HotKey command',
-		comm46: 'HotKey command',
-		comm47: 'HotKey command',
-		comm48: 'HotKey command',
-		comm49: 'HotKey command',
-		comm50: 'HotKey command',		
+        comm31: 'HotKey command',
+        comm32: 'HotKey command',
+        comm33: 'HotKey command',
+        comm34: 'HotKey command',
+        comm35: 'HotKey command',
+        comm36: 'HotKey command',
+        comm37: 'HotKey command',
+        comm38: 'HotKey command',
+        comm39: 'HotKey command',
+        comm40: 'HotKey command',
+        comm41: 'HotKey command',
+        comm42: 'HotKey command',
+        comm43: 'HotKey command',
+        comm44: 'HotKey command',
+        comm45: 'HotKey command',
+        comm46: 'HotKey command',
+        comm47: 'HotKey command',
+        comm48: 'HotKey command',
+        comm49: 'HotKey command',
+        comm50: 'HotKey command',
         saveComm: 'Zapisz komendy',
         theme: 'Wyglad',
         restoreThemeSettings: 'Przywroc ustawienia domyslne wygladu',
@@ -1790,8 +1790,8 @@ var displayText = {
         sectorsFontSize: 'Rozmiar czcionki sektorow',
         sectorsX: 'Sectors X',
         sectorsY: 'Sectors Y',
-		virusSpikesRatio: 'Virus spikes ratio',
-		virusSpikesSize: 'Virus spikes size',
+        virusSpikesRatio: 'Virus spikes ratio',
+        virusSpikesSize: 'Virus spikes size',
         cellsAlpha: 'Przezroczystosc kulek',
         skinsAlpha: 'Przezroczystosc skinow',
         virusAlpha: 'Przezroczystosc wirusow',
@@ -1996,7 +1996,7 @@ var displayText = {
         //hideSizes: 'Hide everything with size smaller than',
         profileNumber: 'Profiles Number',
         suckAnimation: 'Cell Eat [Sucking] Animation',
-		virusSpikes: 'Virus spikes',
+        virusSpikes: 'Virus spikes',
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Zoom speed',
@@ -2037,7 +2037,7 @@ var displayText = {
         showMapBorders: 'Show map borders',
         showGhostCells: 'Ghost cells (fps drop)',
         showGhostCellsInfo: 'Ghost cells info (confusing)',
-		stickyCell: 'Sticky cells (left button, hold right button)',
+        stickyCell: 'Sticky cells (left button, hold right button)',
         //showPartyBots: 'Party bots',
         rotateMap: 'Rotate Map',
         showMiniMap: 'Show minimap',
@@ -2055,7 +2055,7 @@ var displayText = {
         qdsplitRange: 'Quick double split range', //Sonia2
         sdsplitRange: 'Slow double split range', //Sonia2
         virusesRange: 'Viruses range',
-		showOptimisedGrid: 'Icon as grid (fps increase)',
+        showOptimisedGrid: 'Icon as grid (fps increase)',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
@@ -2064,11 +2064,11 @@ var displayText = {
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
         FBTracking: 'Facebook bubble tracker',
-		indicators: 'Indicator',	
+        indicators: 'Indicator',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
-		mouseCommand4: 'Mouse button 4',
-		mouseCommand5: 'Mouse button 5',
+        mouseCommand4: 'Mouse button 4',
+        mouseCommand5: 'Mouse button 5',
         mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
@@ -2092,7 +2092,7 @@ var displayText = {
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
-		showDevConsole: 'Show developer console',
+        showDevConsole: 'Show developer console',
         showLbData: 'Show leaderboard mass',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
@@ -2119,11 +2119,11 @@ var displayText = {
         'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
         'hk-bots-split': 'Bots split',
         'hk-bots-feed': 'Bots feed',
-		'hk-bots-macrofeed': 'Bots Macro feed',				
+        'hk-bots-macrofeed': 'Bots Macro feed',
         //'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Macro feed',
-		'hk-macroFeedPerm': 'Permanent feed',
+        'hk-macroFeedPerm': 'Permanent feed',
         'hk-split': 'Split',
         'hk-doubleSplit': 'Double split',
         'hk-tripleSplit': 'Triple split',
@@ -2134,9 +2134,9 @@ var displayText = {
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Show/hide teamboard',
         'hk-dance': 'Dance',
-		'hk-limitposition': 'Macro position to limits',
+        'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Show/hide current time',
-		'hk-showDevConsole': 'Show developer console',
+        'hk-showDevConsole': 'Show developer console',
         'hk-showSplitRange': 'Show/hide split range',
         'hk-showSplitInd': 'Show/hide split indicators',
         'hk-showTeammatesInd': 'Show/hide teammates indicators',
@@ -2214,26 +2214,26 @@ var displayText = {
         comm28: 'ANTI alarm stage 5',
         comm29: 'Presplit',
         comm30: 'Party Run tricks',
-		comm31: 'HotKey command',
-		comm32: 'HotKey command',	
-		comm33: 'HotKey command',
-		comm34: 'HotKey command',
-		comm35: 'HotKey command',
-		comm36: 'HotKey command',
-		comm37: 'HotKey command',
-		comm38: 'HotKey command',
-		comm39: 'HotKey command',
-		comm40: 'HotKey command',
-		comm41: 'HotKey command',
-		comm42: 'HotKey command',	
-		comm43: 'HotKey command',
-		comm44: 'HotKey command',
-		comm45: 'HotKey command',
-		comm46: 'HotKey command',
-		comm47: 'HotKey command',
-		comm48: 'HotKey command',
-		comm49: 'HotKey command',
-		comm50: 'HotKey command',			
+        comm31: 'HotKey command',
+        comm32: 'HotKey command',
+        comm33: 'HotKey command',
+        comm34: 'HotKey command',
+        comm35: 'HotKey command',
+        comm36: 'HotKey command',
+        comm37: 'HotKey command',
+        comm38: 'HotKey command',
+        comm39: 'HotKey command',
+        comm40: 'HotKey command',
+        comm41: 'HotKey command',
+        comm42: 'HotKey command',
+        comm43: 'HotKey command',
+        comm44: 'HotKey command',
+        comm45: 'HotKey command',
+        comm46: 'HotKey command',
+        comm47: 'HotKey command',
+        comm48: 'HotKey command',
+        comm49: 'HotKey command',
+        comm50: 'HotKey command',
         saveComm: 'Save commands',
         theme: 'Theme',
         restoreThemeSettings: 'Restore theme default settings',
@@ -2274,8 +2274,8 @@ var displayText = {
         sectorsFontSize: 'Sectors font size',
         sectorsX: 'Sectors X',
         sectorsY: 'Sectors Y',
-		virusSpikesRatio: 'Virus spikes ratio',
-		virusSpikesSize: 'Virus spikes size',
+        virusSpikesRatio: 'Virus spikes ratio',
+        virusSpikesSize: 'Virus spikes size',
         cellsAlpha: 'Cells transparency',
         skinsAlpha: 'Skins transparency',
         virusAlpha: 'Virus transparency',
@@ -2487,7 +2487,7 @@ var themePresets = {
         borderGlowSize: 14,
         menuPreset: 'legendv2',
         graphics: 'high',
-		indicators: 'normal',
+        indicators: 'normal',
         menuMainColor: '#01d9cc',
         menuBtnTextColor: '#ffffff',
         menuPanelColor: '#00243e',
@@ -2943,8 +2943,8 @@ var defaultSettings = {
     sectorsFontWeight: 400,
     sectorsX: 5,
     sectorsY: 5,
-	virusSpikesRatio: 0.46,
-	virusSpikesSize: 6,
+    virusSpikesRatio: 0.46,
+    virusSpikesSize: 6,
     namesScale: 1,
     massScale: 3,
     virMassScale: 3,
@@ -2965,7 +2965,7 @@ var defaultSettings = {
     virusStrokeSize: 14,
     menuPreset: 'legendv2',
     graphics: 'high',
-	indicators: 'normal',
+    indicators: 'normal',
     menuMainColor: '#01d9cc',
     menuBtnTextColor: '#ffffff',
     menuPanelColor: '#00243e',
@@ -3057,9 +3057,9 @@ cimg6 = new Image;
 cimg6.src = defaultSettings.commanderImage6;
 //cimg7 = new Image;
 //cimg7.src = 'https://www.legendmod.ml/banners/iconLcForCanvas.png';
-function loadIconSpecialSkins(val){
-	eval('window.' + val + ' = new Image');
-	eval('window.' + val + '.src = "https://www.legendmod.ml/banners/' + val + '.png"')
+function loadIconSpecialSkins(val) {
+    eval('window.' + val + ' = new Image');
+    eval('window.' + val + '.src = "https://www.legendmod.ml/banners/' + val + '.png"')
 }
 /*
 iconSpecialSkinEffectsCrown = new Image;
@@ -3192,27 +3192,27 @@ if (dyinglight1load === "yes") {
                 cimgDyingLight5.src = 'https://www.legendmod.ml/banners/icondyinglightzombiebig.png';
                 cimgDyingLight6 = new Image;
                 cimgDyingLight6.src = 'https://www.legendmod.ml/banners/icondyinglightvolaltile.png';
-				*/
+                */
 
 
 var SkinExplain = [{
-        name: "imgur.com",
-        url: "https://imgur.com/",
-        example: "https://i.imgur.com/xdmUp5N.png",
-        pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
-    },
-    {
-        name: "put.re",
-        url: "https://put.re/",
-        example: "https://s.put.re/iYHAW65g.png",
-        pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
-    },
-    {
-        name: "postimages.org",
-        url: "https://postimages.org/",
-        example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
-        pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
-    }
+    name: "imgur.com",
+    url: "https://imgur.com/",
+    example: "https://i.imgur.com/xdmUp5N.png",
+    pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
+},
+{
+    name: "put.re",
+    url: "https://put.re/",
+    example: "https://s.put.re/iYHAW65g.png",
+    pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
+},
+{
+    name: "postimages.org",
+    url: "https://postimages.org/",
+    example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
+    pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
+}
 ];
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
@@ -3267,7 +3267,7 @@ var defaultmapsettings = {
     showMapBorders: true,
     showGhostCells: false,
     showGhostCellsInfo: false,
-	stickyCell: false,
+    stickyCell: false,
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,
@@ -3285,7 +3285,7 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
-	showOptimisedGrid: true,
+    showOptimisedGrid: true,
     textStroke: false,
     namesStroke: true,
     massStroke: true,
@@ -3299,8 +3299,8 @@ var defaultmapsettings = {
     mouseSplit: false,
     mouseFeed: false,
     mouseWheelClick: false,
-	mouseCommand4: false,
-	mouseCommand5: false,
+    mouseCommand4: false,
+    mouseCommand5: false,
     mouseInvert: false,
     disableChat: false,
     coloredNicks: false,
@@ -3316,7 +3316,7 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     showTime: false,
-	showDevConsole: false,
+    showDevConsole: false,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -3352,7 +3352,7 @@ var defaultmapsettings = {
     cameraSpeed: 7,
     commanderDelay: 1E3,
     suckAnimation: false,
-	virusSpikes: false,
+    virusSpikes: false,
     virusGlow: false,
     borderGlow: false,
     limLB: 10,
@@ -3368,13 +3368,13 @@ var defaultmapsettings = {
     commandSound: 'https://www.legendmod.ml/sounds/chat-message.mp3',
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
-	//
-	leftClick: 'hk-macroFeed',
-	rightClick: 'hk-split',
-	middleClick: 'hk-multiboxswap',
-	mouse4Click: 'hk-doubleSplit',
-	mouse5Click: 'hk-split16',
-	//
+    //
+    leftClick: 'hk-macroFeed',
+    rightClick: 'hk-split',
+    middleClick: 'hk-multiboxswap',
+    mouse4Click: 'hk-doubleSplit',
+    mouse5Click: 'hk-split16',
+    //
     FacebookIDs: ''
 };
 var profiles = [];
@@ -3394,59 +3394,59 @@ if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
 var textLanguage = displayText[lang];
 defineChatCommand();
 function defineChatCommand() {
-	window.chatCommand = {
-		comm0: textLanguage.comm0,
-		comm1: textLanguage.comm1,
-		comm2: textLanguage.comm2,
-		comm3: textLanguage.comm3,
-		comm4: textLanguage.comm4,
-		comm5: textLanguage.comm5,
-		comm6: textLanguage.comm6,
-		comm7: textLanguage.comm7,
-		comm8: textLanguage.comm8,
-		comm9: textLanguage.comm9,
-		comm10: textLanguage.comm10,
-		comm11: textLanguage.comm11,
-		comm12: textLanguage.comm12,
-		comm13: textLanguage.comm13,
-		comm14: textLanguage.comm14,
-		comm15: textLanguage.comm15,
-		comm16: textLanguage.comm16,
-		comm17: textLanguage.comm17,
-		comm18: textLanguage.comm18,
-		comm19: textLanguage.comm19,
-		comm20: textLanguage.comm20,
-		comm21: textLanguage.comm21,
-		comm22: textLanguage.comm22,
-		comm23: textLanguage.comm23,
-		comm24: textLanguage.comm24,
-		comm25: textLanguage.comm25,
-		comm26: textLanguage.comm26,
-		comm27: textLanguage.comm27,
-		comm28: textLanguage.comm28,
-		comm29: textLanguage.comm29,
-		comm30: textLanguage.comm30,
-		comm31: textLanguage.comm31,
-		comm32: textLanguage.comm32,
-		comm33: textLanguage.comm33,
-		comm34: textLanguage.comm34,
-		comm35: textLanguage.comm35,
-		comm36: textLanguage.comm36,
-		comm37: textLanguage.comm37,
-		comm38: textLanguage.comm38,
-		comm39: textLanguage.comm39,
-		comm40: textLanguage.comm40,
-		comm41: textLanguage.comm41,
-		comm42: textLanguage.comm42,
-		comm43: textLanguage.comm43,
-		comm44: textLanguage.comm44,
-		comm45: textLanguage.comm45,
-		comm46: textLanguage.comm46,
-		comm47: textLanguage.comm47,
-		comm48: textLanguage.comm48,
-		comm49: textLanguage.comm49,
-		comm50: textLanguage.comm50	
-	}
+    window.chatCommand = {
+        comm0: textLanguage.comm0,
+        comm1: textLanguage.comm1,
+        comm2: textLanguage.comm2,
+        comm3: textLanguage.comm3,
+        comm4: textLanguage.comm4,
+        comm5: textLanguage.comm5,
+        comm6: textLanguage.comm6,
+        comm7: textLanguage.comm7,
+        comm8: textLanguage.comm8,
+        comm9: textLanguage.comm9,
+        comm10: textLanguage.comm10,
+        comm11: textLanguage.comm11,
+        comm12: textLanguage.comm12,
+        comm13: textLanguage.comm13,
+        comm14: textLanguage.comm14,
+        comm15: textLanguage.comm15,
+        comm16: textLanguage.comm16,
+        comm17: textLanguage.comm17,
+        comm18: textLanguage.comm18,
+        comm19: textLanguage.comm19,
+        comm20: textLanguage.comm20,
+        comm21: textLanguage.comm21,
+        comm22: textLanguage.comm22,
+        comm23: textLanguage.comm23,
+        comm24: textLanguage.comm24,
+        comm25: textLanguage.comm25,
+        comm26: textLanguage.comm26,
+        comm27: textLanguage.comm27,
+        comm28: textLanguage.comm28,
+        comm29: textLanguage.comm29,
+        comm30: textLanguage.comm30,
+        comm31: textLanguage.comm31,
+        comm32: textLanguage.comm32,
+        comm33: textLanguage.comm33,
+        comm34: textLanguage.comm34,
+        comm35: textLanguage.comm35,
+        comm36: textLanguage.comm36,
+        comm37: textLanguage.comm37,
+        comm38: textLanguage.comm38,
+        comm39: textLanguage.comm39,
+        comm40: textLanguage.comm40,
+        comm41: textLanguage.comm41,
+        comm42: textLanguage.comm42,
+        comm43: textLanguage.comm43,
+        comm44: textLanguage.comm44,
+        comm45: textLanguage.comm45,
+        comm46: textLanguage.comm46,
+        comm47: textLanguage.comm47,
+        comm48: textLanguage.comm48,
+        comm49: textLanguage.comm49,
+        comm50: textLanguage.comm50
+    }
 }
 //var thelegendmodproject = function(t, e, i) {
 function thelegendmodproject() {
@@ -3457,13 +3457,13 @@ function thelegendmodproject() {
     /*    lang = 'en',
             userLanguage = window.navigator.language || window.navigator.userLanguage;
         if (userLanguage && displayText.hasOwnProperty(userLanguage)){
-			lang = userLanguage;
-		}
+            lang = userLanguage;
+        }
         var textLanguage = displayText[lang];*/
     //if (displayText[r].comm15 != undefined) {
     //console.log(textLanguage.comm15);
     //}
-window.MouseClicks=[];
+    window.MouseClicks = [];
     Settings = {
         menuMainColorCSS: null,
         menuPanelColorCSS: null,
@@ -3472,7 +3472,7 @@ window.MouseClicks=[];
         hudCSS: null,
         chatCSS: null,
         chatScaleCSS: null,
-        cursorCSS: null,		
+        cursorCSS: null,
         loadThemeSettings() {
             let storage = null;
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
@@ -3510,54 +3510,54 @@ window.MouseClicks=[];
             }
             $('#' + name).val(defaultSettings[value]);
             var app = this;
-            $('#' + name).on('change', function() {
+            $('#' + name).on('change', function () {
                 var id = this.value;
                 defaultSettings[value] = id;
                 app[callback](id);
             });
         },
-		addPresetBox2(id, name, options, value, callback) {
-            for (var option in $(id).append('<label data-original-title="" title="">' +textLanguage[name] + '<div class=\"select-wrapper\" style="display:inline-block; width: 60%; float:right;"><select id=\"' + name + '\" class=\"form-control\"></select></div></label>'), options) {
+        addPresetBox2(id, name, options, value, callback) {
+            for (var option in $(id).append('<label data-original-title="" title="">' + textLanguage[name] + '<div class=\"select-wrapper\" style="display:inline-block; width: 60%; float:right;"><select id=\"' + name + '\" class=\"form-control\"></select></div></label>'), options) {
                 Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
-				//options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
+                //options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
             }
             //$('#' + name).val(defaultSettings[value]);
             var app = this;
-            $('#' + name).on('change', function() {
+            $('#' + name).on('change', function () {
                 var id = this.value;
-				//console.log(id,name)
+                //console.log(id,name)
                 window.MouseClicks[name] = id;
                 app[callback](name);
             });
-        },	
-		addPresetBox3(id, name, options, value, callback) {
+        },
+        addPresetBox3(id, name, options, value, callback) {
             for (var option in $(id).after('<div class=\"select-wrapper\" style="display:inline-block; width: 48%; margin-Left: 10px"><select id=\"' + name + '\" class=\"form-control\"></select></div>'), options) {
                 Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
-				//options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
+                //options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
             }
             //$('#' + name).val(defaultSettings[value]);
             var app = this;
-            $('#' + name).on('change', function() {
+            $('#' + name).on('change', function () {
                 var id = this.value;
-				//console.log(id,name)
+                //console.log(id,name)
                 window.MouseClicks[name] = id;
                 app[callback](name);
             });
-        },			
+        },
         addColorBox(id, name, callback) {
             $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
             if (callback) {
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
                     'format': 'hex'
-                }).on('changeColor.colorpicker', function(id) {
+                }).on('changeColor.colorpicker', function (id) {
                     defaultSettings[name] = id.color.toHex();
                     ogario.hasOwnProperty(name) && (ogario[name] = defaultSettings[name]);
                     app[callback]();
                 });
             } else $(id + ' .' + name + '-picker').colorpicker({
                 'format': 'hex'
-            }).on('changeColor.colorpicker', function(id) {
+            }).on('changeColor.colorpicker', function (id) {
                 defaultSettings[name] = id.color.toHex();
                 if (ogario.hasOwnProperty(name)) {
                     ogario[name] = defaultSettings[name];
@@ -3570,7 +3570,7 @@ window.MouseClicks=[];
                 var app = this;
                 $(id + ' .' + name + '-picker').colorpicker({
                     'format': 'rgba'
-                }).on('changeColor.colorpicker', function(ids) {
+                }).on('changeColor.colorpicker', function (ids) {
                     var color = ids.color.toRGB();
                     defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')';
                     if (ogario.hasOwnProperty(name)) {
@@ -3581,7 +3581,7 @@ window.MouseClicks=[];
             } else {
                 (id + ' .' + name + '-picker').colorpicker({
                     'format': 'rgba'
-                }).on('changeColor.colorpicker', function(ids) {
+                }).on('changeColor.colorpicker', function (ids) {
                     var color = ids.color.toRGB();
                     defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')';
                     ogario.hasOwnProperty(name) && (ogario[name] = defaultSettings[name]);
@@ -3604,7 +3604,7 @@ window.MouseClicks=[];
                           `);
             if (callback) {
                 var app = this;
-                $('#' + name + '-slider').on('input', function() {
+                $('#' + name + '-slider').on('input', function () {
                     var t = parseFloat($(this).val());
                     $('#' + name + '-value').text(t);
                     defaultSettings[name] = t;
@@ -3613,7 +3613,7 @@ window.MouseClicks=[];
                     }
                     app[callback]();
                 });
-            } else $('#' + name + '-slider').on('input', function() {
+            } else $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
                 $('#' + name + '-value').text(t);
                 defaultSettings[name] = t;
@@ -3625,7 +3625,7 @@ window.MouseClicks=[];
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultSettings[name] + '\" /></div>');
             var app = this;
-            $('#' + name).on('input', function() {
+            $('#' + name).on('input', function () {
                 defaultSettings[name] = this.value;
                 app[callback]();
             });
@@ -3654,11 +3654,11 @@ window.MouseClicks=[];
 
             $('#' + name).val(defaultSettings[name]);
             var app = this;
-            callback ? $('#' + name).on('change', function() {
+            callback ? $('#' + name).on('change', function () {
                 var appi = this.value;
                 app.setFont(name, appi);
                 app[callback]();
-            }) : $('#' + name).on('change', function() {
+            }) : $('#' + name).on('change', function () {
                 var appi = this.value;
                 app.setFont(name, appi);
             });
@@ -3741,8 +3741,8 @@ window.MouseClicks=[];
             this.addSliderBox('#theme-main', 'virMassScale', 1, 5, 1);
             this.addSliderBox('#theme-main', 'strokeScale', 1, 4, 0.1);
             this.addSliderBox('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor');
-			this.addSliderBox('#theme-main', 'virusSpikesRatio', 0.03, 0.8, 0.01);
-			this.addSliderBox('#theme-main', 'virusSpikesSize', 1, 60, 1);
+            this.addSliderBox('#theme-main', 'virusSpikesRatio', 0.03, 0.8, 0.01);
+            this.addSliderBox('#theme-main', 'virusSpikesSize', 1, 60, 1);
             this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1);
             this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2);
             this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
@@ -3753,7 +3753,7 @@ window.MouseClicks=[];
             this.addSliderBox('#theme-main', 'virusAlpha', 0, 1, 0.01);
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
             this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 1, 0.01);
-			this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');			
+            this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');
             this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
             this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
@@ -3827,29 +3827,29 @@ window.MouseClicks=[];
             this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
             /*this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);*/
             for (var e = 'https://www.legendmod.ml/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
-            $(document).on('click', '#theme-images .cursor-box a', function(e) {
-                    e.preventDefault();
-                    var i = $('img', this).attr('src');
-                    defaultSettings.customCursor = i;
-                    Settings.setCustomCursor();
-                    $('#customCursor').val(i);
-                    $('#theme-images .cursor-box a').removeClass('active');
-                    $(this).addClass('active');
-                }),
+            $(document).on('click', '#theme-images .cursor-box a', function (e) {
+                e.preventDefault();
+                var i = $('img', this).attr('src');
+                defaultSettings.customCursor = i;
+                Settings.setCustomCursor();
+                $('#customCursor').val(i);
+                $('#theme-images .cursor-box a').removeClass('active');
+                $(this).addClass('active');
+            }),
                 $('#theme').append('<button class=\"btn btn-block btn-success btn-save\"\">' + textLanguage.saveSett + '</button>'),
-                $(document).on('click', '#theme .btn-save', function(e) {
+                $(document).on('click', '#theme .btn-save', function (e) {
                     e.preventDefault();
                     var i = $(this);
                     i.text(textLanguage.saved);
                     Settings.saveThemeSettings();
-                    setTimeout(function() {
+                    setTimeout(function () {
                         i.text(textLanguage.saveSett);
                     }, 500);
                     ogarhusettings();
                     //ogarhusettingsImportExportMobile();
                 });
             $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
-                $(document).on('click', '#theme .restore-settings a', function(e) {
+                $(document).on('click', '#theme .restore-settings a', function (e) {
                     e.preventDefault(), Settings.restoreThemeSettings();
                 }), $('.skin').colorpicker({
                     'format': 'hex',
@@ -3887,25 +3887,25 @@ window.MouseClicks=[];
             this.setTheme();
         },
         changeleftCmd(name) {
-			defaultmapsettings.leftClick = window.MouseClicks[name]
-			application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },	
+            defaultmapsettings.leftClick = window.MouseClicks[name]
+            application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         changerightCmd(name) {
-			defaultmapsettings.rightClick = window.MouseClicks[name]
-			application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },	
+            defaultmapsettings.rightClick = window.MouseClicks[name]
+            application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         changemiddleCmd(name) {
-			defaultmapsettings.middleClick = window.MouseClicks[name]
-			application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },	
+            defaultmapsettings.middleClick = window.MouseClicks[name]
+            application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         change4Cmd(name) {
-			defaultmapsettings.mouse4Click = window.MouseClicks[name]
-			application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },	
+            defaultmapsettings.mouse4Click = window.MouseClicks[name]
+            application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         change5Cmd(name) {
-			defaultmapsettings.mouse5Click = window.MouseClicks[name]
-			application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },			
+            defaultmapsettings.mouse5Click = window.MouseClicks[name]
+            application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },
         changeChatThemePosition(name) {
             this.changePreset(name, chatPositions);
             this.setChatPosition();
@@ -3950,14 +3950,14 @@ window.MouseClicks=[];
             this.setMenuBg();
         },
 
-		changeIndicators(value) {},	
+        changeIndicators(value) { },
         changeMenuPreset(name) {
             this.changePreset(name, themeMenus);
             this.setMenu();
         },
         changeGraphics(value) {
-			
-		},
+
+        },
         setMenuOpacity() {
             $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
         },
@@ -3991,8 +3991,8 @@ window.MouseClicks=[];
             this.setHudScale();
         },
         setHudColors() {
-            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,'+
-			'.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
+            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,' +
+                '.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
             this.addCustomCSS('hudCSS', css);
         },
@@ -4272,37 +4272,37 @@ window.MouseClicks=[];
         },
         macroFeedPerm(on) {
             if (on) {
-                if (this.feedIntervalPerm){ 
-					clearInterval(this.feedIntervalPerm);
-					this.feedIntervalPerm = null					
-					return;
-				}
+                if (this.feedIntervalPerm) {
+                    clearInterval(this.feedIntervalPerm);
+                    this.feedIntervalPerm = null
+                    return;
+                }
                 var app = this;
                 this.feed();
-                this.feedIntervalPerm = setInterval(function() {
+                this.feedIntervalPerm = setInterval(function () {
                     app.feed();
                 }, defaultmapsettings.macroFeeding);
-            } 
+            }
         },
         macrobotFeed(on) {
             if (on) {
                 if (this.feedInterval) return;
                 var app = this;
                 this.Botseject();
-                this.feedInterval = setInterval(function() {
+                this.feedInterval = setInterval(function () {
                     app.Botseject();
                 }, defaultmapsettings.macroFeeding);
             } else if (this.feedInterval) {
                 clearInterval(this.feedInterval);
                 this.feedInterval = null
             };
-        },		
+        },
         macroFeed(on) {
             if (on) {
                 if (this.feedInterval) return;
                 var app = this;
                 this.feed();
-                this.feedInterval = setInterval(function() {
+                this.feedInterval = setInterval(function () {
                     app.feed();
                 }, defaultmapsettings.macroFeeding);
             } else if (this.feedInterval) {
@@ -4326,32 +4326,32 @@ window.MouseClicks=[];
         },
         /*Botsmacroeject() {
             if (window.core && window.core.Botsmacroeject) window.core.Botsmacroeject();
-        },*/		
-		
+        },*/
+
         doubleBotSplit() {
             var app = this;
             app.Botsplit();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.Botsplit();
             }, 40);
         },
         popBotSplit() {
             var app = this;
             app.Botsplit();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.Botsplit();
             }, 200);
         },
         splitBot16() {
             var app = this;
             app.Botsplit();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.Botsplit();
             }, 40);
-            setTimeout(function() {
+            setTimeout(function () {
                 app.Botsplit();
             }, 80);
-            setTimeout(function() {
+            setTimeout(function () {
                 app.Botsplit();
             }, 120);
         },
@@ -4361,7 +4361,7 @@ window.MouseClicks=[];
         doubleSplit() {
             var app = this;
             app.split();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 40);
         },
@@ -4369,7 +4369,7 @@ window.MouseClicks=[];
             var app = this;
             window.lockPosition = true
             app.split();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
                 window.lockPosition = false
             }, 40);
@@ -4377,7 +4377,7 @@ window.MouseClicks=[];
         popSplit() {
             var app = this;
             app.split();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 200);
         },
@@ -4385,10 +4385,10 @@ window.MouseClicks=[];
             var app = this;
             //window.lockPosition = true
             app.split();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 40);
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
                 //window.lockPosition = false
             }, 80);
@@ -4396,13 +4396,13 @@ window.MouseClicks=[];
         split16() {
             var app = this;
             app.split();
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 40);
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 80);
-            setTimeout(function() {
+            setTimeout(function () {
                 app.split();
             }, 120);
         },
@@ -4663,16 +4663,16 @@ window.MouseClicks=[];
             input.val($('#leaderboard-positions').text()).select();
             try {
                 document.execCommand('copy');
-            } catch (ogarcopierlbcather) {}
+            } catch (ogarcopierlbcather) { }
             input.remove();
         },
         changeSpectatorMode() {
             this.spectatorFollow = !this.spectatorFollow;
             ogario.spectatorFollow = this.spectatorFollow;
-            if (this.spectatorFollow && spects.length > 0 && spects[0].staticX ==null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/ ) {
+            if (this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/) {
                 spects[0].sendFreeSpectate();
             } else {
-                void(0);
+                void (0);
             }
         },
         setPause() {
@@ -4731,7 +4731,7 @@ window.MouseClicks=[];
         setVanillaSkins() {
             if (defaultmapsettings.vanillaSkins) {
                 //defaultmapsettings.animateSkinsStart = setInterval(animateSkincheck, window.preSetanimateSkincheck);
-                setTimeout(function() {
+                setTimeout(function () {
                     animateSkincheck()
                 }, window.preSetanimateSkincheck);
             } else {
@@ -4770,7 +4770,7 @@ window.MouseClicks=[];
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
         displayPartyBots() {
-            setTimeout(function() {
+            setTimeout(function () {
                 //if (defaultmapsettings.showPartyBots) {                   
                 $(".quick.quick-bots.ogicon-trophy").hide();
                 /*} else {
@@ -4896,19 +4896,19 @@ window.MouseClicks=[];
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-					if (legendmod.integrity && drawRender.ping) t += ' | PING: ' +  drawRender.ping;
+                    if (legendmod.integrity && drawRender.ping) t += ' | PING: ' + drawRender.ping;
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
-                	if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
-                	var color = ''
-                	if(LM.pps<23 || LM.pps>29) color = 'color:#ff4c4c'
-                	if(LM.pps<20 || LM.pps>32) color = 'color:red'
-                	t += 'PPS: <span style=' + color + '>'+LM.pps+'</span>';
+                    if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
+                    var color = ''
+                    if(LM.pps<23 || LM.pps>29) color = 'color:#ff4c4c'
+                    if(LM.pps<20 || LM.pps>32) color = 'color:red'
+                    t += 'PPS: <span style=' + color + '>'+LM.pps+'</span>';
                 }	*/
                 this.statsHUD.innerHTML = t;
                 //this.statsHUD.textContent = t;
                 var app = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     app.displayStats();
                 }, 250);
             } else $('#stats-hud').hide();
@@ -4918,7 +4918,7 @@ window.MouseClicks=[];
                 var time = new Date().toLocaleString();
                 this.timeHUD.textContent = time;
                 var app = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     app.displayTime();
                 }, 1000);
             } else $('#time-hud').hide();
@@ -4938,8 +4938,8 @@ window.MouseClicks=[];
         /*
                     displayTop5() {
                         if (defaultmapsettings.showTop5) {
-        					//console.log(.top5.length);
-        					//console.log(.teamPlayers.length);
+                            //console.log(.top5.length);
+                            //console.log(.teamPlayers.length);
                             for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this.top5[o].color + '\">' + (o + 1) + '</span>', defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>');
                             this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++), this.top5totalMass.textContent= this.shortMassFormat(e), this.top5totalPlayers.textContent= s;
                         }
@@ -4958,7 +4958,7 @@ window.MouseClicks=[];
                       bufferString = bufferString + this.top5[entityType].mass;
                       if (!(entityType >= defaultmapsettings["limTP"])) {
                         pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + '" alt=""> ' +
-        				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
+                        '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
                         this.shortMassFormat(this.top5[entityType].mass) + '</span></li>');
                       }
                     }
@@ -5008,11 +5008,11 @@ window.MouseClicks=[];
                                     }
                                 }
                             }                            //t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>';
-							
+
                             if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
-                            } 
-							else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
+                            }
+                            else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             //temporary socket 3
@@ -5031,12 +5031,12 @@ window.MouseClicks=[];
                             this.top5totalPlayers.textContent = s;
                     }
                 }
-            } 
-			else {
+            }
+            else {
                 if (defaultmapsettings.showTop5) {
                     //temp
                     var tempTime = new Date().getTime();
-                    Object.getOwnPropertyNames(application.teamPlayers).forEach(function(element) {
+                    Object.getOwnPropertyNames(application.teamPlayers).forEach(function (element) {
                         if (application.teamPlayers && application.teamPlayers[element] && application.teamPlayers[element].lbgpi === -2 && application.teamPlayers[element].mass > 1) {
                             //console.log(application.teamPlayers[element].lastUpdatedTime, tempTime);
                             if (application.teamPlayers[element].lastUpdatedTime && ((application.teamPlayers[element].lastUpdatedTime) - tempTime < 6000)) {
@@ -5058,17 +5058,17 @@ window.MouseClicks=[];
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             /*
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
-								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
-								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
+                                '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
+                                + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
                             var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
                             if (!teamboardskin) {
                                 teamboardskin = new Image();
                                 teamboardskin.crossOrigin = 'anonymous';
                                 teamboardskin.src = "https://www.legendmod.ml/banners/icon32croped.ico.gif";
                             }
-							t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + this.top5[o].id + '" style="background-color: ' + this.top5[o].color +
-							'; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
-							(teamboardskin.outerHTML || '<img src="' + teamboardskin.src + '" alt=""/>') + '</span></a><div style="margin-top: -30px; margin-left: 32px;">');
+                            t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + this.top5[o].id + '" style="background-color: ' + this.top5[o].color +
+                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
+                                (teamboardskin.outerHTML || '<img src="' + teamboardskin.src + '" alt=""/>') + '</span></a><div style="margin-top: -30px; margin-left: 32px;">');
                             // t = t + ('<div><img src=' + teamboardskin.src + 'class="player-skin" style="border: solid 3px' + this.top5[o].color + '">' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 
                             /* if (defaultmapsettings["showTargeting"]) {
@@ -5094,8 +5094,8 @@ window.MouseClicks=[];
                             }
                             if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
-                            } 
-							else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
+                            }
+                            else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             //temporary socket 3
@@ -5263,7 +5263,7 @@ window.MouseClicks=[];
             }
         },
         escapeHTML(string) {
-            return String(string).replace(/[&<>"'\/]/g, function(event) {
+            return String(string).replace(/[&<>"'\/]/g, function (event) {
                 return escapeChar[event];
             });
         },
@@ -5384,18 +5384,18 @@ window.MouseClicks=[];
                     case 'animatedRainbowColor':
                         this.setAnimatedRainbowColor();
                         break;
-                        //case 'normalLb':
-                        //this.setNormalLb();
-                        //break;
+                    //case 'normalLb':
+                    //this.setNormalLb();
+                    //break;
                     case 'fpsAtTop':
                         this.setFpsAtTop();
                         break;
                     case 'tweenMaxEffect':
                         this.setTweenMaxEffect();
                         break;
-                        /*case 'showPartyBots':
-                            this.displayPartyBots();
-                            break;*/
+                    /*case 'showPartyBots':
+                        this.displayPartyBots();
+                        break;*/
                     case 'showStats':
                         this.displayStats();
                         $('#stats-hud').show();
@@ -5456,7 +5456,7 @@ window.MouseClicks=[];
                 }
             }
             application.saveSettings(profiles, 'ogarioPlayerProfiles');
-            setTimeout(function() {
+            setTimeout(function () {
                 application.profiling();
 
             }, 200)
@@ -5475,28 +5475,28 @@ window.MouseClicks=[];
                 ogarcopythelb.color = profiles[this.selectedProfile].color;
             }
         },
-		marqueeSkins(t) {
+        marqueeSkins(t) {
             const scrollingText = document.createElement('div');
             scrollingText.className = 'scrolling-text'; // Add a class to prevent duplication
-			scrollingText.style.position = 'absolute';
-			scrollingText.style.top = '50%'; // Center vertically
-			scrollingText.style.width = '100%';
-			scrollingText.style.textAlign = 'center';
-			scrollingText.style.fontSize = '8px';
-			scrollingText.style.whiteSpace = 'nowrap';
-			scrollingText.style.overflow = 'hidden';
-			scrollingText.style.color = 'white'; // White font color
-			scrollingText.style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black'; // Black outline
+            scrollingText.style.position = 'absolute';
+            scrollingText.style.top = '50%'; // Center vertically
+            scrollingText.style.width = '100%';
+            scrollingText.style.textAlign = 'center';
+            scrollingText.style.fontSize = '8px';
+            scrollingText.style.whiteSpace = 'nowrap';
+            scrollingText.style.overflow = 'hidden';
+            scrollingText.style.color = 'white'; // White font color
+            scrollingText.style.textShadow = '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black'; // Black outline
 
-			// Create a marquee element for scrolling from right to left
-			var marquee = document.createElement('marquee');
-			marquee.direction = 'left';
-			marquee.innerText = 'MP4, video skin';
-			scrollingText.appendChild(marquee);
+            // Create a marquee element for scrolling from right to left
+            var marquee = document.createElement('marquee');
+            marquee.direction = 'left';
+            marquee.innerText = 'MP4, video skin';
+            scrollingText.appendChild(marquee);
 
-			// Append the scrolling text to the anchor element
-			$("#" + t).append(scrollingText);
-		},			
+            // Append the scrolling text to the anchor element
+            $("#" + t).append(scrollingText);
+        },
         changeSkinPreview(e, t) {
             //console.log(e,t);
             if (!t || !e) {
@@ -5518,22 +5518,22 @@ window.MouseClicks=[];
                     $("#skin-preview").removeClass("default");
                     $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<img src=\'' + e.src + "' width='500'>\"></a>");
                 }
-				//e.style.width = $("#skin-popover").width();
-				//e.style.height = $("#skin-popover").height();
+                //e.style.width = $("#skin-popover").width();
+                //e.style.height = $("#skin-popover").height();
                 $("#skin-popover").append($(e).fadeIn(1000));
                 $("#skin-popover").popover();
             } else {
                 if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")) { //console.log("stage 3b videos");
-					/*if ((e.src).startsWith('https://i.imgur.com/') && (e.src).endsWith('.mp4')){
-						e.style.width = "180px" 
-						e.style.height = "180px";
-					}*/
-					/*if (/^https://i.imgur.com/.*.mp4$/i.test(e.src)) {
-						console.log('contains imgur');
-						e.src = e.src.replace('.mp4', '.gif');
-					}*/
-					//e.style.width=$("#skin-preview").width();
-					//e.style.height=$("#skin-preview").height();				
+                    /*if ((e.src).startsWith('https://i.imgur.com/') && (e.src).endsWith('.mp4')){
+                        e.style.width = "180px" 
+                        e.style.height = "180px";
+                    }*/
+                    /*if (/^https://i.imgur.com/.*.mp4$/i.test(e.src)) {
+                        console.log('contains imgur');
+                        e.src = e.src.replace('.mp4', '.gif');
+                    }*/
+                    //e.style.width=$("#skin-preview").width();
+                    //e.style.height=$("#skin-preview").height();				
                     $("#" + t).removeClass("default");
                     $("#" + t).append($(e).fadeIn(1000));
 
@@ -5556,13 +5556,13 @@ window.MouseClicks=[];
                     o.referrerPolicy = 'no-referrer';
                     o.referrer = 'no-referrer';
                     o.src = t;
-					//o.style.width = "100%";
-					//o.style.height = "100%";
-					//this.marqueeSkins(e);
+                    //o.style.width = "100%";
+                    //o.style.height = "100%";
+                    //this.marqueeSkins(e);
                     // o = new Image();
-					
+
                     //o.style.borderRadius = "25px";
-                    setTimeout(function() {
+                    setTimeout(function () {
                         //newo.onload = function() {
                         app.changeSkinPreview(o, e);
                         checkVideos3(o);
@@ -5578,14 +5578,14 @@ window.MouseClicks=[];
                 if ($('#' + e).empty().addClass('default'), t && 0 !== t.length) {
                     //console.log("stage 1 images/videos: " + t);
                     var app = this,
-                    o = checktypeImgVid;
+                        o = checktypeImgVid;
                     o.crossOrigin = 'anonymous';
                     o.referrerPolicy = 'no-referrer';
                     o.referrer = 'no-referrer';
                     o.src = t;
                     // o = new Image();
 
-                    o.onload = function() {
+                    o.onload = function () {
                         app.changeSkinPreview(o, e);
                     };
                 }
@@ -5677,7 +5677,7 @@ window.MouseClicks=[];
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultmapsettings[name] + '\" /></div>');
             var app = this;
-            $('#' + name).on('input', function() {
+            $('#' + name).on('input', function () {
                 defaultmapsettings[name] = this.value, app[callback](),
                     app.saveSettings(defaultmapsettings, 'ogarioSettings');
             });
@@ -5685,14 +5685,14 @@ window.MouseClicks=[];
         addSliderBox(id, name, min, max, step, callback) {
             $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultmapsettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultmapsettings[name] + '\"></div>');
             var app = this;
-            callback ? $('#' + name + '-slider').on('input', function() {
+            callback ? $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
                 $('#' + name + '-value').text(t);
                 defaultmapsettings[name] = t;
                 if (ogario.hasOwnProperty(name)) ogario[name] = t;
                 app[callback]();
                 app.saveSettings(defaultmapsettings, 'ogarioSettings');
-            }) : $('#' + name + '-slider').on('input', function() {
+            }) : $('#' + name + '-slider').on('input', function () {
                 var t = parseFloat($(this).val());
                 $('#' + name + '-value').text(t);
                 defaultmapsettings[name] = t;
@@ -5715,9 +5715,9 @@ window.MouseClicks=[];
         setMenu() {
             const app = this;
             document.title = this.name;
-            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">agar.io level: <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>'+
-			'<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">LM level: <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>'+
-			'<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
+            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">agar.io level: <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
+                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">LM level: <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
+                '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
             $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy"></a>' +
@@ -5832,29 +5832,29 @@ window.MouseClicks=[];
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
-			this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
+            this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showOptimisedGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
-			this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup");
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-			this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
-			this.addOptions(["stickyCell", "mouseSplit", "mouseFeed", "mouseWheelClick", "mouseCommand4", "mouseCommand5"], "mouseGroup");
-//	
-			Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
-			$("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
-			Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');	
-			$("#mouseFeed2 option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
-			Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');	
-			$("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();		
-			Settings.addPresetBox3('#mouseCommand4', 'mouseCommand42', hotkeysCommand, 'preset', 'change4Cmd');	
-			$("#mouseCommand42 option[value=" + defaultmapsettings.mouse4Click + "]").prop('selected', 'selected').change();		
-			Settings.addPresetBox3('#mouseCommand5', 'mouseCommand52', hotkeysCommand, 'preset', 'change5Cmd');	
-			$("#mouseCommand52 option[value=" + defaultmapsettings.mouse5Click + "]").prop('selected', 'selected').change();					
-//
+            this.addOptions(["stickyCell", "mouseSplit", "mouseFeed", "mouseWheelClick", "mouseCommand4", "mouseCommand5"], "mouseGroup");
+            //	
+            Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
+            $("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
+            Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');
+            $("#mouseFeed2 option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
+            Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');
+            $("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
+            Settings.addPresetBox3('#mouseCommand4', 'mouseCommand42', hotkeysCommand, 'preset', 'change4Cmd');
+            $("#mouseCommand42 option[value=" + defaultmapsettings.mouse4Click + "]").prop('selected', 'selected').change();
+            Settings.addPresetBox3('#mouseCommand5', 'mouseCommand52', hotkeysCommand, 'preset', 'change5Cmd');
+            $("#mouseCommand52 option[value=" + defaultmapsettings.mouse5Click + "]").prop('selected', 'selected').change();
+            //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
@@ -5917,20 +5917,20 @@ window.MouseClicks=[];
                 textLanguage.enterChatMsg + '..." maxlength="80"></div>');
             $("body").append('<div id="chat-box"></div>');
             //$("#chat-emoticons").disMojiPicker();
-			if ($("#chat-emoticons").disMojiPicker) $("#chat-emoticons").disMojiPicker();
-			var Opera = (navigator.userAgent.match(/Opera|OPR\//) ? true : false);
-			if (Opera){
-				$("#chat-emoticons").click(emoji => document.getElementById("message").value += emoji.target.textContent);
-			}
-			else{
-				$("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
-			}
-			
+            if ($("#chat-emoticons").disMojiPicker) $("#chat-emoticons").disMojiPicker();
+            var Opera = (navigator.userAgent.match(/Opera|OPR\//) ? true : false);
+            if (Opera) {
+                $("#chat-emoticons").click(emoji => document.getElementById("message").value += emoji.target.textContent);
+            }
+            else {
+                $("#chat-emoticons").picker(emoji => document.getElementById("message").value += emoji);
+            }
 
-			//var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]); this needs on LMexpress.sniff3.js
-			//var twemoji; if (twemoji) twemoji.parse(document.body);
-			/*
-			for (const emoji in emoticonicons) {
+
+            //var twemoji; if (twemoji) twemoji.parse(document.getElementsByClassName("emoji-content")[0]); this needs on LMexpress.sniff3.js
+            //var twemoji; if (twemoji) twemoji.parse(document.body);
+            /*
+            for (const emoji in emoticonicons) {
                 if (emoticonicons.hasOwnProperty(emoji)) {
                     $("#chat-emoticons").append('<img src="https://www.legendmod.ml/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
                 }
@@ -5964,51 +5964,51 @@ window.MouseClicks=[];
         },
         setUI() {
             /*$("#instant").click(function() {			
-            	if (!window.iframereplitCreated){
-            		window.iframereplitCreated=true						
-            	$("#instant").html('<iframe frameborder="0px" width="120px" height="40" src="https://repl.it/@legendmod/party-bots-CleverBots?lite=true"></iframe>')
-            	toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'If <font color="green"><b>GREEN</b></font> button appears, click it!');
-            	if (legendmod.gameMode!="party"){
-            		$("#create-party-btn-2").click()
-            	}
-            	setTimeout(function() {					
-            		$("#botsRemoteIP").val("wss://party-bots-CleverBots--legendmod.repl.co")
-            		window.SERVER_HOST="wss://party-bots-CleverBots--legendmod.repl.co"
-            		$("#connectBots").click()
-            	}, 8000);	
-            	setTimeout(function() {
-            		$("#startBots").click()
-            	}, 10000);				
-            	}
+                if (!window.iframereplitCreated){
+                    window.iframereplitCreated=true						
+                $("#instant").html('<iframe frameborder="0px" width="120px" height="40" src="https://repl.it/@legendmod/party-bots-CleverBots?lite=true"></iframe>')
+                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'If <font color="green"><b>GREEN</b></font> button appears, click it!');
+                if (legendmod.gameMode!="party"){
+                    $("#create-party-btn-2").click()
+                }
+                setTimeout(function() {					
+                    $("#botsRemoteIP").val("wss://party-bots-CleverBots--legendmod.repl.co")
+                    window.SERVER_HOST="wss://party-bots-CleverBots--legendmod.repl.co"
+                    $("#connectBots").click()
+                }, 8000);	
+                setTimeout(function() {
+                    $("#startBots").click()
+                }, 10000);				
+                }
             });	*/
             var app = this;
-            $(document).on("click", ".menu-tabs a", function(event) {
+            $(document).on("click", ".menu-tabs a", function (event) {
                 event.preventDefault();
                 app.switchMenuTabs($(this), "menu-panel");
             });
-            $(document).on("click", ".submenu-tabs a", function(event) {
+            $(document).on("click", ".submenu-tabs a", function (event) {
                 event.preventDefault();
                 app.switchMenuTabs($(this), "submenu-panel");
             });
-            $(document).on("click", ".quick-menu", function(event) {
+            $(document).on("click", ".quick-menu", function (event) {
                 event.preventDefault();
                 defaultmapsettings.showQuickMenu = !defaultmapsettings.showQuickMenu;
                 //defaultmapsettings.showQuickBots=false;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setShowQuickMenu();
             });
-            $(document).on("click", ".quick-bots", function(event) {
+            $(document).on("click", ".quick-bots", function (event) {
                 event.preventDefault();
                 defaultmapsettings.showQuickBots = !defaultmapsettings.showQuickBots;
                 //defaultmapsettings.showQuickMenu=false;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setShowQuickBots();
             });
-            $(document).on("click", ".quick-replay", function(event) {
+            $(document).on("click", ".quick-replay", function (event) {
                 event.preventDefault();
                 BeforeReplay()
             });
-            $(document).on("click", ".quick-skins", function(event) {
+            $(document).on("click", ".quick-skins", function (event) {
                 event.preventDefault();
                 defaultmapsettings.showSkinsPanel = !defaultmapsettings.showSkinsPanel;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
@@ -6057,10 +6057,10 @@ window.MouseClicks=[];
                 input.remove();
 
             });	*/
-            $(document).on("change", "#region", function() {
+            $(document).on("change", "#region", function () {
                 app.region = this.value;
             });
-            $(document).on("change", "#gamemode", function() {
+            $(document).on("change", "#gamemode", function () {
                 var dummy = this.value;
                 if (":party" !== dummy) {
                     app.leaveParty();
@@ -6068,7 +6068,7 @@ window.MouseClicks=[];
                 app.gameMode = ogario.gameMode = dummy;
                 app.setQuest();
             });
-            $(document).on("change", "#quality", function() {
+            $(document).on("change", "#quality", function () {
                 app.getQuality(this.value);
                 ogarhusettings();
                 //ogarhusettingsImportExportMobile();
@@ -6079,12 +6079,12 @@ window.MouseClicks=[];
                 trigger: 'manual',
                 animation: false
             });
-            $(document).on(`input click`, `#skin`, function() {
+            $(document).on(`input click`, `#skin`, function () {
                 const value = this.value;
                 app.setSkinPreview(value, `skin-preview`);
                 app.setSkinPreview(value, `profile-` + app.selectedProfile);
             });
-            $(document).on(`click`, '.skin .example-url a', function(event) {
+            $(document).on(`click`, '.skin .example-url a', function (event) {
                 event.preventDefault();
                 $(`#skin`).val(this.href).click();
             });
@@ -6110,50 +6110,50 @@ window.MouseClicks=[];
             $(document).on(`click`, `#close-stats`, () => {
                 $("#user-stats").hide();
             });
-            $(document).on("input", "#skin", function() {
+            $(document).on("input", "#skin", function () {
                 var hexInputVal = this.value;
                 app.setSkinPreview(hexInputVal, "skin-preview");
                 app.setSkinPreview(hexInputVal, "profile-" + app.selectedProfile);
             });
-            $(document).on("click", "#skins a", function(event) {
+            $(document).on("click", "#skins a", function (event) {
                 event.preventDefault();
                 app.selectProfile($(this).attr("data-profile"));
             });
-            $(document).on("click", "#prev-profile", function() {
+            $(document).on("click", "#prev-profile", function () {
                 app.prevProfile();
             });
-            $(document).on("click", "#next-profile", function() {
+            $(document).on("click", "#next-profile", function () {
                 app.nextProfile();
             });
-            $(document).on("click", "#stream-mode", function() {
+            $(document).on("click", "#stream-mode", function () {
                 /** @type {boolean} */
                 defaultmapsettings.streamMode = !defaultmapsettings.streamMode;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setStreamMode();
             });
-            $(document).on("click", "#hide-url", function() {
+            $(document).on("click", "#hide-url", function () {
                 /** @type {boolean} */
                 defaultmapsettings.hideSkinUrl = !defaultmapsettings.hideSkinUrl;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setHideSkinUrl();
             });
-            $(document).on("click", ".btn-server-info", function() {
+            $(document).on("click", ".btn-server-info", function () {
                 $("#server-info").toggle();
             });
-            $(document).on("click", "#server-connect", function() {
+            $(document).on("click", "#server-connect", function () {
                 app.gameServerConnect($("#server-ws").val());
             });
-            $(document).on("click", "#server-reconnect", function() {
+            $(document).on("click", "#server-reconnect", function () {
                 app.gameServerReconnect();
             });
-            $(document).on("click", "#server-join", function() {
+            $(document).on("click", "#server-join", function () {
                 app.gameServerJoin($("#server-token").val());
             });
-            $(document).on("change", "#og-options input[type='checkbox']", function() {
+            $(document).on("change", "#og-options input[type='checkbox']", function () {
                 var template = $(this);
                 app.setSettings(template.attr("id"), template.prop("checked"));
             });
-            $(document).on("change", ".js-switch-vanilla", function() {
+            $(document).on("change", ".js-switch-vanilla", function () {
                 var template = $(this);
                 var p = template.attr("id");
                 if (void 0 !== app[p]) {
@@ -6166,72 +6166,72 @@ window.MouseClicks=[];
                     //}
                 }
             });
-            $(document).on("click", "#og-settings .restore-settings a", function(result) {
+            $(document).on("click", "#og-settings .restore-settings a", function (result) {
                 result.preventDefault();
                 app.restoreSettings();
             });
-            $(document).on("click", "#og-settings .btn-export", function(result) {
+            $(document).on("click", "#og-settings .btn-export", function (result) {
                 result.preventDefault();
                 app.exportSettings();
                 $("#exp-imp").fadeIn(500);
                 $("#exp-imp-settings, #export-settings").perfectScrollbar("update");
             });
-            $(document).on("click", "#close-exp-imp", function(event) {
+            $(document).on("click", "#close-exp-imp", function (event) {
                 event.preventDefault();
                 $("#exp-imp").fadeOut(500);
             });
-            $(document).on("focus", "#export-settings", function() {
-                    $(this).select();
-                }),
-                $(document).on("click", "#export-settings-btn", function(event) {
+            $(document).on("focus", "#export-settings", function () {
+                $(this).select();
+            }),
+                $(document).on("click", "#export-settings-btn", function (event) {
                     event.preventDefault();
                     app.exportSettings();
                 });
-            $(document).on("click", "#import-settings-btn", function(result) {
+            $(document).on("click", "#import-settings-btn", function (result) {
                 result.preventDefault();
                 app.importSettings();
             });
-            $(document).on("click", "#unblock-popups", function(result) {
+            $(document).on("click", "#unblock-popups", function (result) {
                 result.preventDefault();
                 app.unblockPopups();
             });
-            $(document).on("click", "#openfl-overlay.disabler", function() {
+            $(document).on("click", "#openfl-overlay.disabler", function () {
                 if (defaultmapsettings.blockPopups) {
                     app.blockPopups();
                 }
             });
-            $(document).on("click", "#openfl-content", function() {
+            $(document).on("click", "#openfl-content", function () {
                 if (defaultmapsettings.blockPopups) {
                     var container = $(this);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (!container.is(":visible")) {
                             app.blockPopups();
                         }
                     }, 1000);
                 }
             });
-            $(document).on("click", ".quick-shop", function(event) {
+            $(document).on("click", ".quick-shop", function (event) {
                 event.preventDefault();
                 app.unblockPopups();
                 if (window.MC && window.MC.openShop) {
                     window.MC.openShop();
                 }
             });
-            $(document).on("click", ".quick-free-coins", function(event) {
+            $(document).on("click", ".quick-free-coins", function (event) {
                 event.preventDefault();
                 app.unblockPopups();
                 if (window.MC && window.MC.showFreeCoins) {
                     window.MC.showFreeCoins();
                 }
             });
-            $(document).on("click", ".quick-free-gifts", function(event) {
+            $(document).on("click", ".quick-free-gifts", function (event) {
                 event.preventDefault();
                 app.unblockPopups();
                 if (window.MC && window.MC.showGifting) {
                     window.MC.showGifting();
                 }
             });
-            $(document).on("click", ".quick-quests", function(event) {
+            $(document).on("click", ".quick-quests", function (event) {
                 event.preventDefault();
                 app.unblockPopups();
                 if (window.MC && window.MC.showQuests) {
@@ -6239,35 +6239,35 @@ window.MouseClicks=[];
                 }
             });
 
-            $(document).on("click", "#set-debug", function(event) {
+            $(document).on("click", "#set-debug", function (event) {
                 event.preventDefault();
                 app.setDebug();
             });
-            $(document).on("click", "#set-fullSpectator", function(event) {
+            $(document).on("click", "#set-fullSpectator", function (event) {
                 event.preventDefault();
                 app.setFullSpectator();
             });
-            $(document).on("click", "#set-ingameSpectator", function(event) {
+            $(document).on("click", "#set-ingameSpectator", function (event) {
                 event.preventDefault();
                 app.setIngameSpectator();
             });
-            $(document).on("click", "#set-targeting", function(event) {
+            $(document).on("click", "#set-targeting", function (event) {
                 event.preventDefault();
                 app.setTargeting();
             });
-            $(document).on("click", "#cancel-targeting", function(event) {
+            $(document).on("click", "#cancel-targeting", function (event) {
                 event.preventDefault();
                 app.cancelTargeting();
             });
-            $(document).on("click", "#set-private-minimap", function(event) {
+            $(document).on("click", "#set-private-minimap", function (event) {
                 event.preventDefault();
                 app.setPrivateMiniMap();
             });
-            $(document).on("click", "#change-target", function(result) {
+            $(document).on("click", "#change-target", function (result) {
                 result.preventDefault();
                 app.changeTarget();
             });
-            $(document).on("click", ".team-top-limit", function(event) {
+            $(document).on("click", ".team-top-limit", function (event) {
                 event.preventDefault();
                 var template = $(this);
                 /** @type {number} */
@@ -6280,40 +6280,40 @@ window.MouseClicks=[];
                     template.addClass("active");
                 }
             });
-            $(document).on("click", "#top5-pos .set-target", function(event) {
+            $(document).on("click", "#top5-pos .set-target", function (event) {
                 event.preventDefault();
                 app.setTarget(parseInt($(this).attr("data-user-id")));
             });
-            $(document).on("click", ".mute-user", function(event) {
+            $(document).on("click", ".mute-user", function (event) {
                 event.preventDefault();
                 app.muteChatUser(parseInt($(this).attr("data-user-id")));
             });
-            $(document).on("click", ".btn-mute-user", function() {
+            $(document).on("click", ".btn-mute-user", function () {
                 var template = $(this);
                 app.muteChatUser(parseInt(template.attr("data-user-id")));
                 template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(textLanguage.unmute);
             });
-            $(document).on("click", ".btn-unmute-user", function() {
+            $(document).on("click", ".btn-unmute-user", function () {
                 var template = $(this);
                 app.unmuteChatUser(parseInt(template.attr("data-user-id")));
                 template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(textLanguage.mute);
             });
-            $(document).on("click", ".chat-sound-notifications", function(result) {
+            $(document).on("click", ".chat-sound-notifications", function (result) {
                 result.preventDefault();
                 /** @type {boolean} */
                 defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setChatSoundsBtn();
             });
-            $(document).on("click", ".chat-active-users", function(event) {
+            $(document).on("click", ".chat-active-users", function (event) {
                 event.preventDefault();
                 app.displayChatActiveUsers();
             });
-            $(document).on("click", ".chat-muted-users", function(event) {
+            $(document).on("click", ".chat-muted-users", function (event) {
                 event.preventDefault();
                 app.displayChatMutedUsers();
             });
-            $(document).on("click", ".show-chat-emoticons", function(result) {
+            $(document).on("click", ".show-chat-emoticons", function (result) {
                 result.preventDefault();
                 var template = $(this);
                 var p = $("#chat-emoticons");
@@ -6325,7 +6325,7 @@ window.MouseClicks=[];
                     $("#message").focus();
                 }
             });
-            $(document).on("click", "#chat-emoticons .emoticon", function() {
+            $(document).on("click", "#chat-emoticons .emoticon", function () {
                 var d = $(this).attr("alt");
                 var e = $("#message");
                 var n = e.val();
@@ -6343,10 +6343,10 @@ window.MouseClicks=[];
             this.leaderboardDataHUD = document.getElementById("leaderboard-data");
             this.timeHUD = document.getElementById("time-hud");
             this.questHUD = document.getElementById("quest-hud");
-            $("#canvas").bind("contextmenu", function() {
+            $("#canvas").bind("contextmenu", function () {
                 return false;
             });
-            $(document).on("mouseup", ".btn", function() {
+            $(document).on("mouseup", ".btn", function () {
                 $(this).blur();
             });
             $("[data-toggle='tab-tooltip']").tooltip({
@@ -6355,7 +6355,7 @@ window.MouseClicks=[];
             $(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings").perfectScrollbar({
                 "suppressScrollX": true
             });
-            Array.prototype.slice.call(document.querySelectorAll(".js-switch")).forEach(function(remove) {
+            Array.prototype.slice.call(document.querySelectorAll(".js-switch")).forEach(function (remove) {
                 new Switchery(remove, {
                     "color": defaultSettings.menuMainColor,
                     "size": "small"
@@ -6388,11 +6388,11 @@ window.MouseClicks=[];
             } else {
                 try {
                     $('.menu-panel').not(o).css('display', 'none');
-                } catch (error) {}
+                } catch (error) { }
             }
             try {
                 $(o).fadeIn(1000);
-            } catch (error) {}
+            } catch (error) { }
             ogarhusettings();
             //ogarhusettingsImportExportMobile();
             $('.submenu-panel').perfectScrollbar('update');
@@ -6419,7 +6419,7 @@ window.MouseClicks=[];
             }
             this.setParty();
             if (":party" === this.gameMode && window.location.hash) $("#join-party-btn-2").click();
-            Array.prototype.slice.call(document.querySelectorAll(".js-switch-vanilla")).forEach(function(remove) {
+            Array.prototype.slice.call(document.querySelectorAll(".js-switch-vanilla")).forEach(function (remove) {
                 new Switchery(remove, {
                     "color": defaultSettings.menuMainColor,
                     "size": "small"
@@ -6461,18 +6461,18 @@ window.MouseClicks=[];
         },
         setStreamMode() {
             if (defaultmapsettings.streamMode) {
-				defaultmapsettings.streamModeFlag=true;
+                defaultmapsettings.streamModeFlag = true;
                 $("#stream-mode").addClass("ogicon-eye-blocked");
                 //$("#clantag, #nick, #party-token").addClass("stream-mode");
                 $("#clantag, #nick, #skin").foggy();
-            } 
-			else {			
+            }
+            else {
                 $("#stream-mode").removeClass("ogicon-eye-blocked");
-				if (defaultmapsettings.streamModeFlag){
-					defaultmapsettings.streamModeFlag=null;
-					//$("#clantag, #nick, #party-token").removeClass("stream-mode");
-					$("#clantag, #nick, #skin").foggy(false);
-				}
+                if (defaultmapsettings.streamModeFlag) {
+                    defaultmapsettings.streamModeFlag = null;
+                    //$("#clantag, #nick, #party-token").removeClass("stream-mode");
+                    $("#clantag, #nick, #skin").foggy(false);
+                }
             }
         },
         setHideSkinUrl() {
@@ -6516,25 +6516,25 @@ window.MouseClicks=[];
         },
         setMainButtons() {
             var app = this;
-            $(document).on("click", ".btn-play, .btn-play-guest", function() {
+            $(document).on("click", ".btn-play, .btn-play-guest", function () {
                 app.onPlay();
             });
-            $(document).on("click", ".btn-spectate", function() {
+            $(document).on("click", ".btn-spectate", function () {
                 app.onSpectate();
             });
-            $(document).on("click", "#create-party-btn-2", function() {
+            $(document).on("click", "#create-party-btn-2", function () {
                 app.onCreate();
             });
-            $(document).on("click", "#join-party-btn-2", function() {
+            $(document).on("click", "#join-party-btn-2", function () {
                 app.skipServerData = true;
                 app.joinParty();
                 app.onJoin();
             });
-            $("#closePartyAlert").click(function() {
+            $("#closePartyAlert").click(function () {
                 $("#helloContainer").attr("data-party-state", "0");
                 //$("#helloContainer").attr("data-party-state", "6");
             })
-            $(document).on("click", "#statsContinue2", function() {
+            $(document).on("click", "#statsContinue2", function () {
                 $("#stats, #main-panel").toggle();
             });
         },
@@ -6573,7 +6573,7 @@ window.MouseClicks=[];
             else {
                 this.connect();
                 var app = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     app.sendPartyData();
                 }, 1000);
             }
@@ -6614,7 +6614,7 @@ window.MouseClicks=[];
             else {
                 this.connect();
                 var app = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     app.join();
                     app.sendPlayerJoin();
                 }, 1000);
@@ -6625,7 +6625,7 @@ window.MouseClicks=[];
             if (this.partyToken) this.onJoin();
             else {
                 var app = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     app.create();
                 }, 100);
             }
@@ -6653,7 +6653,7 @@ window.MouseClicks=[];
                 app.onPlayerSpawn();
             }, 100);
             if (defaultmapsettings.spawnSpecialEffects) {
-                setTimeout(function() {
+                setTimeout(function () {
                     ///////// trigger special effects
                     //console.log('Special effects stage 1');
                     ogario.spawnX = ogario.playerX;
@@ -6714,7 +6714,7 @@ window.MouseClicks=[];
                 if (!window.EquippableSkins && !window.findOwnedVanillaSkinOnce) {
                     window.findOwnedVanillaSkinOnce = true;
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' findOwnedVanillaSkin: window.EquippableSkins not loaded');
-                    setTimeout(function() {
+                    setTimeout(function () {
                         application.findOwnedVanillaSkin();
                     }, 4000);
                 }
@@ -6759,55 +6759,55 @@ window.MouseClicks=[];
                 img[url].crossOrigin = 'anonymous';
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].referrer = 'no-referrer';
-                img[url].onload = function() {
-                        if (this.complete &&
-                            this.width &&
-                            this.height &&
-                            this.width <= 2000 && this.width > 0 &&
-                            this.height <= 2000 && this.height > 0) {
+                img[url].onload = function () {
+                    if (this.complete &&
+                        this.width &&
+                        this.height &&
+                        this.width <= 2000 && this.width > 0 &&
+                        this.height <= 2000 && this.height > 0) {
 
 
-                            if (animated === "animatedSkins") {
-                                app.cacheQueueSkinAnimated.push(url);
-                                if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated)
-                                app.cacheQueue2.push(url)
-                                if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
-                            } else if (animated !== "fbSkin") {
-                                app.cacheQueue.push(url);
-                                if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
-                                app.cacheQueue2.push(url)
-                                if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
-                                if (animated === true) app.cacheQueue3.push(url)
-                                if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
-                            } else if (animated === "fbSkin") {
-                                app.cacheQueue4.push(url)
-                                if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)
-                            }
-
-                            //26/6/2020
-                            //if (this && this.includes && (this.includes(".mp4") || this.includes(".webm") || this.includes(".ogv"))) {
-                            //this.style.borderRadius = "50%";
-
-                            //}
-                            //
-                            /*
-						((app.cacheQueue.push(url),
-                                1 == app.cacheQueue.length &&
-                                app.cacheSkin(app.customSkinsCache, animated)),
-                            (app.cacheQueue2.push(url),
-                                1 == app.cacheQueue2.length &&
-                                app.cacheSkin2(app.customSkinsCache)),
-                            (animated == true  && app.cacheQueue3.push(url),
-                                1 == app.cacheQueue3.length &&
-                                app.cacheSkin3(app.customSkinsCache))
-                            (animated == "fbSkin" && app.cacheQueue4.push(url),
-                                1 == app.cacheQueue4.length &&
-                                app.cacheSkin4(app.customSkinsCache))								
-                        );*/
+                        if (animated === "animatedSkins") {
+                            app.cacheQueueSkinAnimated.push(url);
+                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated)
+                            app.cacheQueue2.push(url)
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+                        } else if (animated !== "fbSkin") {
+                            app.cacheQueue.push(url);
+                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
+                            app.cacheQueue2.push(url)
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+                            if (animated === true) app.cacheQueue3.push(url)
+                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
+                        } else if (animated === "fbSkin") {
+                            app.cacheQueue4.push(url)
+                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)
                         }
 
-                    },
-                    img[url].onerror = function() {
+                        //26/6/2020
+                        //if (this && this.includes && (this.includes(".mp4") || this.includes(".webm") || this.includes(".ogv"))) {
+                        //this.style.borderRadius = "50%";
+
+                        //}
+                        //
+                        /*
+                    ((app.cacheQueue.push(url),
+                            1 == app.cacheQueue.length &&
+                            app.cacheSkin(app.customSkinsCache, animated)),
+                        (app.cacheQueue2.push(url),
+                            1 == app.cacheQueue2.length &&
+                            app.cacheSkin2(app.customSkinsCache)),
+                        (animated == true  && app.cacheQueue3.push(url),
+                            1 == app.cacheQueue3.length &&
+                            app.cacheSkin3(app.customSkinsCache))
+                        (animated == "fbSkin" && app.cacheQueue4.push(url),
+                            1 == app.cacheQueue4.length &&
+                            app.cacheSkin4(app.customSkinsCache))								
+                    );*/
+                    }
+
+                },
+                    img[url].onerror = function () {
                         //console.log("error loading image: "+ url);
                         if (url && url.includes(window.EnvConfig.config_url)) {
                             url = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
@@ -6863,7 +6863,7 @@ window.MouseClicks=[];
                             //console.log('was animated')
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
-                    } catch (error) {}
+                    } catch (error) { }
                     this.customSkinsCache[e + "_cached"] = new Image;
                     this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                     i = null;
@@ -6885,7 +6885,7 @@ window.MouseClicks=[];
                     $.clip();
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
-                    } catch (error) {}
+                    } catch (error) { }
                     this.customSkinsCache[e + "_cached2"] = new Image;
                     this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
                     //this.customSkinsCache[e + "_cached"].src = i.toDataURL('image/jpeg', 0.1);
@@ -6913,7 +6913,7 @@ window.MouseClicks=[];
                     $.clip();
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
-                    } catch (error) {}
+                    } catch (error) { }
                     this.customSkinsCache[e + "_cached3"] = new Image;
                     this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
                     i = null;
@@ -6940,7 +6940,7 @@ window.MouseClicks=[];
                     $.clip();
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
-                    } catch (error) {}
+                    } catch (error) { }
                     this.customSkinsCache[e + "_cached4"] = new Image;
                     this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
                     i = null;
@@ -6967,7 +6967,7 @@ window.MouseClicks=[];
                     $.clip();
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
-                    } catch (error) {}
+                    } catch (error) { }
                     this.customSkinsCache[e + "_cached" + skinCache] = new Image;
                     this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
                     i = null;
@@ -7018,14 +7018,14 @@ window.MouseClicks=[];
             }
             /*
             if (closeExpr){
-            	if (window.legendmod.vector[window.legendmod.vnr][0] || window.legendmod.vector[window.legendmod.vnr][1]){
-            		closeExpr= closeExpr + legendmod.mapOffsetX
-            		xgh2 = xgh2 + legendmod.mapOffsetY
-            		//t = legendmod.untranslateX(t)
-            		//t = legendmod.translateX(t - i.mapOffsetX)
-            		//xgh2 = legendmod.untranslateY(xgh2)		
-            		//xgh2 = legendmod.translateY(xgh2 - i.mapOffsetY)							
-            	}
+                if (window.legendmod.vector[window.legendmod.vnr][0] || window.legendmod.vector[window.legendmod.vnr][1]){
+                    closeExpr= closeExpr + legendmod.mapOffsetX
+                    xgh2 = xgh2 + legendmod.mapOffsetY
+                    //t = legendmod.untranslateX(t)
+                    //t = legendmod.translateX(t - i.mapOffsetX)
+                    //xgh2 = legendmod.untranslateY(xgh2)		
+                    //xgh2 = legendmod.translateY(xgh2 - i.mapOffsetY)							
+                }
             }*/
             //var GearType = i.mapOffsetX + i.mapOffset;
             //var closingExpr = i.mapOffsetY + i.mapOffset;				
@@ -7084,8 +7084,8 @@ window.MouseClicks=[];
                     this.w = ogario.playerX,
                     this.u = ogario.playerY,
                     /*
-						this.w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(i.playerX) : i.playerX,
-						this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(i.playerY) : i.playerY,  
+                        this.w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(i.playerX) : i.playerX,
+                        this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(i.playerY) : i.playerY,  
 */
                     //						
                     //this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
@@ -7372,7 +7372,7 @@ window.MouseClicks=[];
                 this.createServerToken();
                 this.updateServerInfo();
                 //if (-1 === this.ws.indexOf('agar.io')) {
-				if (-1 === this.ws.indexOf('agario.miniclippt')) { //2024
+                if (-1 === this.ws.indexOf('agario.miniclippt')) { //2024
                     // fix disconnect?
                     //this.closeConnection();
                 }
@@ -7380,7 +7380,7 @@ window.MouseClicks=[];
         },
         recreateWS(token) {
             if (!token) return null;
-			//const serverFormat30072024 = /web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/            // 30/8/2024 
+            //const serverFormat30072024 = /web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/            // 30/8/2024 
             this.tokenNeedToBtoa = false
             var text = null;
             if (token.includes("replay")) {
@@ -7395,7 +7395,7 @@ window.MouseClicks=[];
                     specialReplay = token.split('^')[1]
                 }
 
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#server-token').val(window.replayToken)
                     window.replayToken = null
                     //console.log("replay")
@@ -7403,8 +7403,8 @@ window.MouseClicks=[];
 
                 }, 500);
                 //return null
-            } 
-			else if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
+            }
+            else if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
                 //var atobToken = atob(token);
                 var atobToken = token;
 
@@ -7419,22 +7419,27 @@ window.MouseClicks=[];
                     text = 'wss://ip-' + atobToken.replace(/\./g, '-').replace(':', '.agar.io:');
                     //console.log("recreateWS case 2:" + text);
                 }
-            } 
-			else if (!text && /^[a-z0-9]{5,}$/.test(token)) {
+            }
+            else if (!text && /^[a-z0-9]{5,}$/.test(token)) {
                 // text = 'wss://live-arena-' + token + '.agar.io:443'
-				const parts = fromLong(parseInt(token, 36));
-	            const server = parts.slice(1, 5).join('-');
-	            const region = awsRegions[parts[0]];
-	            //text = `wss://web-arenas-live-v25-0-${region}.agario.miniclippt.com/${server}`;
-				text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
+                const parts = fromLong(parseInt(token, 36));
+                const server = parts.slice(1, 5).join('-');
+                const region = awsRegions[parts[0]];
+                //text = `wss://web-arenas-live-v25-0-${region}.agario.miniclippt.com/${server}`;
+                text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
-                text = 'wss://' + token; //private servers
+                // Use ws:// for localhost/127.0.0.1 (Chrome rejects wss:// with local certs)
+                if (token.startsWith('localhost') || token.startsWith('127.0.0.1')) {
+                    text = 'ws://' + token;
+                } else {
+                    text = 'wss://' + token; //private servers
+                }
             } else {
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
             }
-			console.log(text);
+            console.log(text);
             return text;
         },
         createServerToken() {
@@ -7443,9 +7448,9 @@ window.MouseClicks=[];
             //var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
             var matchNew = this.ws.match(/live-arena-([\w\d]+(\.tech)?)\.agar\.io/);
             var matchNew2 = this.ws.match(/livec-arena-([\w\d]+(\.tech)?)\.agar\.io\:[\w\d]+/); //original private servers
-			var matchNew3 = this.ws.includes('agario.miniclippt.com'); //original agario servers 2024
-			//const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/)
-			const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0\.agario\.miniclippt\.com\/(.+)\/(\d+-\d+-\d+-\d+)/); // 30/8/2024 
+            var matchNew3 = this.ws.includes('agario.miniclippt.com'); //original agario servers 2024
+            //const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0-(.+)\.agario\.miniclippt\.com\/(\d+-\d+-\d+-\d+)/)
+            const serverFormat30072024 = this.ws.match(/web-arenas-live-v25-0\.agario\.miniclippt\.com\/(.+)\/(\d+-\d+-\d+-\d+)/); // 30/8/2024 
             var text = null;
             if (matchOld) {
                 matchOld = this.ws.replace('.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
@@ -7463,17 +7468,17 @@ window.MouseClicks=[];
                 //text = btoa(text);
                 //console.log("createServerToken case 1:" + text);
             }
-			if (!text && serverFormat30072024) {
-				const [, region, ip] = serverFormat30072024;
-	            const arr = [awsRegions.indexOf(region)].concat(ip.split('-').map((n) => parseInt(n)));
-	            this.serverArena = toLong(arr).toString(36).padStart(7, '0');
-				//HERE I THINK
+            if (!text && serverFormat30072024) {
+                const [, region, ip] = serverFormat30072024;
+                const arr = [awsRegions.indexOf(region)].concat(ip.split('-').map((n) => parseInt(n)));
+                this.serverArena = toLong(arr).toString(36).padStart(7, '0');
+                //HERE I THINK
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
             }
             if (!text && matchNew3) {
                 this.serverArena = this.ws.split('/')[3];
-				//HERE I THINK
+                //HERE I THINK
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
             }
@@ -7487,7 +7492,7 @@ window.MouseClicks=[];
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
             }
-			
+
             if (text) {
                 if (this.serverToken !== text) {
                     this.serverToken = text;
@@ -7559,7 +7564,7 @@ window.MouseClicks=[];
                 //console.log("socket",this.socket.url)
                 //console.log("window.wsinjected",window.wsinjected)
                 //if (!window.wsinjected) { //if delta socket injected
-                    buf.setUint16(1, 401, true);
+                buf.setUint16(1, 401, true);
                 //} else {
                 //    buf.setUint16(1, 404, true);
                 //}
@@ -7571,14 +7576,14 @@ window.MouseClicks=[];
 
                 app.sendPartyData();
             }
-            this.socket.onmessage = function(buf) {
+            this.socket.onmessage = function (buf) {
                 app.handleMessage(buf);
             }
-            this.socket.onclose = function(buf) {
+            this.socket.onclose = function (buf) {
                 //app.flushData();
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket close', buf);
             }
-            this.socket.onerror = function(buf) {
+            this.socket.onerror = function (buf) {
                 //app.flushData();
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
                 window.noOgarioSocket = true;
@@ -7620,7 +7625,7 @@ window.MouseClicks=[];
             window.SLGsocket = new WebSocket("wss://cloud.achex.ca/JIMBOY3200" + room);
             window.SLGsocket.binaryType = 'arraybuffer';
             app = this;
-            window.SLGsocket.onopen = function() {
+            window.SLGsocket.onopen = function () {
                 window.SLG3NumberTries = 0;
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket open:', room);
                 //
@@ -7635,11 +7640,11 @@ window.MouseClicks=[];
                 }));
                 //					
             }
-            window.SLGsocket.onmessage = function(e) {
+            window.SLGsocket.onmessage = function (e) {
                 //console.log(e)
                 application.handleSLGMessage(e);
             }
-            window.SLGsocket.onclose = function(e) {
+            window.SLGsocket.onclose = function (e) {
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket close');
                 //setTimeout(function() {
                 if (window.SLG3NumberTries < 2) {
@@ -7647,13 +7652,13 @@ window.MouseClicks=[];
                 }
                 //}, 1000)					
             }
-            window.SLGsocket.onerror = function(e) {
+            window.SLGsocket.onerror = function (e) {
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket error', e);	
                 window.SLG3NumberTries++;
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket error');
             };
-            window.SLGsocket.closeAndOpen = function(e) {
-                window.SLGsocket.onclose = function(e) {
+            window.SLGsocket.closeAndOpen = function (e) {
+                window.SLGsocket.onclose = function (e) {
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Previous SLG socket closed async');
                 }
                 if (window.SLG3NumberTries < 2) {
@@ -7666,7 +7671,7 @@ window.MouseClicks=[];
                 this.socket.onmessage = null;
                 try {
                     this.socket.close();
-                } catch (ogarcloseconlabel) {}
+                } catch (ogarcloseconlabel) { }
                 this.socket = null;
             }
             //Sonia4
@@ -7674,14 +7679,14 @@ window.MouseClicks=[];
                 window.SLGsocket.onmessage = null;
                 try {
                     window.SLGsocket.close();
-                } catch (ogarcloseconlabel) {}
+                } catch (ogarcloseconlabel) { }
                 window.SLGsocket = null;
             }
             if (window.Socket3) {
                 window.Socket3.onmessage = null;
                 try {
                     window.Socket3.close();
-                } catch (ogarcloseconlabel) {}
+                } catch (ogarcloseconlabel) { }
                 window.Socket3 = null;
             }
         },
@@ -7691,14 +7696,14 @@ window.MouseClicks=[];
                 window.SLGsocket.onmessage = null;
                 try {
                     window.SLGsocket.close();
-                } catch (ogarcloseconlabel) {}
+                } catch (ogarcloseconlabel) { }
                 window.SLGsocket = null;
             }
         },
         reconnect() {
             this.setParty();
             var app = this;
-            setTimeout(function() {
+            setTimeout(function () {
                 app.connect();
             }, 1000);
         },
@@ -7819,7 +7824,7 @@ window.MouseClicks=[];
         //Sonia4
         SLGHandler(message) {
             var packet = this.unpackSLG(message);
-            if (packet ==null) return;
+            if (packet == null) return;
             switch (message.charAt(0)) {
                 case "R":
                     this.getSuperLegendSDATA(packet);
@@ -7829,7 +7834,7 @@ window.MouseClicks=[];
                     break;
             }
         },
-        SLGSimpleHandler(message ) {
+        SLGSimpleHandler(message) {
             //console.log("SLGSimpleHandler recieve", message);
             if (message == null) {
                 return;
@@ -7919,27 +7924,27 @@ window.MouseClicks=[];
             var serverToken = this.tokenNeedToBtoa ? btoa(this.serverToken) : this.serverToken
             this.sendPlayerData(16, 'lastSentServerToken', serverToken);
         },
-		/*sendServerToken() {
-			let serverToken;
-			if (this.tokenNeedToBtoa && !this.serverToken.includes('agario.miniclippt.com')) {
-				serverToken = btoa(this.serverToken);
-			} 
-			else if (this.serverToken.includes('agario.miniclippt.com')) {
-			const match = this.serverToken.match(/-([a-z]+-[a-z]+-\d)\./);
-			if (match) {
-				serverToken = match[1];
-			} 
-			else {
-				// Handle case where regex does not match
-				serverToken = this.serverToken;
-				}
-			} 
-			else {
-				serverToken = this.serverToken;
-			}
-			console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Chat serverToken: ", serverToken);
-			this.sendPlayerData(16, 'lastSentServerToken', serverToken);
-		},*/
+        /*sendServerToken() {
+            let serverToken;
+            if (this.tokenNeedToBtoa && !this.serverToken.includes('agario.miniclippt.com')) {
+                serverToken = btoa(this.serverToken);
+            } 
+            else if (this.serverToken.includes('agario.miniclippt.com')) {
+            const match = this.serverToken.match(/-([a-z]+-[a-z]+-\d)\./);
+            if (match) {
+                serverToken = match[1];
+            } 
+            else {
+                // Handle case where regex does not match
+                serverToken = this.serverToken;
+                }
+            } 
+            else {
+                serverToken = this.serverToken;
+            }
+            console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Chat serverToken: ", serverToken);
+            this.sendPlayerData(16, 'lastSentServerToken', serverToken);
+        },*/
         sendServerJoin() {
             this.sendServerToken();
             this.sendPlayerJoin();
@@ -7983,7 +7988,7 @@ window.MouseClicks=[];
         },
         sendPartyData() {
             this.sendPlayerClanTag();
-			
+
             this.sendPartyToken();
             this.sendServerToken();
             this.sendPlayerNick();
@@ -8086,7 +8091,7 @@ window.MouseClicks=[];
         sendSLGQinfo() {
             let z;
             let i;
-//return;
+            //return;
             var msg = "";
             var vlen = window.legendmod.viruses.length;
             msg += this.packInt(vlen, 2);
@@ -8129,7 +8134,7 @@ window.MouseClicks=[];
             let x;
             let y;
             let cellUpdateSLGCells;
-//return ;
+            //return ;
             var ids = this.getSLGID(t);
             var id = this.checkPlayerID(ids);
             console.log(t);
@@ -8306,7 +8311,7 @@ window.MouseClicks=[];
         updateTeamPlayer(message) {
             function encode() {
                 var text = "";
-                for (;;) {
+                for (; ;) {
                     var string = message.getUint16(offset, true);
                     if (0 === string) {
                         break;
@@ -8455,7 +8460,7 @@ window.MouseClicks=[];
                     }
                 }
             }
-            this.top5.sort(function(row, conf) {
+            this.top5.sort(function (row, conf) {
                 return conf.mass - row.mass;
             });
             this.displayTop5();
@@ -8464,7 +8469,7 @@ window.MouseClicks=[];
         updateParties(t) {
             this.parties = [];
             for (var e = t.getUint8(1), i = 2, s = 0; s < e; s++) {
-                for (var o = '';;) {
+                for (var o = ''; ;) {
                     var a = t.getUint16(i, true);
                     if (0 === a) break;
                     o += String.fromCharCode(a), i += 2;
@@ -8589,7 +8594,7 @@ window.MouseClicks=[];
                 return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });*/
             //return String(string).replace(/\&lt\;3/g, '<3').replace(/?/g, '? Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
-            return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(string) {
+            return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function (string) {
                 //console.log(d[string]);
                 return '<img src=\"https://www.legendmod.ml/banners/emoticons/' + emoticonicons[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });
@@ -8626,9 +8631,9 @@ window.MouseClicks=[];
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            void (defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
-                                defaultmapsettings.chatSounds && this.playSound(this.messageSound)),
+                            defaultmapsettings.chatSounds && this.playSound(this.messageSound)),
                             this.chatHistory.push({
                                 'nick': a,
                                 'message': n,
@@ -8636,17 +8641,17 @@ window.MouseClicks=[];
                                 'time': Date.now()
                                 //
                             }),
-							this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
-                           // this.chatHistory.length > 15 && this.chatHistory.shift();
+                            this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
+                        // this.chatHistory.length > 15 && this.chatHistory.shift();
                     } else if (102 === caseof) {
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500),
-                            void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            void (defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
-                                defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
+                            defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
                             this.commandHistory.push({
                                 'nick': a,
                                 'message': n,
@@ -8722,7 +8727,7 @@ window.MouseClicks=[];
                 var nopromise = {
                     catch: new Function()
                 };
-                (audio.play() || nopromise).catch(function() {});
+                (audio.play() || nopromise).catch(function () { });
             }
         },
         setFBIDs() {
@@ -8859,7 +8864,7 @@ window.MouseClicks=[];
                 this.setTargetStatus(0);
             }
         },
-// --- 1. STRICT PROTOCOL HANDLER (VER 4.4 - FINAL) ---
+        // --- 1. STRICT PROTOCOL HANDLER (VER 4.4 - FINAL) ---
         writeVarint(value) {
             let bytes = [];
             while (value > 127) {
@@ -8990,7 +8995,7 @@ window.MouseClicks=[];
                 $('body').append(panelHTML);
 
                 // Initialize Color Picker for the new panel
-                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
+                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function (e) {
                     $('#legendSkinColor').val(e.color.toHex());
                     $('#legendCanvas').css('border-color', e.color.toHex());
                 });
@@ -9026,7 +9031,7 @@ window.MouseClicks=[];
                                 saveBtn.prop('disabled', true).css('opacity', 0.5);
                             } else {
                                 status.text("PNG Ready: " + kb + "KB").css('color', '#0f0');
-                                saveBtn.prop('disabled', false).css({opacity: 1, cursor: 'pointer'});
+                                saveBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
                             }
                         };
                         reader.readAsArrayBuffer(blob);
@@ -9097,15 +9102,15 @@ window.MouseClicks=[];
                 this.setProfileboxShadow()
             }
             var app = this;
-            setInterval(function() {
+            setInterval(function () {
                 app.drawMiniMap();
             }, 33);
-            setInterval(function() {
+            setInterval(function () {
                 if (typeof repeatSendingSpecialSkins === "function") {
                     repeatSendingSpecialSkins();
                 }
             }, 10000);
-            setInterval(function() {
+            setInterval(function () {
                 app.updateTeamPlayers();
                 //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
             }, this.updateInterval);
@@ -9130,34 +9135,34 @@ window.MouseClicks=[];
             this.measuredWidth = 0,
             this.redraw = false,
             this.remeasure = false,
-            this.setTxt = function(ogariosettxtsetter) {
+            this.setTxt = function (ogariosettxtsetter) {
                 if (this.txt !== ogariosettxtsetter) {
                     this.txt = ogariosettxtsetter;
                     this.redraw = true;
                     this.remeasure = true;
                 }
             },
-            this.setColor = function(ogariocolorsetter) {
+            this.setColor = function (ogariocolorsetter) {
                 this.color !== ogariocolorsetter && (this.color = ogariocolorsetter,
                     this.redraw = true);
             },
-            this.setStroke = function(ogariostrokesetter) {
+            this.setStroke = function (ogariostrokesetter) {
                 this.stroke !== ogariostrokesetter && (this.stroke = ogariostrokesetter,
                     this.redraw = true);
             },
-            this.setStrokeWidth = function(ogariostrokewidthsetter) {
+            this.setStrokeWidth = function (ogariostrokewidthsetter) {
                 this.stroke && this.strokeWidth !== ogariostrokewidthsetter && (this.strokeWidth = ogariostrokewidthsetter,
                     this.redraw = true,
                     this.remeasure = true);
             },
-            this.setStrokeColor = function(ogariostrokecolorsetter) {
+            this.setStrokeColor = function (ogariostrokecolorsetter) {
                 this.stroke && this.strokeColor !== ogariostrokecolorsetter && (this.strokeColor = ogariostrokecolorsetter,
                     this.redraw = true);
             },
-            this.setFont = function() {
+            this.setFont = function () {
                 this.font = this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily;
             },
-            this.setFontFamily = function(ogariofontfamilysetter) {
+            this.setFontFamily = function (ogariofontfamilysetter) {
                 if (this.fontFamily !== ogariofontfamilysetter) {
                     this.fontFamily = ogariofontfamilysetter;
                     this.setFont();
@@ -9165,7 +9170,7 @@ window.MouseClicks=[];
                     this.remeasure = true;
                 }
             },
-            this.setFontWeight = function(ogariofontweightsetter) {
+            this.setFontWeight = function (ogariofontweightsetter) {
                 if (this.fontWeight !== ogariofontweightsetter) {
                     this.fontWeight = ogariofontweightsetter;
                     this.setFont();
@@ -9173,7 +9178,7 @@ window.MouseClicks=[];
                     this.remeasure = true;
                 }
             },
-            this.setFontSize = function(ogariofontsizesetter) {
+            this.setFontSize = function (ogariofontsizesetter) {
                 if (this.fontSize !== ogariofontsizesetter) {
                     this.fontSize = ogariofontsizesetter;
                     this.margin = ~~(0.2 * ogariofontsizesetter);
@@ -9181,18 +9186,18 @@ window.MouseClicks=[];
                     this.redraw = true;
                 }
             },
-            this.setScale = function(ogarioscalesetter) {
+            this.setScale = function (ogarioscalesetter) {
                 if (this.scale !== ogarioscalesetter) {
                     this.scale = ogarioscalesetter;
                     this.redraw = true;
                 }
             },
-            this.createCanvas = function() {
+            this.createCanvas = function () {
                 this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
                     this.txtCtx = this.txtCanvas.getContext('2d'),
                     this.txtCtx.ogarioCtx = true);
             },
-            this.setDrawing = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
+            this.setDrawing = function (ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
                 this.setColor(ogarsetDrawinglabel1);
                 this.setFontFamily(ogarsetDrawinglabel2);
                 this.setFontWeight(ogarsetDrawinglabel3);
@@ -9200,21 +9205,21 @@ window.MouseClicks=[];
                 this.setStrokeWidth(ogarsetDrawinglabel5);
                 this.setStrokeColor(ogarsetDrawinglabel6);
             },
-            this.measureWidth = function() {
+            this.measureWidth = function () {
                 return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
-                        this.measuredWidth = this.txtCtx.measureText(this.txt).width,
-                        this.remeasure = false),
+                    this.measuredWidth = this.txtCtx.measureText(this.txt).width,
+                    this.remeasure = false),
                     ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
             },
             //
-            this.measureWidthCustom = function(customTxt) {
+            this.measureWidthCustom = function (customTxt) {
                 return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
-                        this.measuredWidth = this.txtCtx.measureText(customTxt).width,
-                        this.remeasure = false),
+                    this.measuredWidth = this.txtCtx.measureText(customTxt).width,
+                    this.remeasure = false),
                     ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
             },
             //
-            this.drawTxt = function(customTxt) {
+            this.drawTxt = function (customTxt) {
                 return this.createCanvas(),
                     this.redraw && (this.redraw = false,
 
@@ -9303,7 +9308,7 @@ window.MouseClicks=[];
         this.virusStroke = null;
         //this.nHeight = 6;
 
-        this.updateNumPoints = function() {
+        this.updateNumPoints = function () {
             //adjustment of the number of contacts
             var numPoints = this.size * drawRender.scale | 0;
             numPoints = Math.max(numPoints, 5);
@@ -9336,10 +9341,10 @@ window.MouseClicks=[];
                 this.pointsVel.splice(i, 0, vel);
             }
         }
-        this.sqDist = function(a, b) {
+        this.sqDist = function (a, b) {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
-        this.movePoints = function() {
+        this.movePoints = function () {
             //console.log(this.id)
             var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
@@ -9357,17 +9362,17 @@ window.MouseClicks=[];
                 var prevRl = this.points[(i - 1 + len) % len].rl;
                 var nextRl = this.points[(i + 1) % len].rl;
                 var self = this;
-				var affected
-				if (LM.quadtree){
-                affected = LM.quadtree.some({
-                    x: curP.x - 5,
-                    y: curP.y - 5,
-                    w: 10,
-                    h: 10
-                }, function(item) {
-                    return item.parent != self && this.sqDist(item, curP) <= 25;
-                }.bind(this));
-				}
+                var affected
+                if (LM.quadtree) {
+                    affected = LM.quadtree.some({
+                        x: curP.x - 5,
+                        y: curP.y - 5,
+                        w: 10,
+                        h: 10
+                    }, function (item) {
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
+                }
                 //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
 
                 //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
@@ -9409,7 +9414,7 @@ window.MouseClicks=[];
             }
         };
 
-        this.update = function(x, y, mass, isVirus, isPlayer, nick) {
+        this.update = function (x, y, mass, isVirus, isPlayer, nick) {
             this.x = x;
             this.y = y;
             this.isVirus = isVirus;
@@ -9417,7 +9422,7 @@ window.MouseClicks=[];
             this.setMass(mass);
             this.setNick(nick);
         };
-        this.removeCell = function() {
+        this.removeCell = function () {
             this.removed = true;
             var cells = LM.cells.indexOf(this);
             if (cells !== -1) {
@@ -9454,7 +9459,7 @@ window.MouseClicks=[];
             }
             delete LM.indexedCells[this.id];
         };
-        this.moveCell = function() {
+        this.moveCell = function () {
             var time = LM.time - this.time;
             var delay = time / defaultmapsettings.animation;
             if (delay < 0) {
@@ -9465,13 +9470,13 @@ window.MouseClicks=[];
             //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
             this.x += (this.targetX - this.x) * delay;
             this.y += (this.targetY - this.y) * delay;
-			if (!defaultmapsettings.suckAnimation){
-				this.size += (this.targetSize - this.size) * delay;
-			}
-			else{
-				this.size += (this.targetSize - this.size) * (time / 800);
-				if (this.size<0) this.size = 0 //fix
-			}
+            if (!defaultmapsettings.suckAnimation) {
+                this.size += (this.targetSize - this.size) * delay;
+            }
+            else {
+                this.size += (this.targetSize - this.size) * (time / 800);
+                if (this.size < 0) this.size = 0 //fix
+            }
             this.alpha = delay;
             if (!this.removed) {
                 this.time = LM.time;
@@ -9484,21 +9489,21 @@ window.MouseClicks=[];
                 }
             }
         };
-        this.isInView = function() {
+        this.isInView = function () {
             return !(this.id <= 0) && !(this.x + this.size + 40 < LM.viewX - LM.canvasWidth / 2 / LM.scale || this.y + this.size + 40 < LM.viewY - LM.canvasHeight / 2 / LM.scale || this.x - this.size - 40 > LM.viewX + LM.canvasWidth / 2 / LM.scale || this.y - this.size - 40 > LM.viewY + LM.canvasHeight / 2 / LM.scale);
         };
-        this.isInV = function() {
+        this.isInV = function () {
             if (this.x + this.size < LM.camMinX || this.y + this.size < LM.camMinY || this.x - this.size > LM.camMaxX || this.y - this.size > LM.camMaxY) {
                 return false;
             }
             return true;
         }
         /*
-				this.setMass = function(t) {
+                this.setMass = function(t) {
                     return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor) : (this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
                 };
-				*/
-        this.setMass = function(mass) {
+                */
+        this.setMass = function (mass) {
             this.size = mass;
             if (mass <= 40) {
                 return false;
@@ -9520,11 +9525,11 @@ window.MouseClicks=[];
             this.redrawMass = true;
             if (this.isVirus) {
                 if (this.mass <= 200) {
-                    this.virusColor = defaultSettings.virusColor; 
-					this.virusStroke = defaultSettings.virusStrokeColor;
+                    this.virusColor = defaultSettings.virusColor;
+                    this.virusStroke = defaultSettings.virusStrokeColor;
                 } else if (this.mass > 220) {
-                    this.virusColor = defaultSettings.mVirusColor; 
-					this.virusStroke = defaultSettings.mVirusStrokeColor;
+                    this.virusColor = defaultSettings.mVirusColor;
+                    this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
                 if (this.virMassShots) {
                     this.mass = ~~((200 - this.mass) / 14);
@@ -9547,7 +9552,7 @@ window.MouseClicks=[];
             return true;
         };
 
-        this.setNick = function(nick) {
+        this.setNick = function (nick) {
             this.nick = nick;
             if (!nick || this.isVirus) {
                 return false;
@@ -9558,7 +9563,7 @@ window.MouseClicks=[];
             }
             return true;
         };
-        this.setScale = function(scale, nickScale, massScale, virusScale, strokeScale) {
+        this.setScale = function (scale, nickScale, massScale, virusScale, strokeScale) {
             var scale = Math.ceil(scale * 10) / 10;
             this.rescale = false;
             if (this.scale != scale) {
@@ -9570,7 +9575,7 @@ window.MouseClicks=[];
             this.virMassScale = virusScale;
             this.strokeScale = strokeScale;
         };
-        this.setFontSize = function() {
+        this.setFontSize = function () {
             if (this.isVirus) {
                 this.massSize = Math.ceil(this.virMassSize * this.scale * this.virMassScale);
                 return;
@@ -9584,7 +9589,7 @@ window.MouseClicks=[];
             }
             this.redrawNick = true;
         };
-        this.setStrokeSize = function() {
+        this.setStrokeSize = function () {
             if (this.strokeNick && !this.isVirus) {
                 this.nickStrokeSize = ~~(this.nickSize * 0.1 * this.strokeScale);
             }
@@ -9592,7 +9597,7 @@ window.MouseClicks=[];
                 this.massStrokeSize = ~~(this.massSize * 0.1 * this.strokeScale);
             }
         };
-        this.setDrawing = function() {
+        this.setDrawing = function () {
             this.optimizedNames = defaultmapsettings.optimizedNames;
             this.optimizedMass = defaultmapsettings.optimizedMass;
             this.shortMass = defaultmapsettings.shortMass;
@@ -9600,13 +9605,13 @@ window.MouseClicks=[];
             this.strokeNick = defaultmapsettings.namesStroke;
             this.strokeMass = defaultmapsettings.massStroke;
         };
-        this.setDrawingScale = function() {
+        this.setDrawingScale = function () {
             this.setScale(ogario.viewScale, defaultSettings.namesScale, defaultSettings.massScale, defaultSettings.virMassScale, defaultSettings.strokeScale);
             this.setFontSize();
             this.setStrokeSize();
             this.margin = 0;
         };
-        this.drawNick = function(ctx) {
+        this.drawNick = function (ctx) {
             if (!this.nick || !this.nickCanvas || this.isVirus) {
                 return;
             }
@@ -9624,9 +9629,9 @@ window.MouseClicks=[];
             this.margin = ~~(h / 2);
             try {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
-            } catch (e) {}
+            } catch (e) { }
         };
-        this.drawChat = function(context) {
+        this.drawChat = function (context) {
             if (this.chatCanvas && !(this.size <= 40)) {
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
@@ -9694,12 +9699,12 @@ window.MouseClicks=[];
                     if (width > 1 && height > 1) {
                         try {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                        } catch (e) {}
+                        } catch (e) { }
                     }
                 }
             }
         };
-        this.drawMerge = function(context) {
+        this.drawMerge = function (context) {
             if (this.mergeCanvas && !(this.size <= 40)) {
                 var mergeCanvas = this.mergeCanvas;
                 mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
@@ -9744,7 +9749,7 @@ window.MouseClicks=[];
                         if (width > 1 && height > 1) {
                             try {
                                 context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                            } catch (e) {}
+                            } catch (e) { }
                         }
                     }
 
@@ -9753,7 +9758,7 @@ window.MouseClicks=[];
                 //window.counterCell++;
             }
         };
-        this.drawMass = function(context) {
+        this.drawMass = function (context) {
             if (this.massCanvas && !(this.size <= 40)) {
                 var massCanvas = this.massCanvas;
                 massCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
@@ -9773,18 +9778,18 @@ window.MouseClicks=[];
                 if (width > 1 && height > 1) {
                     try {
                         context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                    } catch (e) {}
+                    } catch (e) { }
                 }
             }
         };
-        this.createStrokeVirusPath = function(shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
+        this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
-			const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
+            const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
             const degreeStep = GROUPSIZE / 2;
             const ctxfx = new Path2D;
             const radiusX = zeroSizeMax - pixelSizeTargetMax;
-			const tileHeight = radiusX + pixelSizeTargetMax;
+            const tileHeight = radiusX + pixelSizeTargetMax;
             //const tileHeight = radiusX + this.nHeight;
             const n = this.pi2 + GROUPSIZE;
             for (let i = 0, j = degreeStep; i <= n; j = (i = i + GROUPSIZE) + degreeStep) {
@@ -9793,80 +9798,80 @@ window.MouseClicks=[];
             }
             return ctxfx;
         };
-		this.drawSpecialSkinDancer = function(style, y) {
-			let tempcolor;
-            if (LM.gameMode !==":party"){
-				if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4"){
-					application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
-				node2 = application.customSkinsMap[this.targetNick]	
-				if (ogarcopythelb.nick === this.targetNick) {
-					ogarcopythelb.skinURL = node2
-				}				
-				
-					//checkVideos(node2, this.targetNick);
-				}				
-			}
-			else{
-				if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4"){
-					application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
-				node2 = application.customSkinsMap[this.targetNick + this.color]	
-				if (ogarcopythelb.nick === this.targetNick) {
-					ogarcopythelb.skinURL = node2
-				}				
-				
-					//checkVideos(node2, this.targetNick);
-				}					
-			}
+        this.drawSpecialSkinDancer = function (style, y) {
+            let tempcolor;
+            if (LM.gameMode !== ":party") {
+                if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
+                    application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+                    node2 = application.customSkinsMap[this.targetNick]
+                    if (ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2
+                    }
 
-			var startWaves;
-			if (!this.drawSpecialSkinDancerEnabled){
-				this.drawSpecialSkinDancerEnabled = Date.now()
-				startWaves = true
-			}
-			else if(Date.now() - this.drawSpecialSkinDancerEnabled > 15000){
-				this.drawSpecialSkinDancerEnabled = Date.now()
-				startWaves = true
-			}
-			
-			if (LM.Waves && LM.Waves.length === 0 && startWaves) {
-                    tempcolor = this.color;
-					if (application.teamPlayers.length>0) {
-						c = 0;
-						for (; c < application.teamPlayers.length; c++) {
-							if (application.teamPlayers[c].nick === this.targetNick) tempcolor = application.teamPlayers[c].color
-						}
-					}				
-				LM.sendWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick, true)
-				//application.teamPlayers[0].color
-			}
-			else if (LM.Waves && LM.Waves.length > 0){
+                    //checkVideos(node2, this.targetNick);
+                }
+            }
+            else {
+                if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
+                    application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+                    node2 = application.customSkinsMap[this.targetNick + this.color]
+                    if (ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2
+                    }
+
+                    //checkVideos(node2, this.targetNick);
+                }
+            }
+
+            var startWaves;
+            if (!this.drawSpecialSkinDancerEnabled) {
+                this.drawSpecialSkinDancerEnabled = Date.now()
+                startWaves = true
+            }
+            else if (Date.now() - this.drawSpecialSkinDancerEnabled > 15000) {
+                this.drawSpecialSkinDancerEnabled = Date.now()
+                startWaves = true
+            }
+
+            if (LM.Waves && LM.Waves.length === 0 && startWaves) {
+                tempcolor = this.color;
+                if (application.teamPlayers.length > 0) {
+                    c = 0;
+                    for (; c < application.teamPlayers.length; c++) {
+                        if (application.teamPlayers[c].nick === this.targetNick) tempcolor = application.teamPlayers[c].color
+                    }
+                }
+                LM.sendWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick, true)
+                //application.teamPlayers[0].color
+            }
+            else if (LM.Waves && LM.Waves.length > 0) {
 
                 tempcolor = this.color;
-                if (application.teamPlayers.length>0) {
-						c = 0;
-						for (; c < application.teamPlayers.length; c++) {
-							if (application.teamPlayers[c].nick === this.targetNick) tempcolor = application.teamPlayers[c].color
-						}
-					}
-				if (this.mass && this.mass >= 1560 && defaultmapsettings.qdsplitRange){
-					LM.changeWaves(this.x, this.y, tempcolor, 2 * this.size + 760, this.targetNick, true)					
-				}
-				else{
-					LM.changeWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick,  true)	
-				}
-				
-			}			
-		};
-		this.drawImageSpecialSkin = function(imageSpecial,b,c,d,e,style){
-			var tempImgSp = eval('window.' + imageSpecial)	
-			if (!tempImgSp) {	
-				loadIconSpecialSkins(imageSpecial)				
-			}			
-			else{			
-				if (tempImgSp.complete) style.drawImage(tempImgSp, b, c, d, e);	
-			}				
-		};
-        this.drawSpecialSkin = function(style, y) {
+                if (application.teamPlayers.length > 0) {
+                    c = 0;
+                    for (; c < application.teamPlayers.length; c++) {
+                        if (application.teamPlayers[c].nick === this.targetNick) tempcolor = application.teamPlayers[c].color
+                    }
+                }
+                if (this.mass && this.mass >= 1560 && defaultmapsettings.qdsplitRange) {
+                    LM.changeWaves(this.x, this.y, tempcolor, 2 * this.size + 760, this.targetNick, true)
+                }
+                else {
+                    LM.changeWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick, true)
+                }
+
+            }
+        };
+        this.drawImageSpecialSkin = function (imageSpecial, b, c, d, e, style) {
+            var tempImgSp = eval('window.' + imageSpecial)
+            if (!tempImgSp) {
+                loadIconSpecialSkins(imageSpecial)
+            }
+            else {
+                if (tempImgSp.complete) style.drawImage(tempImgSp, b, c, d, e);
+            }
+        };
+        this.drawSpecialSkin = function (style, y) {
             if (SpecialEffectPlayers[this.targetNick] && SpecialEffectPlayers[this.targetNick].split && SpecialEffectPlayers[this.targetNick].split(';')) {
                 var temp = SpecialEffectPlayers[this.targetNick].split(';')
                 for (var i = 0; i < temp.length; i++) {
@@ -9874,49 +9879,49 @@ window.MouseClicks=[];
                     else if (this.SpecialEffect !== temp[i]) this.SpecialEffect2 = temp[i];
                 }
                 /*if (!window.eud){
-                	console.log('draw',this.targetNick,this.SpecialEffect)
-                	window.eud=true
+                    console.log('draw',this.targetNick,this.SpecialEffect)
+                    window.eud=true
                 }*/
 
                 if (this.SpecialEffect === "Hat" || this.SpecialEffect2 === "Hat") {
-                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHat3", this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y, style); 					
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHat3", this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsHat3, this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y);
-					
+
                     //style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
                     //style.drawImage(iconSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
                     // the bigger the -y, the upper it draws
                 } else if (this.SpecialEffect === "JellyFish" || this.SpecialEffect2 === "JellyFish") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsJellyFish", this.x - 1 / 3 * y, this.y - 3 / 2 * y, y, y, style); 
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsJellyFish", this.x - 1 / 3 * y, this.y - 3 / 2 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsJellyFish, this.x - 1 / 3 * y, this.y - 3 / 2 * y, y, y);
                 } else if (this.SpecialEffect === "King" || this.SpecialEffect2 === "King") {
                     //style.drawImage(iconSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsCrown", this.x - 1 / 4 * y, this.y - 5.3 / 4 * y, y / 2, y / 2, style); 
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsCrown", this.x - 1 / 4 * y, this.y - 5.3 / 4 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsCrown, this.x - 1 / 4 * y, this.y - 5.3 / 4 * y, y / 2, y / 2);
                 }
                 if (this.SpecialEffect === "Smoke" || this.SpecialEffect2 === "Smoke") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSmoke", this.x - 2 / 3 * y, this.y - 4 / 3 * y, y, y, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSmoke", this.x - 2 / 3 * y, this.y - 4 / 3 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsSmoke, this.x - 2 / 3 * y, this.y - 4 / 3 * y, y, y);
                 } else if (this.SpecialEffect === "USA" || this.SpecialEffect2 === "USA") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsUSA", this.x - 5 / 7 * y, this.y - 1 / 2 * y, y * 2, y * 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsUSA", this.x - 5 / 7 * y, this.y - 1 / 2 * y, y * 2, y * 2, style);
                     //style.drawImage(iconSpecialSkinEffectsUSA, this.x - 5 / 7 * y, this.y - 1 / 2 * y, y * 2, y * 2);
                 } else if (this.SpecialEffect === "SunGlasses" || this.SpecialEffect2 === "SunGlasses") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSunGlasses", this.x - 0.85 * y, this.y - 1.1 * y, y * 1.7, y * 1.4, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSunGlasses", this.x - 0.85 * y, this.y - 1.1 * y, y * 1.7, y * 1.4, style);
                     //style.drawImage(iconSpecialSkinEffectsSunGlasses, this.x - 0.85 * y, this.y - 1.1 * y, y * 1.7, y * 1.4);
                 } else if (this.SpecialEffect === "Moderator" || this.SpecialEffect2 === "Moderator") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsModerator", this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsModerator", this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6, style);
                     //style.drawImage(iconSpecialSkinEffectsModerator, this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6);
                 } else if (this.SpecialEffect === "Turtle" || this.SpecialEffect2 === "Turtle") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsTurtle", this.x - 0.999 * y, this.y - 0.810 * y, y / 0.5, y / 0.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsTurtle", this.x - 0.999 * y, this.y - 0.810 * y, y / 0.5, y / 0.5, style);
                     //style.drawImage(iconSpecialSkinEffectsTurtle, this.x - 0.999 * y, this.y - 0.810 * y, y / 0.5, y / 0.5);
                     //style.drawImage(iconSpecialSkinEffectsTurtle, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);					                     
                 } else if (this.SpecialEffect === "Shiro" || this.SpecialEffect2 === "Shiro") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsShiro", this.x + 0.05 * y, this.y - 1.2 * y, y, y, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsShiro", this.x + 0.05 * y, this.y - 1.2 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsShiro, this.x + 0.05 * y, this.y - 1.2 * y, y, y);
                 } else if (this.SpecialEffect === "Bird" || this.SpecialEffect2 === "Bird") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsBird", this.x - 0 * y, this.y - 1.3 * y, y / 1, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsBird", this.x - 0 * y, this.y - 1.3 * y, y / 1, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsBird, this.x - 0 * y, this.y - 1.3 * y, y / 1, y / 1);
                 } else if (this.SpecialEffect === "AbsolutVodka" || this.SpecialEffect2 === "AbsolutVodka") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsAbsolutVodka", this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsAbsolutVodka", this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1);
                     //style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4;							
                     //if (!window.xx1) window.xx1 = -0.1
@@ -9924,13 +9929,13 @@ window.MouseClicks=[];
                     //if (!window.xx3) window.xx3 = 1.5
                     //if (!window.xx4) window.xx4 = 1			
                 } else if (this.SpecialEffect === "Chemistry" || this.SpecialEffect2 === "Chemistry") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsChemistry", this.x + 0.3 * y, this.y - 1.1 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsChemistry", this.x + 0.3 * y, this.y - 1.1 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsChemistry, this.x + 0.3 * y, this.y - 1.1 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "Japan" || this.SpecialEffect2 === "Japan") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsJapan", this.x - 0.8 * y, this.y - 1 * y, y / 0.5, y / 0.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsJapan", this.x - 0.8 * y, this.y - 1 * y, y / 0.5, y / 0.5, style);
                     //style.drawImage(iconSpecialSkinEffectsJapan, this.x - 0.8 * y, this.y - 1 * y, y / 0.5, y / 0.5);
                 } else if (this.SpecialEffect === "Japan2" || this.SpecialEffect2 === "Japan2") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsJapan2", this.x - 0.5 * y, this.y + 0.47 * y, y / 1, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsJapan2", this.x - 0.5 * y, this.y + 0.47 * y, y / 1, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsJapan2, this.x - 0.5 * y, this.y + 0.47 * y, y / 1, y / 1);
                     /*style.drawImage(iconSpecialSkinEffectsJapan2, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4);							
                         if (!window.xx1) window.xx1= 0.5
@@ -9939,88 +9944,88 @@ window.MouseClicks=[];
                         if (!window.xx4) window.xx4 = 1							
                         */
                 } else if (this.SpecialEffect === "Byzantium" || this.SpecialEffect2 === "Byzantium") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsByzantium", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsByzantium", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsByzantium, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Close" || this.SpecialEffect2 === "Close") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsClose", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsClose", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsClose, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Earth" || this.SpecialEffect2 === "Earth") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsEarth", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsEarth", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsEarth, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "FootStep" || this.SpecialEffect2 === "FootStep") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsFootStep", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsFootStep", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsFootStep, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Forward" || this.SpecialEffect2 === "Forward") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsForward", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsForward", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsForward, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Forever" || this.SpecialEffect2 === "Forever") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsFriendsForever, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Forever2" || this.SpecialEffect2 === "Forever2") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever2", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever2", this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsFriendsForever2, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Forever3" || this.SpecialEffect2 === "Forever3") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever3", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsFriendsForever3", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsFriendsForever3, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Police" || this.SpecialEffect2 === "Police") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsPolice", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsPolice", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsPolice, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Police2" || this.SpecialEffect2 === "Police2") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsPolice2", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsPolice2", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsPolice2, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Unrest" || this.SpecialEffect2 === "Unrest") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsUnrest", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsUnrest", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsUnrest, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Eagle" || this.SpecialEffect2 === "Eagle") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsEagle", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsEagle", this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsEagle, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "BobMarley" || this.SpecialEffect2 === "BobMarley") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsBobMarley", this.x + 0.6 * y, this.y + 0.6 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsBobMarley", this.x + 0.6 * y, this.y + 0.6 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsBobMarley, this.x + 0.6 * y, this.y + 0.6 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Einstein" || this.SpecialEffect2 === "Einstein") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsEinstein", this.x + 0.65 * y, this.y + 0.65 * y, y / 2.5, y / 2.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsEinstein", this.x + 0.65 * y, this.y + 0.65 * y, y / 2.5, y / 2.5, style);
                     //style.drawImage(iconSpecialSkinEffectsEinstein, this.x + 0.65 * y, this.y + 0.65 * y, y / 2.5, y / 2.5);
                 } else if (this.SpecialEffect === "DeadTable" || this.SpecialEffect2 === "DeadTable") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsDeadTable", this.x + 0.7 * y, this.y + 0.7 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsDeadTable", this.x + 0.7 * y, this.y + 0.7 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsDeadTable, this.x + 0.7 * y, this.y + 0.7 * y, y / 3, y / 3);
                 } else if (this.SpecialEffect === "Kebab" || this.SpecialEffect2 === "Kebab") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsKebab", this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsKebab", this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsKebab, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "Meditation" || this.SpecialEffect2 === "Meditation") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsMeditation", this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsMeditation", this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsMeditation, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "Splash" || this.SpecialEffect2 === "Splash") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSplash", this.x - 1.15 * y, this.y - 1.3 * y, y / 0.36, y / 0.36, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSplash", this.x - 1.15 * y, this.y - 1.3 * y, y / 0.36, y / 0.36, style);
                     //style.drawImage(iconSpecialSkinEffectsSplash, this.x - 1.15 * y, this.y - 1.3 * y, y / 0.36, y / 0.36);
                 } else if (this.SpecialEffect === "Butterfly" || this.SpecialEffect2 === "Butterfly") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsButterfly", this.x - 1 * y, this.y - 0.6 * y, y / 2, y / 4, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsButterfly", this.x - 1 * y, this.y - 0.6 * y, y / 2, y / 4, style);
                     //style.drawImage(iconSpecialSkinEffectsButterfly, this.x - 1 * y, this.y - 0.6 * y, y / 2, y / 4);
                 } else if (this.SpecialEffect === "Mouse" || this.SpecialEffect2 === "Mouse") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsMouse", this.x + 0.5 * y, this.y - 0.1 * y, y / 3, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsMouse", this.x + 0.5 * y, this.y - 0.1 * y, y / 3, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsMouse, this.x + 0.5 * y, this.y - 0.1 * y, y / 3, y / 1);
                 } else if (this.SpecialEffect === "Sword" || this.SpecialEffect2 === "Sword") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSword", this.x - 0.8 * y, this.y - 3 / 5 * y, y * 1.6, y * 1.6, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSword", this.x - 0.8 * y, this.y - 3 / 5 * y, y * 1.6, y * 1.6, style);
                     //style.drawImage(iconSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3 / 5 * y, y * 1.6, y * 1.6);
                 }
                 if (this.SpecialEffect === "Mask" || this.SpecialEffect2 === "Mask") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsMask", this.x - 1 / 2 * y, this.y + 1 / 4 * y, y, y, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsMask", this.x - 1 / 2 * y, this.y + 1 / 4 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsMask, this.x - 1 / 2 * y, this.y + 1 / 4 * y, y, y);
                 } else if (this.SpecialEffect === "Heart" || this.SpecialEffect2 === "Heart") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsHeart", this.x - 1 / 2 * y, this.y + 1 / 3 * y, y, y, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHeart", this.x - 1 / 2 * y, this.y + 1 / 3 * y, y, y, style);
                     //style.drawImage(iconSpecialSkinEffectsHeart, this.x - 1 / 2 * y, this.y + 1 / 3 * y, y, y);
                 }
                 if (this.SpecialEffect === "Vip" || this.SpecialEffect2 === "Vip") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsVip", this.x - 1 / 8 * y, this.y - 5.3 / 4 * y, y / 5, y / 5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsVip", this.x - 1 / 8 * y, this.y - 5.3 / 4 * y, y / 5, y / 5, style);
                     //style.drawImage(iconSpecialSkinEffectsVip, this.x - 1 / 8 * y, this.y - 5.3 / 4 * y, y / 5, y / 5);
                 } else if (this.SpecialEffect === "Ddev" || this.SpecialEffect2 === "Ddev") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsDdev", this.x - 1 / 8 * y, this.y - 4.6 / 4 * y, y / 3, y / 5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsDdev", this.x - 1 / 8 * y, this.y - 4.6 / 4 * y, y / 3, y / 5, style);
                     //style.drawImage(iconSpecialSkinEffectsDdev, this.x - 1 / 8 * y, this.y - 4.6 / 4 * y, y / 3, y / 5);
                 } else if (this.SpecialEffect === "Youtube" || this.SpecialEffect2 === "Youtube") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsYoutube", this.x - 1 / 6 * y, this.y - 5.3 / 4 * y, y / 3, y / 3, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsYoutube", this.x - 1 / 6 * y, this.y - 5.3 / 4 * y, y / 3, y / 3, style);
                     //style.drawImage(iconSpecialSkinEffectsYoutube, this.x - 1 / 6 * y, this.y - 5.3 / 4 * y, y / 3, y / 3);
                     //style.drawImage(iconSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
                 } else if (this.SpecialEffect === "LegendHeroes" || this.SpecialEffect2 === "LegendHeroes") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsLegendclan", this.x - 0.95 * y, this.y - 5.3 / 4 * y, y / 0.5, y / 4, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsLegendclan", this.x - 0.95 * y, this.y - 5.3 / 4 * y, y / 0.5, y / 4, style);
                     //style.drawImage(iconSpecialSkinEffectsLegendclan, this.x - 0.95 * y, this.y - 5.3 / 4 * y, y / 0.5, y / 4);
 
                     /*style.drawImage(iconSpecialSkinEffectsLegendclan, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
@@ -10029,7 +10034,7 @@ window.MouseClicks=[];
                     if (!window.xx3) window.xx3 = 0.5
                     if (!window.xx4) window.xx4 = 4*/
                 } else if (this.SpecialEffect === "LegendClan" || this.SpecialEffect2 === "LegendClan") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsLegendclan2", this.x - 1 / 3 * y, this.y - 5.3 / 4 * y, y / 1.5, y / 6, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsLegendclan2", this.x - 1 / 3 * y, this.y - 5.3 / 4 * y, y / 1.5, y / 6, style);
                     //style.drawImage(iconSpecialSkinEffectsLegendclan2, this.x - 1 / 3 * y, this.y - 5.3 / 4 * y, y / 1.5, y / 6);
                     /*style.drawImage(iconSpecialSkinEffectsLegendclan2, this.x - window.xx5 * y, this.y - window.xx6 * y, y/window.xx7, y/window.xx8);				
                     if (!window.xx5) window.xx5 = 1/3
@@ -10038,10 +10043,10 @@ window.MouseClicks=[];
                     if (!window.xx8) window.xx8 = 6*/
                 } else if (this.SpecialEffect === "BabyBoss" || this.SpecialEffect2 === "BabyBoss") {
                     if (this.mass < 3000) {
-						this.drawImageSpecialSkin("iconSpecialSkinEffectsBabyBoss", this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
+                        this.drawImageSpecialSkin("iconSpecialSkinEffectsBabyBoss", this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
                         //style.drawImage(iconSpecialSkinEffectsBabyBoss, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                     } else {
-						this.drawImageSpecialSkin("iconSpecialSkinEffectsBabyBoss1", this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
+                        this.drawImageSpecialSkin("iconSpecialSkinEffectsBabyBoss1", this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
                         //style.drawImage(iconSpecialSkinEffectsBabyBoss1, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                     }
                 } else if (this.SpecialEffect === "Gladiator" || this.SpecialEffect2 === "Gladiator") {
@@ -10054,10 +10059,10 @@ window.MouseClicks=[];
                     style.filter = 'contrast(1.4) sepia(' + e + ')';
                     */
                     style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero" || this.SpecialEffect2 === "Hero") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero1" || this.SpecialEffect2 === "Hero1") {
                     var d = new Date();
@@ -10071,36 +10076,36 @@ window.MouseClicks=[];
                     }
                     style.save();
                     style.globalAlpha = e
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsHero1", this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHero1", this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsHero1, this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1);
                     style.restore();
 
                 } else if (this.SpecialEffect === "Hero2" || this.SpecialEffect2 === "Hero2") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsHero2", this.x - 0.3 * y, this.y - 1.48 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHero2", this.x - 0.3 * y, this.y - 1.48 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsHero2, this.x - 0.3 * y, this.y - 1.48 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "Key" || this.SpecialEffect2 === "Key") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsKey", this.x + 0.4 * y, this.y - 1.15 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsKey", this.x + 0.4 * y, this.y - 1.15 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsKey, this.x + 0.4 * y, this.y - 1.15 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "MetalOfHonor" || this.SpecialEffect2 === "MetalOfHonor") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsMetalOfHonor", this.x - 0.25 * y, this.y + 0.8 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsMetalOfHonor", this.x - 0.25 * y, this.y + 0.8 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsMetalOfHonor, this.x - 0.25 * y, this.y + 0.8 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "PeaceMaker" || this.SpecialEffect2 === "PeaceMaker") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsPeaceMaker", this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 2, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsPeaceMaker", this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 2, style);
                     //style.drawImage(iconSpecialSkinEffectsPeaceMaker, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 2);
                 } else if (this.SpecialEffect === "Survivor" || this.SpecialEffect2 === "Survivor") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSurvivor", this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 1.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSurvivor", this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsSurvivor, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 1.5);
                 } else if (this.SpecialEffect === "Tiger" || this.SpecialEffect2 === "Tiger") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsTiger", this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsTiger", this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsTiger, this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "PanicAtDisco" || this.SpecialEffect2 === "PanicAtDisco") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsPanicAtDisco", this.x - 1 * y, this.y - 1 * y, y/1, y/4, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsPanicAtDisco", this.x - 1 * y, this.y - 1 * y, y / 1, y / 4, style);
                     //style.drawImage(iconSpecialSkinEffectsPanicAtDisco, this.x - 1 * y, this.y - 1 * y, y/1, y/4);	
-					this.drawSpecialSkinDancer(style, y);
+                    this.drawSpecialSkinDancer(style, y);
                 } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
-                    style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);	
+                    style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
                 } else if (this.SpecialEffect === "HappyNewYear" || this.SpecialEffect2 === "HappyNewYear") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsHappyNewYear", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsHappyNewYear", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
                     //style.drawImage(iconSpecialSkinEffectsHappyNewYear, this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1);
                     //style.drawImage(iconSpecialSkinEffectsHappyNewYear, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4;							
                     //if (!window.xx1) window.xx1 = -0.1
@@ -10108,15 +10113,15 @@ window.MouseClicks=[];
                     //if (!window.xx3) window.xx3 = 1.5
                     //if (!window.xx4) window.xx4 = 1	
                 } else if (this.SpecialEffect === "Coffee" || this.SpecialEffect2 === "Coffee") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsCoffee", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);					
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsCoffee", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "ThanksGivings" || this.SpecialEffect2 === "ThanksGivings") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsThanksGivings", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsThanksGivings", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "ChristmasTree" || this.SpecialEffect2 === "ChristmasTree") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsChristmasTree", this.x + 0.4 * y, this.y + 0.2 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsChristmasTree", this.x + 0.4 * y, this.y + 0.2 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "SantaHat" || this.SpecialEffect2 === "SantaHat") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsSantaHa", this.x - 1.05 * y, this.y + 1.5 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSantaHa", this.x - 1.05 * y, this.y + 1.5 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "Flag4July" || this.SpecialEffect2 === "Flag4July") {
-					this.drawImageSpecialSkin("iconSpecialSkinEffectsUSAFlag4July", this.x - 0.9 * y, this.y + 1.1 * y, y / 1.5, y / 1, style);				
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsUSAFlag4July", this.x - 0.9 * y, this.y + 1.1 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "WhiteArrow" || this.SpecialEffect2 === "WhiteArrow") {
                     //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
@@ -10141,145 +10146,145 @@ window.MouseClicks=[];
                         } else {
                             style.drawImage(cimg2, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
                         }
-                    } catch (e) {}
+                    } catch (e) { }
                 }
             }
         }
-		this.drawCircle = function(ctx, x, y, radius, color) {
-			//ctx.lineWidth = radius * 2;
-			//ctx.lineCap = 'round';
-			ctx.beginPath();
-			//ctx.moveTo(x, y);
-			//ctx.lineTo(x, y);
-			//ctx.strokeStyle = color;
-			ctx.fillStyle = color;
-			ctx.arc(x, y, radius, 0, 2 * Math.PI);
-			ctx.fill();
-			//ctx.closePath();
-			//ctx.stroke();
-			
-		},		
-        this.draw = function(style, cellMoved) { //this function draws each cell/virus/food 1 time only
-            if ((LM.hideSmallBots && this.size <= 36) || this.invisible === true) {
-                return;
-            }
-            //					
-            style.save();
+        this.drawCircle = function (ctx, x, y, radius, color) {
+            //ctx.lineWidth = radius * 2;
+            //ctx.lineCap = 'round';
+            ctx.beginPath();
+            //ctx.moveTo(x, y);
+            //ctx.lineTo(x, y);
+            //ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            //ctx.closePath();
+            //ctx.stroke();
 
-			//if (this.isFood){ //food never happens here
-				//console.log('isFood')
-			//}
-            this.redrawed++;
-            if (cellMoved) {
-                this.moveCell();
-            }
-            if (this.removed) {
-                style.globalAlpha *= 1 - this.alpha;
-            }
-            var value = style.globalAlpha;
-            var s = false;
-            var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
-            
+        },
+            this.draw = function (style, cellMoved) { //this function draws each cell/virus/food 1 time only
+                if ((LM.hideSmallBots && this.size <= 36) || this.invisible === true) {
+                    return;
+                }
+                //					
+                style.save();
 
-            //26/7/2020
-            if (LM.ws.includes("replay") && window.replayGreyScale) {
-                style.filter = 'grayscale(100%)';
-            } else if (LM.ws.includes("replay") && window.replaySepia) {
-                style.filter = 'sepia(100%)';
-            } else if (LM.ws.includes("replay") && window.replayHueRotate) {
-                style.filter = 'hue-rotate(90deg)';
-            }
-            //style.filter='grayscale(100%)';
-            //
-			var node = null
-            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                node = application.getCustomSkin(this.targetNick, this.color);
-			}
-			var node2;
-            if (defaultmapsettings.videoSkins) {
-				if (LM.gameMode !=":party"){
-					node2 = application.customSkinsMap[this.targetNick];
-				}
-				else{
-					node2 = application.customSkinsMap[this.targetNick + this.color];
-				}
-			}						
-            if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
-                style.globalAlpha *= defaultSettings.cellsAlpha;
-                s = true;
-            }	
+                //if (this.isFood){ //food never happens here
+                //console.log('isFood')
+                //}
+                this.redrawed++;
+                if (cellMoved) {
+                    this.moveCell();
+                }
+                if (this.removed) {
+                    style.globalAlpha *= 1 - this.alpha;
+                }
+                var value = style.globalAlpha;
+                var s = false;
+                var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
-			var color2 = this.color;	
-            if (LM.play || LM.playerCellsMulti.length) {
-                if (this.isPlayerCell || this.playerCellsMulti) {
-                    if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
-                        this.color = ogarcopythelb.color;
+
+                //26/7/2020
+                if (LM.ws.includes("replay") && window.replayGreyScale) {
+                    style.filter = 'grayscale(100%)';
+                } else if (LM.ws.includes("replay") && window.replaySepia) {
+                    style.filter = 'sepia(100%)';
+                } else if (LM.ws.includes("replay") && window.replayHueRotate) {
+                    style.filter = 'hue-rotate(90deg)';
+                }
+                //style.filter='grayscale(100%)';
+                //
+                var node = null
+                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                    node = application.getCustomSkin(this.targetNick, this.color);
+                }
+                var node2;
+                if (defaultmapsettings.videoSkins) {
+                    if (LM.gameMode != ":party") {
+                        node2 = application.customSkinsMap[this.targetNick];
                     }
-                } 
-				else {
-                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
-                        this.color = this.oppColor;
+                    else {
+                        node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
                 }
-            }		
-            		
-			if (!node) style.beginPath();		
-            if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                var point = this.points[0];
-                style.moveTo(point.x, point.y);
-                for (var i = 0; i < this.points.length; ++i) {
-                    var point = this.points[i];
-                    style.lineTo(point.x, point.y);
+                if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
+                    style.globalAlpha *= defaultSettings.cellsAlpha;
+                    s = true;
                 }
-            } 
-			else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                style.lineJoin = "miter"
-                var pointCount = 120;
-                var incremental = this.pi2 / pointCount;
-                style.moveTo(this.x, this.y + this.size + 3);
-                for (var i = 1; i < pointCount; i++) {
-                    var angle = i * incremental;
-                    var dist = this.size - 3 + (i % 2 === 0) * 6;
-                    style.lineTo(
-                        this.x + dist * Math.sin(angle),
-                        this.y + dist * Math.cos(angle)
-                    )
+
+                var color2 = this.color;
+                if (LM.play || LM.playerCellsMulti.length) {
+                    if (this.isPlayerCell || this.playerCellsMulti) {
+                        if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
+                            this.color = ogarcopythelb.color;
+                        }
+                    }
+                    else {
+                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
+                            this.color = this.oppColor;
+                        }
+                    }
                 }
-                style.lineTo(this.x, this.y + this.size + 3);
-            } 
-			else {
-				if (!node){
-					//this.drawCircle(style, this.x, this.y, y, this.color)
-					if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)){ //this is the normal function
-						style.arc(this.x, this.y, y, 0, this.pi2, false);
-						if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))){
-							style.fillStyle = color2;
-							style.fill();
-						}
-						if (!this.isVirus && defaultmapsettings.cellContours) {
-							style.lineWidth = 20; ///
-							style.strokeStyle = color2; ///
-							style.stroke(); ///
-						} 							
-					}	
-					else{
-						this.drawCircle(style, this.x, this.y, y, color2)
-					}					
-				}					
-			} 
-			if (!node) style.closePath();
-			//17/12/2020
-			if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell){
-				if (defaultmapsettings.jellyPhisycs){
-					style.fillStyle = this.color;
-					style.fill();	
-				}
-				style.restore();
-				return
-			}				
-            //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
-            //    return style.fillStyle = this.color, style.fill(), void style.restore();
-            //}						
+
+                if (!node) style.beginPath();
+                if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                    var point = this.points[0];
+                    style.moveTo(point.x, point.y);
+                    for (var i = 0; i < this.points.length; ++i) {
+                        var point = this.points[i];
+                        style.lineTo(point.x, point.y);
+                    }
+                }
+                else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+                    style.lineJoin = "miter"
+                    var pointCount = 120;
+                    var incremental = this.pi2 / pointCount;
+                    style.moveTo(this.x, this.y + this.size + 3);
+                    for (var i = 1; i < pointCount; i++) {
+                        var angle = i * incremental;
+                        var dist = this.size - 3 + (i % 2 === 0) * 6;
+                        style.lineTo(
+                            this.x + dist * Math.sin(angle),
+                            this.y + dist * Math.cos(angle)
+                        )
+                    }
+                    style.lineTo(this.x, this.y + this.size + 3);
+                }
+                else {
+                    if (!node) {
+                        //this.drawCircle(style, this.x, this.y, y, this.color)
+                        if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                            style.arc(this.x, this.y, y, 0, this.pi2, false);
+                            if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))) {
+                                style.fillStyle = color2;
+                                style.fill();
+                            }
+                            if (!this.isVirus && defaultmapsettings.cellContours) {
+                                style.lineWidth = 20; ///
+                                style.strokeStyle = color2; ///
+                                style.stroke(); ///
+                            }
+                        }
+                        else {
+                            this.drawCircle(style, this.x, this.y, y, color2)
+                        }
+                    }
+                }
+                if (!node) style.closePath();
+                //17/12/2020
+                if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
+                    if (defaultmapsettings.jellyPhisycs) {
+                        style.fillStyle = this.color;
+                        style.fill();
+                    }
+                    style.restore();
+                    return
+                }
+                //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                //    return style.fillStyle = this.color, style.fill(), void style.restore();
+                //}						
                 if (this.isVirus) {
                     //console.log("is not jelly");
                     /*if (dyinglight1load === "yes") {
@@ -10291,207 +10296,207 @@ window.MouseClicks=[];
                         style.globalAlpha *= defaultSettings.virusAlpha;
                         s = true;
                     }
-					if (defaultmapsettings.virColors && LM.play) {						
-						style.fillStyle = application.setVirusColor(y); 
-						style.strokeStyle = application.setVirusStrokeColor(y);
-					}
-					else{ 
-						style.fillStyle = this.virusColor 
-						style.strokeStyle = this.virusStroke							
-					}
-					style.fill()
-					if (s) {
+                    if (defaultmapsettings.virColors && LM.play) {
+                        style.fillStyle = application.setVirusColor(y);
+                        style.strokeStyle = application.setVirusStrokeColor(y);
+                    }
+                    else {
+                        style.fillStyle = this.virusColor
+                        style.strokeStyle = this.virusStroke
+                    }
+                    style.fill()
+                    if (s) {
                         style.globalAlpha = value;
                         s = false;
                     }
-					style.lineWidth = defaultSettings.virusStrokeSize
-					if (defaultmapsettings.virusGlow){
+                    style.lineWidth = defaultSettings.virusStrokeSize
+                    if (defaultmapsettings.virusGlow) {
                         style.shadowBlur = defaultSettings.virusGlowSize;
-                        style.shadowColor = defaultSettings.virusGlowColor;						
-					}
-					if (defaultmapsettings.virusSpikes){
-						style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
-					}
-					else{
-						style.stroke()
-					}
+                        style.shadowColor = defaultSettings.virusGlowColor;
+                    }
+                    if (defaultmapsettings.virusSpikes) {
+                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+                    }
+                    else {
+                        style.stroke()
+                    }
                     if (defaultmapsettings.showMass) {
                         this.setDrawing();
                         this.setDrawingScale();
                         this.setMass(this.size);
                         this.drawMass(style);
-                    }					
-					style.restore();
+                    }
+                    style.restore();
                     return;
                 }
-             
-
-
-            /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
-                style.lineWidth = 20; ///
-                style.strokeStyle = this.color; ///
-                style.stroke(); //
-            } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
-                style.lineWidth = 20; ///
-                style.strokeStyle = this.color; ///
-                style.stroke(); //
-            } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick === profiles[application.selectedProfile].nick && LM.play) {
-                style.lineWidth = 20; ///
-                style.strokeStyle = this.color; ///
-                style.stroke(); //
-            }*/
-            if (defaultmapsettings.cellContours) {
-            } 		
-			else if (node){
-				if (!window.drawRender.cellsColored[color2]){ 
-					window.drawRender.preDrawCellsColors(color2);
-				}
-				else{
-					style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size*2, this.size*2);
-				}					
-			}		
-			else if (defaultmapsettings.jellyPhisycs && this.points.length){		
-			//else{			
-                style.fillStyle = color2;
-                style.fill();		
-            }
-            //}
-            if (s) {
-                style.globalAlpha = value;
-                s = false;
-            }
-			
-            /*if (dyinglight1load != "yes"){
-                            style.globalAlpha = 1;
-                            s = false;
-						}*/
-            //var node = null;
 
 
 
-            if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick === profiles[application.selectedOldProfile].nick || this.targetNick === profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
-                if (legendmod.play && legendmod.playerCellsMulti) {
-                    if (this.targetNick === profiles[application.selectedOldProfile].nick) {
-                        style.shadowBlur = 40;
-                        style.shadowColor = profiles[application.selectedOldProfile].color;
-                    } else if (this.targetNick === profiles[application.selectedProfile].nick) {
-                        style.shadowBlur = 40;
-                        style.shadowColor = profiles[application.selectedProfile].color;
+                /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
+                    style.lineWidth = 20; ///
+                    style.strokeStyle = this.color; ///
+                    style.stroke(); //
+                } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
+                    style.lineWidth = 20; ///
+                    style.strokeStyle = this.color; ///
+                    style.stroke(); //
+                } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick === profiles[application.selectedProfile].nick && LM.play) {
+                    style.lineWidth = 20; ///
+                    style.strokeStyle = this.color; ///
+                    style.stroke(); //
+                }*/
+                if (defaultmapsettings.cellContours) {
+                }
+                else if (node) {
+                    if (!window.drawRender.cellsColored[color2]) {
+                        window.drawRender.preDrawCellsColors(color2);
+                    }
+                    else {
+                        style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-            }
-            //lylko
-            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                //node = application.getCustomSkin(this.targetNick, this.color);
-                if (node) {
-                    //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                    if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha<0.99) {
-                        //console.log('transparent')
-						style.globalAlpha *= defaultSettings.skinsAlpha;
-                        //s = true;
-                    }
-                    if (legendmod.gameMode != ":teams") {
-                        if (defaultmapsettings.jellyPhisycs) {
-                            var lineWidth = Math.max(~~(y / 50), 10);
-                            style.save();
-                            style.clip();
-                            this.maxPointRad && (y = this.maxPointRad);
-                            try {
-                                style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
-                            } catch (e) {}
-                            style.globalCompositeOperation = 'luminosity';
+                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                    //else{			
+                    style.fillStyle = color2;
+                    style.fill();
+                }
+                //}
+                if (s) {
+                    style.globalAlpha = value;
+                    s = false;
+                }
 
-                            style.lineWidth = lineWidth
-                            style.strokeStyle = color2;
-                            style.stroke();
-                            style.globalCompositeOperation = '';
-                            style.restore();
+                /*if (dyinglight1load != "yes"){
+                                style.globalAlpha = 1;
+                                s = false;
+                            }*/
+                //var node = null;
 
-                        } else {
-                            try {
-                                style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
-                            } catch (e) {}
+
+
+                if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick === profiles[application.selectedOldProfile].nick || this.targetNick === profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
+                    if (legendmod.play && legendmod.playerCellsMulti) {
+                        if (this.targetNick === profiles[application.selectedOldProfile].nick) {
+                            style.shadowBlur = 40;
+                            style.shadowColor = profiles[application.selectedOldProfile].color;
+                        } else if (this.targetNick === profiles[application.selectedProfile].nick) {
+                            style.shadowBlur = 40;
+                            style.shadowColor = profiles[application.selectedProfile].color;
                         }
-                        if (defaultmapsettings.FBTracking) {
-                            var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
-                            if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
-                                var temp = nodeFb + "_cached4";
-                                var nodeFB = application.customSkinsCache[temp];
-                                //console.log("found fb name: " + this.targetNick + " src: " + temp);
+                    }
+                }
+                //lylko
+                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                    //node = application.getCustomSkin(this.targetNick, this.color);
+                    if (node) {
+                        //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                        if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99) {
+                            //console.log('transparent')
+                            style.globalAlpha *= defaultSettings.skinsAlpha;
+                            //s = true;
+                        }
+                        if (legendmod.gameMode != ":teams") {
+                            if (defaultmapsettings.jellyPhisycs) {
+                                var lineWidth = Math.max(~~(y / 50), 10);
+                                style.save();
+                                style.clip();
+                                this.maxPointRad && (y = this.maxPointRad);
                                 try {
-                                    style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-                                } catch (e) {}
-                            }
-                        }
-                        //this.drawSpecialSkin(style, y)
-                    }
-                } 
-				else {
-                    if (defaultmapsettings.videoSkins) {
-                        if (node2) {
-                            if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
-                                checkVideos(node2, this.targetNick);
+                                    style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                                } catch (e) { }
+                                style.globalCompositeOperation = 'luminosity';
+
+                                style.lineWidth = lineWidth
+                                style.strokeStyle = color2;
+                                style.stroke();
+                                style.globalCompositeOperation = '';
+                                style.restore();
+
+                            } else {
                                 try {
-                                    style.save();
-                                    style.clip();
-                                    if (defaultmapsettings.videoDestorted) {
-                                        var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
-                                    } else {
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
-                                    }
-                                    style.restore();
-                                } catch (e) {}
+                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
+                                } catch (e) { }
                             }
+                            if (defaultmapsettings.FBTracking) {
+                                var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
+                                if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
+                                    var temp = nodeFb + "_cached4";
+                                    var nodeFB = application.customSkinsCache[temp];
+                                    //console.log("found fb name: " + this.targetNick + " src: " + temp);
+                                    try {
+                                        style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
+                                    } catch (e) { }
+                                }
+                            }
+                            //this.drawSpecialSkin(style, y)
                         }
                     }
-                    if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
-                        try {
-                            style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-                        } catch (e) {}
+                    else {
+                        if (defaultmapsettings.videoSkins) {
+                            if (node2) {
+                                if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
+                                    checkVideos(node2, this.targetNick);
+                                    try {
+                                        style.save();
+                                        style.clip();
+                                        if (defaultmapsettings.videoDestorted) {
+                                            var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
+                                            style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
+                                        } else {
+                                            style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
+                                        }
+                                        style.restore();
+                                    } catch (e) { }
+                                }
+                            }
+                        }
+                        if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
+                            try {
+                                style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+                            } catch (e) { }
+                        }
                     }
+                    this.drawSpecialSkin(style, y)
                 }
-				this.drawSpecialSkin(style, y)
-            }
-            if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                window.teammatenicks && this.targetNick != "" &&
-                (window.teammatenicks.includes(this.targetNick))) {
-                drawRender.drawTeammatesInd(style, this.x, this.y, y)
-            }
-
-            if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
-                //return;
-            } 
-			else {
-                var recursive = false;
-                if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)){
-                    this.setDrawing();
-                    this.setDrawingScale();
-					if ( defaultSettings.textAlpha != 1 ){
-						style.globalAlpha *= defaultSettings.textAlpha;
-					}
-                    if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
-                        if (this.setNick(this.targetNick)) {
-                            this.drawNick(style);
-                        }
-                    }
-                    if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
-                        if (this.setMass(this.size)) {
-
-                            this.drawMass(style);
-                            if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                this.drawMerge(style);
-                            }
-                            if (defaultmapsettings.showChat) {
-                                this.drawChat(style);
-                            }
-                        }
-                    }
+                if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                    window.teammatenicks && this.targetNick != "" &&
+                    (window.teammatenicks.includes(this.targetNick))) {
+                    drawRender.drawTeammatesInd(style, this.x, this.y, y)
                 }
 
+                if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
+                    //return;
+                }
+                else {
+                    var recursive = false;
+                    if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
+                        this.setDrawing();
+                        this.setDrawingScale();
+                        if (defaultSettings.textAlpha != 1) {
+                            style.globalAlpha *= defaultSettings.textAlpha;
+                        }
+                        if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                            if (this.setNick(this.targetNick)) {
+                                this.drawNick(style);
+                            }
+                        }
+                        if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                            if (this.setMass(this.size)) {
+
+                                this.drawMass(style);
+                                if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                    this.drawMerge(style);
+                                }
+                                if (defaultmapsettings.showChat) {
+                                    this.drawChat(style);
+                                }
+                            }
+                        }
+                    }
+
+                }
+                style.restore();
             }
-            style.restore();
-        }
     }
     window.legendmod1 = ogarbasicassembly;
 
@@ -10503,7 +10508,7 @@ window.MouseClicks=[];
     var LM = {
         integrity: true,
         quadtree: null,
-        updateQuadtree: function(cells) {
+        updateQuadtree: function (cells) {
             var w = drawRender.canvasWidth / drawRender.scale;
             var h = drawRender.canvasHeight / drawRender.scale;
             var x = (this.viewX - w / 2);
@@ -10587,7 +10592,7 @@ window.MouseClicks=[];
         playerPosition: 0,
         //playerPositionMulti: null,
         leaderboard: [],
-		botNicks: [],
+        botNicks: [],
         biggerSTEDCellsCache: [], //Sonia
         biggerSTECellsCache: [],
         biggerCellsCache: [],
@@ -10649,7 +10654,7 @@ window.MouseClicks=[];
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
-            setTimeout(function() {
+            setTimeout(function () {
                 application.Socket3connect(t);
                 if (defaultmapsettings.rotateMap) {
                     application.SLGconnect(t);
@@ -10681,26 +10686,26 @@ window.MouseClicks=[];
             this.leaderboard = [];
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
-			this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
+            this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
             this.socket = new WebSocket(t);
             this.socket.binaryType = 'arraybuffer';
-            this.socket.onopen = function() {
+            this.socket.onopen = function () {
                 app.onOpen();
-				//this.socket.ping();
+                //this.socket.ping();
             };
             /*this.socket.onpong = function(t) {
                 console.log(t);
-            };	*/		
-            this.socket.onmessage = function(t) {
+            };	*/
+            this.socket.onmessage = function (t) {
                 app.onMessage(t);
             };
-            this.socket.onerror = function(t) {
+            this.socket.onerror = function (t) {
                 app.onError(t);
             };
-            this.socket.onclose = function(t) {
+            this.socket.onclose = function (t) {
                 app.onClose(t);
             };
             application.getWS(this.ws);
@@ -10740,8 +10745,8 @@ window.MouseClicks=[];
             } else {
                 view.setUint32(1, this.protocolVersion, true);
                 window.gameBots.protocolVersion = master.protocolVersion;
-            } 
-			//			
+            }
+            //			
             //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
             //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
 
@@ -10752,26 +10757,26 @@ window.MouseClicks=[];
             if (!this.integrity) {
                 view.setUint32(1, window.customClient, true);
                 window.gameBots.clientVersion = window.customClient
-				
-				if (LM.ws.includes("cellz.io")){
-					this.sendMessage(view);
-					view.setUint8(0, 80);
-				}			
+
+                if (LM.ws.includes("cellz.io")) {
+                    this.sendMessage(view);
+                    view.setUint8(0, 80);
+                }
             } //protocol 6 and 5
             else {
                 view.setUint32(1, this.clientVersion, true);
                 window.gameBots.clientVersion = this.clientVersion;
-				//new
-				if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
-				//this.sendPong();				
-            } 
-			
-			//
+                //new
+                if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
+                //this.sendPong();				
+            }
+
+            //
             //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
             //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 
             this.sendMessage(view);
-			
+
             this.connectionOpened = true;
         },
         onMessage(message) {
@@ -10795,7 +10800,7 @@ window.MouseClicks=[];
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
             this.flushCellsData();
-			//clearInterval(this.pingInterval);
+            //clearInterval(this.pingInterval);
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
@@ -10843,7 +10848,7 @@ window.MouseClicks=[];
                 this.socket.onclose = null;
                 try {
                     this.socket.close();
-                } catch (error) {}
+                } catch (error) { }
                 this.socket = null;
                 this.ws = null;
             }
@@ -10867,11 +10872,11 @@ window.MouseClicks=[];
             }
             /*jimboy3100
             if (window.LMdebug){
-            	window.tempoo = new window.buffer.Buffer(message.buffer)
-            	if (window.tempoo[0]==102){ 
-            		window.tempoo2 = new window.buffer.Buffer(window.tempoo.buffer)	
-            		console.log(window.tempoo2)
-            	}					
+                window.tempoo = new window.buffer.Buffer(message.buffer)
+                if (window.tempoo[0]==102){ 
+                    window.tempoo2 = new window.buffer.Buffer(window.tempoo.buffer)	
+                    console.log(window.tempoo2)
+                }					
             }*/
             this.sendBuffer(message);
         },
@@ -10895,7 +10900,7 @@ window.MouseClicks=[];
         sendBotEject() {
             //this.sendPosition();
             this.sendAction(23);
-        },	
+        },
         sendBotSplit() {
             //this.sendPosition();
             this.sendAction(22);
@@ -10909,47 +10914,47 @@ window.MouseClicks=[];
             this.sendAction(17);
         },
         sendFBIDS(data) { //Yahnych
-            if (data){
-			var friendsIDs = "";
+            if (data) {
+                var friendsIDs = "";
 
-            var pIDs = application.FacebookIDs.split(',');
-            for (let length = 0; length < pIDs.length; length++) {
-                if (friendsIDs.length === 0) {
-                    friendsIDs += pIDs[length].split(':')[0];
-                } else {
-                    friendsIDs += "|" + pIDs[length].split(':')[0];
+                var pIDs = application.FacebookIDs.split(',');
+                for (let length = 0; length < pIDs.length; length++) {
+                    if (friendsIDs.length === 0) {
+                        friendsIDs += pIDs[length].split(':')[0];
+                    } else {
+                        friendsIDs += "|" + pIDs[length].split(':')[0];
+                    }
                 }
-            }
-            for (let length = 0; length < data.length; length++) {
-                if (friendsIDs.length === 0) {
-                    friendsIDs += data[length].id
-                } else {
-                    friendsIDs += "|" + data[length].id
+                for (let length = 0; length < data.length; length++) {
+                    if (friendsIDs.length === 0) {
+                        friendsIDs += data[length].id
+                    } else {
+                        friendsIDs += "|" + data[length].id
+                    }
                 }
+                friendsIDs = unescape(encodeURIComponent(friendsIDs));
+                const view = this.createView(2 + friendsIDs.length);
+                view.setUint8(0, 5);
+                for (let length = 0; length < friendsIDs.length; length++) {
+                    view.setUint8(1 + length, friendsIDs.charCodeAt(length));
+                }
+                view.setUint8(friendsIDs.length + 1, 0);
+                this.sendMessage(view);
             }
-            friendsIDs = unescape(encodeURIComponent(friendsIDs));
-            const view = this.createView(2 + friendsIDs.length);
-            view.setUint8(0, 5);
-            for (let length = 0; length < friendsIDs.length; length++) {
-                view.setUint8(1 + length, friendsIDs.charCodeAt(length));
-            }
-            view.setUint8(friendsIDs.length + 1, 0);
-            this.sendMessage(view);
-			}
         },
         sendNick(nick) {
 
             var self = this
             this.playerNick = nick;
 
-            var sendSpawn = function(token) {
-				//console.log(token);
+            var sendSpawn = function (token) {
+                //console.log(token);
                 //var token = grecaptcha.getResponse();
-				//console.log(self.playerNick);
+                //console.log(self.playerNick);
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
-				//console.log(nick);
+                //console.log(nick);
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
-				
+
                 var pos = 1
                 //"???".codePointAt(length)
                 for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
@@ -10959,7 +10964,7 @@ window.MouseClicks=[];
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 self.sendMessage(view);
             }
-            var sendSpawnPrivateServer = function() {
+            var sendSpawnPrivateServer = function () {
                 var token = '0'
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
@@ -10977,10 +10982,10 @@ window.MouseClicks=[];
                 sendSpawnPrivateServer()
                 return;
             } else if (LM.integrity) {
-				sendSpawn('0');
+                sendSpawn('0');
                 //window.agarCaptcha.requestCaptchaV3("play", function(token) {
-					//sendSpawn(token)
-                    
+                //sendSpawn(token)
+
                 //})
             }
             /*
@@ -10993,7 +10998,7 @@ window.MouseClicks=[];
                     'action': 'play'
                 }).then(function() {
                     sendSpawn();
-					grecaptcha.reset();
+                    grecaptcha.reset();
                 });
             } else {
                 //next times need recaptcha v3
@@ -11002,11 +11007,11 @@ window.MouseClicks=[];
                     'action': 'play'
                 }).then(function() {
                     sendSpawn();
-					grecaptcha.reset();
+                    grecaptcha.reset();
                 });
             }
 */
-            setTimeout(function() {
+            setTimeout(function () {
                 if (!window.cookieCaptchaOK && LM.integrity) {
                     legendmod.sendNick2(self.playerNick)
                 }
@@ -11016,7 +11021,7 @@ window.MouseClicks=[];
         sendTimeOutTokenForBots() {
             //window.sendTimeOutTokenBots=false;
             if (document.getElementById('userStatus').innerText === 'Connected' && window.RequestedTokens > 1) {
-                setTimeout(function() {
+                setTimeout(function () {
                     legendmod.sendTimeOutTokenForBots();
                     //console.log('sendTimeOutTokenForBots triggered')
                     if (!window.sendTimeOutTokenBots) {
@@ -11025,15 +11030,15 @@ window.MouseClicks=[];
                         console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' bots started again')
                         legendmod.sendTokenForBots();
                         /*
-						$('#captchaErrors1').text(parseInt($('#captchaErrors1').text())+1)
+                        $('#captchaErrors1').text(parseInt($('#captchaErrors1').text())+1)
                         legendmod.sendTokenForBots();
                         if ($('#captchaSpeed').val()) {
                             window.tempol = $('#captchaSpeed').val();
                         } else {
                             window.tempol = 0.5;
-							$('#captchaSpeed').val(window.tempol)
+                            $('#captchaSpeed').val(window.tempol)
                         }
-						*/
+                        */
                     }
                     //}, 10000 + window.tempol * 1000);
                 }, 10000);
@@ -11070,7 +11075,7 @@ window.MouseClicks=[];
             if ($('#captchaSpeed').val()) {
                 window.tempol = $('#captchaSpeed').val();
             }
-			setTimeout(function() {*/
+            setTimeout(function() {*/
             for (var i = 0; i < window.captchaOpenedWindow; i++) {
                 if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed) {
                     window.capthaWindow[i].ProcessParentMessage('doCaptcha');
@@ -11083,7 +11088,7 @@ window.MouseClicks=[];
 
             /*this.integrity && window.agarCaptcha.requestCaptchaV3("play", function(token) {
 
-				if(window.capthaWindow) window.capthaWindow.ProcessParentMessage('doCaptcha');
+                if(window.capthaWindow) window.capthaWindow.ProcessParentMessage('doCaptcha');
                 setTimeout(function() {
                     legendmod.sendSpawn2(token);
                 }, window.tempol * 1000);
@@ -11111,18 +11116,18 @@ window.MouseClicks=[];
                     }
                 } else if (LM.dance || window.followStraight) {
                     let d = ~~((Date.now() / 40) % 8),
-                        distance = 50000;					
-					if (window.followStraight){
-						
-						if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY > 0 ) d = 3
-						else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY > 0) d = 5
-						else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY < 0) d = 7
-						else if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY < 0) d = 1
-						else if (this.cursorX - this.playerX < 0) d = 6 
-						else if (this.cursorX - this.playerX > 0) d = 2
-						else if (this.cursorY - this.playerY > 0) d = 4
-						else if (this.cursorY - this.playerY < 0) d = 0
-					}			
+                        distance = 50000;
+                    if (window.followStraight) {
+
+                        if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY > 0) d = 3
+                        else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY > 0) d = 5
+                        else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY < 0) d = 7
+                        else if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY < 0) d = 1
+                        else if (this.cursorX - this.playerX < 0) d = 6
+                        else if (this.cursorX - this.playerX > 0) d = 2
+                        else if (this.cursorY - this.playerY > 0) d = 4
+                        else if (this.cursorY - this.playerY < 0) d = 0
+                    }
                     switch (d) {
                         case 7:
                             cursorX = this.playerX - distance;
@@ -11158,9 +11163,9 @@ window.MouseClicks=[];
                             break;
                         default:
                             console.log(d);
-                            break;													
+                            break;
                     }
-					cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cursorX) : cursorX; //Sonia3
+                    cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cursorX) : cursorX; //Sonia3
                     cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cursorY) : cursorY; //Sonia3	
                 } else {
                     //if (specialcommand) {
@@ -11178,20 +11183,20 @@ window.MouseClicks=[];
                         if (!this.play && this.targeting || this.pause) {
                             cursorX = this.targetX;
                             cursorY = this.targetY;
-                        }					
+                        }
                     }
                     //autoplay handling
                     else if (!specialcommand) {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                         //if (target2 && Object.keys(target2).length == 0) {
-						if (cell) {	
+                        if (cell) {
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                             // var cursorX = cell.x;
                             //var cursorY = cell.y;
-                        //} else if (target2){
-						} else{	
-							return false;
+                            //} else if (target2){
+                        } else {
+                            return false;
                             //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
                             //cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
                             //var cursorX = target2.x;
@@ -11228,8 +11233,8 @@ window.MouseClicks=[];
                             this.sendMessage(r);
                         }
                     }, */
-			  //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
-		//[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
+        //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
+        //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
             if (!legendmod.integrity) {
                 return
@@ -11263,7 +11268,7 @@ window.MouseClicks=[];
             for (; prev < curr; prev++) {
                 data.push(shapes.charCodeAt(prev));
             }
-			//console.log(data); 
+            //console.log(data); 
             data = new Uint8Array(data);
             var raw_basefont = new DataView(data.buffer);
             this.sendMessage(raw_basefont);
@@ -11301,7 +11306,7 @@ window.MouseClicks=[];
             } //
         },
         /*
-        			generateClientKey(t, e) {
+                    generateClientKey(t, e) {
                         if (!t.length || !e.byteLength) return null;
                         for (var i = null, s = 1540483477, o = t.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
                         n.set(e, o.length);
@@ -11328,7 +11333,7 @@ window.MouseClicks=[];
                         //return 0; //
                         //} //
                     },
-        			*/
+                    */
         generateClientKey(ip, options) {
             if (!ip.length || !options.byteLength) {
                 return null;
@@ -11336,24 +11341,24 @@ window.MouseClicks=[];
             var x = null;
             var suggestedValue = 1540483477;
             //var ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
-			var parsedUrl = new URL(ip);
-			var ipCheck = parsedUrl.hostname + parsedUrl.pathname.replace(/\/$/g, '');
-    // Fix here: manually extract the hostname
-			/*var ipCheck;
-			try {
-				// Remove protocol prefix
-				ipCheck = ip.replace(/^(ws+:\/\/|wss+:\/\/)/, ''); // Handles both ws:// and wss://
+            var parsedUrl = new URL(ip);
+            var ipCheck = parsedUrl.hostname + parsedUrl.pathname.replace(/\/$/g, '');
+            // Fix here: manually extract the hostname
+            /*var ipCheck;
+            try {
+                // Remove protocol prefix
+                ipCheck = ip.replace(/^(ws+:\/\/|wss+:\/\/)/, ''); // Handles both ws:// and wss://
 
-				// Remove path suffix if present
-				ipCheck = ipCheck.split('/')[0];
-				console.log("ipCheck:", ipCheck);
-				console.log("server version2:", options);
-				} catch (e) {
-				console.error("Invalid IP format", e);
-				return null;
-			}*/
-			// End of new code
-			
+                // Remove path suffix if present
+                ipCheck = ipCheck.split('/')[0];
+                console.log("ipCheck:", ipCheck);
+                console.log("server version2:", options);
+                } catch (e) {
+                console.error("Invalid IP format", e);
+                return null;
+            }*/
+            // End of new code
+
             var newLength = ipCheck.length + options.byteLength;
             var uint8Arr = new Uint8Array(newLength);
             var value = 0;
@@ -11399,7 +11404,7 @@ window.MouseClicks=[];
             return x;
 
         },
-        "shiftKey": function(key) {
+        "shiftKey": function (key) {
             if (window.disableIntegrity != true) {
                 var suggestedValue = 1540483477;
                 key = Math.imul(key, suggestedValue) | 0;
@@ -11410,7 +11415,7 @@ window.MouseClicks=[];
                 return 0;
             }
         },
-        "shiftMessage": function(view, key, write) {
+        "shiftMessage": function (view, key, write) {
             if (window.disableIntegrity != true) {
                 var length = 0;
                 if (!write) {
@@ -11471,7 +11476,7 @@ window.MouseClicks=[];
                 var buffer = new LMbuffer(message['buffer']);
                 var readMessage = new LMbuffer(buffer.readUInt32LE(1));
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
-				*/
+                */
         },
         handleMessage(data) {
             //this.pingTimer();		
@@ -11483,15 +11488,15 @@ window.MouseClicks=[];
                 window.catholicCalculator++
             }
             /*			
-			for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
-				setTimeout(function() {	
-					legendmod.handleMessage(window.RecordedProtocol[window.playrecord])
-					console.log(window.playrecord)
-				}, 40*window.playrecord);
-			}			
+            for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
+                setTimeout(function() {	
+                    legendmod.handleMessage(window.RecordedProtocol[window.playrecord])
+                    console.log(window.playrecord)
+                }, 40*window.playrecord);
+            }			
 */
-            var encode = function() {
-                for (var text = '';;) {
+            var encode = function () {
+                for (var text = ''; ;) {
                     var i = data.getUint8(s++);
                     if (0 === i) break;
                     text += String.fromCharCode(i);
@@ -11665,51 +11670,51 @@ window.MouseClicks=[];
                     }
                     this.handleLeaderboard();
                     break;
-                    /*    
-                        if (this.leaderboard = [], this.playerPosition = 0, 54 === data.getUint8(0)) {
-                            data.getUint16(s, true);
-                            s += 2;
+                /*    
+                    if (this.leaderboard = [], this.playerPosition = 0, 54 === data.getUint8(0)) {
+                        data.getUint16(s, true);
+                        s += 2;
+                    }
+                    for (var r = 0; s < data.byteLength;) {
+                        var le = '';
+                        var h = 0;
+                        var c = false;
+                        r++;
+                        if (2 & (y = data.getUint8(s++))) {
+                            le = window.decodeURIComponent(escape(i()));
                         }
-                        for (var r = 0; s < data.byteLength;) {
-                            var le = '';
-                            var h = 0;
-                            var c = false;
-                            r++;
-                            if (2 & (y = data.getUint8(s++))) {
-                                le = window.decodeURIComponent(escape(i()));
-                            }
-							//console.log(y) 4 or 6
-							
-                            //if (16 & y) {
-                                //c = true;
-								//console.log('16+y')
-								//var temp = data.getUint32(s, true);
-								//console.log(temp)
-                            //}							
-                            if (4 & y) {
-                                h = data.getUint32(s, true);
-                                s += 4;
-                            }
-                            if (8 & y) {
-                                le = this.playerNick;
-                                h = 'isPlayer';
-                                this.playerPosition = r
-								
-								// for bots
-								//if (typeof l === "object") { 
-								//console.log(l)
-								//l=legendmod.playerNick;
-								//} 
-								//
-                            }
+                        //console.log(y) 4 or 6
+                    	
+                        //if (16 & y) {
+                            //c = true;
+                            //console.log('16+y')
+                            //var temp = data.getUint32(s, true);
+                            //console.log(temp)
+                        //}							
+                        if (4 & y) {
+                            h = data.getUint32(s, true);
+                            s += 4;
+                        }
+                        if (8 & y) {
+                            le = this.playerNick;
+                            h = 'isPlayer';
+                            this.playerPosition = r
+                        	
+                            // for bots
+                            //if (typeof l === "object") { 
+                            //console.log(l)
+                            //l=legendmod.playerNick;
+                            //} 
+                            //
+                        }
 
-                            this.leaderboard.push({
-                                'nick': le,
-                                'id': h,
-                                'isFriend': c
-                            });
-                        }
-                        this.handleLeaderboard();*/
+                        this.leaderboard.push({
+                            'nick': le,
+                            'id': h,
+                            'isFriend': c
+                        });
+                    }
+                    this.handleLeaderboard();*/
                 case 54:
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                     window.testobjectsOpcode54 = data;
@@ -11754,7 +11759,7 @@ window.MouseClicks=[];
                     //if (window.master && window.master.recaptchaRequested) {
                     if (window.smartbotslimited && legendmod5.autoResp) { //
                         core.connect(legendmod.ws);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             application.autoResp();
                         }, 2000);
                     } else {
@@ -11767,21 +11772,21 @@ window.MouseClicks=[];
                     }
                     //}
                     break;
-	    	case 87:
-			//(function anonymous(t) {
-				console.log('case 87');
-				window.testobjectsOpcode87 = data;
-				window.agarCaptcha.requestCaptchaV3("play", function(a) {
-				var b = this.createView(2 + a.length);
-				b.setUint8(0, 88);
-				for (var c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
-				b.setUint8(a.length + 1, 0);
-				this.sendMessage(b)
-				});
-			//})(window,this)		
-			
-			//for(var a='bWaNbAGAR"APTCHAaNbREQUESTy	.6aSHBbPLAYaBLbFUNCTIONaHbAaIb[VARa@bBa^bTaNbCREATE6IEWaHRKbAaNbLENGTHaI[bBaNbSET5INTaXHPLXXI[bFORaHv	SbCa^P[bCa]z	H[bCaKKI}	KQKbCaLbAaNu 6bR"ODE TaHbCaI~ 	lz	WKQLPI[bTu	8ND-ESSAGEaHbBaIb^aI[*',b=93,c,d=1,e,f=-1,g,h={'	':0},i=[],j=String.fromCharCode;b;)h[j(b+(7<b)+(59<b)+31)]=b--;for(;-1<(e=h[a[b++]]);)if(83<e){if(92<e)for(;e+=g=h[a[b++]],92<g;);for(g=f-94*h[a[b++]]-h[a[b++]];81<e--;)i[++f]=i[g++]}else 63<e&&(c=(e<(d=66)?e-64:70>e?e+126:72<e?(d=0,e-73):e+950)<<6,e=h[a[b++]]),i[++f]=j(d?c|e:94*(c|e)+h[a[b++]]);new Function('w','t',i.join(''))(window,this)
-		    break;
+                case 87:
+                    //(function anonymous(t) {
+                    console.log('case 87');
+                    window.testobjectsOpcode87 = data;
+                    window.agarCaptcha.requestCaptchaV3("play", function (a) {
+                        var b = this.createView(2 + a.length);
+                        b.setUint8(0, 88);
+                        for (var c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
+                        b.setUint8(a.length + 1, 0);
+                        this.sendMessage(b)
+                    });
+                    //})(window,this)		
+
+                    //for(var a='bWaNbAGAR"APTCHAaNbREQUESTy	.6aSHBbPLAYaBLbFUNCTIONaHbAaIb[VARa@bBa^bTaNbCREATE6IEWaHRKbAaNbLENGTHaI[bBaNbSET5INTaXHPLXXI[bFORaHv	SbCa^P[bCa]z	H[bCaKKI}	KQKbCaLbAaNu 6bR"ODE TaHbCaI~ 	lz	WKQLPI[bTu	8ND-ESSAGEaHbBaIb^aI[*',b=93,c,d=1,e,f=-1,g,h={'	':0},i=[],j=String.fromCharCode;b;)h[j(b+(7<b)+(59<b)+31)]=b--;for(;-1<(e=h[a[b++]]);)if(83<e){if(92<e)for(;e+=g=h[a[b++]],92<g;);for(g=f-94*h[a[b++]]-h[a[b++]];81<e--;)i[++f]=i[g++]}else 63<e&&(c=(e<(d=66)?e-64:70>e?e+126:72<e?(d=0,e-73):e+950)<<6,e=h[a[b++]]),i[++f]=j(d?c|e:94*(c|e)+h[a[b++]]);new Function('w','t',i.join(''))(window,this)
+                    break;
                 case 99: //chat for specific private servers
                     window.testobjectsOpcode99 = data;
                     var flag = data.getUint8(s++);
@@ -11850,15 +11855,15 @@ window.MouseClicks=[];
                                 window.callEveryFullHourCoinDig = true;
                                 callEveryFullHourCoinDigger();
                             }
-                        } catch (error) {}
+                        } catch (error) { }
                         window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
 
                         /*if (defaultmapsettings.massBooster && master.context) {				
-                        	massx31hour();
-                        	if (!window.massBoosterMsg){
-                        		toastr.warning("<b>[" + Premadeletter123 + "]:</b> Mass *2 booster -> *3 booster is enabled, this upgrades your boost to *3 for FREE if you have enabled Mass boost *2 on agar.io.<br><font color='blue'>Otherwise disable it, cause it will consume your boosts.</font>").css("width", "350px");
-                        		window.massBoosterMsg=true;
-                        	}
+                            massx31hour();
+                            if (!window.massBoosterMsg){
+                                toastr.warning("<b>[" + Premadeletter123 + "]:</b> Mass *2 booster -> *3 booster is enabled, this upgrades your boost to *3 for FREE if you have enabled Mass boost *2 on agar.io.<br><font color='blue'>Otherwise disable it, cause it will consume your boosts.</font>").css("width", "350px");
+                                window.massBoosterMsg=true;
+                            }
                         }*/
 
                         if (window.agarioUID != undefined) {
@@ -11872,16 +11877,16 @@ window.MouseClicks=[];
                         }
                         if (window.agarioUID && UIDcontroller && !window.checkOneTheUID) {
                             window.checkOneTheUID = true;
-							UIDfunction();
+                            UIDfunction();
                         }
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
                         else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
                             //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
-							window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
-                        }						
-						
+                            window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
+                        }
+
                     }
 
 
@@ -11901,9 +11906,9 @@ window.MouseClicks=[];
                         var option = node.readUint32();
                         var response = node.readFlag();
                         var response_2 = node.readUint32();
-						//if (defaultmapsettings.showDevConsole) console.log(option, response, response_2); //see dis
-						for (var ai=0; ai<data.length;ai++) console.log(data.getUint8(ai));
-                        switch (option) {						
+                        //if (defaultmapsettings.showDevConsole) console.log(option, response, response_2); //see dis
+                        for (var ai = 0; ai < data.length; ai++) console.log(data.getUint8(ai));
+                        switch (option) {
                             case 1:
                                 window.testobjects1021 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Type", option, response);
@@ -12449,14 +12454,14 @@ window.MouseClicks=[];
                     toastr.info(temp);
                     break;
                 case 226: //227
-					//console.log("pong")
+                    //console.log("pong")
                     window.testobjectsOpcode226 = data;
                     var extraOptions = data.getUint16(1, !![]);
-					/*var extraOptions2 = data.getUint8(1, !![]);
-					var extraOptions3 = data.getUint16(s);
-					console.log(extraOptions,1);
-					console.log(extraOptions2,2);
-					console.log(extraOptions3,3);*/
+                    /*var extraOptions2 = data.getUint8(1, !![]);
+                    var extraOptions3 = data.getUint16(s);
+                    console.log(extraOptions,1);
+                    console.log(extraOptions2,2);
+                    console.log(extraOptions3,3);*/
                     data = this.createView(3);
                     data.setUint8(0, 227);
                     data.setUint16(1, extraOptions);
@@ -12465,12 +12470,12 @@ window.MouseClicks=[];
                 case 241:
                     window.testobjectsOpcode241 = data;
                     this.protocolKey = data.getUint32(s, true);
-					
+
                     //window.testobjectsOpcode241.getUint32(1, true);
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
-					//console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
+                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
                     this.clientKey = this.generateClientKey(this.ws, key);
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
                     if (window.master && window.master.login) {
@@ -12512,28 +12517,28 @@ window.MouseClicks=[];
                     }
 
                     break;
-                    //2020 jimboy3100
+                //2020 jimboy3100
 
                 default:
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
             }
         },
         /*countPps() {
-        	if (!defaultmapsettings.showStatsPPS) {
-        		return;
-        	}
-        	const Time = Date.now();
-        	if (!this.ppsLastRequest) {
-        		this.ppsLastRequest = Time;
-        	}
-        	if (Time - this.ppsLastRequest >= 1000) {
-        		this.pps = this.totalPackets;
-        		this.totalPackets = 0;
-        		this.ppsLastRequest = Time;
-        	}
-        	this.totalPackets++;
+            if (!defaultmapsettings.showStatsPPS) {
+                return;
+            }
+            const Time = Date.now();
+            if (!this.ppsLastRequest) {
+                this.ppsLastRequest = Time;
+            }
+            if (Time - this.ppsLastRequest >= 1000) {
+                this.pps = this.totalPackets;
+                this.totalPackets = 0;
+                this.ppsLastRequest = Time;
+            }
+            this.totalPackets++;
         },*/
-        onMobileData: function(msg) {
+        onMobileData: function (msg) {
             if (msg == null) {
                 return
             }
@@ -12541,10 +12546,10 @@ window.MouseClicks=[];
             //console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
             this.unpackageMessage(response);
         },
-        unpackageMessage: function(r) {
+        unpackageMessage: function (r) {
             //var returnMessage = r;
             var type = r.uncompressedData.type;
-			if (defaultmapsettings.showDevConsole) console.log(r);
+            if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
                     this.user = {
@@ -12586,24 +12591,24 @@ window.MouseClicks=[];
                     this.updateUserInfo(u.userInfo)
 
                     this.updatePotions(u.userPotions)
-                    break;	
+                    break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
                     this.disconnectMessage(u.reason);
 
-                    window.loggedIn=false;
+                    window.loggedIn = false;
                     window.logout && window.logout();
-                    break;	
+                    break;
                 case 22:
                     console.log("returnMessage = r.get_noProperResponseField();");
-                    break;	
-				case 31:
-					if (window.agarpingstarted) drawRender.ping = Date.now()-window.agarpingstarted;
-					break;
-				//ping 30 pong 31
+                    break;
+                case 31:
+                    if (window.agarpingstarted) drawRender.ping = Date.now() - window.agarpingstarted;
+                    break;
+                //ping 30 pong 31
                 case 33:
                     console.log("returnMessage = r.get_configurationChangeField();");
-                    break;					
+                    break;
                 case 62:
                     var u = r.uncompressedData.gameOverField;
                     this.displayStats(u.userStats);
@@ -12611,9 +12616,9 @@ window.MouseClicks=[];
                         i = u.xpLevelUpdates[0];
                     if (i.finalLevel != 100) exp = ~~(i.finalXpForLevel * 100 / this.agarExp(i.finalLevel));
                     $('.progress-bar-striped').width(exp + '%');
-					//$('.progress-bar-striped2').width(exp + '%');
+                    //$('.progress-bar-striped2').width(exp + '%');
                     $('.progress-bar-star3').text(i.finalLevel); $('.progress-bar-star').text(i.finalLevel);
-					//$('.progress-bar-star2').text(i.finalLevel);
+                    //$('.progress-bar-star2').text(i.finalLevel);
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
@@ -12621,7 +12626,7 @@ window.MouseClicks=[];
                     if (defaultmapsettings.gameOverStats) {
                         this.showSessionStats(u.gameSessionStats);
                     }
-                    break;					
+                    break;
                 case 71:
                     console.log("returnMessage = r.get_softPurchaseResponseField();");
                     break;
@@ -12630,31 +12635,31 @@ window.MouseClicks=[];
                     break;
                 case 75:
                     console.log("returnMessage = r.get_walletUpdatesField();");
-                    break;					
+                    break;
                 case 76:
                     console.log("returnMessage = r.get_purchaseWalletUpdatesField();");
-                    break;	
+                    break;
                 case 78:
                     console.log("returnMessage = r.get_offerBundleResponseField();");
-                    break;					
+                    break;
                 case 81:
                     var u = r.uncompressedData.updateUserSettingsResponseField;
                     this.updateUserSettings(u.updatedUserSettings)
-                    break;	
+                    break;
                 case 83:
                     console.log("returnMessage = r.get_userStatsResponseField();");
                     break;
                 case 101:
                     console.log("returnMessage = r.get_claimGiftsResponseField();");
-                    break;						
+                    break;
                 case 105:
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
-                    break;				
+                    break;
                 case 111:
                     var u = r.uncompressedData.activateTimedEventResponseField;
                     this.updateProducts(u.productUpdates);
                     this.updateEvents([u.userTimedEvent])
-                    break;					
+                    break;
                 case 113:
                     var u = r.uncompressedData.activateBoostResponseField;
                     this.updateWalletInfo([u.productUpdates[0].userWalletItem]);
@@ -12664,7 +12669,7 @@ window.MouseClicks=[];
                     var u = r.uncompressedData.activateQuestResponseField;
                     this.updateProducts(u.productUpdates);
                     this.displayActiveQuests([u.userQuest])
-                    break;					
+                    break;
                 case 116:
                     console.log("returnMessage = r.get_userTimedEventUpdatesField();");
                     break;
@@ -12689,14 +12694,14 @@ window.MouseClicks=[];
                     break;
                 case 151:
                     console.log("returnMessage = r.get_userSkinsCreateResponseField();");
-                    break;	
+                    break;
                 case 170:
                     var u = r.uncompressedData.actionCountersUpdateField,
                         prev = this.user.actionCounters;
                     if (u.potionsObtained > prev.potionsObtained) toastr.info('<b>[' + Premadeletter123 + ']:</b> New potion');
                     if (u.questsCompleted > prev.questsCompleted) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
                     if (u.skinsCreated > prev.skinsCreated) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
-                    break;					
+                    break;
                 case 184:
                     console.log("returnMessage = r.get_activateRewardLinkResponseField();");
                     break;
@@ -13092,12 +13097,12 @@ window.MouseClicks=[];
             var img = new Image();
             img.crossOrigin = 'anonymous';
             img.setAttribute("alt", name);
-            img.onload = function() {
+            img.onload = function () {
                 if (this.complete && this.width && this.height) {
                     callback(img);
                 }
             };
-            img.onerror = function() {
+            img.onerror = function () {
                 //console.log("error loading image: "+ url);
                 if (url.includes('configs-web.agario.miniclippt')) {
                     var newURL = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop();
@@ -13143,7 +13148,7 @@ window.MouseClicks=[];
         createSkinsHTML() {
             const s = this.user.skins;
             $("#player-skins").html(``);
-            var callback = function(img) {
+            var callback = function (img) {
                 img.style = "display:inline-block;width:100px;height:100px;border-radius: 50px;";
                 $("#player-skins").append(img);
             };
@@ -13156,9 +13161,9 @@ window.MouseClicks=[];
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 if (item.productId[0] === "x") {
-                    $("#xp-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                    $("#xp-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                 } else if (item.productId[0] === "m") {
-                    $("#mass-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                    $("#mass-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                 }
             }
         },
@@ -13169,41 +13174,41 @@ window.MouseClicks=[];
                     type = item.type;
                 switch (type) {
                     case "normal_cells_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} cells. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Eat ${item.goal} cells. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     case "viruses_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} viruses. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Eat ${item.goal} viruses. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     case "food_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} dots. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Eat ${item.goal} dots. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     case "highest_mass":
-                        $("#quest-active").html(`Reach ${item.goal} mass. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Reach ${item.goal} mass. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     case "top_position":
-                        $("#quest-active").html(`Reach TOP-${item.goal} position. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Reach TOP-${item.goal} position. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     case "time_total":
-                        $("#quest-active").html(`Survive ${item.goal/60} minutes. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`Survive ${item.goal / 60} minutes. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                         break;
                     default:
-                        $("#quest-active").html(`${type} : ${item.goal}. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                        $("#quest-active").html(`${type} : ${item.goal}. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
                 }
             }
         },
         displayStats(s) {
-			window.LMscore = Math.trunc(s.allTimeScore/2000000);
-			if (window.LMscore>40){
-				PremiumUsersLMscore();
-			}
-			$('.progress-bar-striped2').width(window.LMscore + '%');
-			$('.progress-bar-star2').text(window.LMscore);	
-			
+            window.LMscore = Math.trunc(s.allTimeScore / 2000000);
+            if (window.LMscore > 40) {
+                PremiumUsersLMscore();
+            }
+            $('.progress-bar-striped2').width(window.LMscore + '%');
+            $('.progress-bar-star2').text(window.LMscore);
+
             $("#stats-content").html(`
 All time score     : ${s.allTimeScore}<br/>
 Games played      : ${s.gamesPlayed}<br/>
 Highest mass      : ${s.highestMass}<br/>
-Longest time alive : ${(s.longestTimeAlive/3600).toFixed(3)} H<br/>
+Longest time alive : ${(s.longestTimeAlive / 3600).toFixed(3)} H<br/>
 Mass consumed     : ${s.massConsumed}<br/>
 Most cells eaten   : ${s.mostCellsEaten}
       `)
@@ -13212,13 +13217,13 @@ Most cells eaten   : ${s.mostCellsEaten}
             var exp = 100;
             if (i.level != 100) exp = ~~(i.xp * 100 / this.agarExp(i.level));
             $('.progress-bar-striped').width(exp + '%');
-			//$('.progress-bar-striped2').width(exp + '%');
-			
+            //$('.progress-bar-striped2').width(exp + '%');
+
             $('.progress-bar-star3').text(i.level); $('.progress-bar-star').text(i.level);
-			//$('.progress-bar-star2').text(i.finalLevel);
+            //$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
             $("#user-info").html(`
-Account age     : ${~~(i.accountAge/3600/24)}D<br/>
+Account age     : ${~~(i.accountAge / 3600 / 24)}D<br/>
 Potions obtained : ${i.actionCounters.potionsObtained}<br/>
 Quests completed      : ${i.actionCounters.questsCompleted}<br/>
 Skins created : ${i.actionCounters.skinsCreated}<br/>
@@ -13288,28 +13293,28 @@ Game name     : ${i.displayName}<br/>
             this.playerPositionMulti = null;
             /*if(LM.multiBoxPlayerExists && (window.multiboxPlayerEnabled || window.multiboxPlayerEnabledSaved)){
             	
-            	if (window.multiboxPlayerEnabled){
-            		for (var i=0; i<spects[window.multiboxPlayerEnabled-1].leaderboard.length; i++){
-            			if (spects[window.multiboxPlayerEnabled-1].leaderboard[i].id == "isPlayer"){		
-            					if (this.leaderboard[i]){ 
-            						this.leaderboard[i].id = 'isPlayer'
-            						this.playerPositionNickMulti  = this.leaderboard[i].nick
-            						this.playerPositionMulti = i
-            					}								
-            				}
-            			}
-            		}                      
-            	else if (window.multiboxPlayerEnabledSaved){
-            		for (var i=0; i<spects[window.multiboxPlayerEnabledSaved-1].leaderboard.length; i++){
-            			if (spects[window.multiboxPlayerEnabledSaved-1].leaderboard[i].id == "isPlayer"){	
-            				if (this.leaderboard[i]){
-            					this.leaderboard[i].id = 'isPlayer'	
-            					this.playerPositionNickMulti  = this.leaderboard[i].nick
-            					this.playerPositionMulti = i
-            				}
-            			}
-            		}
-            	}  
+                if (window.multiboxPlayerEnabled){
+                    for (var i=0; i<spects[window.multiboxPlayerEnabled-1].leaderboard.length; i++){
+                        if (spects[window.multiboxPlayerEnabled-1].leaderboard[i].id == "isPlayer"){		
+                                if (this.leaderboard[i]){ 
+                                    this.leaderboard[i].id = 'isPlayer'
+                                    this.playerPositionNickMulti  = this.leaderboard[i].nick
+                                    this.playerPositionMulti = i
+                                }								
+                            }
+                        }
+                    }                      
+                else if (window.multiboxPlayerEnabledSaved){
+                    for (var i=0; i<spects[window.multiboxPlayerEnabledSaved-1].leaderboard.length; i++){
+                        if (spects[window.multiboxPlayerEnabledSaved-1].leaderboard[i].id == "isPlayer"){	
+                            if (this.leaderboard[i]){
+                                this.leaderboard[i].id = 'isPlayer'	
+                                this.playerPositionNickMulti  = this.leaderboard[i].nick
+                                this.playerPositionMulti = i
+                            }
+                        }
+                    }
+                }  
             	
             }*/
             //			
@@ -13365,33 +13370,33 @@ Game name     : ${i.displayName}<br/>
             //if (legendmod.gameMode != ":battleroyale" && LM.ws && !LM.ws.includes("imsolo.pro")) {
             if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
                 //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
-				let counter=0;
-                let key = "nick"; 
-				let counterNicks = 0;
-				var botcounter = 0;
-				var howmanytypesofbots = 0;
-				var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
-				ArrayLeaderboardCount.forEach((element) => { 
-					
-					botcounter = element.occurrence; 
-					if (botcounter >2){
-						counterNicks += botcounter;
-						howmanytypesofbots++;	
-						//window.botNicks[counter]={element.nick:botcounter}
-						legendmod.botNicks[counter]=element;		
-						counter++;
-					}
-				});
-				if (botcounter === 0) legendmod.botNicks=[];
-				var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
-				if (counterNicks>0){
-					teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
-				}
-				else {
-					teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-				}
-				//teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-				
+                let counter = 0;
+                let key = "nick";
+                let counterNicks = 0;
+                var botcounter = 0;
+                var howmanytypesofbots = 0;
+                var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
+                ArrayLeaderboardCount.forEach((element) => {
+
+                    botcounter = element.occurrence;
+                    if (botcounter > 2) {
+                        counterNicks += botcounter;
+                        howmanytypesofbots++;
+                        //window.botNicks[counter]={element.nick:botcounter}
+                        legendmod.botNicks[counter] = element;
+                        counter++;
+                    }
+                });
+                if (botcounter === 0) legendmod.botNicks = [];
+                var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
+                if (counterNicks > 0) {
+                    teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
+                }
+                else {
+                    teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                }
+                //teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+
                 if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
                     teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                 }
@@ -13410,9 +13415,9 @@ Game name     : ${i.displayName}<br/>
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
                     /*
-					w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(this.ghostCells[o].x) : this.ghostCells[o].x; 
+                    w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(this.ghostCells[o].x) : this.ghostCells[o].x; 
                     u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(this.ghostCells[o].y) : this.ghostCells[o].y; 
-					*/
+                    */
                     //
                     text += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + l2ngth + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + l2ngth + ');">';
                     text += '<span class=\"top5-mass-color\">[' + application.shortMassFormat(this.ghostCells[l2ngth].mass) + ']</span>';
@@ -13427,13 +13432,13 @@ Game name     : ${i.displayName}<br/>
 
 
             ///////////////// establish core.registerSkin
-            if (defaultmapsettings.vanillaSkins === true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] ==null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
+            if (defaultmapsettings.vanillaSkins === true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] == null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
                 for (i = 0; i <= this.leaderboard.length - 1; i++) {
                     if (this.leaderboard[i].nick === window.customskinsname) {
                         application.customSkinsMap[window.customskinsname] = window.customskinsarray[window.customskinsname].customskinsurl;
                         application.loadSkin(application.customSkinsCache, window.customskinsarray[window.customskinsname].customskinsurl, window.customskinsarray[window.customskinsname].customskinanimated);
                         window.customskinsname = null;
-                        window.customskinsarray[window.customskinsname] ==null
+                        window.customskinsarray[window.customskinsname] == null
                     }
                 }
             }
@@ -13455,9 +13460,9 @@ Game name     : ${i.displayName}<br/>
             window.targetingLeadY = legendmod.ghostCells[o].y;
             legendmod.drawCommander2 = true;
         },
-		showBotNicks(){
-			console.log(legendmod.botNicks);
-		},
+        showBotNicks() {
+            console.log(legendmod.botNicks);
+        },
         flushCellsData() {
             this.indexedCells = {};
             this.cells = [];
@@ -13488,69 +13493,69 @@ Game name     : ${i.displayName}<br/>
             //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
             //if (!LM.integrity && !this.mapOffsetFixed){ 
-			//if (!this.mapOffsetFixed){ 
-				var temp, temp2;
-				if ($("#server-token").val().includes("replay^")){
-					temp = $("#server-token").val().replace('replay^','').split('(')[0].split('.lm')[0];					
-					if (temp.length === 7){
-						temp2 = true
-					}
-				}			
-			if (this.integrity || temp2) {
+            //if (!this.mapOffsetFixed){ 
+            var temp, temp2;
+            if ($("#server-token").val().includes("replay^")) {
+                temp = $("#server-token").val().replace('replay^', '').split('(')[0].split('.lm')[0];
+                if (temp.length === 7) {
+                    temp2 = true
+                }
+            }
+            if (this.integrity || temp2) {
                 this.mapSize = 14142 //14142.13562
                 this.mapOffset = this.mapSize / 2
             }
             else if (!this.integrity) {
                 this.mapSize = Math.abs((left - right));
                 this.mapOffset = 0
-            } 		
-			if (!this.mapOffsetFixed){ 
-			//console.log(right - left, bottom - top)
-            if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-			//console.log("ok", right - left, bottom - top);
-				//if (this.integrity || this.ws.includes("replay")) {
-				if (this.integrity || temp2) {
-					/*
-					this.stretchX = this.mapSize - right + left
-					this.stretchY = this.mapSize - bottom + top
-					console.log("stretch", this.stretchX, this.stretchY)
-					right += this.stretchX/2
-					left -=  this.stretchX/2
-					bottom += this.stretchY/2
-					top -=  this.stretchY/2
-					console.log("fix", right - left, bottom - top)
-					*/
-                    this.mapOffsetX = this.mapOffset - right;
-                    this.mapOffsetY = this.mapOffset - bottom;
-                    /*this.mapMinX = -this.mapOffset - this.mapOffsetX;
-                    this.mapMinY = -this.mapOffset - this.mapOffsetY;
-                    this.mapMaxX = this.mapOffset - this.mapOffsetX;
-                    this.mapMaxY = this.mapOffset - this.mapOffsetY;*/
-					
-                    this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                    this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                    this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                    this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-                } 
-				else {
-                    this.mapOffsetX = this.mapSize / 2
-                    this.mapOffsetY = this.mapSize / 2
-                    this.mapMinX = left
-                    this.mapMinY = top
-                    this.mapMaxX = right
-                    this.mapMaxY = bottom
+            }
+            if (!this.mapOffsetFixed) {
+                //console.log(right - left, bottom - top)
+                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
+                    //console.log("ok", right - left, bottom - top);
+                    //if (this.integrity || this.ws.includes("replay")) {
+                    if (this.integrity || temp2) {
+                        /*
+                        this.stretchX = this.mapSize - right + left
+                        this.stretchY = this.mapSize - bottom + top
+                        console.log("stretch", this.stretchX, this.stretchY)
+                        right += this.stretchX/2
+                        left -=  this.stretchX/2
+                        bottom += this.stretchY/2
+                        top -=  this.stretchY/2
+                        console.log("fix", right - left, bottom - top)
+                        */
+                        this.mapOffsetX = this.mapOffset - right;
+                        this.mapOffsetY = this.mapOffset - bottom;
+                        /*this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                        this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                        this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                        this.mapMaxY = this.mapOffset - this.mapOffsetY;*/
+
+                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    }
+                    else {
+                        this.mapOffsetX = this.mapSize / 2
+                        this.mapOffsetY = this.mapSize / 2
+                        this.mapMinX = left
+                        this.mapMinY = top
+                        this.mapMaxX = right
+                        this.mapMaxY = bottom
+                    }
+                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
+                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
+                    this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
+                    //console.log(left, top, right, bottom)				
+                    this.mapOffsetFixed = true;
                 }
-                this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
-                this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
-				this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
-                //console.log(left, top, right, bottom)				
-                this.mapOffsetFixed = true;				
-				}
-			}
-                //for SPECT
-                this.addSpect();
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
-            
+            }
+            //for SPECT
+            this.addSpect();
+            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
+
         },
         addSpect() {
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
@@ -13686,35 +13691,35 @@ Game name     : ${i.displayName}<br/>
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
         },
-		sendWaves(x1, y1, color1, length, sender, moreAnimation) {	
-              var wave = {
+        sendWaves(x1, y1, color1, length, sender, moreAnimation) {
+            var wave = {
                 x: x1,
                 y: y1
-              }
-              wave.time = Date.now();
-              wave.color = color1;
-			  wave.wavelength = length;
-			  wave.sender = sender
-			  wave.moreAnimation = moreAnimation
-          this.Waves.push(wave)			
-		},	
-		changeWaves(x1, y1, color1, length, sender, moreAnimation) {
-			if (this.Waves && this.Waves[0] && this.Waves[0].sender === sender){
-				this.Waves[0].x = x1
-				this.Waves[0].y = y1
-				this.Waves[0].color = color1;
-				
-				this.Waves[0].wavelength = length;
-				this.Waves[0].moreAnimation = moreAnimation
-			}			
-		},
+            }
+            wave.time = Date.now();
+            wave.color = color1;
+            wave.wavelength = length;
+            wave.sender = sender
+            wave.moreAnimation = moreAnimation
+            this.Waves.push(wave)
+        },
+        changeWaves(x1, y1, color1, length, sender, moreAnimation) {
+            if (this.Waves && this.Waves[0] && this.Waves[0].sender === sender) {
+                this.Waves[0].x = x1
+                this.Waves[0].y = y1
+                this.Waves[0].color = color1;
+
+                this.Waves[0].wavelength = length;
+                this.Waves[0].moreAnimation = moreAnimation
+            }
+        },
         updateCells(view, offset) {
 
             //window.updateCellsClock=true;
             this.megaFFAscore();
 
-            var encode = function() {
-                for (var text = '';;) {
+            var encode = function () {
+                for (var text = ''; ;) {
                     var string = view.readUInt8(offset++);
                     if (0 === string) break;
                     text += String.fromCharCode(string);
@@ -13737,7 +13742,7 @@ Game name     : ${i.displayName}<br/>
                 }
             }
 
-            for (length = 0;;) {
+            for (length = 0; ;) {
                 //extendedFlags = false;
                 var id = view.readUInt32LE(offset);
                 if (offset += 4, 0 === id) break;
@@ -13765,7 +13770,7 @@ Game name     : ${i.displayName}<br/>
                     var g = view.readUInt8(offset++);
                     var b = view.readUInt8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-					//console.log(color)
+                    //console.log(color)
                 }
 
                 if (4 & flags) {
@@ -13813,8 +13818,8 @@ Game name     : ${i.displayName}<br/>
                 //y = this.getY(y);	
                 //FOR COLOR
                 //if (!isVirus && !isFood && name != "" && this.gameMode != ":teams") {
-				//
-				//
+                //
+                //
                 if (!isVirus && !isFood && name != "" && this.gameMode != ":teams" && this.gameMode != ":party") { //28/6/2020
                     if (LM.cellcolors[name]) {
                         color = LM.cellcolors[name]
@@ -13904,7 +13909,7 @@ Game name     : ${i.displayName}<br/>
                     let friend = LM.fbOnline.find(element => {
                         return element.id === accountID
                     });
-                    friend != undefined ? cellUpdateCells.fbID = friend.fbId : void(0);
+                    friend != undefined ? cellUpdateCells.fbID = friend.fbId : void (0);
                 }
                 if (extendedFlags & 2) {
                     cellUpdateCells.isFriend = isFriend;
@@ -13971,7 +13976,7 @@ Game name     : ${i.displayName}<br/>
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(function(row, conf) {
+            this.cells.sort(function (row, conf) {
                 return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
             });
         },
@@ -14007,7 +14012,7 @@ Game name     : ${i.displayName}<br/>
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
                 var CellLength = cells.length;
-                cells.sort(function(cells, CellLength) {
+                cells.sort(function (cells, CellLength) {
                     return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
                 });
                 this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
@@ -14029,8 +14034,8 @@ Game name     : ${i.displayName}<br/>
                         this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate * 2); //Sonia2 //minimal mass of enemy who can Split To Eat 
                         this.TTE = Math.ceil(mass / 6); //Sonia2 //minimal mass of your teammate to tricksplit, 
                         this.PTE = Math.floor(mass * 0.66); //Sonia2 //maximal enemys mass for presplit	
-            			
-            			
+                    	
+                    	
                                 var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                                 // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
                                 this.STE = Math.floor(i * 0.375); //Sonia2
@@ -14070,7 +14075,7 @@ Game name     : ${i.displayName}<br/>
                     //console.log(i); i for food is 13
                     var size = ~~(cell.size * cell.size / 100);
 
-					if ((LM.integrity && size > 13) || (!LM.integrity && size > 14)) {
+                    if ((LM.integrity && size > 13) || (!LM.integrity && size > 14)) {
                         var mass
                         if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                             mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
@@ -14233,7 +14238,7 @@ Game name     : ${i.displayName}<br/>
         },
         setKeys() {
             var app = this;
-            document.onkeydown = function(e) {
+            document.onkeydown = function (e) {
                 var i = e.keyCode;
                 if (!app.pressedKeys[i]) switch (i) {
                     case 13:
@@ -14252,17 +14257,17 @@ Game name     : ${i.displayName}<br/>
                         app.sendEject();
                         break;
                 }
-            }, document.onkeyup = function(e) {
+            }, document.onkeyup = function (e) {
                 app.pressedKeys[e.keyCode] = false;
             };
         },
         init() {
             var app = this;
-            /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function(e) {
+            /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function (e) {
                 app.setZoom(e);
-            }, false) : document.body.onmousewheel = function(e) {
+            }, false) : document.body.onmousewheel = function (e) {
                 app.setZoom(e);
-            }, setInterval(function() {
+            }, setInterval(function () {
                 app.sendPosition();
                 //}, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
             }, 10), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
@@ -14270,7 +14275,7 @@ Game name     : ${i.displayName}<br/>
     };
     window.legendmod = LM; // look at this
 
-    window.sendAction = function(action) {
+    window.sendAction = function (action) {
         LM.sendAction(action);
     };
     window.drawRender = {
@@ -14296,14 +14301,14 @@ Game name     : ${i.displayName}<br/>
         counterTime: 0,
         renderTime: 0,
         averageRenderTime: 0,
-		renderingDelay: 0,
+        renderingDelay: 0,
         lastRenderingDelay: 0,
-		pelletColored: [],	
-		cellsColored: [],
+        pelletColored: [],
+        cellsColored: [],
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
-            this.canvas.onmousemove = function(event) {
+            this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
                 LM.clientY = event.clientY;
                 LM.getCursorPosition();
@@ -14364,10 +14369,10 @@ Game name     : ${i.displayName}<br/>
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-        //'renderFrame': async function() { //Sonia5
-        //await this.sleep(4); //Sonia5			
+            //'renderFrame': async function() { //Sonia5
+            //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
-			this.renderStarted = performance.now()
+            this.renderStarted = performance.now()
             LM.time = Date.now();
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
@@ -14378,28 +14383,28 @@ Game name     : ${i.displayName}<br/>
             LM.compareCells();
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
             if (defaultmapsettings.showOptimisedGrid) {
-				//
+                //
             }
             else if (defaultmapsettings.showGrid) {
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
-            }			
+            }
             this.ctx.save();
-            
-			this.ctx.translate((this.canvasWidth / 2) - (this.camX * this.scale), (this.canvasHeight / 2) - (this.camY * this.scale ));
+
+            this.ctx.translate((this.canvasWidth / 2) - (this.camX * this.scale), (this.canvasHeight / 2) - (this.camY * this.scale));
             this.ctx.scale(this.scale, this.scale);
-			//this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
-			//this.ctx.scale(this.scale, this.scale);
+            //this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+            //this.ctx.scale(this.scale, this.scale);
             //this.ctx.translate(-this.camX, -this.camY);
-			
+
             if (defaultmapsettings.showGrid && defaultmapsettings.showOptimisedGrid) {
-				this.drawCustomNewGrid()
-				/*if (!this.drawedGrid){
-					this.drawGridCached();				
-				}	
-				else if (this.drawedGrid){
-					this.drawCustomNewGrid();
-				}	*/
-			}				
+                this.drawCustomNewGrid()
+                /*if (!this.drawedGrid){
+                    this.drawGridCached();				
+                }	
+                else if (this.drawedGrid){
+                    this.drawCustomNewGrid();
+                }	*/
+            }
             if (defaultmapsettings.showBgSectors) {
                 this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
             }
@@ -14418,17 +14423,17 @@ Game name     : ${i.displayName}<br/>
                 this.drawVirusesRange(this.ctx, LM.viruses);
             }
             //if (defaultmapsettings.waves ) {
-			if (LM.Waves && LM.Waves && LM.Waves.length>0) {	
-				this.drawWaves();
-            }	
-				
-            
+            if (LM.Waves && LM.Waves && LM.Waves.length > 0) {
+                this.drawWaves();
+            }
+
+
             if (LM.playerCellsMulti.length) {
                 this.calMinMaxMulti();
             }
             this.calMinMax();
-            this.drawHelpers();	
-			this.drawFood();			
+            this.drawHelpers();
+            this.drawFood();
             this.drawGhostCells();
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
@@ -14442,18 +14447,18 @@ Game name     : ${i.displayName}<br/>
 
                 LM.cells[i].draw(this.ctx);
 
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)){ 
-					//
-					//console.log("LM.selected") 
-					//
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                    //
+                    //console.log("LM.selected") 
+                    //
                     LM.selected = LM.cells[i].id
                     //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
-				}
-            }	
+                }
+            }
             //}
             this.drawMiscRings();
             //lylko
-            if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells); 
+            if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells);
 
             this.drawRings();
             this.drawRMB();
@@ -14462,7 +14467,7 @@ Game name     : ${i.displayName}<br/>
                 this.drawViewPorts(this.ctx)
             }
             //
-	
+
             this.ctx.restore();
 
             //this.ctx.finish2D();
@@ -14471,9 +14476,9 @@ Game name     : ${i.displayName}<br/>
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
-			this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
-			this.lastRenderingDelay = (performance.now() - this.renderStarted)
-			//console.log(this.renderingDelay)
+            this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
+            this.lastRenderingDelay = (performance.now() - this.renderStarted)
+            //console.log(this.renderingDelay)
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
             if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
@@ -14489,7 +14494,7 @@ Game name     : ${i.displayName}<br/>
             //window.updateCellsClock=false
 
             //drawRender.render();
-			
+
         },
         drawHelpers() {
             if (LM.play || LM.playerCellsMulti.length) {
@@ -14553,9 +14558,9 @@ Game name     : ${i.displayName}<br/>
 
                 LM.cursorX = xc + (Math.cos(ang) * distance)
                 LM.cursorY = yc + (Math.sin(ang) * distance)
-				//
-				//LM.selected = null
-				//
+                //
+                //LM.selected = null
+                //
                 LM.sendPosition()
             }
         },
@@ -14572,56 +14577,56 @@ Game name     : ${i.displayName}<br/>
                     LM.indexedCells[reverseTrick.smallerEnemy].size,
                     0.75, 'blue');
             }
-            if (LM.indexedCells[LM.selected]){
-				//console.log("LM.indexedCells[LM.selected]")
-				this.drawRing(this.ctx,
-                LM.indexedCells[LM.selected].x,
-                LM.indexedCells[LM.selected].y,
-                LM.indexedCells[LM.selected].size,
-                0.75, '#ffffff')
-			}
+            if (LM.indexedCells[LM.selected]) {
+                //console.log("LM.indexedCells[LM.selected]")
+                this.drawRing(this.ctx,
+                    LM.indexedCells[LM.selected].x,
+                    LM.indexedCells[LM.selected].y,
+                    LM.indexedCells[LM.selected].size,
+                    0.75, '#ffffff')
+            }
         },
-		drawCustomNewGrid(grid) {	
-					if (!legendmod.gridPic){
-		            legendmod.gridPic = new Image;
-                    legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid3.png";
-					//legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid5.png";
-					}
-					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
-					/*this.ctx.drawImage(legendmod.gridPic,			
-                        legendmod.mapMinX,
-                        legendmod.mapMinY,
-                        legendmod.mapMaxX - legendmod.mapMinX,
-                        legendmod.mapMaxY - legendmod.mapMinY
-                    );*/
-					//legendmod.viewX -> drawRender.camX
-					var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
-					var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
-					var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
-					var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)					
-					this.ctx.drawImage(legendmod.gridPic,			
-						(minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
-						(minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-						(maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-						(maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
-						minX,
-						minY,	
-						maxX - minX,
-						maxY - minY						
-                    );
-					/*this.ctx.drawImage(legendmod.gridPic,			
-						(legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
-						(legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-						(legendmod.viewMaxX - legendmod.viewMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-						(legendmod.viewMaxY - legendmod.viewMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
-						legendmod.viewMinX,
-						legendmod.viewMinY,	
-						legendmod.viewMaxX - legendmod.viewMinX,
-						legendmod.viewMaxY - legendmod.viewMinY						
-                    );*/					
-		},			
-        drawCustomBackgrounds() {		
-            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {			
+        drawCustomNewGrid(grid) {
+            if (!legendmod.gridPic) {
+                legendmod.gridPic = new Image;
+                legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid3.png";
+                //legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid5.png";
+            }
+            //this.ctx.drawImage(application.customSkinsCache["test_cached"],
+            /*this.ctx.drawImage(legendmod.gridPic,			
+                legendmod.mapMinX,
+                legendmod.mapMinY,
+                legendmod.mapMaxX - legendmod.mapMinX,
+                legendmod.mapMaxY - legendmod.mapMinY
+            );*/
+            //legendmod.viewX -> drawRender.camX
+            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
+            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
+            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
+            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)
+            this.ctx.drawImage(legendmod.gridPic,
+                (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                minX,
+                minY,
+                maxX - minX,
+                maxY - minY
+            );
+            /*this.ctx.drawImage(legendmod.gridPic,			
+                (legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
+                (legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                (legendmod.viewMaxX - legendmod.viewMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                (legendmod.viewMaxY - legendmod.viewMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
+                legendmod.viewMinX,
+                legendmod.viewMinY,	
+                legendmod.viewMaxX - legendmod.viewMinX,
+                legendmod.viewMaxY - legendmod.viewMinY						
+            );*/
+        },
+        drawCustomBackgrounds() {
+            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
                 if (!legendmod.customMidPic) {
                     if (defaultSettings.customBackground) {
                         legendmod.customMidPic = new Image;
@@ -14647,7 +14652,7 @@ Game name     : ${i.displayName}<br/>
                     );
                     this.ctx.globalAlpha = this.prevctxglobalAlpha
                 }
-				if (defaultSettings.customBackground) {
+                if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
                     this.ctx.globalAlpha = defaultSettings.backgroundAlpha
                     this.ctx.drawImage(
@@ -14692,21 +14697,21 @@ Game name     : ${i.displayName}<br/>
 
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             for (let length = waves.length - 1; length >= 0; length--) {
-			//for (let length = waves.length - 1; length > 0; length--) {
+                //for (let length = waves.length - 1; length > 0; length--) {
                 let r = (Date.now() - waves[length].time) / 2
 
 
                 let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
-				//if (waves[length].moreAnimation && r > 1560){
-				if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760 )/ 2 ){	
-				//if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
-					gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
-					gradient.addColorStop(1, defaultSettings.splitRangeColor);
-				}
-				else {
-					gradient.addColorStop(0, waves[length].color + "00");
-					gradient.addColorStop(1, waves[length].color);
-				}				
+                //if (waves[length].moreAnimation && r > 1560){
+                if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760) / 2) {
+                    //if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
+                    gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
+                    gradient.addColorStop(1, defaultSettings.splitRangeColor);
+                }
+                else {
+                    gradient.addColorStop(0, waves[length].color + "00");
+                    gradient.addColorStop(1, waves[length].color);
+                }
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = r / 4;
                 this.ctx.beginPath();
@@ -14721,7 +14726,7 @@ Game name     : ${i.displayName}<br/>
                 this.ctx.closePath();
                 this.ctx.stroke();
                 //if (r > 500) {					
-				if (r > waves[length].wavelength) {					
+                if (r > waves[length].wavelength) {
                     LM.Waves.splice(length, 1);
                 }
             }
@@ -14801,7 +14806,7 @@ Game name     : ${i.displayName}<br/>
             this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
             //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
         },
-        drawViewport: function(ctx, text, minX, maxY, maxX, minY, stroke, width) {
+        drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
 
             ctx.strokeStyle = stroke;
             ctx.lineWidth = width;
@@ -14821,11 +14826,11 @@ Game name     : ${i.displayName}<br/>
             ctx.stroke();
 
         },
-        pointInCircle: function(x, y, cx, cy, radius) {
+        pointInCircle: function (x, y, cx, cy, radius) {
             var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
             return distancesquared <= radius * radius;
         },
-        drawRing: function(ctx, x, y, size, alpha, color) {
+        drawRing: function (ctx, x, y, size, alpha, color) {
             ctx.lineWidth = 20;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
@@ -14856,12 +14861,12 @@ Game name     : ${i.displayName}<br/>
             ctx.globalAlpha = 1;
         },
         /*drawGridCached() {
-			//for (var xx = 1; xx > 0; xx -= 0.025){
-				//xx = xx.toFixed(2);
-			xx = window.xx2
-			var i = document.createElement("canvas");
-			i.width = window.xx3
-			i.height = window.xx4
+            //for (var xx = 1; xx > 0; xx -= 0.025){
+                //xx = xx.toFixed(2);
+            xx = window.xx2
+            var i = document.createElement("canvas");
+            i.width = window.xx3
+            i.height = window.xx4
             //i.width = LM.mapSize;
             //i.height = LM.mapSize;
             var $ = i.getContext("2d");
@@ -14880,9 +14885,9 @@ Game name     : ${i.displayName}<br/>
             $.stroke();
             application.customSkinsCache["test" + "_cached"] = new Image;
             application.customSkinsCache["test" + "_cached"].src = i.toDataURL();	
-			//}	
-			this.drawedGrid = true
-			console.log("test_grid_cached")
+            //}	
+            this.drawedGrid = true
+            console.log("test_grid_cached")
         },		*/
         drawSectors(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
             if (mapOffset || !type) {
@@ -14927,7 +14932,7 @@ Game name     : ${i.displayName}<br/>
             //console.log('Special effects stage 2');
             if (LM.drawCommander) {
                 //var pickerAxes = this.ctx;
-				var pickerAxes = ctx;
+                var pickerAxes = ctx;
                 cimg = new Image;
                 cimg.src = defaultSettings.commanderImage;
                 cimg1 = new Image;
@@ -14960,7 +14965,7 @@ Game name     : ${i.displayName}<br/>
             //console.log('Special effects stage 2');
             if (LM.drawCommander2) {
                 //var pickerAxes = this.ctx;
-				var pickerAxes = ctx;
+                var pickerAxes = ctx;
                 cimg = new Image;
                 cimg.src = defaultSettings.commanderImage3;
                 cimg1 = new Image;
@@ -14990,20 +14995,20 @@ Game name     : ${i.displayName}<br/>
             }
         },
         updateCommander() {
-            LM.cRadius += 7 * (60/drawRender.fps);
-            LM.cAngle += .007 * (60/drawRender.fps);
-            LM.cAngle1 -= .006 * (60/drawRender.fps);
-            LM.cAngle2 += .003 * (60/drawRender.fps);
+            LM.cRadius += 7 * (60 / drawRender.fps);
+            LM.cAngle += .007 * (60 / drawRender.fps);
+            LM.cAngle1 -= .006 * (60 / drawRender.fps);
+            LM.cAngle2 += .003 * (60 / drawRender.fps);
             if (2025 <= LM.cRadius) {
-                LM.cAlpha *= 1 - ( 1 * (60/drawRender.fps) / 20) ;
-				//LM.cAlpha *= .95;
+                LM.cAlpha *= 1 - (1 * (60 / drawRender.fps) / 20);
+                //LM.cAlpha *= .95;
             }
             if (0.05 >= LM.cAlpha) {
                 this.resetCommander();
             }
         },
         resetCommander() {
-			console.log('reset commander')
+            console.log('reset commander')
             LM.cRadius = 10; //LM.clientX
             LM.cAngle = 4;
             LM.cAngle1 = 0;
@@ -15018,7 +15023,7 @@ Game name     : ${i.displayName}<br/>
                 drawMapBorders(t, e, i, s, o, a, n, r) {
                     e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
-				*/
+                */
         drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
             if (macros) {
                 ctx.strokeStyle = radius;
@@ -15080,8 +15085,8 @@ Game name     : ${i.displayName}<br/>
                     ctx.lineTo(x0, x1);
                     ctx.lineTo(x0, y0);
                     ctx.lineTo(text, y0);
-				
-					//ctx.lineTo(text, x1);
+            	
+                    //ctx.lineTo(text, x1);
                     if (defaultmapsettings.borderGlow) {
                         ctx.shadowBlur = defaultSettings.borderGlowSize;
                         ctx.shadowColor = defaultSettings.borderGlowColor;
@@ -15165,8 +15170,8 @@ Game name     : ${i.displayName}<br/>
                 return;
             }
             //if (!defaultmapsettings.rainbowFood) {
-                this.drawCachedFood(this.ctx, LM.food, this.scale);
-                //return;
+            this.drawCachedFood(this.ctx, LM.food, this.scale);
+            //return;
             //}
             /*for (let length = 0; length < LM.food.length; length++) {
                 LM.food[length].moveCell();
@@ -15180,7 +15185,7 @@ Game name     : ${i.displayName}<br/>
             if (!food.length) {
                 return;
             }
-			ctx.save();
+            ctx.save();
             /*if (defaultmapsettings.optimizedFood) {
 
                 for (var length = 0; length < food.length; length++) {
@@ -15188,97 +15193,97 @@ Game name     : ${i.displayName}<br/>
                     if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
                     //
                     if (!food[length].invisible) {
-						var x = food[length].x - 10 - defaultSettings.foodSize;
-						var y = food[length].y - 10 - defaultSettings.foodSize;						
-						if (!defaultmapsettings.rainbowFood){                   
-							ctx.drawImage(this.pellet, x, y);
-						}
-						else{
-							if (!this.pelletColored[food[length].color]){ 
-								this.preDrawPelletColors(food[length].color);
-							}
-							else{
-								//ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
-								ctx.drawImage(this.pelletColored[food[length].color], x, y);
-								//ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
-							}
-						}
-						
+                        var x = food[length].x - 10 - defaultSettings.foodSize;
+                        var y = food[length].y - 10 - defaultSettings.foodSize;						
+                        if (!defaultmapsettings.rainbowFood){                   
+                            ctx.drawImage(this.pellet, x, y);
+                        }
+                        else{
+                            if (!this.pelletColored[food[length].color]){ 
+                                this.preDrawPelletColors(food[length].color);
+                            }
+                            else{
+                                //ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
+                                ctx.drawImage(this.pelletColored[food[length].color], x, y);
+                                //ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
+                            }
+                        }
+                    	
                     }
                 }
-            }*/ 
-			//else{
-				ctx.lineCap = 'round';
-				if (LM.integrity && food[0].size){
-					ctx.lineWidth = (food[0].size + defaultSettings.foodSize) * 2
-				}
-				if (!defaultmapsettings.rainbowFood){ 
-				ctx.beginPath();
-					
-				ctx.strokeStyle = defaultSettings.foodColor;
-				}
-                for (var length = 0; length < food.length; length++) {
-					if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-					//ctx.beginPath();
-                    if (!food[length].invisible) { 
-						var temp;
-						if (defaultmapsettings.rainbowFood){ 							
-							ctx.fillStyle = food[length].color	
-							temp = food[length].color 
-						}
-						else if (!defaultmapsettings.rainbowFood){ 				
-							ctx.fillStyle = defaultSettings.foodColor;
-							temp = defaultSettings.foodColor;
-						}
-						
-                        var x = food[length].x;
-                        var y = food[length].y;
-						if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-						else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                        /*ctx.moveTo(x, y);
-						if (scale < 0.08) {
-                            const size = food[length].size + defaultSettings.foodSize;
-							
-                            ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                            //continue;
-                        }
-						else{*/
-							
-							//ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
-						//}
+            }*/
+            //else{
+            ctx.lineCap = 'round';
+            if (LM.integrity && food[0].size) {
+                ctx.lineWidth = (food[0].size + defaultSettings.foodSize) * 2
+            }
+            if (!defaultmapsettings.rainbowFood) {
+                ctx.beginPath();
+
+                ctx.strokeStyle = defaultSettings.foodColor;
+            }
+            for (var length = 0; length < food.length; length++) {
+                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                //ctx.beginPath();
+                if (!food[length].invisible) {
+                    var temp;
+                    if (defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = food[length].color
+                        temp = food[length].color
+                    }
+                    else if (!defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = defaultSettings.foodColor;
+                        temp = defaultSettings.foodColor;
                     }
 
-                //ctx.fill();					
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    /*ctx.moveTo(x, y);
+                    if (scale < 0.08) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                    	
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        //continue;
+                    }
+                    else{*/
+
+                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                    //}
                 }
-				if (!defaultmapsettings.rainbowFood) ctx.stroke();
-			//}
-			ctx.restore()
+
+                //ctx.fill();					
+            }
+            if (!defaultmapsettings.rainbowFood) ctx.stroke();
+            //}
+            ctx.restore()
             if (reset) {
                 food = [];
             }
         },
-		
-		drawCircle(ctx, x, y, radius, color) {
-			//if (!LM.integrity) ctx.lineWidth = radius * 2;
-			ctx.fillStyle = color;
-			//ctx.lineCap = 'round';
-			ctx.beginPath();
-			//ctx.moveTo(x, y); -----!!!
-			//ctx.lineTo(x, y);
-			ctx.arc(x, y, radius, 0, 2 * Math.PI);
-			//ctx.strokeStyle = color;
-			ctx.fill();
-			//ctx.stroke();
-		},
-		drawCircle2(ctx, x, y, radius, color) {
-			if (!LM.integrity) ctx.lineWidth = radius * 2;
-			//ctx.lineCap = 'round';
-			//ctx.beginPath();
-			ctx.moveTo(x, y);
-			ctx.lineTo(x, y);
-			//ctx.strokeStyle = color;
-			//ctx.stroke();
-		},		
+
+        drawCircle(ctx, x, y, radius, color) {
+            //if (!LM.integrity) ctx.lineWidth = radius * 2;
+            ctx.fillStyle = color;
+            //ctx.lineCap = 'round';
+            ctx.beginPath();
+            //ctx.moveTo(x, y); -----!!!
+            //ctx.lineTo(x, y);
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            //ctx.strokeStyle = color;
+            ctx.fill();
+            //ctx.stroke();
+        },
+        drawCircle2(ctx, x, y, radius, color) {
+            if (!LM.integrity) ctx.lineWidth = radius * 2;
+            //ctx.lineCap = 'round';
+            //ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y);
+            //ctx.strokeStyle = color;
+            //ctx.stroke();
+        },
         /*drawCachedFood(t, e, i, s) {
             if (e.length) {
                 if (defaultmapsettings.optimizedFood && this.pellet)
@@ -15308,7 +15313,7 @@ Game name     : ${i.displayName}<br/>
                 ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
                 ctx.strokeStyle = defaultSettings.splitRangeColor;
                 ctx.beginPath();
-				
+
                 ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
                 ctx.closePath();
                 ctx.stroke();
@@ -15439,7 +15444,7 @@ Game name     : ${i.displayName}<br/>
         },
         drawCursorTracking(ctx, players, cursorX, cursorY) {
             ctx.lineWidth = 4,
-            ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             ctx.strokeStyle = defaultSettings.cursorTrackingColor;
             ctx.beginPath();
             for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
@@ -15542,17 +15547,17 @@ Game name     : ${i.displayName}<br/>
             }
         },
         drawTeammatesInd(ctx, x, y, size) {
-			if (this.indicator){
-				if (defaultSettings.indicators==="normal"){
-					 ctx.drawImage(this.indicator, x - 45, y - size - 90);
-				}
-				else if (defaultSettings.indicators==="heart"){
-					ctx.drawImage(this.heartIndicator, x - 25, y - size - 90);
-				}
-				else if (defaultSettings.indicators==="smile"){
-					 ctx.drawImage(this.smileIndicator, x - 55, y - size - 150);
-				}
-			}	
+            if (this.indicator) {
+                if (defaultSettings.indicators === "normal") {
+                    ctx.drawImage(this.indicator, x - 45, y - size - 90);
+                }
+                else if (defaultSettings.indicators === "heart") {
+                    ctx.drawImage(this.heartIndicator, x - 25, y - size - 90);
+                }
+                else if (defaultSettings.indicators === "smile") {
+                    ctx.drawImage(this.smileIndicator, x - 55, y - size - 150);
+                }
+            }
         },
         drawPieChart() {
             this.pieChart || (this.pieChart = document.createElement('canvas'));
@@ -15688,13 +15693,13 @@ Game name     : ${i.displayName}<br/>
                 this.ctx.globalAlpha = 1;
                 this.ctx.shadowBlur = 0;
             }
-        },		
+        },
         preDrawPellet() {
             this.pellet = null;
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
             canvas.width = 2 * size,
-            canvas.height = 2 * size;
+                canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = defaultSettings.foodColor;
@@ -15708,33 +15713,33 @@ Game name     : ${i.displayName}<br/>
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
             canvas.width = 2 * size,
-            canvas.height = 2 * size;
-			//canvas.width = size,
+                canvas.height = 2 * size;
+            //canvas.width = size,
             //canvas.height = size;
             var ctx = canvas.getContext('2d');
             //ctx.arc(size/2, size/2, size/2, 0, this.pi2, false);
-			ctx.arc(size, size, size, 0, this.pi2, false);
+            ctx.arc(size, size, size, 0, this.pi2, false);
             //ctx.fillStyle = defaultSettings.foodColor;
-			ctx.fillStyle = color;
+            ctx.fillStyle = color;
             ctx.fill();
             this.pelletColored[color] = new Image();
             this.pelletColored[color].src = canvas.toDataURL();
             canvas = null;
-        },	
+        },
         preDrawCellsColors(color) {
             this.cellsColored[color] = null;
-			var size = 128;
+            var size = 128;
             var canvas = document.createElement('canvas');
             canvas.width = 2 * size,
-            canvas.height = 2 * size;
+                canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
-			ctx.arc(size, size, size, 0, this.pi2, false);
-			ctx.fillStyle = color;
+            ctx.arc(size, size, size, 0, this.pi2, false);
+            ctx.fillStyle = color;
             ctx.fill();
             this.cellsColored[color] = new Image();
             this.cellsColored[color].src = canvas.toDataURL();
             canvas = null;
-        },		
+        },
         preDrawIndicator() {
             this.indicator = null;
             var canvas = document.createElement('canvas');
@@ -15755,28 +15760,28 @@ Game name     : ${i.displayName}<br/>
             this.indicator.src = canvas.toDataURL();
             canvas = null;
         },
-		preDrawSmileIndicator() {
-			var canvas = document.getElementById('canvas');
-			canvas.x = 90;
-			canvas.y = 90;			
-			var ctx = canvas.getContext('2d');
-			ctx.lineWidth = 2;
-			ctx.fillStyle = defaultSettings.teammatesIndColor;
-			ctx.strokeStyle = defaultSettings.teammatesIndColor;
-			ctx.beginPath();
-			
-			ctx.arc(75, 75, 50, 0, Math.PI * 2, true); // Outer circle
-			ctx.moveTo(110, 75);
-			ctx.arc(75, 75, 35, 0, Math.PI, false);  // Mouth (clockwise)
-			ctx.moveTo(65, 65);
-			ctx.arc(60, 65, 5, 0, Math.PI * 2, true);  // Left eye
-			ctx.moveTo(95, 65);
-			ctx.arc(90, 65, 5, 0, Math.PI * 2, true);  // Right eye
-			ctx.stroke();
+        preDrawSmileIndicator() {
+            var canvas = document.getElementById('canvas');
+            canvas.x = 90;
+            canvas.y = 90;
+            var ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.fillStyle = defaultSettings.teammatesIndColor;
+            ctx.strokeStyle = defaultSettings.teammatesIndColor;
+            ctx.beginPath();
+
+            ctx.arc(75, 75, 50, 0, Math.PI * 2, true); // Outer circle
+            ctx.moveTo(110, 75);
+            ctx.arc(75, 75, 35, 0, Math.PI, false);  // Mouth (clockwise)
+            ctx.moveTo(65, 65);
+            ctx.arc(60, 65, 5, 0, Math.PI * 2, true);  // Left eye
+            ctx.moveTo(95, 65);
+            ctx.arc(90, 65, 5, 0, Math.PI * 2, true);  // Right eye
+            ctx.stroke();
             this.smileIndicator = new Image();
-            this.smileIndicator.src = canvas.toDataURL();							
-		},
-        preDrawHeartIndicator() {			
+            this.smileIndicator.src = canvas.toDataURL();
+        },
+        preDrawHeartIndicator() {
             this.heartIndicator = null;
             var canvas = document.createElement('canvas');
             canvas.width = 50;
@@ -15785,25 +15790,25 @@ Game name     : ${i.displayName}<br/>
             ctx.lineWidth = 2;
             ctx.fillStyle = defaultSettings.teammatesIndColor;
             ctx.strokeStyle = '#000000';
-			var d = Math.min(canvas.width, canvas.height);
-			var k = 0;
+            var d = Math.min(canvas.width, canvas.height);
+            var k = 0;
 
-			ctx.moveTo(k, k + d / 4);
-			ctx.quadraticCurveTo(k, k, k + d / 4, k);
-			ctx.quadraticCurveTo(k + d / 2, k, k + d / 2, k + d / 4);
-			ctx.quadraticCurveTo(k + d / 2, k, k + d * 3/4, k);
-			ctx.quadraticCurveTo(k + d, k, k + d, k + d / 4);
-			ctx.quadraticCurveTo(k + d, k + d / 2, k + d * 3/4, k + d * 3/4);
-			ctx.lineTo(k + d / 2, k + d);
-			ctx.lineTo(k + d / 4, k + d * 3/4);
-			ctx.quadraticCurveTo(k, k + d / 2, k, k + d / 4);
+            ctx.moveTo(k, k + d / 4);
+            ctx.quadraticCurveTo(k, k, k + d / 4, k);
+            ctx.quadraticCurveTo(k + d / 2, k, k + d / 2, k + d / 4);
+            ctx.quadraticCurveTo(k + d / 2, k, k + d * 3 / 4, k);
+            ctx.quadraticCurveTo(k + d, k, k + d, k + d / 4);
+            ctx.quadraticCurveTo(k + d, k + d / 2, k + d * 3 / 4, k + d * 3 / 4);
+            ctx.lineTo(k + d / 2, k + d);
+            ctx.lineTo(k + d / 4, k + d * 3 / 4);
+            ctx.quadraticCurveTo(k, k + d / 2, k, k + d / 4);
 
-			ctx.fill();
-			ctx.stroke();
+            ctx.fill();
+            ctx.stroke();
             this.heartIndicator = new Image();
             this.heartIndicator.src = canvas.toDataURL();
             canvas = null;
-        },		
+        },
         countFps(fake) {
             if (defaultmapsettings.showStatsFPS) {
                 var Time = Date.now();
@@ -15813,9 +15818,9 @@ Game name     : ${i.displayName}<br/>
                 if (Time - this.fpsLastRequest >= 1000) {
                     this.fps = this.renderedFrames;
                     this.renderedFrames = 0;
-					//
-					this.renderingDelay = 0
-					//
+                    //
+                    this.renderingDelay = 0
+                    //
                     this.fpsLastRequest = Time;
                 }
                 this.renderedFrames++;
@@ -15825,82 +15830,82 @@ Game name     : ${i.displayName}<br/>
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-			
-			if (defaultmapsettings.unlockedFPS === true) {
-				
-				if (!window.abc) window.abc= 3
-				
-				if (!window.abb) window.abb=2000			
-                setTimeout(function() {							
-					if (drawRender.lastRenderingDelay * drawRender.fps > window.abb){
-						setTimeout(function() {window.requestAnimationFrame(drawRender.render);}, 4);
-						drawRender.lastRenderingDelay =0;
-						//console.log("cut2")					
-					}
-					else{
-						drawRender.countFps()
-						drawRender.renderFrame();					
-						for (var i = 0; i < 3; i++) {
-							if (drawRender.lastRenderingDelay<=window.abc + window.abc*i){
-							//if (drawRender.lastRenderingDelay<=10 && drawRender.averageRenderTime && parseFloat(drawRender.averageRenderTime) < 65 - i * 10){
-								drawRender.countFps()
-								drawRender.renderFrame();
-							}
-						}
-						drawRender.render()
-					}                    
-                }, 0);
-				
-            }	
-			else{
-			drawRender.countFps()
-			drawRender.renderFrame();
-			if(defaultmapsettings.unlockedFPS === "ultra2") { //old unlimited
-				//drawRender.render()
-                setTimeout(function() {
-                    drawRender.render()
-                }, 0);			
-			}			
-            else if (!defaultmapsettings.unlockedFPS) {
-                window.requestAnimationFrame(drawRender.render);
-            } 
-			else if (defaultmapsettings.unlockedFPS === 2 || defaultmapsettings.unlockedFPS === 4 || defaultmapsettings.unlockedFPS === 8 || defaultmapsettings.unlockedFPS === 16 || defaultmapsettings.unlockedFPS === 32 || defaultmapsettings.unlockedFPS === 64) {
-                setTimeout(function() {
-                    window.requestAnimationFrame(drawRender.render);
-                }, defaultmapsettings.unlockedFPS);
-            } 
-			else if (defaultmapsettings.unlockedFPS === "ultra") {
-                setTimeout(function() {
-                    for (var i = 0; i < 9; i++) {
-						
+
+            if (defaultmapsettings.unlockedFPS === true) {
+
+                if (!window.abc) window.abc = 3
+
+                if (!window.abb) window.abb = 2000
+                setTimeout(function () {
+                    if (drawRender.lastRenderingDelay * drawRender.fps > window.abb) {
+                        setTimeout(function () { window.requestAnimationFrame(drawRender.render); }, 4);
+                        drawRender.lastRenderingDelay = 0;
+                        //console.log("cut2")					
+                    }
+                    else {
                         drawRender.countFps()
                         drawRender.renderFrame();
+                        for (var i = 0; i < 3; i++) {
+                            if (drawRender.lastRenderingDelay <= window.abc + window.abc * i) {
+                                //if (drawRender.lastRenderingDelay<=10 && drawRender.averageRenderTime && parseFloat(drawRender.averageRenderTime) < 65 - i * 10){
+                                drawRender.countFps()
+                                drawRender.renderFrame();
+                            }
+                        }
+                        drawRender.render()
                     }
-                    drawRender.render()
                 }, 0);
-            }				
-            else if (defaultmapsettings.unlockedFPS === "sophisticated") {
-                if (!drawRender.averageRenderTime) {
-                    window.renderDelay = 0;
-                } else if (drawRender.averageRenderTime < 30 && window.renderDelay > 0) {
-                    window.renderDelay--
-                } else if (drawRender.averageRenderTime > 60 && window.renderDelay < 64) {
-                    window.renderDelay++
-                }
-                setTimeout(function() {
-                    //window.requestAnimationFrame(drawRender.render);
-                    drawRender.render();
-                }, window.renderDelay);
+
             }
-			}			
+            else {
+                drawRender.countFps()
+                drawRender.renderFrame();
+                if (defaultmapsettings.unlockedFPS === "ultra2") { //old unlimited
+                    //drawRender.render()
+                    setTimeout(function () {
+                        drawRender.render()
+                    }, 0);
+                }
+                else if (!defaultmapsettings.unlockedFPS) {
+                    window.requestAnimationFrame(drawRender.render);
+                }
+                else if (defaultmapsettings.unlockedFPS === 2 || defaultmapsettings.unlockedFPS === 4 || defaultmapsettings.unlockedFPS === 8 || defaultmapsettings.unlockedFPS === 16 || defaultmapsettings.unlockedFPS === 32 || defaultmapsettings.unlockedFPS === 64) {
+                    setTimeout(function () {
+                        window.requestAnimationFrame(drawRender.render);
+                    }, defaultmapsettings.unlockedFPS);
+                }
+                else if (defaultmapsettings.unlockedFPS === "ultra") {
+                    setTimeout(function () {
+                        for (var i = 0; i < 9; i++) {
+
+                            drawRender.countFps()
+                            drawRender.renderFrame();
+                        }
+                        drawRender.render()
+                    }, 0);
+                }
+                else if (defaultmapsettings.unlockedFPS === "sophisticated") {
+                    if (!drawRender.averageRenderTime) {
+                        window.renderDelay = 0;
+                    } else if (drawRender.averageRenderTime < 30 && window.renderDelay > 0) {
+                        window.renderDelay--
+                    } else if (drawRender.averageRenderTime > 60 && window.renderDelay < 64) {
+                        window.renderDelay++
+                    }
+                    setTimeout(function () {
+                        //window.requestAnimationFrame(drawRender.render);
+                        drawRender.render();
+                    }, window.renderDelay);
+                }
+            }
         },
         init() {
             this.setCanvas();
             this.resizeCanvas();
-            this.preDrawPellet();							
+            this.preDrawPellet();
             this.preDrawIndicator();
-			this.preDrawHeartIndicator();
-			this.preDrawSmileIndicator();
+            this.preDrawHeartIndicator();
+            this.preDrawSmileIndicator();
             window.requestAnimationFrame(drawRender.render);
         }
 
@@ -15931,13 +15936,13 @@ Game name     : ${i.displayName}<br/>
                 chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
             }
         },
-        saveHotkeys() {			
+        saveHotkeys() {
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
             this.saveCommands();
         },
         saveCommands() {
-			defineChatCommand();
-            $('#hotkeys .command-in').each(function() {
+            defineChatCommand();
+            $('#hotkeys .command-in').each(function () {
                 var element = $(this);
                 var id = element.attr('id');
                 if (chatCommand.hasOwnProperty(id)) {
@@ -15948,7 +15953,7 @@ Game name     : ${i.displayName}<br/>
         },
         resetHotkeys() {
             this.loadDefaultHotkeys();
-            $('#hotkeys-cfg .custom-key-in').each(function() {
+            $('#hotkeys-cfg .custom-key-in').each(function () {
                 var t = $(this).attr('id');
                 hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
             });
@@ -15970,22 +15975,22 @@ Game name     : ${i.displayName}<br/>
                         $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                     } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
                 }
-            $(document).on('click', '#reset-hotkeys', function(event) {
-                    event.preventDefault();
-                    //hotkeysSetup.resetHotkeys();
-                    setup.resetHotkeys();
-                }),
-                $(document).on('click', '#save-hotkeys', function(event) {
+            $(document).on('click', '#reset-hotkeys', function (event) {
+                event.preventDefault();
+                //hotkeysSetup.resetHotkeys();
+                setup.resetHotkeys();
+            }),
+                $(document).on('click', '#save-hotkeys', function (event) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();
                     setup.saveHotkeys();
                     $('#hotkeys').fadeOut(500);
                 }),
-                $(document).on('click', '#close-hotkeys', function(event) {
+                $(document).on('click', '#close-hotkeys', function (event) {
                     event.preventDefault();
                     $('#hotkeys').fadeOut(500);
                 }),
-                $(document).on('click', '.hotkeys-link', function(event) {
+                $(document).on('click', '.hotkeys-link', function (event) {
                     $('#hotkeys').fadeIn(500);
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
@@ -16100,12 +16105,12 @@ Game name     : ${i.displayName}<br/>
     window.legendmod6 = hotkeysSetup;
 
     function spectateBlind() {
-        window.onkeydown = function(event) {
+        window.onkeydown = function (event) {
             if (81 === event.keyCode && window.core.specialOn) {
                 window.core.specialOn();
             }
         }
-        window.onkeyup = function(event) {};
+        window.onkeyup = function (event) { };
     }
 
     /*function ogarhusettings() {
@@ -16213,14 +16218,14 @@ Game name     : ${i.displayName}<br/>
         if (application.protocolMode) {
             return;
         }
-        window.onkeydown = event => {};
+        window.onkeydown = event => { };
     }
-    document.onkeydown = function(event) {
+    document.onkeydown = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if (('INPUT' !== event.target.tagName || event.target.className === hotkeysSetup.inputClassName || pressedKey === hotkeys['spec-messageKey']) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
-                return event.preventDefault(), void(application && application.showMenu());
+                return event.preventDefault(), void (application && application.showMenu());
             }
             if (event.target.className === hotkeysSetup.inputClassName) {
                 return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
@@ -16232,7 +16237,7 @@ Game name     : ${i.displayName}<br/>
             }
         }
     }
-    document.onkeyup = function(event) {
+    document.onkeyup = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if ('' !== pressedKey) {
             if (hotkeys[pressedKey]) {
@@ -16244,121 +16249,121 @@ Game name     : ${i.displayName}<br/>
             keyBlind[pressedKey] = false;
         }
     }
-    window.onmousedown = function(event) {
+    window.onmousedown = function (event) {
         if (!$("#overlays").is(":visible")) {
-			//console.log(event.which)
+            //console.log(event.which)
             if (2 === event.which) {
                 event.preventDefault();
-                    if (application && defaultmapsettings.mouseWheelClick) {
-						if (!defaultmapsettings.middleClick){
-							application.multiboxswap()
-						}						
-                        else{
-							hotkeysCommand[defaultmapsettings.middleClick].keyDown()
-						}
-                    } 
-					else {						
-                        //application.sendCommand(10);
+                if (application && defaultmapsettings.mouseWheelClick) {
+                    if (!defaultmapsettings.middleClick) {
+                        application.multiboxswap()
                     }
-					if (defaultmapsettings.stickyCell){
-						LM.selected=null
-					}
-            } 
-			else if (defaultmapsettings.stickyCell) {
+                    else {
+                        hotkeysCommand[defaultmapsettings.middleClick].keyDown()
+                    }
+                }
+                else {
+                    //application.sendCommand(10);
+                }
+                if (defaultmapsettings.stickyCell) {
+                    LM.selected = null
+                }
+            }
+            else if (defaultmapsettings.stickyCell) {
                 if (1 === event.which) {
                     drawRender.LMB = true
-                } 
-				else {
+                }
+                else {
                     drawRender.RMB = true
                 }
-            } 
-			else if (defaultmapsettings.reverseTrick) {
+            }
+            else if (defaultmapsettings.reverseTrick) {
                 reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
-            } 
-			else {
+            }
+            else {
                 //if (defaultmapsettings.mouseSplit && (1 === event.which && !defaultmapsettings.mouseInvert || 3 === event.which && defaultmapsettings.mouseInvert)) {
-				if (defaultmapsettings.mouseSplit && (1 === event.which)) {
+                if (defaultmapsettings.mouseSplit && (1 === event.which)) {
                     event.preventDefault();
                     if (application) {
-						if (!defaultmapsettings.leftClick){
-							application.split();
-						}
-						else{
-							hotkeysCommand[defaultmapsettings.leftClick].keyDown()
-						}
+                        if (!defaultmapsettings.leftClick) {
+                            application.split();
+                        }
+                        else {
+                            hotkeysCommand[defaultmapsettings.leftClick].keyDown()
+                        }
                     }
                 }
                 //if (defaultmapsettings.mouseFeed && (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert)) {
-				if (defaultmapsettings.mouseFeed && (3 === event.which)) {
-                    event.preventDefault();			
+                if (defaultmapsettings.mouseFeed && (3 === event.which)) {
+                    event.preventDefault();
                     if (application) {
-						if (!defaultmapsettings.rightClick){
-							application.split();
-						}
-						else{
-							hotkeysCommand[defaultmapsettings.rightClick].keyDown()
-						}
+                        if (!defaultmapsettings.rightClick) {
+                            application.split();
+                        }
+                        else {
+                            hotkeysCommand[defaultmapsettings.rightClick].keyDown()
+                        }
                     }
                 }
                 if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
-                    event.preventDefault();			
+                    event.preventDefault();
                     if (application) {
-							hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()					
+                        hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
                     }
                 }
                 if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
-                    event.preventDefault();			
+                    event.preventDefault();
                     if (application) {
-							hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()					
+                        hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()
                     }
-                }				
+                }
             }
         }
     }
-    window.onmouseup = function(event) {
+    window.onmouseup = function (event) {
         //if (defaultmapsettings.mouseFeed) {
-			//if (1 === event.which && hotkeysCommand[defaultmapsettings.leftClick]===textLanguage['hk-macroFeed'] || 2 === event.which && hotkeysCommand[defaultmapsettings.middleClick]===textLanguage['hk-macroFeed'] || 3 === event.which && hotkeysCommand[defaultmapsettings.rightClick]===textLanguage['hk-macroFeed'] || 4 === event.which && hotkeysCommand[defaultmapsettings.mouse4Click]===textLanguage['hk-macroFeed'] || 5 === event.which && hotkeysCommand[defaultmapsettings.mouse5Click]===textLanguage['hk-macroFeed']) {
-            //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
-				//application && application.macroFeed(false);
-            //}
-				if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
-					if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
-				}
-				else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
-					if (hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
-				}
-				else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
-					if (hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
-				}	
-				else if (defaultmapsettings.mouseCommand4 && (4 === event.which) && defaultmapsettings.mouse4Click) {
-					if (hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
-				}		
-				else if (defaultmapsettings.mouseCommand5 && (5 === event.which) && defaultmapsettings.mouse5Click) {
-					if (hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
-				}					
-				else {
-					//1=leftclick, 3=rightclick, 2=wheelclick
-					if (event.which === 1){ //for reversetrick or stickycell
-						drawRender.LMB = false						
-					}
-					else{
-						drawRender.RMB = false
-					}
-				}
+        //if (1 === event.which && hotkeysCommand[defaultmapsettings.leftClick]===textLanguage['hk-macroFeed'] || 2 === event.which && hotkeysCommand[defaultmapsettings.middleClick]===textLanguage['hk-macroFeed'] || 3 === event.which && hotkeysCommand[defaultmapsettings.rightClick]===textLanguage['hk-macroFeed'] || 4 === event.which && hotkeysCommand[defaultmapsettings.mouse4Click]===textLanguage['hk-macroFeed'] || 5 === event.which && hotkeysCommand[defaultmapsettings.mouse5Click]===textLanguage['hk-macroFeed']) {
+        //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
+        //application && application.macroFeed(false);
+        //}
+        if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
+            if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
+        }
+        else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
+            if (hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+        }
+        else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
+            if (hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
+        }
+        else if (defaultmapsettings.mouseCommand4 && (4 === event.which) && defaultmapsettings.mouse4Click) {
+            if (hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
+        }
+        else if (defaultmapsettings.mouseCommand5 && (5 === event.which) && defaultmapsettings.mouse5Click) {
+            if (hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
+        }
+        else {
+            //1=leftclick, 3=rightclick, 2=wheelclick
+            if (event.which === 1) { //for reversetrick or stickycell
+                drawRender.LMB = false
+            }
+            else {
+                drawRender.RMB = false
+            }
+        }
     };
-    window.onbeforeunload = function(event) {
+    window.onbeforeunload = function (event) {
         if (ogario.play) {
             return textLanguage.exit;
         } else {
             return;
         }
     };
-    window.changeHistory = function(value) {
+    window.changeHistory = function (value) {
         if (window.history && window.history.replaceState) {
             window.history.replaceState({}, window.document.title, value);
         };
     }
-    window.changeUrl = function() {
+    window.changeUrl = function () {
         if (window.location.pathname === `/legendmod`) {
             changeHistory(`/${window.location.hash}`);
         };
@@ -16373,7 +16378,7 @@ Game name     : ${i.displayName}<br/>
     if ('/legendmod' === window.location.pathname) {
         changeUrl('/' + window.location.hash);
     }
-    window.onresize = function() {
+    window.onresize = function () {
         drawRender.resizeCanvas();
         ogarhusettings();
         //ogarhusettingsImportExportMobile();
@@ -16385,10 +16390,10 @@ Game name     : ${i.displayName}<br/>
         this.offset = offset;
         this.contentType = 1;
         this.uncompressedSize = 0;
-        this.setContentType = function() {
+        this.setContentType = function () {
             this.contentType = this.readUint32();
         };
-        this.setUncompressedSize = function() {
+        this.setUncompressedSize = function () {
             this.uncompressedSize = this.readUint32();
         };
         this.compareBytesGt = (bytes1, bytes2) => {
@@ -16399,17 +16404,17 @@ Game name     : ${i.displayName}<br/>
             }
             return bytes1 > bytes2;
         };
-        this.skipByte = function() {
+        this.skipByte = function () {
             const read = this.readByte();
             if (read < 128) {
                 return;
             }
             this.skipByte();
         };
-        this.readByte = function() {
+        this.readByte = function () {
             return this.view.getUint8(this.offset++);
         };
-        this.readUint32 = function() {
+        this.readUint32 = function () {
             let number = 0;
             let mayor = 0;
             while (true) {
@@ -16429,7 +16434,7 @@ Game name     : ${i.displayName}<br/>
             }
             return number;
         };
-        this.readFlag = function() {
+        this.readFlag = function () {
             return this.readUint32() >>> 3;
         };
     }
@@ -16439,7 +16444,7 @@ Game name     : ${i.displayName}<br/>
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client
         },
-        disconnect() {},
+        disconnect() { },
         sendNick(nick) {
             LM.sendNick(nick);
         },
@@ -16459,7 +16464,7 @@ Game name     : ${i.displayName}<br/>
             } else {
                 LM.sendBotEject();
             }
-        },	*/	
+        },	*/
         Botsplit() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendBotSplit()
@@ -16496,7 +16501,7 @@ Game name     : ${i.displayName}<br/>
         },
         recaptchaHandlerResponse(token) {
             if (window.botscaptcha === true) {
-                setTimeout(function() {
+                setTimeout(function () {
                     core.recaptchaBotResponse(token);
                 }, 100);
             } else {
@@ -16516,29 +16521,29 @@ Game name     : ${i.displayName}<br/>
         },
         setClientVersion(version, strVersion) {
             LM.setClientVersion(version, strVersion);
-        },		
+        },
         proxyMobileData(arr = []) {
-				let data;
-				if (Array.isArray(arr)) {
-					if (arr[0] === 8) {
-						arr.unshift(102);			
-					}
-					data = new Uint8Array(arr);
-					
-				}
-				else{
-					if (arr[0] === 8) {
-						data = new Uint8Array(arr.length + 1);
-						data.set([102]);
-						data.set(arr, 1);	
-						console.log(data);
-					}
-					else{
-						data = new Uint8Array(arr);
-						console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.: ",arr);
-					}	
-				}
-			LM.sendMessage(new DataView(data.buffer));			
+            let data;
+            if (Array.isArray(arr)) {
+                if (arr[0] === 8) {
+                    arr.unshift(102);
+                }
+                data = new Uint8Array(arr);
+
+            }
+            else {
+                if (arr[0] === 8) {
+                    data = new Uint8Array(arr.length + 1);
+                    data.set([102]);
+                    data.set(arr, 1);
+                    console.log(data);
+                }
+                else {
+                    data = new Uint8Array(arr);
+                    console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.: ", arr);
+                }
+            }
+            LM.sendMessage(new DataView(data.buffer));
         },
         registerSkin(a, b, c, d) {
             if (a) {
@@ -16595,49 +16600,49 @@ function setGUIEvents() {
         e.preventDefault()
     })
     var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
-    if (storedbotsRemoteIP ==null || storedbotsRemoteIP === "") {
+    if (storedbotsRemoteIP == null || storedbotsRemoteIP === "") {
         storedbotsRemoteIP = "ws://localhost:1337";
     }
     window.captchaOpenedWindow = 1;
     /*var captchaSpeed = localStorage.getItem("captchaSpeed2");
-	if (captchaSpeed ==null || captchaSpeed === "null" || captchaSpeed === ""){
-		window.captchaOpenedWindow = 1
-	}
-	else{	
-		window.captchaOpenedWindow = parseInt(captchaSpeed);
-		$('#captchaSpeed').val(window.captchaOpenedWindow)
-	}*/
+    if (captchaSpeed ==null || captchaSpeed === "null" || captchaSpeed === ""){
+        window.captchaOpenedWindow = 1
+    }
+    else{	
+        window.captchaOpenedWindow = parseInt(captchaSpeed);
+        $('#captchaSpeed').val(window.captchaOpenedWindow)
+    }*/
     window.bots.remoteIP = storedbotsRemoteIP
     window.SERVER_HOST = storedbotsRemoteIP;
     $('#botsRemoteIP').val(storedbotsRemoteIP)
     var storedbotsname = localStorage.getItem("localStoredBotsName");
-    if (storedbotsname ==null || storedbotsname === "") {
+    if (storedbotsname == null || storedbotsname === "") {
         storedbotsname = "Legendmod|ml";
     }
     window.bots.nameLM = storedbotsname;
     $('#botsNameLM').val(storedbotsname)
     var storedbotsamount = localStorage.getItem("localStoredBotsAmount");
-    if (storedbotsamount ==null || storedbotsamount === "") {
+    if (storedbotsamount == null || storedbotsamount === "") {
         storedbotsamount = 50;
 
     }
     window.bots.amount = storedbotsamount;
     $('#botsAmount').val(storedbotsamount)
     /*document.getElementById('captchaSpeed').addEventListener('change', function() {
-		window.captchaOpenedWindow = $('#captchaSpeed').val()
+        window.captchaOpenedWindow = $('#captchaSpeed').val()
         localStorage.setItem('captchaSpeed2', $('#captchaSpeed').val())
     })*/
-    document.getElementById('botsRemoteIP').addEventListener('change', function() {
+    document.getElementById('botsRemoteIP').addEventListener('change', function () {
         window.bots.remoteIP = this.value
         localStorage.setItem('localstoredBotsRemoteIP', window.bots.remoteIP)
         window.SERVER_HOST = window.bots.remoteIP
     })
-    document.getElementById('botsNameLM').addEventListener('change', function() {
+    document.getElementById('botsNameLM').addEventListener('change', function () {
         document.getElementById('botsNameLM').value = document.getElementById('botsNameLM').value.replace(/[^\x20-\x7E]/g, '');
         window.bots.nameLM = this.value
         localStorage.setItem('localStoredBotsName', window.bots.nameLM)
     })
-    document.getElementById('botsAmount').addEventListener('change', function() {
+    document.getElementById('botsAmount').addEventListener('change', function () {
         localStorage.setItem('localStoredBotsAmount', window.bots.amount)
         window.bots.amount = Number(this.value)
     })
@@ -16684,27 +16689,27 @@ function minimapCell(envId, cb, i, s) {
     this.alive = false;
     this.updateTime = null;
     this.pi2 = 2 * Math.PI;
-    this.setColor = function(i, inRevIdx) {
+    this.setColor = function (i, inRevIdx) {
         this.color = i;
         if (7 === inRevIdx.length) {
             this.customColor = inRevIdx;
         }
     };
-    this.drawPosition = function(options, margin, mult, startcode, endcode, value) {
+    this.drawPosition = function (options, margin, mult, startcode, endcode, value) {
         if (!(!this.alive || startcode && endcode && this.id != endcode)) {
             /*
             var isPositionOK=false;
             var flag=false;
             for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
-            	if (window.predictedGhostCells[e] && legendmod.leaderboard[e] && this.nick === legendmod.leaderboard[e].nick){
-            		flag=true;	
-            		this.lastX = window.predictedGhostCells[e].x;
-            		this.lastY = window.predictedGhostCells[e].y;
-            		isPositionOK = true;
-            	}
+                if (window.predictedGhostCells[e] && legendmod.leaderboard[e] && this.nick === legendmod.leaderboard[e].nick){
+                    flag=true;	
+                    this.lastX = window.predictedGhostCells[e].x;
+                    this.lastY = window.predictedGhostCells[e].y;
+                    isPositionOK = true;
+                }
             }
             if ( (flag===false && this.lbgpi >= 0) || legendmod.gameMode === ":party"){
-            	isPositionOK = true;									
+                isPositionOK = true;									
             }	
             
             */
@@ -16746,27 +16751,27 @@ function minimapCell(envId, cb, i, s) {
 const menuLeft = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
-            'icon': 'download',
-            'name': 'Attack',
-            action: () => {
-                leftClickAttack()
+        'icon': 'download',
+        'name': 'Attack',
+        action: () => {
+            leftClickAttack()
 
-            }
-        },
-        {
-            'icon': 'question',
-            'name': 'Fight',
-            action: () => {
-                leftClickFight()
-            }
-        },
-        {
-            'icon': 'exclamation-triangle',
-            'name': 'Run',
-            action: () => {
-                leftClickRun()
-            }
-        },
+        }
+    },
+    {
+        'icon': 'question',
+        'name': 'Fight',
+        action: () => {
+            leftClickFight()
+        }
+    },
+    {
+        'icon': 'exclamation-triangle',
+        'name': 'Run',
+        action: () => {
+            leftClickRun()
+        }
+    },
     ]
 });
 const menuLeft2 = new ContextMenu({
@@ -16949,14 +16954,14 @@ function animateSkincheck() {
     //if (window.preSetanimateSkincheck > window.anualTop + 1000 ) window.preSetanimateSkincheck = window.anualTop + 1000
     window.preSetanimateSkincheck = window.anualTop
     if (defaultmapsettings.vanillaSkins) {
-        setTimeout(function() {
+        setTimeout(function () {
             animateSkincheck()
         }, window.preSetanimateSkincheck);
     }
 }
 
 function animateSkin(b, verifiednames, d, e, i) {
-    setTimeout(function() {
+    setTimeout(function () {
         //if (verifiednames===legendmod.leaderboard[d].nick){
         application.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
         //if (b === e) {
@@ -16975,7 +16980,7 @@ function animateSkinsStop() {
 
 function animateCustomSkin(nick, id) {
 
-    Object.keys(animatedskins).forEach(function(key) {
+    Object.keys(animatedskins).forEach(function (key) {
         if (animatedskins[key] && animatedskins[key].id === id) {
             //console.log(key, animatedskins[key]);
             animatedskins[nick] = animatedskins[key];
@@ -16988,7 +16993,7 @@ function animateCustomSkin(nick, id) {
 function PreLcCelebration() {
     if (defaultSettings.checkonetimeLc2 === false) {
         var checkdate;
-        Date.prototype.yyyymmdd = function() {
+        Date.prototype.yyyymmdd = function () {
             //var yyyy = this.getFullYear().toString();
             var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
             var dd = this.getDate().toString();
@@ -16999,20 +17004,20 @@ function PreLcCelebration() {
         checkdate = date.yyyymmdd();
         if (checkdate === "11/12") {
             LcCelebration();
-			window.celebrationDay="LcDay"
+            window.celebrationDay = "LcDay"
         }
-		else if (checkdate === "12/31" || checkdate === "1/1"){
-			window.celebrationDay="NewYear"
-		}
-		else if (checkdate === "11/26"){
-			window.celebrationDay="ThanksGiving"
-		}
-		else if (checkdate === "12/25" || checkdate === "12/24"){
-			window.celebrationDay="Christmas"
-		}	
-		else if (checkdate === "7/4"){
-			window.celebrationDay="4July"
-		}		
+        else if (checkdate === "12/31" || checkdate === "1/1") {
+            window.celebrationDay = "NewYear"
+        }
+        else if (checkdate === "11/26") {
+            window.celebrationDay = "ThanksGiving"
+        }
+        else if (checkdate === "12/25" || checkdate === "12/24") {
+            window.celebrationDay = "Christmas"
+        }
+        else if (checkdate === "7/4") {
+            window.celebrationDay = "4July"
+        }
     }
 }
 
@@ -17067,10 +17072,10 @@ function Socket3enabler(srv) {
         var room = $("#server-token").val(); //jimboy3100 5/5/2020
         //Socket3 = new WebSocket("wss://connect.websocket.in/Jimboy3100_socket?room_id=" + this.room);
         Socket3 = new WebSocket("wss://cloud.achex.ca/JIMBOY3100" + room);
-        Socket3.onmessage = function(message) {
+        Socket3.onmessage = function (message) {
             Socket3handler(message.data);
         }
-        Socket3.onopen = function(e) {
+        Socket3.onopen = function (e) {
             window.socket3NumberTries = 0;
             Socket3.send(JSON.stringify({
                 "auth": "JIM" + customLMID,
@@ -17088,7 +17093,7 @@ function Socket3enabler(srv) {
             //window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
             //}
             if (!window.socket3Opened && window.noOgarioSocket) {
-                $("#message").keydown(function(event) {
+                $("#message").keydown(function (event) {
                     if (event.keyCode === 13) { //window.legendmod6.getPressedKey(13)
                         enterChatMessage2();
                     }
@@ -17096,11 +17101,11 @@ function Socket3enabler(srv) {
             }
             window.socket3Opened = true;
         }
-        Socket3.onerror = function(e) {
+        Socket3.onerror = function (e) {
             window.socket3NumberTries++;
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 error');
         }
-        Socket3.onclose = function(e) {
+        Socket3.onclose = function (e) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 close');
             //setTimeout(function() {
             window.socket3NumberTries++;
@@ -17108,8 +17113,8 @@ function Socket3enabler(srv) {
                 //Socket3enabler(window.legendmod.ws)
             }
         }
-        Socket3.closeAndOpen = function(e) {
-            Socket3.onclose = function(e) {
+        Socket3.closeAndOpen = function (e) {
+            Socket3.onclose = function (e) {
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Previous Socket 3 closed async');
             }
 
@@ -17117,7 +17122,7 @@ function Socket3enabler(srv) {
                 window.Socket3['onmessage'] = null;
                 try {
                     window.Socket3['close']();
-                } catch (ogarcloseconlabel) {}
+                } catch (ogarcloseconlabel) { }
                 window.Socket3 = null;
             }
 
@@ -17182,7 +17187,7 @@ function Socket3updateTeamPlayer(Socket3data) {
     application.teamPlayers[h].alive = true;
     application.teamPlayers[h].mass = Socket3data.mass;
     application.teamPlayers[h].temp = true;
-    application.teamPlayers[h].drawPosition = function() {};
+    application.teamPlayers[h].drawPosition = function () { };
     var tempTime = new Date().getTime();
     application.teamPlayers[h].lastUpdatedTime = tempTime;
 }
@@ -17247,7 +17252,7 @@ function enterChatMessage2() {
     if (t.is(':visible')) {
         var o = e.val();
         o.length ? (Socket3MessageChat(101, o), legendmod.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
-        setTimeout(function() {
+        setTimeout(function () {
             t.hide();
         }, 10);
     } else {
@@ -17361,7 +17366,7 @@ function embPassword() {
 }
 
 function appendLMhiFbPs() {
-    $("body").on('DOMNodeInserted', ".toast.toast-warning", function() {
+    $("body").on('DOMNodeInserted', ".toast.toast-warning", function () {
         MSGCOMMANDS2 = $(".toast.toast-warning").html();
         if (MSGCOMMANDS2.includes("You are using an old version of OGARio by")) {
             toastr.error(Premadeletter0);
@@ -17369,7 +17374,7 @@ function appendLMhiFbPs() {
             $(".toast.toast-warning").remove();
         }
     });
-    $("body").on('DOMSubtreeModified', "#chat-box", function() {
+    $("body").on('DOMSubtreeModified', "#chat-box", function () {
         var MSGCOMMANDS3 = $(".command-text").text();
         if (MSGCOMMANDS3.includes("You are using an old version of OGARio by")) {
             $(".command-text").text(Premadeletter0);
@@ -17378,11 +17383,11 @@ function appendLMhiFbPs() {
         }
     });
 
-    $("body").on('DOMNodeInserted', ".toast.toast-success", function() {
+    $("body").on('DOMNodeInserted', ".toast.toast-success", function () {
         MSGCOMMANDS = $(".toast.toast-success").text();
         MSGNICK = $(".message-nick").last().text().replace(": ", "");
     });
-    $("body").on('DOMSubtreeModified', "#chat-box", function() {
+    $("body").on('DOMSubtreeModified', "#chat-box", function () {
         MSGCOMMANDS = $(".message-text").text();
         MSGNICK = $(".message-nick").last().text().replace(": ", "");
     });
@@ -17410,7 +17415,7 @@ var reverseTrick = {
     getDistance(x1, y1, x2, y2) {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     },
-    pointInCircle: function(x, y, type) {
+    pointInCircle: function (x, y, type) {
         for (length = 0; length < legendmod.cells.length; length++) {
             var distancesquared = (x - legendmod.cells[length].x) * (x - legendmod.cells[length].x) + (y - legendmod.cells[length].y) * (y - legendmod.cells[length].y);
 
@@ -17455,30 +17460,30 @@ var reverseTrick = {
             var yc = legendmod.playerCells[index].targetY //.y
 
 
-			var selectedToUse = reverseTrick.smallerEnemy;
+            var selectedToUse = reverseTrick.smallerEnemy;
             var x = legendmod.indexedCells[selectedToUse].targetX//.x
             var y = legendmod.indexedCells[selectedToUse].targetY//.y
-            
+
             var a = xc - x
             var b = yc - y
-            var distance = Math.sqrt( a*a + b*b ) - (legendmod.indexedCells[selectedToUse].size+legendmod.playerCells[index].size)
+            var distance = Math.sqrt(a * a + b * b) - (legendmod.indexedCells[selectedToUse].size + legendmod.playerCells[index].size)
 
             var ang = Math.atan2(y - yc, x - xc);
-            legendmod.cursorX= xc +(Math.cos(ang)*distance)
-            legendmod.cursorY= yc +(Math.sin(ang)*distance)
+            legendmod.cursorX = xc + (Math.cos(ang) * distance)
+            legendmod.cursorY = yc + (Math.sin(ang) * distance)
             legendmod.sendPosition()
-			//
-			//legendmod.sendSplit()
-			//legendmod.selected = null
-			//
- 		
-			$('#pause-hud').text("Avoiding reverse split...");
-			$('#pause-hud').show()
-           setTimeout(function() {
-			$('#pause-hud').text(textLanguage.pause);
-			$('#pause-hud').hide()	
-            }, 500)				
-			
+            //
+            //legendmod.sendSplit()
+            //legendmod.selected = null
+            //
+
+            $('#pause-hud').text("Avoiding reverse split...");
+            $('#pause-hud').show()
+            setTimeout(function () {
+                $('#pause-hud').text(textLanguage.pause);
+                $('#pause-hud').hide()
+            }, 500)
+
             console.log(reverseTrick)
         }
     }
@@ -17498,10 +17503,10 @@ function LMadvertisement2020() {
         '</div>' +
         '</div>');
     $(".modal-dialog").draggable()
-    $("#CloseLMPromo").click(function() {
+    $("#CloseLMPromo").click(function () {
         $("#LMPromo").remove();
     });
-    $("#FAQLMPromo").click(function() {
+    $("#FAQLMPromo").click(function () {
         window.open('https://www.legendmod.ml/', '_blank');
     });
 }
@@ -17526,10 +17531,10 @@ snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopyt
 function playReplayLM(temp) {
     if (temp && window.RecordedProtocol[temp]) {
         /*if (window.replayTimeOuts.length){
-        	for (var i=0;i<window.replayTimeOuts;i++){
-        		clearTimeout(window.replayTimeOuts[i])
-        	}
-        	window.replayTimeOuts=[]
+            for (var i=0;i<window.replayTimeOuts;i++){
+                clearTimeout(window.replayTimeOuts[i])
+            }
+            window.replayTimeOuts=[]
         }*/
         clearTimeout(window.replayTimeOuts)
         application.flushData()
@@ -17550,7 +17555,7 @@ function playReplayLM(temp) {
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
         //if (parseInt(window.replayTiming) < 0) {
-		if (parseFloat(window.replayTiming) < 0) {	
+        if (parseFloat(window.replayTiming) < 0) {
             toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
             legendmod.playingReplayRewind = true
         }
@@ -17594,7 +17599,7 @@ function intervalPlayingRecord() {
             $('#pause-hud').text(textLanguage.pause);
             $('#pause-hud').hide()
         }
-		window.replayTiming2 = Math.abs(parseFloat(window.replayTiming))
+        window.replayTiming2 = Math.abs(parseFloat(window.replayTiming))
         //window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
 
     } else {
@@ -17605,7 +17610,7 @@ function intervalPlayingRecord() {
             $('#pause-hud').show()
         }
     }
-    window.replayTimeOuts = setTimeout(function() {
+    window.replayTimeOuts = setTimeout(function () {
         var tempo = legendmod.playingReplayServer
         if ($("#server-token").val().includes("replay^" + tempo)) {
 
@@ -17619,10 +17624,10 @@ function intervalPlayingRecord() {
                     }
                 } else */ if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length - 1) {
                     for (var i = 0; i < 9; i++) { // 10 times more
-						setTimeout(function() {
-							legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-							legendmod.playingReplayRecord++
-						}, 0);
+                        setTimeout(function () {
+                            legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
+                            legendmod.playingReplayRecord++
+                        }, 0);
                     }
                 }
             }
@@ -17632,7 +17637,7 @@ function intervalPlayingRecord() {
             if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0) {
                 if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 2) intervalPlayingRecord();
                 if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
-				//if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
+                    //if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
                     legendmod.playingReplayRecord++
                 } else {
                     legendmod.playingReplayRecord--
@@ -17653,15 +17658,15 @@ function intervalPlayingRecord() {
 
 /*
 function playReplayLM(temp){		
-	if (temp && window.RecordedProtocol[temp]){
-		//if (window.replayTimeOuts.length){
-			//for (var i=0;i<window.replayTimeOuts;i++){
-				//clearTimeout(window.replayTimeOuts[i])
-			//}
-			//window.replayTimeOuts=[]
-		//}
-		legendmod.indexedCells={}
-		legendmod.cells=[]
+    if (temp && window.RecordedProtocol[temp]){
+        //if (window.replayTimeOuts.length){
+            //for (var i=0;i<window.replayTimeOuts;i++){
+                //clearTimeout(window.replayTimeOuts[i])
+            //}
+            //window.replayTimeOuts=[]
+        //}
+        legendmod.indexedCells={}
+        legendmod.cells=[]
         legendmod.removedCells=[]
         legendmod.food=[]
         legendmod.viruses=[]
@@ -17669,56 +17674,56 @@ function playReplayLM(temp){
         legendmod.playerCells=[]
         legendmod.playerCellIDs=[]
         legendmod.playerCellsMulti=[]	
-		legendmod.playingRecord=0
-		
-		for (var legendmod.playingRecord=0;legendmod.playingRecord<window.RecordedProtocol[temp].length-1;legendmod.playingRecord++){
-			window.playrecord = 0
-			//window.replayTimeOuts[i] = setTimeout(function() {
-				setTimeout(function() {
-				if ($("#server-token").val().includes("replay^"+temp)){	
-				
-					legendmod.handleMessage(window.RecordedProtocol[temp][window.playrecord])
-					
-			//console.log(window.playrecord)
-				}
-				window.playrecord++
-			}, window.replayTiming*legendmod.playingRecord);
-		}		
-	}
+        legendmod.playingRecord=0
+    	
+        for (var legendmod.playingRecord=0;legendmod.playingRecord<window.RecordedProtocol[temp].length-1;legendmod.playingRecord++){
+            window.playrecord = 0
+            //window.replayTimeOuts[i] = setTimeout(function() {
+                setTimeout(function() {
+                if ($("#server-token").val().includes("replay^"+temp)){	
+            	
+                    legendmod.handleMessage(window.RecordedProtocol[temp][window.playrecord])
+                	
+            //console.log(window.playrecord)
+                }
+                window.playrecord++
+            }, window.replayTiming*legendmod.playingRecord);
+        }		
+    }
 }
 */
 
-function findOcc(arr, key){
-      let arr2 = [];
-        
-      arr.forEach((x)=>{
-           
+function findOcc(arr, key) {
+    let arr2 = [];
+
+    arr.forEach((x) => {
+
         // Checking if there is any object in arr2
         // which contains the key value
-         if(arr2.some((val)=>{ return val[key] === x[key] })){
-             
-           // If yes! then increase the occurrence by 1
-           arr2.forEach((k)=>{
-             if(k[key] === x[key]){ 
-               k["occurrence"]++
-             }
-          })
-             
-         }else{
-           // If not! Then create a new object initialize 
-           // it with the present iteration key's value and 
-           // set the occurrence to 1
-           let a = {}
-           a[key] = x[key]
-           a["occurrence"] = 1
-           arr2.push(a);
-         }
-      })
-        
-      return arr2;
-	  //    let key = "nick"; console.log(findOcc(legendmod.leaderboard, key));
+        if (arr2.some((val) => { return val[key] === x[key] })) {
+
+            // If yes! then increase the occurrence by 1
+            arr2.forEach((k) => {
+                if (k[key] === x[key]) {
+                    k["occurrence"]++
+                }
+            })
+
+        } else {
+            // If not! Then create a new object initialize 
+            // it with the present iteration key's value and 
+            // set the occurrence to 1
+            let a = {}
+            a[key] = x[key]
+            a["occurrence"] = 1
+            arr2.push(a);
+        }
+    })
+
+    return arr2;
+    //    let key = "nick"; console.log(findOcc(legendmod.leaderboard, key));
 }
-      
+
 
 
 
