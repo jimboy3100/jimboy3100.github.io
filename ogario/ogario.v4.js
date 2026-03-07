@@ -7429,12 +7429,7 @@ function thelegendmodproject() {
                 text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
-                // Use ws:// for localhost/127.0.0.1 (Chrome rejects wss:// with local certs)
-                if (token.startsWith('localhost') || token.startsWith('127.0.0.1')) {
-                    text = 'ws://' + token;
-                } else {
-                    text = 'wss://' + token; //private servers
-                }
+                text = 'wss://' + token; //private servers
             } else {
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
