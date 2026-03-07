@@ -11210,7 +11210,6 @@ function thelegendmodproject() {
                 view.setInt32(1, cursorX, true);
                 view.setInt32(5, cursorY, true);
                 view.setUint32(9, this.protocolKey, true);
-                if (!window._lmDbgT || Date.now() - window._lmDbgT > 1000) { window._lmDbgT = Date.now(); console.log('[MOUSE] cursor=' + ~~cursorX + ',' + ~~cursorY + ' view=' + ~~this.viewX + ',' + ~~this.viewY + ' play=' + this.play + ' clientXY=' + ~~this.clientX + ',' + ~~this.clientY) }
                 this.sendMessage(view);
             }
             if (window.userBots.startedBots && window.userBots.isAlive) {
