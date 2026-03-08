@@ -528,6 +528,25 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
     win.WebSocket.CLOSING = _OrigWS.CLOSING;
     win.WebSocket.CLOSED = _OrigWS.CLOSED;
 
+    // Fix: ApiDelta loses playerID when recycled from pool after reconnect.
+    // setUnit() doesn't call connect(), so the tab is never re-registered with the relay.
+    // Without playerID, sendChatMessage() silently returns → no chat.
+    const patchApiDelta = setInterval(() => {
+        if (!win.ApiDelta) return;
+        clearInterval(patchApiDelta);
+
+        const origSetUnit = win.ApiDelta.prototype.setUnit;
+        win.ApiDelta.prototype.setUnit = function (unit) {
+            origSetUnit.call(this, unit);
+            // Re-register with relay if RootSocket is already established
+            if (this.RootSocket && this.RootSocket.established && !this.playerID) {
+                console.log(win.LOG_TAG + '✓ Re-registering ApiDelta tab with relay (playerID was lost)');
+                this.connect();
+            }
+        };
+        console.log(win.LOG_TAG + '✓ Patched ApiDelta.setUnit for reconnect fix');
+    }, 200);
+
     // Also patch Delta's app for isAgario and modeInt
     const patchPoll = setInterval(() => {
         const app = win.app;
