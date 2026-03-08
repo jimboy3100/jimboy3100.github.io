@@ -311,6 +311,11 @@ function deleteGamemode(temp) {
     });
     $('#gamemode').val('5001');
     $('#gamemode option[value="5001"]').prop('selected', true);
+    setTimeout(function () {
+        $('#gamemode').val('5001');
+        $('#gamemode option[value="5001"]').prop('selected', true);
+        $('#gamemode')[0].selectedIndex = 0;
+    }, 50);
     $('#gamemode').off('change').on('change', function () {
         if ($('#region').val() == "Private") {
             /*
