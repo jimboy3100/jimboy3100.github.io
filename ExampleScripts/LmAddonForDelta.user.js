@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Delta agar.io
 // @namespace    Legend addon for Delta mod agar.io
-// @version      1.1
+// @version      1.2
 // @description  Agar.io PC addon for Delta (deltio / delt.io) and LegendMod. Discord webhook invites, Play auto-post, rich embeds, server join URLs, SNEZ broadcaster, server history & instant rejoin, cloud save/load, themes, skins, custom skin URLs, clan tags, macro & feed coordination, party play, bot reduction helpers, UI enhancements. Works with Legend, Ogario style play, Agar.io desktop, Discord, YouTube.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
@@ -261,6 +261,262 @@ win.connectPrivateServer = function (rawUrl) {
 // (vs Agar.io tab's "fcols grow hinherit list-style").
 // ==========================================================================
 win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
+
+// ==========================================================================
+// [FIX: DELTA LEADERBOARD FOR PRIVATE SERVERS]
+// Delta's protocol handler chain corrupts the reader offset for opcode 49.
+// Fix: Intercept raw WebSocket messages, parse opcode 0x31 ourselves,
+// and inject data directly into Delta's HudLeaderboard (window.leaderboard).
+// ==========================================================================
+(function fixDeltaPrivateServerLeaderboard() {
+    const PRIVATE_HOSTS = ['legendmod.ml'];
+
+    function isOurServer(url) {
+        return url && PRIVATE_HOSTS.some(h => url.includes(h));
+    }
+
+    // Parse opcode 0x31 leaderboard from raw ArrayBuffer
+    function parseLeaderboard(buf) {
+        const view = new DataView(buf);
+        let offset = 0;
+        const opcode = view.getUint8(offset++);
+        if (opcode !== 0x31) return null;
+
+        const count = view.getUint32(offset, true); offset += 4;
+        const entries = [];
+        for (let i = 0; i < count; i++) {
+            const isMe = view.getUint32(offset, true); offset += 4;
+            let nick = '';
+            while (offset < view.byteLength) {
+                const ch = view.getUint8(offset++);
+                if (ch === 0) break;
+                nick += String.fromCharCode(ch);
+            }
+            try { nick = decodeURIComponent(escape(nick)); } catch (e) { }
+            entries.push({
+                nick: nick,
+                id: isMe === 1 ? 'isPlayer' : 0,
+                isFriend: false
+            });
+        }
+        return entries;
+    }
+
+    // Parse opcode 0x45 ghost cells from raw ArrayBuffer
+    // Format: [0x45][u16 count][i32 x][i32 y][u32 mass][u8 flags]...
+    function parseGhostCells(buf) {
+        const view = new DataView(buf);
+        let offset = 0;
+        const opcode = view.getUint8(offset++);
+        if (opcode !== 0x45) return null;
+
+        const count = view.getUint16(offset, true); offset += 2;
+        const cells = [];
+        for (let i = 0; i < count && offset + 13 <= view.byteLength; i++) {
+            const x = view.getInt32(offset, true); offset += 4;
+            const y = view.getInt32(offset, true); offset += 4;
+            const mass = view.getUint32(offset, true); offset += 4;
+            offset += 1; // flags byte
+            cells.push({
+                x: x,
+                y: y,
+                mass: mass,
+                size: Math.sqrt(100 * mass) // Delta uses size for display
+            });
+        }
+        return cells;
+    }
+
+    // Intercept WebSocket to hook onmessage for our server connections
+    const _OrigWS = win.WebSocket;
+
+    // Format mass like Delta/Legend: 500, 1.2k, 10.5k
+    function shortMass(val) {
+        if (val < 1000) return String(val);
+        const f = Math.round(val / 100) / 10;
+        return (f % 1 === 0 ? f + '.0' : f) + 'k';
+    }
+
+    // Calculate map sector like A1, B3, C5 from coordinates
+    function calcSector(x, y) {
+        try {
+            const app = win.app;
+            if (!app || !app.server) return '';
+            const mapW = app.server.mapSizeH || 14142;
+            const mapH = app.server.mapSizeV || 14142;
+            const sectX = 5, sectY = 5; // 5x5 grid
+            const offX = mapW / 2;
+            const offY = mapH / 2;
+            let rX = Math.floor((x + offX) / (mapW / sectY));
+            let rY = Math.floor((y + offY) / (mapH / sectX));
+            rX = Math.max(0, Math.min(sectY - 1, rX));
+            rY = Math.max(0, Math.min(sectX - 1, rY));
+            return String.fromCharCode(rY + 65) + (rX + 1);
+        } catch (e) { return ''; }
+    }
+
+    // Private storage so Delta's own handlers can't overwrite our data
+    let _lmLeaderboard = [];
+    let _lmGhostCells = [];
+    let _lmPatched = false;
+
+    // Format mass like Delta/Legend: 500, 1.2k, 10.5k
+    function shortMass(val) {
+        if (val < 1000) return String(val);
+        const f = Math.round(val / 100) / 10;
+        return (f % 1 === 0 ? f + '.0' : f) + 'k';
+    }
+
+    // Calculate map sector like A1, B3, C5 from coordinates
+    function calcSector(x, y) {
+        try {
+            const app = win.app;
+            if (!app || !app.server) return '';
+            const mapW = app.server.mapSizeH || 14142;
+            const mapH = app.server.mapSizeV || 14142;
+            const sectX = 5, sectY = 5;
+            const offX = mapW / 2, offY = mapH / 2;
+            let rX = Math.floor((x + offX) / (mapW / sectY));
+            let rY = Math.floor((y + offY) / (mapH / sectX));
+            rX = Math.max(0, Math.min(sectY - 1, rX));
+            rY = Math.max(0, Math.min(sectX - 1, rY));
+            return String.fromCharCode(rY + 65) + (rX + 1);
+        } catch (e) { return ''; }
+    }
+
+    // Inject our data into hudLb and call Delta's own compiler,
+    // then intercept the output state to add mass/sector
+    function lmRenderLeaderboard(hudLb) {
+        if (_lmLeaderboard.length === 0) return;
+
+        // One-time patch: prevent Delta from overwriting + intercept state emit
+        if (!_lmPatched) {
+            _lmPatched = true;
+            hudLb.setLeaderboardData = function () { }; // no-op
+            hudLb.setGhostCellsdData = function () { }; // no-op
+
+            // Intercept 'state' emit to inject mass+sector from ghost cells
+            const origEmit = hudLb.emit.bind(hudLb);
+            hudLb.emit = function (event, data) {
+                if (event === 'state' && data && data.leaderboard) {
+                    const ghosts = _lmGhostCells;
+                    for (let i = 0; i < data.leaderboard.length; i++) {
+                        const entry = data.leaderboard[i];
+                        if (!entry.mass || entry.mass.trim() === '') {
+                            // Add mass+sector from ghost cells
+                            let mass = '';
+                            let sector = '';
+                            if (entry.className === 'me') {
+                                try {
+                                    const app = win.app;
+                                    if (app && app.unitManager && app.unitManager.activeUnit) {
+                                        mass = shortMass(app.unitManager.activeUnit.mass);
+                                        sector = calcSector(app.unitManager.activeUnit.view.x, app.unitManager.activeUnit.view.y);
+                                    }
+                                } catch (e) { }
+                            } else if (ghosts[i]) {
+                                mass = shortMass(ghosts[i].mass);
+                                sector = calcSector(ghosts[i].x, ghosts[i].y);
+                            }
+                            entry.mass = mass + (sector ? ' [' + sector + ']' : '');
+                        }
+                    }
+                }
+                return origEmit(event, data);
+            };
+
+            console.log(win.LOG_TAG + '✓ Patched HudLeaderboard sync + emit');
+        }
+
+        // Inject our data right before compile
+        hudLb.leaderboard = _lmLeaderboard;
+        hudLb.ghostCells = _lmGhostCells;
+        hudLb.connectedLength = 1;
+        hudLb.lbStep = 0;
+        hudLb.canSheludeFrame = true;
+
+        if (typeof hudLb._compileLeaderboard === 'function') {
+            hudLb._compileLeaderboard();
+        }
+    }
+
+    win.WebSocket = function (url, protocols) {
+        const ws = protocols
+            ? new _OrigWS(url, protocols)
+            : new _OrigWS(url);
+
+        if (isOurServer(url)) {
+            ws._isLegendPrivate = true;
+            console.log(win.LOG_TAG + '✓ Tagged WebSocket to Legend server');
+
+            // Intercept raw messages to parse leaderboard + ghost cells
+            ws.addEventListener('message', function (event) {
+                if (!(event.data instanceof ArrayBuffer)) return;
+                const buf = event.data;
+                if (buf.byteLength < 2) return;
+
+                const opcode = new DataView(buf).getUint8(0);
+                const hudLb = win.leaderboard;
+                if (!hudLb) return;
+
+                // Handle leaderboard (opcode 0x31 / 49)
+                if (opcode === 0x31) {
+                    const entries = parseLeaderboard(buf);
+                    if (entries && entries.length > 0) {
+                        _lmLeaderboard = entries;
+                        lmRenderLeaderboard(hudLb);
+                    }
+                }
+
+                // Handle ghost cells (opcode 0x45 / 69)
+                if (opcode === 0x45) {
+                    const cells = parseGhostCells(buf);
+                    if (cells && cells.length > 0) {
+                        _lmGhostCells = cells;
+                        lmRenderLeaderboard(hudLb);
+                    }
+                }
+            });
+        }
+
+        return ws;
+    };
+    win.WebSocket.prototype = _OrigWS.prototype;
+    win.WebSocket.CONNECTING = _OrigWS.CONNECTING;
+    win.WebSocket.OPEN = _OrigWS.OPEN;
+    win.WebSocket.CLOSING = _OrigWS.CLOSING;
+    win.WebSocket.CLOSED = _OrigWS.CLOSED;
+
+    // Also patch Delta's app for isAgario and modeInt
+    const patchPoll = setInterval(() => {
+        const app = win.app;
+        if (!app || !app.clients) return;
+
+        const allClients = [
+            ...(app.clients.render || []),
+            ...(app.clients.player || [])
+        ];
+
+        for (const client of allClients) {
+            const isTagged = client.socket && client.socket._isLegendPrivate;
+            const isUrlMatch = isOurServer(client.ws);
+            if (!isTagged && !isUrlMatch) continue;
+            if (client._lmLbPatched) continue;
+
+            client._lmLbPatched = true;
+            client.isAgario = true;
+
+            if (client.modeInt === 3 || !client.modeInt) {
+                client.modeInt = 1;
+                client.gameMode = ':ffa';
+                client.emit('gameMode', client);
+            }
+
+            console.log(win.LOG_TAG + '✓ Patched Delta: isAgario=true, modeInt=FFA');
+        }
+    }, 1000);
+})();
+
 
 (function () {
     const ENTRY_ID = 'lm-legend-ffa-entry';
