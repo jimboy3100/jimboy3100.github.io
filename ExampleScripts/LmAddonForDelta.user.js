@@ -482,23 +482,32 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
             });
 
             // Ensure Delta's party system (RootSocket) knows about this server
-            // Force application.server state so sendRoomInfo() fires
+            // Root cause: application.connect(ws) is never called for URL-param connections,
+            // so server.ws (serverToken) stays empty and sendRoomInfo sends empty room info.
+            // Fix: set server.ws IMMEDIATELY, then force connected = false → true on open
+            // so the change:connected event fires and sendRoomInfo() gets the right token.
+            try {
+                const app = win.app;
+                if (app && app.server) {
+                    // Set ws immediately so serverToken is derived NOW
+                    app.server.ws = url;
+                    // Ensure connected is false so setting to true will be a CHANGE
+                    app.server.connected = false;
+                    console.log(win.LOG_TAG + '✓ Set app.server.ws=' + url + ' (serverToken will derive)');
+                }
+            } catch (e) { }
+
             ws.addEventListener('open', function () {
-                setTimeout(function () {
-                    try {
-                        const app = win.app;
-                        if (app && app.server) {
-                            // Set the WebSocket URL so serverToken is derived
-                            app.server.ws = url;
-                            // Mark as connected so comm.js sendRoomInfo fires
-                            app.server.connected = true;
-                            app.server.estabilished = true;
-                            console.log(win.LOG_TAG + '✓ Forced app.server state for party system, ws=' + url);
-                        }
-                    } catch (e) {
-                        console.error(win.LOG_TAG + 'Party system patch error:', e);
+                try {
+                    const app = win.app;
+                    if (app && app.server) {
+                        // Now flip connected to true — triggers change:connected → sendRoomInfo()
+                        app.server.connected = true;
+                        app.server.estabilished = true;
+                        app.server.isAgario = true;
+                        console.log(win.LOG_TAG + '✓ app.server.connected=true, sendRoomInfo should fire');
                     }
-                }, 500);
+                } catch (e) { }
             });
         }
 
