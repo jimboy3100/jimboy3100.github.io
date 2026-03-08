@@ -481,26 +481,42 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
                 }
             });
 
-            // Diagnostic: log server state when game WS connects
-            // Delta calls application.connect(ws) itself, which sets server.ws and connected
+            // Fix Delta's server state for private servers
+            // Diagnostics showed: gameMode=':party' (wrong), isAgario=false (wrong)
+            // These cause sendRoomInfo() to send incorrect room data to the relay
             ws.addEventListener('open', function () {
                 setTimeout(function () {
                     try {
                         const app = win.app;
-                        if (app && app.server) {
-                            console.log(win.LOG_TAG + '=== CHAT DIAGNOSTICS ===');
-                            console.log(win.LOG_TAG + 'server.ws:', app.server.ws);
-                            console.log(win.LOG_TAG + 'server.serverToken:', app.server.serverToken);
-                            console.log(win.LOG_TAG + 'server.connected:', app.server.connected);
-                            console.log(win.LOG_TAG + 'server.gameMode:', app.server.gameMode);
-                            console.log(win.LOG_TAG + 'server.isAgario:', app.server.isAgario);
+                        if (!app || !app.server) return;
+
+                        // Fix gameMode — URL param says ffa but Delta defaults to :party
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const modeParam = urlParams.get('m') || 'ffa';
+                        const modeMap = { ffa: ':ffa', teams: ':teams', experimental: ':experimental' };
+                        const correctMode = modeMap[modeParam] || ':ffa';
+                        if (app.server.gameMode !== correctMode) {
+                            app.server.gameMode = correctMode;
+                            console.log(win.LOG_TAG + '✓ Fixed gameMode: ' + correctMode);
                         }
-                        // Check if RootSocket is accessible through ApiDelta
-                        if (win.ApiDelta) {
-                            console.log(win.LOG_TAG + 'ApiDelta.pool size:', win.ApiDelta.pool.size);
-                        }
-                    } catch (e) { }
-                }, 2000);
+
+                        // Fix isAgario on server level
+                        app.server.isAgario = true;
+
+                        // Force re-trigger sendRoomInfo by toggling connected
+                        // This ensures the relay gets correct serverToken + gameMode
+                        app.server.connected = false;
+                        app.server.connected = true;
+
+                        console.log(win.LOG_TAG + '=== CHAT STATE ===');
+                        console.log(win.LOG_TAG + 'serverToken:', app.server.serverToken);
+                        console.log(win.LOG_TAG + 'gameMode:', app.server.gameMode);
+                        console.log(win.LOG_TAG + 'isAgario:', app.server.isAgario);
+                        console.log(win.LOG_TAG + 'connected:', app.server.connected);
+                    } catch (e) {
+                        console.error(win.LOG_TAG + 'Chat fix error:', e);
+                    }
+                }, 1500);
             });
         }
 
