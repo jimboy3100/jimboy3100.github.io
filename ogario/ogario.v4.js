@@ -309,6 +309,7 @@ function deleteGamemode(temp) {
     $.each(privateModOptions, function (i, el) {
         $('#gamemode').append(new Option(el.text, el.value));
     });
+    $('#gamemode').val('5001');
     $('#gamemode').change(function () {
         if ($('#region').val() == "Private") {
             /*
