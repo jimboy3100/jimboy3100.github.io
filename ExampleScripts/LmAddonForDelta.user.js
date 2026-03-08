@@ -255,43 +255,89 @@ win.connectPrivateServer = function (rawUrl) {
 
 // ==========================================================================
 // [LEGEND SERVER LIST ENTRY]
-// Delta uses Preact virtual DOM — the Private tab renders from window.dts
-// (DeltaServerList). We push into dts.list so Preact renders it natively.
+// DOM-based injection with MutationObserver. Delta uses Preact which re-renders
+// the list from data, so we watch for DOM changes and re-append our entry.
+// The Private tab's list-style has class "flex flex-col grow list-style"
+// (vs Agar.io tab's "fcols grow hinherit list-style").
 // ==========================================================================
 win.LM_PRIVATE_SERVER_URL = "ws://localhost:8080";
 
-win.injectLegendServer = function () {
-    const dts = win.dts;
-    if (!dts || !dts.list) return;
-    if (dts.list.has('lm-legend-ffa')) return;
+(function () {
+    const ENTRY_ID = 'lm-legend-ffa-entry';
+    const SERVER_URL = win.LM_PRIVATE_SERVER_URL;
 
-    // Plain object — this approach confirmed working (entry appeared in list before)
-    const entry = {
-        adress: win.LM_PRIVATE_SERVER_URL,
-        token: 'lm-legend-ffa',
-        displayName: 'Legend FFA',
-        cat: 'default',
-        region: 'default',
-        gamemode: 'default',
-        multibox: true,
-        botting: true,
-        lastChecked: new Date(),
-        get lastCheckedTime() {
-            return this.lastChecked.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-        },
-        get isFresh() { return true; },
-        toJSON() { return { adress: this.adress }; }
-    };
-
-    try {
-        dts.list.add(entry);
-        console.log(win.LOG_TAG + "✓ Legend FFA added to server list");
-    } catch (e) {
-        console.error(win.LOG_TAG + "✗ Legend FFA injection failed:", e);
+    function getPrivateTabList() {
+        // The Private tab's list has different classes than the Agar.io tab's list
+        const lists = document.querySelectorAll('.list-style');
+        for (const list of lists) {
+            // Private tab list has "flex flex-col grow" not "fcols grow hinherit"
+            if (list.classList.contains('flex') && list.classList.contains('flex-col')) {
+                return list;
+            }
+        }
+        return null;
     }
-};
 
-setInterval(win.injectLegendServer, 1500);
+    function appendLegendEntry(listEl) {
+        if (!listEl) return;
+        if (listEl.querySelector('#' + ENTRY_ID)) return;
+
+        const entry = document.createElement('div');
+        entry.id = ENTRY_ID;
+        entry.textContent = 'Legend FFA';
+        entry.style.color = '#01d9cc';
+        entry.style.fontWeight = 'bold';
+        entry.style.cursor = 'pointer';
+        entry.addEventListener('click', function (e) {
+            e.stopPropagation();
+            // Remove active from siblings, add to ours
+            Array.from(listEl.children).forEach(c => c.classList.remove('active'));
+            entry.classList.add('active');
+            // Use Delta's application.connect directly
+            if (win.app && typeof win.app.connect === 'function') {
+                win.app.connect(SERVER_URL);
+            } else if (win.application && typeof win.application.connect === 'function') {
+                win.application.connect(SERVER_URL);
+            } else {
+                // Fallback: inject URL into input and click connect
+                win.connectPrivateServer(SERVER_URL);
+            }
+        });
+        listEl.appendChild(entry);
+        console.log(win.LOG_TAG + "✓ Legend FFA appended to Private tab list");
+    }
+
+    // MutationObserver: re-append when Preact re-renders the list
+    let observer = null;
+    function startObserving(listEl) {
+        if (observer) observer.disconnect();
+        observer = new MutationObserver(function () {
+            if (!listEl.querySelector('#' + ENTRY_ID)) {
+                appendLegendEntry(listEl);
+            }
+        });
+        observer.observe(listEl, { childList: true });
+    }
+
+    // Poll until the Private tab list exists, then attach
+    const poll = setInterval(function () {
+        const listEl = getPrivateTabList();
+        if (listEl) {
+            appendLegendEntry(listEl);
+            startObserving(listEl);
+            clearInterval(poll);
+        }
+    }, 500);
+
+    // Fallback: also check periodically in case observer gets disconnected
+    setInterval(function () {
+        const listEl = getPrivateTabList();
+        if (listEl && !listEl.querySelector('#' + ENTRY_ID)) {
+            appendLegendEntry(listEl);
+            startObserving(listEl);
+        }
+    }, 3000);
+})();
 (function () {
     'use strict';
 
@@ -680,8 +726,6 @@ setInterval(win.injectLegendServer, 1500);
             injectHUD();
             win
                 .injectHistoryButton();
-            win
-                .injectLegendServer();
             runGeo().then(() => {
                 setTimeout(() => {
                     const sip = (new RegExp('[\\?&]\\??sip=([^&#]*)').exec(URL_VAULT)?.[1]) || "";
