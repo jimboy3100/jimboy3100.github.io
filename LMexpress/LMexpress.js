@@ -6671,66 +6671,26 @@ function LMLegendFFAPromo() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
         '<div class="modal-content">' +
 
-        '<div id="CloseLMPromoLegendFFA2" class="modal-header" style="background:#000a11;border-bottom:2px solid #01d9cc;">' +
+        '<div id="CloseLMPromoLegendFFA2" class="modal-header">' +
 
-        '<button id="CloseLMPromoLegendFFA" type="button" class="close" style="color:#01d9cc;opacity:1;">' +
+        '<button id="CloseLMPromoLegendFFA" type="button" class="close">' +
         '<span aria-hidden="true">&times;</span>' +
         '</button>' +
 
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; color:#01d9cc;">' +
-        '\ud83d\udc51 Legend FFA Server — Now Live!' +
+        '<button id="FAQLegendFFAPromo" type="button" class="close">' +
+        '<span aria-hidden="true">?</span>' +
+        '</button>' +
+
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
+        '\ud83d\udc51 Legend FFA Server' +
         '</h4>' +
 
         '</div>' +
 
-        '<div id="LMadvertisementLegendFFA" style="background:#000a11;color:#fff;padding:25px;font-family:Arial,sans-serif;">' +
-
-        '<div style="text-align:center;margin-bottom:20px;">' +
-        '<span style="font-size:28px;color:#01d9cc;text-shadow:0 0 15px #01d9cc;">\ud83d\udc51 Legend FFA</span><br>' +
-        '<span style="font-size:14px;color:#bdc3c7;">High-Performance Private Server by Legend Clan</span>' +
-        '</div>' +
-
-        '<div style="background:rgba(0,36,62,0.6);border:1px solid #01d9cc;border-radius:8px;padding:20px;margin-bottom:15px;">' +
-        '<h4 style="color:#f1c40f;margin-top:0;">\u26a1 What is this?</h4>' +
-        '<p style="font-size:13px;line-height:1.6;">A brand new <b style="color:#01d9cc;">high-performance FFA server</b> written entirely in C from the ground up. ' +
-        'Zero GC pauses, pre-allocated memory pools, split quadtree optimization — designed for <b>authentic Agar.io mechanics</b> with blazing speed.</p>' +
-        '<p style="font-size:13px;"><b style="color:#e74c3c;">\ud83d\udd27 Currently in TEST stage</b> — we plan to scale this up to <b>500 players</b> with all the potential for massive games!</p>' +
-        '</div>' +
-
-        '<div style="background:rgba(0,36,62,0.6);border:1px solid #222;border-radius:8px;padding:20px;margin-bottom:15px;">' +
-        '<h4 style="color:#f1c40f;margin-top:0;">\ud83c\udfae Features</h4>' +
-        '<ul style="font-size:13px;line-height:1.8;padding-left:20px;">' +
-        '<li><b>Full Agar.io protocol</b> — leaderboard, ghost cells, skins, names, chat, spectate</li>' +
-        '<li><b>Anti-teaming</b> — real decay mechanics with configurable thresholds</li>' +
-        '<li><b>Anti-cheat scramble</b> — coordinate scrambling per player</li>' +
-        '<li><b>Session stats</b> — time alive, highest mass, food/players eaten on death</li>' +
-        '<li><b>WSS/TLS encrypted</b> — secure WebSocket connections</li>' +
-        '</ul>' +
-        '</div>' +
-
-        '<div style="background:rgba(0,36,62,0.6);border:1px solid #222;border-radius:8px;padding:20px;margin-bottom:15px;">' +
-        '<h4 style="color:#f1c40f;margin-top:0;">\ud83d\ude80 How to Play</h4>' +
-        '<ol style="font-size:13px;line-height:1.8;padding-left:20px;">' +
-        '<li>Select region <b style="color:#01d9cc;">Private</b></li>' +
-        '<li>Choose <b style="color:#01d9cc;">\ud83d\udc51 Legend FFA</b> (it\'s the default!)</li>' +
-        '<li>Click <b>Play</b> and enjoy!</li>' +
-        '</ol>' +
-        '<p style="font-size:12px;color:#95a5a6;margin-top:10px;"><b style="color:#f1c40f;">Delta users:</b> Update the addon for full support: ' +
-        '<a href="https://deltio.pages.dev/" target="_blank" style="color:#01d9cc;">Install Delta</a> \u00b7 ' +
-        '<a href="https://greasyfork.org/en/scripts/559441-legend-delta-agar-io" target="_blank" style="color:#01d9cc;">Get Legend Addon</a></p>' +
-        '</div>' +
-
-        '<div style="background:rgba(0,36,62,0.6);border:1px solid #222;border-radius:8px;padding:20px;margin-bottom:15px;">' +
-        '<h4 style="color:#f1c40f;margin-top:0;">\ud83c\udf10 Other Mods / Custom Clients</h4>' +
-        '<p style="font-size:13px;line-height:1.6;">You can connect from <b>any</b> Agar.io mod or custom client using this server address:</p>' +
-        '<p style="text-align:center;margin:12px 0;"><code style="background:#0d2137;color:#01d9cc;padding:8px 16px;border-radius:4px;font-size:15px;letter-spacing:1px;">wss://46.225.56.188:8080</code></p>' +
-        '<p style="font-size:12px;color:#95a5a6;">Paste this URL into your mod\\'s server / WebSocket field and play.Works with OGARio, Delta, and any OgarII - compatible client.</p > ' +
-    '</div>' +
-
-        '<div style="text-align:center;color:#555;font-size:11px;">' +
-        'By <b>jimboy3100</b> / <b>Legend Clan</b> \u2014 <a href="https://www.legendmod.ml" target="_blank" style="color:#01d9cc;">legendmod.ml</a>' +
-        '</div>' +
-
+        '<div id="LMadvertisementLegendFFA">' +
+        '<iframe id="legendFFAIframe" ' +
+        'src="https://jimboy3100.github.io/extras/legendffa.html" ' +
+        'width="920" height="550" style="border:none;"></iframe>' +
         '</div>' +
 
         '</div>' +
@@ -6743,7 +6703,14 @@ function LMLegendFFAPromo() {
     $("#CloseLMPromoLegendFFA").on("click", function () {
         $("#LMPromoLegendFFA").remove();
     });
+
+    $("#FAQLegendFFAPromo").on("click", function () {
+        window.open('https://www.legendmod.ml/', '_blank');
+    });
 }
+
+
+
 
 function LMrewardDay() {
     $('#helloContainer').after(
