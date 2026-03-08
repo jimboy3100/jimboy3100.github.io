@@ -481,33 +481,26 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
                 }
             });
 
-            // Ensure Delta's party system (RootSocket) knows about this server
-            // Root cause: application.connect(ws) is never called for URL-param connections,
-            // so server.ws (serverToken) stays empty and sendRoomInfo sends empty room info.
-            // Fix: set server.ws IMMEDIATELY, then force connected = false → true on open
-            // so the change:connected event fires and sendRoomInfo() gets the right token.
-            try {
-                const app = win.app;
-                if (app && app.server) {
-                    // Set ws immediately so serverToken is derived NOW
-                    app.server.ws = url;
-                    // Ensure connected is false so setting to true will be a CHANGE
-                    app.server.connected = false;
-                    console.log(win.LOG_TAG + '✓ Set app.server.ws=' + url + ' (serverToken will derive)');
-                }
-            } catch (e) { }
-
+            // Diagnostic: log server state when game WS connects
+            // Delta calls application.connect(ws) itself, which sets server.ws and connected
             ws.addEventListener('open', function () {
-                try {
-                    const app = win.app;
-                    if (app && app.server) {
-                        // Now flip connected to true — triggers change:connected → sendRoomInfo()
-                        app.server.connected = true;
-                        app.server.estabilished = true;
-                        app.server.isAgario = true;
-                        console.log(win.LOG_TAG + '✓ app.server.connected=true, sendRoomInfo should fire');
-                    }
-                } catch (e) { }
+                setTimeout(function () {
+                    try {
+                        const app = win.app;
+                        if (app && app.server) {
+                            console.log(win.LOG_TAG + '=== CHAT DIAGNOSTICS ===');
+                            console.log(win.LOG_TAG + 'server.ws:', app.server.ws);
+                            console.log(win.LOG_TAG + 'server.serverToken:', app.server.serverToken);
+                            console.log(win.LOG_TAG + 'server.connected:', app.server.connected);
+                            console.log(win.LOG_TAG + 'server.gameMode:', app.server.gameMode);
+                            console.log(win.LOG_TAG + 'server.isAgario:', app.server.isAgario);
+                        }
+                        // Check if RootSocket is accessible through ApiDelta
+                        if (win.ApiDelta) {
+                            console.log(win.LOG_TAG + 'ApiDelta.pool size:', win.ApiDelta.pool.size);
+                        }
+                    } catch (e) { }
+                }, 2000);
             });
         }
 
