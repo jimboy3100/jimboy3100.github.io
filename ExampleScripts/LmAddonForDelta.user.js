@@ -279,27 +279,35 @@ win.injectLegendServer = function () {
     const dts = win.dts;
     if (!dts || !dts.list) return;
 
-    // Check if already added (by token which is the address)
+    // Check if already added (by token)
     const TOKEN = 'lm-legend-ffa';
     if (dts.list.has(TOKEN)) return;
 
-    // Create a ServerIntstance-compatible object matching Delta's data model
-    // See ServerSelectorModel.js: new ServerIntstance(adress, token, displayName)
-    const entry = Object.create(Object.getPrototypeOf(
-        dts.list.by.cat['default']?.[0] || {}
-    ));
-    entry.adress = win.LM_PRIVATE_SERVER_URL;
-    entry.token = TOKEN;
-    entry.displayName = 'Legend FFA High Perform.';
-    entry.cat = 'default';
-    entry.region = 'default';
-    entry.gamemode = 'default';
-    entry.multibox = true;
-    entry.botting = true;
-    entry.lastChecked = new Date();
+    // Plain object — avoids "Private element not present" error from
+    // ServerIntstance private class fields when using Object.create
+    const entry = {
+        adress: win.LM_PRIVATE_SERVER_URL,
+        token: TOKEN,
+        displayName: 'Legend FFA',
+        cat: 'default',
+        region: 'default',
+        gamemode: 'default',
+        multibox: true,
+        botting: true,
+        lastChecked: new Date(),
+        get lastCheckedTime() {
+            return this.lastChecked.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+        },
+        get isFresh() {
+            return (new Date().getTime() - this.lastChecked.getTime()) / 1000 / 60 < 5;
+        },
+        toJSON() {
+            return { adress: this.adress };
+        }
+    };
 
     dts.list.add(entry);
-    console.log(win.LOG_TAG + "Legend Server injected into Delta server list (" + win.LM_PRIVATE_SERVER_URL + ")");
+    console.log(win.LOG_TAG + "Legend FFA injected into Delta server list (" + win.LM_PRIVATE_SERVER_URL + ")");
 };
 
 // Poll until dts is ready, then inject
