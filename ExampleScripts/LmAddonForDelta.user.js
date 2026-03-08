@@ -258,39 +258,39 @@ win.connectPrivateServer = function (rawUrl) {
 // Delta uses Preact virtual DOM — the Private tab renders from window.dts
 // (DeltaServerList). We push into dts.list so Preact renders it natively.
 // ==========================================================================
-win.LM_PRIVATE_SERVER_URL = localStorage.getItem("LM_Private_Server") || "ws://localhost:8080";
+win.LM_PRIVATE_SERVER_URL = "ws://localhost:8080";
 
 win.injectLegendServer = function () {
-    // Wait for Delta's server list model to be available
     const dts = win.dts;
     if (!dts || !dts.list) return;
+    if (dts.list.has('lm-legend-ffa')) return;
 
-    const url = win.LM_PRIVATE_SERVER_URL;
-
-    // Check if already added (token = address URL, matching Delta's pattern)
-    if (dts.list.has(url)) return;
-
-    // Get the actual ServerIntstance constructor from an existing list entry
-    // This ensures we create a proper instance with all private fields initialized
-    const existingEntries = dts.list.by.cat['default'];
-    if (!existingEntries || existingEntries.length === 0) return;
-
-    const Constructor = existingEntries[0].constructor;
-    if (!Constructor) return;
+    // Plain object — this approach confirmed working (entry appeared in list before)
+    const entry = {
+        adress: win.LM_PRIVATE_SERVER_URL,
+        token: 'lm-legend-ffa',
+        displayName: 'Legend FFA',
+        cat: 'default',
+        region: 'default',
+        gamemode: 'default',
+        multibox: true,
+        botting: true,
+        lastChecked: new Date(),
+        get lastCheckedTime() {
+            return this.lastChecked.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+        },
+        get isFresh() { return true; },
+        toJSON() { return { adress: this.adress }; }
+    };
 
     try {
-        // Delta's setServerList does: new ServerIntstance(info.val, info.val, info.name)
-        const entry = new Constructor(url, url, 'Legend FFA');
-        entry.multibox = true;
-        entry.cat = 'default';
         dts.list.add(entry);
-        console.log(win.LOG_TAG + "Legend FFA injected into Delta server list (" + url + ")");
+        console.log(win.LOG_TAG + "✓ Legend FFA added to server list");
     } catch (e) {
-        console.error(win.LOG_TAG + "Failed to inject Legend FFA:", e);
+        console.error(win.LOG_TAG + "✗ Legend FFA injection failed:", e);
     }
 };
 
-// Poll until dts is ready, then inject
 setInterval(win.injectLegendServer, 1500);
 (function () {
     'use strict';
