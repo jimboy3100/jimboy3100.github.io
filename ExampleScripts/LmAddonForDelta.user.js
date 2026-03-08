@@ -49,11 +49,13 @@ document.addEventListener('click', (e) => {
             if (win
                 .LM_Session.current.server) {
                 win
-                    .LM_Session.history.unshift({...win
-                        .LM_Session.current});
+                    .LM_Session.history.unshift({
+                        ...win
+                            .LM_Session.current
+                    });
                 if (win
                     .LM_Session.history.length > 10) win
-                    .LM_Session.history.pop();
+                        .LM_Session.history.pop();
             }
             win
                 .LM_Session.current = { nick: nickVal, tag: tagVal, server: sipVal, region: regVal, mode: modVal, time: new Date().toLocaleString() };
@@ -69,7 +71,7 @@ document.addEventListener('click', (e) => {
     }
 }, true);
 
-win.rejoinLastServer = function() {
+win.rejoinLastServer = function () {
     // Check if Delta app exists and get the real connected token, otherwise empty string
     const realConnectedToken = win.app && win.app.server ? win.app.server.serverToken : "";
 
@@ -121,7 +123,7 @@ win.rejoinLastServer = function() {
         }
     }
 };
-win.injectHistoryButton = function() {
+win.injectHistoryButton = function () {
     const serverInput = document.querySelector('input[name="serverToken"]');
     if (!serverInput || document.getElementById('lm-rejoin-btn')) return;
 
@@ -170,15 +172,138 @@ win.injectHistoryButton = function() {
     rejoinBtn.title = "Rejoin Last Played Server";
 
     // Re-linking the click event properly
-    rejoinBtn.onclick = function(e) {
+    rejoinBtn.onclick = function (e) {
         e.preventDefault();
         e.stopPropagation();
         win.rejoinLastServer();
     };
 
     btnCol.appendChild(rejoinBtn);
+
+    // --- Private Server button ---
+    const pvtBtn = document.createElement('button');
+    pvtBtn.id = 'lm-private-btn';
+    pvtBtn.className = connectBtn ? connectBtn.className : "btn";
+    pvtBtn.style.flex = "0 0 36px";
+    pvtBtn.style.minWidth = "36px";
+    pvtBtn.style.padding = "0";
+    pvtBtn.style.boxSizing = "border-box";
+    pvtBtn.style.cursor = "pointer";
+    pvtBtn.style.pointerEvents = "auto";
+    pvtBtn.innerHTML = '<i class="fas fa-server"></i>';
+    pvtBtn.title = "Connect to Private Server (Legend)";
+    pvtBtn.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const lastUrl = localStorage.getItem("LM_Private_Server") || "wss://yourserver.com:8080";
+        const url = prompt("[LM] Enter private server URL:\n\nExamples:\n  wss://myserver.com:8080\n  wss://play.legendmod.ml:443\n  ws://localhost:8080 (auto-upgraded to wss://)\n\nNote: ws:// only works if agar.io is loaded over http://", lastUrl);
+        if (url && url.trim()) {
+            win.connectPrivateServer(url.trim());
+        }
+    };
+    btnCol.appendChild(pvtBtn);
 };
-(function() {
+
+// ==========================================================================
+// [PRIVATE SERVER CONNECTION]
+// Delta uses base64-encoded tokens for non-agar.io servers.
+// ServerStringConverter.js: tokenToWs() decodes btoa(host) → wss://host
+// We encode the private server URL as a base64 token so Delta connects natively.
+// ==========================================================================
+win.connectPrivateServer = function (rawUrl) {
+    let url = rawUrl.trim();
+
+    // Auto-upgrade ws:// to wss:// when on HTTPS (mixed content blocked by browser)
+    if (url.startsWith("ws://") && window.location.protocol === "https:") {
+        console.warn(win.LOG_TAG + "Auto-upgrading ws:// to wss:// (mixed content not allowed on HTTPS)");
+        url = "wss://" + url.substring(5);
+        if (win.toastr) win.toastr.warning("[LM] Auto-upgraded to wss:// (HTTPS page can't use ws://)");
+    }
+
+    // Strip the wss:// or ws:// prefix to get the host:port
+    let host = url;
+    if (host.startsWith("wss://")) host = host.substring(6);
+    else if (host.startsWith("ws://")) host = host.substring(5);
+
+    // Remove trailing slash
+    host = host.replace(/\/+$/, "");
+
+    // Encode as base64 token (Delta's native format for custom servers)
+    // ServerStringConverter.tokenToWs: if tokenUniversal matches → return 'wss://' + atob(token)
+    const token = btoa(host);
+
+    console.log(win.LOG_TAG + "Private server: " + url);
+    console.log(win.LOG_TAG + "Encoded token: " + token);
+    console.log(win.LOG_TAG + "Delta will connect to: wss://" + host);
+
+    // Save for next time
+    localStorage.setItem("LM_Private_Server", rawUrl);
+
+    // Inject into Delta's server token input and click Connect
+    const serverInput = document.querySelector('input[name="serverToken"]');
+    if (!serverInput) {
+        if (win.toastr) win.toastr.error("[LM] Server token input not found!");
+        return;
+    }
+
+    // Use React-compatible value setter
+    const setter = Object.getOwnPropertyDescriptor(
+        win.HTMLInputElement.prototype, "value"
+    ).set;
+    setter.call(serverInput, token);
+    serverInput.dispatchEvent(new Event('input', { bubbles: true }));
+    serverInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // Click the Connect button
+    setTimeout(() => {
+        const btn = serverInput.closest('.flex.items-stretch')?.querySelector('button') ||
+            Array.from(document.querySelectorAll('button')).find(b =>
+                (b.textContent || '').trim().toLowerCase() === 'connect'
+            );
+        if (btn) {
+            btn.click();
+            if (win.toastr) win.toastr.info("[LM] Connecting to private server: " + host);
+        }
+    }, 300);
+};
+
+// ==========================================================================
+// [LEGEND SERVER LIST ENTRY]
+// Injects "Legend Server" into Delta's server list (.list-style)
+// ==========================================================================
+win.LM_PRIVATE_SERVER_URL = localStorage.getItem("LM_Private_Server") || "wss://localhost:8080";
+
+win.injectLegendServer = function () {
+    const listStyle = document.querySelector('.list-style');
+    if (!listStyle) return;
+    if (document.getElementById('lm-legend-server-entry')) return;
+
+    const entry = document.createElement('div');
+    entry.id = 'lm-legend-server-entry';
+    entry.textContent = 'Legend FFA High Perform.';
+    entry.style.color = '#01d9cc';
+    entry.style.fontWeight = 'bold';
+    entry.style.cursor = 'pointer';
+
+    entry.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Remove active class from all siblings
+        Array.from(listStyle.children).forEach(c => c.classList.remove('active'));
+        entry.classList.add('active');
+
+        // Connect to private server
+        win.connectPrivateServer(win.LM_PRIVATE_SERVER_URL);
+    });
+
+    listStyle.appendChild(entry);
+    console.log(win.LOG_TAG + "Legend Server added to server list (" + win.LM_PRIVATE_SERVER_URL + ")");
+};
+
+// Keep polling — Delta rebuilds the server list dynamically
+setInterval(win.injectLegendServer, 2000);
+(function () {
     'use strict';
 
     // ==========================================================================
@@ -212,8 +337,10 @@ win.injectHistoryButton = function() {
             , 'url', { get: () => URL_VAULT, configurable: false });
         Object.defineProperty(win
             , 'originalURL', { get: () => URL_VAULT, configurable: false });
-    } catch (e) { win
-        .url = URL_VAULT; }
+    } catch (e) {
+        win
+            .url = URL_VAULT;
+    }
 
     // ==========================================================================
     // [3. MASTER STATE]
@@ -239,7 +366,7 @@ win.injectHistoryButton = function() {
     // ==========================================================================
     function isValidWebhook(url) { return /^(https?):\/\/(discord|discordapp)\.com\/api\/webhooks\/[^\s]+$/.test(url); }
 
-    win.sendServerToDiscord = function(customToken = null, customRegion = null, customMode = null) {
+    win.sendServerToDiscord = function (customToken = null, customRegion = null, customMode = null) {
         const sip = customToken || document.querySelector('input[name="serverToken"]')?.value;
         const tag = document.querySelector('input[name="clantag"]')?.value || "";
         const nick = document.querySelector('input[name="nickA"]')?.value || "Guest";
@@ -339,7 +466,7 @@ win.injectHistoryButton = function() {
         const isSelect = el instanceof HTMLSelectElement;
         const setter = Object.getOwnPropertyDescriptor(isSelect ? win
             .HTMLSelectElement.prototype : win
-            .HTMLInputElement.prototype, "value").set;
+                .HTMLInputElement.prototype, "value").set;
         setter.call(el, value);
         el.dispatchEvent(new Event('input', { bubbles: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
@@ -348,22 +475,22 @@ win.injectHistoryButton = function() {
     }
 
     win
-        .startSovereignJoin = async function(region, mode, token) {
-        if (LM_MASTER.joinInProgress) return;
-        LM_MASTER.joinInProgress = true;
-        hijackUI('select[name="region"]', region);
-        hijackUI('select[name="gamemode"]', mode);
-        await new Promise(r => setTimeout(r, 1200));
-        hijackUI('input[name="serverToken"]', token);
-        await new Promise(r => setTimeout(r, 200));
-        hijackUI('input[name="serverToken"]', token);
-        setTimeout(() => {
-            const btn = document.querySelector('input[name="serverToken"]')?.closest('.flex.items-stretch')?.querySelector('button') ||
-                Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Connect'));
-            if (btn) btn.click();
-            LM_MASTER.joinInProgress = false;
-        }, 500);
-    }
+        .startSovereignJoin = async function (region, mode, token) {
+            if (LM_MASTER.joinInProgress) return;
+            LM_MASTER.joinInProgress = true;
+            hijackUI('select[name="region"]', region);
+            hijackUI('select[name="gamemode"]', mode);
+            await new Promise(r => setTimeout(r, 1200));
+            hijackUI('input[name="serverToken"]', token);
+            await new Promise(r => setTimeout(r, 200));
+            hijackUI('input[name="serverToken"]', token);
+            setTimeout(() => {
+                const btn = document.querySelector('input[name="serverToken"]')?.closest('.flex.items-stretch')?.querySelector('button') ||
+                    Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Connect'));
+                if (btn) btn.click();
+                LM_MASTER.joinInProgress = false;
+            }, 500);
+        }
 
     // ==========================================================================
     // [6. THE OVERLORD COMPACT HUD]
@@ -451,8 +578,8 @@ win.injectHistoryButton = function() {
 
         ['lm-wh1', 'lm-wh2'].forEach((id, i) => {
             document.getElementById(id).onblur = (e) => {
-                localStorage.setItem(`discwebhook${i+1}`, e.target.value);
-                LM_MASTER.discord[`webhook${i+1}`] = e.target.value;
+                localStorage.setItem(`discwebhook${i + 1}`, e.target.value);
+                LM_MASTER.discord[`webhook${i + 1}`] = e.target.value;
             };
         });
         document.getElementById('lm-auto-d').onchange = (e) => {
@@ -491,8 +618,10 @@ win.injectHistoryButton = function() {
                         <i class="fa fa-discord lm-ds-icon"></i>
                     </div>
                 `;
-                row.querySelector('.lm-ds-icon').onclick = (e) => { e.stopPropagation(); win
-                    .sendServerToDiscord(token, region, mode); };
+                row.querySelector('.lm-ds-icon').onclick = (e) => {
+                    e.stopPropagation(); win
+                        .sendServerToDiscord(token, region, mode);
+                };
                 row.onclick = () => { hideUI(); startSovereignJoin(region, mode, token); };
                 log.appendChild(row);
             }
@@ -500,7 +629,7 @@ win.injectHistoryButton = function() {
     }
 
     function hideUI() { document.getElementById('lm-shade').style.display = 'none'; document.getElementById('lm-main-win').style.display = 'none'; LM_MASTER.searching = false; }
-    function setupDragging(el, h) { let x1=0,y1=0,x2=0,y2=0; h.onmousedown=(e)=>{ e.preventDefault(); x2=e.clientX; y2=e.clientY; document.onmouseup=()=>{document.onmouseup=null;document.onmousemove=null;}; document.onmousemove=(e)=>{e.preventDefault(); x1=x2-e.clientX; y1=y2-e.clientY; x2=e.clientX; y2=e.clientY; el.style.top=(el.offsetTop-y1)+"px"; el.style.left=(el.offsetLeft-x1)+"px"; el.style.transform="none";};}; }
+    function setupDragging(el, h) { let x1 = 0, y1 = 0, x2 = 0, y2 = 0; h.onmousedown = (e) => { e.preventDefault(); x2 = e.clientX; y2 = e.clientY; document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; }; document.onmousemove = (e) => { e.preventDefault(); x1 = x2 - e.clientX; y1 = y2 - e.clientY; x2 = e.clientX; y2 = e.clientY; el.style.top = (el.offsetTop - y1) + "px"; el.style.left = (el.offsetLeft - x1) + "px"; el.style.transform = "none"; }; }; }
 
     // ==========================================================================
     // [7. NETWORK & BROADCASTER]
@@ -512,13 +641,15 @@ win.injectHistoryButton = function() {
             setInterval(() => {
                 const sip = document.querySelector('input[name="serverToken"]')?.value;
                 if (!sip) return;
-                const payload = { type: "update_details", data: {
+                const payload = {
+                    type: "update_details", data: {
                         nickname: (document.querySelector('input[name="nickA"]')?.value || "Unnamed") + " (DM)",
                         server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
                         tag: document.querySelector('input[name="clantag"]')?.value || "",
                         agarioLEVEL: win
                             .agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
-                    }};
+                    }
+                };
                 LM_MASTER.socket.send(JSON.stringify(payload));
             }, 10000);
             LM_MASTER.socket.send(JSON.stringify({ type: "get_players" }));
@@ -539,19 +670,19 @@ win.injectHistoryButton = function() {
     // [8. STARTUP & ADRES SYNC]
     // ==========================================================================
     win
-        .syncAdres = function() {
-        const t = document.querySelector('input[name="serverToken"]')?.value;
-        const g = document.querySelector('input[name="clantag"]')?.value;
-        const r = document.querySelector('select[name="region"]')?.value;
-        const m = document.querySelector('select[name="gamemode"]')?.value;
-        if (!t || t.length < 3 || LM_MASTER.joinInProgress) return;
-        const u = win
-            .location.origin + win
-            .location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g?"&pass="+g:"") + (r?"&?r="+r:"") + (m?"&?m="+m:"");
-        if (win
-            .location.href !== u) win
-            .history.replaceState(null, "", u);
-    };
+        .syncAdres = function () {
+            const t = document.querySelector('input[name="serverToken"]')?.value;
+            const g = document.querySelector('input[name="clantag"]')?.value;
+            const r = document.querySelector('select[name="region"]')?.value;
+            const m = document.querySelector('select[name="gamemode"]')?.value;
+            if (!t || t.length < 3 || LM_MASTER.joinInProgress) return;
+            const u = win
+                .location.origin + win
+                    .location.pathname + "?sip=live-arena-" + t + ".agar.io" + (g ? "&pass=" + g : "") + (r ? "&?r=" + r : "") + (m ? "&?m=" + m : "");
+            if (win
+                .location.href !== u) win
+                    .history.replaceState(null, "", u);
+        };
 
     const boot = setInterval(() => {
 
@@ -560,6 +691,8 @@ win.injectHistoryButton = function() {
             injectHUD();
             win
                 .injectHistoryButton();
+            win
+                .injectLegendServer();
             runGeo().then(() => {
                 setTimeout(() => {
                     const sip = (new RegExp('[\\?&]\\??sip=([^&#]*)').exec(URL_VAULT)?.[1]) || "";
@@ -572,7 +705,7 @@ win.injectHistoryButton = function() {
 
                     // --- LISTENERS ---
                     document.addEventListener('keydown', (e) => {
-                        if (e.keyCode === 8 && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) {
+                        if (e.keyCode === 8 && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
                             e.preventDefault(); document.getElementById('lm-shade').style.display = 'block'; document.getElementById('lm-main-win').style.display = 'block'; document.getElementById('lm-search-in').focus();
                         }
                     });
@@ -606,7 +739,7 @@ win.injectHistoryButton = function() {
                                 session.current.tag = t;
                             } else {
                                 if (session.current.server && session.current.server !== "") {
-                                    session.history.unshift({...session.current});
+                                    session.history.unshift({ ...session.current });
                                     if (session.history.length > 10) session.history.pop();
                                 }
                                 session.current = { nick: n, tag: t, server: s, region: r, mode: m, time: new Date().toLocaleString() };
@@ -623,8 +756,10 @@ win.injectHistoryButton = function() {
                         }
                     }, true);
 
-                    document.addEventListener('change', (e) => { if (['region', 'gamemode', 'clantag', 'serverToken'].includes(e.target.name)) setTimeout(win
-                        .syncAdres, 100); }, true);
+                    document.addEventListener('change', (e) => {
+                        if (['region', 'gamemode', 'clantag', 'serverToken'].includes(e.target.name)) setTimeout(win
+                            .syncAdres, 100);
+                    }, true);
                     setInterval(win
                         .syncAdres, 3500);
                 }, 1200);
@@ -706,9 +841,9 @@ win.injectHistoryButton = function() {
             const t = setInterval(() => {
                 const ok =
                     !!win.keyMaster && typeof win.keyMaster.export === "function" && typeof win.keyMaster.import === "function" &&
-                    !!win.profiles  && typeof win.profiles.export  === "function" && typeof win.profiles.import  === "function" &&
-                    !!win.settings  && typeof win.settings.export  === "function" && typeof win.settings.import  === "function" &&
-                    !!win.theme     && typeof win.theme.export     === "function" && typeof win.theme.import     === "function";
+                    !!win.profiles && typeof win.profiles.export === "function" && typeof win.profiles.import === "function" &&
+                    !!win.settings && typeof win.settings.export === "function" && typeof win.settings.import === "function" &&
+                    !!win.theme && typeof win.theme.export === "function" && typeof win.theme.import === "function";
 
                 if (ok) { clearInterval(t); resolve(true); return; }
                 if (Date.now() - start > timeoutMs) { clearInterval(t); reject(new Error("Delta API not ready: keyMaster/profiles/settings/theme")); }
@@ -747,9 +882,9 @@ win.injectHistoryButton = function() {
                 const t = (b.innerText || "").trim().toUpperCase();
                 return t === "APPLY" || t === "SAVE" || t === "OK";
             });
-            if (hit) { try { hit.click(); } catch (_) {} }
-        } catch (_) {}
-        setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+            if (hit) { try { hit.click(); } catch (_) { } }
+        } catch (_) { }
+        setTimeout(() => { clickDeltaSaveWithRetry().catch(() => { }); }, 250);
     }
 
     // -------------------------
@@ -867,15 +1002,15 @@ win.injectHistoryButton = function() {
                 if (!el) return false;
 
                 // Ensure interactable
-                try { el.style.pointerEvents = "auto"; } catch (_) {}
+                try { el.style.pointerEvents = "auto"; } catch (_) { }
 
                 const opts = { bubbles: true, cancelable: true, composed: true };
 
                 // Pointer events (some UIs prefer this)
                 try {
                     el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
-                    el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
-                } catch (_) {}
+                    el.dispatchEvent(new PointerEvent("pointerup", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+                } catch (_) { }
 
                 // Mouse events (React-style delegation)
                 el.dispatchEvent(new MouseEvent("mousedown", opts));
@@ -895,7 +1030,7 @@ win.injectHistoryButton = function() {
                         try {
                             const form = saveBtn.closest("form");
                             if (form && typeof form.requestSubmit === "function") form.requestSubmit();
-                        } catch (_) {}
+                        } catch (_) { }
 
                         console.log(LOG + "Triggered Save after cloud download.", { ok, attempt: i + 1 });
                         return true;
@@ -912,9 +1047,9 @@ win.injectHistoryButton = function() {
             const forms = Array.from(document.querySelectorAll("form"));
             const settingsForm = forms.find(f => (f.textContent || "").includes("Export / import settings"));
             if (!settingsForm) return;
-// -------------------------
-// Extras row: 50% mobile devtools (left) + 50% Themes website (right)
-// -------------------------
+            // -------------------------
+            // Extras row: 50% mobile devtools (left) + 50% Themes website (right)
+            // -------------------------
             (function addThemesButtonNextToMobileDevtools() {
                 const THEMES_URL = "https://www.legendmod.ml/themes/";
 
@@ -1035,7 +1170,7 @@ win.injectHistoryButton = function() {
                     })
                 );
             }
-// REVEAL UID should be under RESET (3rd column), not under IMPORT
+            // REVEAL UID should be under RESET (3rd column), not under IMPORT
             if (!document.getElementById("lm-reveal-uid-btn") && !document.getElementById("lm-uid-textarea")) {
                 const resetBtn = buttons.find(b => (b.innerText || "").trim() === "RESET");
                 const resetCol = resetBtn?.closest('div[class*="w-1/3"]') || resetBtn?.parentElement;
@@ -1064,9 +1199,9 @@ win.injectHistoryButton = function() {
             if (m.addedNodes && m.addedNodes.length > 0) { injectSettingsButtons(); break; }
         }
     });
-// -------------------------
-// Force-click Delta "Save" (the floppy icon) to persist imported settings
-// -------------------------
+    // -------------------------
+    // Force-click Delta "Save" (the floppy icon) to persist imported settings
+    // -------------------------
     function findDeltaSaveButton() {
         // 1) Icon-based (best, matches your screenshot DOM)
         const byIcon = document.querySelector('.btn-icon.fas.fa-save')?.closest('button');
@@ -1086,15 +1221,15 @@ win.injectHistoryButton = function() {
         if (!el) return false;
 
         // Make sure it can receive input (some Delta elements use pointer-events tricks)
-        try { el.style.pointerEvents = "auto"; } catch (_) {}
+        try { el.style.pointerEvents = "auto"; } catch (_) { }
 
         const opts = { bubbles: true, cancelable: true, composed: true };
 
         // Pointer events (some frameworks listen here)
         try {
             el.dispatchEvent(new PointerEvent("pointerdown", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
-            el.dispatchEvent(new PointerEvent("pointerup",   { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
-        } catch (_) {}
+            el.dispatchEvent(new PointerEvent("pointerup", { ...opts, pointerId: 1, pointerType: "mouse", isPrimary: true }));
+        } catch (_) { }
 
         // Mouse events (React-style delegation)
         el.dispatchEvent(new MouseEvent("mousedown", opts));
@@ -1114,7 +1249,7 @@ win.injectHistoryButton = function() {
                 try {
                     const form = saveBtn.closest("form");
                     if (form && typeof form.requestSubmit === "function") form.requestSubmit();
-                } catch (_) {}
+                } catch (_) { }
 
                 return true;
             }
@@ -1124,7 +1259,7 @@ win.injectHistoryButton = function() {
     }
     settingsObserver.observe(document.body, { childList: true, subtree: true });
     setInterval(injectSettingsButtons, 2500);
-    setTimeout(() => { clickDeltaSaveWithRetry().catch(()=>{}); }, 250);
+    setTimeout(() => { clickDeltaSaveWithRetry().catch(() => { }); }, 250);
 
 })();
 
@@ -1152,8 +1287,8 @@ win.injectHistoryButton = function() {
     // Toggle: remove the original chat line after we handle a command
     // win.REMOVE_CHAT_MESSAGE_AFTER_PARSE = true;
 
-    const TAGS = ["url","tag","yut","img","discord","skype"];
-    const CMD_OPEN_RE  = new RegExp("\\[(" + TAGS.join("|") + ")\\]", "i");
+    const TAGS = ["url", "tag", "yut", "img", "discord", "skype"];
+    const CMD_OPEN_RE = new RegExp("\\[(" + TAGS.join("|") + ")\\]", "i");
     const CMD_CLOSE_RE = new RegExp("\\[\\/(" + TAGS.join("|") + ")\\]", "i");
 
     // --------- cross-source dedup (chat + toastr hook) ----------
@@ -1464,7 +1599,7 @@ win.injectHistoryButton = function() {
             const payload = extractBetween(text, "[url]", "[/url]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleUrlCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1472,7 +1607,7 @@ win.injectHistoryButton = function() {
         if (/\[tag\]/i.test(text) && /\[\/tag\]/i.test(text)) {
             const payload = extractBetween(text, "[tag]", "[/tag]");
             handleTagCommand(payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1481,7 +1616,7 @@ win.injectHistoryButton = function() {
             const payload = extractBetween(text, "[yut]", "[/yut]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleYoutubeCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1490,7 +1625,7 @@ win.injectHistoryButton = function() {
             const payload = extractBetween(text, "[img]", "[/img]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleImgCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1499,7 +1634,7 @@ win.injectHistoryButton = function() {
             const payload = extractBetween(text, "[skype]", "[/skype]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleSkypeCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1508,7 +1643,7 @@ win.injectHistoryButton = function() {
             const payload = extractBetween(text, "[discord]", "[/discord]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleDiscordCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) {}
+            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
 
@@ -1624,7 +1759,7 @@ win.injectHistoryButton = function() {
                             LM_ParseChatCommand(t, (title || "").trim() || "System", null, null);
                         }
                     }
-                } catch (_) {}
+                } catch (_) { }
                 return orig.call(this, msg, title, opts);
             };
         });
