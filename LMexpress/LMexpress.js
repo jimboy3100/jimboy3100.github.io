@@ -6720,6 +6720,13 @@ function LMLegendFFAPromo() {
         '<a href="https://greasyfork.org/en/scripts/559441-legend-delta-agar-io" target="_blank" style="color:#01d9cc;">Get Legend Addon</a></p>' +
         '</div>' +
 
+        '<div style="background:rgba(0,36,62,0.6);border:1px solid #222;border-radius:8px;padding:20px;margin-bottom:15px;">' +
+        '<h4 style="color:#f1c40f;margin-top:0;">\ud83c\udf10 Other Mods / Custom Clients</h4>' +
+        '<p style="font-size:13px;line-height:1.6;">You can connect from <b>any</b> Agar.io mod or custom client using this server address:</p>' +
+        '<p style="text-align:center;margin:12px 0;"><code style="background:#0d2137;color:#01d9cc;padding:8px 16px;border-radius:4px;font-size:15px;letter-spacing:1px;">wss://46.225.56.188:8080</code></p>' +
+        '<p style="font-size:12px;color:#95a5a6;">Paste this URL into your mod\\'s server / WebSocket field and play.Works with OGARio, Delta, and any OgarII - compatible client.</p > ' +
+    '</div>' +
+
         '<div style="text-align:center;color:#555;font-size:11px;">' +
         'By <b>jimboy3100</b> / <b>Legend Clan</b> \u2014 <a href="https://www.legendmod.ml" target="_blank" style="color:#01d9cc;">legendmod.ml</a>' +
         '</div>' +
