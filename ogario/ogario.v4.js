@@ -310,7 +310,8 @@ function deleteGamemode(temp) {
         $('#gamemode').append(new Option(el.text, el.value));
     });
     $('#gamemode').val('5001');
-    $('#gamemode').change(function () {
+    $('#gamemode option[value="5001"]').prop('selected', true);
+    $('#gamemode').off('change').on('change', function () {
         if ($('#region').val() == "Private") {
             /*
             var now = new Date();
