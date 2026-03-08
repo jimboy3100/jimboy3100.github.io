@@ -206,40 +206,26 @@ win.injectHistoryButton = function () {
 
 // ==========================================================================
 // [PRIVATE SERVER CONNECTION]
-// Delta uses base64-encoded tokens for non-agar.io servers.
-// ServerStringConverter.js: tokenToWs() decodes btoa(host) → wss://host
-// We encode the private server URL as a base64 token so Delta connects natively.
+// Delta's getWs() handles raw ws:// and wss:// URLs directly via wsUniversal
+// regex. We just pass the URL into the server token field as-is.
 // ==========================================================================
 win.connectPrivateServer = function (rawUrl) {
     let url = rawUrl.trim();
 
-    // Auto-upgrade ws:// to wss:// when on HTTPS (mixed content blocked by browser)
-    if (url.startsWith("ws://") && window.location.protocol === "https:") {
+    // Auto-upgrade ws:// to wss:// ONLY for non-localhost on HTTPS pages
+    const isLocalhost = /^ws:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)/i.test(url);
+    if (url.startsWith("ws://") && !isLocalhost && window.location.protocol === "https:") {
         console.warn(win.LOG_TAG + "Auto-upgrading ws:// to wss:// (mixed content not allowed on HTTPS)");
         url = "wss://" + url.substring(5);
         if (win.toastr) win.toastr.warning("[LM] Auto-upgraded to wss:// (HTTPS page can't use ws://)");
     }
 
-    // Strip the wss:// or ws:// prefix to get the host:port
-    let host = url;
-    if (host.startsWith("wss://")) host = host.substring(6);
-    else if (host.startsWith("ws://")) host = host.substring(5);
-
-    // Remove trailing slash
-    host = host.replace(/\/+$/, "");
-
-    // Encode as base64 token (Delta's native format for custom servers)
-    // ServerStringConverter.tokenToWs: if tokenUniversal matches → return 'wss://' + atob(token)
-    const token = btoa(host);
-
-    console.log(win.LOG_TAG + "Private server: " + url);
-    console.log(win.LOG_TAG + "Encoded token: " + token);
-    console.log(win.LOG_TAG + "Delta will connect to: wss://" + host);
+    console.log(win.LOG_TAG + "Connecting to private server: " + url);
 
     // Save for next time
     localStorage.setItem("LM_Private_Server", rawUrl);
 
-    // Inject into Delta's server token input and click Connect
+    // Pass the raw URL directly — Delta's tokensUtil.getWs() handles ws:// and wss:// natively
     const serverInput = document.querySelector('input[name="serverToken"]');
     if (!serverInput) {
         if (win.toastr) win.toastr.error("[LM] Server token input not found!");
@@ -250,7 +236,7 @@ win.connectPrivateServer = function (rawUrl) {
     const setter = Object.getOwnPropertyDescriptor(
         win.HTMLInputElement.prototype, "value"
     ).set;
-    setter.call(serverInput, token);
+    setter.call(serverInput, url);
     serverInput.dispatchEvent(new Event('input', { bubbles: true }));
     serverInput.dispatchEvent(new Event('change', { bubbles: true }));
 
@@ -262,7 +248,7 @@ win.connectPrivateServer = function (rawUrl) {
             );
         if (btn) {
             btn.click();
-            if (win.toastr) win.toastr.info("[LM] Connecting to private server: " + host);
+            if (win.toastr) win.toastr.info("[LM] Connecting to: " + url);
         }
     }, 300);
 };
@@ -272,7 +258,7 @@ win.connectPrivateServer = function (rawUrl) {
 // Delta uses Preact virtual DOM — the Private tab renders from window.dts
 // (DeltaServerList). We push into dts.list so Preact renders it natively.
 // ==========================================================================
-win.LM_PRIVATE_SERVER_URL = localStorage.getItem("LM_Private_Server") || "wss://localhost:8080";
+win.LM_PRIVATE_SERVER_URL = localStorage.getItem("LM_Private_Server") || "ws://localhost:8080";
 
 win.injectLegendServer = function () {
     // Wait for Delta's server list model to be available
