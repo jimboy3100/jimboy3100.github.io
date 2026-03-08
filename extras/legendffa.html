@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="-webkit-">
+
 <head>
     <meta charset="UTF-8">
 
@@ -18,174 +19,189 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton|Oswald">
 
     <style>
-        body{
+        body {
             font: 400 1em/1.5 "Neuton", sans-serif;
-            background:#090d00;
-            color: rgba(255,255,255,.75);
-            text-align:center;
-            margin:0;
-            overflow-x:hidden;
+            background: #090d00;
+            color: rgba(255, 255, 255, .75);
+            text-align: center;
+            margin: 0;
+            overflow-x: hidden;
         }
 
-        .panel{
-            text-transform:uppercase;
-            letter-spacing:.35em;
-            display:inline-block;
-            border:4px double rgba(255,255,255,.25);
-            border-width:4px 0;
-            padding:1.5em 1.5em;
-            position:relative;
-            margin:28px auto 40px;
-            width:min(980px, calc(100% - 24px));
-            box-sizing:border-box;
+        .panel {
+            text-transform: uppercase;
+            letter-spacing: .35em;
+            display: inline-block;
+            border: 4px double rgba(255, 255, 255, .25);
+            border-width: 4px 0;
+            padding: 1.5em 1.5em;
+            position: relative;
+            margin: 28px auto 40px;
+            width: min(980px, calc(100% - 24px));
+            box-sizing: border-box;
         }
 
-        .brand, .headline{
+        .brand,
+        .headline {
             font: 700 4em/1 "Oswald", sans-serif;
-            letter-spacing:0;
-            padding:.25em 0 .325em;
-            display:block;
-            margin:0 auto;
-            text-shadow:0 0 80px rgba(255,255,255,.5);
+            letter-spacing: 0;
+            padding: .25em 0 .325em;
+            display: block;
+            margin: 0 auto;
+            text-shadow: 0 0 80px rgba(255, 255, 255, .5);
             background: url("https://jimboy3100.github.io/banners/animated_text_fill.png") repeat-y;
-            -webkit-background-clip:text;
-            background-clip:text;
-            -webkit-text-fill-color:transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             -webkit-animation: aitf 80s linear infinite;
-            -webkit-transform: translate3d(0,0,0);
-            -webkit-backface-visibility:hidden;
-        }
-        @-webkit-keyframes aitf{
-            0%{ background-position:0% 50%; }
-            100%{ background-position:100% 50%; }
+            -webkit-transform: translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
         }
 
-        .sub{
-            font:700 1.15em/1.2 "Oswald", sans-serif;
-            letter-spacing:.18em;
-            margin-top:10px;
-            opacity:.95;
+        @-webkit-keyframes aitf {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
         }
 
-        .row{
-            display:flex;
-            gap:18px;
-            justify-content:center;
-            align-items:flex-start;
-            flex-wrap:wrap;
-            margin:18px auto 10px;
-            letter-spacing:0;
-            text-transform:none;
+        .sub {
+            font: 700 1.15em/1.2 "Oswald", sans-serif;
+            letter-spacing: .18em;
+            margin-top: 10px;
+            opacity: .95;
         }
 
-        .card{
-            width:min(460px, 100%);
-            border:1px solid rgba(255,255,255,.18);
-            background: rgba(0,0,0,.25);
-            box-shadow: 0 0 60px rgba(0,0,0,.35);
-            border-radius:12px;
-            padding:14px 16px 16px;
-            box-sizing:border-box;
-            text-align:left;
+        .row {
+            display: flex;
+            gap: 18px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin: 18px auto 10px;
+            letter-spacing: 0;
+            text-transform: none;
         }
 
-        .card h3{
-            font:700 1.25em/1.2 "Oswald", sans-serif;
-            letter-spacing:.12em;
-            margin:0 0 10px;
-            text-transform:uppercase;
-            color: rgba(255,255,255,.95);
+        .card {
+            width: min(460px, 100%);
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: rgba(0, 0, 0, .25);
+            box-shadow: 0 0 60px rgba(0, 0, 0, .35);
+            border-radius: 12px;
+            padding: 14px 16px 16px;
+            box-sizing: border-box;
+            text-align: left;
         }
 
-        .card p, .card li{
-            margin:0;
-            font:400 1em/1.55 "Neuton", sans-serif;
-            color: rgba(255,255,255,.85);
-            text-transform:none;
-            letter-spacing:.02em;
+        .card h3 {
+            font: 700 1.25em/1.2 "Oswald", sans-serif;
+            letter-spacing: .12em;
+            margin: 0 0 10px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .95);
         }
 
-        .card ul, .card ol{
-            margin:10px 0 0 18px;
-            padding:0;
+        .card p,
+        .card li {
+            margin: 0;
+            font: 400 1em/1.55 "Neuton", sans-serif;
+            color: rgba(255, 255, 255, .85);
+            text-transform: none;
+            letter-spacing: .02em;
         }
 
-        .strong{
-            color:#fff;
-            font-weight:700;
+        .card ul,
+        .card ol {
+            margin: 10px 0 0 18px;
+            padding: 0;
         }
 
-        .accent{
-            color:#01d9cc;
-            font-weight:700;
+        .strong {
+            color: #fff;
+            font-weight: 700;
         }
 
-        .warn{
-            color:#ff4d4d;
-            font-weight:700;
+        .accent {
+            color: #01d9cc;
+            font-weight: 700;
         }
 
-        .test-badge{
-            color:#e74c3c;
-            font-weight:700;
+        .warn {
+            color: #ff4d4d;
+            font-weight: 700;
         }
 
-        .link{
-            color:#8bd3ff;
-            text-decoration:none;
-            border-bottom:1px dotted rgba(139,211,255,.55);
+        .test-badge {
+            color: #e74c3c;
+            font-weight: 700;
         }
-        .link:hover{ border-bottom-color:rgba(139,211,255,1); }
 
-        .wss-box{
-            margin:14px auto;
-            padding:12px 20px;
-            background: rgba(0,36,62,.6);
-            border:2px solid rgba(1,217,204,.4);
-            border-radius:10px;
-            display:inline-block;
+        .link {
+            color: #8bd3ff;
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(139, 211, 255, .55);
         }
-        .wss-box code{
+
+        .link:hover {
+            border-bottom-color: rgba(139, 211, 255, 1);
+        }
+
+        .wss-box {
+            margin: 14px auto;
+            padding: 12px 20px;
+            background: rgba(0, 36, 62, .6);
+            border: 2px solid rgba(1, 217, 204, .4);
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .wss-box code {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size:1.3em;
-            color:#01d9cc;
-            letter-spacing:.08em;
-            text-transform:none;
+            font-size: 1.3em;
+            color: #01d9cc;
+            letter-spacing: .08em;
+            text-transform: none;
         }
 
-        .divider{
-            height:1px;
-            background: rgba(255,255,255,.12);
-            margin:14px 0;
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, .12);
+            margin: 14px 0;
         }
 
-        .tiny{
-            opacity:.75;
-            font-size:.95em;
+        .tiny {
+            opacity: .75;
+            font-size: .95em;
         }
 
-        .footer{
-            margin-top:14px;
-            opacity:.9;
-            letter-spacing:.18em;
-            text-transform:uppercase;
-            font:700 1.05em/1.2 "Oswald", sans-serif;
+        .footer {
+            margin-top: 14px;
+            opacity: .9;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            font: 700 1.05em/1.2 "Oswald", sans-serif;
         }
 
-        .stamp{
-            margin-top:6px;
-            opacity:.6;
-            text-transform:uppercase;
-            letter-spacing:.25em;
-            font-size:.9em;
+        .stamp {
+            margin-top: 6px;
+            opacity: .6;
+            text-transform: uppercase;
+            letter-spacing: .25em;
+            font-size: .9em;
         }
 
-        .emoji{ font-size:1.3em; }
+        .emoji {
+            font-size: 1.3em;
+        }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
     <script>
-        window.console = window.console || function() {};
+        window.console = window.console || function () { };
         if (document.location.search.match(/type=embed/gi)) {
             window.parent.postMessage("resize", "*");
         }
@@ -194,85 +210,128 @@
 
 <body translate="no">
 
-<div class="panel">
+    <div class="panel">
 
-    <div class="brand">THE LEGEND MOD PROJECT</div>
-    <div class="headline">LEGEND FFA SERVER</div>
-    <div class="sub">High-Performance Private Server • Written in Pure C</div>
+        <div class="brand">THE LEGEND MOD PROJECT</div>
+        <div class="headline">LEGEND FFA SERVER</div>
+        <div class="sub">The Highest Performance Agar.io Server Worldwide • Written in Pure C</div>
 
-    <div class="row">
+        <div class="row">
 
-        <div class="card">
-            <h3><span class="emoji">⚡</span> What is this?</h3>
-            <p>
-                A brand new <span class="accent">high-performance FFA server</span> built entirely in C from the ground up.
-                Zero GC pauses, pre-allocated memory pools, split quadtree optimization &mdash;
-                designed for <span class="strong">authentic Agar.io mechanics</span> with blazing speed.
-            </p>
-            <div class="divider"></div>
-            <p>
-                <span class="test-badge">🔧 Currently in TEST stage</span> &mdash;
-                we plan to scale this up to <span class="strong">500 players</span> with all the potential for massive games!
-            </p>
-        </div>
-
-        <div class="card">
-            <h3><span class="emoji">🎮</span> Features</h3>
-            <ul>
-                <li><span class="strong">Full Agar.io protocol</span> &mdash; leaderboard, ghost cells, skins, names, chat, spectate</li>
-                <li><span class="strong">Anti-teaming</span> &mdash; real decay mechanics with configurable thresholds</li>
-                <li><span class="strong">Anti-cheat scramble</span> &mdash; coordinate scrambling per player</li>
-                <li><span class="strong">Session stats</span> &mdash; time alive, highest mass, food/players eaten on death</li>
-                <li><span class="strong">WSS/TLS encrypted</span> &mdash; secure WebSocket connections</li>
-            </ul>
-        </div>
-
-    </div>
-
-    <div class="row">
-
-        <div class="card">
-            <h3><span class="emoji">🚀</span> How to Play (Legend Mod)</h3>
-            <ol>
-                <li>Select region <span class="accent">Private</span></li>
-                <li>Choose <span class="accent">👑 Legend FFA</span> (it's the default!)</li>
-                <li>Click <span class="strong">Play</span> and enjoy!</li>
-            </ol>
-            <div class="divider"></div>
-            <p>
-                <span class="strong" style="color:#f1c40f;">Delta users:</span> Update the addon for full support:<br>
-                <a class="link" href="https://deltio.pages.dev/" target="_blank" rel="noopener">Install Delta</a> &middot;
-                <a class="link" href="https://greasyfork.org/en/scripts/559441-legend-delta-agar-io" target="_blank" rel="noopener">Get Legend Addon</a>
-            </p>
-        </div>
-
-        <div class="card">
-            <h3><span class="emoji">🌐</span> Other Mods / Custom Clients</h3>
-            <p>
-                You can connect from <span class="strong">any</span> Agar.io mod or custom client using this server address:
-            </p>
-            <div class="wss-box">
-                <code>wss://46.225.56.188:8080</code>
+            <div class="card">
+                <h3><span class="emoji">⚡</span> What is this?</h3>
+                <p>
+                    A brand new <span class="accent">high-performance FFA server</span> built entirely in C from the
+                    ground up.
+                    Zero GC pauses, pre-allocated memory pools, split quadtree optimization &mdash;
+                    designed for <span class="strong">authentic Agar.io mechanics</span> with blazing speed.
+                </p>
+                <div class="divider"></div>
+                <p>
+                    <span class="test-badge">🔧 Currently in TEST stage</span> &mdash;
+                    we plan to scale this up to <span class="strong">500 players</span> with all the potential for
+                    massive games!
+                </p>
             </div>
-            <p class="tiny">
-                Paste this URL into your mod's server/WebSocket field and play.
-                Works with OGARio, Delta, and any OgarII-compatible client.
-            </p>
-            <div class="divider"></div>
-            <p class="tiny">
-                <span class="strong">Note:</span> The server uses a self-signed TLS certificate.
-                You may need to visit <a class="link" href="https://46.225.56.188:8080" target="_blank" rel="noopener">https://46.225.56.188:8080</a>
-                first and accept the security warning.
-            </p>
+
+            <div class="card">
+                <h3><span class="emoji">🎮</span> Features</h3>
+                <ul>
+                    <li><span class="strong">Full Agar.io protocol</span> &mdash; leaderboard, ghost cells, skins,
+                        names, chat, spectate</li>
+                    <li><span class="strong">Real anti-teaming</span> &mdash; authentic Agar.io decay mechanics (see
+                        below)</li>
+                    <li><span class="strong">Anti-cheat scramble</span> &mdash; coordinate scrambling per player</li>
+                    <li><span class="strong">Session stats</span> &mdash; time alive, highest mass, food/players eaten
+                        on death</li>
+                    <li><span class="strong">WSS/TLS encrypted</span> &mdash; secure WebSocket connections</li>
+                    <li><span class="strong">500+ player capacity</span> &mdash; ~5 ms tick time at 400 players vs ~40
+                        ms on Node.js servers</li>
+                </ul>
+            </div>
+
         </div>
+
+        <div class="row">
+            <div class="card" style="width:min(940px, 100%);">
+                <h3><span class="emoji">🛡️</span> Anti-Teaming System</h3>
+                <p>
+                    This server uses the <span class="accent">real Agar.io anti-teaming algorithm</span> &mdash;
+                    the same penalty-based decay system used by official servers. It tracks a per-player
+                    <span class="strong">anti-team score</span> that accumulates from teaming behaviors:
+                </p>
+                <ul>
+                    <li><span class="strong">Splitting</span> adds <span class="accent">+10 penalty</span> per split
+                        (teamers split constantly to feed each other)</li>
+                    <li><span class="strong">Ejecting mass (W)</span> adds <span class="accent">+1 penalty</span> per
+                        eject (mass trading is a core teaming tactic)</li>
+                    <li><span class="strong">Eating teammates' cells</span> adds penalty based on mass consumed</li>
+                </ul>
+                <div class="divider"></div>
+                <p>
+                    When your anti-team score exceeds <span class="strong">35</span>, your cells start
+                    <span class="warn">decaying faster</span> &mdash; the higher your score, the faster you shrink.
+                    The score naturally decreases over time (<span class="accent">&minus;4 per tick</span>) when you
+                    stop teaming,
+                    so solo players are never affected.
+                </p>
+                <p class="tiny" style="margin-top:8px;">
+                    This means teamers will rapidly lose mass while solo players enjoy a completely fair game.
+                    No manual bans needed &mdash; the system is fully automatic.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="card">
+                <h3><span class="emoji">🚀</span> How to Play (Legend Mod)</h3>
+                <ol>
+                    <li>Select region <span class="accent">Private</span></li>
+                    <li>Choose <span class="accent">👑 Legend FFA</span> (it's the default!)</li>
+                    <li>Click <span class="strong">Play</span> and enjoy!</li>
+                </ol>
+                <div class="divider"></div>
+                <p>
+                    <span class="strong" style="color:#f1c40f;">Delta users:</span> Update the addon for full
+                    support:<br>
+                    <a class="link" href="https://deltio.pages.dev/" target="_blank" rel="noopener">Install Delta</a>
+                    &middot;
+                    <a class="link" href="https://greasyfork.org/en/scripts/559441-legend-delta-agar-io" target="_blank"
+                        rel="noopener">Get Legend Addon</a>
+                </p>
+            </div>
+
+            <div class="card">
+                <h3><span class="emoji">🌐</span> Other Mods / Custom Clients</h3>
+                <p>
+                    You can connect from <span class="strong">any</span> Agar.io mod or custom client using this server
+                    address:
+                </p>
+                <div class="wss-box">
+                    <code>wss://46.225.56.188:8080</code>
+                </div>
+                <p class="tiny">
+                    Paste this URL into your mod's server/WebSocket field and play.
+                    Works with OGARio, Delta, and any OgarII-compatible client.
+                </p>
+                <div class="divider"></div>
+                <p class="tiny">
+                    <span class="strong">Note:</span> The server uses a self-signed TLS certificate.
+                    You may need to visit <a class="link" href="https://46.225.56.188:8080" target="_blank"
+                        rel="noopener">https://46.225.56.188:8080</a>
+                    first and accept the security warning.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="footer">PLAY ON THE FASTEST SERVER • LEGEND CLAN</div>
+        <div class="stamp">Legend Mod Community &bull; legendmod.ml</div>
 
     </div>
 
-    <div class="footer">PLAY ON THE FASTEST SERVER • LEGEND CLAN</div>
-    <div class="stamp">Legend Mod Community &bull; legendmod.ml</div>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </body>
+
 </html>
