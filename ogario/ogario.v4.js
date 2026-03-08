@@ -110,6 +110,10 @@ function deleteGamemode(temp) {
 
     privateModOptions = [
         {
+            text: '👑 Legend FFA',
+            value: 5001
+        },
+        {
             text: 'Delta FFA',
             value: 4001
         },
@@ -423,6 +427,9 @@ function deleteGamemode(temp) {
         }
         else if ($('#gamemode').val() == 4002) {
             core.connect('wss://delta-server.fly.dev');
+        }
+        else if ($('#gamemode').val() == 5001) {
+            core.connect('wss://46.225.56.188:8080');
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
