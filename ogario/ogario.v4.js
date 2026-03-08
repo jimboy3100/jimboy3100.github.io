@@ -431,7 +431,7 @@ function deleteGamemode(temp) {
             core.connect('wss://delta-server.fly.dev');
         }
         else if ($('#gamemode').val() == 5001) {
-            core.connect('wss://46.225.56.188:8080');
+            core.connect('wss://ffa.legendmod.ml:8080');
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
