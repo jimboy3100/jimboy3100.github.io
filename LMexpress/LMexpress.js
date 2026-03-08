@@ -317,7 +317,7 @@ function startLM(modVersion) {
                     progressBar: true,
                     timeOut: 30000,
                     extendedTimeOut: 15000,
-                    positionClass: "toast-top-center"
+                    positionClass: "toast-bottom-left"
                 };
                 toastr.success(
                     '<div style="text-align:center;">' +
