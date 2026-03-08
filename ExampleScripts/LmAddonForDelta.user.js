@@ -260,7 +260,7 @@ win.connectPrivateServer = function (rawUrl) {
 // The Private tab's list-style has class "flex flex-col grow list-style"
 // (vs Agar.io tab's "fcols grow hinherit list-style").
 // ==========================================================================
-win.LM_PRIVATE_SERVER_URL = "wss://localhost:8080";
+win.LM_PRIVATE_SERVER_URL = "wss://46.225.56.188:8080";
 
 (function () {
     const ENTRY_ID = 'lm-legend-ffa-entry';
