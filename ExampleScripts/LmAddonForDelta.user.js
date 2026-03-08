@@ -440,6 +440,37 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
         }
     }
 
+    // Display server chat messages in Delta's chat UI
+    function lmDisplayChatMessage(name, text, color, flags) {
+        // Try to find Delta's chat message container
+        const chatbox = document.querySelector('#chatbox') || document.querySelector('.chat-messages') || document.querySelector('#message-box .messages');
+        if (!chatbox) {
+            console.log(win.LOG_TAG + 'Chat:', name + ':', text);
+            return;
+        }
+
+        const isServer = !!(flags & 128);
+        const isAdmin = !!(flags & 64);
+        const isMod = !!(flags & 32);
+
+        const now = new Date();
+        const time = now.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+
+        // Escape HTML in name and text
+        const escHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+        const msgEl = document.createElement('div');
+        msgEl.className = 'chat-message' + (isServer ? ' server-msg' : '') + (isAdmin ? ' admin-msg' : '');
+        msgEl.innerHTML = `<span class="chat-time" style="opacity:0.5;margin-right:4px;">${time}</span>`
+            + `<span class="chat-nick" style="color:${escHtml(color)};font-weight:bold;margin-right:4px;">${escHtml(name)}:</span>`
+            + `<span class="chat-text">${escHtml(text)}</span>`;
+        msgEl.style.cssText = 'padding:2px 4px;font-size:13px;word-break:break-word;';
+
+        chatbox.appendChild(msgEl);
+        // Auto-scroll to bottom
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
     win.WebSocket = function (url, protocols) {
         const ws = protocols
             ? new _OrigWS(url, protocols)
@@ -449,18 +480,18 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
             ws._isLegendPrivate = true;
             console.log(win.LOG_TAG + '✓ Tagged WebSocket to Legend server');
 
-            // Intercept raw messages to parse leaderboard + ghost cells
+            // Intercept raw messages to parse leaderboard, ghost cells, and chat
             ws.addEventListener('message', function (event) {
                 if (!(event.data instanceof ArrayBuffer)) return;
                 const buf = event.data;
                 if (buf.byteLength < 2) return;
 
                 const opcode = new DataView(buf).getUint8(0);
-                const hudLb = win.leaderboard;
-                if (!hudLb) return;
 
                 // Handle leaderboard (opcode 0x31 / 49)
                 if (opcode === 0x31) {
+                    const hudLb = win.leaderboard;
+                    if (!hudLb) return;
                     const entries = parseLeaderboard(buf);
                     if (entries && entries.length > 0) {
                         _lmLeaderboard = entries;
@@ -470,10 +501,43 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
 
                 // Handle ghost cells (opcode 0x45 / 69)
                 if (opcode === 0x45) {
+                    const hudLb = win.leaderboard;
+                    if (!hudLb) return;
                     const cells = parseGhostCells(buf);
                     if (cells && cells.length > 0) {
                         _lmGhostCells = cells;
                         lmRenderLeaderboard(hudLb);
+                    }
+                }
+
+                // Handle server chat (opcode 0x63 / 99)
+                if (opcode === 0x63) {
+                    try {
+                        const view = new DataView(buf);
+                        let offset = 1;
+                        const flags = view.getUint8(offset++);
+                        const r = view.getUint8(offset++);
+                        const g = view.getUint8(offset++);
+                        const b = view.getUint8(offset++);
+                        const color = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+                        // Read sender name (UTF-8, zero-terminated)
+                        const decoder = new TextDecoder('utf-8');
+                        let nameEnd = offset;
+                        while (nameEnd < view.byteLength && view.getUint8(nameEnd) !== 0) nameEnd++;
+                        const senderName = decoder.decode(new Uint8Array(buf, offset, nameEnd - offset));
+                        offset = nameEnd + 1;
+
+                        // Read message (UTF-8, zero-terminated)
+                        let msgEnd = offset;
+                        while (msgEnd < view.byteLength && view.getUint8(msgEnd) !== 0) msgEnd++;
+                        const message = decoder.decode(new Uint8Array(buf, offset, msgEnd - offset));
+
+                        if (message && message.length > 0) {
+                            lmDisplayChatMessage(senderName || 'Server', message, color, flags);
+                        }
+                    } catch (e) {
+                        console.error(win.LOG_TAG + 'Chat parse error:', e);
                     }
                 }
             });
