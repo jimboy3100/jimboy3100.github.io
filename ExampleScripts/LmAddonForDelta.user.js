@@ -269,40 +269,41 @@ win.connectPrivateServer = function (rawUrl) {
 
 // ==========================================================================
 // [LEGEND SERVER LIST ENTRY]
-// Injects "Legend Server" into Delta's server list (.list-style)
+// Delta uses Preact virtual DOM — the Private tab renders from window.dts
+// (DeltaServerList). We push into dts.list so Preact renders it natively.
 // ==========================================================================
 win.LM_PRIVATE_SERVER_URL = localStorage.getItem("LM_Private_Server") || "wss://localhost:8080";
 
 win.injectLegendServer = function () {
-    const listStyle = document.querySelector('.list-style');
-    if (!listStyle) return;
-    if (document.getElementById('lm-legend-server-entry')) return;
+    // Wait for Delta's server list model to be available
+    const dts = win.dts;
+    if (!dts || !dts.list) return;
 
-    const entry = document.createElement('div');
-    entry.id = 'lm-legend-server-entry';
-    entry.textContent = 'Legend FFA High Perform.';
-    entry.style.color = '#01d9cc';
-    entry.style.fontWeight = 'bold';
-    entry.style.cursor = 'pointer';
+    // Check if already added (by token which is the address)
+    const TOKEN = 'lm-legend-ffa';
+    if (dts.list.has(TOKEN)) return;
 
-    entry.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // Create a ServerIntstance-compatible object matching Delta's data model
+    // See ServerSelectorModel.js: new ServerIntstance(adress, token, displayName)
+    const entry = Object.create(Object.getPrototypeOf(
+        dts.list.by.cat['default']?.[0] || {}
+    ));
+    entry.adress = win.LM_PRIVATE_SERVER_URL;
+    entry.token = TOKEN;
+    entry.displayName = 'Legend FFA High Perform.';
+    entry.cat = 'default';
+    entry.region = 'default';
+    entry.gamemode = 'default';
+    entry.multibox = true;
+    entry.botting = true;
+    entry.lastChecked = new Date();
 
-        // Remove active class from all siblings
-        Array.from(listStyle.children).forEach(c => c.classList.remove('active'));
-        entry.classList.add('active');
-
-        // Connect to private server
-        win.connectPrivateServer(win.LM_PRIVATE_SERVER_URL);
-    });
-
-    listStyle.appendChild(entry);
-    console.log(win.LOG_TAG + "Legend Server added to server list (" + win.LM_PRIVATE_SERVER_URL + ")");
+    dts.list.add(entry);
+    console.log(win.LOG_TAG + "Legend Server injected into Delta server list (" + win.LM_PRIVATE_SERVER_URL + ")");
 };
 
-// Keep polling — Delta rebuilds the server list dynamically
-setInterval(win.injectLegendServer, 2000);
+// Poll until dts is ready, then inject
+setInterval(win.injectLegendServer, 1500);
 (function () {
     'use strict';
 
