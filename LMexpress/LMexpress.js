@@ -52,7 +52,7 @@ var previousMode = localStorage.getItem("gamemode");
 
 var checkonlyonce = localStorage.getItem("checkonlyonce");
 var checkonlyfourtenth = localStorage.getItem("checkonlyfourtenth");
-var checkonlytwelfth = localStorage.getItem("checkonlytwelfth");
+var checkonlytfourtheenth = localStorage.getItem("checkonlytfourtheenth");
 var checkonlyrewardday3a = localStorage.getItem("checkonlyrewardday3a");
 var defaultMusicUrl = "https://www.youtube.com/watch?v=nj33MArNjC8";
 var musicPlayer;
@@ -384,10 +384,10 @@ function loadersettings() {
         checkonlyrewardday3a = "true";
         localStorage.setItem("checkonlyrewardday3a", checkonlyrewardday3a);
     }
-    if (checkonlytwelfth != "true") {
+    if (checkonlytfourtheenth != "true") {
         LMLegendFFAPromo();
-        checkonlytwelfth = "true";
-        localStorage.setItem("checkonlytwelfth", checkonlytwelfth);
+        checkonlytfourtheenth = "true";
+        localStorage.setItem("checkonlytfourtheenth", checkonlytfourtheenth);
     }
     if (timesopened == 10 || timesopened == 100 || timesopened == 1000) {
         //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
