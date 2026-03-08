@@ -265,35 +265,29 @@ win.injectLegendServer = function () {
     const dts = win.dts;
     if (!dts || !dts.list) return;
 
-    // Check if already added (by token)
-    const TOKEN = 'lm-legend-ffa';
-    if (dts.list.has(TOKEN)) return;
+    const url = win.LM_PRIVATE_SERVER_URL;
 
-    // Plain object — avoids "Private element not present" error from
-    // ServerIntstance private class fields when using Object.create
-    const entry = {
-        adress: win.LM_PRIVATE_SERVER_URL,
-        token: TOKEN,
-        displayName: 'Legend FFA',
-        cat: 'default',
-        region: 'default',
-        gamemode: 'default',
-        multibox: true,
-        botting: true,
-        lastChecked: new Date(),
-        get lastCheckedTime() {
-            return this.lastChecked.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-        },
-        get isFresh() {
-            return (new Date().getTime() - this.lastChecked.getTime()) / 1000 / 60 < 5;
-        },
-        toJSON() {
-            return { adress: this.adress };
-        }
-    };
+    // Check if already added (token = address URL, matching Delta's pattern)
+    if (dts.list.has(url)) return;
 
-    dts.list.add(entry);
-    console.log(win.LOG_TAG + "Legend FFA injected into Delta server list (" + win.LM_PRIVATE_SERVER_URL + ")");
+    // Get the actual ServerIntstance constructor from an existing list entry
+    // This ensures we create a proper instance with all private fields initialized
+    const existingEntries = dts.list.by.cat['default'];
+    if (!existingEntries || existingEntries.length === 0) return;
+
+    const Constructor = existingEntries[0].constructor;
+    if (!Constructor) return;
+
+    try {
+        // Delta's setServerList does: new ServerIntstance(info.val, info.val, info.name)
+        const entry = new Constructor(url, url, 'Legend FFA');
+        entry.multibox = true;
+        entry.cat = 'default';
+        dts.list.add(entry);
+        console.log(win.LOG_TAG + "Legend FFA injected into Delta server list (" + url + ")");
+    } catch (e) {
+        console.error(win.LOG_TAG + "Failed to inject Legend FFA:", e);
+    }
 };
 
 // Poll until dts is ready, then inject
