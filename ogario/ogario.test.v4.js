@@ -49,6 +49,14 @@ $(function () {
 (function () {
     var LW_SERVERS = ['legendmod.ml', 'legendworld', 'localhost'];
 
+    /* Resolve the REAL WebSocket constructor.
+     * standby-server.js replaces window.WebSocket with a wrapper ('ws'),
+     * but stores the real one at ws.prototype.WebSocket.
+     * We need to hook the REAL prototype because game connections use
+     * the real WebSocket constructor internally. */
+    var RealWebSocket = WebSocket.prototype.WebSocket || WebSocket;
+    console.log('[LW] Real WebSocket resolved: ' + (RealWebSocket === WebSocket ? 'same (no wrapper)' : 'unwrapped from standby-server'));
+
     /* ── Cell state tracking for velocity prediction ── */
     var lwCells = {};  /* cellId → { x, y, size, vx, vy } */
     var lwCamX = 0, lwCamY = 0;
@@ -232,8 +240,8 @@ $(function () {
     /* ═══ Hook WebSocket.prototype.send ═══
      * This intercepts ALL WebSocket sends regardless of constructor wrapper.
      * For LW servers, we replace the handshake key 0xFF with 0x4C57. */
-    var _origSend = WebSocket.prototype.send;
-    WebSocket.prototype.send = function (data) {
+    var _origSend = RealWebSocket.prototype.send;
+    RealWebSocket.prototype.send = function (data) {
         var state = getLWState(this);
         if (state.active) {
             /* Normalize data to Uint8Array for inspection */
@@ -270,8 +278,8 @@ $(function () {
 
     /* ═══ Hook WebSocket.prototype.addEventListener ═══
      * This intercepts incoming messages and transcodes LW packets. */
-    var _origAddEventListener = WebSocket.prototype.addEventListener;
-    WebSocket.prototype.addEventListener = function (type, listener, options) {
+    var _origAddEventListener = RealWebSocket.prototype.addEventListener;
+    RealWebSocket.prototype.addEventListener = function (type, listener, options) {
         if (type === 'message') {
             var ws = this;
             var wrappedListener = function (evt) {
@@ -304,9 +312,9 @@ $(function () {
     };
 
     /* ═══ Also hook onmessage setter for code that uses ws.onmessage = fn ═══ */
-    var _origOnmsgDesc = Object.getOwnPropertyDescriptor(WebSocket.prototype, 'onmessage');
+    var _origOnmsgDesc = Object.getOwnPropertyDescriptor(RealWebSocket.prototype, 'onmessage');
     if (_origOnmsgDesc && _origOnmsgDesc.set) {
-        Object.defineProperty(WebSocket.prototype, 'onmessage', {
+        Object.defineProperty(RealWebSocket.prototype, 'onmessage', {
             get: _origOnmsgDesc.get,
             set: function (fn) {
                 var ws = this;
