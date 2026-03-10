@@ -38,19 +38,47 @@ $(function () {
 /* ═══════════════════════════════════════════════════════════════════
  * LEGEND WORLD PROTOCOL V3 — Client-side handler
  *
- * Intercepts WebSocket to:
+ * Hooks WebSocket.prototype.send and addEventListener to:
  *  1. Send LW handshake key (0x4C57) to negotiate LW protocol
  *  2. Transcode incoming 0x4C/0x4D packets → standard 0x10/0x11
  *     so the existing core parser works unchanged
+ *
+ * NOTE: We hook prototypes because standby-server.js replaces
+ *       window.WebSocket before this code runs.
  * ═══════════════════════════════════════════════════════════════════ */
 (function () {
     var LW_SERVERS = ['legendmod.ml', 'legendworld', 'localhost'];
-    var _OriginalWebSocket = window.WebSocket;
 
     /* ── Cell state tracking for velocity prediction ── */
     var lwCells = {};  /* cellId → { x, y, size, vx, vy } */
     var lwCamX = 0, lwCamY = 0;
-    var lwActive = false;
+
+    /* ── Per-socket LW state (keyed by socket reference) ── */
+    var lwSockets = new WeakMap(); /* WebSocket → { active, handshakeState } */
+
+    function isLWServer(url) {
+        if (!url) return false;
+        for (var i = 0; i < LW_SERVERS.length; i++) {
+            if (url.indexOf(LW_SERVERS[i]) !== -1) return true;
+        }
+        return false;
+    }
+
+    function getLWState(ws) {
+        var state = lwSockets.get(ws);
+        if (!state) {
+            var active = isLWServer(ws.url);
+            state = { active: active, handshakeState: 0 };
+            lwSockets.set(ws, state);
+            if (active) {
+                lwCells = {};
+                lwCamX = 0;
+                lwCamY = 0;
+                console.log('[LW] Legend World protocol detected for: ' + ws.url);
+            }
+        }
+        return state;
+    }
 
     /* ── Varint / Zigzag decoders ── */
     function readVarint(dv, offset) {
@@ -60,12 +88,12 @@ $(function () {
             result |= (b & 0x7F) << shift;
             shift += 7;
         } while (b & 0x80);
-        return result >>> 0;  /* unsigned */
+        return result >>> 0;
     }
 
     function readZigzag(dv, offset) {
         var n = readVarint(dv, offset);
-        return (n >>> 1) ^ -(n & 1);  /* zigzag → signed */
+        return (n >>> 1) ^ -(n & 1);
     }
 
     function rgb565to888(val) {
@@ -78,9 +106,8 @@ $(function () {
     /* ── Transcode 0x4C → 0x10 (UpdateNodes) ── */
     function transcodeLW(data) {
         var dv = new DataView(data);
-        var pos = { pos: 1 };  /* skip opcode byte 0x4C */
+        var pos = { pos: 1 };
 
-        /* ── Remove section ── */
         var totalRemove = readVarint(dv, pos);
         var eats = [];
         for (var i = 0; i < totalRemove; i++) {
@@ -88,15 +115,7 @@ $(function () {
             var preyId = dv.getUint16(pos.pos, true); pos.pos += 2;
             eats.push({ hunter: hunterId, prey: preyId });
         }
-        var eatCount = readVarint(dv, pos);  /* how many were eats (rest are plain deletes) */
-        var deletes = [];
-        for (var i = eatCount; i < totalRemove; i++) {
-            /* deletes already decoded above as eats — no, wait. Let me re-read the format */
-        }
-        /* Actually: first totalRemove entries are hunter+prey pairs for eats,
-         * then eatCount marker tells how many were eats, then remaining plain deletes */
-        /* Re-read from the code: eats come first as hunter+prey pairs, then eatCount marker,
-         * then del_count plain uint16 IDs */
+        var eatCount = readVarint(dv, pos);
         var plainDelCount = totalRemove - eatCount;
         var plainDels = [];
         for (var i = 0; i < plainDelCount; i++) {
@@ -104,221 +123,102 @@ $(function () {
             pos.pos += 2;
         }
 
-        /* ── Update section ── */
         var updCount = readVarint(dv, pos);
         var updates = [];
         for (var i = 0; i < updCount; i++) {
             var cellId = dv.getUint16(pos.pos, true); pos.pos += 2;
             var mask = dv.getUint8(pos.pos++);
             var isAbsolute = !!(mask & 0x80);
-
             var cell = lwCells[cellId];
-            if (!cell) {
-                cell = { x: 0, y: 0, size: 10, vx: 0, vy: 0 };
-                lwCells[cellId] = cell;
-            }
-
-            /* Apply velocity prediction to get predicted position */
-            var predX = cell.x + cell.vx;
-            var predY = cell.y + cell.vy;
-
+            if (!cell) { cell = { x: 0, y: 0, size: 10, vx: 0, vy: 0 }; lwCells[cellId] = cell; }
+            var predX = cell.x + cell.vx, predY = cell.y + cell.vy;
             var dx = 0, dy = 0, ds = 0;
-            if (mask & 0x01) dx = readZigzag(dv, pos);  /* LW_HAS_X */
-            if (mask & 0x02) dy = readZigzag(dv, pos);  /* LW_HAS_Y */
-            if (mask & 0x04) ds = readZigzag(dv, pos);  /* LW_HAS_SIZE */
-            if (mask & 0x08) {  /* LW_HAS_VEL */
-                cell.vx = readZigzag(dv, pos);
-                cell.vy = readZigzag(dv, pos);
-            }
-
-            if (isAbsolute) {
-                cell.x = dx;
-                cell.y = dy;
-                cell.size = ds;
-            } else {
-                /* Correction from predicted position */
-                cell.x = predX + dx;
-                cell.y = predY + dy;
-                cell.size += ds;
-            }
-
-            updates.push({
-                id: cellId,
-                x: cell.x,
-                y: cell.y,
-                size: cell.size,
-                isUpdate: true
-            });
+            if (mask & 0x01) dx = readZigzag(dv, pos);
+            if (mask & 0x02) dy = readZigzag(dv, pos);
+            if (mask & 0x04) ds = readZigzag(dv, pos);
+            if (mask & 0x08) { cell.vx = readZigzag(dv, pos); cell.vy = readZigzag(dv, pos); }
+            if (isAbsolute) { cell.x = dx; cell.y = dy; cell.size = ds; }
+            else { cell.x = predX + dx; cell.y = predY + dy; cell.size += ds; }
+            updates.push({ id: cellId, x: cell.x, y: cell.y, size: cell.size });
         }
 
-        /* ── Add section ── */
         var addCount = readVarint(dv, pos);
         var adds = [];
         for (var i = 0; i < addCount; i++) {
             var cellId = dv.getUint16(pos.pos, true); pos.pos += 2;
-            var x = readZigzag(dv, pos);
-            var y = readZigzag(dv, pos);
+            var x = readZigzag(dv, pos), y = readZigzag(dv, pos);
             var size = readVarint(dv, pos);
             var typeFlags = dv.getUint8(pos.pos++);
-
             var cellType = typeFlags & 0x07;
             var isAgitated = !!(typeFlags & 0x08);
             var useRgb565 = !!(typeFlags & 0x10);
             var hasSkin = !!(typeFlags & 0x40);
             var hasName = !!(typeFlags & 0x80);
-
             var r, g, b;
-            if (useRgb565) {
-                var rgb = dv.getUint16(pos.pos, true); pos.pos += 2;
-                var c = rgb565to888(rgb);
-                r = c.r; g = c.g; b = c.b;
-            } else {
-                r = dv.getUint8(pos.pos++);
-                g = dv.getUint8(pos.pos++);
-                b = dv.getUint8(pos.pos++);
-            }
-
+            if (useRgb565) { var rgb = dv.getUint16(pos.pos, true); pos.pos += 2; var c = rgb565to888(rgb); r = c.r; g = c.g; b = c.b; }
+            else { r = dv.getUint8(pos.pos++); g = dv.getUint8(pos.pos++); b = dv.getUint8(pos.pos++); }
             var skin = '';
-            if (hasSkin) {
-                while (pos.pos < data.byteLength) {
-                    var ch = dv.getUint8(pos.pos++);
-                    if (ch === 0) break;
-                    skin += String.fromCharCode(ch);
-                }
-            }
+            if (hasSkin) { while (pos.pos < data.byteLength) { var ch = dv.getUint8(pos.pos++); if (ch === 0) break; skin += String.fromCharCode(ch); } }
             var name = '';
-            if (hasName) {
-                while (pos.pos < data.byteLength) {
-                    var ch = dv.getUint8(pos.pos++);
-                    if (ch === 0) break;
-                    name += String.fromCharCode(ch);
-                }
-            }
-
-            /* Init tracking */
+            if (hasName) { while (pos.pos < data.byteLength) { var ch = dv.getUint8(pos.pos++); if (ch === 0) break; name += String.fromCharCode(ch); } }
             lwCells[cellId] = { x: x, y: y, size: size, vx: 0, vy: 0 };
-
-            /* Map LW cell types to standard flags */
-            var flags = 0x02;  /* always color on add */
-            if (cellType === 2) flags |= 0x01;  /* virus */
-            if (cellType === 3) flags |= 0x20;  /* own ejected */
-            if (cellType === 4) flags |= 0x40;  /* other ejected */
+            var flags = 0x02;
+            if (cellType === 2) flags |= 0x01;
+            if (cellType === 3) flags |= 0x20;
+            if (cellType === 4) flags |= 0x40;
             if (isAgitated) flags |= 0x10;
-            if (cellType === 0) flags |= 0x80;  /* food → extended flags */
+            if (cellType === 0) flags |= 0x80;
             if (hasSkin) flags |= 0x04;
             if (hasName) flags |= 0x08;
-
-            adds.push({
-                id: cellId,
-                x: x,
-                y: y,
-                size: size,
-                flags: flags,
-                extFlags: (cellType === 0) ? 0x01 : 0,
-                r: r, g: g, b: b,
-                skin: skin,
-                name: name
-            });
+            adds.push({ id: cellId, x: x, y: y, size: size, flags: flags, extFlags: (cellType === 0) ? 0x01 : 0, r: r, g: g, b: b, skin: skin, name: name });
         }
 
-        /* ── Build standard 0x10 packet ── */
-        /* Calculate needed buffer size (generous estimate) */
-        var bufSize = 1 + 2 + (eatCount * 8) +
-            (updates.length * 14) + (adds.length * 256) + 4 + 2 + ((eatCount + plainDels.length) * 4) + 128;
+        /* Build standard 0x10 packet */
+        var bufSize = 1 + 2 + (eatCount * 8) + (updates.length * 14) + (adds.length * 256) + 4 + 2 + ((eatCount + plainDels.length) * 4) + 128;
         var buf = new ArrayBuffer(bufSize);
         var out = new DataView(buf);
         var wp = 0;
-
-        out.setUint8(wp++, 0x10);  /* opcode */
-
-        /* Eat records */
+        out.setUint8(wp++, 0x10);
         out.setUint16(wp, eatCount, true); wp += 2;
-        for (var i = 0; i < eatCount; i++) {
-            out.setUint32(wp, eats[i].hunter, true); wp += 4;
-            out.setUint32(wp, eats[i].prey, true); wp += 4;
-        }
-
-        /* Update records (existing cells) */
+        for (var i = 0; i < eatCount; i++) { out.setUint32(wp, eats[i].hunter, true); wp += 4; out.setUint32(wp, eats[i].prey, true); wp += 4; }
         for (var i = 0; i < updates.length; i++) {
             var u = updates[i];
-            out.setUint32(wp, u.id, true); wp += 4;  /* cell id */
-            out.setInt32(wp, u.x, true); wp += 4;    /* x */
-            out.setInt32(wp, u.y, true); wp += 4;    /* y */
-            out.setUint16(wp, u.size, true); wp += 2; /* radius */
-            out.setUint8(wp++, 0x02);  /* flags: color present (for player type) */
-            out.setUint8(wp++, 128);    /* R */
-            out.setUint8(wp++, 128);    /* G */
-            out.setUint8(wp++, 128);    /* B */
+            out.setUint32(wp, u.id, true); wp += 4;
+            out.setInt32(wp, u.x, true); wp += 4;
+            out.setInt32(wp, u.y, true); wp += 4;
+            out.setUint16(wp, u.size, true); wp += 2;
+            out.setUint8(wp++, 0x02); out.setUint8(wp++, 128); out.setUint8(wp++, 128); out.setUint8(wp++, 128);
         }
-
-        /* Add records */
         for (var i = 0; i < adds.length; i++) {
             var a = adds[i];
             out.setUint32(wp, a.id, true); wp += 4;
             out.setInt32(wp, a.x, true); wp += 4;
             out.setInt32(wp, a.y, true); wp += 4;
             out.setUint16(wp, a.size, true); wp += 2;
-
             out.setUint8(wp++, a.flags);
-            if (a.flags & 0x80) {
-                out.setUint8(wp++, a.extFlags);
-            }
-            /* Color (always on adds) */
-            out.setUint8(wp++, a.r);
-            out.setUint8(wp++, a.g);
-            out.setUint8(wp++, a.b);
-            /* Skin */
-            if (a.flags & 0x04) {
-                for (var j = 0; j < a.skin.length; j++)
-                    out.setUint8(wp++, a.skin.charCodeAt(j));
-                out.setUint8(wp++, 0);  /* null terminator */
-            }
-            /* Name */
-            if (a.flags & 0x08) {
-                for (var j = 0; j < a.name.length; j++)
-                    out.setUint8(wp++, a.name.charCodeAt(j));
-                out.setUint8(wp++, 0);
-            }
+            if (a.flags & 0x80) out.setUint8(wp++, a.extFlags);
+            out.setUint8(wp++, a.r); out.setUint8(wp++, a.g); out.setUint8(wp++, a.b);
+            if (a.flags & 0x04) { for (var j = 0; j < a.skin.length; j++) out.setUint8(wp++, a.skin.charCodeAt(j)); out.setUint8(wp++, 0); }
+            if (a.flags & 0x08) { for (var j = 0; j < a.name.length; j++) out.setUint8(wp++, a.name.charCodeAt(j)); out.setUint8(wp++, 0); }
         }
-
-        /* Terminator */
         out.setUint32(wp, 0, true); wp += 4;
-
-        /* Remove records (eats + plain deletes) */
         var totalDel = eatCount + plainDels.length;
         out.setUint16(wp, totalDel, true); wp += 2;
-        for (var i = 0; i < eatCount; i++) {
-            out.setUint32(wp, eats[i].prey, true); wp += 4;
-        }
-        for (var i = 0; i < plainDels.length; i++) {
-            out.setUint32(wp, plainDels[i], true); wp += 4;
-            /* Also clean up tracking */
-            delete lwCells[plainDels[i]];
-        }
-        /* Clean up eat victims from tracking */
-        for (var i = 0; i < eatCount; i++) {
-            delete lwCells[eats[i].prey];
-        }
-
+        for (var i = 0; i < eatCount; i++) { out.setUint32(wp, eats[i].prey, true); wp += 4; }
+        for (var i = 0; i < plainDels.length; i++) { out.setUint32(wp, plainDels[i], true); wp += 4; delete lwCells[plainDels[i]]; }
+        for (var i = 0; i < eatCount; i++) { delete lwCells[eats[i].prey]; }
         return buf.slice(0, wp);
     }
 
     /* ── Transcode 0x4D → 0x11 (UpdatePosition/Camera) ── */
     function transcodeLWCamera(data) {
         var dv = new DataView(data);
-        var pos = { pos: 1 };  /* skip opcode 0x4D */
-
-        var dx = readZigzag(dv, pos);
-        var dy = readZigzag(dv, pos);
-        lwCamX += dx;
-        lwCamY += dy;
-
+        var pos = { pos: 1 };
+        var dx = readZigzag(dv, pos), dy = readZigzag(dv, pos);
+        lwCamX += dx; lwCamY += dy;
         var scaleU16 = dv.getUint16(pos.pos, true); pos.pos += 2;
         var scale = scaleU16 / 65535.0;
-
         var tick = readVarint(dv, pos);
-
-        /* Build standard 0x11 packet: [0x11][f32 x][f32 y][f32 scale][u32 tick] = 17 bytes */
         var buf = new ArrayBuffer(17);
         var out = new DataView(buf);
         out.setUint8(0, 0x11);
@@ -329,111 +229,99 @@ $(function () {
         return buf;
     }
 
-    /* ── WebSocket shim ── */
-    function isLWServer(url) {
-        for (var i = 0; i < LW_SERVERS.length; i++) {
-            if (url.indexOf(LW_SERVERS[i]) !== -1) return true;
+    /* ═══ Hook WebSocket.prototype.send ═══
+     * This intercepts ALL WebSocket sends regardless of constructor wrapper.
+     * For LW servers, we replace the handshake key 0xFF with 0x4C57. */
+    var _origSend = WebSocket.prototype.send;
+    WebSocket.prototype.send = function (data) {
+        var state = getLWState(this);
+        if (state.active && data instanceof ArrayBuffer && data.byteLength === 5) {
+            var view = new Uint8Array(data);
+            if (view[0] === 0xFE) {
+                state.handshakeState = 1;
+            } else if (view[0] === 0xFF && state.handshakeState === 1) {
+                var lwKey = new ArrayBuffer(5);
+                var lwView = new DataView(lwKey);
+                lwView.setUint8(0, 0xFF);
+                lwView.setUint32(1, 0x4C57, true);
+                console.log('[LW] Sending LW handshake key 0x4C57');
+                state.handshakeState = 2;
+                return _origSend.call(this, lwKey);
+            }
         }
-        return false;
-    }
+        return _origSend.call(this, data);
+    };
 
-    window.WebSocket = function (url, protocols) {
-        var ws;
-        if (protocols !== undefined) {
-            ws = new _OriginalWebSocket(url, protocols);
-        } else {
-            ws = new _OriginalWebSocket(url);
+    /* ═══ Hook WebSocket.prototype.addEventListener ═══
+     * This intercepts incoming messages and transcodes LW packets. */
+    var _origAddEventListener = WebSocket.prototype.addEventListener;
+    WebSocket.prototype.addEventListener = function (type, listener, options) {
+        if (type === 'message') {
+            var ws = this;
+            var wrappedListener = function (evt) {
+                var state = getLWState(ws);
+                if (!state.active || !(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
+                    return listener.call(ws, evt);
+                }
+                var opcode = new Uint8Array(evt.data)[0];
+                if (opcode === 0x4C) {
+                    try {
+                        var transcoded = transcodeLW(evt.data);
+                        var newEvt = new MessageEvent('message', { data: transcoded });
+                        listener.call(ws, newEvt);
+                    } catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
+                    return;
+                }
+                if (opcode === 0x4D) {
+                    try {
+                        var transcoded = transcodeLWCamera(evt.data);
+                        var newEvt = new MessageEvent('message', { data: transcoded });
+                        listener.call(ws, newEvt);
+                    } catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
+                    return;
+                }
+                listener.call(ws, evt);
+            };
+            return _origAddEventListener.call(this, type, wrappedListener, options);
         }
+        return _origAddEventListener.call(this, type, listener, options);
+    };
 
-        if (!isLWServer(url)) return ws;
-
-        /* This is a LegendWorld connection — activate LW protocol */
-        lwActive = true;
-        lwCells = {};
-        lwCamX = 0;
-        lwCamY = 0;
-        console.log('[LW] Legend World protocol activated for: ' + url);
-
-        /* Hook onmessage to transcode LW packets */
-        var _origOnMessage = null;
-
-        Object.defineProperty(ws, 'onmessage', {
-            get: function () { return _origOnMessage; },
+    /* ═══ Also hook onmessage setter for code that uses ws.onmessage = fn ═══ */
+    var _origOnmsgDesc = Object.getOwnPropertyDescriptor(WebSocket.prototype, 'onmessage');
+    if (_origOnmsgDesc && _origOnmsgDesc.set) {
+        Object.defineProperty(WebSocket.prototype, 'onmessage', {
+            get: _origOnmsgDesc.get,
             set: function (fn) {
-                _origOnMessage = fn;
-                _OriginalWebSocket.prototype.addEventListener.call(ws, 'message', function (evt) {
+                var ws = this;
+                var state = getLWState(ws);
+                if (!state.active) {
+                    return _origOnmsgDesc.set.call(ws, fn);
+                }
+                _origOnmsgDesc.set.call(ws, function (evt) {
                     if (!(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
-                        fn.call(ws, evt);
-                        return;
+                        return fn.call(ws, evt);
                     }
                     var opcode = new Uint8Array(evt.data)[0];
-
                     if (opcode === 0x4C) {
-                        /* LW update → transcode to 0x10 */
-                        try {
-                            var transcoded = transcodeLW(evt.data);
-                            var newEvt = new MessageEvent('message', { data: transcoded });
-                            fn.call(ws, newEvt);
-                        } catch (e) {
-                            console.error('[LW] Transcode error (0x4C):', e);
-                        }
+                        try { var t = transcodeLW(evt.data); fn.call(ws, new MessageEvent('message', { data: t })); }
+                        catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
                         return;
                     }
                     if (opcode === 0x4D) {
-                        /* LW camera → transcode to 0x11 */
-                        try {
-                            var transcoded = transcodeLWCamera(evt.data);
-                            var newEvt = new MessageEvent('message', { data: transcoded });
-                            fn.call(ws, newEvt);
-                        } catch (e) {
-                            console.error('[LW] Transcode error (0x4D):', e);
-                        }
+                        try { var t = transcodeLWCamera(evt.data); fn.call(ws, new MessageEvent('message', { data: t })); }
+                        catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
                         return;
                     }
-
-                    /* Standard packet — pass through */
                     fn.call(ws, evt);
                 });
             },
-            configurable: true
+            configurable: true,
+            enumerable: true
         });
+    }
 
-        /* Hook send to replace handshake key */
-        var _origSend = ws.send.bind(ws);
-        var handshakeState = 0;  /* 0=waiting for 0xFE, 1=waiting for 0xFF */
-
-        ws.send = function (data) {
-            if (data instanceof ArrayBuffer && data.byteLength === 5) {
-                var view = new Uint8Array(data);
-                if (view[0] === 0xFE) {
-                    handshakeState = 1;  /* next should be 0xFF */
-                    _origSend(data);
-                    return;
-                }
-                if (view[0] === 0xFF && handshakeState === 1) {
-                    /* Replace key with LW identifier 0x4C57 */
-                    var lwKey = new ArrayBuffer(5);
-                    var lwView = new DataView(lwKey);
-                    lwView.setUint8(0, 0xFF);
-                    lwView.setUint32(1, 0x4C57, true);  /* "LW" in LE */
-                    console.log('[LW] Sending LW handshake key 0x4C57');
-                    _origSend(lwKey);
-                    handshakeState = 2;
-                    return;
-                }
-            }
-            _origSend(data);
-        };
-
-        return ws;
-    };
-
-    /* Inherit prototype */
-    window.WebSocket.prototype = _OriginalWebSocket.prototype;
-    window.WebSocket.CONNECTING = _OriginalWebSocket.CONNECTING;
-    window.WebSocket.OPEN = _OriginalWebSocket.OPEN;
-    window.WebSocket.CLOSING = _OriginalWebSocket.CLOSING;
-    window.WebSocket.CLOSED = _OriginalWebSocket.CLOSED;
+    console.log('[LW] Legend World Protocol V3 handler installed (prototype hooks)');
 })();
 /* ═══ END LW Protocol V3 Handler ═══ */
 const ranges = [10, 255, 255, 255, 255];
