@@ -235,18 +235,34 @@ $(function () {
     var _origSend = WebSocket.prototype.send;
     WebSocket.prototype.send = function (data) {
         var state = getLWState(this);
-        if (state.active && data instanceof ArrayBuffer && data.byteLength === 5) {
-            var view = new Uint8Array(data);
-            if (view[0] === 0xFE) {
-                state.handshakeState = 1;
-            } else if (view[0] === 0xFF && state.handshakeState === 1) {
-                var lwKey = new ArrayBuffer(5);
-                var lwView = new DataView(lwKey);
-                lwView.setUint8(0, 0xFF);
-                lwView.setUint32(1, 0x4C57, true);
-                console.log('[LW] Sending LW handshake key 0x4C57');
-                state.handshakeState = 2;
-                return _origSend.call(this, lwKey);
+        if (state.active) {
+            /* Normalize data to Uint8Array for inspection */
+            var bytes = null;
+            var byteLen = 0;
+            if (data instanceof ArrayBuffer) {
+                bytes = new Uint8Array(data);
+                byteLen = data.byteLength;
+            } else if (data && data.buffer instanceof ArrayBuffer) {
+                /* Uint8Array, DataView, Int8Array, etc. */
+                bytes = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+                byteLen = data.byteLength;
+            }
+            if (bytes && byteLen === 5) {
+                if (bytes[0] === 0xFE) {
+                    console.log('[LW] Caught 0xFE handshake (version), state → 1');
+                    state.handshakeState = 1;
+                } else if (bytes[0] === 0xFF && state.handshakeState === 1) {
+                    var lwKey = new ArrayBuffer(5);
+                    var lwView = new DataView(lwKey);
+                    lwView.setUint8(0, 0xFF);
+                    lwView.setUint32(1, 0x4C57, true);
+                    console.log('[LW] Replacing handshake key with 0x4C57 (was 0x' +
+                        ((bytes[4] << 24 | bytes[3] << 16 | bytes[2] << 8 | bytes[1]) >>> 0).toString(16) + ')');
+                    state.handshakeState = 2;
+                    return _origSend.call(this, lwKey);
+                }
+            } else if (bytes && byteLen > 0) {
+                console.log('[LW] send opcode=0x' + bytes[0].toString(16) + ' len=' + byteLen);
             }
         }
         return _origSend.call(this, data);
