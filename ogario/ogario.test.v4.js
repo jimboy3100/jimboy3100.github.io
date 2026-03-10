@@ -38,60 +38,45 @@ $(function () {
 /* ═══════════════════════════════════════════════════════════════════
  * LEGEND WORLD PROTOCOL V3 — Client-side handler
  *
- * Hooks WebSocket.prototype.send and addEventListener to:
- *  1. Send LW handshake key (0x4C57) to negotiate LW protocol
- *  2. Transcode incoming 0x4C/0x4D packets → standard 0x10/0x11
- *     so the existing core parser works unchanged
+ * Server-driven detection: the server sends [0xF0, 0x4C, 0x57]
+ * ("LW Hello") after the handshake to identify itself as Legend World.
+ * On detection, the client activates LW transcoding:
+ *   0x4C → 0x10 (UpdateNodes)
+ *   0x4D → 0x11 (UpdatePosition)
  *
- * NOTE: We hook prototypes because standby-server.js replaces
- *       window.WebSocket before this code runs.
+ * Hooks RealWebSocket.prototype because standby-server.js replaces
+ * window.WebSocket before this code runs.
  * ═══════════════════════════════════════════════════════════════════ */
 (function () {
-    var LW_SERVERS = ['legendmod.ml', 'legendworld', 'localhost'];
-
-    /* Resolve the REAL WebSocket constructor.
-     * standby-server.js replaces window.WebSocket with a wrapper ('ws'),
-     * but stores the real one at ws.prototype.WebSocket.
-     * We need to hook the REAL prototype because game connections use
-     * the real WebSocket constructor internally. */
+    /* Resolve the REAL WebSocket constructor (unwrap standby-server.js wrapper) */
     var RealWebSocket = WebSocket.prototype.WebSocket || WebSocket;
-    console.log('[LW] Real WebSocket resolved: ' + (RealWebSocket === WebSocket ? 'same (no wrapper)' : 'unwrapped from standby-server'));
 
     /* ── Cell state tracking for velocity prediction ── */
-    var lwCells = {};  /* cellId → { x, y, size, vx, vy } */
+    var lwCells = {};
     var lwCamX = 0, lwCamY = 0;
 
-    /* ── Per-socket LW state (keyed by socket reference) ── */
-    var lwSockets = new WeakMap(); /* WebSocket → { active, handshakeState } */
-
-    function isLWServer(url) {
-        if (!url) return false;
-        /* Extract hostname only — prevent false positives from URLs like
-         * wss://cloud.achex.ca/ITMBOY3100ffa.legendmod.ml:8080
-         * where "legendmod.ml" appears in the path, not the host */
-        try {
-            var host = url.replace(/^wss?:\/\//, '').split('/')[0].split(':')[0];
-            for (var i = 0; i < LW_SERVERS.length; i++) {
-                if (host.indexOf(LW_SERVERS[i]) !== -1) return true;
-            }
-        } catch (e) {}
-        return false;
-    }
+    /* ── Per-socket LW state ── */
+    var lwSockets = new WeakMap();
 
     function getLWState(ws) {
         var state = lwSockets.get(ws);
         if (!state) {
-            var active = isLWServer(ws.url);
-            state = { active: active, handshakeState: 0 };
+            /* Default: inactive. Activated only when server sends LW Hello (0xF0) */
+            state = { active: false };
             lwSockets.set(ws, state);
-            if (active) {
-                lwCells = {};
-                lwCamX = 0;
-                lwCamY = 0;
-                console.log('[LW] Legend World protocol detected for: ' + ws.url);
-            }
         }
         return state;
+    }
+
+    function activateLW(ws) {
+        var state = getLWState(ws);
+        if (!state.active) {
+            state.active = true;
+            lwCells = {};
+            lwCamX = 0;
+            lwCamY = 0;
+            console.log('[LW] ★ Server identified as Legend World: ' + ws.url);
+        }
     }
 
     /* ── Varint / Zigzag decoders ── */
@@ -243,91 +228,42 @@ $(function () {
         return buf;
     }
 
-    /* ═══ Hook WebSocket.prototype.send ═══
-     * This intercepts ALL WebSocket sends regardless of constructor wrapper.
-     * For LW servers, we replace the handshake key 0xFF with 0x4C57. */
-    var _origSend = RealWebSocket.prototype.send;
-    RealWebSocket.prototype.send = function (data) {
-        var state = getLWState(this);
-        if (state.active) {
-            /* Log every send for debugging (first 20 sends) */
-            if (!state.sendCount) state.sendCount = 0;
-            state.sendCount++;
-            if (state.sendCount <= 20) {
-                var debugType = typeof data;
-                var debugLen = 0;
-                var debugBytes = '';
-                if (data instanceof ArrayBuffer) {
-                    debugType = 'ArrayBuffer';
-                    debugLen = data.byteLength;
-                    var u8 = new Uint8Array(data);
-                    for (var i = 0; i < Math.min(u8.length, 10); i++) debugBytes += ' ' + ('0' + u8[i].toString(16)).slice(-2);
-                } else if (data && data.buffer instanceof ArrayBuffer) {
-                    debugType = data.constructor.name || 'TypedArray';
-                    debugLen = data.byteLength;
-                    var u8 = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
-                    for (var i = 0; i < Math.min(u8.length, 10); i++) debugBytes += ' ' + ('0' + u8[i].toString(16)).slice(-2);
-                } else if (typeof data === 'number') {
-                    debugType = 'number(' + data + ')';
-                } else if (typeof data === 'string') {
-                    debugType = 'string("' + data.substring(0, 20) + '")';
-                }
-                console.log('[LW] SEND #' + state.sendCount + ' type=' + debugType + ' len=' + debugLen + ' bytes=[' + debugBytes.trim() + '] hs=' + state.handshakeState);
-            }
-
-            /* Normalize data to Uint8Array for inspection */
-            var bytes = null;
-            var byteLen = 0;
-            if (data instanceof ArrayBuffer) {
-                bytes = new Uint8Array(data);
-                byteLen = data.byteLength;
-            } else if (data && data.buffer instanceof ArrayBuffer) {
-                bytes = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
-                byteLen = data.byteLength;
-            }
-            if (bytes && byteLen === 5) {
-                if (bytes[0] === 0xFE) {
-                    console.log('[LW] ★ Caught 0xFE handshake (version), state → 1');
-                    state.handshakeState = 1;
-                } else if (bytes[0] === 0xFF && state.handshakeState === 1) {
-                    var lwKey = new ArrayBuffer(5);
-                    var lwView = new DataView(lwKey);
-                    lwView.setUint8(0, 0xFF);
-                    lwView.setUint32(1, 0x4C57, true);
-                    console.log('[LW] ★★★ Replacing handshake key with 0x4C57!');
-                    state.handshakeState = 2;
-                    return _origSend.call(this, lwKey);
-                }
-            }
-        }
-        return _origSend.call(this, data);
-    };
-
     /* ═══ Hook WebSocket.prototype.addEventListener ═══
-     * This intercepts incoming messages and transcodes LW packets. */
+     * Intercepts incoming messages to:
+     *  1. Detect LW Hello (0xF0) and activate LW mode
+     *  2. Transcode 0x4C/0x4D packets when active */
     var _origAddEventListener = RealWebSocket.prototype.addEventListener;
     RealWebSocket.prototype.addEventListener = function (type, listener, options) {
         if (type === 'message') {
             var ws = this;
             var wrappedListener = function (evt) {
-                var state = getLWState(ws);
-                if (!state.active || !(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
+                if (!(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
                     return listener.call(ws, evt);
                 }
-                var opcode = new Uint8Array(evt.data)[0];
+                var bytes = new Uint8Array(evt.data);
+                var opcode = bytes[0];
+
+                /* Detect LW Hello: [0xF0, 0x4C, 0x57] */
+                if (opcode === 0xF0 && evt.data.byteLength >= 3 && bytes[1] === 0x4C && bytes[2] === 0x57) {
+                    activateLW(ws);
+                    return; /* consume the LW Hello — don't pass to ogario */
+                }
+
+                var state = getLWState(ws);
+                if (!state.active) {
+                    return listener.call(ws, evt);
+                }
                 if (opcode === 0x4C) {
                     try {
                         var transcoded = transcodeLW(evt.data);
-                        var newEvt = new MessageEvent('message', { data: transcoded });
-                        listener.call(ws, newEvt);
+                        listener.call(ws, new MessageEvent('message', { data: transcoded }));
                     } catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
                     return;
                 }
                 if (opcode === 0x4D) {
                     try {
                         var transcoded = transcodeLWCamera(evt.data);
-                        var newEvt = new MessageEvent('message', { data: transcoded });
-                        listener.call(ws, newEvt);
+                        listener.call(ws, new MessageEvent('message', { data: transcoded }));
                     } catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
                     return;
                 }
@@ -338,29 +274,37 @@ $(function () {
         return _origAddEventListener.call(this, type, listener, options);
     };
 
-    /* ═══ Also hook onmessage setter for code that uses ws.onmessage = fn ═══ */
+    /* ═══ Hook onmessage setter — same logic for ws.onmessage = fn ═══ */
     var _origOnmsgDesc = Object.getOwnPropertyDescriptor(RealWebSocket.prototype, 'onmessage');
     if (_origOnmsgDesc && _origOnmsgDesc.set) {
         Object.defineProperty(RealWebSocket.prototype, 'onmessage', {
             get: _origOnmsgDesc.get,
             set: function (fn) {
                 var ws = this;
-                var state = getLWState(ws);
-                if (!state.active) {
-                    return _origOnmsgDesc.set.call(ws, fn);
-                }
                 _origOnmsgDesc.set.call(ws, function (evt) {
                     if (!(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
                         return fn.call(ws, evt);
                     }
-                    var opcode = new Uint8Array(evt.data)[0];
+                    var bytes = new Uint8Array(evt.data);
+                    var opcode = bytes[0];
+
+                    /* Detect LW Hello */
+                    if (opcode === 0xF0 && evt.data.byteLength >= 3 && bytes[1] === 0x4C && bytes[2] === 0x57) {
+                        activateLW(ws);
+                        return;
+                    }
+
+                    var state = getLWState(ws);
+                    if (!state.active) {
+                        return fn.call(ws, evt);
+                    }
                     if (opcode === 0x4C) {
-                        try { var t = transcodeLW(evt.data); fn.call(ws, new MessageEvent('message', { data: t })); }
+                        try { fn.call(ws, new MessageEvent('message', { data: transcodeLW(evt.data) })); }
                         catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
                         return;
                     }
                     if (opcode === 0x4D) {
-                        try { var t = transcodeLWCamera(evt.data); fn.call(ws, new MessageEvent('message', { data: t })); }
+                        try { fn.call(ws, new MessageEvent('message', { data: transcodeLWCamera(evt.data) })); }
                         catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
                         return;
                     }
