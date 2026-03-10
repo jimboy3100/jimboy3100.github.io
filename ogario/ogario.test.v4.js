@@ -436,7 +436,6 @@ $(function () {
     window.WebSocket.CLOSED = _OriginalWebSocket.CLOSED;
 })();
 /* ═══ END LW Protocol V3 Handler ═══ */
-
 const ranges = [10, 255, 255, 255, 255];
 function toLong(ip) {
     let result = 0;
@@ -512,7 +511,7 @@ function deleteGamemode(temp) {
 
     privateModOptions = [
         {
-            text: 'ΏθΣΣ Legend FFA',
+            text: '👑 Legend FFA',
             value: 5001
         },
         {
@@ -5247,22 +5246,22 @@ function thelegendmodproject() {
                         t += ' | ' + spects[window.multiboxPlayerEnabled - 1].playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled - 1].BSTE) {
-                        t += ' | έΩΟέΩΟέηδέΩΚ: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled - 1].BMTE) {
-                        t += ' | έΩΟέηδέΩΚ: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled - 1].MTE) {
-                        t += ' | έΩΚέηδέΩΟ: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
+                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled - 1].STE) {
-                        t += ' | έΩΚέΩΚέηδέΩΟ: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled - 1].TTE) {
-                        t += ' | έΩΚέηγέΩΚ: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
+                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled - 1].PTE) {
-                        t += ' | έηγέΩΟέηα: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
+                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -5280,22 +5279,22 @@ function thelegendmodproject() {
                         t += ' | ' + ogario.playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && ogario.BSTE) {
-                        t += ' | έΩΟέΩΟέηδέΩΚ: ' + ogario.BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + ogario.BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && ogario.BMTE) {
-                        t += ' | έΩΟέηδέΩΚ: ' + ogario.BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + ogario.BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && ogario.MTE) {
-                        t += ' | έΩΚέηδέΩΟ: ' + ogario.MTE //Sonia6
+                        t += ' | ◉➛◎: ' + ogario.MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && ogario.STE) {
-                        t += ' | έΩΚέΩΚέηδέΩΟ: ' + ogario.STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + ogario.STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && ogario.TTE) {
-                        t += ' | έΩΚέηγέΩΚ: ' + ogario.TTE //Sonia6
+                        t += ' | ◉➚◉: ' + ogario.TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && ogario.PTE) {
-                        t += ' | έηγέΩΟέηα: ' + ogario.PTE //Sonia6
+                        t += ' | ➚◎➘: ' + ogario.PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -5306,7 +5305,7 @@ function thelegendmodproject() {
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
                     else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
                     else if (drawRender.averageRenderTime <= 50) color = 'color:green'
-                    t += 'ΏθΤ╗: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
+                    t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
@@ -7599,10 +7598,10 @@ function thelegendmodproject() {
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                        this.miniMapCtx.strokeText('ΏθΦ╣' + LM.arrowFB[0].nick + 'ΏθΦ╣', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                    this.miniMapCtx.fillText('ΏθΦ╣' + LM.arrowFB[0].nick + 'ΏθΦ╣', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     this.miniMapCtx.restore();
                     //}
                 }
@@ -8903,7 +8902,7 @@ function thelegendmodproject() {
                     }
                     var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
                     var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    var pattern3 = "ΏζΧΛΏζΧΨΏζΧθΏζΧκΏζΧΤ.ΏζΧγΏζΧι";
+                    var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
                     //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
@@ -9386,7 +9385,7 @@ function thelegendmodproject() {
                 const panelHTML = `
                     <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; border-radius: 8px; background-color: #00243e; border: 2px solid #01d9cc;">
                         <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">έεΧ</div>
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">✕</div>
                             <center><h5 class="menu-main-color" style="margin: 0; font-size: 16px;">Custom Skin Uploader</h5></center>
                         </div>
                         <div style="display: flex; gap: 5px; margin-bottom: 15px;">
@@ -9399,7 +9398,7 @@ function thelegendmodproject() {
                         <div style="text-align: center; margin-bottom: 15px;">
                             <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; background-color: #000;"></canvas>
                         </div>
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">ΏθΥΓ Choose Image</label>
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose Image</label>
                         <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
                         <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
                         <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">Ready</div>
@@ -11646,7 +11645,7 @@ function thelegendmodproject() {
                         }
                     }, */
         //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
-        //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, έΑο]
+        //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
             if (!legendmod.integrity) {
                 return
@@ -12294,9 +12293,9 @@ function thelegendmodproject() {
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
-                        else if (window.testobjects2.split('"Ύ┐╜\x01')[1]) { //6/8/2024 fix
+                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
                             //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
-                            window.agarioEncodedUID = window.testobjects2.split('"Ύ┐╜\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
+                            window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
                         }
 
                     }
@@ -13195,11 +13194,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`ΏθΤ░` + this.user.coins);
+                                $("#coins").html(`💰` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`Ώθπυ` + this.user.dna);
+                                $("#dna").html(`🧬` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -13264,7 +13263,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`ΏθΠΖ` + this.user.trophy);
+                        $("#trophy").html(`🏅` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -14284,9 +14283,9 @@ Game name     : ${i.displayName}<br/>
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
-                if (name === "έΕΕΏθΝΑJustWatchPro" || name === "έΕΕΏθΝΑάΟξάΣΟάΨ┤άΩζάΨΘάΩ░άΩσϊ╕ΖάΟξάΩζάΣΟ") {
-                    if (name === "έΕΕΏθΝΑJustWatchPro") cellUpdateCells.targetNick = "έΕΕΏθΝΑLet\'s fight for glory. Let\'s fight for our kids";
-                    if (name === "έΕΕΏθΝΑάΟξάΣΟάΨ┤άΩζάΨΘάΩ░άΩσϊ╕ΖάΟξάΩζάΣΟ") cellUpdateCells.targetNick = "έΕΕΏθΝΑAvoid (Anti ,Corners, Random)";
+                if (name === "℄🌀JustWatchPro" || name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") {
+                    if (name === "℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
+                    if (name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
                     if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]) {
                         application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
                         application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);
@@ -14706,7 +14705,7 @@ Game name     : ${i.displayName}<br/>
         cellsColored: [],
         setCanvas() {
             this.canvas = document.getElementById('canvas');
-            this.ctx = this.canvas.getContext(window.PIXI ? 'pixi' : '2d');
+            this.ctx = this.canvas.getContext('2d');
             this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
                 LM.clientY = event.clientY;
@@ -14780,7 +14779,6 @@ Game name     : ${i.displayName}<br/>
             LM.getCursorPosition();
             LM.sortCells();
             LM.compareCells();
-            if (this.ctx.start) this.ctx.start();
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
             if (defaultmapsettings.showOptimisedGrid) {
                 //
@@ -14869,7 +14867,7 @@ Game name     : ${i.displayName}<br/>
             //
 
             this.ctx.restore();
-            if (this.ctx.flush) this.ctx.flush();
+
             //this.ctx.finish2D();
             if (LM.gameMode === ':teams') {
                 if (this.pieChart && this.pieChart.width) {
@@ -17438,7 +17436,7 @@ var stylesLegendModConsole2 = [
 function consoleNotice() {
     console.groupCollapsed('%cLegend express%c  %chttp://www.jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
-    console.log('%cThe Legend mod ProjectέΕλ', stylesLegendModConsole2);
+    console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
     console.groupCollapsed("Mod developed by");
     console.log('%cwww.legendclan.ml', stylesLegendModConsole2);
