@@ -107,15 +107,14 @@ $(function () {
         var dv = new DataView(data);
         var pos = { pos: 1 };
 
-        var totalRemove = readVarint(dv, pos);
+        var eatCount = readVarint(dv, pos);
         var eats = [];
-        for (var i = 0; i < totalRemove; i++) {
+        for (var i = 0; i < eatCount; i++) {
             var hunterId = dv.getUint16(pos.pos, true); pos.pos += 2;
             var preyId = dv.getUint16(pos.pos, true); pos.pos += 2;
             eats.push({ hunter: hunterId, prey: preyId });
         }
-        var eatCount = readVarint(dv, pos);
-        var plainDelCount = totalRemove - eatCount;
+        var plainDelCount = readVarint(dv, pos);
         var plainDels = [];
         for (var i = 0; i < plainDelCount; i++) {
             plainDels.push(dv.getUint16(pos.pos, true));
