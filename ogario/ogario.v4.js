@@ -13499,11 +13499,6 @@ Game name     : ${i.displayName}<br/>
             }
         },
         setMapOffset(left, top, right, bottom) {
-            //if (right - left > 14000 && bottom - top > 14000) {
-            //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
-
-            //if (!LM.integrity && !this.mapOffsetFixed){ 
-            //if (!this.mapOffsetFixed){ 
             var temp, temp2;
             if ($("#server-token").val().includes("replay^")) {
                 temp = $("#server-token").val().replace('replay^', '').split('(')[0].split('.lm')[0];
@@ -13511,36 +13506,29 @@ Game name     : ${i.displayName}<br/>
                     temp2 = true
                 }
             }
+
+            /* Calculate map size dynamically from border values */
+            var newMapSize = ~~Math.abs(right - left);
+
             if (this.integrity || temp2) {
-                this.mapSize = 14142 //14142.13562
-                this.mapOffset = this.mapSize / 2
+                this.mapOffset = newMapSize / 2;
+            } else {
+                this.mapOffset = 0;
             }
-            else if (!this.integrity) {
-                this.mapSize = Math.abs((left - right));
-                this.mapOffset = 0
+
+            /* If map size changed, reset the fixed flag so we recalculate */
+            if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
+                this.mapOffsetFixed = false;
             }
+            this.mapSize = newMapSize;
+
             if (!this.mapOffsetFixed) {
                 //console.log(right - left, bottom - top)
                 if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-                    //console.log("ok", right - left, bottom - top);
                     //if (this.integrity || this.ws.includes("replay")) {
                     if (this.integrity || temp2) {
-                        /*
-                        this.stretchX = this.mapSize - right + left
-                        this.stretchY = this.mapSize - bottom + top
-                        console.log("stretch", this.stretchX, this.stretchY)
-                        right += this.stretchX/2
-                        left -=  this.stretchX/2
-                        bottom += this.stretchY/2
-                        top -=  this.stretchY/2
-                        console.log("fix", right - left, bottom - top)
-                        */
                         this.mapOffsetX = this.mapOffset - right;
                         this.mapOffsetY = this.mapOffset - bottom;
-                        /*this.mapMinX = -this.mapOffset - this.mapOffsetX;
-                        this.mapMinY = -this.mapOffset - this.mapOffsetY;
-                        this.mapMaxX = this.mapOffset - this.mapOffsetX;
-                        this.mapMaxY = this.mapOffset - this.mapOffsetY;*/
 
                         this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
                         this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
@@ -13555,10 +13543,9 @@ Game name     : ${i.displayName}<br/>
                         this.mapMaxX = right
                         this.mapMaxY = bottom
                     }
-                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
-                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
+                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
                     this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
-                    //console.log(left, top, right, bottom)				
                     this.mapOffsetFixed = true;
                 }
             }
