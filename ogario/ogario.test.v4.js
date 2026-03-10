@@ -66,9 +66,15 @@ $(function () {
 
     function isLWServer(url) {
         if (!url) return false;
-        for (var i = 0; i < LW_SERVERS.length; i++) {
-            if (url.indexOf(LW_SERVERS[i]) !== -1) return true;
-        }
+        /* Extract hostname only — prevent false positives from URLs like
+         * wss://cloud.achex.ca/ITMBOY3100ffa.legendmod.ml:8080
+         * where "legendmod.ml" appears in the path, not the host */
+        try {
+            var host = url.replace(/^wss?:\/\//, '').split('/')[0].split(':')[0];
+            for (var i = 0; i < LW_SERVERS.length; i++) {
+                if (host.indexOf(LW_SERVERS[i]) !== -1) return true;
+            }
+        } catch (e) {}
         return false;
     }
 
