@@ -13727,13 +13727,13 @@ Game name     : ${i.displayName}<br/>
             this.removePlayerCell = false;
             var eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
-            if (eatEventsLength > 0) console.log('[CLI-EAT] eatCount=' + eatEventsLength + ' indexedCells=' + Object.keys(this.indexedCells).length);
+
             for (var length = 0; length < eatEventsLength; length++) {
                 var eaterRawID = view.readUInt32LE(offset);
                 var victimRawID = view.readUInt32LE(offset + 4);
                 var eaterID = this.indexedCells[eaterRawID],
                     victimID = this.indexedCells[victimRawID];
-                console.log('[CLI-EAT] eater=' + eaterRawID + (eaterID ? ' FOUND' : ' MISSING') + ' victim=' + victimRawID + (victimID ? ' FOUND' : ' MISSING'));
+
                 if (offset += 8, eaterID && victimID) {
                     victimID.targetX = eaterID.x;
                     victimID.targetY = eaterID.y;
@@ -13920,16 +13920,16 @@ Game name     : ${i.displayName}<br/>
 
             eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
-            if (eatEventsLength > 0) console.log('[CLI-REM] removeCount=' + eatEventsLength + ' indexedCells=' + Object.keys(this.indexedCells).length);
+
             for (length = 0; length < eatEventsLength; length++) {
                 var id = view.readUInt32LE(offset);
                 offset += 4;
                 cell = this.indexedCells[id];
                 if (cell) {
-                    console.log('[CLI-REM] id=' + id + ' FOUND type=' + (cell.isVirus ? 'virus' : cell.isFood ? 'food' : 'cell') + ' -> removeCell()');
+
                     cell.removeCell();
                 } else {
-                    console.log('[CLI-REM] id=' + id + ' NOT FOUND in indexedCells!');
+
                 }
             }
             /*				
