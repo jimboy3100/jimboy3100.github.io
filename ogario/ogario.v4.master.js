@@ -639,7 +639,13 @@ function legendmaster(self) {
         },
         connect(body) {
             //            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Connect to:", body);
-            this.ws = "wss://" + body;
+            if (body.indexOf("ws://") === 0 || body.indexOf("wss://") === 0) {
+                this.ws = body;
+            } else if (body.indexOf("localhost") === 0 || body.indexOf("127.0.0.1") === 0) {
+                this.ws = "ws://" + body;
+            } else {
+                this.ws = "wss://" + body;
+            }
             if (":party" === this.gameMode && this.partyToken) {
                 this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
             }
