@@ -7526,6 +7526,13 @@ function thelegendmodproject() {
             if (!ws) {
                 return;
             }
+            if (ws.indexOf('ws://') !== 0 && ws.indexOf('wss://') !== 0) {
+                if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
+                    ws = 'ws://' + ws;
+                } else {
+                    ws = 'wss://' + ws;
+                }
+            }
             this.skipServerData = true
             window.core && window.core.connect && window.core.connect(ws);
         },
