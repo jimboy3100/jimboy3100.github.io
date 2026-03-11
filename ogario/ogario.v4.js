@@ -7444,7 +7444,11 @@ function thelegendmodproject() {
                 text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
-                text = 'wss://' + token; //private servers
+                if (token.indexOf('localhost') === 0 || token.indexOf('127.0.0.1') === 0) {
+                    text = 'ws://' + token; //localhost
+                } else {
+                    text = 'wss://' + token; //private servers
+                }
             } else {
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
