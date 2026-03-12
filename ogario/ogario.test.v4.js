@@ -8819,6 +8819,15 @@ function thelegendmodproject() {
                 for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
                 this.sendBuffer(view),
                     this.lastMessageSentTime = Date.now();
+
+                /* LW server: also send via opcode 99 to game server */
+                if (LM.legendWorldServer) {
+                    var gview = application.createView(4 + 2 * message.length);
+                    gview.setUint8(0, 99);
+                    gview.setUint8(1, 0);
+                    for (var i = 0; i <= message.length; i++) gview.setUint16(2 + i * 2, message.charCodeAt(i), true);
+                    legendmod.sendMessage(gview);
+                }
             }
         },
         prepareCommand(command) {
@@ -8830,7 +8839,7 @@ function thelegendmodproject() {
 
             //		
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            if (!LM.integrity && $("#clantag").val() === "") {
+            if (LM.legendWorldServer || (!LM.integrity && $("#clantag").val() === "")) {
 
                 var view = application.createView(4 + 2 * prepareCommand.length);
                 view.setUint8(0, 99);
@@ -10948,6 +10957,7 @@ function thelegendmodproject() {
         pressedKeys: {},
         dance: false,
         chatableServer: false,
+        legendWorldServer: false,
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
@@ -12115,6 +12125,21 @@ function thelegendmodproject() {
                     this.chatableServer = true;
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                    }
+                    break;
+                case 240: /* LW (Legend World) server handshake beacon */
+                    if (data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                        /* Server sent [0xF0, 'L', 'W'] — this is a Legend World server */
+                        this.chatableServer = true;
+                        this.legendWorldServer = true;
+                        console.log('%c[LM]%c Legend World server detected — chat via opcode 99 enabled',
+                            'color:#00ff00;font-weight:bold', 'color:inherit');
+                        /* Respond with [0xF0, 'L', 'M'] to identify as Legend Mod */
+                        var lmResp = this.createView(3);
+                        lmResp.setUint8(0, 240);
+                        lmResp.setUint8(1, 0x4C); /* 'L' */
+                        lmResp.setUint8(2, 0x4D); /* 'M' */
+                        this.sendMessage(lmResp);
                     }
                     break;
                 case 102:
