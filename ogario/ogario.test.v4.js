@@ -8797,6 +8797,17 @@ function thelegendmodproject() {
                         if (legendmod.integrity || !LM.chatableServer) {
                             this.displayChatMessage(time, caseof, plId, msg);
                         }
+                        /* LW server: show relay messages unless they're duplicates of opcode 99 */
+                        else if (LM.legendWorldServer) {
+                            var now = Date.now();
+                            /* Clean old entries (>3s) */
+                            LM.recentServerChat = LM.recentServerChat.filter(function(e) { return now - e.t < 3000; });
+                            /* Check for duplicate */
+                            var isDupe = LM.recentServerChat.some(function(e) { return msg.indexOf(e.m) !== -1 || e.m.indexOf(msg) !== -1; });
+                            if (!isDupe) {
+                                this.displayChatMessage(time, caseof, plId, msg);
+                            }
+                        }
                         //else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
                         else if (!legendmod.integrity && $("#clantag").val() !== "") {
                             this.displayChatMessage(time, caseof, plId, msg);
@@ -10958,6 +10969,7 @@ function thelegendmodproject() {
         dance: false,
         chatableServer: false,
         legendWorldServer: false,
+        recentServerChat: [],  /* dedup cache: opcode 99 messages (last 10) */
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
@@ -12123,7 +12135,12 @@ function thelegendmodproject() {
                         message = "For bot commands look at Hotkeys"
                     }
                     this.chatableServer = true;
-                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
+                    /* Cache for dedup against relay messages */
+                    if (LM.legendWorldServer) {
+                        LM.recentServerChat.push({ m: name + ": " + message, t: Date.now() });
+                        if (LM.recentServerChat.length > 15) LM.recentServerChat.shift();
+                    }
+                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && (LM.legendWorldServer || $("#clantag").val() === "")) {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     break;
