@@ -12134,7 +12134,7 @@ function thelegendmodproject() {
                     if (message.includes("E = split bots")) {
                         message = "For bot commands look at Hotkeys"
                     }
-                    this.chatableServer = true;
+                    LM.chatableServer = true;
                     /* Cache for dedup against relay messages */
                     if (LM.legendWorldServer) {
                         LM.recentServerChat.push({ m: name + ": " + message, t: Date.now() });
@@ -12147,8 +12147,8 @@ function thelegendmodproject() {
                 case 240: /* LW (Legend World) server handshake beacon */
                     if (data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
                         /* Server sent [0xF0, 'L', 'W'] — this is a Legend World server */
-                        this.chatableServer = true;
-                        this.legendWorldServer = true;
+                        LM.chatableServer = true;
+                        LM.legendWorldServer = true;
                         console.log('%c[LM]%c Legend World server detected — chat via opcode 99 enabled',
                             'color:#00ff00;font-weight:bold', 'color:inherit');
                         /* Respond with [0xF0, 'L', 'M'] to identify as Legend Mod */
