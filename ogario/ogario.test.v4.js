@@ -5502,16 +5502,8 @@ function thelegendmodproject() {
 
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
-                    if (!LM.integrity && $("#clantag").val() === "") {
-                        var view = application.createView(4 + 2 * value.length);
-                        view.setUint8(0, 99);
-                        view.setUint8(1, 0);
-                        var length = 0
-                        for (; length <= value.length + 1; length++) view.setUint16(2 + length, value.charCodeAt(length), true);
-                        view.setUint8(length, 0);
-                        legendmod.sendMessage(view)
-                    }
-                    //
+                    /* Chat goes via relay socket only (sendChatMessage below).
+                     * No opcode 99 to game server — relay is shared with Delta. */
 
                     this.sendChatMessage(101, value);
                     if (ogario.play) {
@@ -8794,25 +8786,18 @@ function thelegendmodproject() {
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
                     if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
 
-                        if (legendmod.integrity || !LM.chatableServer) {
-                            this.displayChatMessage(time, caseof, plId, msg);
-                        }
-                        /* LW server: show ALL relay messages directly.
-                         * LM sends chat via relay only (not opcode 99), so
-                         * both LM and Delta messages come through this channel.
-                         * No dedup needed since LM doesn't send opcode 99. */
-                        else if (LM.legendWorldServer) {
-                            this.displayChatMessage(time, caseof, plId, msg);
-                        }
-                        /* Old dedup approach (when LM sent both relay + opcode 99):
-                         * var now = Date.now();
-                         * LM.recentServerChat = LM.recentServerChat.filter(function(e) { return now - e.t < 3000; });
-                         * var isDupe = LM.recentServerChat.some(function(e) { return msg.indexOf(e.m) !== -1 || e.m.indexOf(msg) !== -1; });
-                         * if (!isDupe) this.displayChatMessage(time, caseof, plId, msg); */
-                        //else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
-                        else if (!legendmod.integrity && $("#clantag").val() !== "") {
-                            this.displayChatMessage(time, caseof, plId, msg);
-                        }
+                        /* Always display relay chat messages.
+                         * On private servers, chat goes via relay only (no opcode 99),
+                         * so no dedup is needed — just show everything. */
+                        /* Old conditions (before relay-only chat):
+                         * if (legendmod.integrity || !LM.chatableServer) {
+                         *     this.displayChatMessage(time, caseof, plId, msg);
+                         * } else if (LM.legendWorldServer) {
+                         *     this.displayChatMessage(time, caseof, plId, msg);
+                         * } else if (!legendmod.integrity && $("#clantag").val() !== "") {
+                         *     this.displayChatMessage(time, caseof, plId, msg);
+                         * } */
+                        this.displayChatMessage(time, caseof, plId, msg);
                     } else {
                         //console.log('Blocked: ' + msg)
                     }
@@ -8852,21 +8837,8 @@ function thelegendmodproject() {
             var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
             this.sendChatMessage(102, prepareCommand);
 
-            //		
-            //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            /* LW servers: commands go via relay socket only, not opcode 99.
-             * legendWorldServer is excluded from this condition on purpose. */
-            if (!LM.integrity && $("#clantag").val() === "") {
-
-                var view = application.createView(4 + 2 * prepareCommand.length);
-                view.setUint8(0, 99);
-                view.setUint8(1, 0);
-                var length = 0
-                for (; length <= prepareCommand.length + 1; length++) view.setUint16(2 + length, prepareCommand.charCodeAt(length), true);
-                view.setUint8(length, 0);
-                legendmod.sendMessage(view)
-            }
-            //
+            /* Commands go via relay socket only (sendChatMessage above).
+             * No opcode 99 to game server — relay is shared with Delta. */
         },
         addChatUser(id, name) {
             this.chatUsers[id] = name;
