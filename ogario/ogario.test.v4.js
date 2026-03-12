@@ -35,289 +35,6 @@ $(function () {
     $('head').append('<meta name="referrer" content="no-referrer">');
 });
 
-/* ═══════════════════════════════════════════════════════════════════
- * LEGEND WORLD PROTOCOL V3 — Client-side handler
- *
- * Server-driven detection: the server sends [0xF0, 0x4C, 0x57]
- * ("LW Hello") after the handshake to identify itself as Legend World.
- * On detection, the client activates LW transcoding:
- *   0x4C → 0x10 (UpdateNodes)
- *   0x4D → 0x11 (UpdatePosition)
- *
- * Hooks RealWebSocket.prototype because standby-server.js replaces
- * window.WebSocket before this code runs.
- * ═══════════════════════════════════════════════════════════════════ */
-(function () {
-    /* Resolve the REAL WebSocket constructor (unwrap standby-server.js wrapper) */
-    var RealWebSocket = WebSocket.prototype.WebSocket || WebSocket;
-
-    /* ── Cell state tracking for velocity prediction ── */
-    var lwCells = {};
-    var lwCamX = 0, lwCamY = 0;
-
-    /* ── Per-socket LW state ── */
-    var lwSockets = new WeakMap();
-
-    function getLWState(ws) {
-        var state = lwSockets.get(ws);
-        if (!state) {
-            /* Default: inactive. Activated only when server sends LW Hello (0xF0) */
-            state = { active: false };
-            lwSockets.set(ws, state);
-        }
-        return state;
-    }
-
-    function activateLW(ws) {
-        var state = getLWState(ws);
-        if (!state.active) {
-            state.active = true;
-            lwCells = {};
-            lwCamX = 0;
-            lwCamY = 0;
-            console.log('[LW] ★ Server identified as Legend World: ' + ws.url);
-        }
-    }
-
-    /* ── Varint / Zigzag decoders ── */
-    function readVarint(dv, offset) {
-        var result = 0, shift = 0, b;
-        do {
-            b = dv.getUint8(offset.pos++);
-            result |= (b & 0x7F) << shift;
-            shift += 7;
-        } while (b & 0x80);
-        return result >>> 0;
-    }
-
-    function readZigzag(dv, offset) {
-        var n = readVarint(dv, offset);
-        return (n >>> 1) ^ -(n & 1);
-    }
-
-    function rgb565to888(val) {
-        var r = ((val >> 11) & 0x1F) << 3;
-        var g = ((val >> 5) & 0x3F) << 2;
-        var b = (val & 0x1F) << 3;
-        return { r: r, g: g, b: b };
-    }
-
-    /* ── Transcode 0x4C → 0x10 (UpdateNodes) ── */
-    function transcodeLW(data) {
-        var dv = new DataView(data);
-        var pos = { pos: 1 };
-
-        var eatCount = readVarint(dv, pos);
-        var eats = [];
-        for (var i = 0; i < eatCount; i++) {
-            var hunterId = dv.getUint16(pos.pos, true); pos.pos += 2;
-            var preyId = dv.getUint16(pos.pos, true); pos.pos += 2;
-            eats.push({ hunter: hunterId, prey: preyId });
-        }
-        var plainDelCount = readVarint(dv, pos);
-        var plainDels = [];
-        for (var i = 0; i < plainDelCount; i++) {
-            plainDels.push(dv.getUint16(pos.pos, true));
-            pos.pos += 2;
-        }
-
-        var updCount = readVarint(dv, pos);
-        var updates = [];
-        for (var i = 0; i < updCount; i++) {
-            var cellId = dv.getUint16(pos.pos, true); pos.pos += 2;
-            var mask = dv.getUint8(pos.pos++);
-            var isAbsolute = !!(mask & 0x80);
-            var cell = lwCells[cellId];
-            if (!cell) { cell = { x: 0, y: 0, size: 10, vx: 0, vy: 0 }; lwCells[cellId] = cell; }
-            var predX = cell.x + cell.vx, predY = cell.y + cell.vy;
-            var dx = 0, dy = 0, ds = 0;
-            if (mask & 0x01) dx = readZigzag(dv, pos);
-            if (mask & 0x02) dy = readZigzag(dv, pos);
-            if (mask & 0x04) ds = readZigzag(dv, pos);
-            if (mask & 0x08) { cell.vx = readZigzag(dv, pos); cell.vy = readZigzag(dv, pos); }
-            if (isAbsolute) { cell.x = dx; cell.y = dy; cell.size = ds; }
-            else { cell.x = predX + dx; cell.y = predY + dy; cell.size += ds; }
-            updates.push({ id: cellId, x: cell.x, y: cell.y, size: cell.size });
-        }
-
-        var addCount = readVarint(dv, pos);
-        var adds = [];
-        for (var i = 0; i < addCount; i++) {
-            var cellId = dv.getUint16(pos.pos, true); pos.pos += 2;
-            var x = readZigzag(dv, pos), y = readZigzag(dv, pos);
-            var size = readVarint(dv, pos);
-            var typeFlags = dv.getUint8(pos.pos++);
-            var cellType = typeFlags & 0x07;
-            var isAgitated = !!(typeFlags & 0x08);
-            var useRgb565 = !!(typeFlags & 0x10);
-            var hasSkin = !!(typeFlags & 0x40);
-            var hasName = !!(typeFlags & 0x80);
-            var r, g, b;
-            if (useRgb565) { var rgb = dv.getUint16(pos.pos, true); pos.pos += 2; var c = rgb565to888(rgb); r = c.r; g = c.g; b = c.b; }
-            else { r = dv.getUint8(pos.pos++); g = dv.getUint8(pos.pos++); b = dv.getUint8(pos.pos++); }
-            var skin = '';
-            if (hasSkin) { while (pos.pos < data.byteLength) { var ch = dv.getUint8(pos.pos++); if (ch === 0) break; skin += String.fromCharCode(ch); } }
-            var name = '';
-            if (hasName) { while (pos.pos < data.byteLength) { var ch = dv.getUint8(pos.pos++); if (ch === 0) break; name += String.fromCharCode(ch); } }
-            lwCells[cellId] = { x: x, y: y, size: size, vx: 0, vy: 0 };
-            var flags = 0x02;
-            if (cellType === 2) flags |= 0x01;
-            if (cellType === 3) flags |= 0x20;
-            if (cellType === 4) flags |= 0x40;
-            if (isAgitated) flags |= 0x10;
-            if (cellType === 0) flags |= 0x80;
-            if (hasSkin) flags |= 0x04;
-            if (hasName) flags |= 0x08;
-            adds.push({ id: cellId, x: x, y: y, size: size, flags: flags, extFlags: (cellType === 0) ? 0x01 : 0, r: r, g: g, b: b, skin: skin, name: name });
-        }
-
-        /* Build standard 0x10 packet */
-        var bufSize = 1 + 2 + (eatCount * 8) + (updates.length * 14) + (adds.length * 256) + 4 + 2 + ((eatCount + plainDels.length) * 4) + 128;
-        var buf = new ArrayBuffer(bufSize);
-        var out = new DataView(buf);
-        var wp = 0;
-        out.setUint8(wp++, 0x10);
-        out.setUint16(wp, eatCount, true); wp += 2;
-        for (var i = 0; i < eatCount; i++) { out.setUint32(wp, eats[i].hunter, true); wp += 4; out.setUint32(wp, eats[i].prey, true); wp += 4; }
-        for (var i = 0; i < updates.length; i++) {
-            var u = updates[i];
-            out.setUint32(wp, u.id, true); wp += 4;
-            out.setInt32(wp, u.x, true); wp += 4;
-            out.setInt32(wp, u.y, true); wp += 4;
-            out.setUint16(wp, u.size, true); wp += 2;
-            out.setUint8(wp++, 0x02); out.setUint8(wp++, 128); out.setUint8(wp++, 128); out.setUint8(wp++, 128);
-        }
-        for (var i = 0; i < adds.length; i++) {
-            var a = adds[i];
-            out.setUint32(wp, a.id, true); wp += 4;
-            out.setInt32(wp, a.x, true); wp += 4;
-            out.setInt32(wp, a.y, true); wp += 4;
-            out.setUint16(wp, a.size, true); wp += 2;
-            out.setUint8(wp++, a.flags);
-            if (a.flags & 0x80) out.setUint8(wp++, a.extFlags);
-            out.setUint8(wp++, a.r); out.setUint8(wp++, a.g); out.setUint8(wp++, a.b);
-            if (a.flags & 0x04) { for (var j = 0; j < a.skin.length; j++) out.setUint8(wp++, a.skin.charCodeAt(j)); out.setUint8(wp++, 0); }
-            if (a.flags & 0x08) { for (var j = 0; j < a.name.length; j++) out.setUint8(wp++, a.name.charCodeAt(j)); out.setUint8(wp++, 0); }
-        }
-        out.setUint32(wp, 0, true); wp += 4;
-        var totalDel = eatCount + plainDels.length;
-        out.setUint16(wp, totalDel, true); wp += 2;
-        for (var i = 0; i < eatCount; i++) { out.setUint32(wp, eats[i].prey, true); wp += 4; }
-        for (var i = 0; i < plainDels.length; i++) { out.setUint32(wp, plainDels[i], true); wp += 4; delete lwCells[plainDels[i]]; }
-        for (var i = 0; i < eatCount; i++) { delete lwCells[eats[i].prey]; }
-        return buf.slice(0, wp);
-    }
-
-    /* ── Transcode 0x4D → 0x11 (UpdatePosition/Camera) ── */
-    function transcodeLWCamera(data) {
-        var dv = new DataView(data);
-        var pos = { pos: 1 };
-        var dx = readZigzag(dv, pos), dy = readZigzag(dv, pos);
-        lwCamX += dx; lwCamY += dy;
-        var scaleU16 = dv.getUint16(pos.pos, true); pos.pos += 2;
-        var scale = scaleU16 / 65535.0;
-        var tick = readVarint(dv, pos);
-        var buf = new ArrayBuffer(17);
-        var out = new DataView(buf);
-        out.setUint8(0, 0x11);
-        out.setFloat32(1, lwCamX, true);
-        out.setFloat32(5, lwCamY, true);
-        out.setFloat32(9, scale, true);
-        out.setUint32(13, tick, true);
-        return buf;
-    }
-
-    /* ═══ Hook WebSocket.prototype.addEventListener ═══
-     * Intercepts incoming messages to:
-     *  1. Detect LW Hello (0xF0) and activate LW mode
-     *  2. Transcode 0x4C/0x4D packets when active */
-    var _origAddEventListener = RealWebSocket.prototype.addEventListener;
-    RealWebSocket.prototype.addEventListener = function (type, listener, options) {
-        if (type === 'message') {
-            var ws = this;
-            var wrappedListener = function (evt) {
-                if (!(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
-                    return listener.call(ws, evt);
-                }
-                var bytes = new Uint8Array(evt.data);
-                var opcode = bytes[0];
-
-                /* Detect LW Hello: [0xF0, 0x4C, 0x57] */
-                if (opcode === 0xF0 && evt.data.byteLength >= 3 && bytes[1] === 0x4C && bytes[2] === 0x57) {
-                    activateLW(ws);
-                    return; /* consume the LW Hello — don't pass to ogario */
-                }
-
-                var state = getLWState(ws);
-                if (!state.active) {
-                    return listener.call(ws, evt);
-                }
-                if (opcode === 0x4C) {
-                    try {
-                        var transcoded = transcodeLW(evt.data);
-                        listener.call(ws, new MessageEvent('message', { data: transcoded }));
-                    } catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
-                    return;
-                }
-                if (opcode === 0x4D) {
-                    try {
-                        var transcoded = transcodeLWCamera(evt.data);
-                        listener.call(ws, new MessageEvent('message', { data: transcoded }));
-                    } catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
-                    return;
-                }
-                listener.call(ws, evt);
-            };
-            return _origAddEventListener.call(this, type, wrappedListener, options);
-        }
-        return _origAddEventListener.call(this, type, listener, options);
-    };
-
-    /* ═══ Hook onmessage setter — same logic for ws.onmessage = fn ═══ */
-    var _origOnmsgDesc = Object.getOwnPropertyDescriptor(RealWebSocket.prototype, 'onmessage');
-    if (_origOnmsgDesc && _origOnmsgDesc.set) {
-        Object.defineProperty(RealWebSocket.prototype, 'onmessage', {
-            get: _origOnmsgDesc.get,
-            set: function (fn) {
-                var ws = this;
-                _origOnmsgDesc.set.call(ws, function (evt) {
-                    if (!(evt.data instanceof ArrayBuffer) || evt.data.byteLength < 1) {
-                        return fn.call(ws, evt);
-                    }
-                    var bytes = new Uint8Array(evt.data);
-                    var opcode = bytes[0];
-
-                    /* Detect LW Hello */
-                    if (opcode === 0xF0 && evt.data.byteLength >= 3 && bytes[1] === 0x4C && bytes[2] === 0x57) {
-                        activateLW(ws);
-                        return;
-                    }
-
-                    var state = getLWState(ws);
-                    if (!state.active) {
-                        return fn.call(ws, evt);
-                    }
-                    if (opcode === 0x4C) {
-                        try { fn.call(ws, new MessageEvent('message', { data: transcodeLW(evt.data) })); }
-                        catch (e) { console.error('[LW] Transcode error (0x4C):', e); }
-                        return;
-                    }
-                    if (opcode === 0x4D) {
-                        try { fn.call(ws, new MessageEvent('message', { data: transcodeLWCamera(evt.data) })); }
-                        catch (e) { console.error('[LW] Transcode error (0x4D):', e); }
-                        return;
-                    }
-                    fn.call(ws, evt);
-                });
-            },
-            configurable: true,
-            enumerable: true
-        });
-    }
-
-    console.log('[LW] Legend World Protocol V3 handler installed (prototype hooks)');
-})();
-/* ═══ END LW Protocol V3 Handler ═══ */
 const ranges = [10, 255, 255, 255, 255];
 function toLong(ip) {
     let result = 0;
@@ -5502,8 +5219,16 @@ function thelegendmodproject() {
 
                     //
                     //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() === ""){
-                    /* Chat goes via relay socket only (sendChatMessage below).
-                     * No opcode 99 to game server — relay is shared with Delta. */
+                    if (!LM.integrity && $("#clantag").val() === "") {
+                        var view = application.createView(4 + 2 * value.length);
+                        view.setUint8(0, 99);
+                        view.setUint8(1, 0);
+                        var length = 0
+                        for (; length <= value.length + 1; length++) view.setUint16(2 + length, value.charCodeAt(length), true);
+                        view.setUint8(length, 0);
+                        legendmod.sendMessage(view)
+                    }
+                    //
 
                     this.sendChatMessage(101, value);
                     if (ogario.play) {
@@ -7392,6 +7117,25 @@ function thelegendmodproject() {
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
+                    /* ── LegendWorld: Draw warning/danger zone on minimap ── */
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4) && (function() {
+                        var me = LM.mapEvent;
+                        var targetHalf = me.targetSize / 2;
+                        var tMinX = (-targetHalf + r) * n;
+                        var tMinY = (-targetHalf + l) * n;
+                        var tW = me.targetSize * n;
+                        var tH = me.targetSize * n;
+                        var mmCtx = app.miniMapCtx;
+                        mmCtx.save();
+                        if (me.phase === 2) {
+                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                        } else {
+                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                        }
+                        mmCtx.lineWidth = 1;
+                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                        mmCtx.restore();
+                    })(),
                     defaultmapsettings.showMiniMapGhostCells) {
                     var h = ogario.ghostCells;
                     this.miniMapCtx.beginPath();
@@ -7804,6 +7548,13 @@ function thelegendmodproject() {
         gameServerConnect(ws) {
             if (!ws) {
                 return;
+            }
+            if (ws.indexOf('ws://') !== 0 && ws.indexOf('wss://') !== 0) {
+                if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
+                    ws = 'ws://' + ws;
+                } else {
+                    ws = 'wss://' + ws;
+                }
             }
             this.skipServerData = true
             window.core && window.core.connect && window.core.connect(ws);
@@ -8786,18 +8537,13 @@ function thelegendmodproject() {
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
                     if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
 
-                        /* Always display relay chat messages.
-                         * On private servers, chat goes via relay only (no opcode 99),
-                         * so no dedup is needed — just show everything. */
-                        /* Old conditions (before relay-only chat):
-                         * if (legendmod.integrity || !LM.chatableServer) {
-                         *     this.displayChatMessage(time, caseof, plId, msg);
-                         * } else if (LM.legendWorldServer) {
-                         *     this.displayChatMessage(time, caseof, plId, msg);
-                         * } else if (!legendmod.integrity && $("#clantag").val() !== "") {
-                         *     this.displayChatMessage(time, caseof, plId, msg);
-                         * } */
-                        this.displayChatMessage(time, caseof, plId, msg);
+                        if (legendmod.integrity || !LM.chatableServer) {
+                            this.displayChatMessage(time, caseof, plId, msg);
+                        }
+                        //else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
+                        else if (!legendmod.integrity && $("#clantag").val() !== "") {
+                            this.displayChatMessage(time, caseof, plId, msg);
+                        }
                     } else {
                         //console.log('Blocked: ' + msg)
                     }
@@ -8816,18 +8562,6 @@ function thelegendmodproject() {
                 for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
                 this.sendBuffer(view),
                     this.lastMessageSentTime = Date.now();
-
-                /* LW server: chat goes via relay socket (shared with Delta) only.
-                 * The game server still sends opcode 99 for server messages,
-                 * which LM reads in case 99 — but LM does NOT send opcode 99.
-                 * This ensures both LM and Delta use the same relay channel. */
-                // if (LM.legendWorldServer) {
-                //     var gview = application.createView(4 + 2 * message.length);
-                //     gview.setUint8(0, 99);
-                //     gview.setUint8(1, 0);
-                //     for (var i = 0; i <= message.length; i++) gview.setUint16(2 + i * 2, message.charCodeAt(i), true);
-                //     legendmod.sendMessage(gview);
-                // }
             }
         },
         prepareCommand(command) {
@@ -8837,8 +8571,19 @@ function thelegendmodproject() {
             var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
             this.sendChatMessage(102, prepareCommand);
 
-            /* Commands go via relay socket only (sendChatMessage above).
-             * No opcode 99 to game server — relay is shared with Delta. */
+            //		
+            //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
+            if (!LM.integrity && $("#clantag").val() === "") {
+
+                var view = application.createView(4 + 2 * prepareCommand.length);
+                view.setUint8(0, 99);
+                view.setUint8(1, 0);
+                var length = 0
+                for (; length <= prepareCommand.length + 1; length++) view.setUint16(2 + length, prepareCommand.charCodeAt(length), true);
+                view.setUint8(length, 0);
+                legendmod.sendMessage(view)
+            }
+            //
         },
         addChatUser(id, name) {
             this.chatUsers[id] = name;
@@ -10841,6 +10586,23 @@ function thelegendmodproject() {
         mapMaxX: 7071,
         mapMaxY: 7071,
 
+        /* LegendWorld dynamic map state */
+        mapEvent: {
+            phase: 0,        // 0=normal, 1=expanding, 2=warning, 3=danger, 4=shrinking
+            currentSize: 0,
+            targetSize: 0,
+            transitionDuration: 0,
+            warningDuration: 0,
+            startTime: 0,
+            // The "old" border before resize started (for zone overlay)
+            prevMinX: 0, prevMinY: 0, prevMaxX: 0, prevMaxY: 0,
+            active: false
+        },
+
+        /* LegendWorld server identification — set true when server sends
+         * the LW beacon (opcode 0xF0 + 'LW') during handshake */
+        isLegendWorld: false,
+
         mapOffsetX: 0,
         mapOffsetY: 0,
         mapOffsetFixed: false,
@@ -10946,8 +10708,6 @@ function thelegendmodproject() {
         pressedKeys: {},
         dance: false,
         chatableServer: false,
-        legendWorldServer: false,
-        recentServerChat: [],  /* dedup cache: opcode 99 messages (last 10) */
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
@@ -10980,6 +10740,9 @@ function thelegendmodproject() {
             this.accessTokenSent = false;
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
+            this.isLegendWorld = false; // reset LegendWorld state on new connection
+            this.mapEvent.active = false;
+            this.mapEvent.phase = 0;
             this.leaderboard = [];
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
@@ -11075,6 +10838,16 @@ function thelegendmodproject() {
             this.sendMessage(view);
 
             this.connectionOpened = true;
+
+            /* Private server login: trigger Google/Facebook OAuth.
+             * On real agar.io this is called from opcode 241 handler,
+             * but private servers use 0xFE/0xFF handshake instead.
+             * Small delay to let the server finish handshake processing. */
+            if (window.master && window.master.login) {
+                setTimeout(function() {
+                    window.master.login();
+                }, 200);
+            }
         },
         onMessage(message) {
 
@@ -11775,6 +11548,50 @@ function thelegendmodproject() {
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
                 */
         },
+        /* ── LegendWorld: Handle map resize events (opcode 200) ── */
+        handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur) {
+            var me = this.mapEvent;
+            me.currentSize = currentSize;
+            me.targetSize = targetSize;
+            me.startTime = Date.now();
+            me.transitionDuration = transitionDur;
+            me.warningDuration = warningDur;
+            me.prevMinX = this.mapMinX;
+            me.prevMinY = this.mapMinY;
+            me.prevMaxX = this.mapMaxX;
+            me.prevMaxY = this.mapMaxY;
+
+            switch (eventType) {
+                case 1: // MAP_EXPANSION_START
+                    me.phase = 1;
+                    me.active = false;
+                    console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' → ' + ~~targetSize, 'color:#3f3', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.info('Map expanding');
+                    break;
+                case 2: // MAP_CONTRACTION_WARNING
+                    me.phase = 2;
+                    me.active = true;
+                    console.log('%c[LW]%c Warning: shrink in ' + Math.round(warningDur / 25) + 's', 'color:#ff0', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.warning('Map shrinking in ' + Math.round(warningDur / 25) + 's — move inward');
+                    break;
+                case 3: // MAP_CONTRACTION_DANGER
+                    me.phase = 3;
+                    me.active = true;
+                    console.log('%c[LW]%c Danger zone active', 'color:#f33', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.error('Danger zone — leave the red area');
+                    break;
+                case 4: // MAP_SHRINK_START
+                    me.phase = 4;
+                    me.active = true;
+                    console.log('%c[LW]%c Shrinking', 'color:#f33', 'color:inherit');
+                    break;
+                case 5: // MAP_RESIZE_COMPLETE
+                    me.phase = 0;
+                    me.active = false;
+                    console.log('%c[LW]%c Resize complete: ' + ~~currentSize, 'color:#3f3', 'color:inherit');
+                    break;
+            }
+        },
         handleMessage(data) {
             //this.pingTimer();		
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
@@ -12112,29 +11929,38 @@ function thelegendmodproject() {
                     if (message.includes("E = split bots")) {
                         message = "For bot commands look at Hotkeys"
                     }
-                    LM.chatableServer = true;
-                    /* Cache for dedup against relay messages */
-                    if (LM.legendWorldServer) {
-                        LM.recentServerChat.push({ m: name + ": " + message, t: Date.now() });
-                        if (LM.recentServerChat.length > 15) LM.recentServerChat.shift();
-                    }
-                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && (LM.legendWorldServer || $("#clantag").val() === "")) {
+                    this.chatableServer = true;
+                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     break;
-                case 240: /* LW (Legend World) server handshake beacon */
+                /* ── LegendWorld: Dynamic Map Event (opcode 200 / 0xC8) ── */
+                case 200:
+                    if (LM.isLegendWorld) { // only on LegendWorld servers
+                        var eventType = data.getUint8(s++);
+                        // Read f64 little-endian values
+                        var buf = data.buffer || data;
+                        var dv = new DataView(buf);
+                        var baseOffset = s + (data.byteOffset || 0);
+                        var currentSize = dv.getFloat64(baseOffset, true); s += 8;
+                        var targetSize = dv.getFloat64(baseOffset + 8, true); s += 8;
+                        var centerX = dv.getFloat64(baseOffset + 16, true); s += 8;
+                        var centerY = dv.getFloat64(baseOffset + 24, true); s += 8;
+                        var transitionDur = data.getUint32(s, true); s += 4;
+                        var warningDur = data.getUint32(s, true); s += 4;
+                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur);
+                    }
+                    break;
+                /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
+                 * Sent by the LegendWorld server during handshake.
+                 * Payload: 0xF0 + 'L' (0x4C) + 'W' (0x57) = 3 bytes */
+                case 240:
                     if (data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                        /* Server sent [0xF0, 'L', 'W'] — this is a Legend World server */
-                        LM.chatableServer = true;
-                        LM.legendWorldServer = true;
-                        console.log('%c[LM]%c Legend World server detected — chat via opcode 99 enabled',
-                            'color:#00ff00;font-weight:bold', 'color:inherit');
-                        /* Respond with [0xF0, 'L', 'M'] to identify as Legend Mod */
-                        var lmResp = this.createView(3);
-                        lmResp.setUint8(0, 240);
-                        lmResp.setUint8(1, 0x4C); /* 'L' */
-                        lmResp.setUint8(2, 0x4D); /* 'M' */
-                        this.sendMessage(lmResp);
+                        LM.isLegendWorld = true;
+                        this.gameMode = ':legendworld';
+                        console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
+                            'color: #33ff33; font-weight: bold', 'color: inherit');
+                        if (typeof toastr !== 'undefined') toastr.success('LegendWorld mode active');
                     }
                     break;
                 case 102:
@@ -14034,9 +13860,13 @@ Game name     : ${i.displayName}<br/>
             this.removePlayerCell = false;
             var eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
+
             for (var length = 0; length < eatEventsLength; length++) {
-                var eaterID = this.indexedCells[view.readUInt32LE(offset)],
-                    victimID = this.indexedCells[view.readUInt32LE(offset + 4)];
+                var eaterRawID = view.readUInt32LE(offset);
+                var victimRawID = view.readUInt32LE(offset + 4);
+                var eaterID = this.indexedCells[eaterRawID],
+                    victimID = this.indexedCells[victimRawID];
+
                 if (offset += 8, eaterID && victimID) {
                     victimID.targetX = eaterID.x;
                     victimID.targetY = eaterID.y;
@@ -14223,12 +14053,16 @@ Game name     : ${i.displayName}<br/>
 
             eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
+
             for (length = 0; length < eatEventsLength; length++) {
                 var id = view.readUInt32LE(offset);
                 offset += 4;
                 cell = this.indexedCells[id];
                 if (cell) {
+
                     cell.removeCell();
+                } else {
+
                 }
             }
             /*				
@@ -14720,6 +14554,10 @@ Game name     : ${i.displayName}<br/>
 
                 var tempborderwidthradius = defaultSettings.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+            }
+            /* ── LegendWorld: Draw warning/danger zone overlay ── */
+            if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
+                this.drawLegendWorldZone(this.ctx);
             }
             this.drawCommander(this.ctx);
             this.drawCommander2(this.ctx);
@@ -15379,6 +15217,60 @@ Game name     : ${i.displayName}<br/>
             } else {
                 "skrrt";
             }
+        },
+        /* ── LegendWorld: Warning/Danger zone overlay ── */
+        drawLegendWorldZone(ctx) {
+            if (!LM.mapEvent || !LM.mapEvent.active) return;
+            var me = LM.mapEvent;
+            var targetHalf = me.targetSize / 2;
+            var tMinX = -targetHalf, tMinY = -targetHalf;
+
+            // Outer = current map border, inner = target (safe) border
+            var oMinX = LM.mapMinX, oMinY = LM.mapMinY;
+            var oMaxX = LM.mapMaxX, oMaxY = LM.mapMaxY;
+            var oW = oMaxX - oMinX, oH = oMaxY - oMinY;
+            if (Math.abs(oMaxX - targetHalf) < 1) return;
+
+            ctx.save();
+
+            // --- Overlay with destination-out cutout (like Battle Royale) ---
+            var alpha = me.phase === 2 ? 0.12 : (0.15 + 0.07 * Math.sin(Date.now() / 400));
+            var color = me.phase === 2 ? '#66ff66' : '#ff3333';
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = color;
+            ctx.fillRect(oMinX, oMinY, oW, oH);
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.globalAlpha = 1;
+            ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+            ctx.restore();
+
+            // --- Dashed safe zone border ---
+            ctx.save();
+            ctx.strokeStyle = me.phase === 2 ? 'rgba(100, 220, 100, 0.6)' : 'rgba(255, 80, 80, 0.7)';
+            ctx.lineWidth = me.phase === 4 ? 6 : 3;
+            ctx.setLineDash(me.phase === 2 ? [40, 20] : [20, 10]);
+            ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // --- Small status label ---
+            ctx.save();
+            var label = '';
+            if (me.phase === 2) label = 'MAP SHRINKING SOON';
+            else if (me.phase === 3) label = 'DANGER ZONE';
+            else if (me.phase === 4) label = 'MAP SHRINKING';
+            if (label) {
+                var fontSize = Math.max(24, Math.min(36, me.targetSize * 0.004));
+                ctx.font = '600 ' + fontSize + 'px Ubuntu, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.globalAlpha = me.phase === 2 ? 0.7 : 0.85;
+                ctx.fillStyle = me.phase === 2 ? '#aaffaa' : '#ff6666';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 4;
+                ctx.fillText(label, 0, tMinY + 12);
+            }
+            ctx.restore();
         },
         /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
