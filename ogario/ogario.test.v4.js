@@ -8797,17 +8797,18 @@ function thelegendmodproject() {
                         if (legendmod.integrity || !LM.chatableServer) {
                             this.displayChatMessage(time, caseof, plId, msg);
                         }
-                        /* LW server: show relay messages unless they're duplicates of opcode 99 */
+                        /* LW server: show ALL relay messages directly.
+                         * LM sends chat via relay only (not opcode 99), so
+                         * both LM and Delta messages come through this channel.
+                         * No dedup needed since LM doesn't send opcode 99. */
                         else if (LM.legendWorldServer) {
-                            var now = Date.now();
-                            /* Clean old entries (>3s) */
-                            LM.recentServerChat = LM.recentServerChat.filter(function(e) { return now - e.t < 3000; });
-                            /* Check for duplicate */
-                            var isDupe = LM.recentServerChat.some(function(e) { return msg.indexOf(e.m) !== -1 || e.m.indexOf(msg) !== -1; });
-                            if (!isDupe) {
-                                this.displayChatMessage(time, caseof, plId, msg);
-                            }
+                            this.displayChatMessage(time, caseof, plId, msg);
                         }
+                        /* Old dedup approach (when LM sent both relay + opcode 99):
+                         * var now = Date.now();
+                         * LM.recentServerChat = LM.recentServerChat.filter(function(e) { return now - e.t < 3000; });
+                         * var isDupe = LM.recentServerChat.some(function(e) { return msg.indexOf(e.m) !== -1 || e.m.indexOf(msg) !== -1; });
+                         * if (!isDupe) this.displayChatMessage(time, caseof, plId, msg); */
                         //else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
                         else if (!legendmod.integrity && $("#clantag").val() !== "") {
                             this.displayChatMessage(time, caseof, plId, msg);
@@ -8831,14 +8832,17 @@ function thelegendmodproject() {
                 this.sendBuffer(view),
                     this.lastMessageSentTime = Date.now();
 
-                /* LW server: also send via opcode 99 to game server */
-                if (LM.legendWorldServer) {
-                    var gview = application.createView(4 + 2 * message.length);
-                    gview.setUint8(0, 99);
-                    gview.setUint8(1, 0);
-                    for (var i = 0; i <= message.length; i++) gview.setUint16(2 + i * 2, message.charCodeAt(i), true);
-                    legendmod.sendMessage(gview);
-                }
+                /* LW server: chat goes via relay socket (shared with Delta) only.
+                 * The game server still sends opcode 99 for server messages,
+                 * which LM reads in case 99 — but LM does NOT send opcode 99.
+                 * This ensures both LM and Delta use the same relay channel. */
+                // if (LM.legendWorldServer) {
+                //     var gview = application.createView(4 + 2 * message.length);
+                //     gview.setUint8(0, 99);
+                //     gview.setUint8(1, 0);
+                //     for (var i = 0; i <= message.length; i++) gview.setUint16(2 + i * 2, message.charCodeAt(i), true);
+                //     legendmod.sendMessage(gview);
+                // }
             }
         },
         prepareCommand(command) {
@@ -8850,7 +8854,9 @@ function thelegendmodproject() {
 
             //		
             //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-            if (LM.legendWorldServer || (!LM.integrity && $("#clantag").val() === "")) {
+            /* LW servers: commands go via relay socket only, not opcode 99.
+             * legendWorldServer is excluded from this condition on purpose. */
+            if (!LM.integrity && $("#clantag").val() === "") {
 
                 var view = application.createView(4 + 2 * prepareCommand.length);
                 view.setUint8(0, 99);
