@@ -13948,7 +13948,7 @@ Game name     : ${i.displayName}<br/>
                 const isFriend = extendedFlags & 2;
 
                 if (!LM.integrity) { //fix of food for private servers
-                    if (size < 21) isFood = 1
+                    if (size < 21 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
