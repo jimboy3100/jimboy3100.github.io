@@ -6766,6 +6766,18 @@ function thelegendmodproject() {
             if (ogarcopythelb.clanTag.length > 0) {
                 ogario.clanTag = ogarcopythelb.clanTag;
             }
+            /* LegendWorld: send clan tag to game server via opcode 203 (0xCB)
+             * [203][UTF-8 tag bytes][0x00] — server stores in player->clan_tag */
+            if (LM.isLegendWorld && legendmod.isSocketOpen()) {
+                var tagStr = ogarcopythelb.clanTag || '';
+                var tagView = legendmod.createView(2 + tagStr.length);
+                tagView.setUint8(0, 203); // opcode 0xCB
+                for (var ci = 0; ci < tagStr.length; ci++) {
+                    tagView.setUint8(1 + ci, tagStr.charCodeAt(ci) & 0x7F);
+                }
+                tagView.setUint8(1 + tagStr.length, 0); // null terminator
+                legendmod.sendMessage(tagView);
+            }
             if (profiles[this.selectedProfile]) {
                 profiles[this.selectedProfile].nick = ogarcopythelb.nick;
                 profiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
@@ -8573,16 +8585,34 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             //console.log(type);console.log(message);
-            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length) && this.isSocketOpen()) {
-                message = ogarcopythelb.nick + ': ' + message;
-                var view = this.createView(10 + 2 * message.length);
-                view.setUint8(0, 100),
-                    view.setUint8(1, type),
-                    view.setUint32(2, this.playerID, true),
-                    view.setUint32(6, 0, true);
-                for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
-                this.sendBuffer(view),
+            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
+                /* LegendWorld + has clan tag → send via game server opcode 202 (0xCA)
+                 * instead of relay socket. Server broadcasts to same-tag teammates.
+                 * Format: [202][u8 type][UTF-16LE message] */
+                if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
+                    var fullMsg = ogarcopythelb.nick + ': ' + message;
+                    var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
+                    teamView.setUint8(0, 202); // opcode 0xCA
+                    teamView.setUint8(1, type); // 101=party chat, 102=command
+                    for (var ti = 0; ti < fullMsg.length; ti++) {
+                        teamView.setUint16(2 + 2 * ti, fullMsg.charCodeAt(ti), true);
+                    }
+                    teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
+                    legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
+                }
+                /* Fallback: use relay socket (original behavior) */
+                else if (this.isSocketOpen()) {
+                    message = ogarcopythelb.nick + ': ' + message;
+                    var view = this.createView(10 + 2 * message.length);
+                    view.setUint8(0, 100),
+                        view.setUint8(1, type),
+                        view.setUint32(2, this.playerID, true),
+                        view.setUint32(6, 0, true);
+                    for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
+                    this.sendBuffer(view),
+                        this.lastMessageSentTime = Date.now();
+                }
             }
         },
         prepareCommand(command) {
