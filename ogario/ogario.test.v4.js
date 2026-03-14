@@ -1639,6 +1639,7 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
+        showStatsWorldSize: 'World Size (LegendWorld)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -2123,6 +2124,7 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
+        showStatsWorldSize: 'World Size (LegendWorld)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -3346,6 +3348,7 @@ var defaultmapsettings = {
     showStatsPTE: false,
     showStatsSTE: false,
     showStatsN16: true,
+    showStatsWorldSize: true,
     showStatsFPS: true,
     //showStatsPPS: true,
     showStatsRender: false,
@@ -4870,6 +4873,16 @@ function thelegendmodproject() {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
                         t += Languageletter49 + ': ' + ogario.playerMass + ' | '
                     }
+                    if (defaultmapsettings.showStatsWorldSize && LM.isLegendWorld && LM.mapTier >= 0) {
+                        var tierLabel = '🌎: Tier ' + LM.mapTier;
+                        if (LM.mapEvent && LM.mapEvent.active) {
+                            if (LM.mapEvent.phase === 1) tierLabel += ' +++';
+                            else if (LM.mapEvent.phase === 2) tierLabel += ' -';
+                            else if (LM.mapEvent.phase === 3) tierLabel += ' --';
+                            else if (LM.mapEvent.phase === 4) tierLabel += ' ---';
+                        }
+                        t += tierLabel + ' | ';
+                    }
                     if (ogario.playerScore) {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
@@ -5872,7 +5885,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -10604,6 +10617,7 @@ function thelegendmodproject() {
             prevMinX: 0, prevMinY: 0, prevMaxX: 0, prevMaxY: 0,
             active: false
         },
+        mapTier: -1,  // current map tier (0-4), set by opcode 200
 
         /* LegendWorld server identification — set true when server sends
          * the LW beacon (opcode 0xF0 + 'LW') during handshake */
@@ -11555,8 +11569,9 @@ function thelegendmodproject() {
                 */
         },
         /* ── LegendWorld: Handle map resize events (opcode 200) ── */
-        handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur) {
+        handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
             var me = this.mapEvent;
+            if (currentTier >= 0) LM.mapTier = currentTier;
             me.currentSize = currentSize;
             me.targetSize = targetSize;
             me.startTime = Date.now();
@@ -11954,7 +11969,8 @@ function thelegendmodproject() {
                         var centerY = dv.getFloat64(baseOffset + 24, true); s += 8;
                         var transitionDur = data.getUint32(s, true); s += 4;
                         var warningDur = data.getUint32(s, true); s += 4;
-                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur);
+                        var currentTier = (s < data.byteLength) ? data.getUint8(s++) : -1;
+                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
                     }
                     break;
                 /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
@@ -11966,7 +11982,6 @@ function thelegendmodproject() {
                         this.gameMode = ':legendworld';
                         console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
-                        if (typeof toastr !== 'undefined') toastr.success('LegendWorld mode active');
                     }
                     break;
                 case 102:
