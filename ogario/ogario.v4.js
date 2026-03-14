@@ -1,4 +1,4 @@
-window.OgVer = 3.336;
+window.OgVer = 3.337;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
