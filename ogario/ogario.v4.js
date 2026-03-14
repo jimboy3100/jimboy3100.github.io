@@ -11990,53 +11990,7 @@ function thelegendmodproject() {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     break;
-                /* ── LegendWorld: Dynamic Map Event (opcode 200 / 0xC8) ── */
-                case 200:
-                    if (LM.isLegendWorld) { // only on LegendWorld servers
-                        var eventType = data.getUint8(s++);
-                        // Read f64 little-endian values
-                        var buf = data.buffer || data;
-                        var dv = new DataView(buf);
-                        var baseOffset = s + (data.byteOffset || 0);
-                        var currentSize = dv.getFloat64(baseOffset, true); s += 8;
-                        var targetSize = dv.getFloat64(baseOffset + 8, true); s += 8;
-                        var centerX = dv.getFloat64(baseOffset + 16, true); s += 8;
-                        var centerY = dv.getFloat64(baseOffset + 24, true); s += 8;
-                        var transitionDur = data.getUint32(s, true); s += 4;
-                        var warningDur = data.getUint32(s, true); s += 4;
-                        var currentTier = (s < data.byteLength) ? data.getUint8(s++) : -1;
-                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
-                        break; // only break on LW — otherwise fall through to default
-                    }
-                /* ── LegendWorld: LM Stats (opcode 201 / 0xC9) ──
-                 * Server sends: [0xC9][u16 alive_players][u16 bot_count]
-                 * Updates "Total" under leaderboard + bot count display */
-                case 201:
-                    if (LM.isLegendWorld && data.byteLength >= 5) {
-                        var alivePlayers = data.getUint16(1, true);
-                        var botCount = data.getUint16(3, true);
-                        /* Update total players under leaderboard */
-                        if (this.top5totalPlayers) {
-                            this.top5totalPlayers.textContent = alivePlayers;
-                        }
-                        /* Update bot count display */
-                        var botEl = document.getElementById('botCount');
-                        if (botEl) {
-                            botEl.textContent = botCount;
-                        }
-                        break; // only break on LW — otherwise fall through to default
-                    }
-                /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
-                 * Sent by the LegendWorld server during handshake.
-                 * Payload: 0xF0 + 'L' (0x4C) + 'W' (0x57) = 3 bytes */
-                case 240:
-                    if (data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                        LM.isLegendWorld = true;
-                        this.gameMode = ':legendworld';
-                        console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
-                            'color: #33ff33; font-weight: bold', 'color: inherit');
-                        break; // only break on LW — otherwise fall through to default
-                    }
+
                 case 102:
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     this.onMobileData(msg);
@@ -12737,7 +12691,44 @@ function thelegendmodproject() {
                 //2020 jimboy3100
 
                 default:
-                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
+                    /* ── LegendWorld opcodes handled in default: so they never
+                     * interfere with the switch on non-LW servers ── */
+                    var _lwOp = data.getUint8(0);
+                    if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                        /* LW Beacon — sets isLegendWorld */
+                        LM.isLegendWorld = true;
+                        this.gameMode = ':legendworld';
+                        console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
+                            'color: #33ff33; font-weight: bold', 'color: inherit');
+                    } else if (LM.isLegendWorld && _lwOp === 200) {
+                        /* Map Event */
+                        var s2 = 1;
+                        var eventType = data.getUint8(s2++);
+                        var buf2 = data.buffer || data;
+                        var dv2 = new DataView(buf2);
+                        var baseOffset2 = s2 + (data.byteOffset || 0);
+                        var currentSize = dv2.getFloat64(baseOffset2, true); s2 += 8;
+                        var targetSize = dv2.getFloat64(baseOffset2 + 8, true); s2 += 8;
+                        var centerX = dv2.getFloat64(baseOffset2 + 16, true); s2 += 8;
+                        var centerY = dv2.getFloat64(baseOffset2 + 24, true); s2 += 8;
+                        var transitionDur = data.getUint32(s2, true); s2 += 4;
+                        var warningDur = data.getUint32(s2, true); s2 += 4;
+                        var currentTier = (s2 < data.byteLength) ? data.getUint8(s2++) : -1;
+                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
+                    } else if (LM.isLegendWorld && _lwOp === 201 && data.byteLength >= 5) {
+                        /* LM Stats */
+                        var alivePlayers2 = data.getUint16(1, true);
+                        var botCount2 = data.getUint16(3, true);
+                        if (this.top5totalPlayers) {
+                            this.top5totalPlayers.textContent = alivePlayers2;
+                        }
+                        var botEl2 = document.getElementById('botCount');
+                        if (botEl2) {
+                            botEl2.textContent = botCount2;
+                        }
+                    } else {
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
+                    }
             }
         },
         /*countPps() {
