@@ -1,4 +1,4 @@
-window.OgVer = 3.335;
+window.OgVer = 3.338;
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -1639,6 +1639,7 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
+        showStatsWorldSize: 'World Size (LegendWorld)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -2123,6 +2124,7 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
+        showStatsWorldSize: 'World Size (LegendWorld)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -3346,6 +3348,7 @@ var defaultmapsettings = {
     showStatsPTE: false,
     showStatsSTE: false,
     showStatsN16: true,
+    showStatsWorldSize: true,
     showStatsFPS: true,
     //showStatsPPS: true,
     showStatsRender: false,
@@ -4870,6 +4873,7 @@ function thelegendmodproject() {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
                         t += Languageletter49 + ': ' + ogario.playerMass + ' | '
                     }
+
                     if (ogario.playerScore) {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
@@ -4898,6 +4902,17 @@ function thelegendmodproject() {
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
+                }
+                if (defaultmapsettings.showStatsWorldSize && LM.isLegendWorld && LM.mapTier >= 0) {
+                    var tierLabel = '🌎: Tier ' + LM.mapTier;
+                    if (LM.mapEvent && LM.mapEvent.active) {
+                        if (LM.mapEvent.phase === 1) tierLabel += ' +++';
+                        else if (LM.mapEvent.phase === 2) tierLabel += ' -';
+                        else if (LM.mapEvent.phase === 3) tierLabel += ' --';
+                        else if (LM.mapEvent.phase === 4) tierLabel += ' ---';
+                    }
+                    if (t) t += tierLabel + ' | ';
+                    else t += tierLabel + ' | ';
                 }
                 if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
                     var color = '';
@@ -5872,7 +5887,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -6751,6 +6766,18 @@ function thelegendmodproject() {
             if (ogarcopythelb.clanTag.length > 0) {
                 ogario.clanTag = ogarcopythelb.clanTag;
             }
+            /* LegendWorld: send clan tag to game server via opcode 203 (0xCB)
+             * [203][UTF-8 tag bytes][0x00] — server stores in player->clan_tag */
+            if (LM.isLegendWorld && legendmod.isSocketOpen()) {
+                var tagStr = ogarcopythelb.clanTag || '';
+                var tagView = legendmod.createView(2 + tagStr.length);
+                tagView.setUint8(0, 203); // opcode 0xCB
+                for (var ci = 0; ci < tagStr.length; ci++) {
+                    tagView.setUint8(1 + ci, tagStr.charCodeAt(ci) & 0x7F);
+                }
+                tagView.setUint8(1 + tagStr.length, 0); // null terminator
+                legendmod.sendMessage(tagView);
+            }
             if (profiles[this.selectedProfile]) {
                 profiles[this.selectedProfile].nick = ogarcopythelb.nick;
                 profiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
@@ -7117,6 +7144,27 @@ function thelegendmodproject() {
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
+                    /* ── LegendWorld: Draw zone on minimap (all phases) ── */
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
+                        var me = LM.mapEvent;
+                        var targetHalf = me.targetSize / 2;
+                        var tMinX = (-targetHalf + r) * n;
+                        var tMinY = (-targetHalf + l) * n;
+                        var tW = me.targetSize * n;
+                        var tH = me.targetSize * n;
+                        var mmCtx = app.miniMapCtx;
+                        mmCtx.save();
+                        if (me.phase === 1) {
+                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                        } else if (me.phase === 2) {
+                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                        } else {
+                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                        }
+                        mmCtx.lineWidth = 1;
+                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                        mmCtx.restore();
+                    })(),
                     defaultmapsettings.showMiniMapGhostCells) {
                     var h = ogario.ghostCells;
                     this.miniMapCtx.beginPath();
@@ -7444,8 +7492,10 @@ function thelegendmodproject() {
                 text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
-                if (token.indexOf('localhost') === 0 || token.indexOf('127.0.0.1') === 0) {
-                    text = 'ws://' + token; //localhost
+                if (token === 'localhost') {
+                    text = 'ws://localhost:8080'; //localhost without port defaults to 8080
+                } else if (token.indexOf('localhost') === 0 || token.indexOf('127.0.0.1') === 0) {
+                    text = 'ws://' + token; //localhost with port or 127.0.0.1
                 } else {
                     text = 'wss://' + token; //private servers
                 }
@@ -7531,7 +7581,9 @@ function thelegendmodproject() {
                 return;
             }
             if (ws.indexOf('ws://') !== 0 && ws.indexOf('wss://') !== 0) {
-                if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
+                if (ws === 'localhost') {
+                    ws = 'ws://localhost:8080'; //localhost without port defaults to 8080
+                } else if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
                     ws = 'ws://' + ws;
                 } else {
                     ws = 'wss://' + ws;
@@ -8533,16 +8585,34 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             //console.log(type);console.log(message);
-            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length) && this.isSocketOpen()) {
-                message = ogarcopythelb.nick + ': ' + message;
-                var view = this.createView(10 + 2 * message.length);
-                view.setUint8(0, 100),
-                    view.setUint8(1, type),
-                    view.setUint32(2, this.playerID, true),
-                    view.setUint32(6, 0, true);
-                for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
-                this.sendBuffer(view),
+            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
+                /* LegendWorld + has clan tag → send via game server opcode 202 (0xCA)
+                 * instead of relay socket. Server broadcasts to same-tag teammates.
+                 * Format: [202][u8 type][UTF-16LE message] */
+                if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
+                    var fullMsg = ogarcopythelb.nick + ': ' + message;
+                    var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
+                    teamView.setUint8(0, 202); // opcode 0xCA
+                    teamView.setUint8(1, type); // 101=party chat, 102=command
+                    for (var ti = 0; ti < fullMsg.length; ti++) {
+                        teamView.setUint16(2 + 2 * ti, fullMsg.charCodeAt(ti), true);
+                    }
+                    teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
+                    legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
+                }
+                /* Fallback: use relay socket (original behavior) */
+                else if (this.isSocketOpen()) {
+                    message = ogarcopythelb.nick + ': ' + message;
+                    var view = this.createView(10 + 2 * message.length);
+                    view.setUint8(0, 100),
+                        view.setUint8(1, type),
+                        view.setUint32(2, this.playerID, true),
+                        view.setUint32(6, 0, true);
+                    for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
+                    this.sendBuffer(view),
+                        this.lastMessageSentTime = Date.now();
+                }
             }
         },
         prepareCommand(command) {
@@ -10567,6 +10637,24 @@ function thelegendmodproject() {
         mapMaxX: 7071,
         mapMaxY: 7071,
 
+        /* LegendWorld dynamic map state */
+        mapEvent: {
+            phase: 0,        // 0=normal, 1=expanding, 2=warning, 3=danger, 4=shrinking
+            currentSize: 0,
+            targetSize: 0,
+            transitionDuration: 0,
+            warningDuration: 0,
+            startTime: 0,
+            // The "old" border before resize started (for zone overlay)
+            prevMinX: 0, prevMinY: 0, prevMaxX: 0, prevMaxY: 0,
+            active: false
+        },
+        mapTier: -1,  // current map tier (0-4), set by opcode 200
+
+        /* LegendWorld server identification — set true when server sends
+         * the LW beacon (opcode 0xF0 + 'LW') during handshake */
+        isLegendWorld: false,
+
         mapOffsetX: 0,
         mapOffsetY: 0,
         mapOffsetFixed: false,
@@ -10704,6 +10792,12 @@ function thelegendmodproject() {
             this.accessTokenSent = false;
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
+            this.isLegendWorld = false; // reset LegendWorld state on new connection
+            LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
+            LM.mapEvent.active = false;
+            LM.mapEvent.phase = 0;
+            this.mapEvent.active = false;
+            this.mapEvent.phase = 0;
             this.leaderboard = [];
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
@@ -11509,6 +11603,51 @@ function thelegendmodproject() {
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
                 */
         },
+        /* ── LegendWorld: Handle map resize events (opcode 200) ── */
+        handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
+            var me = this.mapEvent;
+            if (currentTier >= 0) LM.mapTier = currentTier;
+            me.currentSize = currentSize;
+            me.targetSize = targetSize;
+            me.startTime = Date.now();
+            me.transitionDuration = transitionDur;
+            me.warningDuration = warningDur;
+            me.prevMinX = this.mapMinX;
+            me.prevMinY = this.mapMinY;
+            me.prevMaxX = this.mapMaxX;
+            me.prevMaxY = this.mapMaxY;
+
+            switch (eventType) {
+                case 1: // MAP_EXPANSION_START
+                    me.phase = 1;
+                    me.active = true;
+                    console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' → ' + ~~targetSize, 'color:#3f3', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.info('🌍 Map expanding — new territory ahead!');
+                    break;
+                case 2: // MAP_CONTRACTION_WARNING
+                    me.phase = 2;
+                    me.active = true;
+                    console.log('%c[LW]%c Warning: shrink in ' + Math.round(warningDur / 25) + 's', 'color:#ff0', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.warning('Map shrinking in ' + Math.round(warningDur / 25) + 's — move inward');
+                    break;
+                case 3: // MAP_CONTRACTION_DANGER
+                    me.phase = 3;
+                    me.active = true;
+                    console.log('%c[LW]%c Danger zone active', 'color:#f33', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.error('Danger zone — leave the red area');
+                    break;
+                case 4: // MAP_SHRINK_START
+                    me.phase = 4;
+                    me.active = true;
+                    console.log('%c[LW]%c Shrinking', 'color:#f33', 'color:inherit');
+                    break;
+                case 5: // MAP_RESIZE_COMPLETE
+                    me.phase = 0;
+                    me.active = false;
+                    console.log('%c[LW]%c Resize complete: ' + ~~currentSize, 'color:#3f3', 'color:inherit');
+                    break;
+            }
+        },
         handleMessage(data) {
             //this.pingTimer();		
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
@@ -11849,6 +11988,53 @@ function thelegendmodproject() {
                     this.chatableServer = true;
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                    }
+                    break;
+                /* ── LegendWorld: Dynamic Map Event (opcode 200 / 0xC8) ── */
+                case 200:
+                    if (LM.isLegendWorld) { // only on LegendWorld servers
+                        var eventType = data.getUint8(s++);
+                        // Read f64 little-endian values
+                        var buf = data.buffer || data;
+                        var dv = new DataView(buf);
+                        var baseOffset = s + (data.byteOffset || 0);
+                        var currentSize = dv.getFloat64(baseOffset, true); s += 8;
+                        var targetSize = dv.getFloat64(baseOffset + 8, true); s += 8;
+                        var centerX = dv.getFloat64(baseOffset + 16, true); s += 8;
+                        var centerY = dv.getFloat64(baseOffset + 24, true); s += 8;
+                        var transitionDur = data.getUint32(s, true); s += 4;
+                        var warningDur = data.getUint32(s, true); s += 4;
+                        var currentTier = (s < data.byteLength) ? data.getUint8(s++) : -1;
+                        this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
+                    }
+                    break;
+                /* ── LegendWorld: LM Stats (opcode 201 / 0xC9) ──
+                 * Server sends: [0xC9][u16 alive_players][u16 bot_count]
+                 * Updates "Total" under leaderboard + bot count display */
+                case 201:
+                    if (LM.isLegendWorld && data.byteLength >= 5) {
+                        var alivePlayers = data.getUint16(1, true);
+                        var botCount = data.getUint16(3, true);
+                        /* Update total players under leaderboard */
+                        if (this.top5totalPlayers) {
+                            this.top5totalPlayers.textContent = alivePlayers;
+                        }
+                        /* Update bot count display */
+                        var botEl = document.getElementById('botCount');
+                        if (botEl) {
+                            botEl.textContent = botCount;
+                        }
+                    }
+                    break;
+                /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
+                 * Sent by the LegendWorld server during handshake.
+                 * Payload: 0xF0 + 'L' (0x4C) + 'W' (0x57) = 3 bytes */
+                case 240:
+                    if (data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                        LM.isLegendWorld = true;
+                        this.gameMode = ':legendworld';
+                        console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
+                            'color: #33ff33; font-weight: bold', 'color: inherit');
                     }
                     break;
                 case 102:
@@ -13832,7 +14018,7 @@ Game name     : ${i.displayName}<br/>
                 const isFriend = extendedFlags & 2;
 
                 if (!LM.integrity) { //fix of food for private servers
-                    if (size < 21) isFood = 1
+                    if (size < 21 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
@@ -14442,6 +14628,10 @@ Game name     : ${i.displayName}<br/>
 
                 var tempborderwidthradius = defaultSettings.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+            }
+            /* ── LegendWorld: Draw warning/danger zone overlay ── */
+            if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
+                this.drawLegendWorldZone(this.ctx);
             }
             this.drawCommander(this.ctx);
             this.drawCommander2(this.ctx);
@@ -15101,6 +15291,136 @@ Game name     : ${i.displayName}<br/>
             } else {
                 "skrrt";
             }
+        },
+        /* ── LegendWorld: Warning/Danger zone overlay ── */
+        drawLegendWorldZone(ctx) {
+            if (!LM.mapEvent || !LM.mapEvent.active) return;
+            var me = LM.mapEvent;
+            var now = Date.now();
+            var elapsed = (now - me.startTime) / 1000; // seconds since event
+            var pulse = Math.sin(now / 600) * 0.5 + 0.5; // 0-1 smooth pulse
+            var fastPulse = Math.sin(now / 250) * 0.5 + 0.5; // faster for danger
+
+            // Current map borders
+            var oMinX = LM.mapMinX, oMinY = LM.mapMinY;
+            var oMaxX = LM.mapMaxX, oMaxY = LM.mapMaxY;
+            var oW = oMaxX - oMinX, oH = oMaxY - oMinY;
+
+            // Target border (centered at 0,0)
+            var targetHalf = me.targetSize / 2;
+            var tMinX = -targetHalf, tMinY = -targetHalf;
+
+            ctx.save();
+
+            if (me.phase === 1) {
+                /* ═══ EXPANSION: highlight the NEW territory being added ═══
+                 * Blue/cyan glow on the band between old border and new (larger) target.
+                 * Old border is INSIDE, target border is OUTSIDE. */
+                if (Math.abs(me.targetSize - oW) < 2) { ctx.restore(); return; }
+
+                // Fill the expansion band (target minus current) with blue glow
+                var alpha = 0.06 + 0.04 * pulse;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#22aaff';
+                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                // Cut out the old (current) area so only the new band is highlighted
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = 1;
+                ctx.fillRect(oMinX, oMinY, oW, oH);
+                ctx.restore();
+
+                // Animated dashed border on the NEW outer border
+                ctx.save();
+                var dashOffset = (now / 30) % 60;
+                ctx.strokeStyle = 'rgba(34, 170, 255, ' + (0.35 + 0.2 * pulse) + ')';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([30, 15]);
+                ctx.lineDashOffset = dashOffset;
+                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                // Subtle inner glow line on the expansion edge
+                ctx.save();
+                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
+                ctx.lineWidth = 8;
+                ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
+                ctx.shadowBlur = 12;
+                ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
+                ctx.restore();
+
+            } else {
+                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══
+                 * Overlay the danger zone (between current border and smaller target).
+                 * Phase 2: soft green warning. Phase 3: red pulsing. Phase 4: intense red. */
+                if (Math.abs(oMaxX - targetHalf) < 1) { ctx.restore(); return; }
+
+                var alpha, color;
+                if (me.phase === 2) {
+                    alpha = 0.08 + 0.04 * pulse;
+                    color = '#44dd66';
+                } else if (me.phase === 3) {
+                    alpha = 0.12 + 0.08 * fastPulse;
+                    color = '#ff3333';
+                } else {
+                    alpha = 0.18 + 0.1 * fastPulse;
+                    color = '#ff2222';
+                }
+
+                // Fill current map, cut out safe zone
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = color;
+                ctx.fillRect(oMinX, oMinY, oW, oH);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = 1;
+                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.restore();
+
+                // Safe zone border
+                ctx.save();
+                var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
+                var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
+                                                 : 'rgba(255, 80, 80, ' + borderAlpha + ')';
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = me.phase >= 3 ? 5 : 3;
+                ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
+                if (me.phase >= 3) ctx.lineDashOffset = (now / 20) % 23;
+                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                // Glow on danger border for phase 3+
+                if (me.phase >= 3) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
+                    ctx.lineWidth = 10;
+                    ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
+                    ctx.shadowBlur = 16;
+                    ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
+                    ctx.restore();
+                }
+            }
+
+            // ═══ STATUS LABEL (all phases) ═══
+            ctx.save();
+            var label = '', labelColor = '', labelAlpha = 0.8;
+            if (me.phase === 1) { label = '🌍 MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
+            else if (me.phase === 2) { label = '⚠ MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
+            else if (me.phase === 3) { label = '⛔ DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
+            else if (me.phase === 4) { label = '💀 MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
+            if (label) {
+                var labelY = me.phase === 1 ? tMinY + 16 : tMinY + 12;
+                var fontSize = Math.max(26, Math.min(40, me.targetSize * 0.004));
+                ctx.font = '700 ' + fontSize + 'px Ubuntu, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.globalAlpha = labelAlpha;
+                ctx.fillStyle = labelColor;
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(label, 0, labelY);
+            }
+            ctx.restore();
         },
         /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
