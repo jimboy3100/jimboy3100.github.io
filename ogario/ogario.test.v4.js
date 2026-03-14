@@ -10894,15 +10894,9 @@ function thelegendmodproject() {
 
             this.connectionOpened = true;
 
-            /* Private server login: trigger Google/Facebook OAuth.
-             * On real agar.io this is called from opcode 241 handler,
-             * but private servers use 0xFE/0xFF handshake instead.
-             * Small delay to let the server finish handshake processing. */
-            if (window.master && window.master.login) {
-                setTimeout(function() {
-                    window.master.login();
-                }, 200);
-            }
+            /* master.login() is NOT needed here — opcode 241 handler (case 241)
+             * already calls it when the real agar.io server sends the protocol key.
+             * Calling it here triggers OAuth on private servers → reconnect loop. */
         },
         onMessage(message) {
 
