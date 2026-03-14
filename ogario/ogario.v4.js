@@ -12024,8 +12024,8 @@ function thelegendmodproject() {
                         if (botEl) {
                             botEl.textContent = botCount;
                         }
+                        break; // only break on LW — otherwise fall through to default
                     }
-                    break;
                 /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
                  * Sent by the LegendWorld server during handshake.
                  * Payload: 0xF0 + 'L' (0x4C) + 'W' (0x57) = 3 bytes */
