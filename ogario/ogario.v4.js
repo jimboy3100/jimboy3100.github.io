@@ -12006,8 +12006,8 @@ function thelegendmodproject() {
                         var warningDur = data.getUint32(s, true); s += 4;
                         var currentTier = (s < data.byteLength) ? data.getUint8(s++) : -1;
                         this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
+                        break; // only break on LW — otherwise fall through to default
                     }
-                    break;
                 /* ── LegendWorld: LM Stats (opcode 201 / 0xC9) ──
                  * Server sends: [0xC9][u16 alive_players][u16 bot_count]
                  * Updates "Total" under leaderboard + bot count display */
@@ -12035,8 +12035,8 @@ function thelegendmodproject() {
                         this.gameMode = ':legendworld';
                         console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
+                        break; // only break on LW — otherwise fall through to default
                     }
-                    break;
                 case 102:
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     this.onMobileData(msg);
