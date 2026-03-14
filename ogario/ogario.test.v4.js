@@ -10793,6 +10793,9 @@ function thelegendmodproject() {
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
             this.isLegendWorld = false; // reset LegendWorld state on new connection
+            LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
+            LM.mapEvent.active = false;
+            LM.mapEvent.phase = 0;
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
             this.leaderboard = [];
