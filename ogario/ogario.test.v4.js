@@ -7117,8 +7117,8 @@ function thelegendmodproject() {
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
-                    /* ── LegendWorld: Draw warning/danger zone on minimap ── */
-                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4) && (function() {
+                    /* ── LegendWorld: Draw zone on minimap (all phases) ── */
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
                         var tMinX = (-targetHalf + r) * n;
@@ -7127,7 +7127,9 @@ function thelegendmodproject() {
                         var tH = me.targetSize * n;
                         var mmCtx = app.miniMapCtx;
                         mmCtx.save();
-                        if (me.phase === 2) {
+                        if (me.phase === 1) {
+                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                        } else if (me.phase === 2) {
                             mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
                         } else {
                             mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
@@ -11568,9 +11570,9 @@ function thelegendmodproject() {
             switch (eventType) {
                 case 1: // MAP_EXPANSION_START
                     me.phase = 1;
-                    me.active = false;
+                    me.active = true;
                     console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' → ' + ~~targetSize, 'color:#3f3', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.info('Map expanding');
+                    if (typeof toastr !== 'undefined') toastr.info('🌍 Map expanding — new territory ahead!');
                     break;
                 case 2: // MAP_CONTRACTION_WARNING
                     me.phase = 2;
@@ -15226,53 +15228,129 @@ Game name     : ${i.displayName}<br/>
         drawLegendWorldZone(ctx) {
             if (!LM.mapEvent || !LM.mapEvent.active) return;
             var me = LM.mapEvent;
-            var targetHalf = me.targetSize / 2;
-            var tMinX = -targetHalf, tMinY = -targetHalf;
+            var now = Date.now();
+            var elapsed = (now - me.startTime) / 1000; // seconds since event
+            var pulse = Math.sin(now / 600) * 0.5 + 0.5; // 0-1 smooth pulse
+            var fastPulse = Math.sin(now / 250) * 0.5 + 0.5; // faster for danger
 
-            // Outer = current map border, inner = target (safe) border
+            // Current map borders
             var oMinX = LM.mapMinX, oMinY = LM.mapMinY;
             var oMaxX = LM.mapMaxX, oMaxY = LM.mapMaxY;
             var oW = oMaxX - oMinX, oH = oMaxY - oMinY;
-            if (Math.abs(oMaxX - targetHalf) < 1) return;
+
+            // Target border (centered at 0,0)
+            var targetHalf = me.targetSize / 2;
+            var tMinX = -targetHalf, tMinY = -targetHalf;
 
             ctx.save();
 
-            // --- Overlay with destination-out cutout (like Battle Royale) ---
-            var alpha = me.phase === 2 ? 0.12 : (0.15 + 0.07 * Math.sin(Date.now() / 400));
-            var color = me.phase === 2 ? '#66ff66' : '#ff3333';
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = color;
-            ctx.fillRect(oMinX, oMinY, oW, oH);
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.globalAlpha = 1;
-            ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
-            ctx.restore();
+            if (me.phase === 1) {
+                /* ═══ EXPANSION: highlight the NEW territory being added ═══
+                 * Blue/cyan glow on the band between old border and new (larger) target.
+                 * Old border is INSIDE, target border is OUTSIDE. */
+                if (Math.abs(me.targetSize - oW) < 2) { ctx.restore(); return; }
 
-            // --- Dashed safe zone border ---
-            ctx.save();
-            ctx.strokeStyle = me.phase === 2 ? 'rgba(100, 220, 100, 0.6)' : 'rgba(255, 80, 80, 0.7)';
-            ctx.lineWidth = me.phase === 4 ? 6 : 3;
-            ctx.setLineDash(me.phase === 2 ? [40, 20] : [20, 10]);
-            ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
-            ctx.setLineDash([]);
-            ctx.restore();
+                // Fill the expansion band (target minus current) with blue glow
+                var alpha = 0.06 + 0.04 * pulse;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#22aaff';
+                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                // Cut out the old (current) area so only the new band is highlighted
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = 1;
+                ctx.fillRect(oMinX, oMinY, oW, oH);
+                ctx.restore();
 
-            // --- Small status label ---
+                // Animated dashed border on the NEW outer border
+                ctx.save();
+                var dashOffset = (now / 30) % 60;
+                ctx.strokeStyle = 'rgba(34, 170, 255, ' + (0.35 + 0.2 * pulse) + ')';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([30, 15]);
+                ctx.lineDashOffset = dashOffset;
+                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                // Subtle inner glow line on the expansion edge
+                ctx.save();
+                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
+                ctx.lineWidth = 8;
+                ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
+                ctx.shadowBlur = 12;
+                ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
+                ctx.restore();
+
+            } else {
+                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══
+                 * Overlay the danger zone (between current border and smaller target).
+                 * Phase 2: soft green warning. Phase 3: red pulsing. Phase 4: intense red. */
+                if (Math.abs(oMaxX - targetHalf) < 1) { ctx.restore(); return; }
+
+                var alpha, color;
+                if (me.phase === 2) {
+                    alpha = 0.08 + 0.04 * pulse;
+                    color = '#44dd66';
+                } else if (me.phase === 3) {
+                    alpha = 0.12 + 0.08 * fastPulse;
+                    color = '#ff3333';
+                } else {
+                    alpha = 0.18 + 0.1 * fastPulse;
+                    color = '#ff2222';
+                }
+
+                // Fill current map, cut out safe zone
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = color;
+                ctx.fillRect(oMinX, oMinY, oW, oH);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = 1;
+                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.restore();
+
+                // Safe zone border
+                ctx.save();
+                var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
+                var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
+                                                 : 'rgba(255, 80, 80, ' + borderAlpha + ')';
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = me.phase >= 3 ? 5 : 3;
+                ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
+                if (me.phase >= 3) ctx.lineDashOffset = (now / 20) % 23;
+                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                // Glow on danger border for phase 3+
+                if (me.phase >= 3) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
+                    ctx.lineWidth = 10;
+                    ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
+                    ctx.shadowBlur = 16;
+                    ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
+                    ctx.restore();
+                }
+            }
+
+            // ═══ STATUS LABEL (all phases) ═══
             ctx.save();
-            var label = '';
-            if (me.phase === 2) label = 'MAP SHRINKING SOON';
-            else if (me.phase === 3) label = 'DANGER ZONE';
-            else if (me.phase === 4) label = 'MAP SHRINKING';
+            var label = '', labelColor = '', labelAlpha = 0.8;
+            if (me.phase === 1) { label = '🌍 MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
+            else if (me.phase === 2) { label = '⚠ MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
+            else if (me.phase === 3) { label = '⛔ DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
+            else if (me.phase === 4) { label = '💀 MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
             if (label) {
-                var fontSize = Math.max(24, Math.min(36, me.targetSize * 0.004));
-                ctx.font = '600 ' + fontSize + 'px Ubuntu, sans-serif';
+                var labelY = me.phase === 1 ? tMinY + 16 : tMinY + 12;
+                var fontSize = Math.max(26, Math.min(40, me.targetSize * 0.004));
+                ctx.font = '700 ' + fontSize + 'px Ubuntu, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                ctx.globalAlpha = me.phase === 2 ? 0.7 : 0.85;
-                ctx.fillStyle = me.phase === 2 ? '#aaffaa' : '#ff6666';
-                ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                ctx.shadowBlur = 4;
-                ctx.fillText(label, 0, tMinY + 12);
+                ctx.globalAlpha = labelAlpha;
+                ctx.fillStyle = labelColor;
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 6;
+                ctx.fillText(label, 0, labelY);
             }
             ctx.restore();
         },
