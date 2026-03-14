@@ -4873,16 +4873,7 @@ function thelegendmodproject() {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
                         t += Languageletter49 + ': ' + ogario.playerMass + ' | '
                     }
-                    if (defaultmapsettings.showStatsWorldSize && LM.isLegendWorld && LM.mapTier >= 0) {
-                        var tierLabel = '🌎: Tier ' + LM.mapTier;
-                        if (LM.mapEvent && LM.mapEvent.active) {
-                            if (LM.mapEvent.phase === 1) tierLabel += ' +++';
-                            else if (LM.mapEvent.phase === 2) tierLabel += ' -';
-                            else if (LM.mapEvent.phase === 3) tierLabel += ' --';
-                            else if (LM.mapEvent.phase === 4) tierLabel += ' ---';
-                        }
-                        t += tierLabel + ' | ';
-                    }
+
                     if (ogario.playerScore) {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
@@ -4911,6 +4902,17 @@ function thelegendmodproject() {
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
+                }
+                if (defaultmapsettings.showStatsWorldSize && LM.isLegendWorld && LM.mapTier >= 0) {
+                    var tierLabel = '🌎: Tier ' + LM.mapTier;
+                    if (LM.mapEvent && LM.mapEvent.active) {
+                        if (LM.mapEvent.phase === 1) tierLabel += ' +++';
+                        else if (LM.mapEvent.phase === 2) tierLabel += ' -';
+                        else if (LM.mapEvent.phase === 3) tierLabel += ' --';
+                        else if (LM.mapEvent.phase === 4) tierLabel += ' ---';
+                    }
+                    if (t) t += tierLabel + ' | ';
+                    else t += tierLabel + ' | ';
                 }
                 if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
                     var color = '';
