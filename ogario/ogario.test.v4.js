@@ -13705,16 +13705,18 @@ Game name     : ${i.displayName}<br/>
                 }
             }
 
-            /* Calculate map size dynamically from border values */
-            var newMapSize = ~~Math.abs(right - left);
-
+            /* Calculate map size — hardcode 14142 for agar.io (integrity),
+             * dynamic from border values for LegendWorld/private servers */
+            var newMapSize;
             if (this.integrity || temp2) {
+                newMapSize = 14142;
                 this.mapOffset = newMapSize / 2;
             } else {
+                newMapSize = ~~Math.abs(right - left);
                 this.mapOffset = 0;
             }
 
-            /* If map size changed, reset the fixed flag so we recalculate */
+            /* If map size changed (LegendWorld resize), reset the fixed flag */
             if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
                 this.mapOffsetFixed = false;
             }
