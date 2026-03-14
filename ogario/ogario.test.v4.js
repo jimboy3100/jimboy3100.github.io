@@ -7463,8 +7463,10 @@ function thelegendmodproject() {
                 text = `wss://web-arenas-live-v25-0.agario.miniclippt.com/${region}/${server}`; // 30/8/2024
             } else if (!token.includes("s://")) {
                 this.tokenNeedToBtoa = true
-                if (token.indexOf('localhost') === 0 || token.indexOf('127.0.0.1') === 0) {
-                    text = 'ws://' + token; //localhost
+                if (token === 'localhost') {
+                    text = 'ws://localhost:8080'; //localhost without port defaults to 8080
+                } else if (token.indexOf('localhost') === 0 || token.indexOf('127.0.0.1') === 0) {
+                    text = 'ws://' + token; //localhost with port or 127.0.0.1
                 } else {
                     text = 'wss://' + token; //private servers
                 }
@@ -7550,7 +7552,9 @@ function thelegendmodproject() {
                 return;
             }
             if (ws.indexOf('ws://') !== 0 && ws.indexOf('wss://') !== 0) {
-                if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
+                if (ws === 'localhost') {
+                    ws = 'ws://localhost:8080'; //localhost without port defaults to 8080
+                } else if (ws.indexOf('localhost') === 0 || ws.indexOf('127.0.0.1') === 0) {
                     ws = 'ws://' + ws;
                 } else {
                     ws = 'wss://' + ws;

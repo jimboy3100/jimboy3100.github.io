@@ -17,16 +17,18 @@ warnings**, **danger phases**, and **controlled entity cleanup**.
 # Map Size Tiers
 
 The server uses fixed map tiers depending on active player count.
+Scale 1.0 = 14142 = real Agar.io map size.
 
-  Player Count   Map Size
-  -------------- ---------------
-  0--30          5000 × 5000
-  31--150        7071 × 7071
-  151--300       10000 × 10000
-  301--600       14142 × 14142
-  601--960       17889 × 17889
+| Tier | Side  | Scale | Food | Virus | Expand >N | Shrink <N |
+|------|-------|-------|------|-------|-----------|-----------|
+| 0    | 7071  | 0.25  | 1000 | 12    | (base)    | (never)   |
+| 1    | 10000 | 0.50  | 2000 | 25    | 30        | 20        |
+| 2    | 14142 | 1.00  | 4000 | 50    | 150       | 120       |
+| 3    | 17889 | 1.60  | 6400 | 80    | 300       | 240       |
+| 4    | 28284 | 4.00  | 16000| 200   | 600       | 480       |
 
 The map always expands or contracts **symmetrically from the center**.
+The server starts at tier 0 (7071) and immediately expands.
 
 ------------------------------------------------------------------------
 
@@ -38,27 +40,27 @@ boundaries.
 
 ### Expansion thresholds
 
-\> 30 → expand to 7071\
-\> 150 → expand to 10000\
-\> 300 → expand to 14142\
-\> 600 → expand to 17889
+\> 30 → expand to 10000\
+\> 150 → expand to 14142\
+\> 300 → expand to 17889\
+\> 600 → expand to 28284
 
 ### Shrink thresholds
 
-\< 25 → shrink to 5000\
-\< 130 → shrink to 7071\
-\< 260 → shrink to 10000\
-\< 520 → shrink to 14142
+\< 20 → shrink to 7071\
+\< 120 → shrink to 10000\
+\< 240 → shrink to 14142\
+\< 480 → shrink to 17889
 
 This produces stable operating bands:
 
-  Map Size   Player Range
-  ---------- --------------
-  5000       ≤30
-  7071       25--150
-  10000      130--300
-  14142      260--600
-  17889      ≥520
+| Map Size | Scale | Player Range |
+|----------|-------|--------------|
+| 7071     | 0.25  | 0–30         |
+| 10000    | 0.50  | 20–150       |
+| 14142    | 1.00  | 120–300      |
+| 17889    | 1.60  | 240–600      |
+| 28284    | 4.00  | ≥480         |
 
 ------------------------------------------------------------------------
 
@@ -133,11 +135,9 @@ become unsafe**.
 
 ### Duration
 
-Recommended default:
+Default: **60 seconds** (1500 ticks at 25Hz)
 
-120 seconds
-
-This value should be configurable.
+This value is configurable via `lw_warning_duration`.
 
 ### Restrictions during warning
 
@@ -287,12 +287,16 @@ All resizing must be **server-authoritative**.
 
 # Transition Timing
 
-Recommended durations:
+Default durations:
 
-map expansion: 5--6 seconds\
-map shrink: 5--6 seconds\
-warning phase: \~120 seconds\
-danger phase: configurable
+| Phase            | Duration   | Ticks (25Hz) |
+|------------------|------------|-------------|
+| Expansion        | 6 seconds  | 150         |
+| Warning (green)  | 60 seconds | 1500        |
+| Danger (red)     | 15 seconds | 375         |
+| Shrink animation | 6 seconds  | 150         |
+
+All values are configurable in `config.c`.
 
 ------------------------------------------------------------------------
 
@@ -341,7 +345,7 @@ the `MapScaler` module.
 |------------------|----------------------------------------------------------------|
 | `mapscaler.h`    | Data structures: `MapTier`, `MapPhase`, `MapEventType`, `MapScaler` state |
 | `mapscaler.c`    | State machine, border interpolation, entity cleanup, scaling   |
-| `config.h/c`     | 4 config fields (`lw_enabled`, `lw_warning_duration`, `lw_danger_duration`, `lw_transition_duration`) |
+| `config.h/c`     | Config fields: `lw_enabled`, `lw_warning_duration`, `lw_danger_duration`, `lw_transition_duration`, `lw_tier_size[]`, `lw_tier_expand[]`, `lw_tier_shrink[]` |
 | `packet.h/c`     | `pkt_map_event()` — builds opcode 200 packets                 |
 | `server.h`       | `MapScaler map_scaler` and `Border spawn_border` in `GameServer` |
 | `server.c`       | Integration into `server_init()`, `server_tick()`, `server_random_pos_padded()` |
@@ -366,19 +370,15 @@ The `MapScaler` struct in `mapscaler.h` tracks:
 8. At each phase transition: broadcasts opcode 200 to all connected clients
 9. Returns `true` if the border changed (so `server_tick` sends updated `SetBorder` 0x40 packets)
 
-### Tier Definition Table (mapscaler.c)
+### Tier Definition (config.c)
 
 ```c
-static const MapTierDef tiers[5] = {
-    {5000.0,   0,   0},    // MAP_5000: base, never shrink below
-    {7071.0,  30,  25},    // MAP_7071: expand >30, shrink <25
-    {10000.0, 150, 130},   // MAP_10000
-    {14142.0, 300, 260},   // MAP_14142
-    {17889.0, 600, 520},   // MAP_17889
-};
+double tier_sizes[5]   = {7071,  10000, 14142, 17889, 28284};
+int    tier_expand[5]  = {0,     30,    150,   300,   600};
+int    tier_shrink[5]  = {0,     20,    120,   240,   480};
 ```
 
-For testing with few players, change these thresholds (e.g., 2/1 for first tier).
+All tier sizes and thresholds are configurable at runtime.
 
 ### Spawn Restriction
 
@@ -396,8 +396,8 @@ to map area: `new_amount = base_amount * (new_area / base_area)`.
 
 ```c
 cfg->lw_enabled = 1;               // enabled for LegendWorld
-cfg->lw_warning_duration = 3000;   // 120 seconds at 25Hz
-cfg->lw_danger_duration = 750;     // 30 seconds at 25Hz
+cfg->lw_warning_duration = 1500;   // 60 seconds at 25Hz
+cfg->lw_danger_duration = 375;     // 15 seconds at 25Hz
 cfg->lw_transition_duration = 150; // 6 seconds at 25Hz
 ```
 
@@ -487,12 +487,12 @@ checks `LM.mapEvent.active` which defaults to `false`.
       │         players < shrink_threshold
       └─────────────────────────────────────► WARNING (green zone)
                                                  │
-                 players recover?                 │ 120 seconds
+                 players recover?                 │ 60 seconds
                  ◄──── CANCELLED ────┘            │
                                                   ▼
                                              DANGER (red zone)
                                                  │
-                                                 │ 30 seconds
+                                                 │ 15 seconds
                                                  ▼
                                              SHRINKING
                                                  │
