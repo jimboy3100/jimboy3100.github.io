@@ -11975,6 +11975,24 @@ function thelegendmodproject() {
                         this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
                     }
                     break;
+                /* ── LegendWorld: LM Stats (opcode 201 / 0xC9) ──
+                 * Server sends: [0xC9][u16 alive_players][u16 bot_count]
+                 * Updates "Total" under leaderboard + bot count display */
+                case 201:
+                    if (LM.isLegendWorld && data.byteLength >= 5) {
+                        var alivePlayers = data.getUint16(1, true);
+                        var botCount = data.getUint16(3, true);
+                        /* Update total players under leaderboard */
+                        if (this.top5totalPlayers) {
+                            this.top5totalPlayers.textContent = alivePlayers;
+                        }
+                        /* Update bot count display */
+                        var botEl = document.getElementById('botCount');
+                        if (botEl) {
+                            botEl.textContent = botCount;
+                        }
+                    }
+                    break;
                 /* ── LegendWorld: LW Beacon (opcode 240 / 0xF0) ──
                  * Sent by the LegendWorld server during handshake.
                  * Payload: 0xF0 + 'L' (0x4C) + 'W' (0x57) = 3 bytes */
