@@ -117,8 +117,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
     $("#region").val("Private").change();
     $("#region").hide();
-    $("#server-reconnect").hide(); // Hide reconnect button - not needed on private servers
-    $("#reconnectBtn").hide(); // Hide reconnect button - not needed on private servers
+    // Remove reconnect buttons from DOM - not needed on private servers
+    setTimeout(function() {
+        $("#server-reconnect").remove();
+        $("#reconnectBtn").remove();
+        $("#gamemode").css({"width": "100%", "max-width": "200px"});
+    }, 500);
     //$(".row").hide()
     modVersion = "1.8"
     init(modVersion);
