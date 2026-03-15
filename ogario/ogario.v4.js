@@ -1,4 +1,7 @@
 window.OgVer = 3.340;
+if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml')) {
+    window.legendModFromWebsite = true;
+}
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
@@ -5651,6 +5654,11 @@ function thelegendmodproject() {
             $(".btn.btn-warning.btn-server-info.ogicon-cogs").after('<button id="server-reconnect" class="btn btn-success" style="display: inline-block; float: left; width: 11%; text-transform: capitalize;"><i class="fa fa-refresh"></i></button>');
             $("#server-join").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
             $(".clearfix").show();
+            if (window.legendModFromWebsite) {
+                $("#server-reconnect").hide();
+                $("#leaderboard-menu").hide();
+                $("#gamemode").css("width", "100%");
+            }
             $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party" style="display: none;">Create</button>');
             $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party"));
             $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel"));
