@@ -17976,16 +17976,31 @@ Array.prototype.stDev = function stDev() {
     //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
 
-// Replace legendmod.ml theme/skin URLs with expanding.land equivalents
+// Replace legendmod.ml URLs with expanding.land equivalents.
+// Uses MutationObserver so it catches dynamically created elements too.
 if (window.expandingLand) {
-    document.querySelectorAll('[href*="www.legendmod.ml/themes"], [src*="www.legendmod.ml/themes"], [style*="www.legendmod.ml/themes"]').forEach(function(el) {
-        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-    });
-    document.querySelectorAll('[href*="www.legendmod.ml/skins"], [src*="www.legendmod.ml/skins"], [style*="www.legendmod.ml/skins"]').forEach(function(el) {
-        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-    });
+    var _elRewriteMap = [
+        { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
+        { match: /(?:www\.)?legendmod\.ml\/skins/g,  replace: 'skins.expanding.land'  },
+        { match: /(?:www\.)?legendmod\.ml/g,          replace: 'expanding.land'        }
+    ];
+    function _rewriteExpandingLinks(root) {
+        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function(el) {
+            _elRewriteMap.forEach(function(r) {
+                if (el.href)  el.href  = el.href.replace(r.match, r.replace);
+                if (el.src)   el.src   = el.src.replace(r.match, r.replace);
+                if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(r.match, r.replace);
+            });
+        });
+    }
+    /* Initial pass */
+    _rewriteExpandingLinks();
+    /* Watch for new elements added to the DOM */
+    new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(n) {
+                if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
+            });
+        });
+    }).observe(document.documentElement, { childList: true, subtree: true });
 }
