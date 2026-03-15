@@ -117,6 +117,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
     $("#region").val("Private").change();
     $("#region").hide();
+    $("#server-reconnect").hide(); // Hide reconnect button - not needed on private servers
+    $("#reconnectBtn").hide(); // Hide reconnect button - not needed on private servers
     //$(".row").hide()
     modVersion = "1.8"
     init(modVersion);
