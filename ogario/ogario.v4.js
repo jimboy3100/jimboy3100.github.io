@@ -13605,6 +13605,15 @@ Game name     : ${i.displayName}<br/>
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
+
+                /* Derive tier from actual border size — guarantees tier
+                 * always matches the real map, regardless of map events */
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
+                var derivedTier = 0;
+                for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
+                    if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
+                }
+                LM.mapTier = derivedTier;
             } else if (this.integrity || temp2) {
                 /* agar.io: hardcoded 14142 (original behavior) */
                 this.mapSize = 14142;
