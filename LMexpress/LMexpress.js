@@ -1,7 +1,7 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "20"; // the version 1.1-> 1.11
+var semimodVersion = "21"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -117,12 +117,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
     $("#region").val("Private").change();
     $("#region").hide();
-    // Clean up UI for private servers
+    // Clean up UI for private servers (3s delay to ensure DOM is fully built)
     setTimeout(function() {
+        $("#server-reconnect").hide();
         $("#reconnectBtn").remove();
-        $("#leaderboard-positions").hide(); // Agar.io global leaderboard not relevant
-        $("#gamemode").css("width", $("#skin").css("width")); // Match gamemode width to skin input
-    }, 500);
+        $("#leaderboard-positions").hide();
+        $("#gamemode").css("width", $("#skin").css("width"));
+    }, 3000);
     //$(".row").hide()
     modVersion = "1.8"
     init(modVersion);
