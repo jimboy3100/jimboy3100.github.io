@@ -614,6 +614,7 @@ function legendmaster(self) {
             this.setGameMode(":party");
         },
         joinParty(d) {
+            if (window.legendModFromWebsite) return; // Agar.io party system not used on private servers
             var scopeHeaderOverrides = this;
             if (-1 != d.indexOf("#")) {
                 d = d.split("#")[1];
@@ -655,13 +656,12 @@ function legendmaster(self) {
             }
         },
         reconnect(table) {
+            if (window.legendModFromWebsite) return; // On website, only #gamemode should connect
             if (this.region) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
                 } else {
-					if (!window.legendModFromWebsite){ // Skip Agar.io server reconnect on private servers
-						this.findServer(this.region, this.gameMode);
-					}
+					this.findServer(this.region, this.gameMode);
                 }
             }
         },
