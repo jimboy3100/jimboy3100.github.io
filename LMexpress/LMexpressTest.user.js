@@ -3,7 +3,7 @@
 // @namespace    Legend Express Agario Mod - TEST
 // @version      1.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     https://www.jimboy3100.github.io
+// @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif

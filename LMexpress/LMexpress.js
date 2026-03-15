@@ -308,7 +308,7 @@ function startLM(modVersion) {
         //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
         window.LMVersion = modVersion;
         if (!modVersion.startsWith("1.8")) {
-            toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.jimboy3100.github.io"><font color="yellow"><b><u>www.jimboy3100.github.io</u></b></font></a>');
+            toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>');
         }
 
         //$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
@@ -490,7 +490,7 @@ function getaccesstoken() {
 
 function getaccesstoken2(accesstomod) {
     if (accesstomod != "a" && accesstomod != null) {
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://www.legendmod.ml/legendmod.user.js"><font color="blue"><b><u>www.jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
+        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://www.legendmod.ml/legendmod.user.js"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
         document.documentElement.innerHTML = "";
     }
 }
@@ -5974,7 +5974,7 @@ function initializeLM(modVersion) {
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
-    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://www.jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion +
+    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion +
         //' </a> <img align="right" src="https://www.legendmod.ml/banners/iconsaynotoffabots.png"></span>' +
 
         '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>' +
@@ -6399,7 +6399,7 @@ function UIDcontroller() {
         localStorage.setItem("bannedUID", true);
         document.documentElement.innerHTML = "";
         window.localStorage.setItem('HSLO[Saigo]:settings', defaultSettings.lbTeammateColor)
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + 'You are banned from Legend mod' + ' <br><a target="_blank" href="https://www.legendmod.ml/"><font color="blue"><b><u>www.jimboy3100.github.io</u></b></font></a><br>' + 'Script Terminated').css("width", "350px");
+        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + 'You are banned from Legend mod' + ' <br><a target="_blank" href="https://www.legendmod.ml/"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + 'Script Terminated').css("width", "350px");
 
     }
 }

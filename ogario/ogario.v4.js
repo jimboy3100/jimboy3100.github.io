@@ -915,7 +915,7 @@ function createCaptchaWindow(i) {
     window.capthaWindow[i].style.height = "0px";
     document.body.appendChild(window.capthaWindow[i]);	*/
     if (window.LMVersion === "1.7") {
-        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.jimboy3100.github.io"><font color="yellow"><b><u>www.jimboy3100.github.io</u></b></font></a>');
+        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>');
     }
     window.capthaWindow[i] = window.open("https://agar.io/captcha");
 }
@@ -17251,7 +17251,7 @@ var stylesLegendModConsole2 = [
 ].join(';');
 
 function consoleNotice() {
-    console.groupCollapsed('%cLegend express%c  %chttp://www.jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
+    console.groupCollapsed('%cLegend express%c  %chttp://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
     console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
