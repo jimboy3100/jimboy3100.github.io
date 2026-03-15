@@ -1,6 +1,9 @@
 window.OgVer = 3.340;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
+    if (document.URL.includes('expanding.land')) {
+        window.expandingLand = true;
+    }
 }
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
@@ -17963,3 +17966,17 @@ Array.prototype.stDev = function stDev() {
     return Math.sqrt(average(this.map(value => Math.pow(value - average(this), 2))))
     //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
+
+// Replace legendmod.ml theme/skin URLs with expanding.land equivalents
+if (window.expandingLand) {
+    document.querySelectorAll('[href*="www.legendmod.ml/themes"], [src*="www.legendmod.ml/themes"], [style*="www.legendmod.ml/themes"]').forEach(function(el) {
+        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
+        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
+        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
+    });
+    document.querySelectorAll('[href*="www.legendmod.ml/skins"], [src*="www.legendmod.ml/skins"], [style*="www.legendmod.ml/skins"]').forEach(function(el) {
+        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
+        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
+        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
+    });
+}
