@@ -1,7 +1,7 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "19"; // the version 1.1-> 1.11
+var semimodVersion = "20"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -110,7 +110,7 @@ var timesopened = localStorage.getItem("timesopened");
 var url = localStorage.getItem("url");
 
 var modVersion;
-if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('jimboy3100.github.io')) {
+if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml')) {
     if (location.protocol !== 'https:') {
         toastr.warning("Legend mod over http. Many functions cannot work properly. To join Non SSL servers use <font color='blue'>ws://</font> in front of websocket.<br>e.g <font color='blue'>ws://34.89.203.157:3000/</font>").css("width", "350px");
     }
