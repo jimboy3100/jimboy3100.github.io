@@ -474,6 +474,7 @@ function legendmaster(self) {
             this.setGameMode(n);
         },
         findServer(id, params) {
+            if (window.legendModFromWebsite) return; // Never contact Agar.io master server on private servers
             var e = Date.now();
             if (!(e - this.findingServer < 500)) {
                 if (self.core) {
