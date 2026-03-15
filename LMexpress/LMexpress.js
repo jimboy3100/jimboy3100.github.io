@@ -6520,7 +6520,7 @@ function populateBanListConfig() {
 
 function findUserLang() {
     if (window.navigator.languages) {
-        if (window.navigator.languages[0] && (window.navigator.languages[0] == "en" || window.navigator.languages[1].includes('-'))) {
+        if (window.navigator.languages[0] && (window.navigator.languages[0] == "en" || window.navigator.languages[1] && window.navigator.languages[1].includes('-'))) {
             if (window.navigator.languages[1] && (window.navigator.languages[1] == "en" || window.navigator.languages[1].includes('-'))) {
                 if (window.navigator.languages[2] && (window.navigator.languages[2] == "en" || window.navigator.languages[2].includes('-'))) {
                     if (window.navigator.languages[3] && !(window.navigator.languages[2] == "en" || window.navigator.languages[2].includes('-'))) window.userLanguage = window.navigator.languages[3]
