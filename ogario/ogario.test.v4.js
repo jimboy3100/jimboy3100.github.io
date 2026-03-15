@@ -5824,7 +5824,13 @@ function thelegendmodproject() {
                 '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
                 '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
                 '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
-            $("body").append('<ul id="messages"></ul>');
+            $('body').append('<ul id="messages"></ul>');
+            if (window.legendModFromWebsite) {
+                $('#set-debug').hide();
+                $('#set-fullSpectator').hide();
+                $('#set-ingameSpectator').hide();
+                $('#Bino').hide();
+            }
             $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                 textLanguage.enterChatMsg + '..." maxlength="80"></div>');
             $("body").append('<div id="chat-box"></div>');
@@ -13643,8 +13649,10 @@ Game name     : ${i.displayName}<br/>
         },
         addSpect() {
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
-                $('#set-fullSpectator').show();
-                $('#set-ingameSpectator').show();
+                if (!window.legendModFromWebsite) {
+                    $('#set-fullSpectator').show();
+                    $('#set-ingameSpectator').show();
+                }
                 if (window.fullSpectator && spects.length === 0) {
                     addFullSpectator();
                 } else if (window.ingameSpectator && spects.length === 0) {
