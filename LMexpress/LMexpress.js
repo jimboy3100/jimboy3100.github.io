@@ -1,7 +1,7 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "22"; // the version 1.1-> 1.11
+var semimodVersion = "23"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -5393,7 +5393,12 @@ function initializeLM(modVersion) {
 
         '<input id="tempCopy" style="display: none;" value="">' +
         '</div>');
-    // player shortcut			
+    // player shortcut
+    if (window.legendModFromWebsite) {
+        $("#leaderboard-menu").hide();
+        $("#server-reconnect").hide();
+        $("#gamemode").css("width", "100%");
+    }
 
     $("#playerBtn").click(function () {
         if (playerState != 1) {
