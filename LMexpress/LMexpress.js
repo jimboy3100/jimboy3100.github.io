@@ -117,11 +117,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
     $("#region").val("Private").change();
     $("#region").hide();
-    // Remove reconnect buttons from DOM - not needed on private servers
+    // Clean up UI for private servers
     setTimeout(function() {
-        $("#server-reconnect").remove();
         $("#reconnectBtn").remove();
-        $("#gamemode").css({"width": "100%", "max-width": "200px"});
+        $("#leaderboard-positions").hide(); // Agar.io global leaderboard not relevant
+        $("#gamemode").css("width", $("#skin").css("width")); // Match gamemode width to skin input
     }, 500);
     //$(".row").hide()
     modVersion = "1.8"
