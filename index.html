@@ -1219,10 +1219,12 @@
                 link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
                 document.getElementsByTagName('head')[0].appendChild(link);
             })();
-            var url = localStorage.getItem("url");
-            var nav = getParameterByName("nav", url);
-            if (nav == "FPS") {
-                document.getElementsByName("FPS")[0].click();
+            /* Auto-navigate to tab from ?nav= URL parameter.
+             * e.g. ?nav=FPS, ?nav=About, ?nav=Features, etc. */
+            var nav = getParameterByName("nav");
+            if (nav) {
+                var tabLink = document.getElementsByName(nav)[0];
+                if (tabLink) tabLink.click();
             }
         }, 2000);
 
