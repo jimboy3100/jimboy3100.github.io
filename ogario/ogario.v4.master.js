@@ -658,7 +658,7 @@ function legendmaster(self) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
                 } else {
-					if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
+					if (!window.legendModFromWebsite){ // Skip Agar.io server reconnect on private servers
 						this.findServer(this.region, this.gameMode);
 					}
                 }
@@ -798,7 +798,7 @@ function legendmaster(self) {
             var n = this;
             this.setUI();
             this.getRegionNames();
-			if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
+			if (!window.legendModFromWebsite){ // Skip Agar.io region/hash/geo on private servers
             this.refreshRegionInfo();
 			this.checkHash();
 			this.getRegionCode()
@@ -855,7 +855,7 @@ function legendmaster(self) {
         alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
 	
-	if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
+	if (!window.legendModFromWebsite){ // Skip FB/Google OAuth init on private servers
     self.fbAsyncInit = function() {
         self.FB.init({
             appId: headers.fb_app_id,
