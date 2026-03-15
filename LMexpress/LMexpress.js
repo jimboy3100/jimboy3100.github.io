@@ -141,8 +141,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     $(".agario-panel.ogario-yt-panel").hide()
     $(".profile-tab").hide()
     $(".menu-tabs").children().css("width", "16.6%")
-    $("#gamemode").css("width", "70%")
-    $("#gamemode").css("width", "87%")
+    if (!window.legendModFromWebsite) {
+        $("#gamemode").css("width", "87%")
+    }
     $('#hotkeys-cfg').children().show();
 
 
