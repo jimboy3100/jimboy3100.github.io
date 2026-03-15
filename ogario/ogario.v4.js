@@ -112,15 +112,12 @@ function deleteGamemode(temp) {
         {
             text: '👑 Legend FFA',
             value: 5001
-        },
-        {
+        }
+        /* All other private servers commented out - only Legend FFA active
+        ,{
             text: 'Delta FFA',
             value: 4001
         },
-        /*{
-                text: 'Delta Party',
-                value: 4002
-            },*/
         {
             text: 'FeelForeverAlone',
             value: 34
@@ -136,54 +133,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'Antarctic',
             value: 35
-        }/*
-		, {
-            text: 'MK NA east',
-            value: 36
         }, {
-            text: 'Eatcells',
-            value: 42
-        }, {
-            text: 'C-Minions EU',
-            value: 43
-        }, {
-            text: 'Minions EU',
-            value: 44
-        }, {		
-            text: 'Selffeed EU ',
-            value: 45
-        }, {		
-            text: 'Moondust EU',
-            value: 46
-        }, {	
-            text: 'Infected EU',
-            value: 47
-        }, {	
-            text: 'Crazy EU',
-            value: 48
-        }, {	
-            text: 'C-Minions NA',
-            value: 49
-        }, {	
-            text: 'Minions NA',
-            value: 50
-        }, {	
-            text: 'Selffeed NA',
-            value: 51
-        }, {
-            text: 'Moondust NA',
-            value: 52
-        }, {
-            text: 'Infected NA',
-            value: 53
-        }, {
-            text: 'Crazy NA',
-            value: 54
-        }*/
-        , /*{			
-            text: 'Instant Merging',
-            value: 16
-        },*/ {
             text: 'Party MegaSplit',
             value: 19
         }, {
@@ -240,58 +190,16 @@ function deleteGamemode(temp) {
         }, {
             text: 'MK Bots WIP',
             value: 39
-        },
-
-            /*
-        text: 'MK Disturb Furry',
-        value: 41		
-    }, {		
-        text: 'Cellz big ffa',
-        value: 34		
-    }, {	
-        text: 'Cellz mega split',
-        value: 35		
-    }, {	
-        text: 'Cellz instant',
-        value: 36		
-    }, {	
-        text: 'Cellz self feed',
-        value: 37		
-    }, {		
-        text: 'Cellz crazy',
-        value: 38		
-    }, {	
-        text: 'Cellz fast split',
-        value: 39		
-    }, {	
-        text: 'Cellz ultra split',
-        value: 40		
-    }, {
-*/		{
+        }, {
             text: 'FPS Test',
             value: 12
-        },
-        /*{
-            text: 'ws://localhost:443',
-            value: 41
+        }, {
+            text: 'Delta Party',
+            value: 4002
         }
-        /*, {	
-        text: 'FFA',
-        value: 8
-    }, {
-        text: 'Battle Royal',
-        value: 9
-    }, {
-        text: 'Teams',
-        value: 10
-    }, {
-        text: 'Experimental',
-        value: 11
-    }, {
-        text: 'Party mode',
-        value: 13
-    }*/
+        */
     ];
+    /* Commented out - non-SSL servers disabled
     if (location.protocol !== 'https:') {
         privateModOptions.unshift({
             text: 'agarios.org NA',
@@ -302,6 +210,7 @@ function deleteGamemode(temp) {
             value: 102
         })
     }
+    */
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
@@ -335,10 +244,15 @@ function deleteGamemode(temp) {
             }
             */
         } else { }
-        if ($('#gamemode').val() == 6) {
+        // Legend FFA - only active private server
+        if ($('#gamemode').val() == 5001) {
+            core.connect('wss://ffa.legendmod.ml:8080');
+        }
+        /* All other private server connect handlers commented out
+        else if ($('#gamemode').val() == 6) {
             core.connect('wss://imsolo.pro:2109/');
         } else if ($('#gamemode').val() == 7) {
-            core.connect('wss://imsolo.pro:2108/'); //beta megasplit
+            core.connect('wss://imsolo.pro:2108/');
         } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
         } else if ($('#gamemode').val() == 14) {
@@ -348,7 +262,7 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 16) {
             core.connect('wss://imsolo.pro:2107/');
         } else if ($('#gamemode').val() == 17) {
-            core.connect('wss://imsolo.pro:2110/'); //beta partymode
+            core.connect('wss://imsolo.pro:2110/');
         } else if ($('#gamemode').val() == 18) {
             core.connect('wss://imsolo.pro:2111/');
         } else if ($('#gamemode').val() == 19) {
@@ -391,54 +305,14 @@ function deleteGamemode(temp) {
             core.connect('wss://agar.mkchat.net/');
         } else if ($('#gamemode').val() == 38) {
             core.connect('wss://teamworkmk.herokuapp.com/');
-            setTimeout(function () {
-                legendmod.gameMode = ":teams";
-            }, 500)
         } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
-        } else if ($('#gamemode').val() == 42) {
-            core.connect('wss://eatcells.com/api/');
-        } else if ($('#gamemode').val() == 41) {
-            //core.connect('wss://distrustfurryserver.herokuapp.com/');
-            core.connect('ws://localhost:443');
-        } else if ($('#gamemode').val() == 43) {
-            core.connect('wss://cellshub.ga:3100');
-        } else if ($('#gamemode').val() == 44) {
-            core.connect('wss://cellshub.ga:3101');
-        } else if ($('#gamemode').val() == 45) {
-            core.connect('wss://cellshub.ga:3103');
-        } else if ($('#gamemode').val() == 46) {
-            core.connect('wss://cellshub.ga:3104');
-        } else if ($('#gamemode').val() == 47) {
-            core.connect('wss://cellshub.ga:3105');
-        } else if ($('#gamemode').val() == 48) {
-            core.connect('wss://cellshub.ga:3107');
-        } else if ($('#gamemode').val() == 49) {
-            core.connect('wss://agariohub.ga:3100');
-        } else if ($('#gamemode').val() == 50) {
-            core.connect('wss://agariohub.ga:3101');
-        } else if ($('#gamemode').val() == 51) {
-            core.connect('wss://agariohub.ga:3103');
-        } else if ($('#gamemode').val() == 52) {
-            core.connect('wss://agariohub.ga:3104');
-        } else if ($('#gamemode').val() == 53) {
-            core.connect('wss://agariohub.ga:3105');
-        } else if ($('#gamemode').val() == 54) {
-            core.connect('wss://agariohub.ga:3107');
-        } else if ($('#gamemode').val() == 102) {
-            core.connect('ws://m16ogar.al.gl:2052/');
-        } else if ($('#gamemode').val() == 103) {
-            core.connect('ws://na.agarios.org:443/');
-        }
-        else if ($('#gamemode').val() == 4001) {
+        } else if ($('#gamemode').val() == 4001) {
             core.connect('wss://delta-ffa.glitch.me');
-        }
-        else if ($('#gamemode').val() == 4002) {
+        } else if ($('#gamemode').val() == 4002) {
             core.connect('wss://delta-server.fly.dev');
         }
-        else if ($('#gamemode').val() == 5001) {
-            core.connect('wss://ffa.legendmod.ml:8080');
-        }
+        */
 
         //wss://eatcells.com/api/~ EatCells FFA 1
         //wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
