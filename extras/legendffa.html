@@ -259,33 +259,178 @@
 
         <div class="row">
             <div class="card" style="width:min(940px, 100%);">
-                <h3><span class="emoji">🛡️</span> Anti-Teaming System</h3>
+                <h3><span class="emoji">🛡️</span> Anti-Teaming System — Discrete Events</h3>
                 <p>
-                    This server uses the <span class="accent">real Agar.io anti-teaming algorithm</span> &mdash;
-                    the same penalty-based decay system used by official servers. It tracks a per-player
-                    <span class="strong">anti-team score</span> that accumulates from teaming behaviors:
+                    This server uses a <span class="accent">discrete event-based anti-teaming system</span>.
+                    Instead of a single bucket that accumulates forever, <span class="strong">every action is tracked
+                    as a separate event with its own lifespan</span>. When an event expires, its penalty is removed
+                    &mdash; older actions don't get extended by newer ones.
                 </p>
-                <ul>
-                    <li><span class="strong">Splitting</span> adds <span class="accent">+10 penalty</span> per split
-                        (teamers split constantly to feed each other)</li>
-                    <li><span class="strong">Ejecting mass (W)</span> adds <span class="accent">+1 penalty</span> per
-                        eject (mass trading is a core teaming tactic)</li>
-                    <li><span class="strong">Eating teammates' cells</span> adds penalty based on mass consumed</li>
-                    <li><span class="strong">Popping (virus)</span> adds <span class="accent">+32 penalty</span> when
-                        you get virus-popped (prevents intentional pop-feeding)</li>
-                </ul>
+
                 <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Penalty Sources</span></p>
+                <p>Each of these actions adds a discrete anti-team event to your score:</p>
+                <ul>
+                    <li><span class="strong">☣ Virus (pop)</span> &mdash; <span class="accent">+32 penalty</span>,
+                        lasts <span class="strong">32 seconds</span>. Triggered when you eat a virus.</li>
+                    <li><span class="strong">◉➚◉ Split</span> &mdash; <span class="accent">+10 penalty</span>,
+                        lasts <span class="strong">10 seconds</span>. Triggered each time you split.</li>
+                    <li><span class="strong">⬤ W (eject mass)</span> &mdash; <span class="accent">+1 penalty per cell</span>,
+                        lasts <span class="strong">1 second</span>. Triggered each time you press W. If you have 16 cells, one W press = +16.</li>
+                    <li><span class="strong">⚠ Danger Zone</span> &mdash; <span class="accent">+0.1 per cell</span> every 0.2 seconds,
+                        batched every 4 seconds, lasts <span class="strong">8 seconds</span>. Only applies when the map is contracting and your cells are in the outer ring.</li>
+                    <li><span class="strong">∞ Base Decay</span> &mdash; always active, never expires. This is the natural mass loss:
+                        <span class="accent">−0.8% mass every 4 seconds</span> regardless of anti-team score.</li>
+                </ul>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">How It Works</span></p>
                 <p>
-                    When your anti-team score exceeds <span class="strong">35</span>, your cells start
-                    <span class="warn">decaying faster</span> &mdash; the higher your score, the faster you shrink.
-                    The score naturally decreases over time (<span class="accent">&minus;4 per tick</span>) when you
-                    stop teaming,
-                    so solo players are never affected.
+                    Your total anti-team score is the <span class="strong">sum of all currently active events</span>.
+                    When the total exceeds the threshold (<span class="accent">35</span>), your cells start
+                    <span class="warn">decaying faster</span>. The decay multiplier formula is:
                 </p>
-                <p class="tiny" style="margin-top:8px;">
-                    This means teamers will rapidly lose mass while solo players enjoy a completely fair game.
-                    No manual bans needed &mdash; the system is fully automatic.
+                <p style="text-align:center; font-size:1.2em; margin:10px 0;">
+                    <span class="accent">decay = base × (1 + score / 15)</span>
                 </p>
+                <p>
+                    At exactly <span class="strong">35</span>, no penalty is applied (the check is <em>strictly greater than</em>).
+                    At 50 you'd lose <span class="warn">3.5× normal decay</span>. At 100 you'd lose <span class="warn">7.7× normal decay</span>.
+                </p>
+                <p>
+                    <span class="strong">Key:</span> Each event expires <span class="accent">independently</span>.
+                    If you eat a virus at t=0 and another at t=20, the first virus event expires at t=32 and the second at t=52.
+                    They don't extend each other. Once all events expire, your score returns to 0 and decay goes back to normal.
+                </p>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Live Stats HUD — Reading the Display</span></p>
+                <p>
+                    When connected to Legend FFA, you can see your live anti-team status in the stats bar.
+                    Here is an example of what it looks like:
+                </p>
+                <div class="wss-box" style="text-align:left; display:block; font-size:1.15em;">
+                    <code style="color:#fff;">
+                        ⚗ Anti: (<span style="color:#ff4c4c;">74.0</span>/35.0, −4.7%/4s) | ☣ Virus: 2 (+64, ⏳32s) | ◉➚◉ Split: 1 (+10, ⏳7s) | ∞ −0.8%/4s
+                    </code>
+                </div>
+                <p style="margin-top:10px;">What each part means:</p>
+                <ul>
+                    <li><span class="strong">⚗ Anti: (<span style="color:#ff4c4c;">74.0</span>/35.0, −4.7%/4s)</span>
+                        &mdash; Your anti-team score is <span class="warn">74.0</span> (above the 35.0 threshold).
+                        The <span class="warn">−4.7%/4s</span> is your actual total mass loss &mdash; you're losing 4.7% of your mass every 4 seconds.
+                        When below threshold, the score appears in <span style="color:#33ff33;">green</span> and no extra decay rate is shown.</li>
+                    <li><span class="strong">☣ Virus: 2 (+64, ⏳32s)</span>
+                        &mdash; You have <span class="strong">2</span> active virus events contributing <span class="accent">+64</span> to your total score (32 each).
+                        <span class="accent">⏳32s</span> = the <span class="strong">last</span> virus event expires in 32 seconds.
+                        Earlier virus events may expire sooner &mdash; this shows only the latest one.</li>
+                    <li><span class="strong">◉➚◉ Split: 1 (+10, ⏳7s)</span>
+                        &mdash; <span class="strong">1</span> active split event contributing <span class="accent">+10</span>.
+                        Expires in <span class="accent">7 seconds</span>.</li>
+                    <li><span class="strong">⬤ W: 3 (+48, ⏳1s)</span>
+                        &mdash; <span class="strong">3</span> active W events. Expire very quickly (1 second each).</li>
+                    <li><span class="strong">⚠ Zone 120s (+10, ⏳8s)</span>
+                        &mdash; You're in the <span class="warn">danger zone</span> (120s left in the phase).
+                        The danger zone has added <span class="accent">+10</span> to your anti-team score.
+                        The oldest danger batch expires in <span class="accent">8 seconds</span>.</li>
+                    <li><span class="strong">∞ −0.8%/4s</span>
+                        &mdash; The constant base decay. Always present. You lose 0.8% mass every 4 seconds regardless of anti-team score.
+                        This is the natural game decay.</li>
+                </ul>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;">
+                    <span class="strong" style="font-size:1.2em;">⏳ Important: "Last Expires" Explained</span>
+                </p>
+                <p>
+                    The <span class="accent">⏳</span> timer shows when the <span class="strong">last (most recent) event of that type</span> expires.
+                    It does <span class="warn">NOT</span> mean all events of that type expire at once.
+                </p>
+                <p>
+                    <span class="strong">Example:</span> You eat a virus at t=0 and another at t=20.
+                    The display might show <span class="accent">☣ Virus: 2 (+64, ⏳32s)</span>.
+                    The ⏳32s is the second virus's timer. The first virus
+                    actually expires at t=32 (12 seconds from now), while the second expires at t=52 (32 seconds from now).
+                    When the first expires, the display updates to <span class="accent">☣ Virus: 1 (+32, ⏳12s)</span>.
+                </p>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">📊 Enable / Disable the Display</span></p>
+                <p>
+                    The decay stats are <span class="accent">enabled by default</span> in Legend Mod.
+                    To toggle them:
+                </p>
+                <ol>
+                    <li>Open <span class="strong">Settings</span> (gear icon)</li>
+                    <li>Find the <span class="strong">Stats</span> section</li>
+                    <li>Toggle <span class="accent">"Decay Info (LegendWorld)"</span> on or off</li>
+                </ol>
+                <p class="tiny">This setting only affects Legend FFA. It has no effect on other servers.</p>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">⚙️ Current Tuning Values</span></p>
+                <p>These are the values we currently use. <span class="warn">We need your feedback to get them right!</span></p>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.2);">
+                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Source</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Penalty</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Lifespan</th>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">☣ Virus (pop)</td>
+                            <td style="text-align:center; padding:6px 10px;">+32</td>
+                            <td style="text-align:center; padding:6px 10px;">32 seconds</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">◉➚◉ Split</td>
+                            <td style="text-align:center; padding:6px 10px;">+10</td>
+                            <td style="text-align:center; padding:6px 10px;">10 seconds</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">⬤ W (per cell)</td>
+                            <td style="text-align:center; padding:6px 10px;">+1 per cell</td>
+                            <td style="text-align:center; padding:6px 10px;">1 second</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">⚠ Danger Zone</td>
+                            <td style="text-align:center; padding:6px 10px;">+0.1 per cell / 0.2s</td>
+                            <td style="text-align:center; padding:6px 10px;">8 seconds</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 10px;">Threshold</td>
+                            <td style="text-align:center; padding:6px 10px;" colspan="2">35 (penalty starts above this)</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="background:rgba(1,217,204,.12); border:2px solid rgba(1,217,204,.35); border-radius:10px; padding:16px 18px; margin:10px 0; text-align:center;">
+                    <p style="font-size:1.3em; margin:0 0 8px;">
+                        <span class="emoji">🎯</span>
+                        <span class="strong">We Need YOUR Help to Tune These Numbers!</span>
+                    </p>
+                    <p style="margin:0 0 10px;">
+                        The anti-teaming system is new and we need the community's input to get the values right.
+                        Are the penalties too harsh? Too soft? Should virus events last longer?
+                        Should W penalty be higher? <span class="strong">Your gameplay experience is crucial.</span>
+                    </p>
+                    <p style="margin:0 0 6px;">
+                        Use the live stats display to see exactly how each action affects your decay,
+                        then tell us what you think:
+                    </p>
+                    <p style="margin:0;">
+                        <a class="link" href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener"
+                            style="font-size:1.3em; border-bottom-width:2px;">
+                            💬 Join our Discord &amp; share your feedback
+                        </a>
+                    </p>
+                    <p class="tiny" style="margin:8px 0 0;">
+                        Post your suggestions with specific numbers (e.g., "virus should be +20 for 20s instead of +32 for 32s").
+                        Screenshots of your stats display are very helpful!
+                    </p>
+                </div>
             </div>
         </div>
 

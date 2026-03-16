@@ -1520,6 +1520,7 @@ var displayText = {
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsWorldSize: 'World Size (LegendWorld)',
+        showStatsDecayInfo: 'Decay Info (LegendWorld)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -2005,6 +2006,7 @@ var displayText = {
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsWorldSize: 'World Size (LegendWorld)',
+        showStatsDecayInfo: 'Decay Info (LegendWorld)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -3229,6 +3231,7 @@ var defaultmapsettings = {
     showStatsSTE: false,
     showStatsN16: true,
     showStatsWorldSize: true,
+    showStatsDecayInfo: true,
     showStatsFPS: true,
     //showStatsPPS: true,
     showStatsRender: false,
@@ -4794,6 +4797,48 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
+                if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
+                    var di = LM.decayInfo;
+                    var atStr = '';
+
+                    /* ⚗ Anti: (X/35) or (X/35, −Y%/4s) — first when any AT score */
+                    if (di.totalScore > 0) {
+                        var isAbove = di.totalScore > di.threshold;
+                        var scoreColor = isAbove ? 'color:#ff4c4c' : 'color:#33ff33';
+                        var scoreVal = (di.totalScore / 10).toFixed(1);
+                        var threshVal = (di.threshold / 10).toFixed(1);
+                        atStr += '⚗ Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
+                        if (isAbove) {
+                            var penaltyPct = ((di.decayScore / 10) * (di.multiplier / 100)).toFixed(1);
+                            atStr += ', −' + penaltyPct + '%/' + di.decayIntervalSecs + 's';
+                        }
+                        atStr += ')';
+
+                        /* Per-source breakdown: ☣ Virus, ◉➚◉ Split, ⬤ W */
+                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 10).toFixed(0) + ', ⏳' + di.virusMaxSecs + 's)';
+                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 10).toFixed(0) + ', ⏳' + di.splitMaxSecs + 's)';
+                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 10).toFixed(0) + ', ⏳' + di.ejectMaxSecs + 's)';
+                    }
+
+                    /* ⚠ Zone — merged danger zone (timer + anti contribution) */
+                    if (di.inDangerZone) {
+                        if (atStr) atStr += ' | ';
+                        atStr += '<span style="color:#ff4c4c">⚠ Zone ' + di.dangerPhaseSecs + 's';
+                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                        atStr += '</span>';
+                    } else if (di.dangerCount > 0) {
+                        /* Not in zone but danger events still expiring */
+                        if (atStr) atStr += ' | ';
+                        atStr += '⚠ Zone (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                    }
+
+                    /* ∞ constant base decay — always shown */
+                    if (atStr) atStr += ' | ';
+                    atStr += '∞ −' + (di.decayScore / 10).toFixed(1) + '%/' + di.decayIntervalSecs + 's';
+
+                    if (t) t += atStr + ' | ';
+                    else t += atStr + ' | ';
+                }
                 if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
                     var color = '';
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
@@ -5772,7 +5817,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -10542,6 +10587,22 @@ function thelegendmodproject() {
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
 
+        /* LegendWorld decay info — populated by opcode 202 (0xCA) */
+        decayInfo: {
+            active: false,
+            totalScore: 0,     // ×10 (350 = 35.0)
+            threshold: 350,    // ×10
+            multiplier: 100,   // ×100 (100 = 1.0×)
+            virusCount: 0, virusScore: 0, virusMaxSecs: 0,
+            splitCount: 0, splitScore: 0, splitMaxSecs: 0,
+            ejectCount: 0, ejectScore: 0, ejectMaxSecs: 0,
+            dangerCount: 0, dangerScore: 0, dangerMaxSecs: 0,
+            decayCount: 0, decayScore: 0, decayMaxSecs: 0,
+            inDangerZone: false,
+            dangerPhaseSecs: 0,
+            decayIntervalSecs: 4
+        },
+
         /* LegendWorld server identification — set true when server sends
          * the LW beacon (opcode 0xF0 + 'LW') during handshake */
         isLegendWorld: false,
@@ -10687,6 +10748,7 @@ function thelegendmodproject() {
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
+            LM.decayInfo.active = false;
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
             this.leaderboard = [];
@@ -12617,6 +12679,23 @@ function thelegendmodproject() {
                         if (botEl2) {
                             botEl2.textContent = botCount2;
                         }
+                    } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
+                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
+                        var di = LM.decayInfo;
+                        var _off = 1;
+                        di.totalScore = data.getUint16(_off, true); _off += 2;
+                        di.threshold = data.getUint16(_off, true); _off += 2;
+                        di.multiplier = data.getUint16(_off, true); _off += 2;
+                        /* Per-type: virus(1), split(2), eject(3), danger(4), decay(5) */
+                        di.virusCount = data.getUint8(_off++); di.virusScore = data.getUint16(_off, true); _off += 2; di.virusMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.splitCount = data.getUint8(_off++); di.splitScore = data.getUint16(_off, true); _off += 2; di.splitMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.ejectCount = data.getUint8(_off++); di.ejectScore = data.getUint16(_off, true); _off += 2; di.ejectMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.dangerCount = data.getUint8(_off++); di.dangerScore = data.getUint16(_off, true); _off += 2; di.dangerMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.decayCount = data.getUint8(_off++); di.decayScore = data.getUint16(_off, true); _off += 2; di.decayMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.inDangerZone = data.getUint8(_off++) === 1;
+                        di.dangerPhaseSecs = data.getUint16(_off, true); _off += 2;
+                        di.decayIntervalSecs = data.getUint8(_off++);
+                        di.active = true;
                     } else {
                         console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
                     }
