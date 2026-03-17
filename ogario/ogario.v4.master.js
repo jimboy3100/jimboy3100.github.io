@@ -856,7 +856,8 @@ function legendmaster(self) {
         alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
 	
-	if (!window.legendModFromWebsite){ // Skip FB/Google OAuth init on private servers
+	// FB/Google OAuth init — always run, including on private servers
+	// (previously guarded by !legendModFromWebsite, which blocked login)
     self.fbAsyncInit = function() {
         self.FB.init({
             appId: headers.fb_app_id,
@@ -872,7 +873,6 @@ function legendmaster(self) {
         self.getStorage();
         setup();
     };
-	}
 	
 };
 function continuelogout(){
