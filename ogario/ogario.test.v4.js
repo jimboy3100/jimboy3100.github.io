@@ -1520,6 +1520,7 @@ var displayText = {
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsWorldSize: 'World Size (LegendWorld)',
+        showStatsDecayInfo: 'Decay Info (LegendWorld)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -2005,6 +2006,7 @@ var displayText = {
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsWorldSize: 'World Size (LegendWorld)',
+        showStatsDecayInfo: 'Decay Info (LegendWorld)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -3182,7 +3184,7 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
-    showOptimisedGrid: true,
+    showOptimisedGrid: false,
     textStroke: false,
     namesStroke: true,
     massStroke: true,
@@ -3229,6 +3231,7 @@ var defaultmapsettings = {
     showStatsSTE: false,
     showStatsN16: true,
     showStatsWorldSize: true,
+    showStatsDecayInfo: true,
     showStatsFPS: true,
     //showStatsPPS: true,
     showStatsRender: false,
@@ -4794,6 +4797,48 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
+                if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
+                    var di = LM.decayInfo;
+                    var atStr = '';
+
+                    /* ⚗ Anti: (X/35) or (X/35, −Y%/4s) — first when any AT score */
+                    if (di.totalScore > 0) {
+                        var isAbove = di.totalScore > di.threshold;
+                        var scoreColor = isAbove ? 'color:#ff4c4c' : 'color:#33ff33';
+                        var scoreVal = (di.totalScore / 10).toFixed(1);
+                        var threshVal = (di.threshold / 10).toFixed(1);
+                        atStr += '⚗ Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
+                        if (isAbove) {
+                            var penaltyPct = ((di.decayScore / 10) * (di.multiplier / 100)).toFixed(1);
+                            atStr += ', −' + penaltyPct + '%/' + di.decayIntervalSecs + 's';
+                        }
+                        atStr += ')';
+
+                        /* Per-source breakdown: ☣ Virus, ◉➚◉ Split, ⬤ W */
+                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 10).toFixed(0) + ', ⏳' + di.virusMaxSecs + 's)';
+                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 10).toFixed(0) + ', ⏳' + di.splitMaxSecs + 's)';
+                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 10).toFixed(0) + ', ⏳' + di.ejectMaxSecs + 's)';
+                    }
+
+                    /* ⚠ Zone — merged danger zone (timer + anti contribution) */
+                    if (di.inDangerZone) {
+                        if (atStr) atStr += ' | ';
+                        atStr += '<span style="color:#ff4c4c">⚠ Zone ' + di.dangerPhaseSecs + 's';
+                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                        atStr += '</span>';
+                    } else if (di.dangerCount > 0) {
+                        /* Not in zone but danger events still expiring */
+                        if (atStr) atStr += ' | ';
+                        atStr += '⚠ Zone (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                    }
+
+                    /* ∞ constant base decay — always shown */
+                    if (atStr) atStr += ' | ';
+                    atStr += '∞ −' + (di.decayScore / 10).toFixed(1) + '%/' + di.decayIntervalSecs + 's';
+
+                    if (t) t += atStr + ' | ';
+                    else t += atStr + ' | ';
+                }
                 if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
                     var color = '';
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
@@ -5625,8 +5670,8 @@ function thelegendmodproject() {
         setMenu() {
             const app = this;
             document.title = this.name;
-            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">agar.io level: <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
-                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">LM level: <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
+            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">★★ <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
+                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
@@ -5772,7 +5817,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -10542,6 +10587,22 @@ function thelegendmodproject() {
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
 
+        /* LegendWorld decay info — populated by opcode 202 (0xCA) */
+        decayInfo: {
+            active: false,
+            totalScore: 0,     // ×10 (350 = 35.0)
+            threshold: 350,    // ×10
+            multiplier: 100,   // ×100 (100 = 1.0×)
+            virusCount: 0, virusScore: 0, virusMaxSecs: 0,
+            splitCount: 0, splitScore: 0, splitMaxSecs: 0,
+            ejectCount: 0, ejectScore: 0, ejectMaxSecs: 0,
+            dangerCount: 0, dangerScore: 0, dangerMaxSecs: 0,
+            decayCount: 0, decayScore: 0, decayMaxSecs: 0,
+            inDangerZone: false,
+            dangerPhaseSecs: 0,
+            decayIntervalSecs: 4
+        },
+
         /* LegendWorld server identification — set true when server sends
          * the LW beacon (opcode 0xF0 + 'LW') during handshake */
         isLegendWorld: false,
@@ -10687,6 +10748,7 @@ function thelegendmodproject() {
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
+            LM.decayInfo.active = false;
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
             this.leaderboard = [];
@@ -11252,9 +11314,9 @@ function thelegendmodproject() {
         //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
         //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
-            if (!legendmod.integrity) {
-                return
-            }
+            // Removed legendmod.integrity guard — auth tokens should always
+            // be sent, even on private servers. Integrity only gates
+            // recaptcha/client key, not social login.
             if (LM.accessTokenSent) {
                 return;
             }
@@ -12617,6 +12679,23 @@ function thelegendmodproject() {
                         if (botEl2) {
                             botEl2.textContent = botCount2;
                         }
+                    } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
+                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
+                        var di = LM.decayInfo;
+                        var _off = 1;
+                        di.totalScore = data.getUint16(_off, true); _off += 2;
+                        di.threshold = data.getUint16(_off, true); _off += 2;
+                        di.multiplier = data.getUint16(_off, true); _off += 2;
+                        /* Per-type: virus(1), split(2), eject(3), danger(4), decay(5) */
+                        di.virusCount = data.getUint8(_off++); di.virusScore = data.getUint16(_off, true); _off += 2; di.virusMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.splitCount = data.getUint8(_off++); di.splitScore = data.getUint16(_off, true); _off += 2; di.splitMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.ejectCount = data.getUint8(_off++); di.ejectScore = data.getUint16(_off, true); _off += 2; di.ejectMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.dangerCount = data.getUint8(_off++); di.dangerScore = data.getUint16(_off, true); _off += 2; di.dangerMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.decayCount = data.getUint8(_off++); di.decayScore = data.getUint16(_off, true); _off += 2; di.decayMaxSecs = data.getUint16(_off, true); _off += 2;
+                        di.inDangerZone = data.getUint8(_off++) === 1;
+                        di.dangerPhaseSecs = data.getUint16(_off, true); _off += 2;
+                        di.decayIntervalSecs = data.getUint8(_off++);
+                        di.active = true;
                     } else {
                         console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
                     }
@@ -13605,6 +13684,15 @@ Game name     : ${i.displayName}<br/>
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
+
+                /* Derive tier from actual border size — guarantees tier
+                 * always matches the real map, regardless of map events */
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
+                var derivedTier = 0;
+                for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
+                    if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
+                }
+                LM.mapTier = derivedTier;
             } else if (this.integrity || temp2) {
                 /* agar.io: hardcoded 14142 (original behavior) */
                 this.mapSize = 14142;
@@ -17967,16 +18055,31 @@ Array.prototype.stDev = function stDev() {
     //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
 
-// Replace legendmod.ml theme/skin URLs with expanding.land equivalents
+// Replace legendmod.ml URLs with expanding.land equivalents.
+// Uses MutationObserver so it catches dynamically created elements too.
 if (window.expandingLand) {
-    document.querySelectorAll('[href*="www.legendmod.ml/themes"], [src*="www.legendmod.ml/themes"], [style*="www.legendmod.ml/themes"]').forEach(function(el) {
-        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/themes/g, 'themes.expanding.land');
-    });
-    document.querySelectorAll('[href*="www.legendmod.ml/skins"], [src*="www.legendmod.ml/skins"], [style*="www.legendmod.ml/skins"]').forEach(function(el) {
-        if (el.href) el.href = el.href.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-        if (el.src) el.src = el.src.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-        if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(/www\.legendmod\.ml\/skins/g, 'skins.expanding.land');
-    });
+    var _elRewriteMap = [
+        { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
+        { match: /(?:www\.)?legendmod\.ml\/skins/g,  replace: 'skins.expanding.land'  },
+        { match: /(?:www\.)?legendmod\.ml/g,          replace: 'expanding.land'        }
+    ];
+    function _rewriteExpandingLinks(root) {
+        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function(el) {
+            _elRewriteMap.forEach(function(r) {
+                if (el.href)  el.href  = el.href.replace(r.match, r.replace);
+                if (el.src)   el.src   = el.src.replace(r.match, r.replace);
+                if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(r.match, r.replace);
+            });
+        });
+    }
+    /* Initial pass */
+    _rewriteExpandingLinks();
+    /* Watch for new elements added to the DOM */
+    new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(n) {
+                if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
+            });
+        });
+    }).observe(document.documentElement, { childList: true, subtree: true });
 }
