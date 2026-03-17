@@ -131,10 +131,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }, 2000);
     });
 
-    //$(".btn.btn-warning.btn-login-play.btn-needs-server").hide() // LW: show login button
-    $(".btn.btn-play-guest.btn-success.btn-needs-server").css("width", "100%")
-    $(".btn.btn-play-guest.btn-success.btn-needs-server").text("Play")
-    //$("#ogario-party").hide() // LW: show party section
+    /* LW: Show both buttons like agar.io — Play as Guest (left) + Login And Play (right) */
+    /* Don't hide login button — keep it visible */
+    /* Don't make Play guest 100% width — leave room for Login And Play */
+    $(".btn.btn-play-guest.btn-success.btn-needs-server").text("Play As Guest")
+    $("#ogario-party").hide() /* party section stays hidden on private servers */
     //$("#openskinchanger").hide() // LW: show skin changer
     $(".quick.quick-bots.ogicon-trophy").hide()
     $(".agario-panel.radio-panel").hide()
