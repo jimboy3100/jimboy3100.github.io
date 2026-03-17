@@ -5702,7 +5702,7 @@ function thelegendmodproject() {
             $(".btn.btn-warning.btn-server-info.ogicon-cogs").after('<button id="server-reconnect" class="btn btn-success" style="display: inline-block; float: left; width: 11%; text-transform: capitalize;"><i class="fa fa-refresh"></i></button>');
             $("#server-join").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
             $(".clearfix").show();
-            if (window.legendModFromWebsite) {
+            if (window.legendModFromWebsite && !window.expandingLand) {
                 $("#server-reconnect").hide();
                 $("#leaderboard-menu").hide();
                 $("#gamemode").css("width", "100%");
@@ -5712,6 +5712,12 @@ function thelegendmodproject() {
             $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel"));
             $("#stats").appendTo($("#main-menu")).addClass("menu-panel");
             $("#statsContinue").attr("id", "statsContinue2");
+            /* On expanding.land, preserve login/play buttons before
+             * #mainPanel is destroyed — they live inside it in play.html */
+            if (window.expandingLand) {
+                $(".btn-login-play, #socialLoginContainer").appendTo("#og-main");
+                $(".btn-play, .btn-play-guest").appendTo("#og-main");
+            }
             $("#mainPanel").empty().remove();
             $(".center-container").addClass("ogario-menu");
             $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://www.legendmod.ml" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://www.legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
@@ -5873,7 +5879,7 @@ function thelegendmodproject() {
                 '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
                 '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
             $('body').append('<ul id="messages"></ul>');
-            if (window.legendModFromWebsite) {
+            if (window.legendModFromWebsite && !window.expandingLand) {
                 $('#set-debug').hide();
                 $('#set-fullSpectator').hide();
                 $('#set-ingameSpectator').hide();
@@ -13737,7 +13743,7 @@ Game name     : ${i.displayName}<br/>
         },
         addSpect() {
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
-                if (!window.legendModFromWebsite) {
+                if (!window.legendModFromWebsite || window.expandingLand) {
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
                 }
