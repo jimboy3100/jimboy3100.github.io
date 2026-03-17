@@ -4,6 +4,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (document.URL.includes('expanding.land')) {
         window.expandingLand = true;
     }
+    /* LW: Swap Google OAuth client ID for our domains.
+     * Agar.io's Google app only allows agar.io as origin.
+     * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
+     * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
+    if (window.EnvConfig) {
+        window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+    }
 }
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH

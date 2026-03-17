@@ -16,3 +16,4 @@ window.EnvConfig = {
     NR_licenseKey: "f246896502",
     NR_applicationID: "18400599"
 }
+
