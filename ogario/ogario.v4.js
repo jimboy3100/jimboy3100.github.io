@@ -3184,7 +3184,7 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
-    showOptimisedGrid: true,
+    showOptimisedGrid: false,
     textStroke: false,
     namesStroke: true,
     massStroke: true,
