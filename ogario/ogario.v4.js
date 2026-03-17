@@ -5702,11 +5702,12 @@ function thelegendmodproject() {
             $(".btn.btn-warning.btn-server-info.ogicon-cogs").after('<button id="server-reconnect" class="btn btn-success" style="display: inline-block; float: left; width: 11%; text-transform: capitalize;"><i class="fa fa-refresh"></i></button>');
             $("#server-join").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
             $(".clearfix").show();
-            if (window.legendModFromWebsite && !window.expandingLand) {
-                $("#server-reconnect").hide();
-                $("#leaderboard-menu").hide();
-                $("#gamemode").css("width", "100%");
-            }
+            /* LW: show server-reconnect and leaderboard on legendmod.ml too */
+            //if (window.legendModFromWebsite && !window.expandingLand) {
+            //    $("#server-reconnect").hide();
+            //    $("#leaderboard-menu").hide();
+            //    $("#gamemode").css("width", "100%");
+            //}
             $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party" style="display: none;">Create</button>');
             $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party"));
             $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel"));
@@ -5879,12 +5880,13 @@ function thelegendmodproject() {
                 '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
                 '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
             $('body').append('<ul id="messages"></ul>');
-            if (window.legendModFromWebsite && !window.expandingLand) {
-                $('#set-debug').hide();
-                $('#set-fullSpectator').hide();
-                $('#set-ingameSpectator').hide();
-                $('#Bino').hide();
-            }
+            /* LW: show debug/spectate buttons on legendmod.ml too */
+            //if (window.legendModFromWebsite && !window.expandingLand) {
+            //    $('#set-debug').hide();
+            //    $('#set-fullSpectator').hide();
+            //    $('#set-ingameSpectator').hide();
+            //    $('#Bino').hide();
+            //}
             $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                 textLanguage.enterChatMsg + '..." maxlength="80"></div>');
             $("body").append('<div id="chat-box"></div>');
@@ -13743,7 +13745,7 @@ Game name     : ${i.displayName}<br/>
         },
         addSpect() {
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
-                if (!window.legendModFromWebsite || window.expandingLand) {
+                if (true) { // LW: always show spectator buttons
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
                 }

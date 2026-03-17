@@ -131,16 +131,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }, 2000);
     });
 
-    $(".btn.btn-warning.btn-login-play.btn-needs-server").hide()
+    //$(".btn.btn-warning.btn-login-play.btn-needs-server").hide() // LW: show login button
     $(".btn.btn-play-guest.btn-success.btn-needs-server").css("width", "100%")
     $(".btn.btn-play-guest.btn-success.btn-needs-server").text("Play")
-    $("#ogario-party").hide()
-    $("#openskinchanger").hide()
+    //$("#ogario-party").hide() // LW: show party section
+    //$("#openskinchanger").hide() // LW: show skin changer
     $(".quick.quick-bots.ogicon-trophy").hide()
     $(".agario-panel.radio-panel").hide()
     $(".agario-panel.ogario-yt-panel").hide()
-    $(".profile-tab").hide()
-    $(".menu-tabs").children().css("width", "16.6%")
+    //$(".profile-tab").hide() // LW: show profile tab
+    //$(".menu-tabs").children().css("width", "16.6%") // LW: let tabs auto-size
     if (!window.legendModFromWebsite) {
         $("#gamemode").css("width", "87%")
     }
