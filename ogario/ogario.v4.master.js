@@ -224,6 +224,12 @@ function legendmaster(self) {
 			protocolVersion: 23
         };		
     }
+	/* LW: Override Google OAuth client ID on our domains.
+	 * The default headers use agar.io's client ID which rejects our origins.
+	 * Our Google app (legend-mod-490514) authorizes expanding.land, legendmod.ml, jimboy3100.github.io. */
+	if (window.legendModFromWebsite) {
+		headers.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+	}
 	window.LMagarioheaders=headers;
     var l = false;
     var f = 0;
