@@ -12727,7 +12727,7 @@ function thelegendmodproject() {
                 return
             }
             const response = window.decodeMobileData(msg);
-            //console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
+            console.log("[LW-DEBUG] 102 decoded:", JSON.stringify(response, null, 2)); //ALL LOGIN AND PROFILE RESPONSE INFO
             this.unpackageMessage(response);
         },
         unpackageMessage: function (r) {
