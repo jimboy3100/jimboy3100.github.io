@@ -13383,7 +13383,14 @@ function thelegendmodproject() {
             }
         },
         displayStats(s) {
-            window.LMscore = Math.trunc(s.allTimeScore / 2000000);
+            var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
+            var massConsumed = (typeof s.massConsumed === 'object' && s.massConsumed.toNumber) ? s.massConsumed.toNumber() : Number(s.massConsumed) || 0;
+            var gamesPlayed = Number(s.gamesPlayed) || 0;
+            var highestMass = Number(s.highestMass) || 0;
+            var longestTimeAlive = Number(s.longestTimeAlive) || 0;
+            var mostCellsEaten = Number(s.mostCellsEaten) || 0;
+
+            window.LMscore = Math.trunc(allTimeScore / 2000000);
             if (window.LMscore > 40) {
                 PremiumUsersLMscore();
             }
@@ -13391,12 +13398,12 @@ function thelegendmodproject() {
             $('.progress-bar-star2').text(window.LMscore);
 
             $("#stats-content").html(`
-All time score     : ${s.allTimeScore}<br/>
-Games played      : ${s.gamesPlayed}<br/>
-Highest mass      : ${s.highestMass}<br/>
-Longest time alive : ${(s.longestTimeAlive / 3600).toFixed(3)} H<br/>
-Mass consumed     : ${s.massConsumed}<br/>
-Most cells eaten   : ${s.mostCellsEaten}
+All time score     : ${allTimeScore}<br/>
+Games played      : ${gamesPlayed}<br/>
+Highest mass      : ${highestMass}<br/>
+Longest time alive : ${(longestTimeAlive / 3600).toFixed(3)} H<br/>
+Mass consumed     : ${massConsumed}<br/>
+Most cells eaten   : ${mostCellsEaten}
       `)
         },
         updateUserInfo(i) {
