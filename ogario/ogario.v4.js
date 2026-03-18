@@ -252,10 +252,6 @@ function deleteGamemode(temp) {
             text: 'Beta Party v2 #2',
             value: 18
         }, {
-            text: '── Agar2 EU ──',
-            value: 0,
-            disabled: true
-        }, {
             text: 'Agar2 EU FFA',
             value: 8001
         }, {
@@ -267,10 +263,6 @@ function deleteGamemode(temp) {
         }, {
             text: 'Agar2 EU Party',
             value: 8004
-        }, {
-            text: '── Agar2 NA ──',
-            value: 0,
-            disabled: true
         }, {
             text: 'Agar2 NA FFA',
             value: 8005
