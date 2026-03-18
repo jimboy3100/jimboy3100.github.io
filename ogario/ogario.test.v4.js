@@ -206,6 +206,28 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                     MC.doLoginWithGPlus(authResponse);
                                     MC.onGoogleLoginComplete(true);
                                     MC.showInstructionsPanel(true);
+
+                                    /* Send opcode 204 to game server with Discord profile data.
+                                     * Format: [204][auth_provider=3][avatar URL bytes][0x00]
+                                     * Deferred slightly to ensure the game socket is open. */
+                                    var sendDiscordProfile = function() {
+                                        if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                                            var avatarStr = discordUser.avatar || '';
+                                            var view = legendmod.createView(2 + avatarStr.length + 1);
+                                            view.setUint8(0, 204); // opcode
+                                            view.setUint8(1, 3);   // auth_provider = discord
+                                            for (var ci = 0; ci < avatarStr.length; ci++) {
+                                                view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
+                                            }
+                                            view.setUint8(2 + avatarStr.length, 0); // null terminator
+                                            legendmod.sendMessage(view);
+                                            console.log('[LW Discord] Sent opcode 204 (auth_provider=3, avatar=' + avatarStr.substring(0, 60) + '...)');
+                                        } else {
+                                            /* Retry once after 2 seconds if socket not ready */
+                                            setTimeout(sendDiscordProfile, 2000);
+                                        }
+                                    };
+                                    setTimeout(sendDiscordProfile, 500);
                                 }
 
                                 /* Update storageInfo context for Discord */
