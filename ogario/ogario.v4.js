@@ -14266,25 +14266,9 @@ Game name     : ${i.displayName}<br/>
                 var imsoloCellType = -1;
                 var imsoloPartyCode = '';
                 var imsoloOwnerID = 0;
-                // Imsolo/Agar2 protocol 6-10: flag 0x40 = hasPlayerID, flag 0x80 = extended (cellType + partyCode)
-                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80)) {
-                    // Protocol 6-10: extended flags = uint16 cellType + string partyCode
-                    imsoloCellType = view.readUInt16LE(offset);
-                    offset += 2;
-                    // Read partyCode string (null-terminated UTF-8)
-                    var _pc = '';
-                    while (offset < view.byteLength) {
-                        var _ch = view.readUInt8(offset++);
-                        if (_ch === 0) break;
-                        _pc += String.fromCharCode(_ch);
-                    }
-                    imsoloPartyCode = _pc;
-                } else {
+                // For non-Imsolo servers: read 1-byte extended flags immediately after flags byte
+                if (!((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80))) {
                     128 & flags && (extendedFlags = view.readUInt8(offset++));
-                }
-                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x40)) {
-                    imsoloOwnerID = view.readUInt16LE(offset);
-                    offset += 2;
                 }
                 //128 & d && (f = t.readUInt8(i++));	
                 var color = null;
@@ -14317,6 +14301,23 @@ Game name     : ${i.displayName}<br/>
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin, color);
                     }
+                }
+                // Imsolo/Agar2 protocol 6-10: flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x40)) {
+                    imsoloOwnerID = view.readUInt16LE(offset);
+                    offset += 2;
+                }
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80)) {
+                    // Protocol 6-10: extended = uint16 cellType + string partyCode
+                    imsoloCellType = view.readUInt16LE(offset);
+                    offset += 2;
+                    var _pc = '';
+                    while (offset < view.byteLength) {
+                        var _ch = view.readUInt8(offset++);
+                        if (_ch === 0) break;
+                        _pc += String.fromCharCode(_ch);
+                    }
+                    imsoloPartyCode = _pc;
                 }
                 //Jimboy's
                 if (16 & flags) {
