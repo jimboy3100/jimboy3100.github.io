@@ -239,20 +239,26 @@ function deleteGamemode(temp) {
         {
             text: '👑 Legend FFA',
             value: 5001
-        }
-        , {
-            text: 'Delta FFA',
-            value: 4001
-        },
-        {
-            text: 'FeelForeverAlone',
-            value: 34
         }, {
             text: 'Arctida',
             value: 6
         }, {
             text: 'Dagestan',
             value: 7
+        }, {
+            text: 'Beta Party #1',
+            value: 14
+        }, {
+            text: 'Beta Party v2 #2',
+            value: 18
+        }
+        /* Other private servers (commented out)
+        , {
+            text: 'Delta FFA',
+            value: 4001
+        }, {
+            text: 'FeelForeverAlone',
+            value: 34
         }, {
             text: 'Zimbabwe',
             value: 31
@@ -296,14 +302,8 @@ function deleteGamemode(temp) {
             text: '2vs2vs2',
             value: 30
         }, {
-            text: 'Beta Party #1',
-            value: 14
-        }, {
             text: 'Beta Party v2 #1',
             value: 17
-        }, {
-            text: 'Beta Party v2 #2',
-            value: 18
         }, {
             text: 'Bots',
             value: 33
@@ -323,6 +323,7 @@ function deleteGamemode(temp) {
             text: 'Delta Party',
             value: 4002
         }
+        */
     ];
     /* Commented out - non-SSL servers disabled
     if (location.protocol !== 'https:') {
