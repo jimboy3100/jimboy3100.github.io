@@ -238,6 +238,39 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         var slc = document.getElementById('socialLoginContainer');
         if (slc) slc.style.display = 'none';
 
+        /* LW: Populate profile panel fields from Discord user data.
+         * On expanding.land, the opcode 102 login response from the server
+         * doesn't reach the client's case 102: handler, so we set these
+         * directly from the Discord OAuth data we already have. */
+        if (window.expandingLand || window.legendModFromWebsite) {
+            /* Social ID = Discord user ID */
+            if (discordUser.id) {
+                window.agarioID = discordUser.id;
+                localStorage.setItem("agarioID", discordUser.id);
+                console.log('[LW Discord] Social ID set:', discordUser.id);
+            }
+            /* UID = hash the token to create a stable identifier.
+             * This matches what the server does (playerdb_hash_uid). */
+            if (discordUser.token) {
+                var hash = 0;
+                for (var hi = 0; hi < discordUser.token.length; hi++) {
+                    hash = ((hash << 5) - hash) + discordUser.token.charCodeAt(hi);
+                    hash |= 0;
+                }
+                var uid = 'discord-' + Math.abs(hash).toString(16).padStart(8, '0');
+                window.agarioUID = uid;
+                localStorage.setItem("agarioUID", uid);
+                $("#UserProfileUUID1").val(uid);
+                console.log('[LW Discord] UID set:', uid);
+            }
+            /* Display name for profile panel */
+            if (discordUser.globalName || discordUser.username) {
+                var name = discordUser.globalName || discordUser.username;
+                $('.agario-profile-name').text(name);
+                console.log('[LW Discord] Profile name set:', name);
+            }
+        }
+
         /* Send opcode 204 with Discord avatar for server-side profile */
         _lw_sendDiscordProfile(discordUser);
 
