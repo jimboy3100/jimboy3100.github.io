@@ -2,7 +2,7 @@
 
 **Version:** Protocol 4–24 (Legacy Protocol) - protocol version 6 recommended for full compatibility
 
-**Reference server:** Custom fork based on [jimboy3100/imsolo-servers](https://github.com/jimboy3100/imsolo-servers) / [ThebigbossCE/ImSoloServers](https://github.com/ThebigbossCE/ImSoloServers)  
+**Reference server:** Custom fork based on jimboy3100/imsolo-servers / ThebigbossCE/ImSoloServers
 
 **Reference client:** Custom Agar2 application (Development Agar2 Application project for Web and Desktop production builds) and ImSolo.pro Web Client
 
@@ -10,22 +10,22 @@
 
 **Outdated clients:** HSLO / Agartool / Cigar2
 
-**Last updated:** 2026-03-16
-
-> This document describes the binary WebSocket protocol used by the **LegacyProtocol** server implementation for ImSolo.pro and Agar2.com. All values are **little-endian**. Strings in protocol ≤5 are **UCS-2** (2 bytes per char, null-terminated with `0x0000`). Strings in protocol 6+ are **UTF-8** (1 byte per ASCII char, null-terminated with `0x00`).
+**Last updated:** 2026-03-18
 
 ---
 
+This document describes the binary WebSocket protocol used by the LegacyProtocol server implementation for ImSolo.pro and Agar2.com. All values are little-endian. Strings in protocol ≤5 are UCS-2 (2 bytes per char, null-terminated with 0x0000). Strings in protocol 6+ are UTF-8 (1 byte per ASCII char, null-terminated with 0x00).
+
 ## Table of Contents
 
-1. [API — Getting a GameServer URL (Matchmaker / Load Balancer)](#api--getting-a-gameserver-url-matchmaker--load-balancer)
+1. [API — Getting a GameServer URL](#api--getting-a-gameserver-url-matchmaker--load-balancer)
 2. [Connection & Handshake](#connection--handshake)
 3. [Anti-Cheat & Security](#anti-cheat--security)
 4. [Client → Server Messages](#client--server-messages)
 5. [Server → Client Messages](#server--client-messages)
 6. [UpdateNodes (0x10) — The Core Packet](#updatenodes-0x10--the-core-packet)
 7. [Cell Types](#cell-types)
-8. [Extended Cell Flags (Protocol 6+)](#extended-cell-flags-protocol-6)
+8. [Extended Cell Flags (Protocol 6+)](#extended-cell-flags-protocol-610)
 9. [Protocol Version Ranges](#protocol-version-ranges)
 10. [Changelog vs Original MultiOgar](#changelog-vs-original-multiogar)
 
@@ -33,23 +33,16 @@
 
 ## API — Getting a GameServer URL (Matchmaker / Load Balancer)
 
-This document focuses on the **binary WebSocket protocol**, but the Agar2 client typically does **one HTTP request first** to discover which game server to connect to for a given **region + gamemode**.
+This document focuses on the binary WebSocket protocol, but the Agar2 client typically does one HTTP request first to discover which game server to connect to for a given region + gamemode.
 
 ### Summary (client flow)
 
-1. User picks **Region** and **Mode** in the dashboard UI.
-2. Client calls:
-
-```
-GET {baseUrl}/getserver/{mode}
-```
-
+1. User picks Region and Mode in the dashboard UI.
+2. Client calls: `GET {baseUrl}/getserver/{mode}`
 3. Response JSON contains `gameurl` (a `ws://` or `wss://` URL).
 4. Client connects to `gameurl` via WebSocket and then performs the handshake described in [Connection & Handshake](#connection--handshake).
 
 ### Base URL by region (current Agar2 app)
-
-The current TypeScript dashboard implementation uses these base URLs:
 
 | Region | baseUrl |
 |--------|---------|
@@ -57,45 +50,41 @@ The current TypeScript dashboard implementation uses these base URLs:
 | North America | `https://agar2.com/getserver/` |
 | Other / fallback | `https://loadbalancer.static.imsolo.pro/getserver/` |
 
-> The final request URL is formed by concatenating `baseUrl + mode` (no extra slash needed because the base URLs above already end with `/`).
+The final request URL is formed by concatenating `baseUrl + mode` (no extra slash needed because the base URLs above already end with `/`).
 
-### Gamemode strings (what to pass as `{mode}`)
-
-In the current Agar2 UI, the selectable modes (and therefore the strings used in the request path) are:
+### Gamemode strings
 
 | UI label (Mode) | `{mode}` value to request |
-|-----------------|---------------------------|
+|----------------|--------------------------|
 | FFA | `FFA` |
 | Experimental | `Experimental` |
 | Teams | `Teams` |
 | Party | `Party` |
 
-So the client obtains a game server URL for each mode by calling:
+### Agar2 servers
 
-# Agar2 
-Available servers: FFA, Experimental, Teams, Party
-## Realistic agar servers and experience
-### EUROPE
+Available servers: FFA, Experimental, Teams, Party — Realistic agar servers and experience
+
+**EUROPE:**
 - `GET https://manage-eu.agar2.com/getserver/FFA`
 - `GET https://manage-eu.agar2.com/getserver/Experimental`
 - `GET https://manage-eu.agar2.com/getserver/Teams`
 - `GET https://manage-eu.agar2.com/getserver/Party`
 
-### NORTH AMERICA
+**NORTH AMERICA:**
 - `GET https://agar2.com/getserver/FFA`
 - `GET https://agar2.com/getserver/Experimental`
 - `GET https://agar2.com/getserver/Teams`
 - `GET https://agar2.com/getserver/Party`
 
-# ImSolo.pro
-Available servers: Rookery, Dagestan (Megasplit), Arctida (selfeed), Maxisplit (x32)
-## Realistic agar servers with fun and bots
+### ImSolo.pro servers
+
+Available servers: Rookery, Dagestan (Megasplit), Arctida (selfeed), Maxisplit (x32) — Realistic agar servers with fun and bots
+
 - `GET https://loadbalancer.static.imsolo.pro/getserver/rookery`
 - `GET https://loadbalancer.static.imsolo.pro/getserver/megasplit`
 - `GET https://loadbalancer.static.imsolo.pro/getserver/selfeed`
 - `GET https://loadbalancer.static.imsolo.pro/getserver/x32`
-
-…or the equivalent base URL for the currently selected region.
 
 ### Response format
 
@@ -109,9 +98,11 @@ The client expects JSON with at least the field:
 
 The `gameurl` is used directly as the WebSocket URL for the LegacyProtocol connection.
 
+---
+
 ## Connection & Handshake
 
-The client connects via **WebSocket** (binary mode). On connection open, it sends three packets in sequence:
+The client connects via WebSocket (binary mode). On connection open, it sends three packets in sequence:
 
 ### Step 1: Protocol Version (0xFE)
 
@@ -135,18 +126,18 @@ Offset  Type      Description
 
 **Total: 5 bytes.** On receipt the server creates the player object and sends the PlayerID packet back.
 
-### Step 3: Auth Packet (0x02) — *Optional* - Only for Agar2
+### Step 3: Auth Packet (0x02) — Optional - Only for Agar2
 
 Sent immediately after connection if the user is logged in:
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x02 (2)
-1..N    string     Account UUID (null-terminated, ≥25 chars)
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x02 (2)
+1..N    string    Account UUID (null-terminated, 25 chars)
 ```
 
-If the UUID is valid, the server verifies it against the account system and sends an **AuthSuccess (0xC9)** response. If not sent within 250 ticks, the player is marked as a **guest**. This method is only used for Agar2, and not for ImSolo
+If the UUID is valid, the server verifies it against the account system and sends an AuthSuccess (0xC9) response. If not sent within 250 ticks, the player is marked as a guest. This method is only used for Agar2, and not for ImSolo.
 
 ### Server Response
 
@@ -163,21 +154,19 @@ After the key packet, the server sends:
 
 ### Scramble Values
 
-The original MultiOgar scramble system (`scrambleX`, `scrambleY`, `scrambleId`) is **not used** in this implementation — all scramble values are effectively `0`.
+The original MultiOgar scramble system (scrambleX, scrambleY, scrambleId) is **not used** in this implementation — all scramble values are effectively 0.
 
 ### Connection Security
 
-The server performs several checks on connection:
-
 | Check | Description |
 |-------|-------------|
-| **Origin filtering** | Checks `origin` header against allowed origins for monthly statistic reports |
-| **Canvas fingerprint** | Required unless origin is in the skip-verification whitelist, (only for ImSolo.pro vanilla), discontinued in favor of privacy for our playerbase |
-| **reCAPTCHA v3** | Verified server-side via Google API; score below threshold disconnects (only for ImSolo.pro vanilla) |
-| **IP challenge** | Optional secondary verification via external IP challenge API (only for ImSolo.pro vanilla, kinda discontinued though) |
-| **IP proxy detection** | Detects suspicious IP connections, and verifies for proxy usage using the ImSolo API |
-| **Ban check** | Checks IP, UUID, and canvas fingerprint against ban database (canvas fingerprint discontinued since 2024) |
-| **Account verification** | UUIDs are verified against the account system API |
+| Origin filtering | Checks origin header against allowed origins for monthly statistic reports |
+| Canvas fingerprint | Required unless origin is in the skip-verification whitelist (only for ImSolo.pro vanilla), discontinued in favor of privacy |
+| reCAPTCHA v3 | Verified server-side via Google API; score below threshold disconnects (only for ImSolo.pro vanilla) |
+| IP challenge | Optional secondary verification via external IP challenge API (only for ImSolo.pro vanilla, kinda discontinued) |
+| IP proxy detection | Detects suspicious IP connections, and verifies for proxy usage using the ImSolo API |
+| Ban check | Checks IP, UUID, and canvas fingerprint against ban database (canvas fingerprint discontinued since 2024) |
+| Account verification | UUIDs are verified against the account system API |
 
 ---
 
@@ -188,14 +177,14 @@ All client messages start with a **1-byte opcode**. Little-endian byte order.
 ### 0x00 — Spawn (Join Game)
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x00
-1..N    string     Player nickname (null-terminated)
-N..M    string     Skin name (null-terminated)
-M..O    string     Account UUID (null-terminated, fallback to stored userID)
-O..P    string     Party code (null-terminated, max 7 chars)
-P..Q    uint16     (optional) Target unit ID for multibox routing
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x00
+1..N    string    Player nickname (null-terminated)
+N..M    string    Skin name (null-terminated)
+M..O    string    Account UUID (null-terminated, fallback to stored userID)
+O..P    string    Party code (null-terminated, max 7 chars)
+P..Q    uint16    (optional) Target unit ID for multibox routing
 ```
 
 - Protocol ≤5: strings are **UCS-2**
@@ -215,22 +204,22 @@ Offset  Type      Description
 ### 0x02 — Auth (Account UUID) - Agar2 exclusive
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x02
-1..N    string     Account UUID (null-terminated, ≥25 chars)
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x02
+1..N    string    Account UUID (null-terminated, 25 chars)
 ```
 
-Sent immediately after connection open. Only accepted once per connection. The server verifies the UUID against the account system and responds with **AuthSuccess (0xC9)** on success.
+Sent immediately after connection open. Only accepted once per connection. The server verifies the UUID against the account system and responds with AuthSuccess (0xC9) on success.
 
 ### 0x04 — Shop Action - Agar2 exclusive
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x04 (4)
-1       uint8      Action type (see table below)
-2..N    string     (optional) Boost type or slot number (UTF-8, null-terminated)
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x04 (4)
+1       uint8     Action type (see table below)
+2..N    string    (optional) Boost type or slot number (UTF-8, null-terminated)
 ```
 
 **Action types:**
@@ -249,32 +238,42 @@ Rate-limited: 1 request per second (shop and potion actions have separate cooldo
 
 ### 0x10 — Mouse Position
 
+#### Protocol 4 (21 bytes):
+
 ```
-Protocol 4 (21 bytes):
-  Offset  Type       Description
-  0       uint8      0x10
-  1-8     float64    Mouse X
-  9-16    float64    Mouse Y
-  17-20   uint32     (unused)
+Offset  Type      Description
+0       uint8     0x10
+1-8     float64   Mouse X
+9-16    float64   Mouse Y
+17-20   uint32    (unused)
+```
 
-Protocol 5 early (9 bytes):
-  0       uint8      0x10
-  1-2     int16      Mouse X
-  3-4     int16      Mouse Y
-  5-8     uint32     (unused)
+#### Protocol 5 early (9 bytes):
 
-Protocol 5 late / 6+ (13 bytes):
-  0       uint8      0x10
-  1-4     int32      Mouse X
-  5-8     int32      Mouse Y
-  9-12    uint32     (unused)
+```
+0       uint8     0x10
+1-2     int16     Mouse X
+3-4     int16     Mouse Y
+5-8     uint32    (unused)
+```
 
-With multibox routing (15 bytes):
-  0       uint8      0x10
-  1-2     uint16     Target unit ID
-  3-6     int32      Mouse X
-  7-10    int32      Mouse Y
-  11-14   uint32     (unused)
+#### Protocol 5 late / 6+ (13 bytes):
+
+```
+0       uint8     0x10
+1-4     int32     Mouse X
+5-8     int32     Mouse Y
+9-12    uint32    (unused)
+```
+
+#### With multibox routing (15 bytes):
+
+```
+0       uint8     0x10
+1-2     uint16    Target unit ID
+3-6     int32     Mouse X
+7-10    int32     Mouse Y
+11-14   uint32    (unused)
 ```
 
 The server distinguishes protocol variant by message length (9 / 13 / 15 / 21 bytes).
@@ -288,7 +287,7 @@ Offset  Type      Description
 1-2     uint16    (optional) Target unit ID for multibox
 ```
 
-**1 or 3 bytes.** Splits all cells toward current mouse position. If controlling minions, splits all minions instead. If controlling multibox, splits the multibox player. Supports optional unit ID for multibox routing.
+**1 or 3 bytes.** Splits all cells toward current mouse position. If controlling minions, splits all minions instead. Supports optional unit ID for multibox routing.
 
 ### 0x12 — Q Press
 
@@ -515,10 +514,10 @@ Offset  Type      Description
 ### 0x31 — Spectate Specific Player
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x31 (49)
-1-2     uint16     Player ID to spectate
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x31 (49)
+1-2     uint16    Player ID to spectate
 ```
 
 **Total: 3 bytes.** Sets the spectating target to the player with the given ID.
@@ -536,12 +535,12 @@ Offset  Type      Description
 ### 0x63 — Chat Message
 
 ```
-Offset  Type       Description
-─────   ────       ───────────
-0       uint8      0x63 (99)
-1       uint8      Flags (client sends 0x00)
-2..N    (skip)     Variable-length reserved bytes based on flags
-N..M    string     Message text (null-terminated)
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x63 (99)
+1       uint8     Flags (client sends 0x00)
+2..N    (skip)    Variable-length reserved bytes based on flags
+N..M    string    Message text (null-terminated)
 ```
 
 **Flag skip calculation:** `2 * ((flags & 2) + (flags & 4) + (flags & 8))` bytes.
@@ -850,16 +849,16 @@ For each ghost cell:
 
 Sent periodically for minimap rendering. Only sent to protocol ≤10. Frequency controlled by `minimapGhostCellsUpdateTicks` setting.
 
-### 0xFE — ServerStat
+### 0xFE — ServerStat (254)
 
 ```
-Offset  Type      Description
-─────   ────      ───────────
-0       uint8     0xFE (254)
-1..N    string    JSON stats (null-terminated, encoding per protocol)
+Offset  Type       Description
+─────   ────       ───────────
+0       uint8      0xFE (254)
+1..N    string     JSON stats (null-terminated, encoding per protocol)
 ```
 
-Extended JSON payload (beyond original MultiOgar):
+**Extended JSON payload (beyond original MultiOgar):**
 
 ```json
 {
@@ -1010,29 +1009,29 @@ The server has expanded cell types beyond the original 5:
 | 13 | Player (Virus) | Dynamic override | No | Player cell while virus-boosted |
 | 14 | Player (Shield) | Dynamic override | No | Player cell while shielded |
 
-> **Note:** Types 11–14 are **dynamic overrides** — the server replaces a player cell's type value based on the player's active ability state. They only appear in the extended flags section of protocol 6–10 cell data.
+> **Note:** Types 11–14 are dynamic overrides — the server replaces a player cell's type value based on the player's active ability state. They only appear in the extended flags section of protocol 6–10 cell data.
 
 ---
 
 ## Extended Cell Flags (Protocol 6–10)
 
-Protocol 6–10 introduced a rich extended data section sent with cell updates when flag `0x80` is set:
+Protocol 6–10 introduced a rich extended data section sent with cell updates when flag 0x80 is set:
 
 ```
 uint16    Cell type (see Cell Types table above)
 string    Party code (UTF-8, null-terminated)
 ```
 
-When flag `0x40` is set (hasPlayerID):
+When flag 0x40 is set (hasPlayerID):
 
 ```
 uint16    Owner player ID (0 if no owner)
 ```
 
 This allows the client to:
-- Identify the **true type** of any cell (food, virus, booster, etc.)
-- Link cells to their **owning player** by player ID
-- Show **party code** for team/party grouping on the minimap
+- Identify the true type of any cell (food, virus, booster, etc.)
+- Link cells to their owning player by player ID
+- Show party code for team/party grouping on the minimap
 
 ---
 
@@ -1041,17 +1040,17 @@ This allows the client to:
 The server supports protocols 4–24, grouped into functional tiers:
 
 | Protocol Range | Cell Data Format | FFA Leaderboard | Text Board | Pie Leaderboard | Strings |
-|---------------|-----------------|----------------|-----------|----------------|---------|
-| 4–5 | `writeCellData4` | Opcode 0x31, cell ID / isMe | Opcode 0x30 | Opcode 0x32 (weights only) | UCS-2 (names) |
-| 6–10 | `writeCellData6` + extended flags | Opcode 0x31, isMe flag | Opcode 0x30 | Opcode 0x32 (weights only) | UTF-8 |
-| 11–13 | `writeCellData11` | Opcode 0x33 (51), flag-based | Opcode 0x30 | Opcode 0x32 (weights only) | UTF-8 |
-| 14–20 | `writeCellData11` | Opcode 0x35 (53), flag-based | Opcode 0x35 (53) | Opcode 0x32 (weights only) | UTF-8 |
-| 21–24 | `writeCellData11` | Opcode 0x35 (53), flag-based | Opcode 0x35 (53) | Opcode 0x32 (weights + colors) | UTF-8 |
+|----------------|-----------------|-----------------|------------|-----------------|---------|
+| 4–5 | writeCellData4 | Opcode 0x31, cell ID / isMe | Opcode 0x30 | Opcode 0x32 (weights only) | UCS-2 |
+| 6–10 | writeCellData6 + extended flags | Opcode 0x31, isMe flag | Opcode 0x30 | Opcode 0x32 (weights only) | UTF-8 |
+| 11–13 | writeCellData11 | Opcode 0x33 (51), flag-based | Opcode 0x30 | Opcode 0x32 (weights only) | UTF-8 |
+| 14–20 | writeCellData11 | Opcode 0x35 (53), flag-based | Opcode 0x35 (53) | Opcode 0x32 (weights only) | UTF-8 |
+| 21–24 | writeCellData11 | Opcode 0x35 (53), flag-based | Opcode 0x35 (53) | Opcode 0x32 (weights + colors) | UTF-8 |
 
 **Protocol-gated features:**
 - Protocol ≤10: Receives minimap ghost cells (0xFC), battle border updates (0xF9), death notifications (0x15)
 - Protocol ≥6: Uses UTF-8 strings, flag-gated cell colors, int32 coordinates
-- Protocol ≥6–10: Receives extended cell flags (player ID, cell type, party code)
+- Protocol 6–10: Receives extended cell flags (player ID, cell type, party code)
 - Protocol ≥11: Gets food type indicator byte in cell updates
 - Protocol ≥14: Uses opcode 0x35 for both FFA leaderboard and text board
 - Protocol ≥21: Pie leaderboard includes team colors
@@ -1140,7 +1139,7 @@ The server supports protocols 4–24, grouped into functional tiers:
 | 0x20 | Player Freeze | Self-freeze toggle |
 | 0x21–0x25 | Booster Ejects | Freeze/speed/virus/shield booster cells |
 | 0x28–0x29 | Random Spawn | Random spawn request and toggle |
-| 0x2D | TAB Multibox | Toggle between main player and multibox instance |
+| 0x2D | TAB | Multibox toggle between main player and multibox instance |
 | 0x31 | Spectate Player | Spectate a specific player by ID |
 | 0x32 | Ban Self | Client-side cheat detection trigger |
 
@@ -1158,32 +1157,32 @@ The server supports protocols 4–24, grouped into functional tiers:
 | 0xFB | PartyFriend | Nearest party friend position and identity |
 | 0xFC | MinimapGhostCells | All player positions for minimap rendering |
 
-### ✎ Modified from Original MultiOgar
+### ✦ Modified from Original MultiOgar
 
 | Feature | Original MultiOgar | Current Implementation |
 |---------|-------------------|----------------------|
-| **Spawn packet (0x00)** | Name + token | Name + skin + UUID + party code + optional multibox unit ID |
-| **Mouse packet (0x10)** | 9/13/21 bytes | Added 15-byte multibox variant |
-| **Split/Eject (0x11, 0x15)** | Fixed 1 byte | Optional 2-byte unit ID suffix for multibox routing |
-| **Cell data (0x10 update)** | Flags 0x01–0x20 | Added flags 0x40 (playerID) and 0x80 (extended: cellType + partyCode) |
-| **Cell types** | 0–4 (player, food, virus, eject, mother) | 0–14 (added event pellet, boosters, power boosters, player states) |
-| **Pie leaderboard** | Weights only | Protocol 21+ adds team colors |
-| **FFA leaderboard** | Single format | 3 format variants by protocol range |
-| **ServerStats JSON** | Basic stats | Extended with `myStats` (eaten counts) and `abilities` (booster counts) |
-| **Chat flags** | Moderator=0x20, Admin=0x40, Server=0x80 | Moderator=0x04, Admin=0x40, Server=0x80 |
-| **Anti-cheat scramble** | scrambleX/Y/Id used | Values always 0 (not used) |
-| **Protocol range** | 4–6 | 4–24 (with functional tiers at 6, 11, 14, 21) |
+| Spawn packet (0x00) | Name + token | Name + skin + UUID + party code + optional multibox unit ID |
+| Mouse packet (0x10) | 9/13/21 bytes | Added 15-byte multibox variant |
+| Split/Eject (0x11, 0x15) | Fixed 1 byte | Optional 2-byte unit ID suffix for multibox routing |
+| Cell data (0x10 update) | Flags 0x01–0x20 | Added flags 0x40 (playerID) and 0x80 (extended: cellType + partyCode) |
+| Cell types | 0–4 (player, food, virus, eject, mother) | 0–14 (added event pellet, boosters, power boosters, player states) |
+| Pie leaderboard | Weights only | Protocol 21+ adds team colors |
+| FFA leaderboard | Single format | 3 format variants by protocol range |
+| ServerStats JSON | Basic stats | Extended with myStats (eaten counts) and abilities (booster counts) |
+| Chat flags | Moderator=0x20, Admin=0x40, Server=0x80 | Moderator=0x04, Admin=0x40, Server=0x80 |
+| Anti-cheat scramble | scrambleX/Y/Id used | Values always 0 (not used) |
+| Protocol range | 4–6 | 4–24 (with functional tiers at 6, 11, 14, 21) |
 
-### ✘ Removed from Original MultiOgar
+### ✦ Removed from Original MultiOgar
 
 | Feature | Original | Status |
 |---------|----------|--------|
-| **Opcode 0x05 (Facebook IDs)** | Pipe-delimited friend IDs for highlighting | Removed — replaced by party code system |
-| **Anti-cheat scramble** | Per-client XOR scramble for coordinates/IDs | Disabled (all values are 0) |
-| **Protocol key validation** | Key must be 0 for protocol >6 | Key value is stored but not validated |
-| **Opcode 0x36 (54) leaderboard mapping** | Some clients mapped 54→53 | Not used |
-| **Opcode 0x45 (69) ghost cells** | Fork extension for minimap | Replaced by opcode 0xFC (252) |
-| **Opcode 0x55/0x57 captcha** | Some forks' captcha request | Replaced by reCAPTCHA v3 in connection handshake |
+| Opcode 0x05 (Facebook IDs) | Pipe-delimited friend IDs for highlighting | Removed — replaced by party code system |
+| Anti-cheat scramble | Per-client XOR scramble for coordinates/IDs | Disabled (all values are 0) |
+| Protocol key validation | Key must be 0 for protocol >6 | Key value is stored but not validated |
+| Opcode 0x36 (54) leaderboard mapping | Some clients mapped 54→53 | Not used |
+| Opcode 0x45 (69) ghost cells | Fork extension for minimap | Replaced by opcode 0xFC (252) |
+| Opcode 0x55/0x57 captcha | Some forks' captcha request | Replaced by reCAPTCHA v3 in connection handshake |
 
 ---
 

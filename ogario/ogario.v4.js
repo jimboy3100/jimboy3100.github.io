@@ -12224,9 +12224,11 @@ function thelegendmodproject() {
                     }
                     break;
 
-                case 253: // 0xFD — Server Stats (Imsolo/Agar2) — silently ignore
+                case 253: // 0xFD — Server Stats (Imsolo/Agar2)
+                    window.testobjectsOpcode253 = data;
                     break;
-                case 254: // 0xFE — Heartbeat/Ping Reply (Imsolo/Agar2) — silently ignore
+                case 254: // 0xFE — Heartbeat/Ping Reply / ServerStat (Imsolo/Agar2)
+                    window.testobjectsOpcode254 = data;
                     break;
 
                 case 99: //chat for specific private servers
