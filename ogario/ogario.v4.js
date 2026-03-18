@@ -13905,10 +13905,10 @@ Game name     : ${i.displayName}<br/>
             }
             //return !(x + size < this.viewX - x2s || y + size < this.viewY - y2s || x - size > this.viewX + x2s || y - size > this.viewY + y2s);
         },
-        vanillaskins(y, g) {
+        vanillaskins(y, g, cellColor) {
             if (application.customSkinsMap[y] === undefined) {
                 if (LM.gameMode === ":party") {
-                    y = y + "#000000";
+                    y = y + (cellColor || "#000000");
                 }
                 //console.log(g)		
                 if (legendflags.includes(LowerCase(y))) {
@@ -13937,8 +13937,13 @@ Game name     : ${i.displayName}<br/>
                             //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
                             window.lastusednameforskin = y;
                             //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
-                            if (!application.customSkinsMap[y] || LM.gameMode != ":party") {
-                                application.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                            var skinKey = y;
+                            if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
+                                // In party mode, y already has color appended, so register with that key
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                            } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
                                 application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                             }
                         }
@@ -14113,7 +14118,7 @@ Game name     : ${i.displayName}<br/>
                         name = name.split('}')[1]
                     }
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
-                        this.vanillaskins(name, skin);
+                        this.vanillaskins(name, skin, color);
                     }
                 }
                 //Jimboy's
