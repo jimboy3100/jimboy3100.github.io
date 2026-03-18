@@ -11093,6 +11093,11 @@ function thelegendmodproject() {
             //}				
         },
         closeConnection() {
+            // Clear Imsolo/Agar2 heartbeat interval on disconnect
+            if (this.imsoloHeartbeatInterval) {
+                clearInterval(this.imsoloHeartbeatInterval);
+                this.imsoloHeartbeatInterval = null;
+            }
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
