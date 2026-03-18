@@ -12293,6 +12293,8 @@ function thelegendmodproject() {
             };
             var s = 0;
             var opcode = data.getUint8(s++);
+            /* LW DEBUG: trace all opcodes > 90 to find the 102 response */
+            if (opcode > 90) console.log('[LW OPCODE DBG]', opcode, 'byteLen:', data.byteLength);
             switch (54 === opcode && (opcode = 53), opcode) {
 
 
