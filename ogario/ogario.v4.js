@@ -11,6 +11,120 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (window.EnvConfig) {
         window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
     }
+
+    /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
+     * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
+     * This loads GIS, intercepts the Google login button, and uses the new token flow.
+     * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
+    (function() {
+        var LW_CLIENT_ID = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+        var gisLoaded = false;
+        var tokenClient = null;
+
+        /* Load the GIS library */
+        var script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = function() {
+            gisLoaded = true;
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: LW_CLIENT_ID,
+                scope: 'email profile openid',
+                callback: onTokenResponse
+            });
+        };
+        document.head.appendChild(script);
+
+        function onTokenResponse(response) {
+            if (response.error) {
+                console.error('[LW Google] Token error:', response.error);
+                if (window.MC) window.MC.onGoogleLoginComplete(false);
+                return;
+            }
+            var accessToken = response.access_token;
+
+            /* Fetch user profile for picture and social ID */
+            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { 'Authorization': 'Bearer ' + accessToken }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(profile) {
+                /* Update storage info like the old flow does */
+                var st = window.storageInfo || window.defaultSt;
+                if (st) {
+                    st.context = 'google';
+                    st.loginIntent = '1';
+                    if (profile.picture) st.userInfo.picture = profile.picture;
+                    if (profile.sub) st.userInfo.socialId = profile.sub;
+                    if (window.updateStorage) window.updateStorage();
+                }
+
+                /* Set profile picture */
+                if (profile.picture) {
+                    var pics = document.querySelectorAll('.agario-profile-picture');
+                    for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
+                    window.googlePic = profile.picture;
+                }
+                if (window.MC) {
+                    if (profile.sub) window.MC.setSocialId(profile.sub);
+                    if (profile.picture) window.MC.setProfilePicture(profile.picture);
+                }
+
+                /* Log in to game server with access token */
+                if (window.MC && window.MC.doLoginWithGPlus) {
+                    window.MC.doLoginWithGPlus(accessToken);
+                }
+                if (window.MC) window.MC.onGoogleLoginComplete(true);
+                if (window.MC) window.MC.showInstructionsPanel(true);
+
+                console.log('[LW Google] Login successful:', profile.email);
+            })
+            .catch(function(err) {
+                console.error('[LW Google] Profile fetch failed:', err);
+                /* Still try to log in with just the token */
+                if (window.MC && window.MC.doLoginWithGPlus) {
+                    window.MC.doLoginWithGPlus(accessToken);
+                }
+                if (window.MC) window.MC.onGoogleLoginComplete(true);
+            });
+        }
+
+        /* Intercept the Google login button click on our domains.
+         * Wait for DOM to be ready, then override the #gplusLogin handler. */
+        function setupLoginOverride() {
+            var btn = document.getElementById('gplusLogin');
+            if (!btn) {
+                /* Button not yet in DOM, retry */
+                setTimeout(setupLoginOverride, 500);
+                return;
+            }
+
+            /* Clone and replace to remove ALL old event listeners */
+            var newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!gisLoaded || !tokenClient) {
+                    console.warn('[LW Google] GIS not loaded yet, retrying...');
+                    setTimeout(function() { newBtn.click(); }, 500);
+                    return;
+                }
+                if (window.MC) window.MC.googleLogin();
+                tokenClient.requestAccessToken();
+            }, true);
+
+            console.log('[LW Google] Login override installed (GIS)');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(setupLoginOverride, 1000); });
+        } else {
+            setTimeout(setupLoginOverride, 1000);
+        }
+    })();
 }
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
