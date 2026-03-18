@@ -12667,8 +12667,13 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
+                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
-                    this.onMobileData(msg);
+                    try {
+                        this.onMobileData(msg);
+                    } catch (e102) {
+                        console.error('[LW 102 DBG] onMobileData error:', e102);
+                    }
                     //break;				
                     if (data.byteLength < 20) {
                         //this["loggedIn"] = ![];
