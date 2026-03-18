@@ -12194,14 +12194,14 @@ function thelegendmodproject() {
                     break;
                 case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
-                        var hasFriend = data.getUint8(s++);
-                        if (hasFriend) {
-                            var friendX = data.getInt32(s, true); s += 4;
-                            var friendY = data.getInt32(s, true); s += 4;
-                            var friendNick = encode();
-                            var friendSkin = encode();
+                        var _pfHas = data.getUint8(s++);
+                        if (_pfHas) {
+                            var _pfX = data.getInt32(s, true); s += 4;
+                            var _pfY = data.getInt32(s, true); s += 4;
+                            var _pfNick = encode();
+                            var _pfSkin = encode();
                             // Store for minimap rendering if needed
-                            this.imsoloPartyFriend = { x: friendX, y: friendY, nick: friendNick, skin: friendSkin };
+                            this.imsoloPartyFriend = { x: _pfX, y: _pfY, nick: _pfNick, skin: _pfSkin };
                         } else {
                             this.imsoloPartyFriend = null;
                         }
