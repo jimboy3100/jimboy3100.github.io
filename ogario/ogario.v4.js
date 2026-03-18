@@ -240,8 +240,7 @@ function deleteGamemode(temp) {
             text: '👑 Legend FFA',
             value: 5001
         }
-        /* All other private servers commented out - only Legend FFA active
-        ,{
+        , {
             text: 'Delta FFA',
             value: 4001
         },
@@ -324,7 +323,6 @@ function deleteGamemode(temp) {
             text: 'Delta Party',
             value: 4002
         }
-        */
     ];
     /* Commented out - non-SSL servers disabled
     if (location.protocol !== 'https:') {
@@ -4381,6 +4379,11 @@ function thelegendmodproject() {
         },
         doubleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic double split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.doubleSplit) window.core.doubleSplit();
+                return;
+            }
             app.split();
             setTimeout(function () {
                 app.split();
@@ -4388,6 +4391,13 @@ function thelegendmodproject() {
         },
         crazyDoubleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic double split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                window.lockPosition = true;
+                if (window.core && window.core.doubleSplit) window.core.doubleSplit();
+                setTimeout(function() { window.lockPosition = false; }, 40);
+                return;
+            }
             window.lockPosition = true
             app.split();
             setTimeout(function () {
@@ -4404,6 +4414,11 @@ function thelegendmodproject() {
         },
         tripleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic triple split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.tripleSplit) window.core.tripleSplit();
+                return;
+            }
             //window.lockPosition = true
             app.split();
             setTimeout(function () {
@@ -4416,6 +4431,11 @@ function thelegendmodproject() {
         },
         split16() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic quad split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.quadSplit) window.core.quadSplit();
+                return;
+            }
             app.split();
             setTimeout(function () {
                 app.split();
@@ -10916,6 +10936,20 @@ function thelegendmodproject() {
             this.socket.onclose = function (t) {
                 app.onClose(t);
             };
+            // Imsolo/Agar2 heartbeat: send 0xFE every 2 seconds to keep connection alive
+            if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                var self = this;
+                this.imsoloHeartbeatInterval = setInterval(function() {
+                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                        var hb = self.createView(1);
+                        hb.setUint8(0, 254); // 0xFE
+                        self.sendMessage(hb);
+                    } else {
+                        clearInterval(self.imsoloHeartbeatInterval);
+                    }
+                }, 2000);
+            }
             application.getWS(this.ws);
             application.sendServerJoin();
             application.sendServerData();
@@ -11346,7 +11380,34 @@ function thelegendmodproject() {
         sendNick2(nick) {
             this.playerNick = nick,
                 nick = window.unescape(window.encodeURIComponent(nick));
-            window.Bufferdata = nick; //
+            window.Bufferdata = nick;
+            // Imsolo/Agar2: extended spawn = [0x00][nick\0][skin\0][uuid\0][partyCode\0]
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                var skinName = ogarcopythelb.skinURL || '';
+                skinName = window.unescape(window.encodeURIComponent(skinName));
+                var uuid = ''; // Guest mode — no Agar2 auth UUID
+                var partyCode = '';
+                if ($('#party-token').length && $('#party-token').val()) {
+                    partyCode = $('#party-token').val().substring(0, 7); // max 7 chars
+                }
+                // Calculate total buffer size: opcode + nick + \0 + skin + \0 + uuid + \0 + partyCode + \0
+                var totalLen = 1 + nick.length + 1 + skinName.length + 1 + uuid.length + 1 + partyCode.length + 1;
+                var view = this.createView(totalLen);
+                var pos = 0;
+                view.setUint8(pos++, 0); // opcode 0x00
+                for (var i = 0; i < nick.length; i++) view.setUint8(pos++, nick.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < skinName.length; i++) view.setUint8(pos++, skinName.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < uuid.length; i++) view.setUint8(pos++, uuid.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < partyCode.length; i++) view.setUint8(pos++, partyCode.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                this.sendMessage(view);
+                console.log('%c[MultiProto]%c Spawn sent: nick=%s skin=%s party=%s', 'color:#3f3', 'color:inherit', nick, skinName, partyCode);
+                return;
+            }
+            // Default (agar.io / LegendWorld / other): just nick
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
@@ -14277,7 +14338,10 @@ Game name     : ${i.displayName}<br/>
                 var isFood = extendedFlags & 1;
                 const isFriend = extendedFlags & 2;
 
-                if (!LM.integrity) { //fix of food for private servers
+                // Imsolo/Agar2: use cellType-based food detection (cellType 1 = food/pellet)
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && imsoloCellType >= 0) {
+                    isFood = (imsoloCellType === 1 || imsoloCellType === 5) ? 1 : 0; // 1=pellet, 5=event pellet
+                } else if (!LM.integrity) { //fix of food for private servers
                     if (size < 21 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
