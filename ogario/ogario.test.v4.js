@@ -12515,6 +12515,7 @@ function thelegendmodproject() {
                     break;
                 case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        if (s + 10 > data.byteLength) break; // need 2+2+2+4 bytes
                         var bbEnabled = data.getUint16(s, true); s += 2;
                         var bbCenterX = data.getUint16(s, true); s += 2;
                         var bbCenterY = data.getUint16(s, true); s += 2;
@@ -12525,14 +12526,17 @@ function thelegendmodproject() {
                     break;
                 case 250: // 0xFA — PlayerID (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        if (s + 2 > data.byteLength) break;
                         this.imsoloPlayerID = data.getUint16(s, true);
                         console.log('%c[MultiProto]%c Assigned PlayerID:', 'color:#3f3', 'color:inherit', this.imsoloPlayerID);
                     }
                     break;
                 case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        if (s + 1 > data.byteLength) break;
                         var _pfHas = data.getUint8(s++);
                         if (_pfHas) {
+                            if (s + 8 > data.byteLength) break; // need 4+4 for x,y
                             var _pfX = data.getInt32(s, true); s += 4;
                             var _pfY = data.getInt32(s, true); s += 4;
                             var _pfNick = encode();
@@ -12546,9 +12550,10 @@ function thelegendmodproject() {
                     break;
                 case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        if (s + 2 > data.byteLength) break;
                         var ghostCount = data.getUint16(s, true); s += 2;
                         this.imsoloGhostCells = [];
-                        for (var gi = 0; gi < ghostCount && s < data.byteLength; gi++) {
+                        for (var gi = 0; gi < ghostCount && s + 14 <= data.byteLength; gi++) {
                             var gPlayerID = data.getUint16(s, true); s += 2;
                             var gX = data.getInt32(s, true); s += 4;
                             var gY = data.getInt32(s, true); s += 4;
