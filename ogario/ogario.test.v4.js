@@ -288,9 +288,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                console.log('[LW Discord DBG] Button clicked');
+                console.log('[LW Discord DBG] Auth URL:', DISCORD_AUTH_URL);
 
                 /* Clear any stale Discord data from a previous session */
                 localStorage.removeItem('legendmod_discord');
+                console.log('[LW Discord DBG] Cleared old localStorage data');
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
@@ -298,41 +301,59 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 var top = (screen.height - h) / 2;
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+                console.log('[LW Discord DBG] Popup opened:', popup ? 'OK' : 'BLOCKED');
 
+                var pollCount = 0;
                 /* Poll localStorage for the Discord auth result from the callback page */
                 var poll = setInterval(function() {
+                    pollCount++;
                     try {
                         var data = localStorage.getItem('legendmod_discord');
+                        if (pollCount <= 5 || pollCount % 5 === 0) {
+                            console.log('[LW Discord DBG] Poll #' + pollCount + ' localStorage=' + (data ? 'HAS DATA (' + data.length + ' bytes)' : 'empty'));
+                        }
                         if (data) {
                             var discordUser = JSON.parse(data);
+                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
-                                console.log('[LW Discord] Login successful:', discordUser.username, discordUser.id);
+                                console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
+                                console.log('[LW Discord DBG] MC available:', !!window.MC);
+                                console.log('[LW Discord DBG] legendmod available:', typeof legendmod !== 'undefined');
 
-                                /* Feed the Discord token into the game's auth system.
-                                 * MC.doLoginWithGPlus() sends the token to the server via
-                                 * opcode 102 (protobuf login message) — same as Google.
-                                 * The server hashes the token into a UID regardless of source. */
                                 window._lw_applyDiscordLogin(discordUser);
+                                console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
 
                                 /* Close the popup if still open */
                                 try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
 
-                                toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
+                                if (typeof toastr !== 'undefined') {
+                                    toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
+                                }
                             }
                         }
                     } catch(err) {
-                        console.error('[LW Discord] Poll error:', err);
+                        console.error('[LW Discord DBG] Poll error:', err);
                     }
                     /* Stop polling if popup closed without completing */
                     if (popup && popup.closed) {
                         clearInterval(poll);
+                        console.log('[LW Discord DBG] Popup closed after ' + pollCount + ' polls');
                         /* Check one last time after popup closes */
                         setTimeout(function() {
                             var finalData = localStorage.getItem('legendmod_discord');
-                            if (!finalData) {
-                                console.log('[LW Discord] Popup closed without completing auth');
+                            if (finalData) {
+                                console.log('[LW Discord DBG] Found data after popup close! Processing...');
+                                try {
+                                    var discordUser = JSON.parse(finalData);
+                                    if (discordUser && discordUser.id && discordUser.token) {
+                                        window._lw_applyDiscordLogin(discordUser);
+                                        console.log('[LW Discord DBG] Late login applied successfully');
+                                    }
+                                } catch(e) { console.error('[LW Discord DBG] Late parse error:', e); }
+                            } else {
+                                console.log('[LW Discord DBG] Popup closed without completing auth - NO DATA in localStorage');
                             }
                         }, 500);
                     }
