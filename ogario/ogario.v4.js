@@ -6460,7 +6460,15 @@ function thelegendmodproject() {
                 if (":party" !== dummy) {
                     app.leaveParty();
                 }
-                app.gameMode = ogario.gameMode = dummy;
+                /* Map Agar2 dropdown values to actual game mode strings.
+                 * Without this, gameMode gets set to raw values like "8003"
+                 * instead of ":teams", breaking mode-dependent logic. */
+                var agar2ModeMap = {
+                    '8001': ':ffa', '8002': ':experimental', '8003': ':teams',
+                    '8004': ':party', '8005': ':ffa', '8006': ':experimental',
+                    '8007': ':teams', '8008': ':party'
+                };
+                app.gameMode = ogario.gameMode = agar2ModeMap[dummy] || dummy;
                 app.setQuest();
             });
             $(document).on("change", "#quality", function () {
