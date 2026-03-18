@@ -14156,6 +14156,37 @@ Most cells eaten   : ${mostCellsEaten}
             $('.progress-bar-star3').text(i.level); $('.progress-bar-star').text(i.level);
             //$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
+
+            /* LW: Extract UID and social ID from decoded protobuf userInfo.
+             * Server sends userId="provider$UUID" (e.g. "discord$abc-123-def").
+             * This is the clean parsed path — no raw text splitting needed. */
+            if ((window.expandingLand || window.legendModFromWebsite) && i.userId) {
+                var parts = i.userId.split('$');
+                if (parts.length >= 2) {
+                    window.agarioUID = parts[1].substr(0, 36);
+                    localStorage.setItem("agarioUID", window.agarioUID);
+                    $("#UserProfileUUID1").val(window.agarioUID);
+                    console.log('[LW 102] UID from protobuf:', window.agarioUID);
+                }
+                /* realmInfo contains the social ID */
+                if (i.realmInfo && i.realmInfo.userId) {
+                    window.agarioID = i.realmInfo.userId;
+                    localStorage.setItem("agarioID", window.agarioID);
+                    console.log('[LW 102] Social ID from protobuf:', window.agarioID);
+                }
+                /* Profile picture from realmInfo.avatarUrl */
+                if (i.realmInfo && i.realmInfo.avatarUrl) {
+                    window.googlePic = i.realmInfo.avatarUrl;
+                    var pics = document.querySelectorAll('.agario-profile-picture');
+                    for (var pi = 0; pi < pics.length; pi++) pics[pi].src = i.realmInfo.avatarUrl;
+                }
+                /* Display name */
+                if (i.displayName) {
+                    var profileName = document.querySelector('.agario-profile-name');
+                    if (profileName) profileName.textContent = i.displayName;
+                }
+            }
+
             $("#user-info").html(`
 Account age     : ${~~(i.accountAge / 3600 / 24)}D<br/>
 Potions obtained : ${i.actionCounters.potionsObtained}<br/>
