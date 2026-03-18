@@ -126,64 +126,92 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
     })();
 
+    /* LW: Send opcode 102 directly via legendmod's socket.
+     * Used when MC (from agario.core.js) is unavailable (e.g. expanding.land).
+     * The server's fallback parser scans for the longest printable ASCII run
+     * in the opcode 102 payload, so we just embed the token as raw bytes.
+     * Format: [102][token ASCII bytes] — server hashes this into a UID. */
+    function _lw_sendLogin102(token) {
+        var sendFn = function() {
+            if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                var tokenBytes = [];
+                for (var i = 0; i < token.length; i++) {
+                    tokenBytes.push(token.charCodeAt(i) & 0xFF);
+                }
+                var view = legendmod.createView(1 + tokenBytes.length);
+                view.setUint8(0, 102); // opcode
+                for (var j = 0; j < tokenBytes.length; j++) {
+                    view.setUint8(1 + j, tokenBytes[j]);
+                }
+                legendmod.sendMessage(view);
+                console.log('[LW Login] Sent opcode 102 directly (token_len=' + token.length + ')');
+            } else {
+                setTimeout(sendFn, 1000);
+            }
+        };
+        sendFn();
+    }
+
+    /* LW: Send opcode 204 (Discord profile data) via legendmod's socket.
+     * Format: [204][auth_provider=3][avatar URL bytes][0x00] */
+    function _lw_sendDiscordProfile(discordUser) {
+        var sendFn = function() {
+            if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                var avatarStr = discordUser.avatar || '';
+                var view = legendmod.createView(2 + avatarStr.length + 1);
+                view.setUint8(0, 204);
+                view.setUint8(1, 3); // auth_provider = discord
+                for (var ci = 0; ci < avatarStr.length; ci++) {
+                    view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
+                }
+                view.setUint8(2 + avatarStr.length, 0);
+                legendmod.sendMessage(view);
+                console.log('[LW Discord] Sent opcode 204 (avatar=' + avatarStr.substring(0, 60) + '...)');
+            } else {
+                setTimeout(sendFn, 2000);
+            }
+        };
+        setTimeout(sendFn, 500);
+    }
+
     /* LW: Core Discord login function — used by both initial auth and reconnects.
-     * Sets auth token via MC.doLoginWithGPlus(), updates UI manually (like Google does),
-     * sends opcode 204 for server-side avatar, and registers gplusRelogin for reconnects. */
+     * On agar.io: uses MC.doLoginWithGPlus() (agario.core.js available).
+     * On expanding.land: sends opcode 102 directly via legendmod socket. */
     window._lw_applyDiscordLogin = function(discordUser) {
         if (!discordUser || !discordUser.token) return;
         window.legendmod_discordUser = discordUser;
 
         if (window.MC) {
-            /* Set profile picture to Discord avatar */
+            /* agar.io path: use the engine's built-in login */
             if (discordUser.avatar) {
                 MC.setProfilePicture(discordUser.avatar);
-                var pics = document.querySelectorAll('.agario-profile-picture');
-                for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
                 window.googlePic = discordUser.avatar;
             }
-            /* Set social ID to Discord user ID */
             MC.setSocialId(discordUser.id);
-
-            /* Build auth response object matching Google's format.
-             * The game engine just needs access_token and expires_in. */
-            var authResponse = {
+            MC.doLoginWithGPlus({
                 access_token: discordUser.token,
-                expires_in: 604800 /* Discord tokens last ~7 days */
-            };
-            MC.doLoginWithGPlus(authResponse);
-
-            /* Manually update the UI to logged-in state — same as Google.
-             * The engine's Core auth model should do this, but we do it
-             * explicitly to ensure buttons hide/show immediately. */
-            var hello = document.getElementById('helloContainer');
-            if (hello) hello.setAttribute('data-logged-in', '1');
-            var profileName = document.querySelector('.agario-profile-name');
-            if (profileName) profileName.textContent = discordUser.globalName || discordUser.username;
-            var slc = document.getElementById('socialLoginContainer');
-            if (slc) slc.style.display = 'none';
-
-            /* Send opcode 204 to game server with Discord profile data.
-             * Format: [204][auth_provider=3][avatar URL bytes][0x00]
-             * Deferred slightly to ensure the game socket is open. */
-            var sendDiscordProfile = function() {
-                if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
-                    var avatarStr = discordUser.avatar || '';
-                    var view = legendmod.createView(2 + avatarStr.length + 1);
-                    view.setUint8(0, 204); // opcode
-                    view.setUint8(1, 3);   // auth_provider = discord
-                    for (var ci = 0; ci < avatarStr.length; ci++) {
-                        view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
-                    }
-                    view.setUint8(2 + avatarStr.length, 0); // null terminator
-                    legendmod.sendMessage(view);
-                    console.log('[LW Discord] Sent opcode 204 (auth_provider=3, avatar=' + avatarStr.substring(0, 60) + '...)');
-                } else {
-                    /* Retry after 2 seconds if socket not ready */
-                    setTimeout(sendDiscordProfile, 2000);
-                }
-            };
-            setTimeout(sendDiscordProfile, 500);
+                expires_in: 604800
+            });
+        } else {
+            /* expanding.land path: MC unavailable, send opcode 102 directly */
+            _lw_sendLogin102(discordUser.token);
         }
+
+        /* UI updates — work on both domains */
+        if (discordUser.avatar) {
+            var pics = document.querySelectorAll('.agario-profile-picture');
+            for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
+            window.googlePic = discordUser.avatar;
+        }
+        var hello = document.getElementById('helloContainer');
+        if (hello) hello.setAttribute('data-logged-in', '1');
+        var profileName = document.querySelector('.agario-profile-name');
+        if (profileName) profileName.textContent = discordUser.globalName || discordUser.username;
+        var slc = document.getElementById('socialLoginContainer');
+        if (slc) slc.style.display = 'none';
+
+        /* Send opcode 204 with Discord avatar for server-side profile */
+        _lw_sendDiscordProfile(discordUser);
 
         /* Update storageInfo context for Discord */
         var st = window.storageInfo || window.defaultSt;
@@ -197,21 +225,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             if (window.updateStorage) window.updateStorage();
         }
 
-        /* Register gplusRelogin so the engine can re-auth on reconnect.
-         * The engine calls window.gplusRelogin(callback) for authSource=3.
-         * We re-use the cached Discord token from localStorage. */
+        /* Register gplusRelogin for reconnects.
+         * On agar.io the engine calls this; on expanding.land our hook calls it. */
         window.gplusRelogin = function(callback) {
             var cached = localStorage.getItem('legendmod_discord');
             if (cached) {
                 try {
                     var user = JSON.parse(cached);
-                    if (user && user.token && window.MC) {
-                        var reAuth = {
-                            access_token: user.token,
-                            expires_in: 604800
-                        };
-                        MC.doLoginWithGPlus(reAuth);
-                        console.log('[LW Discord] gplusRelogin: re-authenticated with cached Discord token');
+                    if (user && user.token) {
+                        if (window.MC) {
+                            MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
+                        } else {
+                            _lw_sendLogin102(user.token);
+                        }
+                        _lw_sendDiscordProfile(user);
+                        console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
                     }
                 } catch(e) {
                     console.error('[LW Discord] gplusRelogin error:', e);
