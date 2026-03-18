@@ -6177,7 +6177,7 @@ function thelegendmodproject() {
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
                 '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>' +
-                (legendModFromWebsite ? '<a id="PrivacyLink" href="https://help.expanding.land/" target="_blank" class="fa fa-question-circle" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Help"></a>' : ''));
+                (window.legendModFromWebsite ? '<a id="PrivacyLink" href="https://help.expanding.land/" target="_blank" class="fa fa-question-circle" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Help"></a>' : ''));
             //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
 
             //<input type="number" id="captchaSpeed" value="1" step="1" placeholder="CPU cores" min=1 max=${CPUamount} spellcheck="false" style="display:inline-block;">
