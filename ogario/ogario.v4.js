@@ -43,6 +43,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 return;
             }
             var accessToken = response.access_token;
+            console.log('[LW Google DBG] Got access token, length:', accessToken.length);
 
             /* Fetch user profile for picture and social ID */
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -50,6 +51,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             })
             .then(function(r) { return r.json(); })
             .then(function(profile) {
+                console.log('[LW Google DBG] Profile fetched:', profile.email, profile.sub);
+
                 /* Update storage info like the old flow does */
                 var st = window.storageInfo || window.defaultSt;
                 if (st) {
@@ -66,17 +69,34 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
                     window.googlePic = profile.picture;
                 }
-                if (window.MC) {
+
+                /* Send token to game server */
+                if (window.MC && window.MC.doLoginWithGPlus) {
+                    /* MC available (agar.io or domains with agario.core.js) */
                     if (profile.sub) window.MC.setSocialId(profile.sub);
                     if (profile.picture) window.MC.setProfilePicture(profile.picture);
-                }
-
-                /* Log in to game server with access token */
-                if (window.MC && window.MC.doLoginWithGPlus) {
                     window.MC.doLoginWithGPlus(accessToken);
+                    window.MC.onGoogleLoginComplete(true);
+                    window.MC.showInstructionsPanel(true);
+                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                    /* MC unavailable (expanding.land) — send opcode 102 directly */
+                    console.log('[LW Google DBG] MC unavailable, sending opcode 102 directly');
+                    var view = legendmod.createView(1 + accessToken.length);
+                    view.setUint8(0, 102);
+                    for (var ti = 0; ti < accessToken.length; ti++) {
+                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                    }
+                    legendmod.sendMessage(view);
+                    console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
+
+                    /* Update UI manually */
+                    var menuInner = document.getElementById('main-menu');
+                    if (menuInner) menuInner.style.display = 'none';
+                    var overlays = document.querySelectorAll('.agario-promo-overlay');
+                    for (var oi = 0; oi < overlays.length; oi++) overlays[oi].style.display = 'none';
+                } else {
+                    console.error('[LW Google] No MC or legendmod available to send token');
                 }
-                if (window.MC) window.MC.onGoogleLoginComplete(true);
-                if (window.MC) window.MC.showInstructionsPanel(true);
 
                 console.log('[LW Google] Login successful:', profile.email);
             })
@@ -85,8 +105,15 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 /* Still try to log in with just the token */
                 if (window.MC && window.MC.doLoginWithGPlus) {
                     window.MC.doLoginWithGPlus(accessToken);
+                    window.MC.onGoogleLoginComplete(true);
+                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                    var view = legendmod.createView(1 + accessToken.length);
+                    view.setUint8(0, 102);
+                    for (var ti = 0; ti < accessToken.length; ti++) {
+                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                    }
+                    legendmod.sendMessage(view);
                 }
-                if (window.MC) window.MC.onGoogleLoginComplete(true);
             });
         }
 
@@ -112,7 +139,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     setTimeout(function() { newBtn.click(); }, 500);
                     return;
                 }
-                if (window.MC) window.MC.googleLogin();
+                console.log('[LW Google DBG] Login button clicked');
+                if (window.MC && window.MC.googleLogin) window.MC.googleLogin();
                 tokenClient.requestAccessToken();
             }, true);
 
