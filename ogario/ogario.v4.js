@@ -394,6 +394,8 @@ function deleteGamemode(temp) {
             }
             */
         } else { }
+        // Reset gameMode to FFA (default) — Agar2 servers override below with the correct mode
+        legendmod.gameMode = ':ffa';
         // Legend FFA - only active private server
         if ($('#gamemode').val() == 5001) {
             core.connect('wss://ffa.legendmod.ml:8080');
