@@ -467,14 +467,14 @@ function deleteGamemode(temp) {
             (function connectAgar2(val) {
                 // Agar2 matchmaker API config (ONLY for Agar2 servers, never touches agar.io)
                 var agar2ApiMap = {
-                    8001: { url: 'https://manage-eu.agar2.com/getserver/FFA', fallback: 'wss://live-arena-f9sn3a-eu.agar2.com' },
-                    8002: { url: 'https://manage-eu.agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9pm4-eu.agar2.com' },
-                    8003: { url: 'https://manage-eu.agar2.com/getserver/Teams', fallback: 'wss://live-arena-t13msx-eu.agar2.com' },
-                    8004: { url: 'https://manage-eu.agar2.com/getserver/Party', fallback: 'wss://live-arena-p4r1ym-eu.agar2.com' },
-                    8005: { url: 'https://agar2.com/getserver/FFA', fallback: 'wss://live-arena-fmpv2x-na.agar2.com' },
-                    8006: { url: 'https://agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9ml2-na.agar2.com' },
-                    8007: { url: 'https://agar2.com/getserver/Teams', fallback: 'wss://live-arena-te4m2v-na.agar2.com' },
-                    8008: { url: 'https://agar2.com/getserver/Party', fallback: 'wss://live-arena-ml3s4z-na.agar2.com' }
+                    8001: { url: 'https://manage-eu.agar2.com/getserver/FFA', fallback: 'wss://live-arena-f9sn3a-eu.agar2.com', gm: ':ffa' },
+                    8002: { url: 'https://manage-eu.agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9pm4-eu.agar2.com', gm: ':experimental' },
+                    8003: { url: 'https://manage-eu.agar2.com/getserver/Teams', fallback: 'wss://live-arena-t13msx-eu.agar2.com', gm: ':teams' },
+                    8004: { url: 'https://manage-eu.agar2.com/getserver/Party', fallback: 'wss://live-arena-p4r1ym-eu.agar2.com', gm: ':party' },
+                    8005: { url: 'https://agar2.com/getserver/FFA', fallback: 'wss://live-arena-fmpv2x-na.agar2.com', gm: ':ffa' },
+                    8006: { url: 'https://agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9ml2-na.agar2.com', gm: ':experimental' },
+                    8007: { url: 'https://agar2.com/getserver/Teams', fallback: 'wss://live-arena-te4m2v-na.agar2.com', gm: ':teams' },
+                    8008: { url: 'https://agar2.com/getserver/Party', fallback: 'wss://live-arena-ml3s4z-na.agar2.com', gm: ':party' }
                 };
                 var cfg = agar2ApiMap[val];
                 if (!cfg) return;
@@ -486,13 +486,16 @@ function deleteGamemode(temp) {
                         window.agar2Token = token;
                         window.agar2GameUrl = data.gameurl;
                         console.log('%c[Agar2]%c Token: ' + token + ' | ' + data.gameurl, 'color:#3af', 'color:inherit');
+                        legendmod.gameMode = cfg.gm;
                         core.connect(data.gameurl);
                     } else {
                         console.log('%c[Agar2]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
+                        legendmod.gameMode = cfg.gm;
                         core.connect(cfg.fallback);
                     }
                 }).catch(function(err) {
                     console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
+                    legendmod.gameMode = cfg.gm;
                     core.connect(cfg.fallback);
                 });
             })(parseInt($('#gamemode').val()));
