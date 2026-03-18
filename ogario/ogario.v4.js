@@ -6702,6 +6702,10 @@ function thelegendmodproject() {
             }
         },
         setPlayerSettings() {
+            /* Prevent name/skin changes while alive — server ignores the join
+             * anyway, but this also prevents the relay/minimap from showing
+             * the updated nick to other LM users mid-game. */
+            if (ogario.play) return;
             var nick = $('#nick').val();
             var tag = $('#clantag').val();
             var skin = $('#skin').val();
