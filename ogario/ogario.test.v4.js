@@ -12701,7 +12701,32 @@ function thelegendmodproject() {
                                 window.callEveryFullHourCoinDig = true;
                                 callEveryFullHourCoinDigger();
                             }
-                        } catch (error) { }
+                        } catch (error) {
+                            if (window.expandingLand || window.legendModFromWebsite) {
+                                console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
+                            }
+                        }
+                        /* LW: Fallback extraction for our server's protobuf format.
+                         * Server sends userId="provider$UID" in userInfo field.
+                         * Only runs on our domains — doesn't affect agar.io parsing. */
+                        if (window.expandingLand || window.legendModFromWebsite) {
+                            console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
+                                'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
+                            var rawText = window.testobjects2;
+                            if (!window.agarioUID && rawText.includes('$')) {
+                                try {
+                                    var uidMatch = rawText.match(/(?:google|discord|facebook)\$([0-9a-f-]{8,})/i);
+                                    if (uidMatch) {
+                                        window.agarioUID = uidMatch[1].substr(0, 36);
+                                        localStorage.setItem("agarioUID", window.agarioUID);
+                                        $("#UserProfileUUID1").val(window.agarioUID);
+                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                    }
+                                } catch (lwErr) {
+                                    console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
+                                }
+                            }
+                        }
                         window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
 
                         /*if (defaultmapsettings.massBooster && master.context) {				
