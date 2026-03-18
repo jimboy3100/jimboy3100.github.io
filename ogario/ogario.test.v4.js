@@ -11,6 +11,120 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (window.EnvConfig) {
         window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hem.apps.googleusercontent.com";
     }
+
+    /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
+     * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
+     * This loads GIS, intercepts the Google login button, and uses the new token flow.
+     * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
+    (function() {
+        var LW_CLIENT_ID = "317663835351-aurr32dabsfaan9b367vmamutq692hem.apps.googleusercontent.com";
+        var gisLoaded = false;
+        var tokenClient = null;
+
+        /* Load the GIS library */
+        var script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = function() {
+            gisLoaded = true;
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: LW_CLIENT_ID,
+                scope: 'email profile openid',
+                callback: onTokenResponse
+            });
+        };
+        document.head.appendChild(script);
+
+        function onTokenResponse(response) {
+            if (response.error) {
+                console.error('[LW Google] Token error:', response.error);
+                if (window.MC) window.MC.onGoogleLoginComplete(false);
+                return;
+            }
+            var accessToken = response.access_token;
+
+            /* Fetch user profile for picture and social ID */
+            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { 'Authorization': 'Bearer ' + accessToken }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(profile) {
+                /* Update storage info like the old flow does */
+                var st = window.storageInfo || window.defaultSt;
+                if (st) {
+                    st.context = 'google';
+                    st.loginIntent = '1';
+                    if (profile.picture) st.userInfo.picture = profile.picture;
+                    if (profile.sub) st.userInfo.socialId = profile.sub;
+                    if (window.updateStorage) window.updateStorage();
+                }
+
+                /* Set profile picture */
+                if (profile.picture) {
+                    var pics = document.querySelectorAll('.agario-profile-picture');
+                    for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
+                    window.googlePic = profile.picture;
+                }
+                if (window.MC) {
+                    if (profile.sub) window.MC.setSocialId(profile.sub);
+                    if (profile.picture) window.MC.setProfilePicture(profile.picture);
+                }
+
+                /* Log in to game server with access token */
+                if (window.MC && window.MC.doLoginWithGPlus) {
+                    window.MC.doLoginWithGPlus(accessToken);
+                }
+                if (window.MC) window.MC.onGoogleLoginComplete(true);
+                if (window.MC) window.MC.showInstructionsPanel(true);
+
+                console.log('[LW Google] Login successful:', profile.email);
+            })
+            .catch(function(err) {
+                console.error('[LW Google] Profile fetch failed:', err);
+                /* Still try to log in with just the token */
+                if (window.MC && window.MC.doLoginWithGPlus) {
+                    window.MC.doLoginWithGPlus(accessToken);
+                }
+                if (window.MC) window.MC.onGoogleLoginComplete(true);
+            });
+        }
+
+        /* Intercept the Google login button click on our domains.
+         * Wait for DOM to be ready, then override the #gplusLogin handler. */
+        function setupLoginOverride() {
+            var btn = document.getElementById('gplusLogin');
+            if (!btn) {
+                /* Button not yet in DOM, retry */
+                setTimeout(setupLoginOverride, 500);
+                return;
+            }
+
+            /* Clone and replace to remove ALL old event listeners */
+            var newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!gisLoaded || !tokenClient) {
+                    console.warn('[LW Google] GIS not loaded yet, retrying...');
+                    setTimeout(function() { newBtn.click(); }, 500);
+                    return;
+                }
+                if (window.MC) window.MC.googleLogin();
+                tokenClient.requestAccessToken();
+            }, true);
+
+            console.log('[LW Google] Login override installed (GIS)');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(setupLoginOverride, 1000); });
+        } else {
+            setTimeout(setupLoginOverride, 1000);
+        }
+    })();
 }
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
@@ -125,21 +239,50 @@ function deleteGamemode(temp) {
         {
             text: '👑 Legend FFA',
             value: 5001
-        }
-        /* All other private servers commented out - only Legend FFA active
-        ,{
-            text: 'Delta FFA',
-            value: 4001
-        },
-        {
-            text: 'FeelForeverAlone',
-            value: 34
         }, {
             text: 'Arctida',
             value: 6
         }, {
             text: 'Dagestan',
             value: 7
+        }, {
+            text: 'Beta Party #1',
+            value: 14
+        }, {
+            text: 'Beta Party v2 #2',
+            value: 18
+        }, {
+            text: 'Agar2 EU FFA',
+            value: 8001
+        }, {
+            text: 'Agar2 EU Experimental',
+            value: 8002
+        }, {
+            text: 'Agar2 EU Teams',
+            value: 8003
+        }, {
+            text: 'Agar2 EU Party',
+            value: 8004
+        }, {
+            text: 'Agar2 NA FFA',
+            value: 8005
+        }, {
+            text: 'Agar2 NA Experimental',
+            value: 8006
+        }, {
+            text: 'Agar2 NA Teams',
+            value: 8007
+        }, {
+            text: 'Agar2 NA Party',
+            value: 8008
+        }
+        /* Other private servers (commented out)
+        , {
+            text: 'Delta FFA',
+            value: 4001
+        }, {
+            text: 'FeelForeverAlone',
+            value: 34
         }, {
             text: 'Zimbabwe',
             value: 31
@@ -183,14 +326,8 @@ function deleteGamemode(temp) {
             text: '2vs2vs2',
             value: 30
         }, {
-            text: 'Beta Party #1',
-            value: 14
-        }, {
             text: 'Beta Party v2 #1',
             value: 17
-        }, {
-            text: 'Beta Party v2 #2',
-            value: 18
         }, {
             text: 'Bots',
             value: 33
@@ -257,15 +394,35 @@ function deleteGamemode(temp) {
             }
             */
         } else { }
+        // Reset gameMode to FFA (default) — Agar2 servers override below with the correct mode
+        legendmod.gameMode = ':ffa';
         // Legend FFA - only active private server
         if ($('#gamemode').val() == 5001) {
             core.connect('wss://ffa.legendmod.ml:8080');
         }
-        /* All other private server connect handlers commented out
-        else if ($('#gamemode').val() == 6) {
-            core.connect('wss://imsolo.pro:2109/');
-        } else if ($('#gamemode').val() == 7) {
-            core.connect('wss://imsolo.pro:2108/');
+        // Imsolo & Agar2 private server connections (multi-protocol support)
+        // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
+        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7) {
+            (function connectImsolo(val) {
+                var imsoloLbMap = {
+                    6: { url: 'https://loadbalancer.static.imsolo.pro/getserver/selfeed', fallback: 'wss://imsolo.pro:2109/' },
+                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://imsolo.pro:2108/' }
+                };
+                var cfg = imsoloLbMap[val];
+                if (!cfg) return;
+                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                    if (data && data.gameurl) {
+                        console.log('%c[ImSolo]%c Load balancer: ' + data.gameurl, 'color:#f3a', 'color:inherit');
+                        core.connect(data.gameurl);
+                    } else {
+                        console.log('%c[ImSolo]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
+                        core.connect(cfg.fallback);
+                    }
+                }).catch(function(err) {
+                    console.log('%c[ImSolo]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
+                    core.connect(cfg.fallback);
+                });
+            })(parseInt($('#gamemode').val()));
         } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
         } else if ($('#gamemode').val() == 14) {
@@ -325,7 +482,44 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 4002) {
             core.connect('wss://delta-server.fly.dev');
         }
-        */
+        // Agar2 servers: use matchmaker API to get dynamic server URL + token
+        else if (parseInt($('#gamemode').val()) >= 8001 && parseInt($('#gamemode').val()) <= 8008) {
+            (function connectAgar2(val) {
+                // Agar2 matchmaker API config (ONLY for Agar2 servers, never touches agar.io)
+                var agar2ApiMap = {
+                    8001: { url: 'https://manage-eu.agar2.com/getserver/FFA', fallback: 'wss://live-arena-f9sn3a-eu.agar2.com', gm: ':ffa' },
+                    8002: { url: 'https://manage-eu.agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9pm4-eu.agar2.com', gm: ':experimental' },
+                    8003: { url: 'https://manage-eu.agar2.com/getserver/Teams', fallback: 'wss://live-arena-t13msx-eu.agar2.com', gm: ':teams' },
+                    8004: { url: 'https://manage-eu.agar2.com/getserver/Party', fallback: 'wss://live-arena-p4r1ym-eu.agar2.com', gm: ':party' },
+                    8005: { url: 'https://agar2.com/getserver/FFA', fallback: 'wss://live-arena-fmpv2x-na.agar2.com', gm: ':ffa' },
+                    8006: { url: 'https://agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9ml2-na.agar2.com', gm: ':experimental' },
+                    8007: { url: 'https://agar2.com/getserver/Teams', fallback: 'wss://live-arena-te4m2v-na.agar2.com', gm: ':teams' },
+                    8008: { url: 'https://agar2.com/getserver/Party', fallback: 'wss://live-arena-ml3s4z-na.agar2.com', gm: ':party' }
+                };
+                var cfg = agar2ApiMap[val];
+                if (!cfg) return;
+                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                    if (data && data.gameurl) {
+                        // Extract token from URL: wss://live-arena-{token}-{region}.agar2.com
+                        var tokenMatch = data.gameurl.match(/live-arena-([a-z0-9]+)-/i);
+                        var token = tokenMatch ? tokenMatch[1] : '???';
+                        window.agar2Token = token;
+                        window.agar2GameUrl = data.gameurl;
+                        console.log('%c[Agar2]%c Token: ' + token + ' | ' + data.gameurl, 'color:#3af', 'color:inherit');
+                        legendmod.gameMode = cfg.gm;
+                        core.connect(data.gameurl);
+                    } else {
+                        console.log('%c[Agar2]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
+                        legendmod.gameMode = cfg.gm;
+                        core.connect(cfg.fallback);
+                    }
+                }).catch(function(err) {
+                    console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
+                    legendmod.gameMode = cfg.gm;
+                    core.connect(cfg.fallback);
+                });
+            })(parseInt($('#gamemode').val()));
+        }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
         //wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
@@ -4268,6 +4462,11 @@ function thelegendmodproject() {
         },
         doubleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic double split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.doubleSplit) window.core.doubleSplit();
+                return;
+            }
             app.split();
             setTimeout(function () {
                 app.split();
@@ -4275,6 +4474,13 @@ function thelegendmodproject() {
         },
         crazyDoubleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic double split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                window.lockPosition = true;
+                if (window.core && window.core.doubleSplit) window.core.doubleSplit();
+                setTimeout(function() { window.lockPosition = false; }, 40);
+                return;
+            }
             window.lockPosition = true
             app.split();
             setTimeout(function () {
@@ -4291,6 +4497,11 @@ function thelegendmodproject() {
         },
         tripleSplit() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic triple split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.tripleSplit) window.core.tripleSplit();
+                return;
+            }
             //window.lockPosition = true
             app.split();
             setTimeout(function () {
@@ -4303,6 +4514,11 @@ function thelegendmodproject() {
         },
         split16() {
             var app = this;
+            // Imsolo/Agar2: use dedicated server-side atomic quad split opcode
+            if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
+                if (window.core && window.core.quadSplit) window.core.quadSplit();
+                return;
+            }
             app.split();
             setTimeout(function () {
                 app.split();
@@ -5743,7 +5959,8 @@ function thelegendmodproject() {
                 '<a id= "themesBtn" target="_blank" href="https://www.legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
-                '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>');
+                '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>' +
+                '<a id="PrivacyLink" href="https://expanding.land/privacy.html" target="_blank" class="fa fa-shield" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Privacy Policy"></a>');
             //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
 
             //<input type="number" id="captchaSpeed" value="1" step="1" placeholder="CPU cores" min=1 max=${CPUamount} spellcheck="false" style="display:inline-block;">
@@ -6702,6 +6919,10 @@ function thelegendmodproject() {
             }
         },
         setPlayerSettings() {
+            /* Prevent name/skin changes while alive — server ignores the join
+             * anyway, but this also prevents the relay/minimap from showing
+             * the updated nick to other LM users mid-game. */
+            if (ogario.play) return;
             var nick = $('#nick').val();
             var tag = $('#clantag').val();
             var skin = $('#skin').val();
@@ -10770,6 +10991,13 @@ function thelegendmodproject() {
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
             this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
+            // Multi-protocol server type detection (2026)
+            this.serverType = t.includes('agario.miniclippt') ? 'agario'
+                : t.includes('imsolo.pro') ? 'imsolo'
+                : t.includes('agar2.com') ? 'agar2'
+                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'legendworld'
+                : 'private';
+            this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
@@ -10791,6 +11019,20 @@ function thelegendmodproject() {
             this.socket.onclose = function (t) {
                 app.onClose(t);
             };
+            // Imsolo/Agar2 heartbeat: send 0xFE every 2 seconds to keep connection alive
+            if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                var self = this;
+                this.imsoloHeartbeatInterval = setInterval(function() {
+                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                        var hb = self.createView(1);
+                        hb.setUint8(0, 254); // 0xFE
+                        self.sendMessage(hb);
+                    } else {
+                        clearInterval(self.imsoloHeartbeatInterval);
+                    }
+                }, 2000);
+            }
             application.getWS(this.ws);
             application.sendServerJoin();
             application.sendServerData();
@@ -10934,6 +11176,11 @@ function thelegendmodproject() {
             //}				
         },
         closeConnection() {
+            // Clear Imsolo/Agar2 heartbeat interval on disconnect
+            if (this.imsoloHeartbeatInterval) {
+                clearInterval(this.imsoloHeartbeatInterval);
+                this.imsoloHeartbeatInterval = null;
+            }
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
@@ -11005,6 +11252,36 @@ function thelegendmodproject() {
         sendSplit() {
             this.sendPosition();
             this.sendAction(17);
+        },
+        // Multi-protocol split macros for Imsolo/Agar2 (opcodes 0x1A, 0x1B, 0x1C)
+        sendDoubleSplit() {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+                this.sendPosition();
+                this.sendAction(28); // 0x1C
+            } else {
+                this.sendSplit(); this.sendSplit(); // fallback: 2x regular split
+            }
+        },
+        sendTripleSplit() {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+                this.sendPosition();
+                this.sendAction(26); // 0x1A
+            } else {
+                this.sendSplit(); this.sendSplit(); this.sendSplit(); // fallback: 3x regular split
+            }
+        },
+        sendQuadSplit() {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+                this.sendPosition();
+                this.sendAction(27); // 0x1B
+            } else {
+                this.sendSplit(); this.sendSplit(); this.sendSplit(); this.sendSplit(); // fallback
+            }
+        },
+        sendPlayerFreeze() {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+                this.sendAction(32); // 0x20 — player freeze toggle
+            }
         },
         sendFBIDS(data) { //Yahnych
             if (data) {
@@ -11191,7 +11468,34 @@ function thelegendmodproject() {
         sendNick2(nick) {
             this.playerNick = nick,
                 nick = window.unescape(window.encodeURIComponent(nick));
-            window.Bufferdata = nick; //
+            window.Bufferdata = nick;
+            // Imsolo/Agar2: extended spawn = [0x00][nick\0][skin\0][uuid\0][partyCode\0]
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                var skinName = ogarcopythelb.skinURL || '';
+                skinName = window.unescape(window.encodeURIComponent(skinName));
+                var uuid = ''; // Guest mode — no Agar2 auth UUID
+                var partyCode = '';
+                if ($('#party-token').length && $('#party-token').val()) {
+                    partyCode = $('#party-token').val().substring(0, 7); // max 7 chars
+                }
+                // Calculate total buffer size: opcode + nick + \0 + skin + \0 + uuid + \0 + partyCode + \0
+                var totalLen = 1 + nick.length + 1 + skinName.length + 1 + uuid.length + 1 + partyCode.length + 1;
+                var view = this.createView(totalLen);
+                var pos = 0;
+                view.setUint8(pos++, 0); // opcode 0x00
+                for (var i = 0; i < nick.length; i++) view.setUint8(pos++, nick.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < skinName.length; i++) view.setUint8(pos++, skinName.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < uuid.length; i++) view.setUint8(pos++, uuid.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                for (var i = 0; i < partyCode.length; i++) view.setUint8(pos++, partyCode.charCodeAt(i));
+                view.setUint8(pos++, 0); // null terminator
+                this.sendMessage(view);
+                console.log('%c[MultiProto]%c Spawn sent: nick=%s skin=%s party=%s', 'color:#3f3', 'color:inherit', nick, skinName, partyCode);
+                return;
+            }
+            // Default (agar.io / LegendWorld / other): just nick
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
@@ -11925,6 +12229,90 @@ function thelegendmodproject() {
 
                     //for(var a='bWaNbAGAR"APTCHAaNbREQUESTy	.6aSHBbPLAYaBLbFUNCTIONaHbAaIb[VARa@bBa^bTaNbCREATE6IEWaHRKbAaNbLENGTHaI[bBaNbSET5INTaXHPLXXI[bFORaHv	SbCa^P[bCa]z	H[bCaKKI}	KQKbCaLbAaNu 6bR"ODE TaHbCaI~ 	lz	WKQLPI[bTu	8ND-ESSAGEaHbBaIb^aI[*',b=93,c,d=1,e,f=-1,g,h={'	':0},i=[],j=String.fromCharCode;b;)h[j(b+(7<b)+(59<b)+31)]=b--;for(;-1<(e=h[a[b++]]);)if(83<e){if(92<e)for(;e+=g=h[a[b++]],92<g;);for(g=f-94*h[a[b++]]-h[a[b++]];81<e--;)i[++f]=i[g++]}else 63<e&&(c=(e<(d=66)?e-64:70>e?e+126:72<e?(d=0,e-73):e+950)<<6,e=h[a[b++]]),i[++f]=j(d?c|e:94*(c|e)+h[a[b++]]);new Function('w','t',i.join(''))(window,this)
                     break;
+
+                // ===== Imsolo/Agar2 Multi-Protocol Opcodes (2026) =====
+                case 21: // 0x15 — Death Notification (Imsolo/Agar2 only, protocol ≤10)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        this.play = false;
+                        this.playerCellIDs = [];
+                        window.userBots.isAlive = false;
+                        if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
+                        application.showMenu();
+                        console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
+                    }
+                    break;
+                case 200: // 0xC8 — ShopResponse (Agar2 only)
+                    if (this.serverType === 'agar2') {
+                        // Parse shop response but don't act on it (no shop UI yet)
+                        var shopAction = data.getUint8(s++);
+                        var shopSuccess = data.getUint8(s++);
+                        var shopCoins = data.getInt32(s, true); s += 4;
+                        var shopRemaining = data.getInt32(s, true); s += 4;
+                        var shopMsg = encode();
+                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit', 
+                            'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
+                    }
+                    break;
+                case 201: // 0xC9 — AuthSuccess (Agar2 only)
+                    if (this.serverType === 'agar2') {
+                        this.imsoloAuthSuccess = true;
+                        console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
+                    }
+                    break;
+                case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        var bbEnabled = data.getUint16(s, true); s += 2;
+                        var bbCenterX = data.getUint16(s, true); s += 2;
+                        var bbCenterY = data.getUint16(s, true); s += 2;
+                        var bbRadius = data.getInt32(s, true); s += 4;
+                        console.log('%c[MultiProto]%c BattleBorder:', 'color:#fa3', 'color:inherit',
+                            'enabled:', bbEnabled, 'center:', bbCenterX, bbCenterY, 'radius:', bbRadius);
+                    }
+                    break;
+                case 250: // 0xFA — PlayerID (Imsolo/Agar2)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        this.imsoloPlayerID = data.getUint16(s, true);
+                        console.log('%c[MultiProto]%c Assigned PlayerID:', 'color:#3f3', 'color:inherit', this.imsoloPlayerID);
+                    }
+                    break;
+                case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        var _pfHas = data.getUint8(s++);
+                        if (_pfHas) {
+                            var _pfX = data.getInt32(s, true); s += 4;
+                            var _pfY = data.getInt32(s, true); s += 4;
+                            var _pfNick = encode();
+                            var _pfSkin = encode();
+                            // Store for minimap rendering if needed
+                            this.imsoloPartyFriend = { x: _pfX, y: _pfY, nick: _pfNick, skin: _pfSkin };
+                        } else {
+                            this.imsoloPartyFriend = null;
+                        }
+                    }
+                    break;
+                case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                        var ghostCount = data.getUint16(s, true); s += 2;
+                        this.imsoloGhostCells = [];
+                        for (var gi = 0; gi < ghostCount && s < data.byteLength; gi++) {
+                            var gPlayerID = data.getUint16(s, true); s += 2;
+                            var gX = data.getInt32(s, true); s += 4;
+                            var gY = data.getInt32(s, true); s += 4;
+                            var gMass = data.getInt32(s, true); s += 4;
+                            var gColor = encode();
+                            var gName = encode();
+                            this.imsoloGhostCells.push({ id: gPlayerID, x: gX, y: gY, mass: gMass, color: gColor, name: gName });
+                        }
+                    }
+                    break;
+
+                case 253: // 0xFD — Server Stats (Imsolo/Agar2)
+                    window.testobjectsOpcode253 = data;
+                    break;
+                case 254: // 0xFE — Heartbeat/Ping Reply / ServerStat (Imsolo/Agar2)
+                    window.testobjectsOpcode254 = data;
+                    break;
+
                 case 99: //chat for specific private servers
                     window.testobjectsOpcode99 = data;
                     var flag = data.getUint8(s++);
@@ -11935,7 +12323,8 @@ function thelegendmodproject() {
                     var message = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();	
                     var server = !!(flags & 128),
                         admin = !!(flags & 64),
-                        mod = !!(flag & 32);
+                        // Imsolo/Agar2 uses bit 2 (0x04) for moderator, others use bit 5 (0x20)
+                        mod = (this.serverType === 'imsolo' || this.serverType === 'agar2') ? !!(flag & 4) : !!(flag & 32);
 
                     if (server && name !== "SERVER") name = "[SERVER] " + name;
                     if (name === "SERVER") name = "[SERVER]"
@@ -12736,7 +13125,7 @@ function thelegendmodproject() {
                 return
             }
             const response = window.decodeMobileData(msg);
-            //console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
+            console.log("[LW-DEBUG] 102 decoded:", JSON.stringify(response, null, 2)); //ALL LOGIN AND PROFILE RESPONSE INFO
             this.unpackageMessage(response);
         },
         unpackageMessage: function (r) {
@@ -13390,6 +13779,8 @@ function thelegendmodproject() {
             }
         },
         displayStats(s) {
+            /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.
+             * Convert to Number so arithmetic and template literals work correctly. */
             var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
             var massConsumed = (typeof s.massConsumed === 'object' && s.massConsumed.toNumber) ? s.massConsumed.toNumber() : Number(s.massConsumed) || 0;
             var gamesPlayed = Number(s.gamesPlayed) || 0;
@@ -13784,10 +14175,10 @@ Game name     : ${i.displayName}<br/>
             }
             //return !(x + size < this.viewX - x2s || y + size < this.viewY - y2s || x - size > this.viewX + x2s || y - size > this.viewY + y2s);
         },
-        vanillaskins(y, g) {
+        vanillaskins(y, g, cellColor) {
             if (application.customSkinsMap[y] === undefined) {
                 if (LM.gameMode === ":party") {
-                    y = y + "#000000";
+                    y = y + (cellColor || "#000000");
                 }
                 //console.log(g)		
                 if (legendflags.includes(LowerCase(y))) {
@@ -13816,8 +14207,13 @@ Game name     : ${i.displayName}<br/>
                             //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
                             window.lastusednameforskin = y;
                             //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
-                            if (!application.customSkinsMap[y] || LM.gameMode != ":party") {
-                                application.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                            var skinKey = y;
+                            if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
+                                // In party mode, y already has color appended, so register with that key
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                            } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
                                 application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                             }
                         }
@@ -13962,7 +14358,13 @@ Game name     : ${i.displayName}<br/>
                 offset += 2;
                 var flags = view.readUInt8(offset++),
                     extendedFlags = 0;
-                128 & flags && (extendedFlags = view.readUInt8(offset++));
+                var imsoloCellType = -1;
+                var imsoloPartyCode = '';
+                var imsoloOwnerID = 0;
+                // For non-Imsolo servers: read 1-byte extended flags immediately after flags byte
+                if (!((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80))) {
+                    128 & flags && (extendedFlags = view.readUInt8(offset++));
+                }
                 //128 & d && (f = t.readUInt8(i++));	
                 var color = null;
                 var skin = null;
@@ -13992,8 +14394,25 @@ Game name     : ${i.displayName}<br/>
                         name = name.split('}')[1]
                     }
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
-                        this.vanillaskins(name, skin);
+                        this.vanillaskins(name, skin, color);
                     }
+                }
+                // Imsolo/Agar2 protocol 6-10: flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x40)) {
+                    imsoloOwnerID = view.readUInt16LE(offset);
+                    offset += 2;
+                }
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80)) {
+                    // Protocol 6-10: extended = uint16 cellType + string partyCode
+                    imsoloCellType = view.readUInt16LE(offset);
+                    offset += 2;
+                    var _pc = '';
+                    while (offset < view.byteLength) {
+                        var _ch = view.readUInt8(offset++);
+                        if (_ch === 0) break;
+                        _pc += String.fromCharCode(_ch);
+                    }
+                    imsoloPartyCode = _pc;
                 }
                 //Jimboy's
                 if (16 & flags) {
@@ -14015,7 +14434,10 @@ Game name     : ${i.displayName}<br/>
                 var isFood = extendedFlags & 1;
                 const isFriend = extendedFlags & 2;
 
-                if (!LM.integrity) { //fix of food for private servers
+                // Imsolo/Agar2: use cellType-based food detection (cellType 1 = food/pellet)
+                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && imsoloCellType >= 0) {
+                    isFood = (imsoloCellType === 1 || imsoloCellType === 5) ? 1 : 0; // 1=pellet, 5=event pellet
+                } else if (!LM.integrity) { //fix of food for private servers
                     if (size < 21 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
@@ -16830,6 +17252,19 @@ Game name     : ${i.displayName}<br/>
             } else {
                 LM.sendSplit();
             }
+        },
+        // Multi-protocol split macros (Imsolo/Agar2)
+        doubleSplit() {
+            LM.sendDoubleSplit();
+        },
+        tripleSplit() {
+            LM.sendTripleSplit();
+        },
+        quadSplit() {
+            LM.sendQuadSplit();
+        },
+        playerFreeze() {
+            LM.sendPlayerFreeze();
         },
         specialOn() {
             LM.sendFreeSpectate();
