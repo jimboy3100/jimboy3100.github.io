@@ -126,6 +126,126 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
     })();
 
+    /* LW: Core Discord login function — used by both initial auth and reconnects.
+     * Sets auth token via MC.doLoginWithGPlus(), updates UI manually (like Google does),
+     * sends opcode 204 for server-side avatar, and registers gplusRelogin for reconnects. */
+    window._lw_applyDiscordLogin = function(discordUser) {
+        if (!discordUser || !discordUser.token) return;
+        window.legendmod_discordUser = discordUser;
+
+        if (window.MC) {
+            /* Set profile picture to Discord avatar */
+            if (discordUser.avatar) {
+                MC.setProfilePicture(discordUser.avatar);
+                var pics = document.querySelectorAll('.agario-profile-picture');
+                for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
+                window.googlePic = discordUser.avatar;
+            }
+            /* Set social ID to Discord user ID */
+            MC.setSocialId(discordUser.id);
+
+            /* Build auth response object matching Google's format.
+             * The game engine just needs access_token and expires_in. */
+            var authResponse = {
+                access_token: discordUser.token,
+                expires_in: 604800 /* Discord tokens last ~7 days */
+            };
+            MC.doLoginWithGPlus(authResponse);
+
+            /* Manually update the UI to logged-in state — same as Google.
+             * The engine's Core auth model should do this, but we do it
+             * explicitly to ensure buttons hide/show immediately. */
+            var hello = document.getElementById('helloContainer');
+            if (hello) hello.setAttribute('data-logged-in', '1');
+            var profileName = document.querySelector('.agario-profile-name');
+            if (profileName) profileName.textContent = discordUser.globalName || discordUser.username;
+            var slc = document.getElementById('socialLoginContainer');
+            if (slc) slc.style.display = 'none';
+
+            /* Send opcode 204 to game server with Discord profile data.
+             * Format: [204][auth_provider=3][avatar URL bytes][0x00]
+             * Deferred slightly to ensure the game socket is open. */
+            var sendDiscordProfile = function() {
+                if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                    var avatarStr = discordUser.avatar || '';
+                    var view = legendmod.createView(2 + avatarStr.length + 1);
+                    view.setUint8(0, 204); // opcode
+                    view.setUint8(1, 3);   // auth_provider = discord
+                    for (var ci = 0; ci < avatarStr.length; ci++) {
+                        view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
+                    }
+                    view.setUint8(2 + avatarStr.length, 0); // null terminator
+                    legendmod.sendMessage(view);
+                    console.log('[LW Discord] Sent opcode 204 (auth_provider=3, avatar=' + avatarStr.substring(0, 60) + '...)');
+                } else {
+                    /* Retry after 2 seconds if socket not ready */
+                    setTimeout(sendDiscordProfile, 2000);
+                }
+            };
+            setTimeout(sendDiscordProfile, 500);
+        }
+
+        /* Update storageInfo context for Discord */
+        var st = window.storageInfo || window.defaultSt;
+        if (st) {
+            st.context = 'discord';
+            st.loginIntent = '1';
+            if (st.userInfo) {
+                if (discordUser.avatar) st.userInfo.picture = discordUser.avatar;
+                if (discordUser.id) st.userInfo.socialId = discordUser.id;
+            }
+            if (window.updateStorage) window.updateStorage();
+        }
+
+        /* Register gplusRelogin so the engine can re-auth on reconnect.
+         * The engine calls window.gplusRelogin(callback) for authSource=3.
+         * We re-use the cached Discord token from localStorage. */
+        window.gplusRelogin = function(callback) {
+            var cached = localStorage.getItem('legendmod_discord');
+            if (cached) {
+                try {
+                    var user = JSON.parse(cached);
+                    if (user && user.token && window.MC) {
+                        var reAuth = {
+                            access_token: user.token,
+                            expires_in: 604800
+                        };
+                        MC.doLoginWithGPlus(reAuth);
+                        console.log('[LW Discord] gplusRelogin: re-authenticated with cached Discord token');
+                    }
+                } catch(e) {
+                    console.error('[LW Discord] gplusRelogin error:', e);
+                }
+            }
+            if (callback) callback();
+        };
+
+        console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
+    };
+
+    /* LW: Auto-login with cached Discord token on page load (if previously logged in).
+     * Only on LegendWorld domains, deferred to ensure MC is ready. */
+    (function() {
+        var cached = localStorage.getItem('legendmod_discord');
+        if (cached) {
+            try {
+                var user = JSON.parse(cached);
+                if (user && user.token && user.id) {
+                    var tryAutoLogin = function() {
+                        if (window.MC && window._lw_applyDiscordLogin) {
+                            window._lw_applyDiscordLogin(user);
+                            console.log('[LW Discord] Auto-login from cached session');
+                        } else {
+                            setTimeout(tryAutoLogin, 1000);
+                        }
+                    };
+                    /* Wait for MC to initialize (Core.onReady) */
+                    setTimeout(tryAutoLogin, 3000);
+                }
+            } catch(e) {}
+        }
+    })();
+
     /* LW: Replace the Facebook login button with Discord login on our domains.
      * On agar.io the original Facebook button is left untouched.
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
@@ -186,61 +306,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                  * MC.doLoginWithGPlus() sends the token to the server via
                                  * opcode 102 (protobuf login message) — same as Google.
                                  * The server hashes the token into a UID regardless of source. */
-                                if (window.MC) {
-                                    /* Set profile picture to Discord avatar */
-                                    if (discordUser.avatar) {
-                                        MC.setProfilePicture(discordUser.avatar);
-                                        var pics = document.querySelectorAll('.agario-profile-picture');
-                                        for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
-                                        window.googlePic = discordUser.avatar;
-                                    }
-                                    /* Set social ID to Discord user ID */
-                                    MC.setSocialId(discordUser.id);
-
-                                    /* Build auth response object matching Google's format.
-                                     * The game engine just needs access_token and expires_in. */
-                                    var authResponse = {
-                                        access_token: discordUser.token,
-                                        expires_in: 604800 /* Discord tokens last ~7 days */
-                                    };
-                                    MC.doLoginWithGPlus(authResponse);
-                                    MC.onGoogleLoginComplete(true);
-                                    MC.showInstructionsPanel(true);
-
-                                    /* Send opcode 204 to game server with Discord profile data.
-                                     * Format: [204][auth_provider=3][avatar URL bytes][0x00]
-                                     * Deferred slightly to ensure the game socket is open. */
-                                    var sendDiscordProfile = function() {
-                                        if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
-                                            var avatarStr = discordUser.avatar || '';
-                                            var view = legendmod.createView(2 + avatarStr.length + 1);
-                                            view.setUint8(0, 204); // opcode
-                                            view.setUint8(1, 3);   // auth_provider = discord
-                                            for (var ci = 0; ci < avatarStr.length; ci++) {
-                                                view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
-                                            }
-                                            view.setUint8(2 + avatarStr.length, 0); // null terminator
-                                            legendmod.sendMessage(view);
-                                            console.log('[LW Discord] Sent opcode 204 (auth_provider=3, avatar=' + avatarStr.substring(0, 60) + '...)');
-                                        } else {
-                                            /* Retry once after 2 seconds if socket not ready */
-                                            setTimeout(sendDiscordProfile, 2000);
-                                        }
-                                    };
-                                    setTimeout(sendDiscordProfile, 500);
-                                }
-
-                                /* Update storageInfo context for Discord */
-                                var st = window.storageInfo || window.defaultSt;
-                                if (st) {
-                                    st.context = 'discord';
-                                    st.loginIntent = '1';
-                                    if (st.userInfo) {
-                                        if (discordUser.avatar) st.userInfo.picture = discordUser.avatar;
-                                        if (discordUser.id) st.userInfo.socialId = discordUser.id;
-                                    }
-                                    if (window.updateStorage) window.updateStorage();
-                                }
+                                window._lw_applyDiscordLogin(discordUser);
 
                                 /* Close the popup if still open */
                                 try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
