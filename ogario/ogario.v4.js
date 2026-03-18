@@ -14820,6 +14820,15 @@ Game name     : ${i.displayName}<br/>
                 if (skin) {
                     cellUpdateCells.skin = skin;
                 }
+                /* LW Potion detection: server sends name="$potion" instead of a
+                 * skin URL (saves bandwidth). Client assigns the image locally. */
+                if (name === '$potion') {
+                    cellUpdateCells.skin = 'https://jimboy3100.github.io/img/skins/potion-blue.jpg';
+                    cellUpdateCells.nick = '';
+                    cellUpdateCells.isPotion = true;
+                    cellUpdateCells.isFood = false;
+                    name = '';
+                }
                 if (extendedFlags & 4) {
                     accountID = view.readUInt32LE(offset);
                     offset += 4;
