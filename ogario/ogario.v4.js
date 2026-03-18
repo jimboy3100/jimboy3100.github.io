@@ -285,6 +285,36 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.innerHTML = '<span class="discord-icon" style="display:inline-block;width:24px;height:24px;position:absolute;left:18px;top:50%;margin-top:-12px;margin-left:-8px;background-size:contain;background-repeat:no-repeat;background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTIwLjMxNyA0LjM2OTVhMTkuNzkgMTkuNzkgMCAwMC00Ljg4NS0xLjUxNTUuMDc1Ljc1IDAgMDAtLjA3My4wMzY1Yy0uMjEuMzc0LS40NDQuNzY1LS42MDggMS4yMjQ1LTEuNzY1LS4yNjQ1LTMuNTAyLS4yNjQ1LTUuMjI3IDBhMTIuMzYgMTIuMzYgMCAwMC0uNjE3LTEuMjI0NS4wNzguMDc4IDAgMDAtLjA3NC0uMDM2NSAxOS43MzUgMTkuNzM1IDAgMDAtNC44ODUgMS41MTU1LjA3LjA3IDAgMDAtLjAzMjcuMDI4QzEuMjcxOCA5Ljg0MzUuMjkyNyAxNS4xNjA1Ljc2NTcgMjAuNDA4NWEuMDgyLjA4MiAwIDAwLjAzMS4wNTYgMTkuOSAxOS45IDAgMDA1Ljk5MyAzLjAzLjA3OC4wNzggMCAwMC4wODQtLjAyOCAxNC4wOSAxNC4wOSAwIDAwMS4yMjYtMS45OTQuMDc2LjA3NiAwIDAwLS4wNDItLjEwNjUgMTMuMSAxMy4xIDAgMDEtMS44NzItLjg5MjUuMDc3LjA3NyAwIDAxLS4wMDc1LS4xMjhjLjEyNi0uMDk0LjI1Mi0uMTkxNS4zNzItLjI5YS4wNzQuMDc0IDAgMDEuMDc3NS0uMDFjMy45MjcgMS43OTIgOC4xOCAxLjc5MiAxMi4wNjEgMGEuMDc0LjA3NCAwIDAxLjA3ODUuMDA5Yy4xMi4wOTkuMjQ2LjE5Ny4zNzMuMjkxYS4wNzcuMDc3IDAgMDEtLjAwNjUuMTI4IDEyLjMgMTIuMyAwIDAxLTEuODczLjg5MjUuMDc2LjA3NiAwIDAwLS4wNDEuMTA3NSAxNS45IDE1LjkgMCAwMDEuMjI2IDEuOTkzLjA3Ni4wNzYgMCAwMC4wODQuMDI4IDEuODQ0IDEuODQ0IDAgMDA1Ljk5NC0zLjAzLjA3Ny4wNzcgMCAwMC4wMzItLjA1NWMuNTYtNS44MDUtLjkzOC0xMC44NS00LjE3Mi0xNi4wMTVhLjA2MS4wNjEgMCAwMC0uMDMxLS4wMjkyek04LjAyIDE2LjczMTVjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6bTcuOTc1IDBjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6Ii8+PC9zdmc+)"></span>' +
                                    '<span class="btn-text">Sign in with Discord</span>';
 
+            /* Listen for postMessage from the callback popup (primary channel).
+             * Chrome's storage partitioning blocks localStorage sharing between
+             * popup and parent when the popup navigates through a cross-origin
+             * redirect (discord.com). postMessage bypasses this entirely. */
+            var discordPopupRef = null;
+            window.addEventListener('message', function(event) {
+                /* Only accept messages from our callback domain */
+                if (event.origin !== 'https://expanding.land') return;
+                if (!event.data || event.data.type !== 'legendmod_discord_login') return;
+
+                var discordUser = event.data.data;
+                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
+
+                if (discordUser && discordUser.id && discordUser.token) {
+                    /* Also save to localStorage for reconnect/reload */
+                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+
+                    window.legendmod_discordUser = discordUser;
+                    console.log('[LW Discord DBG] Applying login via postMessage...');
+                    window._lw_applyDiscordLogin(discordUser);
+
+                    /* Close popup */
+                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch(ex) {}
+
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
+                    }
+                }
+            });
+
             discordBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -301,6 +331,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 var top = (screen.height - h) / 2;
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+                discordPopupRef = popup;
                 console.log('[LW Discord DBG] Popup opened:', popup ? 'OK' : 'BLOCKED');
 
                 var pollCount = 0;
