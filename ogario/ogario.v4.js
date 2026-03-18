@@ -127,7 +127,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     })();
 
     /* LW: Replace the Facebook login button with Discord login on our domains.
-     * On agar.io the original Facebook button is left untouched. */
+     * On agar.io the original Facebook button is left untouched.
+     * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
+     * which sends it to the game server via opcode 102 — same path as Google. */
     (function() {
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback&scope=identify+email';
 
@@ -136,7 +138,6 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             var fbBtn = document.querySelector('[data-itr="page_menu_login_facebook"]');
             if (!fbBtn) fbBtn = document.querySelector('button[onclick*="facebookLogin"]');
             if (!fbBtn) {
-                /* Also try finding by the btn-fb class */
                 fbBtn = document.querySelector('.btn-fb .btn-text') || document.querySelector('.btn-fb');
             }
             if (!fbBtn) {
@@ -159,6 +160,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+
+                /* Clear any stale Discord data from a previous session */
+                localStorage.removeItem('legendmod_discord');
+
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
                 var left = (screen.width - w) / 2;
@@ -166,23 +171,75 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
 
-                /* Poll localStorage for the Discord auth result */
+                /* Poll localStorage for the Discord auth result from the callback page */
                 var poll = setInterval(function() {
                     try {
                         var data = localStorage.getItem('legendmod_discord');
                         if (data) {
                             var discordUser = JSON.parse(data);
-                            if (discordUser && discordUser.id) {
+                            if (discordUser && discordUser.id && discordUser.token) {
                                 clearInterval(poll);
-                                /* Handle Discord login in the game */
                                 window.legendmod_discordUser = discordUser;
                                 console.log('[LW Discord] Login successful:', discordUser.username, discordUser.id);
+
+                                /* Feed the Discord token into the game's auth system.
+                                 * MC.doLoginWithGPlus() sends the token to the server via
+                                 * opcode 102 (protobuf login message) — same as Google.
+                                 * The server hashes the token into a UID regardless of source. */
+                                if (window.MC) {
+                                    /* Set profile picture to Discord avatar */
+                                    if (discordUser.avatar) {
+                                        MC.setProfilePicture(discordUser.avatar);
+                                        var pics = document.querySelectorAll('.agario-profile-picture');
+                                        for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
+                                        window.googlePic = discordUser.avatar;
+                                    }
+                                    /* Set social ID to Discord user ID */
+                                    MC.setSocialId(discordUser.id);
+
+                                    /* Build auth response object matching Google's format.
+                                     * The game engine just needs access_token and expires_in. */
+                                    var authResponse = {
+                                        access_token: discordUser.token,
+                                        expires_in: 604800 /* Discord tokens last ~7 days */
+                                    };
+                                    MC.doLoginWithGPlus(authResponse);
+                                    MC.onGoogleLoginComplete(true);
+                                    MC.showInstructionsPanel(true);
+                                }
+
+                                /* Update storageInfo context for Discord */
+                                var st = window.storageInfo || window.defaultSt;
+                                if (st) {
+                                    st.context = 'discord';
+                                    st.loginIntent = '1';
+                                    if (st.userInfo) {
+                                        if (discordUser.avatar) st.userInfo.picture = discordUser.avatar;
+                                        if (discordUser.id) st.userInfo.socialId = discordUser.id;
+                                    }
+                                    if (window.updateStorage) window.updateStorage();
+                                }
+
+                                /* Close the popup if still open */
+                                try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
+
                                 toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
                             }
                         }
-                    } catch(err) {}
-                    /* Stop polling if popup closed */
-                    if (popup && popup.closed) clearInterval(poll);
+                    } catch(err) {
+                        console.error('[LW Discord] Poll error:', err);
+                    }
+                    /* Stop polling if popup closed without completing */
+                    if (popup && popup.closed) {
+                        clearInterval(poll);
+                        /* Check one last time after popup closes */
+                        setTimeout(function() {
+                            var finalData = localStorage.getItem('legendmod_discord');
+                            if (!finalData) {
+                                console.log('[LW Discord] Popup closed without completing auth');
+                            }
+                        }, 500);
+                    }
                 }, 1000);
             });
 
