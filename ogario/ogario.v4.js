@@ -223,28 +223,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
     };
 
-    /* LW: Auto-login with cached Discord token on page load (if previously logged in).
-     * Only on LegendWorld domains, deferred to ensure MC is ready. */
-    (function() {
-        var cached = localStorage.getItem('legendmod_discord');
-        if (cached) {
-            try {
-                var user = JSON.parse(cached);
-                if (user && user.token && user.id) {
-                    var tryAutoLogin = function() {
-                        if (window.MC && window._lw_applyDiscordLogin) {
-                            window._lw_applyDiscordLogin(user);
-                            console.log('[LW Discord] Auto-login from cached session');
-                        } else {
-                            setTimeout(tryAutoLogin, 1000);
-                        }
-                    };
-                    /* Wait for MC to initialize (Core.onReady) */
-                    setTimeout(tryAutoLogin, 3000);
-                }
-            } catch(e) {}
-        }
-    })();
+    /* LW: Auto-login removed — users must explicitly click Sign In.
+     * Cached Discord data in localStorage is only used for gplusRelogin reconnects. */
 
     /* LW: Replace the Facebook login button with Discord login on our domains.
      * On agar.io the original Facebook button is left untouched.
