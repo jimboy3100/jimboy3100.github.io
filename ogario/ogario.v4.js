@@ -401,10 +401,28 @@ function deleteGamemode(temp) {
             core.connect('wss://ffa.legendmod.ml:8080');
         }
         // Imsolo & Agar2 private server connections (multi-protocol support)
-        else if ($('#gamemode').val() == 6) {
-            core.connect('wss://imsolo.pro:2109/');
-        } else if ($('#gamemode').val() == 7) {
-            core.connect('wss://imsolo.pro:2108/');
+        // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
+        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7) {
+            (function connectImsolo(val) {
+                var imsoloLbMap = {
+                    6: { url: 'https://loadbalancer.static.imsolo.pro/getserver/selfeed', fallback: 'wss://imsolo.pro:2109/' },
+                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://imsolo.pro:2108/' }
+                };
+                var cfg = imsoloLbMap[val];
+                if (!cfg) return;
+                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                    if (data && data.gameurl) {
+                        console.log('%c[ImSolo]%c Load balancer: ' + data.gameurl, 'color:#f3a', 'color:inherit');
+                        core.connect(data.gameurl);
+                    } else {
+                        console.log('%c[ImSolo]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
+                        core.connect(cfg.fallback);
+                    }
+                }).catch(function(err) {
+                    console.log('%c[ImSolo]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
+                    core.connect(cfg.fallback);
+                });
+            })(parseInt($('#gamemode').val()));
         } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
         } else if ($('#gamemode').val() == 14) {
