@@ -9,7 +9,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
      * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
     if (window.EnvConfig) {
-        window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+        window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hem.apps.googleusercontent.com";
     }
 }
 /* Source script - test

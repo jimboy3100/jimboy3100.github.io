@@ -9,7 +9,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
      * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
     if (window.EnvConfig) {
-        window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+        window.EnvConfig.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hem.apps.googleusercontent.com";
     }
 
     /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
@@ -17,7 +17,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
      * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
     (function() {
-        var LW_CLIENT_ID = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+        var LW_CLIENT_ID = "317663835351-aurr32dabsfaan9b367vmamutq692hem.apps.googleusercontent.com";
         var gisLoaded = false;
         var tokenClient = null;
 
