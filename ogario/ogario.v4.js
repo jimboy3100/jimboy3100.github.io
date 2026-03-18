@@ -251,6 +251,38 @@ function deleteGamemode(temp) {
         }, {
             text: 'Beta Party v2 #2',
             value: 18
+        }, {
+            text: '── Agar2 EU ──',
+            value: 0,
+            disabled: true
+        }, {
+            text: 'Agar2 EU FFA',
+            value: 8001
+        }, {
+            text: 'Agar2 EU Experimental',
+            value: 8002
+        }, {
+            text: 'Agar2 EU Teams',
+            value: 8003
+        }, {
+            text: 'Agar2 EU Party',
+            value: 8004
+        }, {
+            text: '── Agar2 NA ──',
+            value: 0,
+            disabled: true
+        }, {
+            text: 'Agar2 NA FFA',
+            value: 8005
+        }, {
+            text: 'Agar2 NA Experimental',
+            value: 8006
+        }, {
+            text: 'Agar2 NA Teams',
+            value: 8007
+        }, {
+            text: 'Agar2 NA Party',
+            value: 8008
         }
         /* Other private servers (commented out)
         , {
@@ -437,6 +469,26 @@ function deleteGamemode(temp) {
             core.connect('wss://delta-ffa.glitch.me');
         } else if ($('#gamemode').val() == 4002) {
             core.connect('wss://delta-server.fly.dev');
+        }
+        // Agar2 EU servers
+        else if ($('#gamemode').val() == 8001) {
+            core.connect('wss://live-arena-f9sn3a-eu.agar2.com');
+        } else if ($('#gamemode').val() == 8002) {
+            core.connect('wss://live-arena-ex9pm4-eu.agar2.com');
+        } else if ($('#gamemode').val() == 8003) {
+            core.connect('wss://live-arena-t13msx-eu.agar2.com');
+        } else if ($('#gamemode').val() == 8004) {
+            core.connect('wss://live-arena-p4r1ym-eu.agar2.com');
+        }
+        // Agar2 NA servers
+        else if ($('#gamemode').val() == 8005) {
+            core.connect('wss://live-arena-fmpv2x-na.agar2.com');
+        } else if ($('#gamemode').val() == 8006) {
+            core.connect('wss://live-arena-ex9ml2-na.agar2.com');
+        } else if ($('#gamemode').val() == 8007) {
+            core.connect('wss://live-arena-te4m2v-na.agar2.com');
+        } else if ($('#gamemode').val() == 8008) {
+            core.connect('wss://live-arena-ml3s4z-na.agar2.com');
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
