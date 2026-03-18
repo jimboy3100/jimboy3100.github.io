@@ -125,6 +125,78 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             setTimeout(setupLoginOverride, 1000);
         }
     })();
+
+    /* LW: Replace the Facebook login button with Discord login on our domains.
+     * On agar.io the original Facebook button is left untouched. */
+    (function() {
+        var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback&scope=identify+email';
+
+        function replaceWithDiscord() {
+            /* Find the Facebook button by its onclick handler or data-itr attribute */
+            var fbBtn = document.querySelector('[data-itr="page_menu_login_facebook"]');
+            if (!fbBtn) fbBtn = document.querySelector('button[onclick*="facebookLogin"]');
+            if (!fbBtn) {
+                /* Also try finding by the btn-fb class */
+                fbBtn = document.querySelector('.btn-fb .btn-text') || document.querySelector('.btn-fb');
+            }
+            if (!fbBtn) {
+                setTimeout(replaceWithDiscord, 500);
+                return;
+            }
+
+            /* Walk up to the actual button element */
+            var btnEl = fbBtn;
+            while (btnEl && btnEl.tagName !== 'BUTTON') btnEl = btnEl.parentElement;
+            if (!btnEl) btnEl = fbBtn.closest('button') || fbBtn;
+
+            /* Create new Discord button */
+            var discordBtn = document.createElement('button');
+            discordBtn.className = btnEl.className.replace('btn-fb', 'btn-discord');
+            discordBtn.style.cssText = 'background-color: #5865F2; border-color: #5865F2; color: #fff;';
+            discordBtn.innerHTML = '<span class="fab fa-discord fa-lg" style="position: absolute; left: 15px; top: 12px;"></span>' +
+                                   '<span class="btn-text">Sign in with Discord</span>';
+
+            discordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                /* Open Discord auth in a popup */
+                var w = 500, h = 700;
+                var left = (screen.width - w) / 2;
+                var top = (screen.height - h) / 2;
+                var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
+                    'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+
+                /* Poll localStorage for the Discord auth result */
+                var poll = setInterval(function() {
+                    try {
+                        var data = localStorage.getItem('legendmod_discord');
+                        if (data) {
+                            var discordUser = JSON.parse(data);
+                            if (discordUser && discordUser.id) {
+                                clearInterval(poll);
+                                /* Handle Discord login in the game */
+                                window.legendmod_discordUser = discordUser;
+                                console.log('[LW Discord] Login successful:', discordUser.username, discordUser.id);
+                                toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
+                            }
+                        }
+                    } catch(err) {}
+                    /* Stop polling if popup closed */
+                    if (popup && popup.closed) clearInterval(poll);
+                }, 1000);
+            });
+
+            /* Replace the Facebook button with Discord */
+            btnEl.parentNode.replaceChild(discordBtn, btnEl);
+            console.log('[LW Discord] Facebook button replaced with Discord');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(replaceWithDiscord, 1500); });
+        } else {
+            setTimeout(replaceWithDiscord, 1500);
+        }
+    })();
 }
 /* Source script - test
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
