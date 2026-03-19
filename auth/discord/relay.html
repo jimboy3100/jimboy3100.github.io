@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discord Login - Completing...</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0e17;
+      color: #c8d6e5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #111827;
+      border-radius: 12px;
+      padding: 40px;
+      border: 1px solid #1e293b;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    h2 { color: #5865F2; margin-bottom: 8px; }
+    .status { color: #64748b; margin-bottom: 20px; }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #5865F2;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    .error { color: #f87171; }
+    .info { color: #64748b; font-size: 0.85em; margin-top: 16px; }
+    #debug { text-align: left; font-family: monospace; font-size: 11px; color: #4ade80;
+             background: #0d1117; padding: 12px; border-radius: 8px; margin-top: 16px;
+             max-height: 200px; overflow-y: auto; white-space: pre-wrap; display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="https://jimboy3100.github.io/banners/icon128croped.gif" alt="LegendMod" style="width:64px;height:64px;margin-bottom:16px;border-radius:12px;">
+    <div id="success">
+      <h2>✅ Discord Linked!</h2>
+      <p class="status">Closing this window...</p>
+      <p class="info">If this window doesn't close, <a href="javascript:window.close()" class="btn" style="padding:8px 16px;font-size:0.9em">Close Window</a></p>
+    </div>
+    <div id="error-msg" style="display:none">
+      <h2 class="error">Login Failed</h2>
+      <p class="status" id="error-text"></p>
+      <br>
+      <a href="https://expanding.land" class="btn">Back to Game</a>
+    </div>
+    <div id="debug"></div>
+  </div>
+
+  <script>
+    var debugEl = document.getElementById('debug');
+    function dbg(msg) {
+      console.log('[RELAY] ' + msg);
+      debugEl.textContent += msg + '\n';
+    }
+
+    (function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var code = urlParams.get('code');
+
+      if (!code) {
+        document.getElementById('success').style.display = 'none';
+        document.getElementById('error-msg').style.display = 'block';
+        document.getElementById('error-text').textContent = 'No authorization code received.';
+        return;
+      }
+
+      dbg('Relay page loaded on origin: ' + window.location.origin);
+      dbg('Code length: ' + code.length);
+
+      /* Build Discord user data with the code as token */
+      var discordData = {
+        id: 'discord_' + code.substring(0, 16),
+        username: 'Discord User',
+        globalName: 'Discord User',
+        avatar: '',
+        email: '',
+        token: code
+      };
+
+      /* Method 1: BroadcastChannel — same-origin, most reliable */
+      try {
+        var bc = new BroadcastChannel('legendmod_discord');
+        bc.postMessage({ type: 'legendmod_discord_login', data: discordData });
+        dbg('BroadcastChannel sent!');
+        bc.close();
+      } catch(e) {
+        dbg('BroadcastChannel failed: ' + e.message);
+      }
+
+      /* Method 2: localStorage — same-origin, works as fallback */
+      try {
+        localStorage.setItem('legendmod_discord', JSON.stringify(discordData));
+        dbg('localStorage SET OK');
+      } catch(e) {
+        dbg('localStorage failed: ' + e.message);
+      }
+
+      /* Method 3: postMessage to opener — may work if opener still exists */
+      if (window.opener) {
+        try {
+          var msg = { type: 'legendmod_discord_login', data: discordData };
+          window.opener.postMessage(msg, '*');
+          dbg('postMessage sent to opener!');
+        } catch(e) {
+          dbg('postMessage failed: ' + e.message);
+        }
+      } else {
+        dbg('window.opener is null (expected for cross-origin popup)');
+      }
+
+      /* Auto-close after 1.5 seconds */
+      setTimeout(function() {
+        dbg('Closing popup...');
+        window.close();
+      }, 1500);
+    })();
+  </script>
+</body>
+</html>

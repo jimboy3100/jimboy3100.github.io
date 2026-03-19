@@ -320,9 +320,32 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
      * which sends it to the game server via opcode 102 — same path as Google. */
     (function() {
-        var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email';
+        var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
 
         function replaceWithDiscord() {
+            /* LW: BroadcastChannel listener — PRIMARY method for receiving Discord data.
+             * The relay page (same origin) sends via BroadcastChannel, which is
+             * 100% reliable for same-origin communication. */
+            try {
+                var bc = new BroadcastChannel('legendmod_discord');
+                bc.onmessage = function(event) {
+                    if (!event.data || event.data.type !== 'legendmod_discord_login') return;
+                    var discordUser = event.data.data;
+                    console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
+                    if (discordUser && discordUser.id && discordUser.token) {
+                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+                        window.legendmod_discordUser = discordUser;
+                        window._lw_applyDiscordLogin(discordUser);
+                        if (typeof toastr !== 'undefined') {
+                            toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
+                        }
+                    }
+                };
+                console.log('[LW Discord] BroadcastChannel listener registered');
+            } catch(e) {
+                console.log('[LW Discord] BroadcastChannel not supported:', e.message);
+            }
+
             /* Find the Facebook button by its onclick handler or data-itr attribute */
             var fbBtn = document.querySelector('[data-itr="page_menu_login_facebook"]');
             if (!fbBtn) fbBtn = document.querySelector('button[onclick*="facebookLogin"]');
