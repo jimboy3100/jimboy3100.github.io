@@ -5,7 +5,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://jimboy3100.github.io/sitemap.xml
+Sitemap: https://www.legendmod.ml/sitemap.xml
 
 # Disallow internal/dev paths
 Disallow: /server-side/
