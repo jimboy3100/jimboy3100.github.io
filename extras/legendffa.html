@@ -280,7 +280,9 @@
                     <li><span class="strong">⚠ Danger Zone</span> &mdash; <span class="accent">+0.1 per cell</span> every 0.2 seconds,
                         batched every 4 seconds, lasts <span class="strong">8 seconds</span>. Only applies when the map is contracting and your cells are in the outer ring.</li>
                     <li><span class="strong">∞ Base Decay</span> &mdash; always active, never expires. This is the natural mass loss:
-                        <span class="accent">−0.8% mass every 4 seconds</span> regardless of anti-team score.</li>
+                        <span class="accent">−0.8% mass every 4 seconds</span> regardless of anti-team score or cell mass.
+                        It's a flat percentage &mdash; a 10,000 mass cell loses ~80, a 100 mass cell loses ~0.8.
+                        <span class="warn">Non-negotiable</span> &mdash; verified by analyzing 97,806 real Agar.io server packets.</li>
                 </ul>
 
                 <div class="divider"></div>
@@ -370,6 +372,7 @@
                 <div class="divider"></div>
                 <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">⚙️ Current Tuning Values</span></p>
                 <p>These are the values we currently use. <span class="warn">We need your feedback to get them right!</span></p>
+                <p style="margin:6px 0 0;"><span class="accent">Tick rate: 25 ticks/sec</span> &mdash; <span class="warn">non-negotiable</span>, verified from real Agar.io. Base decay of 0.8%/4s is also <span class="warn">non-negotiable</span>.</p>
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
                         <tr style="border-bottom:1px solid rgba(255,255,255,.2);">

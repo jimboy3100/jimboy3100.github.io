@@ -7877,7 +7877,14 @@ function thelegendmodproject() {
         },
         setParty() {
             let value = $('#party-token').val();
-            this.gameMode = ogario.gameMode = $('#gamemode').val();
+            var gmVal = $('#gamemode').val();
+            var gmNum = parseInt(gmVal);
+            // Agar2 servers (8001-8008): gameMode already set by async handler, don't overwrite
+            if (gmNum >= 8001 && gmNum <= 8008) {
+                // Keep existing gameMode set by Agar2 connection handler
+            } else {
+                this.gameMode = ogario.gameMode = gmVal;
+            }
             this.setQuest();
             if (this.gameMode !== ':party' || !value) {
                 return;
@@ -12294,7 +12301,7 @@ function thelegendmodproject() {
             var s = 0;
             var opcode = data.getUint8(s++);
             /* LW DEBUG: trace all opcodes > 90 to find the 102 response */
-            if (opcode > 90) console.log('[LW OPCODE DBG]', opcode, 'byteLen:', data.byteLength);
+
             switch (54 === opcode && (opcode = 53), opcode) {
 
 
@@ -13484,7 +13491,7 @@ function thelegendmodproject() {
                         di.decayIntervalSecs = data.getUint8(_off++);
                         di.active = true;
                     } else {
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
+
                     }
             }
         },
@@ -13508,7 +13515,7 @@ function thelegendmodproject() {
                 return
             }
             const response = window.decodeMobileData(msg);
-            console.log("[LW-DEBUG] 102 decoded:", JSON.stringify(response, null, 2)); //ALL LOGIN AND PROFILE RESPONSE INFO
+
             this.unpackageMessage(response);
         },
         unpackageMessage: function (r) {
