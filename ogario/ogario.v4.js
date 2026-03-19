@@ -15538,6 +15538,10 @@ Game name     : ${i.displayName}<br/>
 
             //this.ctx.finish2D();
             if (LM.gameMode === ':teams') {
+                // Agar2: redraw pie if canvas wasn't ready when op50 first arrived
+                if (LM.serverType === 'agar2' && LM.pieChart && LM.pieChart.length && this.canvasWidth > 0) {
+                    this.drawPieChart();
+                }
                 if (this.pieChart && this.pieChart.width) {
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
