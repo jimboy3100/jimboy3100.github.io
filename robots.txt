@@ -1,0 +1,12 @@
+# Legend Mod - https://www.legendmod.ml/
+# Allow all crawlers full access
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://jimboy3100.github.io/sitemap.xml
+
+# Disallow internal/dev paths
+Disallow: /server-side/
+Disallow: /.git/
