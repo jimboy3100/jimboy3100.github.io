@@ -588,10 +588,111 @@
             </div>
         </div>
         <div id="Scripts" class="skins-wrapper" style="display: block;">
-            <h3 class="project-tagline">Private servers: <a href="https://jimboy3100.github.io/play"
-                    target="_blank"><b>https://jimboy3100.github.io/play</b></a> <a style="font-size: 12px;"
-                    href="https://jimboy3100.github.io/playWS.html" target="_blank"><b>No SSL servers</b></a></h3>
-            <h3 class="project-tagline"></h3>
+            <!-- ═══ Expanding Land Promo Banner ═══ -->
+            <div id="expanding-land-promo" style="
+                background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+                border-radius: 18px; padding: 32px 28px; margin: 10px 0 20px;
+                position: relative; overflow: hidden;
+                box-shadow: 0 8px 32px rgba(48,43,99,0.5), 0 0 60px rgba(124,58,237,0.15);
+                border: 1px solid rgba(167,139,250,0.2);
+            ">
+                <!-- Animated background particles -->
+                <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+                    <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.15),transparent 70%);top:-60px;right:-40px;animation:elFloat 6s ease-in-out infinite;"></div>
+                    <div style="position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,0.1),transparent 70%);bottom:-30px;left:-20px;animation:elFloat 8s ease-in-out infinite reverse;"></div>
+                    <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.08),transparent 70%);top:40%;left:60%;animation:elFloat 5s ease-in-out infinite 1s;"></div>
+                </div>
+                <style>
+                    @keyframes elFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.1)} }
+                    @keyframes elPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+                    @keyframes elSlideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+                    @keyframes elCount { from{opacity:0;transform:scale(0.5)} to{opacity:1;transform:scale(1)} }
+                    #expanding-land-promo * { position: relative; z-index: 1; }
+                </style>
+
+                <!-- Live indicator + Title -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;animation:elSlideUp 0.6s ease both;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#f87171;letter-spacing:0.05em;text-transform:uppercase;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;animation:elPulse 1.5s ease-in-out infinite;"></span>
+                        LIVE
+                    </span>
+                    <span style="font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:500;">New Game by Legend Clan</span>
+                </div>
+
+                <!-- Game title -->
+                <h2 style="font-family:'Inter',sans-serif !important;font-size:1.8rem !important;font-weight:800 !important;color:#fff !important;margin:8px 0 4px !important;padding:0 !important;border:none !important;letter-spacing:-0.03em;line-height:1.2;animation:elSlideUp 0.6s ease 0.1s both;border-image:none !important;">
+                    🌍 Expanding Land
+                </h2>
+                <p style="color:rgba(255,255,255,0.65);font-size:0.92rem;margin:0 0 18px;line-height:1.5;max-width:500px;animation:elSlideUp 0.6s ease 0.2s both;">
+                    The ultimate agar.io private server experience — massive maps that grow with you.
+                </p>
+
+                <!-- Stats row -->
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px;animation:elSlideUp 0.6s ease 0.3s both;">
+                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;flex:1;min-width:130px;text-align:center;">
+                        <div style="font-size:1.6rem;font-weight:800;color:#a78bfa;line-height:1;animation:elCount 0.8s ease 0.5s both;">720</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Players</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;flex:1;min-width:130px;text-align:center;">
+                        <div style="font-size:1.6rem;font-weight:800;color:#14b8a6;line-height:1;animation:elCount 0.8s ease 0.6s both;">200+</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 20px;flex:1;min-width:130px;text-align:center;">
+                        <div style="font-size:1.6rem;font-weight:800;color:#fbbf24;line-height:1;animation:elCount 0.8s ease 0.7s both;">∞</div>
+                        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Resizable Map</div>
+                    </div>
+                </div>
+
+                <!-- Feature pills -->
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;animation:elSlideUp 0.6s ease 0.35s both;">
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#c4b5fd;">
+                        <i class="fas fa-expand-arrows-alt" style="font-size:0.65rem;"></i> Dynamic Map
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#5eead4;">
+                        <i class="fas fa-flask" style="font-size:0.65rem;"></i> Potions
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#fde68a;">
+                        <i class="fas fa-robot" style="font-size:0.65rem;"></i> 700 AI Bots
+                    </span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#fca5a5;">
+                        <i class="fas fa-shield-alt" style="font-size:0.65rem;"></i> Anti-Team
+                    </span>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div style="display:flex;flex-wrap:wrap;gap:12px;animation:elSlideUp 0.6s ease 0.4s both;">
+                    <a href="https://expanding.land/" target="_blank" style="
+                        display:inline-flex;align-items:center;gap:10px;
+                        padding:14px 32px;
+                        background:linear-gradient(135deg,#7c3aed,#9333ea,#a855f7) !important;
+                        color:#fff !important;font-weight:700;font-size:0.95rem;
+                        border-radius:12px;border:none !important;
+                        box-shadow:0 4px 20px rgba(124,58,237,0.4);
+                        transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+                        text-decoration:none !important;letter-spacing:-0.01em;
+                        background-image:linear-gradient(135deg,#7c3aed,#9333ea,#a855f7) !important;
+                        background-size:100% 100% !important;
+                    " onmouseover="this.style.transform='translateY(-3px) scale(1.03)';this.style.boxShadow='0 8px 30px rgba(124,58,237,0.5)'"
+                       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(124,58,237,0.4)'">
+                        <i class="fas fa-play" style="font-size:0.85rem;"></i>
+                        <span style="color:#fff !important;">Play Now</span>
+                    </a>
+                    <a href="https://help.expanding.land/" target="_blank" style="
+                        display:inline-flex;align-items:center;gap:10px;
+                        padding:14px 28px;
+                        background:rgba(255,255,255,0.08) !important;
+                        color:rgba(255,255,255,0.85) !important;font-weight:600;font-size:0.9rem;
+                        border-radius:12px;border:1px solid rgba(255,255,255,0.15) !important;
+                        transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+                        text-decoration:none !important;
+                        background-image:none !important;background-size:unset !important;
+                    " onmouseover="this.style.transform='translateY(-2px)';this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(255,255,255,0.3)'"
+                       onmouseout="this.style.transform='';this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.15)'">
+                        <i class="fas fa-book-open" style="font-size:0.8rem;"></i>
+                        <span style="color:rgba(255,255,255,0.85) !important;">Game Info & Help</span>
+                    </a>
+                </div>
+            </div>
             <span>LM <a href="https://github.com/jimboy3100/jimboy3100.github.io/"
                     target="_blank"><b>Github</b></a> is 100% open source. <a
                     href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/server-side"
