@@ -42,7 +42,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:12px;bottom:clamp(20px,6vh,50px);z-index:100000;' +
+    '#lm-mc-l{position:fixed;left:4px;bottom:clamp(16px,5vh,40px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -193,18 +193,18 @@
     '#overlays{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
 
     /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
-    '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important;' +
+    '#minimap-hud{position:fixed!important;bottom:4px!important;right:4px!important;' +
     'transform:scale(0.5)!important;transform-origin:bottom right!important}' +
-    '#leaderboard-hud{position:fixed!important;top:10px!important;right:10px!important;' +
+    '#leaderboard-hud{position:fixed!important;top:4px!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:top right!important}' +
-    '#top5-hud{position:fixed!important;top:55px!important;left:10px!important;' +
+    '#top5-hud{position:fixed!important;top:45px!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:top left!important}' +
-    '#stats-hud{position:fixed!important;left:10px!important;' +
+    '#stats-hud{position:fixed!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom left!important}' +
-    '#time-hud{position:fixed!important;right:10px!important;' +
+    '#time-hud{position:fixed!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
-    '#chat-box,#messages{position:fixed!important;left:10px!important}' +
-    '#message-box{position:fixed!important;left:50%!important;bottom:82px!important;transform:translate(-50%,0)!important}' +
+    '#chat-box,#messages{position:fixed!important;left:4px!important}' +
+    '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
     '#toast-container{position:fixed!important}' +
 
     /* fullscreen prompt toast */
@@ -1009,7 +1009,7 @@
             var mm = document.getElementById('minimap-hud');
             var vw = window.innerWidth;
             var vh = window.innerHeight;
-            var GAP = 12;
+            var GAP = 8;
 
             if (mm && mm.offsetParent !== null) {
                 var r = mm.getBoundingClientRect();
