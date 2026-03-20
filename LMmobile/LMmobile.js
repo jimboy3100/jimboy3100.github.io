@@ -1,5 +1,5 @@
-// LM Mobile Controls v2.0 — by Jimboy3100
-// Touch controls for mobile: virtual joystick, split, feed,
+// LM Mobile Controls v2.1 — by Jimboy3100
+// Touch controls for mobile: virtual joystick, split, feed, chat,
 // pinch-to-zoom, menu toggle (ESC), and fullscreen button.
 // Styled to match the ogario HUD (teal/navy theme).
 
@@ -12,73 +12,78 @@
     // ── Inject CSS for mobile controls ──────────────────────────
     var style = document.createElement('style');
     style.textContent = [
-        // Button container
+        // Button container — bottom-right
         '#lm-mobile-controls {',
         '  position: fixed; bottom: 0; right: 0; z-index: 100000;',
         '  pointer-events: none; user-select: none; -webkit-user-select: none;',
-        '  padding: 12px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;',
+        '  padding: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;',
         '}',
 
-        // Action buttons (split & feed)
+        // Base button style
         '.lm-btn {',
         '  pointer-events: auto; touch-action: none; cursor: pointer;',
         '  display: flex; align-items: center; justify-content: center;',
         '  border-radius: 50%;',
-        '  background: rgba(0, 36, 62, 0.65);',                 // #00243e at 65%
-        '  border: 2px solid rgba(1, 217, 204, 0.4);',          // #01d9cc border
+        '  background: rgba(0, 36, 62, 0.65);',
+        '  border: 2px solid rgba(1, 217, 204, 0.4);',
         '  box-shadow: 0 0 12px rgba(1, 217, 204, 0.15), inset 0 1px 0 rgba(255,255,255,0.05);',
         '  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);',
-        '  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;',
+        '  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;',
         '  color: rgba(255, 255, 255, 0.9);',
         '  font-family: "Ubuntu", "Roboto", sans-serif;',
         '  font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;',
         '  text-shadow: 0 1px 2px rgba(0,0,0,0.6);',
         '}',
-        '.lm-btn:active, .lm-btn.pressed {',
+        '.lm-btn.pressed {',
         '  transform: scale(0.88);',
-        '  background: rgba(1, 217, 204, 0.3);',
+        '  background: rgba(1, 217, 204, 0.35);',
         '  border-color: rgba(1, 217, 204, 0.8);',
-        '  box-shadow: 0 0 20px rgba(1, 217, 204, 0.35), inset 0 1px 0 rgba(255,255,255,0.1);',
+        '  box-shadow: 0 0 20px rgba(1, 217, 204, 0.4), inset 0 1px 0 rgba(255,255,255,0.1);',
         '}',
 
-        // Large action buttons (split/feed)
+        // Large action buttons (split/feed) — 21vmin for good mobile size
         '.lm-btn-action {',
-        '  width: 72px; height: 72px; font-size: 13px;',
+        '  width: 21vmin; height: 21vmin;',
+        '  min-width: 70px; min-height: 70px;',
+        '  max-width: 110px; max-height: 110px;',
+        '  font-size: 14px;',
         '}',
 
-        // Small utility buttons (menu/fullscreen)
+        // Small utility buttons (menu/fullscreen/chat) — 14vmin
         '.lm-btn-util {',
-        '  width: 48px; height: 48px; font-size: 18px;',
-        '  background: rgba(0, 47, 82, 0.55);',                 // #002f52 at 55%
-        '  border-color: rgba(1, 140, 246, 0.35);',             // #018cf6 border
+        '  width: 14vmin; height: 14vmin;',
+        '  min-width: 50px; min-height: 50px;',
+        '  max-width: 68px; max-height: 68px;',
+        '  font-size: 20px;',
+        '  background: rgba(0, 47, 82, 0.55);',
+        '  border-color: rgba(1, 140, 246, 0.35);',
         '  box-shadow: 0 0 8px rgba(1, 140, 246, 0.1);',
         '}',
-        '.lm-btn-util:active, .lm-btn-util.pressed {',
+        '.lm-btn-util.pressed {',
         '  background: rgba(1, 140, 246, 0.3);',
         '  border-color: rgba(1, 140, 246, 0.8);',
         '  box-shadow: 0 0 16px rgba(1, 140, 246, 0.3);',
         '}',
 
-        // Button icon inside
+        // Icon + label layout inside buttons
         '.lm-btn-icon {',
         '  display: flex; flex-direction: column; align-items: center; gap: 2px;',
         '}',
-        '.lm-btn-icon .lm-icon { font-size: 22px; line-height: 1; }',
-        '.lm-btn-icon .lm-label { font-size: 9px; opacity: 0.7; letter-spacing: 1px; }',
+        '.lm-btn-icon .lm-icon { font-size: min(6vmin, 28px); line-height: 1; }',
+        '.lm-btn-icon .lm-label { font-size: min(2.5vmin, 11px); opacity: 0.7; letter-spacing: 1px; }',
 
-        // Row for util buttons
+        // Rows
         '.lm-util-row {',
-        '  display: flex; gap: 8px; pointer-events: none; margin-bottom: 4px;',
+        '  display: flex; gap: 8px; pointer-events: none;',
         '}',
 
-        // Joystick elements
+        // Joystick
         '.lm-joystick-outer {',
         '  width: 120px; height: 120px; border-radius: 50%;',
         '  background: rgba(0, 36, 62, 0.2);',
         '  border: 2px solid rgba(1, 217, 204, 0.25);',
         '  position: fixed; display: none; z-index: 99998;',
-        '  transform: translate(-50%, -50%);',
-        '  pointer-events: none;',
+        '  transform: translate(-50%, -50%); pointer-events: none;',
         '}',
         '.lm-joystick-inner {',
         '  width: 52px; height: 52px; border-radius: 50%;',
@@ -86,8 +91,7 @@
         '  border: 2px solid rgba(1, 217, 204, 0.5);',
         '  box-shadow: 0 0 10px rgba(1, 217, 204, 0.2);',
         '  position: fixed; display: none; z-index: 99999;',
-        '  transform: translate(-50%, -50%);',
-        '  pointer-events: none;',
+        '  transform: translate(-50%, -50%); pointer-events: none;',
         '}',
 
         // Zoom indicator
@@ -101,19 +105,33 @@
         '}',
         '.lm-zoom-indicator.visible { opacity: 1; }',
 
-        // Hide controls when main menu is open
+        // Chat send bar (shown when chat is focused)
+        '#lm-chat-send-bar {',
+        '  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100002;',
+        '  display: none; background: rgba(0, 36, 62, 0.9);',
+        '  border-top: 2px solid rgba(1, 217, 204, 0.5);',
+        '  padding: 8px 12px; text-align: right;',
+        '}',
+        '#lm-chat-send-btn {',
+        '  background: #01d9cc; color: #00243e; border: none; border-radius: 6px;',
+        '  padding: 10px 28px; font-size: 16px; font-weight: 700;',
+        '  font-family: "Ubuntu", "Roboto", sans-serif;',
+        '  text-transform: uppercase; letter-spacing: 1px; cursor: pointer;',
+        '}',
+        '#lm-chat-send-btn:active { background: #00b9a3; }',
+
+        // Dim controls when menu is visible
         '#helloContainer:not([style*="display: none"]):not([style*="display:none"]) ~ #lm-mobile-controls {',
         '  opacity: 0.3;',
         '}',
-
     ].join('\n');
     document.head.appendChild(style);
 
-    // Wait for canvas + game core
+    // Wait for canvas
     var readyCheck = setInterval(function () {
         if (!document.getElementById('canvas')) return;
         clearInterval(readyCheck);
-        setTimeout(initMobileControls, 500); // small delay for game scripts to init
+        setTimeout(initMobileControls, 500);
     }, 200);
 
     function initMobileControls() {
@@ -121,74 +139,74 @@
         if (!canvas) return;
 
         // ════════════════════════════════════════════════════════
-        //  1. CREATE BUTTON CONTAINER
+        //  1. BUILD UI
         // ════════════════════════════════════════════════════════
         var container = document.createElement('div');
         container.id = 'lm-mobile-controls';
         document.body.appendChild(container);
 
-        // Utility row (menu + fullscreen)
+        // Top row: Menu + Chat + Fullscreen
         var utilRow = document.createElement('div');
         utilRow.className = 'lm-util-row';
+        var menuBtn = makeBtn('lm-menuBtn', '☰', null, 'lm-btn lm-btn-util');
+        var chatBtn = makeBtn('lm-chatBtn', '💬', null, 'lm-btn lm-btn-util');
+        var fullBtn = makeBtn('lm-fullBtn', '⛶', null, 'lm-btn lm-btn-util');
+        utilRow.appendChild(menuBtn);
+        utilRow.appendChild(chatBtn);
+        utilRow.appendChild(fullBtn);
         container.appendChild(utilRow);
 
-        var menuBtn = createButton('lm-menuBtn', '☰', null, 'lm-btn lm-btn-util');
-        var fullBtn = createButton('lm-fullBtn', '⛶', null, 'lm-btn lm-btn-util');
-        utilRow.appendChild(menuBtn);
-        utilRow.appendChild(fullBtn);
-
-        // Split button
-        var splitBtn = createButton('lm-splitBtn', '⚔', 'SPLIT', 'lm-btn lm-btn-action');
+        // Split
+        var splitBtn = makeBtn('lm-splitBtn', '⚔', 'SPLIT', 'lm-btn lm-btn-action');
         container.appendChild(splitBtn);
 
-        // Feed button
-        var feedBtn = createButton('lm-feedBtn', '⬤', 'FEED', 'lm-btn lm-btn-action');
+        // Feed
+        var feedBtn = makeBtn('lm-feedBtn', '⬤', 'FEED', 'lm-btn lm-btn-action');
         container.appendChild(feedBtn);
 
         // Joystick elements
-        var joystickOuter = document.createElement('div');
-        joystickOuter.className = 'lm-joystick-outer';
-        document.body.appendChild(joystickOuter);
-
-        var joystickInner = document.createElement('div');
-        joystickInner.className = 'lm-joystick-inner';
-        document.body.appendChild(joystickInner);
+        var jOuter = document.createElement('div');
+        jOuter.className = 'lm-joystick-outer';
+        document.body.appendChild(jOuter);
+        var jInner = document.createElement('div');
+        jInner.className = 'lm-joystick-inner';
+        document.body.appendChild(jInner);
 
         // Zoom indicator
         var zoomInd = document.createElement('div');
         zoomInd.className = 'lm-zoom-indicator';
-        zoomInd.textContent = 'ZOOM';
         document.body.appendChild(zoomInd);
         var zoomTimeout = null;
+
+        // Chat send bar
+        var chatBar = document.createElement('div');
+        chatBar.id = 'lm-chat-send-bar';
+        chatBar.innerHTML = '<button id="lm-chat-send-btn">Send ⏎</button>';
+        document.body.appendChild(chatBar);
 
         // ════════════════════════════════════════════════════════
         //  2. BUTTON INTERACTIONS
         // ════════════════════════════════════════════════════════
+        bindPress(menuBtn); bindPress(chatBtn); bindPress(fullBtn);
+        bindPress(splitBtn); bindPress(feedBtn);
 
-        // --- Press effects ---
-        function bindPress(el) {
-            el.addEventListener('touchstart', function () { el.classList.add('pressed'); }, { passive: true });
-            el.addEventListener('touchend', function () { el.classList.remove('pressed'); }, { passive: true });
-            el.addEventListener('touchcancel', function () { el.classList.remove('pressed'); }, { passive: true });
-        }
-        bindPress(menuBtn); bindPress(fullBtn); bindPress(splitBtn); bindPress(feedBtn);
-
-        // --- Split: tap = one split (space) ---
+        // ── Split: space key ──
         splitBtn.addEventListener('touchstart', function (e) {
             e.preventDefault();
             fireKey(32, ' ');
         }, { passive: false });
 
-        // --- Feed: hold = continuous W ---
-        var feedInterval = null;
+        // ── Feed: hold W ──
+        var feedIv = null;
         feedBtn.addEventListener('touchstart', function (e) {
             e.preventDefault();
-            feedInterval = setInterval(function () { fireKey(87, 'w'); }, 10);
+            feedIv = setInterval(function () { fireKey(87, 'w'); }, 10);
         }, { passive: false });
-        feedBtn.addEventListener('touchend', function () { clearInterval(feedInterval); }, { passive: true });
-        feedBtn.addEventListener('touchcancel', function () { clearInterval(feedInterval); }, { passive: true });
+        feedBtn.addEventListener('touchend', stopFeed, { passive: true });
+        feedBtn.addEventListener('touchcancel', stopFeed, { passive: true });
+        function stopFeed() { clearInterval(feedIv); feedIv = null; }
 
-        // --- Menu: toggle HUD (ESC) ---
+        // ── Menu: ESC ──
         menuBtn.addEventListener('touchstart', function (e) {
             e.preventDefault();
             if (typeof application !== 'undefined' && application.showMenu) {
@@ -198,7 +216,67 @@
             }
         }, { passive: false });
 
-        // --- Fullscreen ---
+        // ── Chat button ──
+        var chatActive = false;
+        chatBtn.addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            if (!chatActive) {
+                openChat();
+            } else {
+                sendAndCloseChat();
+            }
+        }, { passive: false });
+
+        // Send button in the bar
+        document.getElementById('lm-chat-send-btn').addEventListener('touchstart', function (e) {
+            e.preventDefault();
+            sendAndCloseChat();
+        }, { passive: false });
+
+        function openChat() {
+            chatActive = true;
+            // Trigger Enter key to open chat (same as pressing Enter on keyboard)
+            fireKey(13, 'Enter');
+            // Focus the message input after a short delay (chat box might need to render)
+            setTimeout(function () {
+                var msgInput = document.getElementById('message');
+                if (msgInput) {
+                    msgInput.focus();
+                    chatBar.style.display = 'block';
+                    container.style.display = 'none'; // hide game buttons while chatting
+                }
+            }, 100);
+        }
+
+        function sendAndCloseChat() {
+            chatActive = false;
+            var msgInput = document.getElementById('message');
+            if (msgInput) {
+                // Trigger Enter on the input to send the message
+                var enterDown = new KeyboardEvent('keydown', {
+                    keyCode: 13, which: 13, key: 'Enter',
+                    bubbles: true, cancelable: true
+                });
+                var enterUp = new KeyboardEvent('keyup', {
+                    keyCode: 13, which: 13, key: 'Enter',
+                    bubbles: true, cancelable: true
+                });
+                msgInput.dispatchEvent(enterDown);
+                msgInput.dispatchEvent(enterUp);
+                msgInput.blur();
+            }
+            chatBar.style.display = 'none';
+            container.style.display = 'flex'; // restore game buttons
+        }
+
+        // If user taps outside chat while it's active, close it
+        canvas.addEventListener('touchstart', function () {
+            if (chatActive) {
+                sendAndCloseChat();
+            }
+        }, { passive: true });
+
+        // ── Fullscreen ──
         fullBtn.addEventListener('touchstart', function (e) {
             e.preventDefault();
             var el = document.documentElement;
@@ -212,31 +290,31 @@
         // ════════════════════════════════════════════════════════
         //  3. VIRTUAL JOYSTICK
         // ════════════════════════════════════════════════════════
-        var touchOrigin = { x: 0, y: 0 };
-        var joystickTouchId = null;
-        var aspectRatio = window.innerWidth / window.innerHeight;
-        var JOYSTICK_CLAMP = 55; // px radius for inner stick
+        var origin = { x: 0, y: 0 };
+        var jTouchId = null;
+        var aspect = window.innerWidth / window.innerHeight;
+        var CLAMP = 55;
 
         window.addEventListener('resize', function () {
-            aspectRatio = window.innerWidth / window.innerHeight;
+            aspect = window.innerWidth / window.innerHeight;
         });
 
         canvas.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 1) {
+            if (e.touches.length === 1 && !chatActive) {
                 var t = e.changedTouches[0];
-                joystickTouchId = t.identifier;
-                touchOrigin.x = t.clientX;
-                touchOrigin.y = t.clientY;
-                dispatchMouse(t.clientX, t.clientY);
-                showJoystick(touchOrigin.x, touchOrigin.y, touchOrigin.x, touchOrigin.y);
+                jTouchId = t.identifier;
+                origin.x = t.clientX;
+                origin.y = t.clientY;
+                moveMouse(t.clientX, t.clientY);
+                setJoystick(origin.x, origin.y, origin.x, origin.y);
             }
         }, { passive: true });
 
         canvas.addEventListener('touchend', function (e) {
             for (var i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === joystickTouchId) {
-                    joystickTouchId = null;
-                    dispatchMouse(window.innerWidth / 2, window.innerHeight / 2);
+                if (e.changedTouches[i].identifier === jTouchId) {
+                    jTouchId = null;
+                    moveMouse(window.innerWidth / 2, window.innerHeight / 2);
                     hideJoystick();
                     break;
                 }
@@ -244,59 +322,61 @@
         }, { passive: true });
 
         canvas.addEventListener('touchcancel', function () {
-            joystickTouchId = null;
-            dispatchMouse(window.innerWidth / 2, window.innerHeight / 2);
+            jTouchId = null;
+            moveMouse(window.innerWidth / 2, window.innerHeight / 2);
             hideJoystick();
         }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
-            var jTouch = findTouch(e.changedTouches, joystickTouchId);
-            if (!jTouch) return;
+            if (e.touches.length >= 2) return; // pinch handled separately
+            var t = findTouch(e.changedTouches, jTouchId);
+            if (!t) return;
 
-            // Amplified mouse position for game engine
-            var dx = -(touchOrigin.x - jTouch.clientX) * 300;
-            var dy = -(touchOrigin.y - jTouch.clientY) * 300 * aspectRatio;
-            dispatchMouse((window.innerWidth / 2) + dx, (window.innerHeight / 2) + dy);
+            var dx = -(origin.x - t.clientX) * 300;
+            var dy = -(origin.y - t.clientY) * 300 * aspect;
+            moveMouse((window.innerWidth / 2) + dx, (window.innerHeight / 2) + dy);
 
-            // Visual: clamp inner stick
-            var rawDx = jTouch.clientX - touchOrigin.x;
-            var rawDy = jTouch.clientY - touchOrigin.y;
-            var dist = Math.sqrt(rawDx * rawDx + rawDy * rawDy);
-            var innerX, innerY;
-            if (dist > JOYSTICK_CLAMP) {
-                var angle = Math.atan2(rawDy, rawDx);
-                innerX = touchOrigin.x + Math.cos(angle) * JOYSTICK_CLAMP;
-                innerY = touchOrigin.y + Math.sin(angle) * JOYSTICK_CLAMP;
+            // Clamp inner stick visual
+            var rx = t.clientX - origin.x, ry = t.clientY - origin.y;
+            var d = Math.sqrt(rx * rx + ry * ry);
+            var ix, iy;
+            if (d > CLAMP) {
+                var a = Math.atan2(ry, rx);
+                ix = origin.x + Math.cos(a) * CLAMP;
+                iy = origin.y + Math.sin(a) * CLAMP;
             } else {
-                innerX = jTouch.clientX;
-                innerY = jTouch.clientY;
+                ix = t.clientX;
+                iy = t.clientY;
             }
-            showJoystick(touchOrigin.x, touchOrigin.y, innerX, innerY);
+            setJoystick(origin.x, origin.y, ix, iy);
         }, { passive: true });
 
         // ════════════════════════════════════════════════════════
         //  4. PINCH-TO-ZOOM → WheelEvent
+        //     Pinch OUT (spread fingers) = ZOOM IN  (negative deltaY)
+        //     Pinch IN  (close fingers)  = ZOOM OUT (positive deltaY)
         // ════════════════════════════════════════════════════════
-        var lastPinchDist = 0;
-        var isPinching = false;
+        var lastPinch = 0;
+        var pinching = false;
 
         canvas.addEventListener('touchstart', function (e) {
             if (e.touches.length === 2) {
-                isPinching = true;
-                lastPinchDist = pinchDist(e.touches[0], e.touches[1]);
+                pinching = true;
+                lastPinch = dist2(e.touches[0], e.touches[1]);
                 hideJoystick();
-                joystickTouchId = null;
+                jTouchId = null;
             }
         }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
-            if (e.touches.length === 2 && isPinching) {
+            if (e.touches.length === 2 && pinching) {
                 e.preventDefault();
-                var newDist = pinchDist(e.touches[0], e.touches[1]);
-                var delta = lastPinchDist - newDist;
+                var nd = dist2(e.touches[0], e.touches[1]);
+                var delta = nd - lastPinch; // positive = fingers spread = zoom in
 
                 if (Math.abs(delta) > 4) {
-                    var wheelDelta = delta * 2.5;
+                    // Negative deltaY = scroll up = zoom in (game convention)
+                    var wheelDelta = -delta * 2.5;
                     var cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
                     var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
 
@@ -311,85 +391,83 @@
                         bubbles: true, cancelable: true
                     }));
 
-                    // Show zoom indicator
-                    zoomInd.textContent = delta > 0 ? '🔍 −' : '🔍 +';
+                    zoomInd.textContent = delta > 0 ? '🔍 +' : '🔍 −';
                     zoomInd.classList.add('visible');
                     clearTimeout(zoomTimeout);
                     zoomTimeout = setTimeout(function () {
                         zoomInd.classList.remove('visible');
                     }, 400);
 
-                    lastPinchDist = newDist;
+                    lastPinch = nd;
                 }
             }
         }, { passive: false });
 
         canvas.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                isPinching = false;
-                lastPinchDist = 0;
-            }
+            if (e.touches.length < 2) { pinching = false; lastPinch = 0; }
         }, { passive: true });
 
         // ════════════════════════════════════════════════════════
         //  HELPERS
         // ════════════════════════════════════════════════════════
-        function createButton(id, icon, label, cls) {
-            var btn = document.createElement('div');
-            btn.id = id;
-            btn.className = cls;
+        function makeBtn(id, icon, label, cls) {
+            var b = document.createElement('div');
+            b.id = id;
+            b.className = cls;
             if (label) {
-                btn.innerHTML = '<div class="lm-btn-icon"><span class="lm-icon">' + icon + '</span><span class="lm-label">' + label + '</span></div>';
+                b.innerHTML = '<div class="lm-btn-icon"><span class="lm-icon">' + icon + '</span><span class="lm-label">' + label + '</span></div>';
             } else {
-                btn.textContent = icon;
+                b.textContent = icon;
             }
-            return btn;
+            return b;
         }
 
-        function fireKey(keyCode, key) {
-            var opts = { keyCode: keyCode, which: keyCode, key: key, bubbles: true, cancelable: true };
-            document.body.dispatchEvent(new KeyboardEvent('keydown', opts));
-            document.body.dispatchEvent(new KeyboardEvent('keyup', opts));
+        function bindPress(el) {
+            el.addEventListener('touchstart', function () { el.classList.add('pressed'); }, { passive: true });
+            el.addEventListener('touchend', function () { el.classList.remove('pressed'); }, { passive: true });
+            el.addEventListener('touchcancel', function () { el.classList.remove('pressed'); }, { passive: true });
         }
 
-        function dispatchMouse(x, y) {
+        // Dispatch key events on DOCUMENT so document.onkeydown catches them
+        function fireKey(code, key) {
+            var o = { keyCode: code, which: code, key: key, code: key === ' ' ? 'Space' : 'Key' + key.toUpperCase(), bubbles: true, cancelable: true };
+            document.dispatchEvent(new KeyboardEvent('keydown', o));
+            document.dispatchEvent(new KeyboardEvent('keyup', o));
+        }
+
+        function moveMouse(x, y) {
             canvas.dispatchEvent(new MouseEvent('mousemove', {
                 clientX: x, clientY: y, bubbles: true, cancelable: true
             }));
         }
 
-        function pinchDist(t1, t2) {
-            var dx = t1.clientX - t2.clientX, dy = t1.clientY - t2.clientY;
+        function dist2(a, b) {
+            var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
 
         function findTouch(list, id) {
-            for (var i = 0; i < list.length; i++) {
-                if (list[i].identifier === id) return list[i];
-            }
+            for (var i = 0; i < list.length; i++) if (list[i].identifier === id) return list[i];
             return null;
         }
 
-        function showJoystick(ox, oy, ix, iy) {
-            joystickOuter.style.display = 'block';
-            joystickInner.style.display = 'block';
-            joystickOuter.style.left = ox + 'px';
-            joystickOuter.style.top = oy + 'px';
-            joystickInner.style.left = ix + 'px';
-            joystickInner.style.top = iy + 'px';
+        function setJoystick(ox, oy, ix, iy) {
+            jOuter.style.display = 'block';
+            jInner.style.display = 'block';
+            jOuter.style.left = ox + 'px'; jOuter.style.top = oy + 'px';
+            jInner.style.left = ix + 'px'; jInner.style.top = iy + 'px';
         }
 
         function hideJoystick() {
-            joystickOuter.style.display = 'none';
-            joystickInner.style.display = 'none';
+            jOuter.style.display = 'none';
+            jInner.style.display = 'none';
         }
 
         // Prevent context menu on long-press
         document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-        // Console branding
         console.log(
-            '%c LM Mobile v2.0 %c Touch controls active ',
+            '%c LM Mobile v2.1 %c Touch controls active ',
             'background: linear-gradient(135deg, #01d9cc, #018cf6); color: #fff; font-weight: bold; padding: 4px 10px; border-radius: 4px 0 0 4px; font-family: Ubuntu, sans-serif;',
             'background: #00243e; color: #01d9cc; padding: 4px 10px; border-radius: 0 4px 4px 0; font-family: Ubuntu, sans-serif;'
         );
