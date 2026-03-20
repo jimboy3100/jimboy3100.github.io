@@ -307,44 +307,17 @@
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
-         *  DEVICE TIERING + HiDPI CANVAS
-         *  Low-end (≤2 cores): DPR 1, disable effects
-         *  Mid-range (3-4 cores): DPR capped at 2
-         *  High-end (5+ cores): native DPR (crisp graphics)
+         *  DEVICE TIERING
+         *  Low-end (≤2 cores): disable expensive effects
+         *  Everyone else: full quality
          * ═══════════════════════════════════════════════════════ */
         var cores = navigator.hardwareConcurrency || 4;
-        var nativeDPR = window.devicePixelRatio || 1;
-        var effectiveDPR;
         if (cores <= 2) {
-            effectiveDPR = 1;
             window.LM_LOW_END = true;
-            // Disable expensive effects on very old phones
             var lowCSS = document.createElement('style');
             lowCSS.textContent = '*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
             document.head.appendChild(lowCSS);
-        } else {
-            effectiveDPR = nativeDPR; // full native DPR for crisp graphics
         }
-
-        // Patch canvas to render at effective DPR for sharp graphics
-        function applyHiDPI() {
-            if (!canvas) return;
-            var w = canvas.clientWidth;
-            var h = canvas.clientHeight;
-            if (w === 0 || h === 0) return;
-            var targetW = Math.round(w * effectiveDPR);
-            var targetH = Math.round(h * effectiveDPR);
-            // Only resize if significantly different (avoid constant redraws)
-            if (Math.abs(canvas.width - targetW) > 2 || Math.abs(canvas.height - targetH) > 2) {
-                canvas.width = targetW;
-                canvas.height = targetH;
-            }
-        }
-        applyHiDPI();
-        window.addEventListener('resize', applyHiDPI);
-        window.addEventListener('orientationchange', function () {
-            setTimeout(applyHiDPI, 500);
-        });
 
         /* ── Fullscreen + Landscape helper ──
          * Works in browser; gracefully degrades in Google Play WebView/TWA
