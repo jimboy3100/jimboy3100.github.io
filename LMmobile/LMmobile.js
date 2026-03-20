@@ -1,5 +1,5 @@
 /**
- * LM Mobile Controls v3.1 — by Jimboy3100
+ * LM Mobile Controls v4.0 — by Jimboy3100
  *
  * Touch-control overlay for Legend Mod mobile.
  * Matches the ogario HUD aesthetic (teal / navy / Ubuntu font).
@@ -18,6 +18,9 @@
     'use strict';
 
     if (!('ontouchstart' in window) && navigator.maxTouchPoints <= 0) return;
+
+    /* ── Global flag for other scripts to detect mobile mode ── */
+    window.LM_IS_MOBILE = true;
 
     /* ═══════════════════════════════════════════════════════════
      *  CSS
@@ -70,6 +73,24 @@
 
     '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
+    /* ── Settings panel ── */
+    '#lm-sp{position:fixed;left:12px;bottom:clamp(130px,20vh,180px);z-index:100001;' +
+    'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
+    'border-radius:12px;padding:14px 16px;width:200px;' +
+    'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
+    'pointer-events:auto;user-select:none;-webkit-user-select:none;' +
+    'display:none;flex-direction:column;gap:10px}' +
+    '#lm-sp.on{display:flex}' +
+    '#lm-sp label{color:rgba(255,255,255,.75);font:600 11px/1.2 Ubuntu,Roboto,sans-serif;' +
+    'letter-spacing:.5px;text-transform:uppercase;display:flex;' +
+    'justify-content:space-between;align-items:center}' +
+    '#lm-sp label span{color:#01d9cc;font-weight:700}' +
+    '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
+    'background:rgba(1,217,204,.25);border-radius:2px;outline:none;margin-top:4px}' +
+    '#lm-sp input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;' +
+    'width:18px;height:18px;border-radius:50%;background:#01d9cc;cursor:pointer;' +
+    'box-shadow:0 0 6px rgba(1,217,204,.4)}' +
+
     '.lm-jo{width:120px;height:120px;border-radius:50%;' +
     'background:rgba(0,36,62,.18);border:2px solid rgba(1,217,204,.22);' +
     'position:fixed;display:none;z-index:99998;transform:translate(-50%,-50%);pointer-events:none}' +
@@ -100,15 +121,48 @@
     /* hide target panel on mobile — overlaps with touch buttons */
     '#target-panel-hud,#target-hud{display:none!important}' +
 
+    /* GPU acceleration for smooth rendering on mobile */
+    'canvas,#minimap-hud,#leaderboard-hud,#top5-hud,#stats-hud{will-change:transform}' +
+
+    /* smaller HUD text on mobile */
+    '#leaderboard-hud{font-size:85%!important}' +
+    '#leaderboard-hud h5{font-size:16px!important}' +
+    '#leaderboard-positions{font-size:14px!important}' +
+    '#top5-hud{font-size:85%!important}' +
+    '#top5-pos{font-size:13px!important}' +
+
+    /* HUD fade transition */
+    '#leaderboard-hud,#top5-hud,#stats-hud,#time-hud{transition:opacity .4s ease}' +
+
+    /* minimap tap-to-expand transition */
+    '#minimap-hud{transition:transform .25s ease!important}' +
+
+    /* portrait orientation prompt */
+    '#lm-orient-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+    'background:rgba(0,36,62,.95);border:2px solid rgba(1,217,204,.5);' +
+    'color:#01d9cc;font:600 16px/1.6 Ubuntu,Roboto,sans-serif;' +
+    'padding:20px 28px;border-radius:16px;z-index:100004;text-align:center;' +
+    'opacity:0;transition:opacity .5s;pointer-events:none}' +
+    '#lm-orient-toast.on{opacity:1}' +
+
     /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
-    '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important}' +
+    '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important;' +
+    'transform:scale(0.7)!important;transform-origin:bottom right!important}' +
     '#leaderboard-hud{position:fixed!important;top:10px!important;right:10px!important}' +
     '#top5-hud{position:fixed!important;top:55px!important;left:10px!important}' +
     '#stats-hud{position:fixed!important;left:10px!important}' +
     '#time-hud{position:fixed!important;right:10px!important}' +
     '#chat-box,#messages{position:fixed!important;left:10px!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:82px!important;transform:translate(-50%,0)!important}' +
-    '#toast-container{position:fixed!important}';
+    '#toast-container{position:fixed!important}' +
+
+    /* fullscreen prompt toast */
+    '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
+    'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.45);' +
+    'color:#01d9cc;font:600 14px/1.4 Ubuntu,Roboto,sans-serif;' +
+    'padding:10px 20px;border-radius:24px;z-index:100003;' +
+    'opacity:0;transition:opacity .4s;pointer-events:none;text-align:center}' +
+    '#lm-fs-toast.on{opacity:1}';
 
     document.head.appendChild(css);
 
@@ -137,18 +191,48 @@
         document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, {passive:false});
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
 
-        /* ── Auto-fullscreen on first touch ── */
-        var fsOnce = function () {
-            document.removeEventListener('touchstart', fsOnce, true);
+        /* ── Fullscreen prompt (one-time, non-intrusive) ── */
+        if (!localStorage.getItem('lm-fs-prompted')) {
+            var fst = mk('div'); fst.id = 'lm-fs-toast';
+            fst.textContent = 'Tap ⛶ for fullscreen — best mobile experience!';
+            document.body.appendChild(fst);
+            setTimeout(function () { fst.classList.add('on'); }, 800);
+            setTimeout(function () {
+                fst.classList.remove('on');
+                setTimeout(function () { fst.remove(); }, 500);
+            }, 5000);
+            localStorage.setItem('lm-fs-prompted', '1');
+        }
+
+        /* ── Portrait orientation prompt ── */
+        if (window.innerHeight > window.innerWidth && !localStorage.getItem('lm-orient-prompted')) {
+            var ot = mk('div'); ot.id = 'lm-orient-toast';
+            ot.innerHTML = '📱⇔️<br>Rotate your phone for<br>better gameplay!';
+            document.body.appendChild(ot);
+            setTimeout(function () { ot.classList.add('on'); }, 1200);
+            setTimeout(function () {
+                ot.classList.remove('on');
+                setTimeout(function () { ot.remove(); }, 600);
+            }, 6000);
+            localStorage.setItem('lm-orient-prompted', '1');
+        }
+
+        /* ── Wake Lock (prevent screen from sleeping during gameplay) ── */
+        var wakeLock = null;
+        function requestWakeLock() {
             try {
-                var r = document.documentElement;
-                var fn = r.requestFullscreen || r.webkitRequestFullscreen;
-                if (fn && !document.fullscreenElement && !document.webkitFullscreenElement) {
-                    fn.call(r);
+                if ('wakeLock' in navigator) {
+                    navigator.wakeLock.request('screen').then(function (wl) {
+                        wakeLock = wl;
+                    }).catch(function () {});
                 }
-            } catch(ex) {}
-        };
-        document.addEventListener('touchstart', fsOnce, {capture:true, passive:true});
+            } catch(e) {}
+        }
+        requestWakeLock();
+        // Re-acquire on tab becoming visible again
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') requestWakeLock();
+        });
 
         /* ═══════════════════════════════════════════════════════
          *  DOM — Game-controller layout
@@ -160,6 +244,24 @@
          *  Right thumb = combat actions (split / feed)
          * ═══════════════════════════════════════════════════════ */
 
+        /* ═══════════════════════════════════════════════════════
+         *  USER PREFERENCES (localStorage)
+         * ═══════════════════════════════════════════════════════ */
+        var PREF_KEY = 'lm-mobile-prefs';
+        var prefs = {jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5};
+        try {
+            var saved = JSON.parse(localStorage.getItem(PREF_KEY));
+            if (saved) {
+                if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = saved.jsSensitivity;
+                if (saved.btnOpacity   !== undefined) prefs.btnOpacity   = saved.btnOpacity;
+                if (saved.btnScale     !== undefined) prefs.btnScale     = saved.btnScale;
+                if (saved.hudFade      !== undefined) prefs.hudFade      = saved.hudFade;
+            }
+        } catch(e) {}
+        function savePrefs() {
+            try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch(e) {}
+        }
+
         /* ── LEFT side: utilities ── */
         var rootL = mk('div'); rootL.id = 'lm-mc-l';
         document.body.appendChild(rootL);
@@ -168,7 +270,9 @@
         var bMenu = mkb('☰', null, true);
         var bChat = mkb('💬', null, true);
         var bFull = mkb('⛶', null, true);
+        var bGear = mks('⚙');
         rowU.appendChild(bMenu); rowU.appendChild(bChat); rowU.appendChild(bFull);
+        rowU.appendChild(bGear);
         rootL.appendChild(rowU);
 
         var rowC = mk('div'); rowC.className = 'lm-r';
@@ -176,6 +280,51 @@
         var bPaus = mks('⏸');
         rowC.appendChild(bAI); rowC.appendChild(bPaus);
         rootL.appendChild(rowC);
+
+        /* ── Settings panel ── */
+        var sp = mk('div'); sp.id = 'lm-sp';
+        sp.innerHTML =
+            '<label>Joystick <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
+            '<input type="range" id="lm-js" min="100" max="600" step="25" value="' + prefs.jsSensitivity + '">' +
+            '<label>Opacity <span id="lm-op-v">' + Math.round(prefs.btnOpacity*100) + '%</span></label>' +
+            '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity*100) + '">' +
+            '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale*100) + '%</span></label>' +
+            '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale*100) + '">' +
+            '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade*100) + '%</span></label>' +
+            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade*100) + '">';
+        document.body.appendChild(sp);
+
+        /* apply prefs to all buttons */
+        function applyPrefs() {
+            rootL.style.opacity = prefs.btnOpacity;
+            rootR.style.opacity = prefs.btnOpacity;
+            rootL.style.transform = 'scale(' + prefs.btnScale + ')';
+            rootL.style.transformOrigin = 'bottom left';
+            rootR.style.transform = 'scale(' + prefs.btnScale + ')';
+            rootR.style.transformOrigin = 'bottom right';
+        }
+
+        /* slider handlers */
+        sp.querySelector('#lm-js').addEventListener('input', function () {
+            prefs.jsSensitivity = parseInt(this.value);
+            sp.querySelector('#lm-js-v').textContent = this.value;
+            savePrefs();
+        });
+        sp.querySelector('#lm-op').addEventListener('input', function () {
+            prefs.btnOpacity = parseInt(this.value) / 100;
+            sp.querySelector('#lm-op-v').textContent = this.value + '%';
+            applyPrefs(); savePrefs();
+        });
+        sp.querySelector('#lm-bs').addEventListener('input', function () {
+            prefs.btnScale = parseInt(this.value) / 100;
+            sp.querySelector('#lm-bs-v').textContent = this.value + '%';
+            applyPrefs(); savePrefs();
+        });
+        sp.querySelector('#lm-hf').addEventListener('input', function () {
+            prefs.hudFade = parseInt(this.value) / 100;
+            sp.querySelector('#lm-hf-v').textContent = this.value + '%';
+            savePrefs();
+        });
 
         /* ── RIGHT side: actions (above minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -202,12 +351,23 @@
         cBar.innerHTML = '<button>Send ⏎</button>';
         document.body.appendChild(cBar);
 
+        /* apply initial prefs */
+        applyPrefs();
+
         /* ── Press effects ── */
-        [bMenu, bChat, bFull, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
+        [bMenu, bChat, bFull, bGear, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
             b.addEventListener('touchstart',  function () { b.classList.add('p'); },    {passive:true});
             b.addEventListener('touchend',    function () { b.classList.remove('p'); }, {passive:true});
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, {passive:true});
         });
+
+        /* ═══════════════════════════════════════════════════════
+         *  GEAR — toggle settings panel
+         * ═══════════════════════════════════════════════════════ */
+        bGear.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            sp.classList.toggle('on');
+        }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
          *  SPLIT — Space (keyCode 32)
@@ -262,8 +422,8 @@
             emitKey(87);
             feedIv = setInterval(function () { emitKey(87); }, 50);
         }, {passive:false});
-        bFeed.addEventListener('touchend',    function () { clearInterval(feedIv); }, {passive:true});
-        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); }, {passive:true});
+        bFeed.addEventListener('touchend',    function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
+        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
 
         /* ═══════════════════════════════════════════════════════
          *  MENU — ESC (keyCode 27)
@@ -292,24 +452,8 @@
             chatClose();
         }, {passive:false});
 
-        function lockViewport() {
-            var vp = document.querySelector('meta[name="viewport"]');
-            if (vp) {
-                vp._origContent = vp.getAttribute('content');
-                vp.setAttribute('content',
-                    'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
-            }
-        }
-        function unlockViewport() {
-            var vp = document.querySelector('meta[name="viewport"]');
-            if (vp && vp._origContent) {
-                vp.setAttribute('content', vp._origContent);
-            }
-        }
-
         function chatOpen() {
             chatOn = true;
-            lockViewport(); // prevent zoom when focusing input
             emitKey(13); // open chat box
             setTimeout(function () {
                 var inp = document.getElementById('message');
@@ -317,6 +461,7 @@
                 cBar.style.display = 'block';
                 rootL.style.visibility = 'hidden';
                 rootR.style.visibility = 'hidden';
+                sp.classList.remove('on'); // close settings if open
             }, 120);
         }
 
@@ -338,7 +483,6 @@
                 emitKey(13);
             }, 50);
             chatOn = false;
-            unlockViewport(); // restore normal viewport
             cBar.style.display = 'none';
             rootL.style.visibility = 'visible';
             rootR.style.visibility = 'visible';
@@ -362,6 +506,11 @@
                 if (!d.fullscreenElement && !d.webkitFullscreenElement) {
                     var r = d.documentElement;
                     (r.requestFullscreen || r.webkitRequestFullscreen).call(r);
+                    /* lock to landscape when entering fullscreen */
+                    try {
+                        if (screen.orientation && screen.orientation.lock)
+                            screen.orientation.lock('landscape').catch(function(){});
+                    } catch(ol) {}
                 } else {
                     (d.exitFullscreen || d.webkitExitFullscreen).call(d);
                 }
@@ -369,12 +518,50 @@
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
+         *  SWIPE GESTURES (left half of canvas)
+         *  swipe right → split | swipe up → double split
+         * ═══════════════════════════════════════════════════════ */
+        var swStart = null;
+        var SW_THRESH = 50; // min px to count as swipe
+        canvas.addEventListener('touchstart', function (e) {
+            if (chatOn || e.touches.length !== 1) return;
+            var t = e.changedTouches[0];
+            if (t.clientX < window.innerWidth * 0.5) {
+                swStart = {x: t.clientX, y: t.clientY, id: t.identifier};
+            } else {
+                swStart = null;
+            }
+        }, {passive:true});
+
+        canvas.addEventListener('touchend', function (e) {
+            if (!swStart) return;
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                var t = e.changedTouches[i];
+                if (t.identifier !== swStart.id) continue;
+                var dx = t.clientX - swStart.x;
+                var dy = t.clientY - swStart.y;
+                // swipe right → split
+                if (dx > SW_THRESH && Math.abs(dy) < dx) {
+                    emitKey(32);
+                }
+                // swipe up → double split
+                else if (-dy > SW_THRESH && Math.abs(dx) < -dy) {
+                    if (typeof application !== 'undefined' && application.doubleSplit)
+                        application.doubleSplit();
+                }
+                swStart = null;
+                break;
+            }
+        }, {passive:true});
+
+        /* ═══════════════════════════════════════════════════════
          *  JOYSTICK — direction persists after finger lift
          * ═══════════════════════════════════════════════════════ */
-        var org = {x:0, y:0};
+        var org = {x:0, y:0}; // joystick origin
         var jId = null;
         var asp = window.innerWidth / window.innerHeight;
-        var JR = 55, JS = 300;
+        // JS sensitivity now comes from prefs (live-updated by slider)
+        var JR = 55;
 
         window.addEventListener('resize', function () {
             asp = window.innerWidth / window.innerHeight;
@@ -387,6 +574,7 @@
             org.x = t.clientX; org.y = t.clientY;
             mouseAt(t.clientX, t.clientY);
             jShow(org.x, org.y, org.x, org.y);
+            swStart = null; // cancel any swipe tracking when joystick starts
         }, {passive:true});
 
         canvas.addEventListener('touchend', function (e) {
@@ -410,9 +598,12 @@
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
-            var dx = (t.clientX - org.x) * JS;
-            var dy = (t.clientY - org.y) * JS * asp;
-            mouseAt(window.innerWidth/2 + dx, window.innerHeight/2 + dy);
+            var dx = (t.clientX - org.x) * prefs.jsSensitivity;
+            var dy = (t.clientY - org.y) * prefs.jsSensitivity;
+            // Apply aspect ratio correction (landscape screens need wider X moves)
+            var cx = window.innerWidth  / 2 + dx / asp;
+            var cy = window.innerHeight / 2 + dy;
+            mouseAt(cx, cy);
 
             var rx = t.clientX - org.x, ry = t.clientY - org.y;
             var d = Math.sqrt(rx*rx + ry*ry);
@@ -482,6 +673,98 @@
         canvas.addEventListener('touchend', function (e) {
             if (e.touches.length < 2) { pOn = false; pDist = 0; }
         }, {passive:true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  HAPTIC FEEDBACK
+         * ═══════════════════════════════════════════════════════ */
+        function vibrate(pattern) {
+            try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
+        }
+
+        /* Death / losing — watch #stats becoming visible */
+        (function () {
+            var statsEl = document.getElementById('stats');
+            if (!statsEl) return;
+            var wasHidden = statsEl.style.display === 'none' || !statsEl.offsetParent;
+            new MutationObserver(function () {
+                var isVisible = statsEl.style.display !== 'none' && statsEl.offsetParent !== null;
+                if (isVisible && wasHidden) {
+                    vibrate([100, 50, 100]); // double buzz — "ouch"
+                }
+                wasHidden = !isVisible;
+            }).observe(statsEl, {attributes: true, attributeFilter: ['style', 'class']});
+        })();
+
+        /* New chat message — watch #messages for new children */
+        (function () {
+            var msgList = document.getElementById('messages');
+            if (!msgList) return;
+            new MutationObserver(function (mutations) {
+                for (var i = 0; i < mutations.length; i++) {
+                    if (mutations[i].addedNodes.length > 0) {
+                        vibrate([30, 20, 30]); // light double tap
+                        break;
+                    }
+                }
+            }).observe(msgList, {childList: true});
+        })();
+
+        /* ═══════════════════════════════════════════════════════
+         *  MINIMAP TAP-TO-TOGGLE (70% ↔ 100%)
+         * ═══════════════════════════════════════════════════════ */
+        (function () {
+            var mm = document.getElementById('minimap-hud');
+            if (!mm) return;
+            var expanded = false;
+            mm.style.pointerEvents = 'auto';
+            mm.addEventListener('touchstart', function (e) {
+                e.stopPropagation();
+                expanded = !expanded;
+                mm.style.transform = expanded ? 'scale(1)' : 'scale(0.7)';
+            }, {passive:true});
+        })();
+
+        /* ═══════════════════════════════════════════════════════
+         *  HUD AUTO-FADE WHILE PLAYING
+         *  Fades leaderboard/teamboard/stats when touching canvas
+         *  Restores full opacity after 2.5s idle
+         * ═══════════════════════════════════════════════════════ */
+        (function () {
+            var hudEls = ['leaderboard-hud', 'top5-hud', 'stats-hud', 'time-hud'];
+            var els = [];
+            for (var i = 0; i < hudEls.length; i++) {
+                var el = document.getElementById(hudEls[i]);
+                if (el) els.push(el);
+            }
+            if (!els.length) return;
+
+            var fadeTimer = null;
+
+            function fadeHud() {
+                for (var i = 0; i < els.length; i++)
+                    els[i].style.opacity = prefs.hudFade;
+            }
+            function restoreHud() {
+                for (var i = 0; i < els.length; i++)
+                    els[i].style.opacity = '1';
+            }
+
+            canvas.addEventListener('touchstart', function () {
+                if (chatOn) return;
+                fadeHud();
+                clearTimeout(fadeTimer);
+            }, {passive:true});
+
+            canvas.addEventListener('touchend', function () {
+                clearTimeout(fadeTimer);
+                fadeTimer = setTimeout(restoreHud, 2500);
+            }, {passive:true});
+
+            canvas.addEventListener('touchcancel', function () {
+                clearTimeout(fadeTimer);
+                fadeTimer = setTimeout(restoreHud, 2500);
+            }, {passive:true});
+        })();
 
         /* ═══════════════════════════════════════════════════════
          *  HELPERS
@@ -572,7 +855,7 @@
             if (e.target===canvas||e.target===document.body) e.preventDefault();
         }, {passive:false});
 
-        console.log('%c LM Mobile v3.1 %c Touch controls loaded ',
+        console.log('%c LM Mobile v4.0 %c Touch controls loaded ',
             'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
             'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
     }

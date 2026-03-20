@@ -6629,6 +6629,7 @@ function changeFrameWorkStart() {
     }
 }
 function LMnoBotsPromo() {
+    if (window.LM_IS_MOBILE) return; // skip promo on mobile
     $('#helloContainer').after(
         '<div class="modal fade in" id="LMPromoNoBots" aria-hidden="false" style="display: block;">' +
         '<div class="modal-backdrop fade in"></div>' +
@@ -6674,6 +6675,7 @@ function LMnoBotsPromo() {
 }
 
 function LMLegendFFAPromo() {
+    if (window.LM_IS_MOBILE) return; // skip promo on mobile
     $('#helloContainer').after(
         '<div class="modal fade in" id="LMPromoLegendFFA" aria-hidden="false" style="display: block;">' +
         '<div class="modal-backdrop fade in"></div>' +
@@ -6722,6 +6724,7 @@ function LMLegendFFAPromo() {
 
 
 function LMrewardDay() {
+    if (window.LM_IS_MOBILE) return; // skip promo on mobile
     $('#helloContainer').after(
         '<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
         '<div class="modal-backdrop fade in"></div>' +
