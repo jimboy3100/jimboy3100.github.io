@@ -254,13 +254,20 @@
                 var vw = window.innerWidth;
                 var vh = window.innerHeight;
                 var baseW = 740; // original width from legend.css
-                var ratio = Math.min(1, (vw - 16) / baseW);
+                var baseH = hc.scrollHeight || 600; // actual content height
+                var ratioW = (vw - 16) / baseW;
+                var ratioH = (vh - 16) / baseH;
+                var ratio = Math.min(1, ratioW, ratioH);
                 hc.style.transform = 'translate(-50%,-50%) scale(' + ratio + ')';
                 hc.style.transformOrigin = 'center center';
+                hc.style.position = 'fixed';
+                hc.style.top = '50%';
+                hc.style.left = '50%';
                 hc.style.maxHeight = Math.floor(vh / ratio) + 'px';
+                hc.style.overflowY = 'auto';
             }
             fit();
-            setInterval(fit, 2000); // re-check (menu shows/hides)
+            setInterval(fit, 2000);
             window.addEventListener('resize', fit);
             window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
         })();
