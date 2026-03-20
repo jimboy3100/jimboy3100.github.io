@@ -89,18 +89,19 @@
         email: '',
         token: code
       };
+      var msg = { type: 'legendmod_discord_login', data: discordData };
 
-      /* Method 1: BroadcastChannel — same-origin, most reliable */
+      /* Method 1: BroadcastChannel — works if play.html is accessed directly (same origin, same partition) */
       try {
         var bc = new BroadcastChannel('legendmod_discord');
-        bc.postMessage({ type: 'legendmod_discord_login', data: discordData });
+        bc.postMessage(msg);
         dbg('BroadcastChannel sent!');
         bc.close();
       } catch(e) {
         dbg('BroadcastChannel failed: ' + e.message);
       }
 
-      /* Method 2: localStorage — same-origin, works as fallback */
+      /* Method 2: localStorage — works if same origin AND same storage partition */
       try {
         localStorage.setItem('legendmod_discord', JSON.stringify(discordData));
         dbg('localStorage SET OK');
@@ -108,17 +109,31 @@
         dbg('localStorage failed: ' + e.message);
       }
 
-      /* Method 3: postMessage to opener — may work if opener still exists */
+      /* Method 3: postMessage to opener — the popup was opened from play.html.
+       * If the opener reference survived the cross-origin redirect chain
+       * (discord.com → expanding.land → jimboy3100.github.io), this works.
+       * Use '*' target since we don't know if opener is expanding.land or jimboy3100.github.io. */
       if (window.opener) {
         try {
-          var msg = { type: 'legendmod_discord_login', data: discordData };
           window.opener.postMessage(msg, '*');
           dbg('postMessage sent to opener!');
+
+          /* Method 4: The opener might be expanding.land which embeds play.html in an iframe.
+           * Try to postMessage into each iframe inside the opener. */
+          try {
+            var frames = window.opener.frames;
+            for (var i = 0; i < frames.length; i++) {
+              frames[i].postMessage(msg, '*');
+            }
+            dbg('postMessage sent to ' + frames.length + ' iframe(s) in opener');
+          } catch(e2) {
+            dbg('Could not access opener iframes (cross-origin): ' + e2.message);
+          }
         } catch(e) {
-          dbg('postMessage failed: ' + e.message);
+          dbg('postMessage to opener failed: ' + e.message);
         }
       } else {
-        dbg('window.opener is null (expected for cross-origin popup)');
+        dbg('window.opener is null — using localStorage/BroadcastChannel fallback only');
       }
 
       /* Auto-close after 1.5 seconds */

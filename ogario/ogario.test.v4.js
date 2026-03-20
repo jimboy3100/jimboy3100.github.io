@@ -375,8 +375,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
              * redirect (discord.com). postMessage bypasses this entirely. */
             var discordPopupRef = null;
             window.addEventListener('message', function(event) {
-                /* Only accept messages from our callback domain */
-                if (event.origin !== 'https://expanding.land') return;
+                /* Accept messages from our domains (relay page or callback) */
+                var trusted = ['https://expanding.land', 'https://jimboy3100.github.io', 'https://legendmod.ml'];
+                if (trusted.indexOf(event.origin) === -1) return;
                 if (!event.data || event.data.type !== 'legendmod_discord_login') return;
 
                 var discordUser = event.data.data;
