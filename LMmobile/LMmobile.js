@@ -159,6 +159,15 @@
     'opacity:0;transition:opacity .5s;pointer-events:none}' +
     '#lm-orient-toast.on{opacity:1}' +
 
+    /* ── Persistent portrait overlay (blocks gameplay in portrait) ── */
+    '#lm-portrait-ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200000;' +
+    'background:rgba(0,20,40,.92);display:none;align-items:center;justify-content:center;' +
+    'flex-direction:column;gap:16px;color:#01d9cc;font:600 18px/1.5 Ubuntu,Roboto,sans-serif;' +
+    'text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}' +
+    '#lm-portrait-ov.on{display:flex}' +
+    '#lm-portrait-ov .icon{font-size:60px;animation:lm-rotate 2s ease-in-out infinite}' +
+    '@keyframes lm-rotate{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}' +
+
     /* ── helloContainer: only overflow guard, JS handles scaling ── */
     '#helloContainer{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
     '#overlays{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
@@ -249,31 +258,67 @@
         document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, {passive:false});
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
 
-        /* ── Fullscreen prompt (one-time, non-intrusive) ── */
-        if (!localStorage.getItem('lm-fs-prompted')) {
-            var fst = mk('div'); fst.id = 'lm-fs-toast';
-            fst.textContent = 'Tap ⛶ for fullscreen — best mobile experience!';
-            document.body.appendChild(fst);
-            setTimeout(function () { fst.classList.add('on'); }, 800);
-            setTimeout(function () {
-                fst.classList.remove('on');
-                setTimeout(function () { fst.remove(); }, 500);
-            }, 5000);
-            localStorage.setItem('lm-fs-prompted', '1');
+        /* ── Fullscreen + Landscape helper ──
+         * Works in browser; gracefully degrades in Google Play WebView/TWA
+         * where fullscreen/orientation are handled by AndroidManifest instead */
+        function goFullscreenLandscape() {
+            try {
+                var el = document.documentElement;
+                var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+                if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                    rfs.call(el).then(function () {
+                        try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
+                    }).catch(function () {});
+                }
+            } catch(e) {}
         }
 
-        /* ── Portrait orientation prompt ── */
-        if (window.innerHeight > window.innerWidth && !localStorage.getItem('lm-orient-prompted')) {
-            var ot = mk('div'); ot.id = 'lm-orient-toast';
-            ot.innerHTML = '📱⇔️<br>Rotate your phone for<br>better gameplay!';
-            document.body.appendChild(ot);
-            setTimeout(function () { ot.classList.add('on'); }, 7000);
-            setTimeout(function () {
-                ot.classList.remove('on');
-                setTimeout(function () { ot.remove(); }, 600);
-            }, 12000);
-            localStorage.setItem('lm-orient-prompted', '1');
+        /* ── Auto-fullscreen on Play button tap ── */
+        (function hookPlayButtons() {
+            function hook(btn) {
+                if (!btn || btn._lmHooked) return;
+                btn._lmHooked = true;
+                btn.addEventListener('click', function () {
+                    goFullscreenLandscape();
+                }, {passive: true});
+                btn.addEventListener('touchstart', function () {
+                    goFullscreenLandscape();
+                }, {passive: true});
+            }
+            function scan() {
+                // Hook all Play-type buttons
+                var selectors = ['.btn-play', '.btn-play-guest', '.btn-login-play',
+                                 '#btn-play', '#btn-play-guest', '#btn-login-play'];
+                selectors.forEach(function (s) {
+                    var btns = document.querySelectorAll(s);
+                    for (var i = 0; i < btns.length; i++) hook(btns[i]);
+                });
+            }
+            scan();
+            // Re-scan when DOM changes (in case buttons load late)
+            setTimeout(scan, 2000);
+            setTimeout(scan, 5000);
+        })();
+
+        /* ── Persistent portrait overlay (replaces one-time toast) ── */
+        var portOv = mk('div'); portOv.id = 'lm-portrait-ov';
+        portOv.innerHTML = '<div class="icon">📱</div>' +
+            'Rotate your phone<br>for better gameplay' +
+            '<div style="font-size:13px;opacity:.6;margin-top:8px">Landscape mode required</div>';
+        document.body.appendChild(portOv);
+
+        function checkOrientation() {
+            var isPortrait = window.innerHeight > window.innerWidth;
+            var isPlaying = !isMenuVisible();
+            if (isPortrait && isPlaying) {
+                portOv.classList.add('on');
+            } else {
+                portOv.classList.remove('on');
+            }
         }
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', function () { setTimeout(checkOrientation, 300); });
+        setInterval(checkOrientation, 3000);
 
         /* ── Wake Lock (prevent screen from sleeping during gameplay) ── */
         var wakeLock = null;
@@ -439,6 +484,19 @@
         bGear.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             sp.classList.toggle('on');
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  FULLSCREEN — toggle fullscreen + landscape lock
+         * ═══════════════════════════════════════════════════════ */
+        bFull.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+            } else {
+                goFullscreenLandscape();
+            }
+            drawer.classList.remove('on'); sp.classList.remove('on');
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
