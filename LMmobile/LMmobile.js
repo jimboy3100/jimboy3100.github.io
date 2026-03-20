@@ -424,11 +424,11 @@
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
         drawer.appendChild(bChat);
-        rootL.appendChild(drawer);
 
-        /* ☰ menu button: always visible on left, toggles helloContainer */
+        /* ☰ menu button: leftmost, always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
         rootL.appendChild(bMenu);
+        rootL.appendChild(drawer);
 
         /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
