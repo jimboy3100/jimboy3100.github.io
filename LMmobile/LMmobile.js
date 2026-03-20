@@ -25,10 +25,21 @@
     var css = document.createElement('style');
     css.id = 'lm-mobile-css';
     css.textContent =
-    '#lm-mc{position:fixed;bottom:0;right:0;z-index:100000;' +
-    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'padding:12px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}' +
+    /* lock down browser zoom — only our JS pinch handler zooms */
+    'html,body{touch-action:pan-x pan-y}' +
+    'canvas{touch-action:none}' +
 
+    /* ── LEFT container: utilities (bottom-left, above chat area) ── */
+    '#lm-mc-l{position:fixed;left:12px;bottom:clamp(30px,8vh,70px);z-index:100000;' +
+    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+    'display:flex;flex-direction:column;align-items:flex-start;gap:8px}' +
+
+    /* ── RIGHT container: actions (right side, above minimap) ── */
+    '#lm-mc-r{position:fixed;right:12px;bottom:clamp(100px,40vh,280px);z-index:100000;' +
+    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+    'display:flex;flex-direction:column;align-items:flex-end;gap:8px}' +
+
+    /* ── Shared button base ── */
     '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
     'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
     'background:rgba(0,36,62,.65);border:2px solid rgba(1,217,204,.4);' +
@@ -41,18 +52,23 @@
     '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.30);' +
     'border-color:rgba(1,217,204,.80);box-shadow:0 0 18px rgba(1,217,204,.35)}' +
 
-    '.lm-a{width:clamp(72px,20vmin,108px);height:clamp(72px,20vmin,108px)}' +
+    '.lm-a{width:clamp(64px,17vmin,90px);height:clamp(64px,17vmin,90px)}' +
 
-    '.lm-u{width:clamp(52px,13vmin,66px);height:clamp(52px,13vmin,66px);font-size:20px;' +
+    '.lm-u{width:clamp(46px,12vmin,58px);height:clamp(46px,12vmin,58px);font-size:18px;' +
     'background:rgba(0,47,82,.55);border-color:rgba(1,140,246,.35);' +
     'box-shadow:0 0 8px rgba(1,140,246,.12)}' +
     '.lm-u.p{background:rgba(1,140,246,.25);border-color:rgba(1,140,246,.75)}' +
 
     '.lm-bi{display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}' +
-    '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
-    '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.65;letter-spacing:1.2px;text-transform:uppercase}' +
+    '.lm-bi .i{font-size:clamp(20px,5.5vmin,26px);line-height:1}' +
+    '.lm-bi .l{font-size:clamp(7px,2vmin,10px);opacity:.65;letter-spacing:1.2px;text-transform:uppercase}' +
 
-    '.lm-r{display:flex;gap:8px;pointer-events:none}' +
+    '.lm-s{width:clamp(40px,10vmin,50px);height:clamp(40px,10vmin,50px);font-size:13px;' +
+    'background:rgba(0,47,82,.50);border-color:rgba(141,95,230,.35);' +
+    'box-shadow:0 0 6px rgba(141,95,230,.10)}' +
+    '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
+
+    '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
     '.lm-jo{width:120px;height:120px;border-radius:50%;' +
     'background:rgba(0,36,62,.18);border:2px solid rgba(1,217,204,.22);' +
@@ -76,7 +92,23 @@
     '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
     'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
     'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
-    '#lm-cb button:active{opacity:.8}';
+    '#lm-cb button:active{opacity:.8}' +
+
+    /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
+    '#message{font-size:16px!important}' +
+
+    /* hide target panel on mobile — overlaps with touch buttons */
+    '#target-panel-hud,#target-hud{display:none!important}' +
+
+    /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
+    '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important}' +
+    '#leaderboard-hud{position:fixed!important;top:10px!important;right:10px!important}' +
+    '#top5-hud{position:fixed!important;top:55px!important;left:10px!important}' +
+    '#stats-hud{position:fixed!important;left:10px!important}' +
+    '#time-hud{position:fixed!important;right:10px!important}' +
+    '#chat-box,#messages{position:fixed!important;left:10px!important}' +
+    '#message-box{position:fixed!important;left:50%!important;bottom:82px!important;transform:translate(-50%,0)!important}' +
+    '#toast-container{position:fixed!important}';
 
     document.head.appendChild(css);
 
@@ -93,21 +125,72 @@
         var canvas = document.getElementById('canvas');
         if (!canvas) return;
 
-        /* ── DOM ── */
-        var root = mk('div'); root.id = 'lm-mc';
-        document.body.appendChild(root);
+        /* ── Lock down browser zoom ── */
+        // Force viewport meta (iOS 10+ ignores user-scalable=no, so we also use gesturestart)
+        var vp = document.querySelector('meta[name="viewport"]');
+        if (vp) {
+            vp.setAttribute('content',
+                'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
+        }
+        // Safari/iOS: prevent native pinch-zoom gesture
+        document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, {passive:false});
+        document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, {passive:false});
+        document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
 
-        var row = mk('div'); row.className = 'lm-r';
+        /* ── Auto-fullscreen on first touch ── */
+        var fsOnce = function () {
+            document.removeEventListener('touchstart', fsOnce, true);
+            try {
+                var r = document.documentElement;
+                var fn = r.requestFullscreen || r.webkitRequestFullscreen;
+                if (fn && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                    fn.call(r);
+                }
+            } catch(ex) {}
+        };
+        document.addEventListener('touchstart', fsOnce, {capture:true, passive:true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  DOM — Game-controller layout
+         *
+         *  LEFT  (#lm-mc-l) — utilities:  ☰ 💬 ⛶  /  🤖 ⏸
+         *  RIGHT (#lm-mc-r) — actions:    [2×][16×] / ⚔ / ⬤
+         *
+         *  Left thumb  = joystick (canvas touch)
+         *  Right thumb = combat actions (split / feed)
+         * ═══════════════════════════════════════════════════════ */
+
+        /* ── LEFT side: utilities ── */
+        var rootL = mk('div'); rootL.id = 'lm-mc-l';
+        document.body.appendChild(rootL);
+
+        var rowU = mk('div'); rowU.className = 'lm-r';
         var bMenu = mkb('☰', null, true);
         var bChat = mkb('💬', null, true);
         var bFull = mkb('⛶', null, true);
-        row.appendChild(bMenu); row.appendChild(bChat); row.appendChild(bFull);
-        root.appendChild(row);
+        rowU.appendChild(bMenu); rowU.appendChild(bChat); rowU.appendChild(bFull);
+        rootL.appendChild(rowU);
+
+        var rowC = mk('div'); rowC.className = 'lm-r';
+        var bAI   = mks('🤖');
+        var bPaus = mks('⏸');
+        rowC.appendChild(bAI); rowC.appendChild(bPaus);
+        rootL.appendChild(rowC);
+
+        /* ── RIGHT side: actions (above minimap) ── */
+        var rootR = mk('div'); rootR.id = 'lm-mc-r';
+        document.body.appendChild(rootR);
+
+        var rowA = mk('div'); rowA.className = 'lm-r';
+        var bDbl = mks('2×');
+        var b16  = mks('16×');
+        rowA.appendChild(bDbl); rowA.appendChild(b16);
+        rootR.appendChild(rowA);
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
-        root.appendChild(bSplit);
-        root.appendChild(bFeed);
+        rootR.appendChild(bSplit);
+        rootR.appendChild(bFeed);
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
@@ -120,7 +203,7 @@
         document.body.appendChild(cBar);
 
         /* ── Press effects ── */
-        [bMenu, bChat, bFull, bSplit, bFeed].forEach(function (b) {
+        [bMenu, bChat, bFull, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
             b.addEventListener('touchstart',  function () { b.classList.add('p'); },    {passive:true});
             b.addEventListener('touchend',    function () { b.classList.remove('p'); }, {passive:true});
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, {passive:true});
@@ -132,6 +215,42 @@
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             emitKey(32);
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  DOUBLE SPLIT — calls application.doubleSplit()
+         * ═══════════════════════════════════════════════════════ */
+        bDbl.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (typeof application !== 'undefined' && application.doubleSplit)
+                application.doubleSplit();
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  SPLIT 16 — calls application.split16()
+         * ═══════════════════════════════════════════════════════ */
+        b16.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (typeof application !== 'undefined' && application.split16)
+                application.split16();
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  AUTOPLAY — calls application.setAutoPlay()
+         * ═══════════════════════════════════════════════════════ */
+        bAI.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (typeof application !== 'undefined' && application.setAutoPlay)
+                application.setAutoPlay();
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  PAUSE — calls application.setPause()
+         * ═══════════════════════════════════════════════════════ */
+        bPaus.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            if (typeof application !== 'undefined' && application.setPause)
+                application.setPause();
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -173,14 +292,31 @@
             chatClose();
         }, {passive:false});
 
+        function lockViewport() {
+            var vp = document.querySelector('meta[name="viewport"]');
+            if (vp) {
+                vp._origContent = vp.getAttribute('content');
+                vp.setAttribute('content',
+                    'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
+            }
+        }
+        function unlockViewport() {
+            var vp = document.querySelector('meta[name="viewport"]');
+            if (vp && vp._origContent) {
+                vp.setAttribute('content', vp._origContent);
+            }
+        }
+
         function chatOpen() {
             chatOn = true;
+            lockViewport(); // prevent zoom when focusing input
             emitKey(13); // open chat box
             setTimeout(function () {
                 var inp = document.getElementById('message');
                 if (inp) { inp.focus(); }
                 cBar.style.display = 'block';
-                root.style.visibility = 'hidden'; // hide but keep layout
+                rootL.style.visibility = 'hidden';
+                rootR.style.visibility = 'hidden';
             }, 120);
         }
 
@@ -202,8 +338,10 @@
                 emitKey(13);
             }, 50);
             chatOn = false;
+            unlockViewport(); // restore normal viewport
             cBar.style.display = 'none';
-            root.style.visibility = 'visible'; // restore buttons
+            rootL.style.visibility = 'visible';
+            rootR.style.visibility = 'visible';
         }
 
         // Tap canvas while chatting → send & close
@@ -287,9 +425,20 @@
         }, {passive:true});
 
         /* ═══════════════════════════════════════════════════════
-         *  PINCH-TO-ZOOM
+         *  PINCH-TO-ZOOM  (dual mode)
+         *    Menu visible  → scale HUD  (hudScale, 0.3 – 1.0)
+         *    In-game       → zoom map   (WheelEvent)
+         *    Spread fingers = zoom IN for both
          * ═══════════════════════════════════════════════════════ */
         var pDist = 0, pOn = false;
+
+        function isMenuVisible() {
+            var ov = document.getElementById('overlays');
+            if (!ov) return false;
+            if (ov.style.display === 'none') return false;
+            // overlays is hidden via .stop().hide() when in-game
+            return ov.offsetParent !== null || ov.offsetHeight > 0;
+        }
 
         canvas.addEventListener('touchstart', function (e) {
             if (e.touches.length === 2) {
@@ -303,13 +452,27 @@
             if (!(e.touches.length === 2 && pOn)) return;
             e.preventDefault();
             var nd = dist(e.touches[0], e.touches[1]);
-            var delta = nd - pDist;
+            var delta = nd - pDist;   // >0 = spread, <0 = pinch
             if (Math.abs(delta) > 4) {
-                var cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-                wheel(canvas, -delta * 2, cx, cy);
+                if (isMenuVisible()) {
+                    /* ── HUD scale mode ── */
+                    var step = delta * 0.003;
+                    if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
+                        var ns = Math.min(1, Math.max(0.3, defaultSettings.hudScale + step));
+                        defaultSettings.hudScale = ns;
+                        if (typeof ogario !== 'undefined') ogario.hudScale = ns;
+                        if (typeof ogarhusettings === 'function') ogarhusettings();
+                        zP.textContent = '🔍 HUD ' + Math.round(ns * 100) + '%';
+                    }
+                } else {
+                    /* ── Map zoom mode ── */
+                    var cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                    // spread (delta>0) → positive deltaY → zoom in (ogario convention)
+                    wheel(canvas, delta * 2, cx, cy);
+                    zP.textContent = delta > 0 ? '🔍 +' : '🔍 −';
+                }
                 pDist = nd;
-                zP.textContent = delta > 0 ? '🔍 +' : '🔍 −';
                 zP.classList.add('on');
                 clearTimeout(zT);
                 zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
@@ -332,6 +495,13 @@
                 b.innerHTML = '<div class="lm-bi"><span class="i">' + icon + '</span><span class="l">' + label + '</span></div>';
             else
                 b.textContent = icon;
+            return b;
+        }
+
+        function mks(icon) {
+            var b = mk('div');
+            b.className = 'lm-b lm-s';
+            b.textContent = icon;
             return b;
         }
 
