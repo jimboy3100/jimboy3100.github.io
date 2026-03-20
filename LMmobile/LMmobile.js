@@ -1174,22 +1174,28 @@
                      navigator.standalone === true);
 
         /* ═══════════════════════════════════════════════════════
-         *  EXIT FULLSCREEN WHEN NOT PLAYING (browser only)
-         *  In TWA/Google Play: stay fullscreen always
+         *  FULLSCREEN ↔ MENU SYNC
+         *  helloContainer hidden → enter fullscreen (always)
+         *  helloContainer visible → exit fullscreen (browser only)
          * ═══════════════════════════════════════════════════════ */
         var _prevMenuVisible = isMenuVisible();
         setInterval(function () {
             var nowVisible = isMenuVisible();
-            if (nowVisible && !_prevMenuVisible && !isTWA) {
-                // Menu just appeared (player died or opened menu) → exit fullscreen
-                try {
-                    if (document.fullscreenElement || document.webkitFullscreenElement) {
-                        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-                    }
-                } catch(e) {}
+            if (nowVisible !== _prevMenuVisible) {
+                if (!nowVisible) {
+                    // Menu just hidden (playing/spectating) → fullscreen
+                    goFullscreenLandscape();
+                } else if (!isTWA) {
+                    // Menu just appeared (died/opened) → exit fullscreen (browser only)
+                    try {
+                        if (document.fullscreenElement || document.webkitFullscreenElement) {
+                            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+                        }
+                    } catch(e) {}
+                }
+                _prevMenuVisible = nowVisible;
             }
-            _prevMenuVisible = nowVisible;
-        }, 1000);
+        }, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  TABLET-AWARE SIZING
