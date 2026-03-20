@@ -71,12 +71,17 @@
     'box-shadow:0 0 6px rgba(141,95,230,.10)}' +
     '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
 
+    /* toggle-active glow for autoplay / pause */
+    '.lm-active{background:rgba(1,217,204,.22)!important;border-color:rgba(1,217,204,.7)!important;' +
+    'box-shadow:0 0 10px rgba(1,217,204,.35)!important}' +
+
     '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
     /* ── Settings panel ── */
     '#lm-sp{position:fixed;left:12px;bottom:clamp(130px,20vh,180px);z-index:100001;' +
     'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
     'border-radius:12px;padding:14px 16px;width:200px;' +
+    'max-height:50vh;overflow-y:auto;' +
     'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
     'pointer-events:auto;user-select:none;-webkit-user-select:none;' +
     'display:none;flex-direction:column;gap:10px}' +
@@ -209,11 +214,11 @@
             var ot = mk('div'); ot.id = 'lm-orient-toast';
             ot.innerHTML = '📱⇔️<br>Rotate your phone for<br>better gameplay!';
             document.body.appendChild(ot);
-            setTimeout(function () { ot.classList.add('on'); }, 1200);
+            setTimeout(function () { ot.classList.add('on'); }, 7000);
             setTimeout(function () {
                 ot.classList.remove('on');
                 setTimeout(function () { ot.remove(); }, 600);
-            }, 6000);
+            }, 12000);
             localStorage.setItem('lm-orient-prompted', '1');
         }
 
@@ -369,12 +374,31 @@
             sp.classList.toggle('on');
         }, {passive:false});
 
+        /* close settings when tapping outside */
+        document.addEventListener('touchstart', function (e) {
+            if (!sp.classList.contains('on')) return;
+            if (sp.contains(e.target) || bGear.contains(e.target)) return;
+            sp.classList.remove('on');
+        }, {passive:true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  BUTTON DEBOUNCE — prevents accidental double-fires
+         * ═══════════════════════════════════════════════════════ */
+        var lastAction = 0;
+        var DEBOUNCE = 150; // ms
+        function debounced(fn) {
+            var now = Date.now();
+            if (now - lastAction < DEBOUNCE) return;
+            lastAction = now;
+            fn();
+        }
+
         /* ═══════════════════════════════════════════════════════
          *  SPLIT — Space (keyCode 32)
          * ═══════════════════════════════════════════════════════ */
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            emitKey(32);
+            debounced(function () { emitKey(32); });
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -382,8 +406,10 @@
          * ═══════════════════════════════════════════════════════ */
         bDbl.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            if (typeof application !== 'undefined' && application.doubleSplit)
-                application.doubleSplit();
+            debounced(function () {
+                if (typeof application !== 'undefined' && application.doubleSplit)
+                    application.doubleSplit();
+            });
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -391,8 +417,10 @@
          * ═══════════════════════════════════════════════════════ */
         b16.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            if (typeof application !== 'undefined' && application.split16)
-                application.split16();
+            debounced(function () {
+                if (typeof application !== 'undefined' && application.split16)
+                    application.split16();
+            });
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -400,8 +428,10 @@
          * ═══════════════════════════════════════════════════════ */
         bAI.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            if (typeof application !== 'undefined' && application.setAutoPlay)
+            if (typeof application !== 'undefined' && application.setAutoPlay) {
                 application.setAutoPlay();
+                bAI.classList.toggle('lm-active');
+            }
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -409,8 +439,10 @@
          * ═══════════════════════════════════════════════════════ */
         bPaus.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            if (typeof application !== 'undefined' && application.setPause)
+            if (typeof application !== 'undefined' && application.setPause) {
                 application.setPause();
+                bPaus.classList.toggle('lm-active');
+            }
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
@@ -598,8 +630,13 @@
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
-            var dx = (t.clientX - org.x) * prefs.jsSensitivity;
-            var dy = (t.clientY - org.y) * prefs.jsSensitivity;
+            var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
+            var rawD = Math.sqrt(rx0*rx0 + ry0*ry0);
+            // dead zone: ignore tiny movements to prevent accidental direction change
+            if (rawD < 8) return;
+
+            var dx = rx0 * prefs.jsSensitivity;
+            var dy = ry0 * prefs.jsSensitivity;
             // Apply aspect ratio correction (landscape screens need wider X moves)
             var cx = window.innerWidth  / 2 + dx / asp;
             var cy = window.innerHeight / 2 + dy;
