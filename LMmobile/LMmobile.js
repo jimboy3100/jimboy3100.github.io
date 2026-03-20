@@ -200,7 +200,14 @@
     '#top5-hud{position:fixed!important;top:45px!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:top left!important}' +
     '#stats-hud{position:fixed!important;left:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:bottom left!important}' +
+    'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
+    'display:none!important}' +
+
+    /* ── Compact mobile stats overlay ── */
+    '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
+    'font:600 12px/1 Ubuntu,Roboto,sans-serif;color:rgba(255,255,255,.85);' +
+    'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
+    'user-select:none;-webkit-user-select:none;cursor:pointer}' +
     '#time-hud{position:fixed!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
@@ -1054,40 +1061,60 @@
         }, {passive: true});
 
         /* ═══════════════════════════════════════════════════════
-         *  CONNECTION QUALITY INDICATOR (inside #stats-hud)
-         *  Reads game's pingTime and shows colored dot
+         *  COMPACT STATS OVERLAY + CONNECTION DOT
+         *  Replaces verbose #stats-hud with "mass · cells/16 🟢 42ms"
+         *  Tap to expand shows original full stats
          * ═══════════════════════════════════════════════════════ */
-        (function connectionDot() {
-            var dot = mk('div');
-            dot.id = 'lm-ping';
-            dot.style.cssText = 'font-size:11px;font-family:Ubuntu,Roboto,sans-serif;' +
-                'color:#01d9cc;opacity:.8;margin-top:2px;white-space:nowrap';
-            // Inject into stats HUD
-            var statsHud = document.getElementById('stats-hud');
-            if (statsHud) {
-                statsHud.appendChild(dot);
-            } else {
-                // Fallback: fixed position near stats area
-                dot.style.position = 'fixed';
-                dot.style.bottom = '60px';
-                dot.style.left = '4px';
-                dot.style.zIndex = '100001';
-                document.body.appendChild(dot);
-            }
+        (function compactStats() {
+            var mStats = mk('div');
+            mStats.id = 'lm-stats';
+            document.body.appendChild(mStats);
+
+            var massSpan = mk('span');
+            var dot = mk('span');
+            dot.style.cssText = 'margin-left:6px;opacity:.8';
+            mStats.appendChild(massSpan);
+            mStats.appendChild(dot);
+
+            var expanded = false;
+            mStats.addEventListener('touchstart', function (e) {
+                e.preventDefault();
+                var orig = document.getElementById('stats-hud');
+                if (orig) {
+                    expanded = !expanded;
+                    orig.style.display = expanded ? 'block' : 'none';
+                }
+            }, {passive: false});
+
             setInterval(function () {
+                // Mass + cells
+                var mass = 0, cells = 0, maxCells = 16;
+                if (typeof ogario !== 'undefined') mass = ogario.playerMass || 0;
+                else if (typeof legendmod !== 'undefined') mass = legendmod.playerMass || 0;
+                if (typeof legendmod !== 'undefined' && legendmod.playerCells)
+                    cells = legendmod.playerCells.length;
+                else if (typeof LM !== 'undefined' && LM.playerCells)
+                    cells = LM.playerCells.length;
+
+                if (mass > 0) {
+                    massSpan.textContent = mass + ' \u00b7 ' + cells + '/' + maxCells;
+                } else {
+                    massSpan.textContent = '';
+                }
+
+                // Ping
                 var ping = -1;
-                // Try multiple sources the game might expose
                 if (typeof window.pingTime !== 'undefined') ping = window.pingTime;
                 else if (typeof ogario !== 'undefined' && ogario.ping) ping = ogario.ping;
                 else if (typeof connection !== 'undefined' && connection.ping) ping = connection.ping;
 
                 if (ping >= 0) {
-                    var icon = ping <= 80 ? '🟢' : ping <= 200 ? '🟡' : '🔴';
+                    var icon = ping <= 80 ? '\ud83d\udfe2' : ping <= 200 ? '\ud83d\udfe1' : '\ud83d\udd34';
                     dot.textContent = icon + ' ' + Math.round(ping) + 'ms';
                 } else {
-                    dot.textContent = '⚪ --ms';
+                    dot.textContent = '';
                 }
-            }, 2000);
+            }, 500);
         })();
 
         /* ═══════════════════════════════════════════════════════
