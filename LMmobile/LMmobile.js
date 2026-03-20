@@ -426,6 +426,10 @@
         drawer.appendChild(bChat);
         rootL.appendChild(drawer);
 
+        /* ☰ menu button: always visible on left, toggles helloContainer */
+        var bMenu = mkb('☰', null, true);
+        rootL.appendChild(bMenu);
+
         /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
         sp.innerHTML =
@@ -479,8 +483,6 @@
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
-        var bMenu  = mkb('☰', null, true);
-        rootR.appendChild(bMenu);
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
 
