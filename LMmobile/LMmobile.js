@@ -1015,6 +1015,82 @@
             'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
 
         /* ═══════════════════════════════════════════════════════
+         *  DOUBLE-TAP CANVAS = SPLIT (right half only)
+         *  Two rapid taps within 300ms → emitKey(32) = Space
+         * ═══════════════════════════════════════════════════════ */
+        var _dtLast = 0;
+        canvas.addEventListener('touchend', function (e) {
+            if (chatOn) return;
+            var t = e.changedTouches[0];
+            if (!t || t.clientX < window.innerWidth * 0.5) return; // left half = joystick
+            var now = Date.now();
+            if (now - _dtLast < 300) {
+                emitKey(32); // split
+                _dtLast = 0; // reset so triple-tap doesn't re-fire
+            } else {
+                _dtLast = now;
+            }
+        }, {passive: true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  AUTO-HIDE LEFT BUTTONS DURING GAMEPLAY
+         *  Fade to 10% when touching canvas, restore after 3s idle
+         * ═══════════════════════════════════════════════════════ */
+        var _fadeTimer = null;
+        rootL.style.transition = 'opacity .4s ease';
+        canvas.addEventListener('touchstart', function () {
+            if (isMenuVisible()) return;
+            rootL.style.opacity = '0.1';
+            if (_fadeTimer) clearTimeout(_fadeTimer);
+            _fadeTimer = setTimeout(function () {
+                rootL.style.opacity = prefs.btnOpacity;
+            }, 3000);
+        }, {passive: true});
+        canvas.addEventListener('touchend', function () {
+            if (_fadeTimer) clearTimeout(_fadeTimer);
+            _fadeTimer = setTimeout(function () {
+                rootL.style.opacity = prefs.btnOpacity;
+            }, 3000);
+        }, {passive: true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  CONNECTION QUALITY INDICATOR (inside #stats-hud)
+         *  Reads game's pingTime and shows colored dot
+         * ═══════════════════════════════════════════════════════ */
+        (function connectionDot() {
+            var dot = mk('div');
+            dot.id = 'lm-ping';
+            dot.style.cssText = 'font-size:11px;font-family:Ubuntu,Roboto,sans-serif;' +
+                'color:#01d9cc;opacity:.8;margin-top:2px;white-space:nowrap';
+            // Inject into stats HUD
+            var statsHud = document.getElementById('stats-hud');
+            if (statsHud) {
+                statsHud.appendChild(dot);
+            } else {
+                // Fallback: fixed position near stats area
+                dot.style.position = 'fixed';
+                dot.style.bottom = '60px';
+                dot.style.left = '4px';
+                dot.style.zIndex = '100001';
+                document.body.appendChild(dot);
+            }
+            setInterval(function () {
+                var ping = -1;
+                // Try multiple sources the game might expose
+                if (typeof window.pingTime !== 'undefined') ping = window.pingTime;
+                else if (typeof ogario !== 'undefined' && ogario.ping) ping = ogario.ping;
+                else if (typeof connection !== 'undefined' && connection.ping) ping = connection.ping;
+
+                if (ping >= 0) {
+                    var icon = ping <= 80 ? '🟢' : ping <= 200 ? '🟡' : '🔴';
+                    dot.textContent = icon + ' ' + Math.round(ping) + 'ms';
+                } else {
+                    dot.textContent = '⚪ --ms';
+                }
+            }, 2000);
+        })();
+
+        /* ═══════════════════════════════════════════════════════
          *  DYNAMIC BUTTON POSITIONING (collision-free)
          *  Reads minimap's actual position and places buttons
          *  relative to it. Adapts to any screen size.
