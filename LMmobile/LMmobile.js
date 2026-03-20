@@ -625,45 +625,40 @@
             chatOn ? chatClose() : chatOpen();
         }, {passive:false});
 
-        cBar.querySelector('button').addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            chatClose();
-        }, {passive:false});
-
         function chatOpen() {
             chatOn = true;
-            emitKey(13); // open chat box
+            // Open chat box — dispatch Enter on document to open game's chat
+            emitKey(13);
             setTimeout(function () {
                 var inp = document.getElementById('message');
-                if (inp) { inp.focus(); }
+                if (inp) {
+                    inp.focus();
+                    // Auto-send on Enter key from virtual keyboard
+                    inp.addEventListener('keydown', function onEnter(ev) {
+                        if (ev.keyCode === 13 || ev.key === 'Enter') {
+                            inp.removeEventListener('keydown', onEnter);
+                            setTimeout(function () { chatClose(); }, 50);
+                        }
+                    });
+                }
                 cBar.style.display = 'block';
-                rootL.style.visibility = 'hidden';
-                rootR.style.visibility = 'hidden';
-                drawer.classList.remove('on'); sp.classList.remove('on');
             }, 120);
         }
 
         function chatClose() {
             var inp = document.getElementById('message');
-            if (inp) {
+            if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
-                // jQuery's keydown handler on #message checks keyCode === 13
                 var ev = document.createEvent('Event');
                 ev.initEvent('keydown', true, true);
                 ev.keyCode = 13;
                 ev.which = 13;
                 ev.key = 'Enter';
                 inp.dispatchEvent(ev);
-                inp.blur();
             }
-            // Also dispatch Enter on document to close the chat panel
-            setTimeout(function () {
-                emitKey(13);
-            }, 50);
+            if (inp) inp.blur();
             chatOn = false;
             cBar.style.display = 'none';
-            rootL.style.visibility = 'visible';
-            rootR.style.visibility = 'visible';
         }
 
         // Tap canvas while chatting → send & close
@@ -1130,29 +1125,29 @@
             var vh = window.innerHeight;
             var GAP = 8;
 
-            if (mm && mm.offsetParent !== null) {
+            if (mm) {
                 var r = mm.getBoundingClientRect();
                 // Sanity: skip if rect is clearly stale (0-sized or off-screen)
-                if (r.width < 10 || r.height < 10) return;
+                if (r.width < 10 || r.height < 10 || r.right < 0 || r.bottom < 0) return;
 
-                // SPLIT/FEED/☰: column to LEFT of minimap, bottom-aligned
+                // SPLIT/FEED: column to LEFT of minimap, bottom-aligned at 4px
                 var rRight = vw - r.left + GAP;
                 rootR.style.right = rRight + 'px';
                 rootR.style.bottom = '4px';
 
-                // 4×/16×: ABOVE minimap, centered
+                // 4×/16×: row centered ABOVE minimap
                 var smBottom = vh - r.top + 6;
-                var mmCenterX = r.left + r.width / 2;
-                smallR.style.left = (mmCenterX - 30) + 'px';
-                smallR.style.right = 'auto';
+                var mmCenterRight = vw - (r.left + r.width / 2);
+                smallR.style.right = (mmCenterRight - 30) + 'px';
+                smallR.style.left = 'auto';
                 smallR.style.bottom = smBottom + 'px';
             } else {
-                // Fallback: minimap hidden
+                // Fallback: minimap not found
                 rootR.style.right = '14px';
                 rootR.style.bottom = '4px';
                 smallR.style.right = '14px';
                 smallR.style.left = 'auto';
-                smallR.style.bottom = '220px';
+                smallR.style.bottom = '160px';
             }
         }
         repositionButtons();
