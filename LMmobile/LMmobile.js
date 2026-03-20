@@ -41,16 +41,25 @@
     '#lm-cb{padding-bottom:env(safe-area-inset-bottom)}' +
     '}' +
 
-    /* ── LEFT: single ☰ button (always visible) ── */
+    /* ── LEFT: ☰ trigger + horizontal drawer ── */
     '#lm-mc-l{position:fixed;left:12px;bottom:clamp(20px,6vh,50px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:flex-start;gap:6px}' +
+    'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
-    /* ── Drawer: slides up from ☰, hidden by default ── */
-    '#lm-drawer{display:flex;flex-direction:column;align-items:flex-start;gap:6px;' +
-    'pointer-events:none;max-height:0;overflow:hidden;opacity:0;' +
-    'transition:max-height .25s ease,opacity .2s ease}' +
-    '#lm-drawer.on{max-height:400px;opacity:1;pointer-events:auto}' +
+    /* ── Drawer: always visible, horizontal row to right of ☰ ── */
+    '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:5px;' +
+    'pointer-events:auto}' +
+
+    /* ── Drawer button: smaller than trigger, equal size ── */
+    '.lm-d{pointer-events:auto;touch-action:none;cursor:pointer;' +
+    'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
+    'width:36px;height:36px;font-size:15px;' +
+    'background:rgba(0,36,62,.50);border:1.5px solid rgba(1,217,204,.22);' +
+    'box-shadow:0 0 6px rgba(1,217,204,.06);' +
+    'color:rgba(255,255,255,.8);font-family:Ubuntu,Roboto,sans-serif;' +
+    'font-weight:700;transition:transform .1s,background .15s}' +
+    '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20)}' +
+    '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important}' +
 
     /* ── RIGHT container: horizontal row near minimap ── */
     '#lm-mc-r{position:fixed;right:14px;bottom:clamp(70px,18vh,140px);z-index:100000;' +
@@ -378,20 +387,23 @@
         var rootL = mk('div'); rootL.id = 'lm-mc-l';
         document.body.appendChild(rootL);
 
-        /* drawer: all secondary buttons (hidden by default) */
+        /* drawer: secondary buttons (hidden by default, opens right) */
         var drawer = mk('div'); drawer.id = 'lm-drawer';
 
-        var bChat = mkb('💬', null, true);
-        var bFull = mkb('⛶', null, true);
-        var bGear = mks('⚙');
-        var bAI   = mks('►');
-        var bPaus = mks('‖');
-        drawer.appendChild(bAI); drawer.appendChild(bPaus);
-        drawer.appendChild(bChat); drawer.appendChild(bFull);
-        drawer.appendChild(bGear);
+        function mkd(label) {
+            var b = mk('div'); b.className = 'lm-d lm-b';
+            b.textContent = label;
+            return b;
+        }
+        var bChat = mkd('💬');
+        var bAI   = mkd('►');
+        var bPaus = mkd('❚❚');
+        drawer.appendChild(bAI);
+        drawer.appendChild(bPaus);
+        drawer.appendChild(bChat);
         rootL.appendChild(drawer);
 
-        /* ☰ menu button: always visible, toggles drawer */
+        /* ☰ menu button: always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
         rootL.appendChild(bMenu);
 
@@ -465,34 +477,37 @@
         var zT = null;
 
         var cBar = mk('div'); cBar.id = 'lm-cb';
-        cBar.innerHTML = '<button>Send ⏎</button>';
+        cBar.innerHTML = '';
         document.body.appendChild(cBar);
 
         /* apply initial prefs */
         applyPrefs();
 
         /* ── Press effects ── */
-        [bMenu, bChat, bFull, bGear, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
+        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
             b.addEventListener('touchstart',  function () { b.classList.add('p'); },    {passive:true});
             b.addEventListener('touchend',    function () { b.classList.remove('p'); }, {passive:true});
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, {passive:true});
         });
 
         /* ═══════════════════════════════════════════════════════
-         *  MENU — toggles drawer (shows/hides all secondary buttons)
+         *  MENU — toggles helloContainer (show/hide game menu)
          * ═══════════════════════════════════════════════════════ */
         bMenu.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            drawer.classList.toggle('on');
-            if (!drawer.classList.contains('on')) sp.classList.remove('on');
-        }, {passive:false});
-
-        /* ═══════════════════════════════════════════════════════
-         *  GEAR — toggle settings panel (inside drawer)
-         * ═══════════════════════════════════════════════════════ */
-        bGear.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            sp.classList.toggle('on');
+            var hc = document.getElementById('helloContainer');
+            if (hc) {
+                if (hc.style.display === 'none' || hc.style.display === '') {
+                    hc.style.display = 'block';
+                    if (typeof application !== 'undefined' && application.showMenu) {
+                        application.showMenu();
+                    }
+                } else {
+                    hc.style.display = 'none';
+                }
+            } else {
+                emitKey(27); // fallback: ESC
+            }
         }, {passive:false});
 
         /* ═══════════════════════════════════════════════════════
