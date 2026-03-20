@@ -42,7 +42,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:4px;bottom:clamp(16px,5vh,40px);z-index:100000;' +
+    '#lm-mc-l{position:fixed;left:4px;bottom:6px;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -197,7 +197,7 @@
     'transform:scale(0.5)!important;transform-origin:bottom right!important}' +
     '#leaderboard-hud{position:fixed!important;top:4px!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:top right!important}' +
-    '#top5-hud{position:fixed!important;top:45px!important;left:4px!important;' +
+    '#top5-hud{position:fixed!important;top:30px!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:top left!important}' +
     '#stats-hud{position:fixed!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
@@ -1025,23 +1025,7 @@
             'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
             'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
 
-        /* ═══════════════════════════════════════════════════════
-         *  DOUBLE-TAP CANVAS = SPLIT (right half only)
-         *  Two rapid taps within 300ms → emitKey(32) = Space
-         * ═══════════════════════════════════════════════════════ */
-        var _dtLast = 0;
-        canvas.addEventListener('touchend', function (e) {
-            if (chatOn) return;
-            var t = e.changedTouches[0];
-            if (!t || t.clientX < window.innerWidth * 0.5) return; // left half = joystick
-            var now = Date.now();
-            if (now - _dtLast < 300) {
-                emitKey(32); // split
-                _dtLast = 0; // reset so triple-tap doesn't re-fire
-            } else {
-                _dtLast = now;
-            }
-        }, {passive: true});
+        /* (double-tap split removed — user preference) */
 
         /* ═══════════════════════════════════════════════════════
          *  AUTO-HIDE LEFT BUTTONS DURING GAMEPLAY
@@ -1183,19 +1167,41 @@
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
                 if (!nowVisible) {
-                    // Menu just hidden (playing/spectating) → fullscreen
+                    // Menu just hidden (playing/spectating) → fullscreen + wake lock
                     goFullscreenLandscape();
-                } else if (!isTWA) {
-                    // Menu just appeared (died/opened) → exit fullscreen (browser only)
-                    try {
-                        if (document.fullscreenElement || document.webkitFullscreenElement) {
-                            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-                        }
-                    } catch(e) {}
+                    // Keep screen on while playing
+                    if ('wakeLock' in navigator) {
+                        navigator.wakeLock.request('screen').then(function (wl) {
+                            window._lmWakeLock = wl;
+                        }).catch(function () {});
+                    }
+                } else {
+                    if (!isTWA) {
+                        // Menu appeared (died/opened) → exit fullscreen (browser only)
+                        try {
+                            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+                            }
+                        } catch(e) {}
+                    }
+                    // Release wake lock when not playing
+                    if (window._lmWakeLock) {
+                        try { window._lmWakeLock.release(); } catch(e) {}
+                        window._lmWakeLock = null;
+                    }
                 }
                 _prevMenuVisible = nowVisible;
             }
         }, 500);
+
+        // Re-acquire wake lock when tab becomes visible again (browser releases it on hidden)
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible' && !isMenuVisible() && 'wakeLock' in navigator) {
+                navigator.wakeLock.request('screen').then(function (wl) {
+                    window._lmWakeLock = wl;
+                }).catch(function () {});
+            }
+        });
 
         /* ═══════════════════════════════════════════════════════
          *  TABLET-AWARE SIZING
