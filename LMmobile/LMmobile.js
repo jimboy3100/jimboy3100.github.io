@@ -318,42 +318,7 @@
             lowCSS.textContent = '*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
             document.head.appendChild(lowCSS);
         }
-
-        /* ═══════════════════════════════════════════════════════
-         *  HiDPI CANVAS (sharp graphics on high-DPR screens)
-         *  Intercepts canvas.width/height writes to multiply by DPR
-         *  Returns original CSS-pixel values on reads so game
-         *  coordinate system stays correct
-         * ═══════════════════════════════════════════════════════ */
-        (function patchCanvasDPR() {
-            var dpr = window.devicePixelRatio || 1;
-            if (dpr <= 1 || window.LM_LOW_END) return; // no-op for 1x or low-end
-            var _realW = 0, _realH = 0;
-            var _cssW = 0, _cssH = 0;
-
-            Object.defineProperty(canvas, 'width', {
-                set: function (v) {
-                    _cssW = v;
-                    _realW = Math.round(v * dpr);
-                    HTMLCanvasElement.prototype.__lookupSetter__('width').call(this, _realW);
-                    // Scale context so game draws in CSS-pixel space
-                    var ctx = this.getContext('2d');
-                    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                },
-                get: function () { return _cssW; }
-            });
-
-            Object.defineProperty(canvas, 'height', {
-                set: function (v) {
-                    _cssH = v;
-                    _realH = Math.round(v * dpr);
-                    HTMLCanvasElement.prototype.__lookupSetter__('height').call(this, _realH);
-                    var ctx = this.getContext('2d');
-                    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                },
-                get: function () { return _cssH; }
-            });
-        })();
+        /* (HiDPI canvas requires changes to ogario.v4.js resizeCanvas — cannot be patched externally) */
 
         /* ── Fullscreen + Landscape helper ──
          * Works in browser; gracefully degrades in Google Play WebView/TWA
