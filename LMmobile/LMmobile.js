@@ -322,10 +322,8 @@
             var lowCSS = document.createElement('style');
             lowCSS.textContent = '*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
             document.head.appendChild(lowCSS);
-        } else if (cores <= 4) {
-            effectiveDPR = Math.min(nativeDPR, 2);
         } else {
-            effectiveDPR = nativeDPR;
+            effectiveDPR = nativeDPR; // full native DPR for crisp graphics
         }
 
         // Patch canvas to render at effective DPR for sharp graphics
