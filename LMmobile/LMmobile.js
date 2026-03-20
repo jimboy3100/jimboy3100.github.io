@@ -44,33 +44,34 @@
     '#lm-drawer.on{max-height:400px;opacity:1;pointer-events:auto}' +
 
     /* ── RIGHT container: split + feed only (always visible) ── */
-    '#lm-mc-r{position:fixed;right:12px;bottom:clamp(80px,25vh,200px);z-index:100000;' +
+    '#lm-mc-r{position:fixed;right:14px;bottom:clamp(60px,18vh,160px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:flex-end;gap:10px}' +
+    'display:flex;flex-direction:column;align-items:flex-end;gap:16px}' +
 
-    /* ── Shared button base ── */
+    /* ── Shared button base (clean, subtle) ── */
     '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
     'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
-    'background:rgba(0,36,62,.65);border:2px solid rgba(1,217,204,.4);' +
-    'box-shadow:0 0 12px rgba(1,217,204,.15),inset 0 1px 0 rgba(255,255,255,.06);' +
-    'backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);' +
+    'background:rgba(0,36,62,.55);border:2px solid rgba(1,217,204,.25);' +
+    'box-shadow:0 0 8px rgba(1,217,204,.08);' +
+    'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' +
     'transition:transform .1s,background .15s,border-color .15s,box-shadow .15s;' +
-    'color:rgba(255,255,255,.9);font-family:Ubuntu,Roboto,sans-serif;' +
-    'font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}' +
+    'color:rgba(255,255,255,.85);font-family:Ubuntu,Roboto,sans-serif;' +
+    'font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4)}' +
 
-    '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.30);' +
-    'border-color:rgba(1,217,204,.80);box-shadow:0 0 18px rgba(1,217,204,.35)}' +
+    '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.25);' +
+    'border-color:rgba(1,217,204,.65);box-shadow:0 0 14px rgba(1,217,204,.25)}' +
 
-    '.lm-a{width:clamp(64px,17vmin,90px);height:clamp(64px,17vmin,90px)}' +
+    /* action buttons: BIG, thumb-friendly */
+    '.lm-a{width:clamp(72px,20vmin,100px);height:clamp(72px,20vmin,100px)}' +
 
-    '.lm-u{width:clamp(46px,12vmin,58px);height:clamp(46px,12vmin,58px);font-size:18px;' +
-    'background:rgba(0,47,82,.55);border-color:rgba(1,140,246,.35);' +
-    'box-shadow:0 0 8px rgba(1,140,246,.12)}' +
-    '.lm-u.p{background:rgba(1,140,246,.25);border-color:rgba(1,140,246,.75)}' +
+    '.lm-u{width:clamp(48px,13vmin,60px);height:clamp(48px,13vmin,60px);font-size:20px;' +
+    'background:rgba(0,47,82,.45);border-color:rgba(1,140,246,.25);' +
+    'box-shadow:0 0 6px rgba(1,140,246,.08)}' +
+    '.lm-u.p{background:rgba(1,140,246,.20);border-color:rgba(1,140,246,.60)}' +
 
     '.lm-bi{display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}' +
-    '.lm-bi .i{font-size:clamp(20px,5.5vmin,26px);line-height:1}' +
-    '.lm-bi .l{font-size:clamp(7px,2vmin,10px);opacity:.65;letter-spacing:1.2px;text-transform:uppercase}' +
+    '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
+    '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.55;letter-spacing:1.2px;text-transform:uppercase}' +
 
     '.lm-s{width:clamp(40px,10vmin,50px);height:clamp(40px,10vmin,50px);font-size:13px;' +
     'background:rgba(0,47,82,.50);border-color:rgba(141,95,230,.35);' +
@@ -78,8 +79,8 @@
     '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
 
     /* toggle-active glow for autoplay / pause */
-    '.lm-active{background:rgba(1,217,204,.22)!important;border-color:rgba(1,217,204,.7)!important;' +
-    'box-shadow:0 0 10px rgba(1,217,204,.35)!important}' +
+    '.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important;' +
+    'box-shadow:0 0 8px rgba(1,217,204,.25)!important}' +
 
     '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
@@ -197,6 +198,23 @@
                 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
         }
         // Safari/iOS: prevent native pinch-zoom gesture
+        /* ── Mobile visual overrides: reduce canvas noise ── */
+        (function mobileVisuals() {
+            function apply() {
+                if (typeof defaultSettings !== 'undefined') {
+                    defaultSettings.gridColor = 'rgba(0,36,62,.15)'; // dim grid
+                    defaultSettings.foodSize = 3; // smaller food dots
+                }
+                if (typeof defaultmapsettings !== 'undefined') {
+                    defaultmapsettings.showBgSectors = false; // no sector background
+                }
+            }
+            apply();
+            // re-apply after theme loads (ogario loads settings late)
+            setTimeout(apply, 3000);
+            setTimeout(apply, 6000);
+        })();
+
         document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, {passive:false});
         document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, {passive:false});
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
