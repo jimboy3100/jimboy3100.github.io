@@ -257,12 +257,26 @@
             window.addEventListener('resize', fit);
             window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
         })();
-        /* ── Mobile visual overrides: reduce canvas noise ── */
+        /* ── Mobile visual overrides: proportional to user settings ── */
         (function mobileVisuals() {
             function apply() {
                 if (typeof defaultSettings !== 'undefined') {
-                    defaultSettings.gridColor = 'rgba(0,36,62,.15)'; // dim grid
-                    defaultSettings.foodSize = 3; // smaller food dots
+                    // Grid: keep user's color, reduce opacity proportionally (×0.3)
+                    var gc = defaultSettings.gridColor || '#00243e';
+                    if (gc.indexOf('rgba') === 0) {
+                        // Extract rgba components, multiply alpha by 0.3
+                        var parts = gc.replace(/rgba?\(/,'').replace(')','').split(',');
+                        var a = parseFloat(parts[3] || 1) * 0.3;
+                        defaultSettings.gridColor = 'rgba(' + parts[0].trim() + ',' +
+                            parts[1].trim() + ',' + parts[2].trim() + ',' + a.toFixed(2) + ')';
+                    } else {
+                        // Hex or named color — wrap in rgba with low alpha
+                        defaultSettings.gridColor = 'rgba(0,36,62,.15)';
+                    }
+
+                    // FoodSize: proportional (60% of user's setting, min 1)
+                    var userFood = defaultSettings.foodSize || 5;
+                    defaultSettings.foodSize = Math.max(1, Math.round(userFood * 0.6));
                 }
                 if (typeof defaultmapsettings !== 'undefined') {
                     defaultmapsettings.showBgSectors = false; // no sector background
