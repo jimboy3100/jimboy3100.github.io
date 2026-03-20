@@ -1,0 +1,19 @@
+{
+  "name": "Expanding Land",
+  "short_name": "Expanding",
+  "description": "Play Expanding Land - the ultimate agar.io experience with Legend Mod",
+  "start_url": "/LMexpress/LMexpress.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "theme_color": "#00243e",
+  "background_color": "#00243e",
+  "categories": ["games"],
+  "icons": [
+    {
+      "src": "/banners/static/img/ogario.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

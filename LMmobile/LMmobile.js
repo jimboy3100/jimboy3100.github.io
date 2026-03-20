@@ -32,6 +32,15 @@
     'html,body{touch-action:pan-x pan-y}' +
     'canvas{touch-action:none}' +
 
+    /* ── Safe area insets for notched phones / iPads ── */
+    '@supports(padding:env(safe-area-inset-top)){' +
+    '#lm-mc-l{padding-left:env(safe-area-inset-left);padding-bottom:env(safe-area-inset-bottom)}' +
+    '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
+    '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
+    'margin-bottom:env(safe-area-inset-bottom)!important}' +
+    '#lm-cb{padding-bottom:env(safe-area-inset-bottom)}' +
+    '}' +
+
     /* ── LEFT: single ☰ button (always visible) ── */
     '#lm-mc-l{position:fixed;left:12px;bottom:clamp(20px,6vh,50px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
@@ -636,26 +645,7 @@
             }
         }, {passive:false});
 
-        /* ═══════════════════════════════════════════════════════
-         *  FULLSCREEN
-         * ═══════════════════════════════════════════════════════ */
-        bFull.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            try {
-                var d = document;
-                if (!d.fullscreenElement && !d.webkitFullscreenElement) {
-                    var r = d.documentElement;
-                    (r.requestFullscreen || r.webkitRequestFullscreen).call(r);
-                    /* lock to landscape when entering fullscreen */
-                    try {
-                        if (screen.orientation && screen.orientation.lock)
-                            screen.orientation.lock('landscape').catch(function(){});
-                    } catch(ol) {}
-                } else {
-                    (d.exitFullscreen || d.webkitExitFullscreen).call(d);
-                }
-            } catch(ex) {}
-        }, {passive:false});
+        /* (fullscreen toggle handled by bFull listener above) */
 
         /* ═══════════════════════════════════════════════════════
          *  SWIPE GESTURES (left half of canvas)
@@ -1003,5 +993,92 @@
         console.log('%c LM Mobile v4.0 %c Touch controls loaded ',
             'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
             'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
+
+        /* ═══════════════════════════════════════════════════════
+         *  TABLET-AWARE SIZING
+         *  Screen ≥ 768px = tablet — less aggressive HUD scaling
+         * ═══════════════════════════════════════════════════════ */
+        (function tabletAware() {
+            var minDim = Math.min(window.innerWidth, window.innerHeight);
+            if (minDim >= 768) {
+                // Tablet: use gentler scaling
+                var huds = ['#leaderboard-hud','#top5-hud','#stats-hud','#time-hud'];
+                huds.forEach(function (sel) {
+                    var el = document.querySelector(sel);
+                    if (el) el.style.transform = el.style.transform.replace('scale(0.75)', 'scale(0.9)');
+                });
+                var mm = document.querySelector('#minimap-hud');
+                if (mm) mm.style.transform = mm.style.transform.replace('scale(0.5)', 'scale(0.65)');
+            }
+        })();
+
+        /* ═══════════════════════════════════════════════════════
+         *  TAP CANVAS TO CLOSE DRAWER
+         * ═══════════════════════════════════════════════════════ */
+        document.addEventListener('touchstart', function (e) {
+            if (!drawer.classList.contains('on')) return;
+            // If tap is outside the drawer, menu button, and settings panel — close
+            if (rootL.contains(e.target)) return;
+            drawer.classList.remove('on');
+            sp.classList.remove('on');
+        }, {passive: true});
+
+        /* ═══════════════════════════════════════════════════════
+         *  KEYBOARD HANDLING (virtual keyboard shifts layout)
+         * ═══════════════════════════════════════════════════════ */
+        if ('visualViewport' in window) {
+            window.visualViewport.addEventListener('resize', function () {
+                var vv = window.visualViewport;
+                var kbHeight = window.innerHeight - vv.height;
+                if (kbHeight > 100) {
+                    // Keyboard is open — shift chat bar above keyboard
+                    cBar.style.bottom = kbHeight + 'px';
+                } else {
+                    cBar.style.bottom = '';
+                }
+            });
+        }
+
+        /* ═══════════════════════════════════════════════════════
+         *  LOW-END DEVICE DETECTION
+         *  Disable expensive effects on ≤ 4 CPU cores
+         * ═══════════════════════════════════════════════════════ */
+        (function lowEndCheck() {
+            var cores = navigator.hardwareConcurrency || 4;
+            if (cores <= 4) {
+                window.LM_LOW_END = true;
+                // Disable backdrop-filter (expensive on GPU-weak devices)
+                var lowCss = document.createElement('style');
+                lowCss.textContent = '.lm-b,.lm-u,.lm-s,#lm-sp{backdrop-filter:none!important;' +
+                    '-webkit-backdrop-filter:none!important}';
+                document.head.appendChild(lowCss);
+                // Reduce food rendering
+                if (typeof defaultSettings !== 'undefined') {
+                    defaultSettings.foodSize = 1;
+                }
+                console.log('[LM Mobile] Low-end mode: ' + cores + ' cores, blur disabled');
+            }
+        })();
+
+        /* ═══════════════════════════════════════════════════════
+         *  DARK STATUS BAR + THEME COLOR
+         * ═══════════════════════════════════════════════════════ */
+        (function setThemeColor() {
+            var tc = document.querySelector('meta[name="theme-color"]');
+            if (!tc) {
+                tc = document.createElement('meta');
+                tc.name = 'theme-color';
+                document.head.appendChild(tc);
+            }
+            tc.content = '#00243e';
+
+            // Inject PWA manifest link if not present
+            if (!document.querySelector('link[rel="manifest"]')) {
+                var ml = document.createElement('link');
+                ml.rel = 'manifest';
+                ml.href = '/manifest.json';
+                document.head.appendChild(ml);
+            }
+        })();
     }
 })();
