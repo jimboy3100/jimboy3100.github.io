@@ -32,15 +32,21 @@
     'html,body{touch-action:pan-x pan-y}' +
     'canvas{touch-action:none}' +
 
-    /* ── LEFT container: utilities (bottom-left, above chat area) ── */
-    '#lm-mc-l{position:fixed;left:12px;bottom:clamp(30px,8vh,70px);z-index:100000;' +
+    /* ── LEFT: single ☰ button (always visible) ── */
+    '#lm-mc-l{position:fixed;left:12px;bottom:clamp(20px,6vh,50px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:flex-start;gap:8px}' +
+    'display:flex;flex-direction:column;align-items:flex-start;gap:6px}' +
 
-    /* ── RIGHT container: actions (right side, above minimap) ── */
-    '#lm-mc-r{position:fixed;right:12px;bottom:clamp(100px,40vh,280px);z-index:100000;' +
+    /* ── Drawer: slides up from ☰, hidden by default ── */
+    '#lm-drawer{display:flex;flex-direction:column;align-items:flex-start;gap:6px;' +
+    'pointer-events:none;max-height:0;overflow:hidden;opacity:0;' +
+    'transition:max-height .25s ease,opacity .2s ease}' +
+    '#lm-drawer.on{max-height:400px;opacity:1;pointer-events:auto}' +
+
+    /* ── RIGHT container: split + feed only (always visible) ── */
+    '#lm-mc-r{position:fixed;right:12px;bottom:clamp(80px,25vh,200px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:flex-end;gap:8px}' +
+    'display:flex;flex-direction:column;align-items:flex-end;gap:10px}' +
 
     /* ── Shared button base ── */
     '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
@@ -78,8 +84,7 @@
     '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
     /* ── Settings panel ── */
-    '#lm-sp{position:fixed;left:12px;bottom:clamp(130px,20vh,180px);z-index:100001;' +
-    'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
+    '#lm-sp{background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
     'border-radius:12px;padding:14px 16px;width:200px;' +
     'max-height:50vh;overflow-y:auto;' +
     'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
@@ -267,26 +272,31 @@
             try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch(e) {}
         }
 
-        /* ── LEFT side: utilities ── */
+        /* ── LEFT side: ☰ menu + hidden drawer ── */
         var rootL = mk('div'); rootL.id = 'lm-mc-l';
         document.body.appendChild(rootL);
 
-        var rowU = mk('div'); rowU.className = 'lm-r';
-        var bMenu = mkb('☰', null, true);
+        /* drawer: all secondary buttons (hidden by default) */
+        var drawer = mk('div'); drawer.id = 'lm-drawer';
+
         var bChat = mkb('💬', null, true);
         var bFull = mkb('⛶', null, true);
         var bGear = mks('⚙');
-        rowU.appendChild(bMenu); rowU.appendChild(bChat); rowU.appendChild(bFull);
-        rowU.appendChild(bGear);
-        rootL.appendChild(rowU);
+        var bAI   = mks('►');
+        var bPaus = mks('‖');
+        var bDbl  = mks('2×');
+        var b16   = mks('16×');
+        drawer.appendChild(bDbl); drawer.appendChild(b16);
+        drawer.appendChild(bAI); drawer.appendChild(bPaus);
+        drawer.appendChild(bChat); drawer.appendChild(bFull);
+        drawer.appendChild(bGear);
+        rootL.appendChild(drawer);
 
-        var rowC = mk('div'); rowC.className = 'lm-r';
-        var bAI   = mks('🤖');
-        var bPaus = mks('⏸');
-        rowC.appendChild(bAI); rowC.appendChild(bPaus);
-        rootL.appendChild(rowC);
+        /* ☰ menu button: always visible, toggles drawer */
+        var bMenu = mkb('☰', null, true);
+        rootL.appendChild(bMenu);
 
-        /* ── Settings panel ── */
+        /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
         sp.innerHTML =
             '<label>Joystick <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
@@ -297,7 +307,7 @@
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale*100) + '">' +
             '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade*100) + '%</span></label>' +
             '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade*100) + '">';
-        document.body.appendChild(sp);
+        drawer.appendChild(sp);
 
         /* apply prefs to all buttons */
         function applyPrefs() {
@@ -331,15 +341,9 @@
             savePrefs();
         });
 
-        /* ── RIGHT side: actions (above minimap) ── */
+        /* ── RIGHT side: split + feed ONLY (always visible) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
         document.body.appendChild(rootR);
-
-        var rowA = mk('div'); rowA.className = 'lm-r';
-        var bDbl = mks('2×');
-        var b16  = mks('16×');
-        rowA.appendChild(bDbl); rowA.appendChild(b16);
-        rootR.appendChild(rowA);
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
@@ -367,19 +371,21 @@
         });
 
         /* ═══════════════════════════════════════════════════════
-         *  GEAR — toggle settings panel
+         *  MENU — toggles drawer (shows/hides all secondary buttons)
+         * ═══════════════════════════════════════════════════════ */
+        bMenu.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            drawer.classList.toggle('on');
+            if (!drawer.classList.contains('on')) sp.classList.remove('on');
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  GEAR — toggle settings panel (inside drawer)
          * ═══════════════════════════════════════════════════════ */
         bGear.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             sp.classList.toggle('on');
         }, {passive:false});
-
-        /* close settings when tapping outside */
-        document.addEventListener('touchstart', function (e) {
-            if (!sp.classList.contains('on')) return;
-            if (sp.contains(e.target) || bGear.contains(e.target)) return;
-            sp.classList.remove('on');
-        }, {passive:true});
 
         /* ═══════════════════════════════════════════════════════
          *  BUTTON DEBOUNCE — prevents accidental double-fires
@@ -457,17 +463,7 @@
         bFeed.addEventListener('touchend',    function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
         bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
 
-        /* ═══════════════════════════════════════════════════════
-         *  MENU — ESC (keyCode 27)
-         * ═══════════════════════════════════════════════════════ */
-        bMenu.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            if (typeof application !== 'undefined' && application.showMenu) {
-                application.showMenu();
-            } else {
-                emitKey(27);
-            }
-        }, {passive:false});
+        /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
 
         /* ═══════════════════════════════════════════════════════
          *  CHAT — Enter (keyCode 13)
@@ -493,7 +489,7 @@
                 cBar.style.display = 'block';
                 rootL.style.visibility = 'hidden';
                 rootR.style.visibility = 'hidden';
-                sp.classList.remove('on'); // close settings if open
+                drawer.classList.remove('on'); sp.classList.remove('on');
             }, 120);
         }
 
