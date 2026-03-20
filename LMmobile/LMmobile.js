@@ -426,10 +426,6 @@
         drawer.appendChild(bChat);
         rootL.appendChild(drawer);
 
-        /* ☰ menu button: always visible, toggles helloContainer */
-        var bMenu = mkb('☰', null, true);
-        rootL.appendChild(bMenu);
-
         /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
         sp.innerHTML =
@@ -443,14 +439,16 @@
             '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade*100) + '">';
         drawer.appendChild(sp);
 
-        /* apply prefs to all buttons */
         function applyPrefs() {
             rootL.style.opacity = prefs.btnOpacity;
             rootR.style.opacity = prefs.btnOpacity;
+            smallR.style.opacity = prefs.btnOpacity;
             rootL.style.transform = 'scale(' + prefs.btnScale + ')';
             rootL.style.transformOrigin = 'bottom left';
             rootR.style.transform = 'scale(' + prefs.btnScale + ')';
             rootR.style.transformOrigin = 'bottom right';
+            smallR.style.transform = 'scale(' + prefs.btnScale + ')';
+            smallR.style.transformOrigin = 'bottom right';
         }
 
         /* slider handlers */
@@ -481,6 +479,8 @@
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
+        var bMenu  = mkb('☰', null, true);
+        rootR.appendChild(bMenu);
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
 
@@ -1130,23 +1130,26 @@
 
             if (mm && mm.offsetParent !== null) {
                 var r = mm.getBoundingClientRect();
+                // Sanity: skip if rect is clearly stale (0-sized or off-screen)
+                if (r.width < 10 || r.height < 10) return;
 
-                // SPLIT/FEED: to the LEFT of minimap, vertically centered with it
+                // SPLIT/FEED/☰: column to LEFT of minimap, bottom-aligned
                 var rRight = vw - r.left + GAP;
-                var rBottom = vh - (r.top + r.height / 2);
                 rootR.style.right = rRight + 'px';
-                rootR.style.bottom = Math.max(10, rBottom - 50) + 'px';
+                rootR.style.bottom = '4px';
 
-                // 4×/16×: centered ABOVE minimap
-                var smBottom = vh - r.top + 8;
-                var smRight = vw - (r.left + r.width / 2) - 30;
-                smallR.style.right = Math.max(10, smRight) + 'px';
+                // 4×/16×: ABOVE minimap, centered
+                var smBottom = vh - r.top + 6;
+                var mmCenterX = r.left + r.width / 2;
+                smallR.style.left = (mmCenterX - 30) + 'px';
+                smallR.style.right = 'auto';
                 smallR.style.bottom = smBottom + 'px';
             } else {
-                // Fallback: minimap hidden — position at bottom-right
+                // Fallback: minimap hidden
                 rootR.style.right = '14px';
-                rootR.style.bottom = '80px';
+                rootR.style.bottom = '4px';
                 smallR.style.right = '14px';
+                smallR.style.left = 'auto';
                 smallR.style.bottom = '220px';
             }
         }
@@ -1154,7 +1157,10 @@
         setInterval(repositionButtons, 2500);
         window.addEventListener('resize', repositionButtons);
         window.addEventListener('orientationchange', function () {
-            setTimeout(repositionButtons, 400);
+            // Browser needs time to re-layout after rotation
+            setTimeout(repositionButtons, 300);
+            setTimeout(repositionButtons, 600);
+            setTimeout(repositionButtons, 1200);
         });
 
         /* ═══════════════════════════════════════════════════════
