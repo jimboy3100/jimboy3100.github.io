@@ -15401,10 +15401,12 @@ Game name     : ${i.displayName}<br/>
             };
         },
         resizeCanvas() {
+            var dpr = (window.LM_IS_MOBILE) ? (window.devicePixelRatio || 1) : 1;
+            this.dpr = dpr;
             this.canvasWidth = window.innerWidth;
             this.canvasHeight = window.innerHeight;
-            this.canvas.width = this.canvasWidth;
-            this.canvas.height = this.canvasHeight;
+            this.canvas.width = this.canvasWidth * dpr;
+            this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
             //this.renderFrame();
@@ -15467,7 +15469,9 @@ Game name     : ${i.displayName}<br/>
             LM.getCursorPosition();
             LM.sortCells();
             LM.compareCells();
-            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
+            this.ctx.save();
+            this.ctx.scale(this.dpr || 1, this.dpr || 1);
             if (defaultmapsettings.showOptimisedGrid) {
                 //
             }
@@ -15570,6 +15574,9 @@ Game name     : ${i.displayName}<br/>
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
+
+            this.ctx.restore(); // restore DPR scale
+
             this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
             this.lastRenderingDelay = (performance.now() - this.renderStarted)
             //console.log(this.renderingDelay)
