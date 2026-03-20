@@ -1142,10 +1142,9 @@
                 rootR.style.right = rRight + 'px';
                 rootR.style.bottom = '4px';
 
-                // 4×/16×: row centered ABOVE minimap
+                // 4×/16×: row ABOVE minimap, aligned to right edge
                 var smBottom = vh - r.top + 6;
-                var mmCenterRight = vw - (r.left + r.width / 2);
-                smallR.style.right = (mmCenterRight - 30) + 'px';
+                smallR.style.right = Math.max(4, vw - r.right) + 'px';
                 smallR.style.left = 'auto';
                 smallR.style.bottom = smBottom + 'px';
             } else {
