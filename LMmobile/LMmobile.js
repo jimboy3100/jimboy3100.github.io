@@ -1,169 +1,88 @@
 /**
- * LM Mobile Controls v3.0 — by Jimboy3100
+ * LM Mobile Controls v3.1 — by Jimboy3100
  *
- * Professional touch-control overlay for Legend Mod mobile users.
+ * Touch-control overlay for Legend Mod mobile.
  * Matches the ogario HUD aesthetic (teal / navy / Ubuntu font).
  *
- * Features
- * ────────
- *  • Virtual joystick  — drag anywhere on canvas to steer
- *  • Split  (⚔)        — tap to split (Space key)
- *  • Feed   (⬤)        — hold to eject mass (W key, 50 ms repeat)
- *  • Menu   (☰)        — toggle main HUD / ESC menu
- *  • Chat   (💬)        — opens chat input, shows Send bar, re-tap to send
- *  • Fullscreen (⛶)    — toggle fullscreen mode
- *  • Pinch-to-zoom      — two-finger pinch dispatches WheelEvent
- *
- * Compatibility: ES5 + standard Web APIs (no jQuery dependency).
- * Only activates on touch-capable devices.
+ * Features:
+ *  • Virtual joystick  — drag on canvas to steer, cell keeps moving after release
+ *  • Split  (⚔)        — tap to split (Space)
+ *  • Feed   (⬤)        — hold to eject mass (W)
+ *  • Menu   (☰)        — toggle main HUD / ESC
+ *  • Chat   (💬)        — open chat, tap Send or anywhere else to send & close
+ *  • Fullscreen (⛶)    — toggle fullscreen
+ *  • Pinch-to-zoom      — two-finger pinch → WheelEvent
  */
 
 (function () {
     'use strict';
 
-    // ── Guard: only run on touch devices ────────────────────────
     if (!('ontouchstart' in window) && navigator.maxTouchPoints <= 0) return;
 
-    // ── Design tokens (ogario HUD palette) ──────────────────────
-    var C = {
-        navy:       'rgba(0, 36, 62,',       // #00243e
-        navyDark:   'rgba(0, 47, 82,',       // #002f52
-        teal:       'rgba(1, 217, 204,',      // #01d9cc
-        blue:       'rgba(1, 140, 246,',      // #018cf6
-        white:      'rgba(255, 255, 255,',
-        tealSolid:  '#01d9cc',
-        navySolid:  '#00243e',
-        font:       '"Ubuntu", "Roboto", sans-serif'
-    };
-
-    // ── Inject CSS ──────────────────────────────────────────────
+    /* ═══════════════════════════════════════════════════════════
+     *  CSS
+     * ═══════════════════════════════════════════════════════════ */
     var css = document.createElement('style');
     css.id = 'lm-mobile-css';
-    css.textContent = '\n' +
+    css.textContent =
+    '#lm-mc{position:fixed;bottom:0;right:0;z-index:100000;' +
+    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+    'padding:12px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}' +
 
-    /* ── Container ── */
-    '#lm-mobile-controls {\n' +
-    '  position: fixed; bottom: 0; right: 0; z-index: 100000;\n' +
-    '  pointer-events: none; user-select: none; -webkit-user-select: none;\n' +
-    '  padding: 12px; display: flex; flex-direction: column;\n' +
-    '  align-items: flex-end; gap: 10px;\n' +
-    '}\n' +
+    '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
+    'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
+    'background:rgba(0,36,62,.65);border:2px solid rgba(1,217,204,.4);' +
+    'box-shadow:0 0 12px rgba(1,217,204,.15),inset 0 1px 0 rgba(255,255,255,.06);' +
+    'backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);' +
+    'transition:transform .1s,background .15s,border-color .15s,box-shadow .15s;' +
+    'color:rgba(255,255,255,.9);font-family:Ubuntu,Roboto,sans-serif;' +
+    'font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.5)}' +
 
-    /* ── Base button ── */
-    '.lm-btn {\n' +
-    '  pointer-events: auto; touch-action: none; cursor: pointer;\n' +
-    '  display: flex; align-items: center; justify-content: center;\n' +
-    '  border-radius: 50%;\n' +
-    '  background: ' + C.navy + '0.65);\n' +
-    '  border: 2px solid ' + C.teal + '0.4);\n' +
-    '  box-shadow: 0 0 12px ' + C.teal + '0.15),\n' +
-    '              inset 0 1px 0 ' + C.white + '0.06);\n' +
-    '  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);\n' +
-    '  transition: transform 0.1s ease, background 0.15s ease,\n' +
-    '              border-color 0.15s ease, box-shadow 0.15s ease;\n' +
-    '  color: ' + C.white + '0.9);\n' +
-    '  font-family: ' + C.font + ';\n' +
-    '  font-weight: 700; letter-spacing: 0.4px;\n' +
-    '  text-shadow: 0 1px 3px rgba(0,0,0,0.5);\n' +
-    '}\n' +
-    '.lm-btn.pressed {\n' +
-    '  transform: scale(0.88);\n' +
-    '  background: ' + C.teal + '0.30);\n' +
-    '  border-color: ' + C.teal + '0.80);\n' +
-    '  box-shadow: 0 0 18px ' + C.teal + '0.35),\n' +
-    '              inset 0 1px 0 ' + C.white + '0.1);\n' +
-    '}\n' +
+    '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.30);' +
+    'border-color:rgba(1,217,204,.80);box-shadow:0 0 18px rgba(1,217,204,.35)}' +
 
-    /* ── Action buttons (Split / Feed) ── */
-    '.lm-btn-action {\n' +
-    '  width: clamp(72px, 20vmin, 108px);\n' +
-    '  height: clamp(72px, 20vmin, 108px);\n' +
-    '}\n' +
+    '.lm-a{width:clamp(72px,20vmin,108px);height:clamp(72px,20vmin,108px)}' +
 
-    /* ── Utility buttons (Menu / Chat / Fullscreen) ── */
-    '.lm-btn-util {\n' +
-    '  width: clamp(52px, 13vmin, 66px);\n' +
-    '  height: clamp(52px, 13vmin, 66px);\n' +
-    '  font-size: 20px;\n' +
-    '  background: ' + C.navyDark + '0.55);\n' +
-    '  border-color: ' + C.blue + '0.35);\n' +
-    '  box-shadow: 0 0 8px ' + C.blue + '0.12);\n' +
-    '}\n' +
-    '.lm-btn-util.pressed {\n' +
-    '  background: ' + C.blue + '0.25);\n' +
-    '  border-color: ' + C.blue + '0.75);\n' +
-    '  box-shadow: 0 0 14px ' + C.blue + '0.3);\n' +
-    '}\n' +
+    '.lm-u{width:clamp(52px,13vmin,66px);height:clamp(52px,13vmin,66px);font-size:20px;' +
+    'background:rgba(0,47,82,.55);border-color:rgba(1,140,246,.35);' +
+    'box-shadow:0 0 8px rgba(1,140,246,.12)}' +
+    '.lm-u.p{background:rgba(1,140,246,.25);border-color:rgba(1,140,246,.75)}' +
 
-    /* ── Icon + label inside action buttons ── */
-    '.lm-btn-icon {\n' +
-    '  display: flex; flex-direction: column;\n' +
-    '  align-items: center; gap: 1px; pointer-events: none;\n' +
-    '}\n' +
-    '.lm-btn-icon .lm-i { font-size: clamp(22px, 6vmin, 30px); line-height: 1; }\n' +
-    '.lm-btn-icon .lm-l {\n' +
-    '  font-size: clamp(8px, 2.2vmin, 11px); opacity: 0.65;\n' +
-    '  letter-spacing: 1.2px; text-transform: uppercase;\n' +
-    '}\n' +
+    '.lm-bi{display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}' +
+    '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
+    '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.65;letter-spacing:1.2px;text-transform:uppercase}' +
 
-    /* ── Utility row ── */
-    '.lm-util-row { display: flex; gap: 8px; pointer-events: none; }\n' +
+    '.lm-r{display:flex;gap:8px;pointer-events:none}' +
 
-    /* ── Joystick ── */
-    '.lm-joy-outer {\n' +
-    '  width: 120px; height: 120px; border-radius: 50%;\n' +
-    '  background: ' + C.navy + '0.18);\n' +
-    '  border: 2px solid ' + C.teal + '0.22);\n' +
-    '  position: fixed; display: none; z-index: 99998;\n' +
-    '  transform: translate(-50%, -50%); pointer-events: none;\n' +
-    '}\n' +
-    '.lm-joy-inner {\n' +
-    '  width: 50px; height: 50px; border-radius: 50%;\n' +
-    '  background: radial-gradient(circle, ' + C.teal + '0.28) 0%, ' + C.teal + '0.06) 100%);\n' +
-    '  border: 2px solid ' + C.teal + '0.45);\n' +
-    '  box-shadow: 0 0 8px ' + C.teal + '0.18);\n' +
-    '  position: fixed; display: none; z-index: 99999;\n' +
-    '  transform: translate(-50%, -50%); pointer-events: none;\n' +
-    '}\n' +
+    '.lm-jo{width:120px;height:120px;border-radius:50%;' +
+    'background:rgba(0,36,62,.18);border:2px solid rgba(1,217,204,.22);' +
+    'position:fixed;display:none;z-index:99998;transform:translate(-50%,-50%);pointer-events:none}' +
 
-    /* ── Zoom indicator pill ── */
-    '.lm-zoom {\n' +
-    '  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);\n' +
-    '  background: ' + C.navy + '0.82);\n' +
-    '  border: 1px solid ' + C.teal + '0.45);\n' +
-    '  color: ' + C.tealSolid + ';\n' +
-    '  font: 700 14px/1 ' + C.font + ';\n' +
-    '  padding: 6px 18px; border-radius: 20px;\n' +
-    '  pointer-events: none; z-index: 100001;\n' +
-    '  opacity: 0; transition: opacity 0.2s ease;\n' +
-    '}\n' +
-    '.lm-zoom.on { opacity: 1; }\n' +
+    '.lm-ji{width:50px;height:50px;border-radius:50%;' +
+    'background:radial-gradient(circle,rgba(1,217,204,.28) 0%,rgba(1,217,204,.06) 100%);' +
+    'border:2px solid rgba(1,217,204,.45);box-shadow:0 0 8px rgba(1,217,204,.18);' +
+    'position:fixed;display:none;z-index:99999;transform:translate(-50%,-50%);pointer-events:none}' +
 
-    /* ── Chat send bar ── */
-    '#lm-chat-bar {\n' +
-    '  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100002;\n' +
-    '  display: none;\n' +
-    '  background: ' + C.navy + '0.92);\n' +
-    '  border-top: 2px solid ' + C.teal + '0.45);\n' +
-    '  padding: 8px 14px; text-align: right;\n' +
-    '  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);\n' +
-    '}\n' +
-    '#lm-chat-bar button {\n' +
-    '  background: ' + C.tealSolid + '; color: ' + C.navySolid + ';\n' +
-    '  border: none; border-radius: 6px;\n' +
-    '  padding: 10px 32px; font: 700 15px/1 ' + C.font + ';\n' +
-    '  text-transform: uppercase; letter-spacing: 1px; cursor: pointer;\n' +
-    '}\n' +
-    '#lm-chat-bar button:active { opacity: 0.8; }\n' +
+    '.lm-z{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+    'background:rgba(0,36,62,.82);border:1px solid rgba(1,217,204,.45);' +
+    'color:#01d9cc;font:700 14px/1 Ubuntu,Roboto,sans-serif;' +
+    'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
+    'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-    /* ── Auto-dim when main menu overlays ── */
-    '#helloContainer:not([style*="display: none"]):not([style*="display:none"]) ~ #lm-mobile-controls {\n' +
-    '  opacity: 0.25;\n' +
-    '}\n';
+    '#lm-cb{position:fixed;bottom:0;left:0;right:0;z-index:100002;' +
+    'display:none;background:rgba(0,36,62,.92);' +
+    'border-top:2px solid rgba(1,217,204,.45);' +
+    'padding:8px 14px;text-align:right;backdrop-filter:blur(6px)}' +
+    '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
+    'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
+    'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
+    '#lm-cb button:active{opacity:.8}';
 
     document.head.appendChild(css);
 
-    // ── Wait for canvas + game to be ready ──────────────────────
+    /* ═══════════════════════════════════════════════════════════
+     *  INIT
+     * ═══════════════════════════════════════════════════════════ */
     var readyTimer = setInterval(function () {
         if (!document.getElementById('canvas')) return;
         clearInterval(readyTimer);
@@ -174,384 +93,317 @@
         var canvas = document.getElementById('canvas');
         if (!canvas) return;
 
-        // ════════════════════════════════════════════════════════
-        //  1.  BUILD DOM
-        // ════════════════════════════════════════════════════════
-        var root = el('div', {id: 'lm-mobile-controls'});
+        /* ── DOM ── */
+        var root = mk('div'); root.id = 'lm-mc';
         document.body.appendChild(root);
 
-        // Utility row
-        var utilRow = el('div', {cls: 'lm-util-row'});
-        var btnMenu = btn('lm-menu', '☰', null, true);
-        var btnChat = btn('lm-chat', '💬', null, true);
-        var btnFull = btn('lm-full', '⛶', null, true);
-        utilRow.appendChild(btnMenu);
-        utilRow.appendChild(btnChat);
-        utilRow.appendChild(btnFull);
-        root.appendChild(utilRow);
+        var row = mk('div'); row.className = 'lm-r';
+        var bMenu = mkb('☰', null, true);
+        var bChat = mkb('💬', null, true);
+        var bFull = mkb('⛶', null, true);
+        row.appendChild(bMenu); row.appendChild(bChat); row.appendChild(bFull);
+        root.appendChild(row);
 
-        // Action buttons
-        var btnSplit = btn('lm-split', '⚔', 'SPLIT', false);
-        var btnFeed  = btn('lm-feed', '⬤', 'FEED', false);
-        root.appendChild(btnSplit);
-        root.appendChild(btnFeed);
+        var bSplit = mkb('⚔', 'SPLIT', false);
+        var bFeed  = mkb('⬤', 'FEED', false);
+        root.appendChild(bSplit);
+        root.appendChild(bFeed);
 
-        // Joystick
-        var jOuter = el('div', {cls: 'lm-joy-outer'});
-        var jInner = el('div', {cls: 'lm-joy-inner'});
-        document.body.appendChild(jOuter);
-        document.body.appendChild(jInner);
+        var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
+        var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
 
-        // Zoom indicator
-        var zoomPill = el('div', {cls: 'lm-zoom'});
-        document.body.appendChild(zoomPill);
-        var zoomTimer = null;
+        var zP = mk('div'); zP.className = 'lm-z'; document.body.appendChild(zP);
+        var zT = null;
 
-        // Chat bar
-        var chatBar = el('div', {id: 'lm-chat-bar'});
-        chatBar.innerHTML = '<button>Send ⏎</button>';
-        document.body.appendChild(chatBar);
+        var cBar = mk('div'); cBar.id = 'lm-cb';
+        cBar.innerHTML = '<button>Send ⏎</button>';
+        document.body.appendChild(cBar);
 
-        // ════════════════════════════════════════════════════════
-        //  2.  BUTTON HANDLERS
-        // ════════════════════════════════════════════════════════
-        [btnMenu, btnChat, btnFull, btnSplit, btnFeed].forEach(pressEffect);
+        /* ── Press effects ── */
+        [bMenu, bChat, bFull, bSplit, bFeed].forEach(function (b) {
+            b.addEventListener('touchstart',  function () { b.classList.add('p'); },    {passive:true});
+            b.addEventListener('touchend',    function () { b.classList.remove('p'); }, {passive:true});
+            b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, {passive:true});
+        });
 
-        // ── Split: emit Space (keyCode 32) ──
-        on(btnSplit, 'touchstart', function (e) {
-            e.preventDefault();
+        /* ═══════════════════════════════════════════════════════
+         *  SPLIT — Space (keyCode 32)
+         * ═══════════════════════════════════════════════════════ */
+        bSplit.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
             emitKey(32);
-        });
+        }, {passive:false});
 
-        // ── Feed: hold W (keyCode 87) at 50 ms ──
-        var feedTimer = null;
-        on(btnFeed, 'touchstart', function (e) {
-            e.preventDefault();
+        /* ═══════════════════════════════════════════════════════
+         *  FEED — W (keyCode 87), hold to repeat
+         * ═══════════════════════════════════════════════════════ */
+        var feedIv = null;
+        bFeed.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
             emitKey(87);
-            feedTimer = setInterval(function () { emitKey(87); }, 50);
-        });
-        on(btnFeed, 'touchend',    function () { clearInterval(feedTimer); });
-        on(btnFeed, 'touchcancel', function () { clearInterval(feedTimer); });
+            feedIv = setInterval(function () { emitKey(87); }, 50);
+        }, {passive:false});
+        bFeed.addEventListener('touchend',    function () { clearInterval(feedIv); }, {passive:true});
+        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); }, {passive:true});
 
-        // ── Menu: ESC / application.showMenu ──
-        on(btnMenu, 'touchstart', function (e) {
-            e.preventDefault();
+        /* ═══════════════════════════════════════════════════════
+         *  MENU — ESC (keyCode 27)
+         * ═══════════════════════════════════════════════════════ */
+        bMenu.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
             if (typeof application !== 'undefined' && application.showMenu) {
                 application.showMenu();
             } else {
                 emitKey(27);
             }
-        });
+        }, {passive:false});
 
-        // ── Chat ──
-        var chatOpen = false;
+        /* ═══════════════════════════════════════════════════════
+         *  CHAT — Enter (keyCode 13)
+         * ═══════════════════════════════════════════════════════ */
+        var chatOn = false;
 
-        on(btnChat, 'touchstart', function (e) {
-            e.preventDefault();
-            chatOpen ? closeChat() : openChat();
-        });
+        bChat.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            chatOn ? chatClose() : chatOpen();
+        }, {passive:false});
 
-        on(chatBar.querySelector('button'), 'touchstart', function (e) {
-            e.preventDefault();
-            closeChat();
-        });
+        cBar.querySelector('button').addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            chatClose();
+        }, {passive:false});
 
-        // Close chat if user taps the canvas
-        canvas.addEventListener('touchstart', function () {
-            if (chatOpen) closeChat();
-        }, { passive: true });
-
-        function openChat() {
-            chatOpen = true;
-            // Trigger ENTER to open the chat box (ogario maps ENTER → chat)
-            emitKey(13);
+        function chatOpen() {
+            chatOn = true;
+            emitKey(13); // open chat box
             setTimeout(function () {
                 var inp = document.getElementById('message');
-                if (inp) {
-                    inp.focus();
-                    chatBar.style.display = 'block';
-                    root.style.display = 'none';
-                }
+                if (inp) { inp.focus(); }
+                cBar.style.display = 'block';
+                root.style.visibility = 'hidden'; // hide but keep layout
             }, 120);
         }
 
-        function closeChat() {
-            chatOpen = false;
+        function chatClose() {
             var inp = document.getElementById('message');
-            if (inp && inp.value.length > 0) {
-                // Dispatch Enter on the input itself so jQuery's keydown handler fires
-                var ev = new KeyboardEvent('keydown', {
-                    keyCode: 13, which: 13, key: 'Enter',
-                    bubbles: true, cancelable: true
-                });
+            if (inp) {
+                // Send the message by dispatching Enter on the input
+                // jQuery's keydown handler on #message checks keyCode === 13
+                var ev = document.createEvent('Event');
+                ev.initEvent('keydown', true, true);
+                ev.keyCode = 13;
+                ev.which = 13;
+                ev.key = 'Enter';
                 inp.dispatchEvent(ev);
+                inp.blur();
             }
-            // Also dispatch on document to toggle chat off
-            emitKey(13);
-            if (inp) inp.blur();
-            chatBar.style.display = 'none';
-            root.style.display = '';
+            // Also dispatch Enter on document to close the chat panel
+            setTimeout(function () {
+                emitKey(13);
+            }, 50);
+            chatOn = false;
+            cBar.style.display = 'none';
+            root.style.visibility = 'visible'; // restore buttons
         }
 
-        // ── Fullscreen ──
-        on(btnFull, 'touchstart', function (e) {
-            e.preventDefault();
-            var d = document, r = d.documentElement;
-            if (!d.fullscreenElement && !d.webkitFullscreenElement) {
-                var fn = r.requestFullscreen || r.webkitRequestFullscreen || r.msRequestFullscreen;
-                if (fn) fn.call(r);
-            } else {
-                var ef = d.exitFullscreen || d.webkitExitFullscreen;
-                if (ef) ef.call(d);
+        // Tap canvas while chatting → send & close
+        canvas.addEventListener('touchstart', function (e) {
+            if (chatOn) {
+                e.preventDefault();
+                chatClose();
             }
-        });
+        }, {passive:false});
 
-        // ════════════════════════════════════════════════════════
-        //  3.  VIRTUAL JOYSTICK
-        // ════════════════════════════════════════════════════════
-        var origin   = { x: 0, y: 0 };
-        var jId      = null;       // touch identifier for joystick finger
-        var aspect   = window.innerWidth / window.innerHeight;
-        var JOY_R    = 55;         // visual clamp radius (px)
-        var JOY_SENS = 300;        // mouse-move amplification
+        /* ═══════════════════════════════════════════════════════
+         *  FULLSCREEN
+         * ═══════════════════════════════════════════════════════ */
+        bFull.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            try {
+                var d = document;
+                if (!d.fullscreenElement && !d.webkitFullscreenElement) {
+                    var r = d.documentElement;
+                    (r.requestFullscreen || r.webkitRequestFullscreen).call(r);
+                } else {
+                    (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+                }
+            } catch(ex) {}
+        }, {passive:false});
+
+        /* ═══════════════════════════════════════════════════════
+         *  JOYSTICK — direction persists after finger lift
+         * ═══════════════════════════════════════════════════════ */
+        var org = {x:0, y:0};
+        var jId = null;
+        var asp = window.innerWidth / window.innerHeight;
+        var JR = 55, JS = 300;
 
         window.addEventListener('resize', function () {
-            aspect = window.innerWidth / window.innerHeight;
+            asp = window.innerWidth / window.innerHeight;
         });
 
-        // touchstart on canvas — start joystick if single finger
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOpen) return;
-            if (e.touches.length === 1) {
-                var t = e.changedTouches[0];
-                jId = t.identifier;
-                origin.x = t.clientX;
-                origin.y = t.clientY;
-                mouseAt(t.clientX, t.clientY);
-                joyShow(origin.x, origin.y, origin.x, origin.y);
-            }
-        }, { passive: true });
+            if (chatOn || e.touches.length !== 1) return;
+            var t = e.changedTouches[0];
+            jId = t.identifier;
+            org.x = t.clientX; org.y = t.clientY;
+            mouseAt(t.clientX, t.clientY);
+            jShow(org.x, org.y, org.x, org.y);
+        }, {passive:true});
 
         canvas.addEventListener('touchend', function (e) {
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
-                    mouseAt(window.innerWidth / 2, window.innerHeight / 2);
-                    joyHide();
+                    // DO NOT reset mouse to center — direction persists
+                    jHide();
                     break;
                 }
             }
-        }, { passive: true });
+        }, {passive:true});
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            mouseAt(window.innerWidth / 2, window.innerHeight / 2);
-            joyHide();
-        }, { passive: true });
+            jHide();
+        }, {passive:true});
 
         canvas.addEventListener('touchmove', function (e) {
-            if (e.touches.length >= 2) return;  // pinch handled below
-            var t = touchById(e.changedTouches, jId);
+            if (e.touches.length >= 2) return;
+            var t = tById(e.changedTouches, jId);
             if (!t) return;
 
-            // Translate to amplified mouse position
-            var dx = (t.clientX - origin.x) * JOY_SENS;
-            var dy = (t.clientY - origin.y) * JOY_SENS * aspect;
-            mouseAt(window.innerWidth / 2 + dx, window.innerHeight / 2 + dy);
+            var dx = (t.clientX - org.x) * JS;
+            var dy = (t.clientY - org.y) * JS * asp;
+            mouseAt(window.innerWidth/2 + dx, window.innerHeight/2 + dy);
 
-            // Visual: clamp inner stick to outer ring
-            var rx = t.clientX - origin.x;
-            var ry = t.clientY - origin.y;
-            var d  = Math.sqrt(rx * rx + ry * ry);
-            if (d > JOY_R) {
+            var rx = t.clientX - org.x, ry = t.clientY - org.y;
+            var d = Math.sqrt(rx*rx + ry*ry);
+            if (d > JR) {
                 var a = Math.atan2(ry, rx);
-                joyShow(origin.x, origin.y,
-                        origin.x + Math.cos(a) * JOY_R,
-                        origin.y + Math.sin(a) * JOY_R);
+                jShow(org.x, org.y, org.x + Math.cos(a)*JR, org.y + Math.sin(a)*JR);
             } else {
-                joyShow(origin.x, origin.y, t.clientX, t.clientY);
+                jShow(org.x, org.y, t.clientX, t.clientY);
             }
-        }, { passive: true });
+        }, {passive:true});
 
-        // ════════════════════════════════════════════════════════
-        //  4.  PINCH-TO-ZOOM
-        //      Spread fingers → zoom IN  (negative deltaY)
-        //      Pinch fingers  → zoom OUT (positive deltaY)
-        // ════════════════════════════════════════════════════════
-        var pinchDist = 0;
-        var pinching  = false;
+        /* ═══════════════════════════════════════════════════════
+         *  PINCH-TO-ZOOM
+         * ═══════════════════════════════════════════════════════ */
+        var pDist = 0, pOn = false;
 
         canvas.addEventListener('touchstart', function (e) {
             if (e.touches.length === 2) {
-                pinching  = true;
-                pinchDist = dist(e.touches[0], e.touches[1]);
-                joyHide();
-                jId = null;
+                pOn = true;
+                pDist = dist(e.touches[0], e.touches[1]);
+                jHide(); jId = null;
             }
-        }, { passive: true });
+        }, {passive:true});
 
         canvas.addEventListener('touchmove', function (e) {
-            if (!(e.touches.length === 2 && pinching)) return;
-            e.preventDefault();   // block native page zoom
-
-            var nd    = dist(e.touches[0], e.touches[1]);
-            var delta = nd - pinchDist;         // positive = spread = zoom in
-
+            if (!(e.touches.length === 2 && pOn)) return;
+            e.preventDefault();
+            var nd = dist(e.touches[0], e.touches[1]);
+            var delta = nd - pDist;
             if (Math.abs(delta) > 4) {
-                var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
                 var cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                var wd = -delta * 2;            // negative = scroll-up = zoom in
-
-                dispatchWheel(canvas, wd, cx, cy);
-                pinchDist = nd;
-
-                // Show zoom indicator
-                zoomPill.textContent = delta > 0 ? '🔍 +' : '🔍 −';
-                zoomPill.classList.add('on');
-                clearTimeout(zoomTimer);
-                zoomTimer = setTimeout(function () {
-                    zoomPill.classList.remove('on');
-                }, 400);
+                var cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                wheel(canvas, -delta * 2, cx, cy);
+                pDist = nd;
+                zP.textContent = delta > 0 ? '🔍 +' : '🔍 −';
+                zP.classList.add('on');
+                clearTimeout(zT);
+                zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
             }
-        }, { passive: false });
+        }, {passive:false});
 
         canvas.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                pinching = false;
-                pinchDist = 0;
-            }
-        }, { passive: true });
+            if (e.touches.length < 2) { pOn = false; pDist = 0; }
+        }, {passive:true});
 
-        // ════════════════════════════════════════════════════════
-        //  UTILITY FUNCTIONS
-        // ════════════════════════════════════════════════════════
+        /* ═══════════════════════════════════════════════════════
+         *  HELPERS
+         * ═══════════════════════════════════════════════════════ */
+        function mk(tag) { return document.createElement(tag); }
 
-        /** Create an element with optional id / className */
-        function el(tag, opts) {
-            var e = document.createElement(tag);
-            if (opts) {
-                if (opts.id)  e.id = opts.id;
-                if (opts.cls) e.className = opts.cls;
-            }
-            return e;
-        }
-
-        /** Create a button (utility or action) */
-        function btn(id, icon, label, isUtil) {
-            var b = el('div', {id: id, cls: 'lm-btn ' + (isUtil ? 'lm-btn-util' : 'lm-btn-action')});
-            if (label) {
-                b.innerHTML =
-                    '<div class="lm-btn-icon">' +
-                    '<span class="lm-i">' + icon + '</span>' +
-                    '<span class="lm-l">' + label + '</span>' +
-                    '</div>';
-            } else {
+        function mkb(icon, label, isUtil) {
+            var b = mk('div');
+            b.className = 'lm-b ' + (isUtil ? 'lm-u' : 'lm-a');
+            if (label)
+                b.innerHTML = '<div class="lm-bi"><span class="i">' + icon + '</span><span class="l">' + label + '</span></div>';
+            else
                 b.textContent = icon;
-            }
             return b;
         }
 
-        /** Bind press visual effect */
-        function pressEffect(el) {
-            el.addEventListener('touchstart',  function () { el.classList.add('pressed'); },    { passive: true });
-            el.addEventListener('touchend',    function () { el.classList.remove('pressed'); }, { passive: true });
-            el.addEventListener('touchcancel', function () { el.classList.remove('pressed'); }, { passive: true });
-        }
-
-        /** Shorthand: addEventListener with passive:false */
-        function on(el, evt, fn) {
-            el.addEventListener(evt, fn, { passive: false });
-        }
-
         /**
-         * Dispatch a keydown + keyup on `document` so that
-         * document.onkeydown (ogario's key handler) picks it up.
-         * The `keyCode` property is what getPressedKey reads.
+         * Emit keydown + keyup on document.
+         * Uses Object.defineProperty to FORCE keyCode / which values,
+         * because some browsers ignore them from the KeyboardEvent constructor.
+         * ogario's getPressedKey() reads event.keyCode via a switch statement.
          */
-        function emitKey(keyCode) {
-            var opts = {
-                keyCode:   keyCode,
-                which:     keyCode,
-                key:       keyName(keyCode),
-                code:      keyCodeProp(keyCode),
-                bubbles:   true,
-                cancelable: true
-            };
-            document.dispatchEvent(new KeyboardEvent('keydown', opts));
-            document.dispatchEvent(new KeyboardEvent('keyup',   opts));
+        function emitKey(kc) {
+            fire('keydown', kc);
+            fire('keyup', kc);
         }
 
-        function keyName(c) {
-            switch (c) {
-                case 13: return 'Enter';
-                case 27: return 'Escape';
-                case 32: return ' ';
-                default: return String.fromCharCode(c);
+        function fire(type, kc) {
+            var ev;
+            try {
+                ev = new KeyboardEvent(type, {
+                    bubbles: true, cancelable: true, view: window
+                });
+            } catch(e) {
+                ev = document.createEvent('KeyboardEvent');
+                ev.initEvent(type, true, true);
             }
-        }
-        function keyCodeProp(c) {
-            switch (c) {
-                case 13: return 'Enter';
-                case 27: return 'Escape';
-                case 32: return 'Space';
-                default: return 'Key' + String.fromCharCode(c).toUpperCase();
-            }
+            // Force keyCode and which — this is the critical fix
+            Object.defineProperty(ev, 'keyCode', {get: function(){return kc;}});
+            Object.defineProperty(ev, 'which',   {get: function(){return kc;}});
+            Object.defineProperty(ev, 'key',     {get: function(){return kn(kc);}});
+            document.dispatchEvent(ev);
         }
 
-        /** Move mouse on canvas */
+        function kn(c) {
+            return c===13?'Enter':c===27?'Escape':c===32?' ':String.fromCharCode(c);
+        }
+
         function mouseAt(x, y) {
             canvas.dispatchEvent(new MouseEvent('mousemove', {
                 clientX: x, clientY: y, bubbles: true, cancelable: true
             }));
         }
 
-        /** Dispatch both modern 'wheel' and legacy 'mousewheel' events */
-        function dispatchWheel(target, deltaY, cx, cy) {
-            var o = { deltaY: deltaY, deltaMode: 0, clientX: cx, clientY: cy, bubbles: true, cancelable: true };
-            target.dispatchEvent(new WheelEvent('wheel', o));
-            o.detail = deltaY > 0 ? 3 : -3;
-            target.dispatchEvent(new WheelEvent('mousewheel', o));
+        function wheel(t, dy, cx, cy) {
+            var o = {deltaY:dy, deltaMode:0, clientX:cx, clientY:cy, bubbles:true, cancelable:true};
+            t.dispatchEvent(new WheelEvent('wheel', o));
+            o.detail = dy > 0 ? 3 : -3;
+            t.dispatchEvent(new WheelEvent('mousewheel', o));
         }
 
-        /** Distance between two Touch objects */
         function dist(a, b) {
-            var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
+            var dx=a.clientX-b.clientX, dy=a.clientY-b.clientY;
+            return Math.sqrt(dx*dx+dy*dy);
         }
 
-        /** Find a touch by identifier in a TouchList */
-        function touchById(list, id) {
+        function tById(list, id) {
             if (id === null) return null;
-            for (var i = 0; i < list.length; i++) {
-                if (list[i].identifier === id) return list[i];
-            }
+            for (var i=0; i<list.length; i++) if (list[i].identifier===id) return list[i];
             return null;
         }
 
-        /** Show joystick visuals */
-        function joyShow(ox, oy, ix, iy) {
-            jOuter.style.cssText += ';display:block;left:' + ox + 'px;top:' + oy + 'px';
-            jInner.style.cssText += ';display:block;left:' + ix + 'px;top:' + iy + 'px';
+        function jShow(ox,oy,ix,iy) {
+            jO.style.display='block'; jO.style.left=ox+'px'; jO.style.top=oy+'px';
+            jI.style.display='block'; jI.style.left=ix+'px'; jI.style.top=iy+'px';
         }
-        function joyHide() {
-            jOuter.style.display = 'none';
-            jInner.style.display = 'none';
-        }
+        function jHide() { jO.style.display='none'; jI.style.display='none'; }
 
-        /** Disable context menu (prevents long-press menu on mobile) */
-        document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        document.addEventListener('contextmenu', function(e){e.preventDefault();});
+        document.body.addEventListener('touchmove', function(e){
+            if (e.target===canvas||e.target===document.body) e.preventDefault();
+        }, {passive:false});
 
-        /** Prevent elastic / bounce scrolling on iOS */
-        document.body.addEventListener('touchmove', function (e) {
-            if (e.target === canvas || e.target === document.body) e.preventDefault();
-        }, { passive: false });
-
-        // ── Console branding ──
-        console.log(
-            '%c LM Mobile v3.0 %c Touch controls loaded ',
-            'background:linear-gradient(135deg,' + C.tealSolid + ',' + C.navySolid + ');' +
-            'color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
-            'background:' + C.navySolid + ';color:' + C.tealSolid + ';padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif'
-        );
+        console.log('%c LM Mobile v3.1 %c Touch controls loaded ',
+            'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
+            'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
     }
 })();
