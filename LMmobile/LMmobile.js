@@ -61,13 +61,15 @@
     '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20)}' +
     '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important}' +
 
-    /* ── RIGHT container: horizontal row near minimap ── */
-    '#lm-mc-r{position:fixed;right:14px;bottom:clamp(70px,18vh,140px);z-index:100000;' +
+    /* ── RIGHT: SPLIT + FEED column (positioned by JS) ── */
+    '#lm-mc-r{position:fixed;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:row;align-items:center;gap:10px}' +
+    'display:flex;flex-direction:column;align-items:center;gap:10px}' +
 
-    /* stacked column for 2×/16× inside the row */
-    '.lm-stack{display:flex;flex-direction:column;gap:4px;pointer-events:auto}' +
+    /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
+    '#lm-mc-sm{position:fixed;z-index:100000;' +
+    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+    'display:flex;flex-direction:row;align-items:center;gap:6px}' +
 
     /* ── Shared button base (clean, subtle) ── */
     '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
@@ -452,23 +454,23 @@
             savePrefs();
         });
 
-        /* ── RIGHT side: SPLIT + FEED + stacked 2×/16×, one horizontal row ── */
+        /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
         document.body.appendChild(rootR);
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
-        var bDbl   = mks('2×');
-        var b16    = mks('16×');
-
-        /* stacked 2×/16× column */
-        var stack = mk('div'); stack.className = 'lm-stack';
-        stack.appendChild(bDbl);
-        stack.appendChild(b16);
-
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
-        rootR.appendChild(stack);
+
+        /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
+        var smallR = mk('div'); smallR.id = 'lm-mc-sm';
+        document.body.appendChild(smallR);
+
+        var bDbl = mks('4×');
+        var b16  = mks('16×');
+        smallR.appendChild(bDbl);
+        smallR.appendChild(b16);
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
@@ -510,18 +512,7 @@
             }
         }, {passive:false});
 
-        /* ═══════════════════════════════════════════════════════
-         *  FULLSCREEN — toggle fullscreen + landscape lock
-         * ═══════════════════════════════════════════════════════ */
-        bFull.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
-            if (document.fullscreenElement || document.webkitFullscreenElement) {
-                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-            } else {
-                goFullscreenLandscape();
-            }
-            drawer.classList.remove('on'); sp.classList.remove('on');
-        }, {passive:false});
+        /* (fullscreen toggled via goFullscreenLandscape on Play button tap) */
 
         /* ═══════════════════════════════════════════════════════
          *  BUTTON DEBOUNCE — prevents accidental double-fires
@@ -1008,6 +999,71 @@
         console.log('%c LM Mobile v4.0 %c Touch controls loaded ',
             'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
             'background:#00243e;color:#01d9cc;padding:4px 10px;border-radius:0 4px 4px 0;font-family:Ubuntu,sans-serif');
+
+        /* ═══════════════════════════════════════════════════════
+         *  DYNAMIC BUTTON POSITIONING (collision-free)
+         *  Reads minimap's actual position and places buttons
+         *  relative to it. Adapts to any screen size.
+         * ═══════════════════════════════════════════════════════ */
+        function repositionButtons() {
+            var mm = document.getElementById('minimap-hud');
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var GAP = 12;
+
+            if (mm && mm.offsetParent !== null) {
+                var r = mm.getBoundingClientRect();
+
+                // SPLIT/FEED: to the LEFT of minimap, vertically centered with it
+                var rRight = vw - r.left + GAP;
+                var rBottom = vh - (r.top + r.height / 2);
+                rootR.style.right = rRight + 'px';
+                rootR.style.bottom = Math.max(10, rBottom - 50) + 'px';
+
+                // 4×/16×: centered ABOVE minimap
+                var smBottom = vh - r.top + 8;
+                var smRight = vw - (r.left + r.width / 2) - 30;
+                smallR.style.right = Math.max(10, smRight) + 'px';
+                smallR.style.bottom = smBottom + 'px';
+            } else {
+                // Fallback: minimap hidden — position at bottom-right
+                rootR.style.right = '14px';
+                rootR.style.bottom = '80px';
+                smallR.style.right = '14px';
+                smallR.style.bottom = '220px';
+            }
+        }
+        repositionButtons();
+        setInterval(repositionButtons, 2500);
+        window.addEventListener('resize', repositionButtons);
+        window.addEventListener('orientationchange', function () {
+            setTimeout(repositionButtons, 400);
+        });
+
+        /* ═══════════════════════════════════════════════════════
+         *  TWA DETECTION (Google Play WebView)
+         * ═══════════════════════════════════════════════════════ */
+        var isTWA = (window.matchMedia('(display-mode: standalone)').matches ||
+                     window.matchMedia('(display-mode: fullscreen)').matches ||
+                     navigator.standalone === true);
+
+        /* ═══════════════════════════════════════════════════════
+         *  EXIT FULLSCREEN WHEN NOT PLAYING (browser only)
+         *  In TWA/Google Play: stay fullscreen always
+         * ═══════════════════════════════════════════════════════ */
+        var _prevMenuVisible = isMenuVisible();
+        setInterval(function () {
+            var nowVisible = isMenuVisible();
+            if (nowVisible && !_prevMenuVisible && !isTWA) {
+                // Menu just appeared (player died or opened menu) → exit fullscreen
+                try {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+                    }
+                } catch(e) {}
+            }
+            _prevMenuVisible = nowVisible;
+        }, 1000);
 
         /* ═══════════════════════════════════════════════════════
          *  TABLET-AWARE SIZING
