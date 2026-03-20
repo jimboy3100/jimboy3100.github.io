@@ -156,6 +156,20 @@
     'opacity:0;transition:opacity .5s;pointer-events:none}' +
     '#lm-orient-toast.on{opacity:1}' +
 
+    /* ── helloContainer: fit to mobile viewport, always visible ── */
+    '#helloContainer{width:100vw!important;max-width:100vw!important;' +
+    'max-height:100vh!important;overflow-y:auto!important;overflow-x:hidden!important;' +
+    '-webkit-overflow-scrolling:touch!important;box-sizing:border-box!important;' +
+    'padding:8px!important;left:50%!important;top:50%!important;' +
+    'transform:translate(-50%,-50%)!important}' +
+    '#overlays{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
+    '.agario-panel{width:100%!important;max-width:100%!important;box-sizing:border-box!important}' +
+    '.center-container{width:100%!important;max-width:100%!important}' +
+    '.left-container,.right-container{width:100%!important;max-width:100%!important;padding-top:8px!important}' +
+    '.agario-side-panel{width:100%!important;max-width:100%!important}' +
+    '#main-menu{overflow-x:hidden!important}' +
+    '.menu-tabs,.submenu-tabs{width:100%!important;overflow-x:auto!important}' +
+
     /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
     '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important;' +
     'transform:scale(0.7)!important;transform-origin:bottom right!important}' +
