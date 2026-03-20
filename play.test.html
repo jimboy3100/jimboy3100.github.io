@@ -275,7 +275,7 @@
     <script src="https://jimboy3100.github.io/buffer.js" charset="utf-8"></script>
     <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff.js"></script>
     <script src="https://jimboy3100.github.io/ogario/quadtree.js" charset="utf-8"></script>
-    <script src="https://jimboy3100.github.io/ogario/ogario.test.v4.js" charset="utf-8"></script>
+    <script src="https://jimboy3100.github.io/ogario/ogario.v4.js" charset="utf-8"></script>
     <script src="https://jimboy3100.github.io/ogario/hotkeysCommand.js" charset="utf-8"></script>
     <script src="https://jimboy3100.github.io/ogario/captcha.js" charset="utf-8"></script>
     <script src="https://jimboy3100.github.io/ogario/spect.js" charset="utf-8"></script>
@@ -305,6 +305,13 @@
     </script>
     <!--script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script-->
     <a href="https://expanding.land/privacy.html" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;">Privacy Policy</a>
+    <script>
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            var _lmm = document.createElement('script');
+            _lmm.src = 'https://jimboy3100.github.io/LMmobile/LMmobile.js';
+            document.body.appendChild(_lmm);
+        }
+    </script>
 </body>
 
 </html>
