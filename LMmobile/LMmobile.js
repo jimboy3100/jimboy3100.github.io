@@ -43,10 +43,13 @@
     'transition:max-height .25s ease,opacity .2s ease}' +
     '#lm-drawer.on{max-height:400px;opacity:1;pointer-events:auto}' +
 
-    /* ── RIGHT container: split + feed only (always visible) ── */
-    '#lm-mc-r{position:fixed;right:14px;bottom:clamp(60px,18vh,160px);z-index:100000;' +
+    /* ── RIGHT container: horizontal row near minimap ── */
+    '#lm-mc-r{position:fixed;right:14px;bottom:clamp(70px,18vh,140px);z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:flex-end;gap:16px}' +
+    'display:flex;flex-direction:row;align-items:center;gap:10px}' +
+
+    /* stacked column for 2×/16× inside the row */
+    '.lm-stack{display:flex;flex-direction:column;gap:4px;pointer-events:auto}' +
 
     /* ── Shared button base (clean, subtle) ── */
     '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
@@ -172,11 +175,15 @@
 
     /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
     '#minimap-hud{position:fixed!important;bottom:10px!important;right:10px!important;' +
-    'transform:scale(0.7)!important;transform-origin:bottom right!important}' +
-    '#leaderboard-hud{position:fixed!important;top:10px!important;right:10px!important}' +
-    '#top5-hud{position:fixed!important;top:55px!important;left:10px!important}' +
-    '#stats-hud{position:fixed!important;left:10px!important}' +
-    '#time-hud{position:fixed!important;right:10px!important}' +
+    'transform:scale(0.5)!important;transform-origin:bottom right!important}' +
+    '#leaderboard-hud{position:fixed!important;top:10px!important;right:10px!important;' +
+    'transform:scale(0.75)!important;transform-origin:top right!important}' +
+    '#top5-hud{position:fixed!important;top:55px!important;left:10px!important;' +
+    'transform:scale(0.75)!important;transform-origin:top left!important}' +
+    '#stats-hud{position:fixed!important;left:10px!important;' +
+    'transform:scale(0.75)!important;transform-origin:bottom left!important}' +
+    '#time-hud{position:fixed!important;right:10px!important;' +
+    'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
     '#chat-box,#messages{position:fixed!important;left:10px!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:82px!important;transform:translate(-50%,0)!important}' +
     '#toast-container{position:fixed!important}' +
@@ -316,9 +323,6 @@
         var bGear = mks('⚙');
         var bAI   = mks('►');
         var bPaus = mks('‖');
-        var bDbl  = mks('2×');
-        var b16   = mks('16×');
-        drawer.appendChild(bDbl); drawer.appendChild(b16);
         drawer.appendChild(bAI); drawer.appendChild(bPaus);
         drawer.appendChild(bChat); drawer.appendChild(bFull);
         drawer.appendChild(bGear);
@@ -373,14 +377,23 @@
             savePrefs();
         });
 
-        /* ── RIGHT side: split + feed ONLY (always visible) ── */
+        /* ── RIGHT side: SPLIT + FEED + stacked 2×/16×, one horizontal row ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
         document.body.appendChild(rootR);
 
         var bSplit = mkb('⚔', 'SPLIT', false);
         var bFeed  = mkb('⬤', 'FEED', false);
+        var bDbl   = mks('2×');
+        var b16    = mks('16×');
+
+        /* stacked 2×/16× column */
+        var stack = mk('div'); stack.className = 'lm-stack';
+        stack.appendChild(bDbl);
+        stack.appendChild(b16);
+
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
+        rootR.appendChild(stack);
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
