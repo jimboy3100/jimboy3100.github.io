@@ -42,7 +42,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:4px;bottom:6px;z-index:100000;' +
+    '#lm-mc-l{position:fixed;left:2px;bottom:6px;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -527,15 +527,19 @@
          * ═══════════════════════════════════════════════════════ */
         bMenu.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            // Restore opacity immediately so button responds on first tap
+            rootL.style.opacity = prefs.btnOpacity;
             var hc = document.getElementById('helloContainer');
             if (hc) {
                 if (hc.style.display === 'none' || hc.style.display === '') {
                     hc.style.display = 'block';
+                    bMenu.textContent = '\u2715'; // ✕ when open
                     if (typeof application !== 'undefined' && application.showMenu) {
                         application.showMenu();
                     }
                 } else {
                     hc.style.display = 'none';
+                    bMenu.textContent = '\u2630'; // ☰ when closed
                 }
             } else {
                 emitKey(27); // fallback: ESC
@@ -1035,7 +1039,7 @@
         rootL.style.transition = 'opacity .4s ease';
         canvas.addEventListener('touchstart', function () {
             if (isMenuVisible()) return;
-            rootL.style.opacity = '0.1';
+            rootL.style.opacity = '0.35';
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
@@ -1047,6 +1051,13 @@
                 rootL.style.opacity = prefs.btnOpacity;
             }, 3000);
         }, {passive: true});
+        // Any button tap instantly restores full opacity
+        [bMenu, bChat, bAI, bPaus].forEach(function (b) {
+            b.addEventListener('touchstart', function () {
+                rootL.style.opacity = prefs.btnOpacity;
+                if (_fadeTimer) clearTimeout(_fadeTimer);
+            }, {passive: true});
+        });
 
         /* ═══════════════════════════════════════════════════════
          *  COMPACT STATS OVERLAY + CONNECTION DOT
