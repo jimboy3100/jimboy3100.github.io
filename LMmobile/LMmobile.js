@@ -35,7 +35,7 @@
     css.id = 'lm-mobile-css';
     css.textContent =
     /* lock down browser zoom — only our JS pinch handler zooms */
-    'html,body{touch-action:manipulation}' +
+    'html,body,canvas{touch-action:none}' +
     'canvas{touch-action:none}' +
 
     /* ── Safe area insets for notched phones / iPads ── */
