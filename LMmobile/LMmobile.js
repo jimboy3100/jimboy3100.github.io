@@ -225,7 +225,7 @@
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
     '#chat-box{transform:scale(0.5)!important;transform-origin:top left!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
-    '#toast-container{position:fixed!important;transform:scale(0.5)!important;transform-origin:top right!important}' +
+    '#toast-container{position:fixed!important;transform:scale(0.5)!important;transform-origin:top left!important}' +
 
     /* fullscreen prompt toast */
     '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
@@ -1210,6 +1210,21 @@
          *  helloContainer visible → exit fullscreen (browser only)
          * ═══════════════════════════════════════════════════════ */
         var _prevMenuVisible = isMenuVisible();
+        function repinLeftButtons() {
+            rootL.style.left = '2px';
+            rootL.style.bottom = '2px';
+        }
+        /* Re-pin after ANY fullscreen change (viewport shifts) */
+        document.addEventListener('fullscreenchange', function () {
+            setTimeout(repinLeftButtons, 100);
+            setTimeout(repinLeftButtons, 300);
+            setTimeout(repinLeftButtons, 600);
+        });
+        document.addEventListener('webkitfullscreenchange', function () {
+            setTimeout(repinLeftButtons, 100);
+            setTimeout(repinLeftButtons, 300);
+            setTimeout(repinLeftButtons, 600);
+        });
         setInterval(function () {
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
@@ -1237,6 +1252,9 @@
                         window._lmWakeLock = null;
                     }
                 }
+                /* Always re-pin after menu toggle */
+                setTimeout(repinLeftButtons, 200);
+                setTimeout(repinLeftButtons, 500);
                 _prevMenuVisible = nowVisible;
             }
         }, 500);
