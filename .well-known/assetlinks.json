@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.legendmod.expandingland",
+      "package_name": "land.expanding.twa",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_YOUR_KEYSTORE_SHA256_FINGERPRINT"
+        "F3:11:3B:39:FC:2E:6F:EF:E8:A0:53:52:01:55:40:91:EF:9E:21:99:17:30:5D:9E:D3:4C:08:6D:ED:75:AD:59"
       ]
     }
   }
