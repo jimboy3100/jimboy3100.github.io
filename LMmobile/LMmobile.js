@@ -920,47 +920,7 @@
             }, {passive:true});
         })();
 
-        /* ═══════════════════════════════════════════════════════
-         *  HUD AUTO-FADE WHILE PLAYING
-         *  Fades leaderboard/teamboard/stats when touching canvas
-         *  Restores full opacity after 2.5s idle
-         * ═══════════════════════════════════════════════════════ */
-        (function () {
-            var hudEls = ['leaderboard-hud', 'top5-hud', 'stats-hud', 'time-hud'];
-            var els = [];
-            for (var i = 0; i < hudEls.length; i++) {
-                var el = document.getElementById(hudEls[i]);
-                if (el) els.push(el);
-            }
-            if (!els.length) return;
 
-            var fadeTimer = null;
-
-            function fadeHud() {
-                for (var i = 0; i < els.length; i++)
-                    els[i].style.opacity = prefs.hudFade;
-            }
-            function restoreHud() {
-                for (var i = 0; i < els.length; i++)
-                    els[i].style.opacity = '1';
-            }
-
-            canvas.addEventListener('touchstart', function () {
-                if (chatOn) return;
-                fadeHud();
-                clearTimeout(fadeTimer);
-            }, {passive:true});
-
-            canvas.addEventListener('touchend', function () {
-                clearTimeout(fadeTimer);
-                fadeTimer = setTimeout(restoreHud, 2500);
-            }, {passive:true});
-
-            canvas.addEventListener('touchcancel', function () {
-                clearTimeout(fadeTimer);
-                fadeTimer = setTimeout(restoreHud, 2500);
-            }, {passive:true});
-        })();
 
         /* ═══════════════════════════════════════════════════════
          *  HELPERS
