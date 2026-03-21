@@ -42,7 +42,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:2px;bottom:6px;z-index:100000;' +
+    '#lm-mc-l{position:fixed;left:0;bottom:2px;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -1051,18 +1051,35 @@
          * ═══════════════════════════════════════════════════════ */
         var _fadeTimer = null;
         rootL.style.transition = 'opacity .4s ease';
+
+        // Also fade leaderboard, teamboard, minimap during gameplay
+        var _hudEls = ['#leaderboard-hud', '#top5-hud', '#minimap-hud'];
+        _hudEls.forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (el) el.style.transition = 'opacity .4s ease';
+        });
+        function fadeHUD(opacity) {
+            _hudEls.forEach(function (sel) {
+                var el = document.querySelector(sel);
+                if (el) el.style.opacity = opacity;
+            });
+        }
+
         canvas.addEventListener('touchstart', function () {
             if (isMenuVisible()) return;
             rootL.style.opacity = '0.35';
+            fadeHUD('0.4');
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
+                fadeHUD('1');
             }, 3000);
         }, {passive: true});
         canvas.addEventListener('touchend', function () {
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
+                fadeHUD('1');
             }, 3000);
         }, {passive: true});
         // Any button tap instantly restores full opacity
