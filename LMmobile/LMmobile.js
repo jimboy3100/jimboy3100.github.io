@@ -974,8 +974,15 @@
         function wheel(t, dy, cx, cy) {
             var o = { deltaY: dy, deltaMode: 0, clientX: cx, clientY: cy, bubbles: true, cancelable: true };
             t.dispatchEvent(new WheelEvent('wheel', o));
-            o.detail = dy > 0 ? 3 : -3;
+            o.detail = dy > 0 ? 1 : -1;
             t.dispatchEvent(new WheelEvent('mousewheel', o));
+            // Firefox: game listens for DOMMouseScroll on document (ogario.v4.js:15358)
+            try {
+                var ff = new Event('DOMMouseScroll', {bubbles:true, cancelable:true});
+                ff.detail = dy > 0 ? -1 : 1;
+                ff.axis = 2; // vertical
+                document.dispatchEvent(ff);
+            } catch(e) {}
         }
 
         function dist(a, b) {
