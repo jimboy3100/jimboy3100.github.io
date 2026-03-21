@@ -684,6 +684,15 @@
             if (inp) inp.blur();
             chatOn = false;
 
+            /* LW: After 50ms, check if the game's chat UI is still visible.
+             * Mobile keyboard "OK" sends the message but the chat box stays open
+             * because the game expects a document-level Enter to close it. */
+            setTimeout(function () {
+                var msgBox = document.getElementById('message');
+                if (msgBox && (msgBox.offsetParent !== null || msgBox.offsetHeight > 0)) {
+                    emitKey(13);
+                }
+            }, 50);
         }
 
         // Tap canvas while chatting → send & close
