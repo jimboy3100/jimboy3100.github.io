@@ -206,6 +206,8 @@
     'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
     'display:none!important}' +
     '#menu-footer{display:none!important}' +
+    '#LMPromoLegendFFA,#LMPromo,.modal-backdrop{display:none!important}' +
+
 
     /* ── Compact mobile stats overlay ── */
     '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
@@ -215,9 +217,9 @@
     '#time-hud{position:fixed!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
-    '#chat-box{transform:scale(0.75)!important;transform-origin:bottom left!important}' +
+    '#chat-box{transform:scale(0.5)!important;transform-origin:bottom left!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
-    '#toast-container{position:fixed!important}' +
+    '#toast-container{position:fixed!important;transform:scale(0.5)!important;transform-origin:top right!important}' +
 
     /* fullscreen prompt toast */
     '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
@@ -1056,35 +1058,18 @@
          * ═══════════════════════════════════════════════════════ */
         var _fadeTimer = null;
         rootL.style.transition = 'opacity .4s ease';
-
-        // Also fade leaderboard, teamboard, minimap during gameplay
-        var _hudEls = ['#leaderboard-hud', '#top5-hud', '#minimap-hud'];
-        _hudEls.forEach(function (sel) {
-            var el = document.querySelector(sel);
-            if (el) el.style.transition = 'opacity .4s ease';
-        });
-        function fadeHUD(opacity) {
-            _hudEls.forEach(function (sel) {
-                var el = document.querySelector(sel);
-                if (el) el.style.opacity = opacity;
-            });
-        }
-
         canvas.addEventListener('touchstart', function () {
             if (isMenuVisible()) return;
             rootL.style.opacity = '0.35';
-            fadeHUD('0.4');
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
-                fadeHUD('1');
             }, 3000);
         }, {passive: true});
         canvas.addEventListener('touchend', function () {
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
-                fadeHUD('1');
             }, 3000);
         }, {passive: true});
         // Any button tap instantly restores full opacity
