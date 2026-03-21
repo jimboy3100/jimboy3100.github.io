@@ -681,8 +681,13 @@
             }
             if (inp) inp.blur();
             chatOn = false;
-            // Close the chat UI by dispatching Enter on document
-            setTimeout(function () { emitKey(13); }, 100);
+            // Only close chat UI if it's still open (game may have auto-closed)
+            setTimeout(function () {
+                var chatBox = document.getElementById('chat-box');
+                if (chatBox && chatBox.offsetHeight > 0) {
+                    emitKey(13);
+                }
+            }, 150);
         }
 
         // Tap canvas while chatting → send & close
