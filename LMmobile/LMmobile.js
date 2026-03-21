@@ -42,7 +42,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:0;bottom:2px;z-index:100000;' +
+    '#lm-mc-l{position:fixed;left:2px;bottom:2px;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -540,20 +540,18 @@
          *  MENU — toggles helloContainer (show/hide game menu)
          * ═══════════════════════════════════════════════════════ */
         bMenu.addEventListener('touchstart', function (e) {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault();
             // Restore opacity immediately so button responds on first tap
             rootL.style.opacity = prefs.btnOpacity;
             var hc = document.getElementById('helloContainer');
             if (hc) {
                 if (hc.style.display === 'none' || hc.style.display === '') {
                     hc.style.display = 'block';
-                    bMenu.textContent = '\u2715'; // ✕ when open
                     if (typeof application !== 'undefined' && application.showMenu) {
                         application.showMenu();
                     }
                 } else {
                     hc.style.display = 'none';
-                    bMenu.textContent = '\u2630'; // ☰ when closed
                 }
             } else {
                 emitKey(27); // fallback: ESC
