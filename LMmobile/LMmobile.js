@@ -668,7 +668,7 @@
                         }
                     });
                 }
-                cBar.style.display = 'block';
+
             }, 120);
         }
 
@@ -685,7 +685,7 @@
             }
             if (inp) inp.blur();
             chatOn = false;
-            cBar.style.display = 'none';
+
         }
 
         // Tap canvas while chatting → send & close
@@ -1210,7 +1210,7 @@
         setInterval(function () {
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
-                if (!nowVisible) {
+                if (!nowVisible && !chatOn) {
                     // Menu just hidden (playing/spectating) → fullscreen + wake lock
                     goFullscreenLandscape();
                     // Keep screen on while playing
