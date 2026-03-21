@@ -40,15 +40,15 @@
 
     /* ── Safe area insets for notched phones / iPads ── */
     '@supports(padding:env(safe-area-inset-top)){' +
-    '#lm-mc-l{padding-left:env(safe-area-inset-left);padding-bottom:env(safe-area-inset-bottom)}' +
+    '#lm-mc-l{padding:0!important}' +
     '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
     '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
     'margin-bottom:env(safe-area-inset-bottom)!important}' +
 
     '}' +
 
-    /* ── LEFT: ☰ trigger + horizontal drawer ── */
     '#lm-mc-l{position:fixed!important;left:2px!important;bottom:2px!important;z-index:100000;' +
+    'margin:0!important;padding:0!important;transform:none!important;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -323,15 +323,9 @@
          * Works in browser; gracefully degrades in Google Play WebView/TWA
          * where fullscreen/orientation are handled by AndroidManifest instead */
         function goFullscreenLandscape() {
-            try {
-                var el = document.documentElement;
-                var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-                if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
-                    rfs.call(el, {navigationUI: 'auto'}).then(function () {
-                        try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
-                    }).catch(function () {});
-                }
-            } catch(e) {}
+            /* No requestFullscreen — it blocks screenshots on Android.
+               Just lock orientation to landscape instead. */
+            try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
         }
 
         /* ── Auto-fullscreen on Play button tap ── */
@@ -479,9 +473,6 @@
                 rootR.style.transform = 'none';
                 smallR.style.transform = 'none';
             }
-            /* Always re-pin left buttons to prevent drift */
-            rootL.style.left = '2px';
-            rootL.style.bottom = '2px';
         }
 
         /* slider handlers */
