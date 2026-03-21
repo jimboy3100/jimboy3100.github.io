@@ -815,6 +815,39 @@
                 pDist = dist(e.touches[0], e.touches[1]);
                 jHide(); jId = null;
             }
+        }, {passive:false});
+
+        /* Also listen on document for pinch when menu covers canvas (Firefox) */
+        var docPDist = 0, docPOn = false;
+        document.addEventListener('touchstart', function (e) {
+            if (e.touches.length === 2) {
+                docPDist = dist(e.touches[0], e.touches[1]);
+                docPOn = true;
+            }
+        }, {passive:true});
+        document.addEventListener('touchmove', function (e) {
+            if (!(e.touches.length === 2 && docPOn)) return;
+            if (!isMenuVisible()) return; // only for HUD scale when menu visible
+            e.preventDefault();
+            var nd = dist(e.touches[0], e.touches[1]);
+            var delta = nd - docPDist;
+            if (Math.abs(delta) > 4) {
+                var step = delta * 0.003;
+                if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
+                    var ns = Math.min(1, Math.max(0.3, defaultSettings.hudScale + step));
+                    defaultSettings.hudScale = ns;
+                    if (typeof ogario !== 'undefined') ogario.hudScale = ns;
+                    if (typeof ogarhusettings === 'function') ogarhusettings();
+                    zP.textContent = '\ud83d\udd0d HUD ' + Math.round(ns * 100) + '%';
+                    zP.classList.add('on');
+                    clearTimeout(zT);
+                    zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
+                }
+                docPDist = nd;
+            }
+        }, {passive:false});
+        document.addEventListener('touchend', function (e) {
+            if (e.touches.length < 2) { docPOn = false; docPDist = 0; }
         }, {passive:true});
 
         canvas.addEventListener('touchmove', function (e) {
@@ -972,7 +1005,7 @@
             // Firefox: game listens for DOMMouseScroll on document (ogario.v4.js:15358)
             try {
                 var ff = new Event('DOMMouseScroll', {bubbles:true, cancelable:true});
-                ff.detail = dy > 0 ? 1 : -1; // use 1/-1 (not 3/-3) to avoid exponential zoom
+                ff.detail = dy > 0 ? -1 : 1; // flipped: spread=zoom in, pinch=zoom out
                 ff.axis = 2;
                 document.dispatchEvent(ff);
             } catch(e) {}
