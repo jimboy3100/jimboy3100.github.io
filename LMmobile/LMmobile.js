@@ -331,7 +331,7 @@
          * where fullscreen/orientation are handled by AndroidManifest instead */
         function goFullscreenLandscape() {
             try {
-                var el = document.body;
+                var el = document.documentElement;
                 var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
                 if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
                     rfs.call(el, {navigationUI: 'auto'}).then(function () {
