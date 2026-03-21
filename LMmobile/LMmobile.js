@@ -683,8 +683,8 @@
             chatOn = false;
             // Only close chat UI if it's still open (game may have auto-closed)
             setTimeout(function () {
-                var chatBox = document.getElementById('chat-box');
-                if (chatBox && chatBox.offsetHeight > 0) {
+                var msgBox = document.getElementById('message-box');
+                if (msgBox && msgBox.offsetHeight > 0 && msgBox.style.display !== 'none') {
                     emitKey(13);
                 }
             }, 150);
