@@ -9860,13 +9860,15 @@ function thelegendmodproject() {
             },
             //
             this.drawTxt = function (customTxt) {
+                var _dpr = window.LM_DPR || 1;
                 return this.createCanvas(),
                     this.redraw && (this.redraw = false,
 
 
-                        this.txtCanvas.width = this.measureWidthCustom(customTxt),
-                        this.txtCanvas.width = this.measureWidth(),
-                        this.txtCanvas.height = this.fontSize + this.margin * 2,
+                        this.txtCanvas.width = this.measureWidthCustom(customTxt) * _dpr,
+                        this.txtCanvas.width = this.measureWidth() * _dpr,
+                        this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr,
+                        this.txtCtx.scale(_dpr, _dpr),
                         this.txtCtx.font = this.font,
                         this.txtCtx.globalAlpha = 1,
                         this.txtCtx.lineWidth = this.strokeWidth,
@@ -10264,8 +10266,9 @@ function thelegendmodproject() {
             }
             nickCanvas.setScale(this.scale);
             var nickImg = nickCanvas.drawTxt();
-            var w = ~~(nickImg.width / this.scale);
-            var h = ~~(nickImg.height / this.scale);
+            var _dpr = window.LM_DPR || 1;
+            var w = ~~(nickImg.width / (this.scale * _dpr));
+            var h = ~~(nickImg.height / (this.scale * _dpr));
             this.margin = ~~(h / 2);
             try {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
@@ -10325,8 +10328,9 @@ function thelegendmodproject() {
                         chatCanvas.setTxt(customTxt);
                     }
                     var data = chatCanvas.drawTxt(customTxt);
-                    var width = ~~(data.width / this.scale);
-                    var height = ~~(data.height / this.scale);
+                    var _dpr2 = window.LM_DPR || 1;
+                    var width = ~~(data.width / (this.scale * _dpr2));
+                    var height = ~~(data.height / (this.scale * _dpr2));
                     var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
                     if (temp < 2000) {
@@ -10382,9 +10386,10 @@ function thelegendmodproject() {
                             //this.lastMass = this.mass;
                         }
                         var data = mergeCanvas.drawTxt(customTxt);
-                        var width = ~~(data.width / this.scale);
+                        var _dpr3 = window.LM_DPR || 1;
+                        var width = ~~(data.width / (this.scale * _dpr3));
                         //console.log(data.width, this.scale, width, this.x - width / 2);
-                        var height = ~~(data.height / this.scale);
+                        var height = ~~(data.height / (this.scale * _dpr3));
                         var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
                         if (width > 1 && height > 1) {
                             try {
@@ -10411,9 +10416,10 @@ function thelegendmodproject() {
                 massCanvas.setScale(this.scale);
 
                 var data = massCanvas.drawTxt();
-                var width = ~~(data.width / this.scale);
+                var _dpr4 = window.LM_DPR || 1;
+                var width = ~~(data.width / (this.scale * _dpr4));
                 //console.log("m:"+data.width, this.scale, width, this.x - width / 2);
-                var height = ~~(data.height / this.scale)
+                var height = ~~(data.height / (this.scale * _dpr4))
                 var textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
                 if (width > 1 && height > 1) {
                     try {
@@ -15403,6 +15409,7 @@ Game name     : ${i.displayName}<br/>
         resizeCanvas() {
             var dpr = (window.LM_IS_MOBILE) ? (window.devicePixelRatio || 1) : 1;
             this.dpr = dpr;
+            window.LM_DPR = dpr;
             this.canvasWidth = window.innerWidth;
             this.canvasHeight = window.innerHeight;
             this.canvas.width = this.canvasWidth * dpr;
