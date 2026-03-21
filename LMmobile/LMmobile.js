@@ -194,11 +194,14 @@
 
     /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
     '#minimap-hud{position:fixed!important;bottom:4px!important;right:4px!important;' +
-    'transform:scale(0.5)!important;transform-origin:bottom right!important}' +
+    'transform:scale(0.5)!important;transform-origin:bottom right!important;' +
+    'pointer-events:none!important}' +
     '#leaderboard-hud{position:fixed!important;top:4px!important;right:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:top right!important}' +
+    'transform:scale(0.75)!important;transform-origin:top right!important;' +
+    'pointer-events:none!important}' +
     '#top5-hud{position:fixed!important;top:30px!important;left:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:top left!important}' +
+    'transform:scale(0.75)!important;transform-origin:top left!important;' +
+    'pointer-events:none!important}' +
     '#stats-hud{position:fixed!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
     'display:none!important}' +
