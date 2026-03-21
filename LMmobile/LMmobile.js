@@ -803,11 +803,10 @@
 
         function isMenuVisible() {
             var hc = document.getElementById('helloContainer');
-            if (hc && hc.style.display !== 'none' && hc.offsetParent !== null) return true;
+            if (hc && hc.style.display !== 'none' && hc.offsetWidth > 0) return true;
             var ov = document.getElementById('overlays');
-            if (!ov) return false;
-            if (ov.style.display === 'none') return false;
-            return ov.offsetParent !== null || ov.offsetHeight > 0;
+            if (!ov || ov.style.display === 'none') return false;
+            return ov.offsetWidth > 0;
         }
 
         canvas.addEventListener('touchstart', function (e) {
