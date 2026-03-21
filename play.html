@@ -326,8 +326,12 @@
             document.body.appendChild(_lmm);
         }
 
-        /* PWA: Register service worker (Android + iOS) */
-        if ('serviceWorker' in navigator) {
+        /* PWA: Register service worker ONLY when running as installed app (TWA/PWA).
+         * In normal browser or userscript mode, skip entirely to avoid caching issues. */
+        var _isApp = window.matchMedia('(display-mode: standalone)').matches ||
+                     window.matchMedia('(display-mode: fullscreen)').matches ||
+                     navigator.standalone === true;
+        if (_isApp && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').then(function(reg) {
                 console.log('[PWA] Service worker registered, scope:', reg.scope);
             }).catch(function(err) {
