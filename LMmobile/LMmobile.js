@@ -22,6 +22,12 @@
     /* ── Global flag for other scripts to detect mobile mode ── */
     window.LM_IS_MOBILE = true;
 
+    /* Force resizeCanvas to re-run now that LM_IS_MOBILE is set,
+       so DPR is picked up (ogario.v4.js ran resizeCanvas before this loaded) */
+    setTimeout(function () {
+        window.dispatchEvent(new Event('resize'));
+    }, 200);
+
     /* ═══════════════════════════════════════════════════════════
      *  CSS
      * ═══════════════════════════════════════════════════════════ */
