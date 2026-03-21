@@ -638,6 +638,7 @@
          *  CHAT — Enter (keyCode 13)
          * ═══════════════════════════════════════════════════════ */
         var chatOn = false;
+        var chatOpenedAt = 0;
 
         bChat.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
@@ -666,6 +667,8 @@
         }
 
         function chatClose() {
+            // Don't close within 500ms of opening (Firefox keyboard causes spurious events)
+            if (Date.now() - chatOpenedAt < 500) return;
             var inp = document.getElementById('message');
             if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
@@ -682,10 +685,9 @@
             setTimeout(function () { emitKey(13); }, 100);
         }
 
-        // Tap canvas while chatting → send & close (with debounce for Firefox)
-        var chatOpenedAt = 0;
+        // Tap canvas while chatting → send & close
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOn && Date.now() - chatOpenedAt > 300) {
+            if (chatOn) {
                 e.preventDefault();
                 chatClose();
             }
