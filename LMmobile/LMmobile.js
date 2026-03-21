@@ -223,7 +223,7 @@
     '#time-hud{position:fixed!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
-    '#chat-box{transform:scale(0.5)!important;transform-origin:bottom left!important}' +
+    '#chat-box{transform:scale(0.5)!important;transform-origin:top left!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
     '#toast-container{position:fixed!important;transform:scale(0.5)!important;transform-origin:top right!important}' +
 
@@ -481,12 +481,21 @@
             rootL.style.opacity = prefs.btnOpacity;
             rootR.style.opacity = prefs.btnOpacity;
             smallR.style.opacity = prefs.btnOpacity;
-            rootL.style.transform = 'scale(' + prefs.btnScale + ')';
-            rootL.style.transformOrigin = 'bottom left';
-            rootR.style.transform = 'scale(' + prefs.btnScale + ')';
-            rootR.style.transformOrigin = 'bottom right';
-            smallR.style.transform = 'scale(' + prefs.btnScale + ')';
-            smallR.style.transformOrigin = 'bottom right';
+            if (prefs.btnScale !== 1) {
+                rootL.style.transform = 'scale(' + prefs.btnScale + ')';
+                rootL.style.transformOrigin = 'bottom left';
+                rootR.style.transform = 'scale(' + prefs.btnScale + ')';
+                rootR.style.transformOrigin = 'bottom right';
+                smallR.style.transform = 'scale(' + prefs.btnScale + ')';
+                smallR.style.transformOrigin = 'bottom right';
+            } else {
+                rootL.style.transform = 'none';
+                rootR.style.transform = 'none';
+                smallR.style.transform = 'none';
+            }
+            /* Always re-pin left buttons to prevent drift */
+            rootL.style.left = '2px';
+            rootL.style.bottom = '2px';
         }
 
         /* slider handlers */
