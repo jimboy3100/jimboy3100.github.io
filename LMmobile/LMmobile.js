@@ -146,10 +146,7 @@
     'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
     'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-    '#lm-cb{position:fixed;bottom:0;left:0;right:0;z-index:100002;' +
-    'display:none;background:rgba(0,36,62,.92);' +
-    'border-top:2px solid rgba(1,217,204,.45);' +
-    'padding:8px 14px;text-align:right;backdrop-filter:blur(6px)}' +
+    '#lm-cb{display:none!important}' +
     '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
     'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
     'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
@@ -538,8 +535,8 @@
         var zT = null;
 
         var cBar = mk('div'); cBar.id = 'lm-cb';
-        cBar.innerHTML = '';
-        document.body.appendChild(cBar);
+        cBar.style.display = 'none';
+        /* no longer appended — chat bar is not needed */
 
         /* apply initial prefs */
         applyPrefs();
