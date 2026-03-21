@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "land.expanding.twa",
       "sha256_cert_fingerprints": [
-        "F3:11:3B:39:FC:2E:6F:EF:E8:A0:53:52:01:55:40:91:EF:9E:21:99:17:30:5D:9E:D3:4C:08:6D:ED:75:AD:59"
+        "F3:11:3B:39:FC:2E:6F:EF:E8:A0:53:52:01:55:40:91:EF:9E:21:99:17:30:5D:9E:D3:4C:08:6D:ED:75:AD:59",
+        "EF:5D:5D:1A:92:7C:93:CE:47:01:6F:20:B7:C1:59:FB:55:1B:A3:B4:31:F3:02:BA:69:31:7F:9C:A8:0A:C1:15"
       ]
     }
   }
