@@ -678,7 +678,8 @@
             }
             if (inp) inp.blur();
             chatOn = false;
-
+            // Close the chat UI by dispatching Enter on document
+            setTimeout(function () { emitKey(13); }, 100);
         }
 
         // Tap canvas while chatting → send & close (with debounce for Firefox)
