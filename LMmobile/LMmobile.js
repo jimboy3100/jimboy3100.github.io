@@ -205,7 +205,7 @@
     'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
     'display:none!important}' +
     '#menu-footer{display:none!important}' +
-    '#LMPromoLegendFFA,#LMPromo,.modal-backdrop{display:none!important}' +
+    '#LMPromoLegendFFA,#LMPromo,.modal-backdrop,#leaderboard-menu{display:none!important}' +
 
 
     /* ── Compact mobile stats overlay ── */
