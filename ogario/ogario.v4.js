@@ -7258,14 +7258,14 @@ function thelegendmodproject() {
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
-                        core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
+                        core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
                     }
                 }
             } else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
-                    application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin;
-                    application.loadSkin(application.customSkinsCache, window.UserVanillaSkin);
+                    application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?');
+                    application.loadSkin(application.customSkinsCache, window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?'));
                     //core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
                     //window.UserVanillaSkin=null;
                 } else {
@@ -7273,8 +7273,8 @@ function thelegendmodproject() {
                         if (window.EquippableSkins[player].productId === "skin_" + window.UserVanillaSkin && window.EquippableSkins[player].image !== "uses_spine") {
                             //console.log("2. " + window.EquippableSkins[player].image);	
                             window.lastusednameforskin = ogarcopythelb.nick;
-                            application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                            application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                            application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?";
+                            application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?");
                             //core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);   
                             //window.UserVanillaSkin=null;								
                         }
@@ -7395,7 +7395,8 @@ function thelegendmodproject() {
 
                 },
                     img[url].onerror = function () {
-                        //console.log("error loading image: "+ url);
+                        console.warn("[LM] Failed to load skin image: " + url);
+                        /* OLD FALLBACK (commented out — now using ? cache-buster on CDN URLs instead)
                         if (url && url.includes(window.EnvConfig.config_url)) {
                             url = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
@@ -7411,6 +7412,7 @@ function thelegendmodproject() {
                             return url;
 
                         }
+                        */
                     };
                 img[url].src = url;
             }
@@ -12766,7 +12768,8 @@ function thelegendmodproject() {
                             var temp = window.testobjects2.split('').pop().split('R')[0].replace('', "");
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
-                                window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png';
+                                //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
+                                window.UserVanillaSkin = "https://configs.agario.miniclippt.com/live/custom_skins/" + temp.substring(1) + '.png?';
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
@@ -14640,21 +14643,21 @@ Game name     : ${i.displayName}<br/>
                 } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
                         if (LowerCase(y) === window.FreeSkins[player].id) {
-                            core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
+                            core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
                             //console.log("https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image)
                         }
                     }
                 } else if (g != null && g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%custom_', 'skin_custom_')
-                    core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null);
-                    //core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png", null);
+                    //core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null); // OLD — may point to wrong domain
+                    core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?", null);
                 } else if (g != null && g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%', '')
                     g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
                     g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
                     g1 = makeUpperCaseAfterUnderline(g1);
                     var customskinanimated = true;
-                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", customskinanimated);
+                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png?", customskinanimated);
                 } else if (g != null && defaultmapsettings.vanillaSkins === true && window.LMAgarGameConfiguration != undefined) {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId === "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
@@ -14664,11 +14667,11 @@ Game name     : ${i.displayName}<br/>
                             var skinKey = y;
                             if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
                                 // In party mode, y already has color appended, so register with that key
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?";
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?");
                             } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?";
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image + "?");
                             }
                         }
                     }
