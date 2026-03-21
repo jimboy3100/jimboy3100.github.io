@@ -5387,39 +5387,34 @@ function thelegendmodproject() {
                     var atStr = '';
                     function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
-                    /* ⚗ Anti: (X%/Y%) or (X%/Y%, −Z%/4s) */
-                    if (di.totalScore > 0) {
-                        var isAbove = di.totalScore > di.threshold;
-                        var scoreColor = isAbove ? 'color:#ff4c4c' : 'color:#33ff33';
-                        var scoreVal = (di.totalScore / 100).toFixed(2) + '%';
-                        var threshVal = (di.threshold / 100).toFixed(2) + '%';
-                        atStr += '⚗ Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
-                        if (isAbove) {
-                            var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
-                            atStr += ', −' + excessPct + '%/' + di.decayIntervalSecs + 's';
-                        }
-                        atStr += ')';
+                    var basePct = (di.decayScore / 100).toFixed(2);
+                    var isAbove = di.totalScore > di.threshold;
 
-                        /* Per-source breakdown */
-                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.virusMaxSecs) + ')';
-                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.splitMaxSecs) + ')';
-                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.ejectMaxSecs) + ')';
+                    if (isAbove) {
+                        var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
+                        var totalDecay = (parseFloat(basePct) + parseFloat(excessPct)).toFixed(2);
+                        atStr += '<span style="color:#ff4c4c">\u2697 Anti: \u2212' + excessPct + '%/' + di.decayIntervalSecs + 's extra</span>';
+                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' +' + (di.virusScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.virusMaxSecs);
+                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' +' + (di.splitScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.splitMaxSecs);
+                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' +' + (di.ejectScore / 100).toFixed(2) + '% \u23f3' + _fmtSecs(di.ejectMaxSecs);
+                        atStr += ' | \u221e \u2212' + totalDecay + '%/' + di.decayIntervalSecs + 's';
+                    } else if (di.totalScore > 0) {
+                        var scoreVal = (di.totalScore / 100).toFixed(2);
+                        var threshVal = (di.threshold / 100).toFixed(2);
+                        atStr += '<span style="color:#33ff33">\u2697 ' + scoreVal + '/' + threshVal + '%</span>';
+                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' \u23f3' + _fmtSecs(di.virusMaxSecs);
+                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' \u23f3' + _fmtSecs(di.splitMaxSecs);
+                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' \u23f3' + _fmtSecs(di.ejectMaxSecs);
+                        atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    } else {
+                        atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
                     }
 
-                    /* ⚠ Zone */
                     if (di.inDangerZone) {
-                        if (atStr) atStr += ' | ';
-                        atStr += '<span style="color:#ff4c4c">⚠ Zone ' + di.dangerPhaseSecs + 's';
-                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
-                        atStr += '</span>';
+                        atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
                     } else if (di.dangerCount > 0) {
-                        if (atStr) atStr += ' | ';
-                        atStr += '⚠ Zone (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
+                        atStr += ' | \u26a0 \u23f3' + _fmtSecs(di.dangerMaxSecs);
                     }
-
-                    /* ∞ constant base decay */
-                    if (atStr) atStr += ' | ';
-                    atStr += '∞ −' + (di.decayScore / 100).toFixed(2) + '%/' + di.decayIntervalSecs + 's';
 
                     if (t) t += atStr + ' | ';
                     else t += atStr + ' | ';
