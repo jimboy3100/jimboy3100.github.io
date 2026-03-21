@@ -215,6 +215,7 @@
     '#time-hud{position:fixed!important;right:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
+    '#chat-box{transform:scale(0.75)!important;transform-origin:bottom left!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
     '#toast-container{position:fixed!important}' +
 
@@ -557,6 +558,8 @@
                 } else {
                     hc.style.display = 'none';
                 }
+                // Re-anchor buttons after helloContainer toggle
+                setTimeout(function () { applyPrefs(); }, 100);
             } else {
                 emitKey(27); // fallback: ESC
             }
