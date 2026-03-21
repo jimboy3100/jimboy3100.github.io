@@ -288,18 +288,8 @@
         (function mobileVisuals() {
             function apply() {
                 if (typeof defaultSettings !== 'undefined') {
-                    // Grid: keep user's color, reduce opacity proportionally (×0.3)
-                    var gc = defaultSettings.gridColor || '#00243e';
-                    if (gc.indexOf('rgba') === 0) {
-                        // Extract rgba components, multiply alpha by 0.3
-                        var parts = gc.replace(/rgba?\(/,'').replace(')','').split(',');
-                        var a = parseFloat(parts[3] || 1) * 0.3;
-                        defaultSettings.gridColor = 'rgba(' + parts[0].trim() + ',' +
-                            parts[1].trim() + ',' + parts[2].trim() + ',' + a.toFixed(2) + ')';
-                    } else {
-                        // Hex or named color — wrap in rgba with low alpha
-                        defaultSettings.gridColor = 'rgba(0,36,62,.15)';
-                    }
+                    /* Grid: keep user's color unchanged (DPR scale already
+                       makes lines thinner, no need to also dim alpha) */
 
                     // FoodSize: proportional (60% of user's setting, min 1)
                     var userFood = defaultSettings.foodSize || 5;
@@ -338,10 +328,10 @@
          * where fullscreen/orientation are handled by AndroidManifest instead */
         function goFullscreenLandscape() {
             try {
-                var el = document.documentElement;
+                var el = document.body;
                 var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
                 if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
-                    rfs.call(el).then(function () {
+                    rfs.call(el, {navigationUI: 'auto'}).then(function () {
                         try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
                     }).catch(function () {});
                 }
