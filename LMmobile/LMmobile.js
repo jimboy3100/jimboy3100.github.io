@@ -34,15 +34,15 @@
 
         /* ── Safe area insets for notched phones / iPads ── */
         '@supports(padding:env(safe-area-inset-top)){' +
-        '#lm-mc-l{padding-left:env(safe-area-inset-left);padding-bottom:env(safe-area-inset-bottom)}' +
+        '#lm-mc-l{padding:0!important}' +
         '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
         '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
         'margin-bottom:env(safe-area-inset-bottom)!important}' +
-        '#lm-cb{padding-bottom:env(safe-area-inset-bottom)}' +
+
         '}' +
 
-        /* ── LEFT: ☰ trigger + horizontal drawer ── */
-        '#lm-mc-l{position:fixed;left:2px;bottom:2px;z-index:100000;' +
+        '#lm-mc-l{position:fixed!important;left:2px!important;bottom:2px!important;z-index:100000;' +
+        'margin:0!important;padding:0!important;transform:none!important;' +
         'pointer-events:none;user-select:none;-webkit-user-select:none;' +
         'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -140,14 +140,7 @@
         'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
         'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-        '#lm-cb{position:fixed;bottom:0;left:0;right:0;z-index:100002;' +
-        'display:none;background:rgba(0,36,62,.92);' +
-        'border-top:2px solid rgba(1,217,204,.45);' +
-        'padding:8px 14px;text-align:right;backdrop-filter:blur(6px)}' +
-        '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
-        'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
-        'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
-        '#lm-cb button:active{opacity:.8}' +
+        '#lm-cb{display:none!important}' +
 
         /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
         '#message{font-size:16px!important}' +
@@ -206,6 +199,7 @@
         'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
         'display:none!important}' +
         '#menu-footer{display:none!important}' +
+        '#LMPromoLegendFFA,#LMPromo,.modal-backdrop,#leaderboard-menu{display:none!important}' +
 
         /* ── Compact mobile stats overlay ── */
         '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
