@@ -48,7 +48,7 @@
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
-    '#lm-mc-l{position:fixed;left:2px;bottom:2px;z-index:100000;' +
+    '#lm-mc-l{position:fixed!important;left:2px!important;bottom:2px!important;z-index:100000;' +
     'pointer-events:none;user-select:none;-webkit-user-select:none;' +
     'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
@@ -225,7 +225,10 @@
     '#chat-box,#messages{position:fixed!important;left:4px!important}' +
     '#chat-box{transform:scale(0.5)!important;transform-origin:top left!important}' +
     '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
-    '#toast-container{position:fixed!important;transform:scale(0.5)!important;transform-origin:top left!important}' +
+    '#toast-container{position:fixed!important;left:4px!important;bottom:80px!important;' +
+    'top:auto!important;right:auto!important;' +
+    'transform:scale(0.5)!important;transform-origin:bottom left!important;' +
+    'max-width:300px!important}' +
 
     /* fullscreen prompt toast */
     '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
