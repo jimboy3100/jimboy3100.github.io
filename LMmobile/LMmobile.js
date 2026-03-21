@@ -349,6 +349,7 @@
             function scan() {
                 // Hook all Play-type buttons
                 var selectors = ['.btn-play', '.btn-play-guest', '.btn-login-play',
+                                 '.btn-spectate',
                                  '#btn-play', '#btn-play-guest', '#btn-login-play'];
                 selectors.forEach(function (s) {
                     var btns = document.querySelectorAll(s);
@@ -555,6 +556,7 @@
                     }
                 } else {
                     hc.style.display = 'none';
+                    goFullscreenLandscape(); // user gesture — fullscreen works here
                 }
                 // Re-anchor buttons after helloContainer toggle
                 setTimeout(function () { applyPrefs(); }, 100);
