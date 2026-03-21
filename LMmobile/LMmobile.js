@@ -972,8 +972,8 @@
             // Firefox: game listens for DOMMouseScroll on document (ogario.v4.js:15358)
             try {
                 var ff = new Event('DOMMouseScroll', {bubbles:true, cancelable:true});
-                ff.detail = dy > 0 ? 3 : -3;
-                ff.axis = 2; // vertical
+                ff.detail = dy > 0 ? 1 : -1; // use 1/-1 (not 3/-3) to avoid exponential zoom
+                ff.axis = 2;
                 document.dispatchEvent(ff);
             } catch(e) {}
         }
