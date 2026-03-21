@@ -323,9 +323,15 @@
          * Works in browser; gracefully degrades in Google Play WebView/TWA
          * where fullscreen/orientation are handled by AndroidManifest instead */
         function goFullscreenLandscape() {
-            /* No requestFullscreen — it blocks screenshots on Android.
-               Just lock orientation to landscape instead. */
-            try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
+            try {
+                var el = document.documentElement;
+                var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+                if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
+                    rfs.call(el, {navigationUI: 'auto'}).then(function () {
+                        try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
+                    }).catch(function () {});
+                }
+            } catch(e) {}
         }
 
         /* ── Auto-fullscreen on Play button tap ── */
