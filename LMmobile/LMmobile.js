@@ -205,7 +205,7 @@
     '#stats-hud{position:fixed!important;left:4px!important;' +
     'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
     'display:none!important}' +
-    '.menu-footer{display:none!important}' +
+    '#menu-footer{display:none!important}' +
 
     /* ── Compact mobile stats overlay ── */
     '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
