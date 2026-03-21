@@ -646,6 +646,7 @@
 
         function chatOpen() {
             chatOn = true;
+            chatOpenedAt = Date.now();
             // Open chat box — dispatch Enter on document to open game's chat
             emitKey(13);
             setTimeout(function () {
@@ -680,9 +681,10 @@
 
         }
 
-        // Tap canvas while chatting → send & close
+        // Tap canvas while chatting → send & close (with debounce for Firefox)
+        var chatOpenedAt = 0;
         canvas.addEventListener('touchstart', function (e) {
-            if (chatOn) {
+            if (chatOn && Date.now() - chatOpenedAt > 300) {
                 e.preventDefault();
                 chatClose();
             }
