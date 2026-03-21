@@ -35,7 +35,7 @@
     css.id = 'lm-mobile-css';
     css.textContent =
     /* lock down browser zoom — only our JS pinch handler zooms */
-    'html,body{touch-action:pan-x pan-y}' +
+    'html,body{touch-action:manipulation}' +
     'canvas{touch-action:none}' +
 
     /* ── Safe area insets for notched phones / iPads ── */
@@ -253,8 +253,13 @@
             vp.setAttribute('content',
                 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
         }
-        // Safari/iOS: prevent native pinch-zoom gesture
-
+        // Firefox/Safari: prevent native pinch-zoom gesture at document level
+        document.addEventListener('touchmove', function (e) {
+            if (e.touches.length >= 2) e.preventDefault();
+        }, {passive: false});
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        }, {passive: false});
         /* ── Scale #helloContainer to fit viewport (preserves internal layout) ── */
         (function fitHelloContainer() {
             function fit() {
