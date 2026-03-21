@@ -334,33 +334,17 @@
             } catch(e) {}
         }
 
-        /* ── Auto-fullscreen on Play button tap ── */
-        (function hookPlayButtons() {
-            function hook(btn) {
-                if (!btn || btn._lmHooked) return;
-                btn._lmHooked = true;
-                btn.addEventListener('click', function () {
+        /* ── Auto-fullscreen on Play/Spectate button tap ── */
+        document.addEventListener('click', function (e) {
+            var t = e.target;
+            // Walk up to 3 parents to find the button
+            for (var i = 0; i < 4 && t && t !== document; i++, t = t.parentElement) {
+                if (t.matches && t.matches('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate, .btn-spectate-shortcut')) {
                     goFullscreenLandscape();
-                }, {passive: true});
-                btn.addEventListener('touchstart', function () {
-                    goFullscreenLandscape();
-                }, {passive: true});
+                    return;
+                }
             }
-            function scan() {
-                // Hook all Play-type buttons
-                var selectors = ['.btn-play', '.btn-play-guest', '.btn-login-play',
-                                 '.btn-spectate',
-                                 '#btn-play', '#btn-play-guest', '#btn-login-play'];
-                selectors.forEach(function (s) {
-                    var btns = document.querySelectorAll(s);
-                    for (var i = 0; i < btns.length; i++) hook(btns[i]);
-                });
-            }
-            scan();
-            // Re-scan when DOM changes (in case buttons load late)
-            setTimeout(scan, 2000);
-            setTimeout(scan, 5000);
-        })();
+        }, true); // capture phase — fires before game handlers
 
         /* ── Persistent portrait overlay (replaces one-time toast) ── */
         var portOv = mk('div'); portOv.id = 'lm-portrait-ov';
