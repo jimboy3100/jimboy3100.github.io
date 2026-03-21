@@ -44,7 +44,7 @@
     '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
     '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
     'margin-bottom:env(safe-area-inset-bottom)!important}' +
-    '#lm-cb{padding-bottom:env(safe-area-inset-bottom)}' +
+
     '}' +
 
     /* ── LEFT: ☰ trigger + horizontal drawer ── */
@@ -146,11 +146,7 @@
     'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
     'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-    '#lm-cb{display:none!important}' +
-    '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
-    'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
-    'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
-    '#lm-cb button:active{opacity:.8}' +
+
 
     /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
     '#message{font-size:16px!important}' +
@@ -534,9 +530,7 @@
         var zP = mk('div'); zP.className = 'lm-z'; document.body.appendChild(zP);
         var zT = null;
 
-        var cBar = mk('div'); cBar.id = 'lm-cb';
-        cBar.style.display = 'none';
-        /* no longer appended — chat bar is not needed */
+
 
         /* apply initial prefs */
         applyPrefs();
@@ -678,7 +672,7 @@
                         }
                     });
                 }
-                cBar.style.display = 'block';
+
             }, 120);
         }
 
@@ -695,7 +689,7 @@
             }
             if (inp) inp.blur();
             chatOn = false;
-            cBar.style.display = 'none';
+
         }
 
         // Tap canvas while chatting → send & close
@@ -1254,12 +1248,7 @@
             window.visualViewport.addEventListener('resize', function () {
                 var vv = window.visualViewport;
                 var kbHeight = window.innerHeight - vv.height;
-                if (kbHeight > 100) {
-                    // Keyboard is open — shift chat bar above keyboard
-                    cBar.style.bottom = kbHeight + 'px';
-                } else {
-                    cBar.style.bottom = '';
-                }
+
             });
         }
 
