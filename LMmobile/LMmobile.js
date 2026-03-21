@@ -22,214 +22,209 @@
     /* ── Global flag for other scripts to detect mobile mode ── */
     window.LM_IS_MOBILE = true;
 
-    /* Force resizeCanvas to re-run now that LM_IS_MOBILE is set,
-       so DPR is picked up (ogario.v4.js ran resizeCanvas before this loaded) */
-    setTimeout(function () {
-        window.dispatchEvent(new Event('resize'));
-    }, 200);
-
     /* ═══════════════════════════════════════════════════════════
      *  CSS
      * ═══════════════════════════════════════════════════════════ */
     var css = document.createElement('style');
     css.id = 'lm-mobile-css';
     css.textContent =
-    /* lock down browser zoom — only our JS pinch handler zooms */
-    'html,body,canvas{touch-action:none}' +
-    'canvas{touch-action:none}' +
+        /* lock down browser zoom — only our JS pinch handler zooms */
+        'html,body{touch-action:pan-x pan-y}' +
+        'canvas{touch-action:none}' +
 
-    /* ── Safe area insets for notched phones / iPads ── */
-    '@supports(padding:env(safe-area-inset-top)){' +
-    '#lm-mc-l{padding:0!important}' +
-    '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
-    '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
-    'margin-bottom:env(safe-area-inset-bottom)!important}' +
+        /* ── Safe area insets for notched phones / iPads ── */
+        '@supports(padding:env(safe-area-inset-top)){' +
+        '#lm-mc-l{padding-left:env(safe-area-inset-left);padding-bottom:env(safe-area-inset-bottom)}' +
+        '#lm-mc-r{padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}' +
+        '#minimap-hud{margin-right:env(safe-area-inset-right)!important;' +
+        'margin-bottom:env(safe-area-inset-bottom)!important}' +
+        '#lm-cb{padding-bottom:env(safe-area-inset-bottom)}' +
+        '}' +
 
-    '}' +
+        /* ── LEFT: ☰ trigger + horizontal drawer ── */
+        '#lm-mc-l{position:fixed;left:2px;bottom:2px;z-index:100000;' +
+        'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+        'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
-    '#lm-mc-l{position:fixed!important;left:2px!important;bottom:2px!important;z-index:100000;' +
-    'margin:0!important;padding:0!important;transform:none!important;' +
-    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
+        /* ── Drawer: always visible, horizontal row to right of ☰ ── */
+        '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:5px;' +
+        'pointer-events:auto}' +
 
-    /* ── Drawer: always visible, horizontal row to right of ☰ ── */
-    '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:5px;' +
-    'pointer-events:auto}' +
+        /* ── Drawer button: smaller than trigger, equal size ── */
+        '.lm-d{pointer-events:auto;touch-action:none;cursor:pointer;' +
+        'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
+        'width:36px;height:36px;font-size:15px;' +
+        'background:rgba(0,36,62,.50);border:1.5px solid rgba(1,217,204,.22);' +
+        'box-shadow:0 0 6px rgba(1,217,204,.06);' +
+        'color:rgba(255,255,255,.8);font-family:Ubuntu,Roboto,sans-serif;' +
+        'font-weight:700;transition:transform .1s,background .15s}' +
+        '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20)}' +
+        '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important}' +
 
-    /* ── Drawer button: smaller than trigger, equal size ── */
-    '.lm-d{pointer-events:auto;touch-action:none;cursor:pointer;' +
-    'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
-    'width:36px;height:36px;font-size:15px;' +
-    'background:rgba(0,36,62,.50);border:1.5px solid rgba(1,217,204,.22);' +
-    'box-shadow:0 0 6px rgba(1,217,204,.06);' +
-    'color:rgba(255,255,255,.8);font-family:Ubuntu,Roboto,sans-serif;' +
-    'font-weight:700;transition:transform .1s,background .15s}' +
-    '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20)}' +
-    '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important}' +
+        /* ── RIGHT: SPLIT + FEED column (positioned by JS) ── */
+        '#lm-mc-r{position:fixed;z-index:100000;' +
+        'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+        'display:flex;flex-direction:column;align-items:center;gap:10px}' +
 
-    /* ── RIGHT: SPLIT + FEED column (positioned by JS) ── */
-    '#lm-mc-r{position:fixed;z-index:100000;' +
-    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:column;align-items:center;gap:10px}' +
+        /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
+        '#lm-mc-sm{position:fixed;z-index:100000;' +
+        'pointer-events:none;user-select:none;-webkit-user-select:none;' +
+        'display:flex;flex-direction:row;align-items:center;gap:6px}' +
 
-    /* ── SMALL ROW: 4× + 16× (positioned by JS above minimap) ── */
-    '#lm-mc-sm{position:fixed;z-index:100000;' +
-    'pointer-events:none;user-select:none;-webkit-user-select:none;' +
-    'display:flex;flex-direction:row;align-items:center;gap:6px}' +
+        /* ── Shared button base (clean, subtle) ── */
+        '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
+        'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
+        'background:rgba(0,36,62,.55);border:2px solid rgba(1,217,204,.25);' +
+        'box-shadow:0 0 8px rgba(1,217,204,.08);' +
+        'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' +
+        'transition:transform .1s,background .15s,border-color .15s,box-shadow .15s;' +
+        'color:rgba(255,255,255,.85);font-family:Ubuntu,Roboto,sans-serif;' +
+        'font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4)}' +
 
-    /* ── Shared button base (clean, subtle) ── */
-    '.lm-b{pointer-events:auto;touch-action:none;cursor:pointer;' +
-    'display:flex;align-items:center;justify-content:center;border-radius:50%;' +
-    'background:rgba(0,36,62,.55);border:2px solid rgba(1,217,204,.25);' +
-    'box-shadow:0 0 8px rgba(1,217,204,.08);' +
-    'backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);' +
-    'transition:transform .1s,background .15s,border-color .15s,box-shadow .15s;' +
-    'color:rgba(255,255,255,.85);font-family:Ubuntu,Roboto,sans-serif;' +
-    'font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.4)}' +
+        '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.25);' +
+        'border-color:rgba(1,217,204,.65);box-shadow:0 0 14px rgba(1,217,204,.25)}' +
 
-    '.lm-b.p{transform:scale(.88);background:rgba(1,217,204,.25);' +
-    'border-color:rgba(1,217,204,.65);box-shadow:0 0 14px rgba(1,217,204,.25)}' +
+        /* action buttons: BIG, thumb-friendly */
+        '.lm-a{width:clamp(72px,20vmin,100px);height:clamp(72px,20vmin,100px)}' +
 
-    /* action buttons: BIG, thumb-friendly */
-    '.lm-a{width:clamp(72px,20vmin,100px);height:clamp(72px,20vmin,100px)}' +
+        '.lm-u{width:clamp(48px,13vmin,60px);height:clamp(48px,13vmin,60px);font-size:20px;' +
+        'background:rgba(0,47,82,.45);border-color:rgba(1,140,246,.25);' +
+        'box-shadow:0 0 6px rgba(1,140,246,.08)}' +
+        '.lm-u.p{background:rgba(1,140,246,.20);border-color:rgba(1,140,246,.60)}' +
 
-    '.lm-u{width:clamp(48px,13vmin,60px);height:clamp(48px,13vmin,60px);font-size:20px;' +
-    'background:rgba(0,47,82,.45);border-color:rgba(1,140,246,.25);' +
-    'box-shadow:0 0 6px rgba(1,140,246,.08)}' +
-    '.lm-u.p{background:rgba(1,140,246,.20);border-color:rgba(1,140,246,.60)}' +
+        '.lm-bi{display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}' +
+        '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
+        '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.55;letter-spacing:1.2px;text-transform:uppercase}' +
 
-    '.lm-bi{display:flex;flex-direction:column;align-items:center;gap:1px;pointer-events:none}' +
-    '.lm-bi .i{font-size:clamp(22px,6vmin,30px);line-height:1}' +
-    '.lm-bi .l{font-size:clamp(8px,2.2vmin,11px);opacity:.55;letter-spacing:1.2px;text-transform:uppercase}' +
+        '.lm-s{width:clamp(40px,10vmin,50px);height:clamp(40px,10vmin,50px);font-size:13px;' +
+        'background:rgba(0,47,82,.50);border-color:rgba(141,95,230,.35);' +
+        'box-shadow:0 0 6px rgba(141,95,230,.10)}' +
+        '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
 
-    '.lm-s{width:clamp(40px,10vmin,50px);height:clamp(40px,10vmin,50px);font-size:13px;' +
-    'background:rgba(0,47,82,.50);border-color:rgba(141,95,230,.35);' +
-    'box-shadow:0 0 6px rgba(141,95,230,.10)}' +
-    '.lm-s.p{background:rgba(141,95,230,.25);border-color:rgba(141,95,230,.75)}' +
+        /* toggle-active glow for autoplay / pause */
+        '.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important;' +
+        'box-shadow:0 0 8px rgba(1,217,204,.25)!important}' +
 
-    /* toggle-active glow for autoplay / pause */
-    '.lm-active{background:rgba(1,217,204,.18)!important;border-color:rgba(1,217,204,.55)!important;' +
-    'box-shadow:0 0 8px rgba(1,217,204,.25)!important}' +
+        '.lm-r{display:flex;gap:6px;pointer-events:none}' +
 
-    '.lm-r{display:flex;gap:6px;pointer-events:none}' +
+        /* ── Settings panel ── */
+        '#lm-sp{background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
+        'border-radius:12px;padding:14px 16px;width:200px;' +
+        'max-height:50vh;overflow-y:auto;' +
+        'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
+        'pointer-events:auto;user-select:none;-webkit-user-select:none;' +
+        'display:none;flex-direction:column;gap:10px}' +
+        '#lm-sp.on{display:flex}' +
+        '#lm-sp label{color:rgba(255,255,255,.75);font:600 11px/1.2 Ubuntu,Roboto,sans-serif;' +
+        'letter-spacing:.5px;text-transform:uppercase;display:flex;' +
+        'justify-content:space-between;align-items:center}' +
+        '#lm-sp label span{color:#01d9cc;font-weight:700}' +
+        '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
+        'background:rgba(1,217,204,.25);border-radius:2px;outline:none;margin-top:4px}' +
+        '#lm-sp input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;' +
+        'width:18px;height:18px;border-radius:50%;background:#01d9cc;cursor:pointer;' +
+        'box-shadow:0 0 6px rgba(1,217,204,.4)}' +
 
-    /* ── Settings panel ── */
-    '#lm-sp{background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.35);' +
-    'border-radius:12px;padding:14px 16px;width:200px;' +
-    'max-height:50vh;overflow-y:auto;' +
-    'backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);' +
-    'pointer-events:auto;user-select:none;-webkit-user-select:none;' +
-    'display:none;flex-direction:column;gap:10px}' +
-    '#lm-sp.on{display:flex}' +
-    '#lm-sp label{color:rgba(255,255,255,.75);font:600 11px/1.2 Ubuntu,Roboto,sans-serif;' +
-    'letter-spacing:.5px;text-transform:uppercase;display:flex;' +
-    'justify-content:space-between;align-items:center}' +
-    '#lm-sp label span{color:#01d9cc;font-weight:700}' +
-    '#lm-sp input[type=range]{-webkit-appearance:none;width:100%;height:4px;' +
-    'background:rgba(1,217,204,.25);border-radius:2px;outline:none;margin-top:4px}' +
-    '#lm-sp input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;' +
-    'width:18px;height:18px;border-radius:50%;background:#01d9cc;cursor:pointer;' +
-    'box-shadow:0 0 6px rgba(1,217,204,.4)}' +
+        '.lm-jo{width:120px;height:120px;border-radius:50%;' +
+        'background:rgba(0,36,62,.18);border:2px solid rgba(1,217,204,.22);' +
+        'position:fixed;display:none;z-index:99998;transform:translate(-50%,-50%);pointer-events:none}' +
 
-    '.lm-jo{width:120px;height:120px;border-radius:50%;' +
-    'background:rgba(0,36,62,.18);border:2px solid rgba(1,217,204,.22);' +
-    'position:fixed;display:none;z-index:99998;transform:translate(-50%,-50%);pointer-events:none}' +
+        '.lm-ji{width:50px;height:50px;border-radius:50%;' +
+        'background:radial-gradient(circle,rgba(1,217,204,.28) 0%,rgba(1,217,204,.06) 100%);' +
+        'border:2px solid rgba(1,217,204,.45);box-shadow:0 0 8px rgba(1,217,204,.18);' +
+        'position:fixed;display:none;z-index:99999;transform:translate(-50%,-50%);pointer-events:none}' +
 
-    '.lm-ji{width:50px;height:50px;border-radius:50%;' +
-    'background:radial-gradient(circle,rgba(1,217,204,.28) 0%,rgba(1,217,204,.06) 100%);' +
-    'border:2px solid rgba(1,217,204,.45);box-shadow:0 0 8px rgba(1,217,204,.18);' +
-    'position:fixed;display:none;z-index:99999;transform:translate(-50%,-50%);pointer-events:none}' +
+        '.lm-z{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+        'background:rgba(0,36,62,.82);border:1px solid rgba(1,217,204,.45);' +
+        'color:#01d9cc;font:700 14px/1 Ubuntu,Roboto,sans-serif;' +
+        'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
+        'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-    '.lm-z{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
-    'background:rgba(0,36,62,.82);border:1px solid rgba(1,217,204,.45);' +
-    'color:#01d9cc;font:700 14px/1 Ubuntu,Roboto,sans-serif;' +
-    'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
-    'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
+        '#lm-cb{position:fixed;bottom:0;left:0;right:0;z-index:100002;' +
+        'display:none;background:rgba(0,36,62,.92);' +
+        'border-top:2px solid rgba(1,217,204,.45);' +
+        'padding:8px 14px;text-align:right;backdrop-filter:blur(6px)}' +
+        '#lm-cb button{background:#01d9cc;color:#00243e;border:none;border-radius:6px;' +
+        'padding:10px 32px;font:700 15px/1 Ubuntu,Roboto,sans-serif;' +
+        'text-transform:uppercase;letter-spacing:1px;cursor:pointer}' +
+        '#lm-cb button:active{opacity:.8}' +
 
+        /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
+        '#message{font-size:16px!important}' +
 
+        /* hide target panel on mobile — overlaps with touch buttons */
+        '#target-panel-hud,#target-hud{display:none!important}' +
 
-    /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
-    '#message{font-size:16px!important}' +
+        /* GPU acceleration for smooth rendering on mobile */
+        'canvas,#minimap-hud,#leaderboard-hud,#top5-hud,#stats-hud{will-change:transform}' +
 
-    /* hide target panel on mobile — overlaps with touch buttons */
-    '#target-panel-hud,#target-hud{display:none!important}' +
+        /* smaller HUD text on mobile */
+        '#leaderboard-hud{font-size:85%!important}' +
+        '#leaderboard-hud h5{font-size:16px!important}' +
+        '#leaderboard-positions{font-size:14px!important}' +
+        '#top5-hud{font-size:85%!important}' +
+        '#top5-pos{font-size:13px!important}' +
 
-    /* GPU acceleration for smooth rendering on mobile */
-    'canvas,#minimap-hud,#leaderboard-hud,#top5-hud,#stats-hud{will-change:transform}' +
+        /* HUD fade transition */
+        '#leaderboard-hud,#top5-hud,#stats-hud,#time-hud{transition:opacity .4s ease}' +
 
-    /* smaller HUD text on mobile */
-    '#leaderboard-hud{font-size:85%!important}' +
-    '#leaderboard-hud h5{font-size:16px!important}' +
-    '#leaderboard-positions{font-size:14px!important}' +
-    '#top5-hud{font-size:85%!important}' +
-    '#top5-pos{font-size:13px!important}' +
+        /* minimap tap-to-expand transition */
+        '#minimap-hud{transition:transform .25s ease!important}' +
 
-    /* HUD fade transition */
-    '#leaderboard-hud,#top5-hud,#stats-hud,#time-hud{transition:opacity .4s ease}' +
+        /* portrait orientation prompt */
+        '#lm-orient-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+        'background:rgba(0,36,62,.95);border:2px solid rgba(1,217,204,.5);' +
+        'color:#01d9cc;font:600 16px/1.6 Ubuntu,Roboto,sans-serif;' +
+        'padding:20px 28px;border-radius:16px;z-index:100004;text-align:center;' +
+        'opacity:0;transition:opacity .5s;pointer-events:none}' +
+        '#lm-orient-toast.on{opacity:1}' +
 
-    /* minimap tap-to-expand transition */
-    '#minimap-hud{transition:transform .25s ease!important}' +
+        /* ── Persistent portrait overlay (blocks gameplay in portrait) ── */
+        '#lm-portrait-ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200000;' +
+        'background:rgba(0,20,40,.92);display:none;align-items:center;justify-content:center;' +
+        'flex-direction:column;gap:16px;color:#01d9cc;font:600 18px/1.5 Ubuntu,Roboto,sans-serif;' +
+        'text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}' +
+        '#lm-portrait-ov.on{display:flex}' +
+        '#lm-portrait-ov .icon{font-size:60px;animation:lm-rotate 2s ease-in-out infinite}' +
+        '@keyframes lm-rotate{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}' +
 
-    /* portrait orientation prompt */
-    '#lm-orient-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
-    'background:rgba(0,36,62,.95);border:2px solid rgba(1,217,204,.5);' +
-    'color:#01d9cc;font:600 16px/1.6 Ubuntu,Roboto,sans-serif;' +
-    'padding:20px 28px;border-radius:16px;z-index:100004;text-align:center;' +
-    'opacity:0;transition:opacity .5s;pointer-events:none}' +
-    '#lm-orient-toast.on{opacity:1}' +
+        /* ── helloContainer: only overflow guard, JS handles scaling ── */
+        '#helloContainer{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
+        '#overlays{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
 
-    /* ── Persistent portrait overlay (blocks gameplay in portrait) ── */
-    '#lm-portrait-ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200000;' +
-    'background:rgba(0,20,40,.92);display:none;align-items:center;justify-content:center;' +
-    'flex-direction:column;gap:16px;color:#01d9cc;font:600 18px/1.5 Ubuntu,Roboto,sans-serif;' +
-    'text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}' +
-    '#lm-portrait-ov.on{display:flex}' +
-    '#lm-portrait-ov .icon{font-size:60px;animation:lm-rotate 2s ease-in-out infinite}' +
-    '@keyframes lm-rotate{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}' +
+        /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
+        '#minimap-hud{position:fixed!important;bottom:4px!important;right:4px!important;' +
+        'transform:scale(0.5)!important;transform-origin:bottom right!important;' +
+        'pointer-events:none!important}' +
+        '#leaderboard-hud{position:fixed!important;top:4px!important;right:4px!important;' +
+        'transform:scale(0.75)!important;transform-origin:top right!important;' +
+        'pointer-events:none!important}' +
+        '#top5-hud{position:fixed!important;top:30px!important;left:4px!important;' +
+        'transform:scale(0.75)!important;transform-origin:top left!important;' +
+        'pointer-events:none!important}' +
+        '#stats-hud{position:fixed!important;left:4px!important;' +
+        'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
+        'display:none!important}' +
+        '#menu-footer{display:none!important}' +
 
-    /* ── helloContainer: only overflow guard, JS handles scaling ── */
-    '#helloContainer{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
-    '#overlays{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}' +
+        /* ── Compact mobile stats overlay ── */
+        '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
+        'font:600 12px/1 Ubuntu,Roboto,sans-serif;color:rgba(255,255,255,.85);' +
+        'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
+        'user-select:none;-webkit-user-select:none;cursor:pointer}' +
+        '#time-hud{position:fixed!important;right:4px!important;' +
+        'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
+        '#chat-box,#messages{position:fixed!important;left:4px!important}' +
+        '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
+        '#toast-container{position:fixed!important}' +
 
-    /* ── Lock HUD elements into fixed positions (prevent displacement) ── */
-    '#minimap-hud{position:fixed!important;bottom:4px!important;right:4px!important;' +
-    'transform:scale(0.5)!important;transform-origin:bottom right!important;' +
-    'pointer-events:none!important}' +
-    '#leaderboard-hud{position:fixed!important;top:4px!important;right:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:top right!important;' +
-    'pointer-events:none!important}' +
-    '#top5-hud{position:fixed!important;top:30px!important;left:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:top left!important;' +
-    'pointer-events:none!important}' +
-    '#stats-hud{position:fixed!important;left:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:bottom left!important;' +
-    'display:none!important}' +
-    '#menu-footer{display:none!important}' +
-    '#LMPromoLegendFFA,#LMPromo,.modal-backdrop,#leaderboard-menu{display:none!important}' +
-
-
-    /* ── Compact mobile stats overlay ── */
-    '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
-    'font:600 12px/1 Ubuntu,Roboto,sans-serif;color:rgba(255,255,255,.85);' +
-    'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
-    'user-select:none;-webkit-user-select:none;cursor:pointer}' +
-    '#time-hud{position:fixed!important;right:4px!important;' +
-    'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
-    '#chat-box,#messages{position:fixed!important;left:4px!important}' +
-    '#chat-box{transform:scale(0.5)!important;transform-origin:top left!important}' +
-    '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
-    '#toast-container{position:fixed!important;left:4px!important;bottom:80px!important;' +
-    'top:auto!important;right:auto!important;' +
-    'transform:scale(0.5)!important;transform-origin:bottom left!important;' +
-    'max-width:300px!important}' +
-
-    /* fullscreen prompt toast */
-    '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
-    'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.45);' +
-    'color:#01d9cc;font:600 14px/1.4 Ubuntu,Roboto,sans-serif;' +
-    'padding:10px 20px;border-radius:24px;z-index:100003;' +
-    'opacity:0;transition:opacity .4s;pointer-events:none;text-align:center}' +
-    '#lm-fs-toast.on{opacity:1}';
+        /* fullscreen prompt toast */
+        '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
+        'background:rgba(0,36,62,.92);border:1px solid rgba(1,217,204,.45);' +
+        'color:#01d9cc;font:600 14px/1.4 Ubuntu,Roboto,sans-serif;' +
+        'padding:10px 20px;border-radius:24px;z-index:100003;' +
+        'opacity:0;transition:opacity .4s;pointer-events:none;text-align:center}' +
+        '#lm-fs-toast.on{opacity:1}';
 
     document.head.appendChild(css);
 
@@ -253,13 +248,8 @@
             vp.setAttribute('content',
                 'width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no');
         }
-        // Firefox/Safari: prevent native pinch-zoom gesture at document level
-        document.addEventListener('touchmove', function (e) {
-            if (e.touches.length >= 2) e.preventDefault();
-        }, {passive: false});
-        document.addEventListener('gesturestart', function (e) {
-            e.preventDefault();
-        }, {passive: false});
+        // Safari/iOS: prevent native pinch-zoom gesture
+
         /* ── Scale #helloContainer to fit viewport (preserves internal layout) ── */
         (function fitHelloContainer() {
             function fit() {
@@ -289,8 +279,18 @@
         (function mobileVisuals() {
             function apply() {
                 if (typeof defaultSettings !== 'undefined') {
-                    /* Grid: keep user's color unchanged (DPR scale already
-                       makes lines thinner, no need to also dim alpha) */
+                    // Grid: keep user's color, reduce opacity proportionally (×0.3)
+                    var gc = defaultSettings.gridColor || '#00243e';
+                    if (gc.indexOf('rgba') === 0) {
+                        // Extract rgba components, multiply alpha by 0.3
+                        var parts = gc.replace(/rgba?\(/, '').replace(')', '').split(',');
+                        var a = parseFloat(parts[3] || 1) * 0.3;
+                        defaultSettings.gridColor = 'rgba(' + parts[0].trim() + ',' +
+                            parts[1].trim() + ',' + parts[2].trim() + ',' + a.toFixed(2) + ')';
+                    } else {
+                        // Hex or named color — wrap in rgba with low alpha
+                        defaultSettings.gridColor = 'rgba(0,36,62,.15)';
+                    }
 
                     // FoodSize: proportional (60% of user's setting, min 1)
                     var userFood = defaultSettings.foodSize || 5;
@@ -306,9 +306,9 @@
             setTimeout(apply, 6000);
         })();
 
-        document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, {passive:false});
-        document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, {passive:false});
-        document.addEventListener('gestureend', function (e) { e.preventDefault(); }, {passive:false});
+        document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
+        document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
+        document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  DEVICE TIERING
@@ -332,24 +332,39 @@
                 var el = document.documentElement;
                 var rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
                 if (rfs && !document.fullscreenElement && !document.webkitFullscreenElement) {
-                    rfs.call(el, {navigationUI: 'auto'}).then(function () {
-                        try { screen.orientation.lock('landscape').catch(function () {}); } catch(e) {}
-                    }).catch(function () {});
+                    rfs.call(el).then(function () {
+                        try { screen.orientation.lock('landscape').catch(function () { }); } catch (e) { }
+                    }).catch(function () { });
                 }
-            } catch(e) {}
+            } catch (e) { }
         }
 
-        /* ── Auto-fullscreen on Play/Spectate button tap ── */
-        document.addEventListener('click', function (e) {
-            var t = e.target;
-            // Walk up to 3 parents to find the button
-            for (var i = 0; i < 4 && t && t !== document; i++, t = t.parentElement) {
-                if (t.matches && t.matches('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate, .btn-spectate-shortcut')) {
+        /* ── Auto-fullscreen on Play button tap ── */
+        (function hookPlayButtons() {
+            function hook(btn) {
+                if (!btn || btn._lmHooked) return;
+                btn._lmHooked = true;
+                btn.addEventListener('click', function () {
                     goFullscreenLandscape();
-                    return;
-                }
+                }, { passive: true });
+                btn.addEventListener('touchstart', function () {
+                    goFullscreenLandscape();
+                }, { passive: true });
             }
-        }, true); // capture phase — fires before game handlers
+            function scan() {
+                // Hook all Play-type buttons
+                var selectors = ['.btn-play', '.btn-play-guest', '.btn-login-play',
+                    '#btn-play', '#btn-play-guest', '#btn-login-play'];
+                selectors.forEach(function (s) {
+                    var btns = document.querySelectorAll(s);
+                    for (var i = 0; i < btns.length; i++) hook(btns[i]);
+                });
+            }
+            scan();
+            // Re-scan when DOM changes (in case buttons load late)
+            setTimeout(scan, 2000);
+            setTimeout(scan, 5000);
+        })();
 
         /* ── Persistent portrait overlay (replaces one-time toast) ── */
         var portOv = mk('div'); portOv.id = 'lm-portrait-ov';
@@ -378,9 +393,9 @@
                 if ('wakeLock' in navigator) {
                     navigator.wakeLock.request('screen').then(function (wl) {
                         wakeLock = wl;
-                    }).catch(function () {});
+                    }).catch(function () { });
                 }
-            } catch(e) {}
+            } catch (e) { }
         }
         requestWakeLock();
         // Re-acquire on tab becoming visible again
@@ -402,18 +417,18 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = {jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5};
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5 };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
                 if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = saved.jsSensitivity;
-                if (saved.btnOpacity   !== undefined) prefs.btnOpacity   = saved.btnOpacity;
-                if (saved.btnScale     !== undefined) prefs.btnScale     = saved.btnScale;
-                if (saved.hudFade      !== undefined) prefs.hudFade      = saved.hudFade;
+                if (saved.btnOpacity !== undefined) prefs.btnOpacity = saved.btnOpacity;
+                if (saved.btnScale !== undefined) prefs.btnScale = saved.btnScale;
+                if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
             }
-        } catch(e) {}
+        } catch (e) { }
         function savePrefs() {
-            try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch(e) {}
+            try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) { }
         }
 
         /* ── LEFT side: ☰ menu + hidden drawer ── */
@@ -429,7 +444,7 @@
             return b;
         }
         var bChat = mkd('💬');
-        var bAI   = mkd('►');
+        var bAI = mkd('►');
         var bPaus = mkd('❚❚');
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
@@ -445,30 +460,24 @@
         sp.innerHTML =
             '<label>Joystick <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
             '<input type="range" id="lm-js" min="100" max="600" step="25" value="' + prefs.jsSensitivity + '">' +
-            '<label>Opacity <span id="lm-op-v">' + Math.round(prefs.btnOpacity*100) + '%</span></label>' +
-            '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity*100) + '">' +
-            '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale*100) + '%</span></label>' +
-            '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale*100) + '">' +
-            '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade*100) + '%</span></label>' +
-            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade*100) + '">';
+            '<label>Opacity <span id="lm-op-v">' + Math.round(prefs.btnOpacity * 100) + '%</span></label>' +
+            '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
+            '<label>Btn Size <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
+            '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
+            '<label>HUD Fade <span id="lm-hf-v">' + Math.round(prefs.hudFade * 100) + '%</span></label>' +
+            '<input type="range" id="lm-hf" min="20" max="100" step="5" value="' + Math.round(prefs.hudFade * 100) + '">';
         drawer.appendChild(sp);
 
         function applyPrefs() {
             rootL.style.opacity = prefs.btnOpacity;
             rootR.style.opacity = prefs.btnOpacity;
             smallR.style.opacity = prefs.btnOpacity;
-            if (prefs.btnScale !== 1) {
-                rootL.style.transform = 'scale(' + prefs.btnScale + ')';
-                rootL.style.transformOrigin = 'bottom left';
-                rootR.style.transform = 'scale(' + prefs.btnScale + ')';
-                rootR.style.transformOrigin = 'bottom right';
-                smallR.style.transform = 'scale(' + prefs.btnScale + ')';
-                smallR.style.transformOrigin = 'bottom right';
-            } else {
-                rootL.style.transform = 'none';
-                rootR.style.transform = 'none';
-                smallR.style.transform = 'none';
-            }
+            rootL.style.transform = 'scale(' + prefs.btnScale + ')';
+            rootL.style.transformOrigin = 'bottom left';
+            rootR.style.transform = 'scale(' + prefs.btnScale + ')';
+            rootR.style.transformOrigin = 'bottom right';
+            smallR.style.transform = 'scale(' + prefs.btnScale + ')';
+            smallR.style.transformOrigin = 'bottom right';
         }
 
         /* slider handlers */
@@ -498,7 +507,7 @@
         document.body.appendChild(rootR);
 
         var bSplit = mkb('⚔', 'SPLIT', false);
-        var bFeed  = mkb('⬤', 'FEED', false);
+        var bFeed = mkb('⬤', 'FEED', false);
         rootR.appendChild(bSplit);
         rootR.appendChild(bFeed);
 
@@ -507,7 +516,7 @@
         document.body.appendChild(smallR);
 
         var bDbl = mks('4×');
-        var b16  = mks('16×');
+        var b16 = mks('16×');
         smallR.appendChild(bDbl);
         smallR.appendChild(b16);
 
@@ -517,16 +526,18 @@
         var zP = mk('div'); zP.className = 'lm-z'; document.body.appendChild(zP);
         var zT = null;
 
-
+        var cBar = mk('div'); cBar.id = 'lm-cb';
+        cBar.innerHTML = '';
+        document.body.appendChild(cBar);
 
         /* apply initial prefs */
         applyPrefs();
 
         /* ── Press effects ── */
         [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus].forEach(function (b) {
-            b.addEventListener('touchstart',  function () { b.classList.add('p'); },    {passive:true});
-            b.addEventListener('touchend',    function () { b.classList.remove('p'); }, {passive:true});
-            b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, {passive:true});
+            b.addEventListener('touchstart', function () { b.classList.add('p'); }, { passive: true });
+            b.addEventListener('touchend', function () { b.classList.remove('p'); }, { passive: true });
+            b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, { passive: true });
         });
 
         /* ═══════════════════════════════════════════════════════
@@ -545,14 +556,11 @@
                     }
                 } else {
                     hc.style.display = 'none';
-                    goFullscreenLandscape(); // user gesture — fullscreen works here
                 }
-                // Re-anchor buttons after helloContainer toggle
-                setTimeout(function () { applyPrefs(); }, 100);
             } else {
                 emitKey(27); // fallback: ESC
             }
-        }, {passive:false});
+        }, { passive: false });
 
         /* (fullscreen toggled via goFullscreenLandscape on Play button tap) */
 
@@ -574,7 +582,7 @@
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             debounced(function () { emitKey(32); });
-        }, {passive:false});
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  DOUBLE SPLIT — calls application.doubleSplit()
@@ -585,7 +593,7 @@
                 if (typeof application !== 'undefined' && application.doubleSplit)
                     application.doubleSplit();
             });
-        }, {passive:false});
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  SPLIT 16 — calls application.split16()
@@ -596,7 +604,7 @@
                 if (typeof application !== 'undefined' && application.split16)
                     application.split16();
             });
-        }, {passive:false});
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  AUTOPLAY — calls application.setAutoPlay()
@@ -607,7 +615,7 @@
                 application.setAutoPlay();
                 bAI.classList.toggle('lm-active');
             }
-        }, {passive:false});
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -618,7 +626,7 @@
                 application.setPause();
                 bPaus.classList.toggle('lm-active');
             }
-        }, {passive:false});
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  FEED — W (keyCode 87), hold to repeat
@@ -628,9 +636,9 @@
             e.preventDefault(); e.stopPropagation();
             emitKey(87);
             feedIv = setInterval(function () { emitKey(87); }, 50);
-        }, {passive:false});
-        bFeed.addEventListener('touchend',    function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
-        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, {passive:true});
+        }, { passive: false });
+        bFeed.addEventListener('touchend', function () { clearInterval(feedIv); feedIv = null; }, { passive: true });
+        bFeed.addEventListener('touchcancel', function () { clearInterval(feedIv); feedIv = null; }, { passive: true });
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
 
@@ -638,16 +646,14 @@
          *  CHAT — Enter (keyCode 13)
          * ═══════════════════════════════════════════════════════ */
         var chatOn = false;
-        var chatOpenedAt = 0;
 
         bChat.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             chatOn ? chatClose() : chatOpen();
-        }, {passive:false});
+        }, { passive: false });
 
         function chatOpen() {
             chatOn = true;
-            chatOpenedAt = Date.now();
             // Open chat box — dispatch Enter on document to open game's chat
             emitKey(13);
             setTimeout(function () {
@@ -662,13 +668,11 @@
                         }
                     });
                 }
-
+                cBar.style.display = 'block';
             }, 120);
         }
 
         function chatClose() {
-            // Don't close within 500ms of opening (Firefox keyboard causes spurious events)
-            if (Date.now() - chatOpenedAt < 500) return;
             var inp = document.getElementById('message');
             if (inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
@@ -681,13 +685,7 @@
             }
             if (inp) inp.blur();
             chatOn = false;
-            // Only close chat UI if it's still open (game may have auto-closed)
-            setTimeout(function () {
-                var msgBox = document.getElementById('message-box');
-                if (msgBox && msgBox.offsetHeight > 0 && msgBox.style.display !== 'none') {
-                    emitKey(13);
-                }
-            }, 150);
+            cBar.style.display = 'none';
         }
 
         // Tap canvas while chatting → send & close
@@ -696,7 +694,7 @@
                 e.preventDefault();
                 chatClose();
             }
-        }, {passive:false});
+        }, { passive: false });
 
         /* (fullscreen toggle handled by bFull listener above) */
 
@@ -710,11 +708,11 @@
             if (chatOn || e.touches.length !== 1) return;
             var t = e.changedTouches[0];
             if (t.clientX < window.innerWidth * 0.5) {
-                swStart = {x: t.clientX, y: t.clientY, id: t.identifier};
+                swStart = { x: t.clientX, y: t.clientY, id: t.identifier };
             } else {
                 swStart = null;
             }
-        }, {passive:true});
+        }, { passive: true });
 
         canvas.addEventListener('touchend', function (e) {
             if (!swStart) return;
@@ -735,12 +733,12 @@
                 swStart = null;
                 break;
             }
-        }, {passive:true});
+        }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
          *  JOYSTICK — direction persists after finger lift
          * ═══════════════════════════════════════════════════════ */
-        var org = {x:0, y:0}; // joystick origin
+        var org = { x: 0, y: 0 }; // joystick origin
         var jId = null;
         var asp = window.innerWidth / window.innerHeight;
         // JS sensitivity now comes from prefs (live-updated by slider)
@@ -758,7 +756,7 @@
             mouseAt(t.clientX, t.clientY);
             jShow(org.x, org.y, org.x, org.y);
             swStart = null; // cancel any swipe tracking when joystick starts
-        }, {passive:true});
+        }, { passive: true });
 
         canvas.addEventListener('touchend', function (e) {
             for (var i = 0; i < e.changedTouches.length; i++) {
@@ -769,12 +767,12 @@
                     break;
                 }
             }
-        }, {passive:true});
+        }, { passive: true });
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
             jHide();
-        }, {passive:true});
+        }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
             if (e.touches.length >= 2) return;
@@ -782,26 +780,26 @@
             if (!t) return;
 
             var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
-            var rawD = Math.sqrt(rx0*rx0 + ry0*ry0);
+            var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
             // dead zone: ignore tiny movements to prevent accidental direction change
             if (rawD < 8) return;
 
             var dx = rx0 * prefs.jsSensitivity;
             var dy = ry0 * prefs.jsSensitivity;
             // Apply aspect ratio correction (landscape screens need wider X moves)
-            var cx = window.innerWidth  / 2 + dx / asp;
+            var cx = window.innerWidth / 2 + dx / asp;
             var cy = window.innerHeight / 2 + dy;
             mouseAt(cx, cy);
 
             var rx = t.clientX - org.x, ry = t.clientY - org.y;
-            var d = Math.sqrt(rx*rx + ry*ry);
+            var d = Math.sqrt(rx * rx + ry * ry);
             if (d > JR) {
                 var a = Math.atan2(ry, rx);
-                jShow(org.x, org.y, org.x + Math.cos(a)*JR, org.y + Math.sin(a)*JR);
+                jShow(org.x, org.y, org.x + Math.cos(a) * JR, org.y + Math.sin(a) * JR);
             } else {
                 jShow(org.x, org.y, t.clientX, t.clientY);
             }
-        }, {passive:true});
+        }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
          *  PINCH-TO-ZOOM  (dual mode)
@@ -812,11 +810,11 @@
         var pDist = 0, pOn = false;
 
         function isMenuVisible() {
-            var hc = document.getElementById('helloContainer');
-            if (hc && hc.style.display !== 'none' && hc.offsetWidth > 0) return true;
             var ov = document.getElementById('overlays');
-            if (!ov || ov.style.display === 'none') return false;
-            return ov.offsetWidth > 0;
+            if (!ov) return false;
+            if (ov.style.display === 'none') return false;
+            // overlays is hidden via .stop().hide() when in-game
+            return ov.offsetParent !== null || ov.offsetHeight > 0;
         }
 
         canvas.addEventListener('touchstart', function (e) {
@@ -825,40 +823,7 @@
                 pDist = dist(e.touches[0], e.touches[1]);
                 jHide(); jId = null;
             }
-        }, {passive:false});
-
-        /* Also listen on document for pinch when menu covers canvas (Firefox) */
-        var docPDist = 0, docPOn = false;
-        document.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) {
-                docPDist = dist(e.touches[0], e.touches[1]);
-                docPOn = true;
-            }
-        }, {passive:true});
-        document.addEventListener('touchmove', function (e) {
-            if (!(e.touches.length === 2 && docPOn)) return;
-            if (!isMenuVisible()) return; // only for HUD scale when menu visible
-            e.preventDefault();
-            var nd = dist(e.touches[0], e.touches[1]);
-            var delta = nd - docPDist;
-            if (Math.abs(delta) > 4) {
-                var step = delta * 0.003;
-                if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
-                    var ns = Math.min(1, Math.max(0.3, defaultSettings.hudScale + step));
-                    defaultSettings.hudScale = ns;
-                    if (typeof ogario !== 'undefined') ogario.hudScale = ns;
-                    if (typeof ogarhusettings === 'function') ogarhusettings();
-                    zP.textContent = '\ud83d\udd0d HUD ' + Math.round(ns * 100) + '%';
-                    zP.classList.add('on');
-                    clearTimeout(zT);
-                    zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
-                }
-                docPDist = nd;
-            }
-        }, {passive:false});
-        document.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) { docPOn = false; docPDist = 0; }
-        }, {passive:true});
+        }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
             if (!(e.touches.length === 2 && pOn)) return;
@@ -889,17 +854,17 @@
                 clearTimeout(zT);
                 zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
             }
-        }, {passive:false});
+        }, { passive: false });
 
         canvas.addEventListener('touchend', function (e) {
             if (e.touches.length < 2) { pOn = false; pDist = 0; }
-        }, {passive:true});
+        }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
          *  HAPTIC FEEDBACK
          * ═══════════════════════════════════════════════════════ */
         function vibrate(pattern) {
-            try { if (navigator.vibrate) navigator.vibrate(pattern); } catch(e) {}
+            try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) { }
         }
 
         /* Death / losing — watch #stats becoming visible */
@@ -913,7 +878,7 @@
                     vibrate([100, 50, 100]); // double buzz — "ouch"
                 }
                 wasHidden = !isVisible;
-            }).observe(statsEl, {attributes: true, attributeFilter: ['style', 'class']});
+            }).observe(statsEl, { attributes: true, attributeFilter: ['style', 'class'] });
         })();
 
         /* New chat message — watch #messages for new children */
@@ -927,7 +892,7 @@
                         break;
                     }
                 }
-            }).observe(msgList, {childList: true});
+            }).observe(msgList, { childList: true });
         })();
 
         /* ═══════════════════════════════════════════════════════
@@ -942,10 +907,50 @@
                 e.stopPropagation();
                 expanded = !expanded;
                 mm.style.transform = expanded ? 'scale(1)' : 'scale(0.7)';
-            }, {passive:true});
+            }, { passive: true });
         })();
 
+        /* ═══════════════════════════════════════════════════════
+         *  HUD AUTO-FADE WHILE PLAYING
+         *  Fades leaderboard/teamboard/stats when touching canvas
+         *  Restores full opacity after 2.5s idle
+         * ═══════════════════════════════════════════════════════ */
+        (function () {
+            var hudEls = ['leaderboard-hud', 'top5-hud', 'stats-hud', 'time-hud'];
+            var els = [];
+            for (var i = 0; i < hudEls.length; i++) {
+                var el = document.getElementById(hudEls[i]);
+                if (el) els.push(el);
+            }
+            if (!els.length) return;
 
+            var fadeTimer = null;
+
+            function fadeHud() {
+                for (var i = 0; i < els.length; i++)
+                    els[i].style.opacity = prefs.hudFade;
+            }
+            function restoreHud() {
+                for (var i = 0; i < els.length; i++)
+                    els[i].style.opacity = '1';
+            }
+
+            canvas.addEventListener('touchstart', function () {
+                if (chatOn) return;
+                fadeHud();
+                clearTimeout(fadeTimer);
+            }, { passive: true });
+
+            canvas.addEventListener('touchend', function () {
+                clearTimeout(fadeTimer);
+                fadeTimer = setTimeout(restoreHud, 2500);
+            }, { passive: true });
+
+            canvas.addEventListener('touchcancel', function () {
+                clearTimeout(fadeTimer);
+                fadeTimer = setTimeout(restoreHud, 2500);
+            }, { passive: true });
+        })();
 
         /* ═══════════════════════════════════════════════════════
          *  HELPERS
@@ -986,19 +991,19 @@
                 ev = new KeyboardEvent(type, {
                     bubbles: true, cancelable: true, view: window
                 });
-            } catch(e) {
+            } catch (e) {
                 ev = document.createEvent('KeyboardEvent');
                 ev.initEvent(type, true, true);
             }
             // Force keyCode and which — this is the critical fix
-            Object.defineProperty(ev, 'keyCode', {get: function(){return kc;}});
-            Object.defineProperty(ev, 'which',   {get: function(){return kc;}});
-            Object.defineProperty(ev, 'key',     {get: function(){return kn(kc);}});
+            Object.defineProperty(ev, 'keyCode', { get: function () { return kc; } });
+            Object.defineProperty(ev, 'which', { get: function () { return kc; } });
+            Object.defineProperty(ev, 'key', { get: function () { return kn(kc); } });
             document.dispatchEvent(ev);
         }
 
         function kn(c) {
-            return c===13?'Enter':c===27?'Escape':c===32?' ':String.fromCharCode(c);
+            return c === 13 ? 'Enter' : c === 27 ? 'Escape' : c === 32 ? ' ' : String.fromCharCode(c);
         }
 
         function mouseAt(x, y) {
@@ -1008,40 +1013,33 @@
         }
 
         function wheel(t, dy, cx, cy) {
-            var o = {deltaY:dy, deltaMode:0, clientX:cx, clientY:cy, bubbles:true, cancelable:true};
+            var o = { deltaY: dy, deltaMode: 0, clientX: cx, clientY: cy, bubbles: true, cancelable: true };
             t.dispatchEvent(new WheelEvent('wheel', o));
             o.detail = dy > 0 ? 3 : -3;
             t.dispatchEvent(new WheelEvent('mousewheel', o));
-            // Firefox: game listens for DOMMouseScroll on document (ogario.v4.js:15358)
-            try {
-                var ff = new Event('DOMMouseScroll', {bubbles:true, cancelable:true});
-                ff.detail = dy > 0 ? -1 : 1; // flipped: spread=zoom in, pinch=zoom out
-                ff.axis = 2;
-                document.dispatchEvent(ff);
-            } catch(e) {}
         }
 
         function dist(a, b) {
-            var dx=a.clientX-b.clientX, dy=a.clientY-b.clientY;
-            return Math.sqrt(dx*dx+dy*dy);
+            var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
         }
 
         function tById(list, id) {
             if (id === null) return null;
-            for (var i=0; i<list.length; i++) if (list[i].identifier===id) return list[i];
+            for (var i = 0; i < list.length; i++) if (list[i].identifier === id) return list[i];
             return null;
         }
 
-        function jShow(ox,oy,ix,iy) {
-            jO.style.display='block'; jO.style.left=ox+'px'; jO.style.top=oy+'px';
-            jI.style.display='block'; jI.style.left=ix+'px'; jI.style.top=iy+'px';
+        function jShow(ox, oy, ix, iy) {
+            jO.style.display = 'block'; jO.style.left = ox + 'px'; jO.style.top = oy + 'px';
+            jI.style.display = 'block'; jI.style.left = ix + 'px'; jI.style.top = iy + 'px';
         }
-        function jHide() { jO.style.display='none'; jI.style.display='none'; }
+        function jHide() { jO.style.display = 'none'; jI.style.display = 'none'; }
 
-        document.addEventListener('contextmenu', function(e){e.preventDefault();});
-        document.body.addEventListener('touchmove', function(e){
-            if (e.target===canvas||e.target===document.body) e.preventDefault();
-        }, {passive:false});
+        document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+        document.body.addEventListener('touchmove', function (e) {
+            if (e.target === canvas || e.target === document.body) e.preventDefault();
+        }, { passive: false });
 
         console.log('%c LM Mobile v4.0 %c Touch controls loaded ',
             'background:linear-gradient(135deg,#01d9cc,#00243e);color:#fff;font-weight:bold;padding:4px 10px;border-radius:4px 0 0 4px;font-family:Ubuntu,sans-serif',
@@ -1055,26 +1053,43 @@
          * ═══════════════════════════════════════════════════════ */
         var _fadeTimer = null;
         rootL.style.transition = 'opacity .4s ease';
+
+        // Also fade leaderboard, teamboard, minimap during gameplay
+        var _hudEls = ['#leaderboard-hud', '#top5-hud', '#minimap-hud'];
+        _hudEls.forEach(function (sel) {
+            var el = document.querySelector(sel);
+            if (el) el.style.transition = 'opacity .4s ease';
+        });
+        function fadeHUD(opacity) {
+            _hudEls.forEach(function (sel) {
+                var el = document.querySelector(sel);
+                if (el) el.style.opacity = opacity;
+            });
+        }
+
         canvas.addEventListener('touchstart', function () {
             if (isMenuVisible()) return;
             rootL.style.opacity = '0.35';
+            fadeHUD('0.4');
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
+                fadeHUD('1');
             }, 3000);
-        }, {passive: true});
+        }, { passive: true });
         canvas.addEventListener('touchend', function () {
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
+                fadeHUD('1');
             }, 3000);
-        }, {passive: true});
+        }, { passive: true });
         // Any button tap instantly restores full opacity
         [bMenu, bChat, bAI, bPaus].forEach(function (b) {
             b.addEventListener('touchstart', function () {
                 rootL.style.opacity = prefs.btnOpacity;
                 if (_fadeTimer) clearTimeout(_fadeTimer);
-            }, {passive: true});
+            }, { passive: true });
         });
 
         /* ═══════════════════════════════════════════════════════
@@ -1101,7 +1116,7 @@
                     expanded = !expanded;
                     orig.style.display = expanded ? 'block' : 'none';
                 }
-            }, {passive: false});
+            }, { passive: false });
 
             setInterval(function () {
                 // Mass + cells
@@ -1183,8 +1198,8 @@
          *  TWA DETECTION (Google Play WebView)
          * ═══════════════════════════════════════════════════════ */
         var isTWA = (window.matchMedia('(display-mode: standalone)').matches ||
-                     window.matchMedia('(display-mode: fullscreen)').matches ||
-                     navigator.standalone === true);
+            window.matchMedia('(display-mode: fullscreen)').matches ||
+            navigator.standalone === true);
 
         /* ═══════════════════════════════════════════════════════
          *  FULLSCREEN ↔ MENU SYNC
@@ -1192,21 +1207,6 @@
          *  helloContainer visible → exit fullscreen (browser only)
          * ═══════════════════════════════════════════════════════ */
         var _prevMenuVisible = isMenuVisible();
-        function repinLeftButtons() {
-            rootL.style.left = '2px';
-            rootL.style.bottom = '2px';
-        }
-        /* Re-pin after ANY fullscreen change (viewport shifts) */
-        document.addEventListener('fullscreenchange', function () {
-            setTimeout(repinLeftButtons, 100);
-            setTimeout(repinLeftButtons, 300);
-            setTimeout(repinLeftButtons, 600);
-        });
-        document.addEventListener('webkitfullscreenchange', function () {
-            setTimeout(repinLeftButtons, 100);
-            setTimeout(repinLeftButtons, 300);
-            setTimeout(repinLeftButtons, 600);
-        });
         setInterval(function () {
             var nowVisible = isMenuVisible();
             if (nowVisible !== _prevMenuVisible) {
@@ -1217,7 +1217,7 @@
                     if ('wakeLock' in navigator) {
                         navigator.wakeLock.request('screen').then(function (wl) {
                             window._lmWakeLock = wl;
-                        }).catch(function () {});
+                        }).catch(function () { });
                     }
                 } else {
                     if (!isTWA) {
@@ -1226,17 +1226,14 @@
                             if (document.fullscreenElement || document.webkitFullscreenElement) {
                                 (document.exitFullscreen || document.webkitExitFullscreen).call(document);
                             }
-                        } catch(e) {}
+                        } catch (e) { }
                     }
                     // Release wake lock when not playing
                     if (window._lmWakeLock) {
-                        try { window._lmWakeLock.release(); } catch(e) {}
+                        try { window._lmWakeLock.release(); } catch (e) { }
                         window._lmWakeLock = null;
                     }
                 }
-                /* Always re-pin after menu toggle */
-                setTimeout(repinLeftButtons, 200);
-                setTimeout(repinLeftButtons, 500);
                 _prevMenuVisible = nowVisible;
             }
         }, 500);
@@ -1246,7 +1243,7 @@
             if (document.visibilityState === 'visible' && !isMenuVisible() && 'wakeLock' in navigator) {
                 navigator.wakeLock.request('screen').then(function (wl) {
                     window._lmWakeLock = wl;
-                }).catch(function () {});
+                }).catch(function () { });
             }
         });
 
@@ -1258,7 +1255,7 @@
             var minDim = Math.min(window.innerWidth, window.innerHeight);
             if (minDim >= 768) {
                 // Tablet: use gentler scaling
-                var huds = ['#leaderboard-hud','#top5-hud','#stats-hud','#time-hud'];
+                var huds = ['#leaderboard-hud', '#top5-hud', '#stats-hud', '#time-hud'];
                 huds.forEach(function (sel) {
                     var el = document.querySelector(sel);
                     if (el) el.style.transform = el.style.transform.replace('scale(0.75)', 'scale(0.9)');
@@ -1277,7 +1274,7 @@
             if (rootL.contains(e.target)) return;
             drawer.classList.remove('on');
             sp.classList.remove('on');
-        }, {passive: true});
+        }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
          *  KEYBOARD HANDLING (virtual keyboard shifts layout)
@@ -1286,7 +1283,12 @@
             window.visualViewport.addEventListener('resize', function () {
                 var vv = window.visualViewport;
                 var kbHeight = window.innerHeight - vv.height;
-
+                if (kbHeight > 100) {
+                    // Keyboard is open — shift chat bar above keyboard
+                    cBar.style.bottom = kbHeight + 'px';
+                } else {
+                    cBar.style.bottom = '';
+                }
             });
         }
 
