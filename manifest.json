@@ -1,19 +1,48 @@
 {
-  "name": "Expanding Land",
-  "short_name": "Expanding",
-  "description": "Play Expanding Land - the ultimate agar.io experience with Legend Mod",
-  "start_url": "/LMexpress/LMexpress.html",
+  "name": "Legend Mod - Expanding Land",
+  "short_name": "Legend Mod",
+  "description": "Play Expanding Land — the ultimate agar.io experience with Legend Mod. Mobile-optimized with touch controls.",
+  "start_url": "/play.html",
+  "scope": "/",
   "display": "fullscreen",
   "orientation": "landscape",
   "theme_color": "#00243e",
   "background_color": "#00243e",
-  "categories": ["games"],
+  "categories": ["games", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/banners/static/img/ogario.png",
+      "src": "/banners/icon48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/banners/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/banners/icon128.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/banners/icon128.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Play Now",
+      "url": "/play.html",
+      "icons": [{ "src": "/banners/icon128.png", "sizes": "128x128" }]
     }
   ]
 }

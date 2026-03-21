@@ -5,7 +5,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LM express</title>
+    <title>Legend Mod - Expanding Land</title>
+
+    <!-- PWA: manifest + theme -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00243e">
+
+    <!-- iOS: Add to Home Screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Legend Mod">
+    <link rel="apple-touch-icon" href="/banners/icon128.png">
+
+    <!-- Windows tile -->
+    <meta name="msapplication-TileColor" content="#00243e">
+    <meta name="msapplication-TileImage" content="/banners/icon128.png">
     <meta property="og:url" content="https://jimboy3100.github.io" />
     <meta property="og:type" content="Legend mod Express" />
     <meta property="og:title" content="The Legend mod Project" />
@@ -310,6 +324,15 @@
             var _lmm = document.createElement('script');
             _lmm.src = 'https://jimboy3100.github.io/LMmobile/LMmobile.js';
             document.body.appendChild(_lmm);
+        }
+
+        /* PWA: Register service worker (Android + iOS) */
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                console.log('[PWA] Service worker registered, scope:', reg.scope);
+            }).catch(function(err) {
+                console.log('[PWA] Service worker registration failed:', err);
+            });
         }
     </script>
 </body>
