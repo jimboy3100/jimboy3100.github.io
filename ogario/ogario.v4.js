@@ -1995,6 +1995,7 @@ var displayText = {
         hideMyMass: 'Ukryj wlasna mase',
         hideEnemiesMass: 'Ukryj mase przeciwnikow',
         vanillaSkins: 'Podstawowe skiny',
+        ownVanillaSkin: 'Wlasny skin gdy brak custom',
         universalChat: 'Universal chat',
         customSkins: 'Wlasne skiny',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
@@ -2481,6 +2482,7 @@ var displayText = {
         hideMyMass: 'Hide my mass',
         hideEnemiesMass: 'Hide enemies mass',
         vanillaSkins: 'Vanilla skins',
+        ownVanillaSkin: 'Own vanilla skin when no custom',
         universalChat: 'Universal chat',
         customSkins: 'Custom skins',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
@@ -3713,6 +3715,7 @@ var defaultmapsettings = {
     hideMyMass: false,
     hideEnemiesMass: false,
     vanillaSkins: true,
+    ownVanillaSkin: false,
     universalChat: true,
     customSkins: true,
     videoSkins: true,
@@ -6378,7 +6381,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -7208,7 +7211,12 @@ function thelegendmodproject() {
             ogario.play = true;
             if (ogario.playerColor) {
                 this.sendPlayerSpawn();
-                this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
+                /* If ownVanillaSkin is ON and player has no custom skin,
+                 * skip cacheCustomSkin to preserve the vanilla skin that
+                 * opcode 102 already put in customSkinsMap[nick]. */
+                if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
+                    this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
+                }
                 return;
             }
             const app = this;
