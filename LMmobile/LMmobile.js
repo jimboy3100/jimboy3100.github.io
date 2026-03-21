@@ -802,10 +802,11 @@
         var pDist = 0, pOn = false;
 
         function isMenuVisible() {
+            var hc = document.getElementById('helloContainer');
+            if (hc && hc.style.display !== 'none' && hc.offsetParent !== null) return true;
             var ov = document.getElementById('overlays');
             if (!ov) return false;
             if (ov.style.display === 'none') return false;
-            // overlays is hidden via .stop().hide() when in-game
             return ov.offsetParent !== null || ov.offsetHeight > 0;
         }
 
