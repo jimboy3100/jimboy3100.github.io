@@ -650,19 +650,23 @@
             chatOn = true;
             // Open chat box — dispatch Enter on document to open game's chat
             emitKey(13);
+            // Focus immediately (user gesture context) for Firefox
+            var inp = document.getElementById('message');
+            if (inp) {
+                inp.focus();
+            }
+            // Re-focus after game finishes setup + add Enter handler
             setTimeout(function () {
-                var inp = document.getElementById('message');
-                if (inp) {
-                    inp.focus();
-                    // Auto-send on Enter key from virtual keyboard
-                    inp.addEventListener('keydown', function onEnter(ev) {
+                var inp2 = document.getElementById('message');
+                if (inp2) {
+                    inp2.focus();
+                    inp2.addEventListener('keydown', function onEnter(ev) {
                         if (ev.keyCode === 13 || ev.key === 'Enter') {
-                            inp.removeEventListener('keydown', onEnter);
+                            inp2.removeEventListener('keydown', onEnter);
                             setTimeout(function () { chatClose(); }, 50);
                         }
                     });
                 }
-
             }, 120);
         }
 
