@@ -5385,41 +5385,41 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
+                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
-                    /* ⚗ Anti: (X/35) or (X/35, −Y%/4s) — first when any AT score */
+                    /* ⚗ Anti: (X%/Y%) or (X%/Y%, −Z%/4s) */
                     if (di.totalScore > 0) {
                         var isAbove = di.totalScore > di.threshold;
                         var scoreColor = isAbove ? 'color:#ff4c4c' : 'color:#33ff33';
-                        var scoreVal = (di.totalScore / 10).toFixed(1);
-                        var threshVal = (di.threshold / 10).toFixed(1);
+                        var scoreVal = (di.totalScore / 100).toFixed(2) + '%';
+                        var threshVal = (di.threshold / 100).toFixed(2) + '%';
                         atStr += '⚗ Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
                         if (isAbove) {
-                            var penaltyPct = ((di.decayScore / 10) * (di.multiplier / 100)).toFixed(1);
-                            atStr += ', −' + penaltyPct + '%/' + di.decayIntervalSecs + 's';
+                            var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
+                            atStr += ', −' + excessPct + '%/' + di.decayIntervalSecs + 's';
                         }
                         atStr += ')';
 
-                        /* Per-source breakdown: ☣ Virus, ◉➚◉ Split, ⬤ W */
-                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 10).toFixed(0) + ', ⏳' + di.virusMaxSecs + 's)';
-                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 10).toFixed(0) + ', ⏳' + di.splitMaxSecs + 's)';
-                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 10).toFixed(0) + ', ⏳' + di.ejectMaxSecs + 's)';
+                        /* Per-source breakdown */
+                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.virusMaxSecs) + ')';
+                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.splitMaxSecs) + ')';
+                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.ejectMaxSecs) + ')';
                     }
 
-                    /* ⚠ Zone — merged danger zone (timer + anti contribution) */
+                    /* ⚠ Zone */
                     if (di.inDangerZone) {
                         if (atStr) atStr += ' | ';
                         atStr += '<span style="color:#ff4c4c">⚠ Zone ' + di.dangerPhaseSecs + 's';
-                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
                         atStr += '</span>';
                     } else if (di.dangerCount > 0) {
-                        /* Not in zone but danger events still expiring */
                         if (atStr) atStr += ' | ';
-                        atStr += '⚠ Zone (+' + (di.dangerScore / 10).toFixed(0) + ', ⏳' + di.dangerMaxSecs + 's)';
+                        atStr += '⚠ Zone (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
                     }
 
-                    /* ∞ constant base decay — always shown */
+                    /* ∞ constant base decay */
                     if (atStr) atStr += ' | ';
-                    atStr += '∞ −' + (di.decayScore / 10).toFixed(1) + '%/' + di.decayIntervalSecs + 's';
+                    atStr += '∞ −' + (di.decayScore / 100).toFixed(2) + '%/' + di.decayIntervalSecs + 's';
 
                     if (t) t += atStr + ' | ';
                     else t += atStr + ' | ';
@@ -11210,7 +11210,7 @@ function thelegendmodproject() {
         decayInfo: {
             active: false,
             totalScore: 0,     // ×10 (350 = 35.0)
-            threshold: 350,    // ×10
+            threshold: 280,    // ×10000 (2.8%/4s)
             multiplier: 100,   // ×100 (100 = 1.0×)
             virusCount: 0, virusScore: 0, virusMaxSecs: 0,
             splitCount: 0, splitScore: 0, splitMaxSecs: 0,

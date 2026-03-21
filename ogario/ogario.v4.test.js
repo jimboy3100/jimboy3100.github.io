@@ -1,4 +1,4 @@
-﻿window.OgVer = 3.340;
+window.OgVer = 3.340;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7,7 +7,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* LW: Swap Google OAuth client ID for our domains.
      * Agar.io's Google app only allows agar.io as origin.
      * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
-     * The server accepts Google tokens from BOTH apps β€” UIDs are the same regardless of client_id. */
+     * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
     if (window.EnvConfig) {
         window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
     }
@@ -15,7 +15,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
-     * Only runs on our domains β€” agar.io uses its own old client and gapi.auth2 works fine there. */
+     * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
     (function() {
         var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
         var gisLoaded = false;
@@ -79,7 +79,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     window.MC.onGoogleLoginComplete(true);
                     window.MC.showInstructionsPanel(true);
                 } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    /* MC unavailable (expanding.land) β€” send opcode 102 directly */
+                    /* MC unavailable (expanding.land) — send opcode 102 directly */
                     console.log('[LW Google DBG] MC unavailable, sending opcode 102 directly');
                     var view = legendmod.createView(1 + accessToken.length);
                     view.setUint8(0, 102);
@@ -158,7 +158,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Used when MC (from agario.core.js) is unavailable (e.g. expanding.land).
      * The server's fallback parser scans for the longest printable ASCII run
      * in the opcode 102 payload, so we just embed the token as raw bytes.
-     * Format: [102][token ASCII bytes] β€” server hashes this into a UID. */
+     * Format: [102][token ASCII bytes] — server hashes this into a UID. */
     function _lw_sendLogin102(token) {
         var sendFn = function() {
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
@@ -202,7 +202,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         setTimeout(sendFn, 500);
     }
 
-    /* LW: Core Discord login function β€” used by both initial auth and reconnects.
+    /* LW: Core Discord login function — used by both initial auth and reconnects.
      * On agar.io: uses MC.doLoginWithGPlus() (agario.core.js available).
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
     window._lw_applyDiscordLogin = function(discordUser) {
@@ -225,7 +225,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             _lw_sendLogin102(discordUser.token);
         }
 
-        /* UI updates β€” work on both domains */
+        /* UI updates — work on both domains */
         if (discordUser.avatar) {
             var pics = document.querySelectorAll('.agario-profile-picture');
             for (var i = 0; i < pics.length; i++) pics[i].src = discordUser.avatar;
@@ -312,18 +312,18 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
     };
 
-    /* LW: Auto-login removed β€” users must explicitly click Sign In.
+    /* LW: Auto-login removed — users must explicitly click Sign In.
      * Cached Discord data in localStorage is only used for gplusRelogin reconnects. */
 
     /* LW: Replace the Facebook login button with Discord login on our domains.
      * On agar.io the original Facebook button is left untouched.
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
-     * which sends it to the game server via opcode 102 β€” same path as Google. */
+     * which sends it to the game server via opcode 102 — same path as Google. */
     (function() {
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
 
         function replaceWithDiscord() {
-            /* LW: BroadcastChannel listener β€” PRIMARY method for receiving Discord data.
+            /* LW: BroadcastChannel listener — PRIMARY method for receiving Discord data.
              * The relay page (same origin) sends via BroadcastChannel, which is
              * 100% reliable for same-origin communication. */
             try {
@@ -381,14 +381,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (!event.data || event.data.type !== 'legendmod_discord_login') return;
 
                 var discordUser = event.data.data;
-//console.log(' Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
+                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
 
                     window.legendmod_discordUser = discordUser;
-//console.log(' Applying login via postMessage...');
+                    console.log('[LW Discord DBG] Applying login via postMessage...');
                     window._lw_applyDiscordLogin(discordUser);
 
                     /* Close popup */
@@ -403,12 +403,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-//console.log(' Button clicked');
-//console.log(' Auth URL:', DISCORD_AUTH_URL);
+                console.log('[LW Discord DBG] Button clicked');
+                console.log('[LW Discord DBG] Auth URL:', DISCORD_AUTH_URL);
 
                 /* Clear any stale Discord data from a previous session */
                 localStorage.removeItem('legendmod_discord');
-//console.log(' Cleared old localStorage data');
+                console.log('[LW Discord DBG] Cleared old localStorage data');
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
@@ -417,7 +417,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 var popup = window.open(DISCORD_AUTH_URL, 'discordAuth',
                     'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',scrollbars=yes');
                 discordPopupRef = popup;
-//console.log(' Popup opened:', popup ? 'OK' : 'BLOCKED');
+                console.log('[LW Discord DBG] Popup opened:', popup ? 'OK' : 'BLOCKED');
 
                 var pollCount = 0;
                 /* Poll localStorage for the Discord auth result from the callback page */
@@ -426,20 +426,20 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     try {
                         var data = localStorage.getItem('legendmod_discord');
                         if (pollCount <= 5 || pollCount % 5 === 0) {
-//console.log(' Poll #' + pollCount + ' localStorage=' + (data ? 'HAS DATA (' + data.length + ' bytes)' : 'empty'));
+                            console.log('[LW Discord DBG] Poll #' + pollCount + ' localStorage=' + (data ? 'HAS DATA (' + data.length + ' bytes)' : 'empty'));
                         }
                         if (data) {
                             var discordUser = JSON.parse(data);
-//console.log(' Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
+                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
-//console.log(' Login data valid! Calling _lw_applyDiscordLogin...');
-//console.log(' MC available:', !!window.MC);
-//console.log(' legendmod available:', typeof legendmod !== 'undefined');
+                                console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
+                                console.log('[LW Discord DBG] MC available:', !!window.MC);
+                                console.log('[LW Discord DBG] legendmod available:', typeof legendmod !== 'undefined');
 
                                 window._lw_applyDiscordLogin(discordUser);
-//console.log(' _lw_applyDiscordLogin called successfully');
+                                console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
 
                                 /* Close the popup if still open */
                                 try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
@@ -450,26 +450,26 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             }
                         }
                     } catch(err) {
-//console.error(' Poll error:', err);
+                        console.error('[LW Discord DBG] Poll error:', err);
                     }
                     /* Stop polling if popup closed without completing */
                     if (popup && popup.closed) {
                         clearInterval(poll);
-//console.log(' Popup closed after ' + pollCount + ' polls');
+                        console.log('[LW Discord DBG] Popup closed after ' + pollCount + ' polls');
                         /* Check one last time after popup closes */
                         setTimeout(function() {
                             var finalData = localStorage.getItem('legendmod_discord');
                             if (finalData) {
-//console.log(' Found data after popup close! Processing...');
+                                console.log('[LW Discord DBG] Found data after popup close! Processing...');
                                 try {
                                     var discordUser = JSON.parse(finalData);
                                     if (discordUser && discordUser.id && discordUser.token) {
                                         window._lw_applyDiscordLogin(discordUser);
-//console.log(' Late login applied successfully');
+                                        console.log('[LW Discord DBG] Late login applied successfully');
                                     }
-                                } catch(e) {//console.error(' Late parse error:', e); }
+                                } catch(e) { console.error('[LW Discord DBG] Late parse error:', e); }
                             } else {
-//console.log(' Popup closed without completing auth - NO DATA in localStorage');
+                                console.log('[LW Discord DBG] Popup closed without completing auth - NO DATA in localStorage');
                             }
                         }, 500);
                     }
@@ -599,7 +599,7 @@ function deleteGamemode(temp) {
 
     privateModOptions = [
         {
-            text: 'π‘‘ Legend FFA',
+            text: '👑 Legend FFA',
             value: 5001
         }, {
             text: 'Arctida',
@@ -756,7 +756,7 @@ function deleteGamemode(temp) {
             }
             */
         } else { }
-        // Reset gameMode to FFA (default) β€” Agar2 servers override below with the correct mode
+        // Reset gameMode to FFA (default) — Agar2 servers override below with the correct mode
         legendmod.gameMode = ':ffa';
         // Legend FFA - only active private server
         if ($('#gamemode').val() == 5001) {
@@ -5316,22 +5316,22 @@ function thelegendmodproject() {
                         t += ' | ' + spects[window.multiboxPlayerEnabled - 1].playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled - 1].BSTE) {
-                        t += ' | β—β—β›β—‰: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled - 1].BMTE) {
-                        t += ' | β—β›β—‰: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled - 1].MTE) {
-                        t += ' | β—‰β›β—: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
+                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled - 1].STE) {
-                        t += ' | β—‰β—‰β›β—: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled - 1].TTE) {
-                        t += ' | β—‰ββ—‰: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
+                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled - 1].PTE) {
-                        t += ' | ββ—β: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
+                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -5350,29 +5350,29 @@ function thelegendmodproject() {
                         t += ' | ' + ogario.playerSplitCells + '/16'
                     }
                     if (defaultmapsettings.showStatsESTE && ogario.BSTE) {
-                        t += ' | β—β—β›β—‰: ' + ogario.BSTE //Sonia6
+                        t += ' | ◎◎➛◉: ' + ogario.BSTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsEMTE && ogario.BMTE) {
-                        t += ' | β—β›β—‰: ' + ogario.BMTE //Sonia6
+                        t += ' | ◎➛◉: ' + ogario.BMTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsMTE && ogario.MTE) {
-                        t += ' | β—‰β›β—: ' + ogario.MTE //Sonia6
+                        t += ' | ◉➛◎: ' + ogario.MTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsSTE && ogario.STE) {
-                        t += ' | β—‰β—‰β›β—: ' + ogario.STE //Sonia6
+                        t += ' | ◉◉➛◎: ' + ogario.STE //Sonia6
                     }
                     if (defaultmapsettings.showStatsTTE && ogario.TTE) {
-                        t += ' | β—‰ββ—‰: ' + ogario.TTE //Sonia6
+                        t += ' | ◉➚◉: ' + ogario.TTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsPTE && ogario.PTE) {
-                        t += ' | ββ—β: ' + ogario.PTE //Sonia6
+                        t += ' | ➚◎➘: ' + ogario.PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
                 }
                 if (defaultmapsettings.showStatsWorldSize && LM.isLegendWorld && LM.mapTier >= 0) {
-                    var tierLabel = 'π: Tier ' + LM.mapTier;
+                    var tierLabel = '🌎: Tier ' + LM.mapTier;
                     if (LM.mapEvent && LM.mapEvent.active) {
                         if (LM.mapEvent.phase === 1) tierLabel += ' +++';
                         else if (LM.mapEvent.phase === 2) tierLabel += ' -';
@@ -5385,41 +5385,41 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
+                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
-                    /* β— Anti: (X/35) or (X/35, β’Y%/4s) β€” first when any AT score */
+                    /* ⚗ Anti: (X%/Y%) or (X%/Y%, −Z%/4s) */
                     if (di.totalScore > 0) {
                         var isAbove = di.totalScore > di.threshold;
                         var scoreColor = isAbove ? 'color:#ff4c4c' : 'color:#33ff33';
-                        var scoreVal = (di.totalScore / 10).toFixed(1);
-                        var threshVal = (di.threshold / 10).toFixed(1);
-                        atStr += 'β— Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
+                        var scoreVal = (di.totalScore / 100).toFixed(2) + '%';
+                        var threshVal = (di.threshold / 100).toFixed(2) + '%';
+                        atStr += '⚗ Anti: (<span style="' + scoreColor + '">' + scoreVal + '</span>/' + threshVal;
                         if (isAbove) {
-                            var penaltyPct = ((di.decayScore / 10) * (di.multiplier / 100)).toFixed(1);
-                            atStr += ', β’' + penaltyPct + '%/' + di.decayIntervalSecs + 's';
+                            var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
+                            atStr += ', −' + excessPct + '%/' + di.decayIntervalSecs + 's';
                         }
                         atStr += ')';
 
-                        /* Per-source breakdown: β£ Virus, β—‰ββ—‰ Split, β¬¤ W */
-                        if (di.virusCount > 0) atStr += ' | β£ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 10).toFixed(0) + ', β³' + di.virusMaxSecs + 's)';
-                        if (di.splitCount > 0) atStr += ' | β—‰ββ—‰ Split: ' + di.splitCount + ' (+' + (di.splitScore / 10).toFixed(0) + ', β³' + di.splitMaxSecs + 's)';
-                        if (di.ejectCount > 0) atStr += ' | β¬¤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 10).toFixed(0) + ', β³' + di.ejectMaxSecs + 's)';
+                        /* Per-source breakdown */
+                        if (di.virusCount > 0) atStr += ' | ☣ Virus: ' + di.virusCount + ' (+' + (di.virusScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.virusMaxSecs) + ')';
+                        if (di.splitCount > 0) atStr += ' | ◉➚◉ Split: ' + di.splitCount + ' (+' + (di.splitScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.splitMaxSecs) + ')';
+                        if (di.ejectCount > 0) atStr += ' | ⬤ W: ' + di.ejectCount + ' (+' + (di.ejectScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.ejectMaxSecs) + ')';
                     }
 
-                    /* β  Zone β€” merged danger zone (timer + anti contribution) */
+                    /* ⚠ Zone */
                     if (di.inDangerZone) {
                         if (atStr) atStr += ' | ';
-                        atStr += '<span style="color:#ff4c4c">β  Zone ' + di.dangerPhaseSecs + 's';
-                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 10).toFixed(0) + ', β³' + di.dangerMaxSecs + 's)';
+                        atStr += '<span style="color:#ff4c4c">⚠ Zone ' + di.dangerPhaseSecs + 's';
+                        if (di.dangerCount > 0) atStr += ' (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
                         atStr += '</span>';
                     } else if (di.dangerCount > 0) {
-                        /* Not in zone but danger events still expiring */
                         if (atStr) atStr += ' | ';
-                        atStr += 'β  Zone (+' + (di.dangerScore / 10).toFixed(0) + ', β³' + di.dangerMaxSecs + 's)';
+                        atStr += '⚠ Zone (+' + (di.dangerScore / 100).toFixed(2) + '%, ⏳' + _fmtSecs(di.dangerMaxSecs) + ')';
                     }
 
-                    /* β constant base decay β€” always shown */
+                    /* ∞ constant base decay */
                     if (atStr) atStr += ' | ';
-                    atStr += 'β β’' + (di.decayScore / 10).toFixed(1) + '%/' + di.decayIntervalSecs + 's';
+                    atStr += '∞ −' + (di.decayScore / 100).toFixed(2) + '%/' + di.decayIntervalSecs + 's';
 
                     if (t) t += atStr + ' | ';
                     else t += atStr + ' | ';
@@ -5429,7 +5429,7 @@ function thelegendmodproject() {
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
                     else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
                     else if (drawRender.averageRenderTime <= 50) color = 'color:green'
-                    t += 'π’»: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
+                    t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
@@ -6255,8 +6255,8 @@ function thelegendmodproject() {
         setMenu() {
             const app = this;
             document.title = this.name;
-            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">β…β… <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
-                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">β…β…β… <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
+            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text">★★ <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
+                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
@@ -6299,7 +6299,7 @@ function thelegendmodproject() {
             $("#stats").appendTo($("#main-menu")).addClass("menu-panel");
             $("#statsContinue").attr("id", "statsContinue2");
             /* On expanding.land, preserve login/play buttons before
-             * #mainPanel is destroyed β€” they live inside it in play.html */
+             * #mainPanel is destroyed — they live inside it in play.html */
             if (window.expandingLand) {
                 $(".btn-login-play, #socialLoginContainer").appendTo("#og-main");
                 $(".btn-play, .btn-play-guest").appendTo("#og-main");
@@ -7289,7 +7289,7 @@ function thelegendmodproject() {
             }
         },
         setPlayerSettings() {
-            /* Prevent name/skin changes while alive β€” server ignores the join
+            /* Prevent name/skin changes while alive — server ignores the join
              * anyway, but this also prevents the relay/minimap from showing
              * the updated nick to other LM users mid-game. */
             if (ogario.play) return;
@@ -7309,7 +7309,7 @@ function thelegendmodproject() {
                 ogario.clanTag = ogarcopythelb.clanTag;
             }
             /* LegendWorld: send clan tag to game server via opcode 203 (0xCB)
-             * [203][UTF-8 tag bytes][0x00] β€” server stores in player->clan_tag */
+             * [203][UTF-8 tag bytes][0x00] — server stores in player->clan_tag */
             if (LM.isLegendWorld && legendmod.isSocketOpen()) {
                 var tagStr = ogarcopythelb.clanTag || '';
                 var tagView = legendmod.createView(2 + tagStr.length);
@@ -7686,7 +7686,7 @@ function thelegendmodproject() {
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
-                    /* β”€β”€ LegendWorld: Draw zone on minimap (all phases) β”€β”€ */
+                    /* ── LegendWorld: Draw zone on minimap (all phases) ── */
                     LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
@@ -7787,10 +7787,10 @@ function thelegendmodproject() {
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                        this.miniMapCtx.strokeText('π”Ή' + LM.arrowFB[0].nick + 'π”Ή', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                    this.miniMapCtx.fillText('π”Ή' + LM.arrowFB[0].nick + 'π”Ή', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     this.miniMapCtx.restore();
                     //}
                 }
@@ -9113,7 +9113,7 @@ function thelegendmodproject() {
                     }
                     var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
                     var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    var pattern3 = "π•π•–π•π•΅π•’.π•π• ";
+                    var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
                     //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
@@ -9135,7 +9135,7 @@ function thelegendmodproject() {
         sendChatMessage(type, message) {
             //console.log(type);console.log(message);
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
-                /* LegendWorld + has clan tag β†’ send via game server opcode 202 (0xCA)
+                /* LegendWorld + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
@@ -9614,7 +9614,7 @@ function thelegendmodproject() {
                 const panelHTML = `
                     <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; border-radius: 8px; background-color: #00243e; border: 2px solid #01d9cc;">
                         <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">β•</div>
+                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">✕</div>
                             <center><h5 class="menu-main-color" style="margin: 0; font-size: 16px;">Custom Skin Uploader</h5></center>
                         </div>
                         <div style="display: flex; gap: 5px; margin-bottom: 15px;">
@@ -9627,7 +9627,7 @@ function thelegendmodproject() {
                         <div style="text-align: center; margin-bottom: 15px;">
                             <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; background-color: #000;"></canvas>
                         </div>
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">π“‚ Choose Image</label>
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose Image</label>
                         <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
                         <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
                         <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">Ready</div>
@@ -9860,13 +9860,15 @@ function thelegendmodproject() {
             },
             //
             this.drawTxt = function (customTxt) {
+                var _dpr = window.LM_DPR || 1;
                 return this.createCanvas(),
                     this.redraw && (this.redraw = false,
 
 
-                        this.txtCanvas.width = this.measureWidthCustom(customTxt),
-                        this.txtCanvas.width = this.measureWidth(),
-                        this.txtCanvas.height = this.fontSize + this.margin * 2,
+                        this.txtCanvas.width = this.measureWidthCustom(customTxt) * _dpr,
+                        this.txtCanvas.width = this.measureWidth() * _dpr,
+                        this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr,
+                        this.txtCtx.scale(_dpr, _dpr),
                         this.txtCtx.font = this.font,
                         this.txtCtx.globalAlpha = 1,
                         this.txtCtx.lineWidth = this.strokeWidth,
@@ -10264,8 +10266,9 @@ function thelegendmodproject() {
             }
             nickCanvas.setScale(this.scale);
             var nickImg = nickCanvas.drawTxt();
-            var w = ~~(nickImg.width / this.scale);
-            var h = ~~(nickImg.height / this.scale);
+            var _dpr = window.LM_DPR || 1;
+            var w = ~~(nickImg.width / (this.scale * _dpr));
+            var h = ~~(nickImg.height / (this.scale * _dpr));
             this.margin = ~~(h / 2);
             try {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
@@ -10325,8 +10328,9 @@ function thelegendmodproject() {
                         chatCanvas.setTxt(customTxt);
                     }
                     var data = chatCanvas.drawTxt(customTxt);
-                    var width = ~~(data.width / this.scale);
-                    var height = ~~(data.height / this.scale);
+                    var _dpr2 = window.LM_DPR || 1;
+                    var width = ~~(data.width / (this.scale * _dpr2));
+                    var height = ~~(data.height / (this.scale * _dpr2));
                     var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
                     if (temp < 2000) {
@@ -10382,9 +10386,10 @@ function thelegendmodproject() {
                             //this.lastMass = this.mass;
                         }
                         var data = mergeCanvas.drawTxt(customTxt);
-                        var width = ~~(data.width / this.scale);
+                        var _dpr3 = window.LM_DPR || 1;
+                        var width = ~~(data.width / (this.scale * _dpr3));
                         //console.log(data.width, this.scale, width, this.x - width / 2);
-                        var height = ~~(data.height / this.scale);
+                        var height = ~~(data.height / (this.scale * _dpr3));
                         var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
                         if (width > 1 && height > 1) {
                             try {
@@ -10411,9 +10416,10 @@ function thelegendmodproject() {
                 massCanvas.setScale(this.scale);
 
                 var data = massCanvas.drawTxt();
-                var width = ~~(data.width / this.scale);
+                var _dpr4 = window.LM_DPR || 1;
+                var width = ~~(data.width / (this.scale * _dpr4));
                 //console.log("m:"+data.width, this.scale, width, this.x - width / 2);
-                var height = ~~(data.height / this.scale)
+                var height = ~~(data.height / (this.scale * _dpr4))
                 var textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
                 if (width > 1 && height > 1) {
                     try {
@@ -11200,12 +11206,12 @@ function thelegendmodproject() {
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
 
-        /* LegendWorld decay info β€” populated by opcode 202 (0xCA) */
+        /* LegendWorld decay info — populated by opcode 202 (0xCA) */
         decayInfo: {
             active: false,
-            totalScore: 0,     // Γ—10 (350 = 35.0)
-            threshold: 350,    // Γ—10
-            multiplier: 100,   // Γ—100 (100 = 1.0Γ—)
+            totalScore: 0,     // ×10 (350 = 35.0)
+            threshold: 280,    // ×10000 (2.8%/4s)
+            multiplier: 100,   // ×100 (100 = 1.0×)
             virusCount: 0, virusScore: 0, virusMaxSecs: 0,
             splitCount: 0, splitScore: 0, splitMaxSecs: 0,
             ejectCount: 0, ejectScore: 0, ejectMaxSecs: 0,
@@ -11216,7 +11222,7 @@ function thelegendmodproject() {
             decayIntervalSecs: 4
         },
 
-        /* LegendWorld server identification β€” set true when server sends
+        /* LegendWorld server identification — set true when server sends
          * the LW beacon (opcode 0xF0 + 'LW') during handshake */
         isLegendWorld: false,
 
@@ -11657,7 +11663,7 @@ function thelegendmodproject() {
         },
         sendPlayerFreeze() {
             if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
-                this.sendAction(32); // 0x20 β€” player freeze toggle
+                this.sendAction(32); // 0x20 — player freeze toggle
             }
         },
         sendFBIDS(data) { //Yahnych
@@ -11850,7 +11856,7 @@ function thelegendmodproject() {
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 var skinName = ogarcopythelb.skinURL || '';
                 skinName = window.unescape(window.encodeURIComponent(skinName));
-                var uuid = ''; // Guest mode β€” no Agar2 auth UUID
+                var uuid = ''; // Guest mode — no Agar2 auth UUID
                 var partyCode = '';
                 if ($('#party-token').length && $('#party-token').val()) {
                     partyCode = $('#party-token').val().substring(0, 7); // max 7 chars
@@ -12008,9 +12014,9 @@ function thelegendmodproject() {
                         }
                     }, */
         //8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104
-        //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, β€¦]
+        //[102, 8, 1, 18, 215, 9, 8, 10, 82, 210, 9, 8, 4, 18, 15, 8, 5, 18, 7, 51, 46, 49, 49, 46, 49, 54, 24, 0, 32, 0, 26, 188, 9, 10, 185, 9, 101, 121, 74, 104, 98, 71, 99, 105, 79, 105, 74, 83, 85, 122, 73, 49, 78, 105, 73, 115, 73, 109, 116, 112, 90, 67, 73, 54, 73, 109, 70, 106, 90, 71, 69, 122, 78, 106, 66, 109, 89, 106, 77, 50, 89, 50, 81, 120, 78, 87, 90, 109, 79, 68, 78, 104, 90, 106, 103, 122, 90, 84, 69, 51, …]
         sendAccessToken(shapes, options, oW) {
-            // Removed legendmod.integrity guard β€” auth tokens should always
+            // Removed legendmod.integrity guard — auth tokens should always
             // be sent, even on private servers. Integrity only gates
             // recaptcha/client key, not social login.
             if (LM.accessTokenSent) {
@@ -12252,7 +12258,7 @@ function thelegendmodproject() {
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
                 */
         },
-        /* β”€β”€ LegendWorld: Handle map resize events (opcode 200) β”€β”€ */
+        /* ── LegendWorld: Handle map resize events (opcode 200) ── */
         handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
             var me = this.mapEvent;
             if (currentTier >= 0) LM.mapTier = currentTier;
@@ -12270,20 +12276,20 @@ function thelegendmodproject() {
                 case 1: // MAP_EXPANSION_START
                     me.phase = 1;
                     me.active = true;
-                    console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' β†’ ' + ~~targetSize, 'color:#3f3', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.info('π Map expanding β€” new territory ahead!');
+                    console.log('%c[LW]%c Expanding: ' + ~~currentSize + ' → ' + ~~targetSize, 'color:#3f3', 'color:inherit');
+                    if (typeof toastr !== 'undefined') toastr.info('🌍 Map expanding — new territory ahead!');
                     break;
                 case 2: // MAP_CONTRACTION_WARNING
                     me.phase = 2;
                     me.active = true;
                     console.log('%c[LW]%c Warning: shrink in ' + Math.round(warningDur / 25) + 's', 'color:#ff0', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.warning('Map shrinking in ' + Math.round(warningDur / 25) + 's β€” move inward');
+                    if (typeof toastr !== 'undefined') toastr.warning('Map shrinking in ' + Math.round(warningDur / 25) + 's — move inward');
                     break;
                 case 3: // MAP_CONTRACTION_DANGER
                     me.phase = 3;
                     me.active = true;
                     console.log('%c[LW]%c Danger zone active', 'color:#f33', 'color:inherit');
-                    if (typeof toastr !== 'undefined') toastr.error('Danger zone β€” leave the red area');
+                    if (typeof toastr !== 'undefined') toastr.error('Danger zone — leave the red area');
                     break;
                 case 4: // MAP_SHRINK_START
                     me.phase = 4;
@@ -12610,7 +12616,7 @@ function thelegendmodproject() {
                     break;
 
                 // ===== Imsolo/Agar2 Multi-Protocol Opcodes (2026) =====
-                case 21: // 0x15 β€” Death Notification (Imsolo/Agar2 only, protocol β‰¤10)
+                case 21: // 0x15 — Death Notification (Imsolo/Agar2 only, protocol ≤10)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         this.play = false;
                         this.playerCellIDs = [];
@@ -12620,7 +12626,7 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
-                case 200: // 0xC8 β€” ShopResponse (Agar2 only)
+                case 200: // 0xC8 — ShopResponse (Agar2 only)
                     if (this.serverType === 'agar2') {
                         // Parse shop response but don't act on it (no shop UI yet)
                         var shopAction = data.getUint8(s++);
@@ -12632,13 +12638,13 @@ function thelegendmodproject() {
                             'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
                     }
                     break;
-                case 201: // 0xC9 β€” AuthSuccess (Agar2 only)
+                case 201: // 0xC9 — AuthSuccess (Agar2 only)
                     if (this.serverType === 'agar2') {
                         this.imsoloAuthSuccess = true;
                         console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
                     }
                     break;
-                case 249: // 0xF9 β€” BattleBorder Update (Imsolo/Agar2)
+                case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 10 > data.byteLength) break; // need 2+2+2+4 bytes
                         var bbEnabled = data.getUint16(s, true); s += 2;
@@ -12649,14 +12655,14 @@ function thelegendmodproject() {
                             'enabled:', bbEnabled, 'center:', bbCenterX, bbCenterY, 'radius:', bbRadius);
                     }
                     break;
-                case 250: // 0xFA β€” PlayerID (Imsolo/Agar2)
+                case 250: // 0xFA — PlayerID (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 2 > data.byteLength) break;
                         this.imsoloPlayerID = data.getUint16(s, true);
                         console.log('%c[MultiProto]%c Assigned PlayerID:', 'color:#3f3', 'color:inherit', this.imsoloPlayerID);
                     }
                     break;
-                case 251: // 0xFB β€” PartyFriend Update (Imsolo/Agar2)
+                case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 1 > data.byteLength) break;
                         var _pfHas = data.getUint8(s++);
@@ -12673,7 +12679,7 @@ function thelegendmodproject() {
                         }
                     }
                     break;
-                case 252: // 0xFC β€” Minimap Ghost Cells (Imsolo/Agar2)
+                case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 2 > data.byteLength) break;
                         var ghostCount = data.getUint16(s, true); s += 2;
@@ -12690,10 +12696,10 @@ function thelegendmodproject() {
                     }
                     break;
 
-                case 253: // 0xFD β€” Server Stats (Imsolo/Agar2)
+                case 253: // 0xFD — Server Stats (Imsolo/Agar2)
                     window.testobjectsOpcode253 = data;
                     break;
-                case 254: // 0xFE β€” Heartbeat/Ping Reply / ServerStat (Imsolo/Agar2)
+                case 254: // 0xFE — Heartbeat/Ping Reply / ServerStat (Imsolo/Agar2)
                     window.testobjectsOpcode254 = data;
                     break;
 
@@ -12779,7 +12785,7 @@ function thelegendmodproject() {
                         }
                         /* LW: Fallback extraction for our server's protobuf format.
                          * Server sends userId="provider$UID" in userInfo field.
-                         * Only runs on our domains β€” doesn't affect agar.io parsing. */
+                         * Only runs on our domains — doesn't affect agar.io parsing. */
                         if (window.expandingLand || window.legendModFromWebsite) {
                             console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
                                 'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
@@ -12824,9 +12830,9 @@ function thelegendmodproject() {
                         if (window.testobjects2.split('" ')[1]) {
                             window.agarioEncodedUID = window.testobjects2.split('" ')[1].split('=')[0] + "%3D";
                         }
-                        else if (window.testobjects2.split('"οΏ½\x01')[1]) { //6/8/2024 fix
+                        else if (window.testobjects2.split('"�\x01')[1]) { //6/8/2024 fix
                             //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('=')[0] + "%3D"; 
-                            window.agarioEncodedUID = window.testobjects2.split('"οΏ½\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
+                            window.agarioEncodedUID = window.testobjects2.split('"�\x01')[1].split('=')[0] + "%3D"; //3/11/2024 TEST
                         }
 
                     }
@@ -13462,11 +13468,11 @@ function thelegendmodproject() {
                 //2020 jimboy3100
 
                 default:
-                    /* β”€β”€ LegendWorld opcodes handled in default: so they never
-                     * interfere with the switch on non-LW servers β”€β”€ */
+                    /* ── LegendWorld opcodes handled in default: so they never
+                     * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
                     if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                        /* LW Beacon β€” sets isLegendWorld */
+                        /* LW Beacon — sets isLegendWorld */
                         LM.isLegendWorld = true;
                         this.gameMode = ':legendworld';
                         console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
@@ -13498,7 +13504,7 @@ function thelegendmodproject() {
                             botEl2.textContent = botCount2;
                         }
                     } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info β€” per-player anti-team breakdown */
+                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
                         var di = LM.decayInfo;
                         var _off = 1;
                         di.totalScore = data.getUint16(_off, true); _off += 2;
@@ -13779,11 +13785,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`π’°` + this.user.coins);
+                                $("#coins").html(`💰` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`π§¬` + this.user.dna);
+                                $("#dna").html(`🧬` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -13848,7 +13854,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`π…` + this.user.trophy);
+                        $("#trophy").html(`🏅` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -14193,7 +14199,7 @@ function thelegendmodproject() {
             }
         },
         displayStats(s) {
-            /* allTimeScore and massConsumed are uint64 β†’ protobuf.js returns Long objects.
+            /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.
              * Convert to Number so arithmetic and template literals work correctly. */
             var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
             var massConsumed = (typeof s.massConsumed === 'object' && s.massConsumed.toNumber) ? s.massConsumed.toNumber() : Number(s.massConsumed) || 0;
@@ -14230,7 +14236,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
              * Server sends userId="provider$UUID" (e.g. "discord$abc-123-def").
-             * This is the clean parsed path β€” no raw text splitting needed. */
+             * This is the clean parsed path — no raw text splitting needed. */
             if ((window.expandingLand || window.legendModFromWebsite) && i.userId) {
                 var parts = i.userId.split('$');
                 if (parts.length >= 2) {
@@ -14543,7 +14549,7 @@ Game name     : ${i.displayName}<br/>
                 }
                 this.mapSize = newMapSize;
 
-                /* Derive tier from actual border size β€” guarantees tier
+                /* Derive tier from actual border size — guarantees tier
                  * always matches the real map, regardless of map events */
                 var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
                 var derivedTier = 0;
@@ -14958,9 +14964,9 @@ Game name     : ${i.displayName}<br/>
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
-                if (name === "β„„π€JustWatchPro" || name === "β„„π€α¥α‘α–΄α—α–‡α—°α—©δΈ…α¥α—α‘") {
-                    if (name === "β„„π€JustWatchPro") cellUpdateCells.targetNick = "β„„π€Let\'s fight for glory. Let\'s fight for our kids";
-                    if (name === "β„„π€α¥α‘α–΄α—α–‡α—°α—©δΈ…α¥α—α‘") cellUpdateCells.targetNick = "β„„π€Avoid (Anti ,Corners, Random)";
+                if (name === "℄🌀JustWatchPro" || name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") {
+                    if (name === "℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
+                    if (name === "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
                     if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]) {
                         application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
                         application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);
@@ -15401,10 +15407,13 @@ Game name     : ${i.displayName}<br/>
             };
         },
         resizeCanvas() {
+            var dpr = (window.LM_IS_MOBILE) ? (window.devicePixelRatio || 1) : 1;
+            this.dpr = dpr;
+            window.LM_DPR = dpr;
             this.canvasWidth = window.innerWidth;
             this.canvasHeight = window.innerHeight;
-            this.canvas.width = this.canvasWidth;
-            this.canvas.height = this.canvasHeight;
+            this.canvas.width = this.canvasWidth * dpr;
+            this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
             //this.renderFrame();
@@ -15467,7 +15476,9 @@ Game name     : ${i.displayName}<br/>
             LM.getCursorPosition();
             LM.sortCells();
             LM.compareCells();
-            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
+            this.ctx.save();
+            this.ctx.scale(this.dpr || 1, this.dpr || 1);
             if (defaultmapsettings.showOptimisedGrid) {
                 //
             }
@@ -15503,7 +15514,7 @@ Game name     : ${i.displayName}<br/>
                 var tempborderwidthradius = defaultSettings.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
-            /* β”€β”€ LegendWorld: Draw warning/danger zone overlay β”€β”€ */
+            /* ── LegendWorld: Draw warning/danger zone overlay ── */
             if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
                 this.drawLegendWorldZone(this.ctx);
             }
@@ -15570,6 +15581,9 @@ Game name     : ${i.displayName}<br/>
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
+
+            this.ctx.restore(); // restore DPR scale
+
             this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
             this.lastRenderingDelay = (performance.now() - this.renderStarted)
             //console.log(this.renderingDelay)
@@ -16170,7 +16184,7 @@ Game name     : ${i.displayName}<br/>
                 "skrrt";
             }
         },
-        /* β”€β”€ LegendWorld: Warning/Danger zone overlay β”€β”€ */
+        /* ── LegendWorld: Warning/Danger zone overlay ── */
         drawLegendWorldZone(ctx) {
             if (!LM.mapEvent || !LM.mapEvent.active) return;
             var me = LM.mapEvent;
@@ -16191,7 +16205,7 @@ Game name     : ${i.displayName}<br/>
             ctx.save();
 
             if (me.phase === 1) {
-                /* β•β•β• EXPANSION: highlight the NEW territory being added β•β•β•
+                /* ═══ EXPANSION: highlight the NEW territory being added ═══
                  * Blue/cyan glow on the band between old border and new (larger) target.
                  * Old border is INSIDE, target border is OUTSIDE. */
                 if (Math.abs(me.targetSize - oW) < 2) { ctx.restore(); return; }
@@ -16228,7 +16242,7 @@ Game name     : ${i.displayName}<br/>
                 ctx.restore();
 
             } else {
-                /* β•β•β• CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) β•β•β•
+                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══
                  * Overlay the danger zone (between current border and smaller target).
                  * Phase 2: soft green warning. Phase 3: red pulsing. Phase 4: intense red. */
                 if (Math.abs(oMaxX - targetHalf) < 1) { ctx.restore(); return; }
@@ -16279,13 +16293,13 @@ Game name     : ${i.displayName}<br/>
                 }
             }
 
-            // β•β•β• STATUS LABEL (all phases) β•β•β•
+            // ═══ STATUS LABEL (all phases) ═══
             ctx.save();
             var label = '', labelColor = '', labelAlpha = 0.8;
-            if (me.phase === 1) { label = 'π MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
-            else if (me.phase === 2) { label = 'β  MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
-            else if (me.phase === 3) { label = 'β›” DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
-            else if (me.phase === 4) { label = 'π’€ MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
+            if (me.phase === 1) { label = '🌍 MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
+            else if (me.phase === 2) { label = '⚠ MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
+            else if (me.phase === 3) { label = '⛔ DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
+            else if (me.phase === 4) { label = '💀 MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
             if (label) {
                 var labelY = me.phase === 1 ? tMinY + 16 : tMinY + 12;
                 var fontSize = Math.max(26, Math.min(40, me.targetSize * 0.004));
@@ -18278,7 +18292,7 @@ var stylesLegendModConsole2 = [
 function consoleNotice() {
     console.groupCollapsed('%cLegend express%c  %chttp://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
-    console.log('%cThe Legend mod Projectβ„Ά', stylesLegendModConsole2);
+    console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
     console.groupCollapsed("Mod developed by");
     console.log('%cwww.legendclan.ml', stylesLegendModConsole2);
