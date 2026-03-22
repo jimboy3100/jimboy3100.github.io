@@ -13602,6 +13602,27 @@ function thelegendmodproject() {
 
                     window.localStorage.setItem("getLatestID", u.latestConfiguration);
 
+                    /* Update agarversion with fresh configId from server and rebuild skin map */
+                    if (u.latestConfiguration) {
+                        var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
+                        window.agarversion = freshVersion;
+                        window.localStorage.setItem("getLatestID", u.latestConfiguration);
+                        /* Rebuild VanillaSkinUrlMap with correct CDN version */
+                        if (window.EquippableSkins) {
+                            window.VanillaSkinUrlMap = {};
+                            var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + freshVersion;
+                            for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
+                                var skn = window.EquippableSkins[sk];
+                                var skKey = skn.productId.replace('skin_', '%');
+                                if (skn.image && skn.image !== "uses_spine") {
+                                    window.VanillaSkinUrlMap[skKey] = cdnBase + skn.image + "?";
+                                } else if (skn.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skn.productId]) {
+                                    window.VanillaSkinUrlMap[skKey] = cdnBase + window.SpineSkinMap[skn.productId] + ".png?";
+                                }
+                            }
+                        }
+                    }
+
                     this.updateWalletInfo(u.userWallet);
 
                     this.displayActiveBoosts(u.userBoosts);
