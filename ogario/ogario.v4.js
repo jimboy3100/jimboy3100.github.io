@@ -1824,7 +1824,6 @@ setTimeout(function () {
         window.LMAgarGameConfiguration = window.LMGameConfiguration;
         window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
 
-        /* Build Spine skin map: productId -> spineFileName (Delta mod approach) */
         window.SpineSkinMap = {};
         try {
             var spineAnims = LMAgarGameConfiguration.gameConfig["Visual - Prod. Spine Animations"];
@@ -1835,8 +1834,7 @@ setTimeout(function () {
                     }
                 }
             }
-            //console.log('[LM] SpineSkinMap built with ' + Object.keys(window.SpineSkinMap).length + ' entries');
-        } catch(e) { /*console.warn('[LM] Failed to build SpineSkinMap', e);*/ }
+        } catch(e) { }
 
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
@@ -7285,16 +7283,12 @@ function thelegendmodproject() {
                 } else {
                     for (player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId === "skin_" + window.UserVanillaSkin) {
-                            var skinImage = window.EquippableSkins[player].image;
-                            /* If Spine skin, look up spineFileName from SpineSkinMap */
-                            if (skinImage === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) {
-                                skinImage = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png";
-                            }
-                            if (skinImage && skinImage !== "uses_spine") {
-                                //console.log("2. " + skinImage);
+                            var skinImg = window.EquippableSkins[player].image;
+                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) { skinImg = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png"; }
+                            if (skinImg && skinImg !== "uses_spine") {
                                 window.lastusednameforskin = ogarcopythelb.nick;
-                                application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?";
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?");
+                                application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
                             }
                         }
                     }
@@ -12768,7 +12762,7 @@ function thelegendmodproject() {
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        //console.error('[LW 102 DBG] onMobileData error:', e102);
+                        console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
@@ -14166,13 +14160,10 @@ function thelegendmodproject() {
                 } else if (window.LMAgarGameConfiguration != undefined) {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId === link) {
-                            var skinImage = window.EquippableSkins[player].image;
-                            if (skinImage === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[link]) {
-                                skinImage = window.SpineSkinMap[link] + ".png";
-                            }
-                            if (skinImage && skinImage !== "uses_spine") {
-                                return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage, type];
-                            }
+                            var skinImg = window.EquippableSkins[player].image;
+                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[link]) { skinImg = window.SpineSkinMap[link] + ".png"; }
+                            if (skinImg && skinImg !== "uses_spine") { return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg, type]; }
+                        }
                     }
                 }
             }
@@ -14685,24 +14676,18 @@ Game name     : ${i.displayName}<br/>
                 } else if (g != null && defaultmapsettings.vanillaSkins === true && window.LMAgarGameConfiguration != undefined) {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId === "skin_" + g.replace('%', '')) {
-                            var skinImage = window.EquippableSkins[player].image;
-                            /* If Spine skin, look up spineFileName from SpineSkinMap */
-                            if (skinImage === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) {
-                                skinImage = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png";
-                            }
-                            if (skinImage && skinImage !== "uses_spine") {
-                            //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + skinImage + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
-                            window.lastusednameforskin = y;
-                            //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage, null);
-                            var skinKey = y;
-                            if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
-                                // In party mode, y already has color appended, so register with that key
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?";
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?");
-                            } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?";
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImage + "?");
-                            }
+                            var skinImg = window.EquippableSkins[player].image;
+                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) { skinImg = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png"; }
+                            if (skinImg && skinImg !== "uses_spine") {
+                                window.lastusednameforskin = y;
+                                var skinKey = y;
+                                if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
+                                    application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
+                                    application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
+                                } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
+                                    application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
+                                    application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
+                                }
                             }
                         }
                     }
