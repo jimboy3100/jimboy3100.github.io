@@ -13678,24 +13678,24 @@ function thelegendmodproject() {
                         }
                     }
 
-                    this.updateWalletInfo(u.userWallet);
+                    try { this.updateWalletInfo(u.userWallet); } catch(e) { console.error('[LW 102] updateWalletInfo error:', e); }
 
-                    this.displayActiveBoosts(u.userBoosts);
+                    try { this.displayActiveBoosts(u.userBoosts); } catch(e) { console.error('[LW 102] displayActiveBoosts error:', e); }
 
                     this.user.stats = u.userStats;
-                    this.displayStats(u.userStats);
+                    try { this.displayStats(u.userStats); } catch(e) { console.error('[LW 102] displayStats error:', e); }
 
-                    this.updateEvents(u.userTimedEvents)
+                    try { this.updateEvents(u.userTimedEvents); } catch(e) { console.error('[LW 102] updateEvents error:', e); }
 
-                    this.displayActiveQuests(u.userActiveQuests); //FIX IT
+                    try { this.displayActiveQuests(u.userActiveQuests); } catch(e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
-                    this.createSkinsHTML();
+                    try { this.createSkinsHTML(); } catch(e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
-                    this.updateUserSettings(u.userSettings)
+                    try { this.updateUserSettings(u.userSettings); } catch(e) { console.error('[LW 102] updateUserSettings error:', e); }
 
-                    this.updateUserInfo(u.userInfo)
+                    try { this.updateUserInfo(u.userInfo); } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
 
-                    this.updatePotions(u.userPotions)
+                    try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
                     break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
