@@ -14300,6 +14300,7 @@ function thelegendmodproject() {
             }
         },
         displayStats(s) {
+            if (!s) s = {}; /* guard: protobuf may not decode userStats */
             /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.
              * Convert to Number so arithmetic and template literals work correctly. */
             var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
@@ -14326,12 +14327,15 @@ Most cells eaten   : ${mostCellsEaten}
       `)
         },
         updateUserInfo(i) {
+            if (!i) i = {}; /* guard: protobuf may not decode userInfo */
             var exp = 100;
-            if (i.level != 100) exp = ~~(i.xp * 100 / this.agarExp(i.level));
+            var level = Number(i.level) || 1;
+            var xp = Number(i.xp) || 0;
+            if (level != 100) exp = ~~(xp * 100 / this.agarExp(level));
             $('.progress-bar-striped').width(exp + '%');
             //$('.progress-bar-striped2').width(exp + '%');
 
-            $('.progress-bar-star3').text(i.level); $('.progress-bar-star').text(i.level);
+            $('.progress-bar-star3').text(level); $('.progress-bar-star').text(level);
             //$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
 
