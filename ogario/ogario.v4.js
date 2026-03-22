@@ -140,7 +140,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     return;
                 }
                 console.log('[LW Google DBG] Login button clicked');
-                if (window.MC && window.MC.googleLogin) window.MC.googleLogin();
+                /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
                 tokenClient.requestAccessToken();
             }, true);
 
