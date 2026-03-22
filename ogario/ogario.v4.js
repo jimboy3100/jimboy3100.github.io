@@ -14365,14 +14365,23 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            $("#user-info").html(`
-Account age     : ${~~(i.accountAge / 3600 / 24)}D<br/>
-Potions obtained : ${i.actionCounters.potionsObtained}<br/>
-Quests completed      : ${i.actionCounters.questsCompleted}<br/>
-Skins created : ${i.actionCounters.skinsCreated}<br/>
-Country     : ${i.latestCountryCode}<br/>
-Game name     : ${i.displayName}<br/>
-      `)
+            /* Null-safe access to actionCounters (protobuf may not decode nested submessage) */
+            var ac = i.actionCounters || {};
+            var potions = Number(ac.potionsObtained) || 0;
+            var quests = Number(ac.questsCompleted) || 0;
+            var skins = Number(ac.skinsCreated) || 0;
+            var accountAge = ~~((Number(i.accountAge) || 0) / 3600 / 24);
+            var country = i.latestCountryCode || 'N/A';
+            var gameName = i.displayName || 'Player';
+
+            $("#user-info").html(
+                'Account age     : ' + accountAge + 'D<br/>' +
+                'Potions obtained : ' + potions + '<br/>' +
+                'Quests completed : ' + quests + '<br/>' +
+                'Skins created   : ' + skins + '<br/>' +
+                'Country         : ' + country + '<br/>' +
+                'Game name       : ' + gameName + '<br/>'
+            )
         },
         agarExp(q) {
             var s = {};
