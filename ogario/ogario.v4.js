@@ -106,12 +106,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     legendmod.sendMessage(view);
                     console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
-
-                    /* Update UI manually */
-                    var menuInner = document.getElementById('main-menu');
-                    if (menuInner) menuInner.style.display = 'none';
-                    var overlays = document.querySelectorAll('.agario-promo-overlay');
-                    for (var oi = 0; oi < overlays.length; oi++) overlays[oi].style.display = 'none';
+                    /* Login sent — user can now click Play in the menu */
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
                 }
@@ -7316,7 +7311,8 @@ function thelegendmodproject() {
                     var ownSkinUrl = window.VanillaSkinUrlMap && window.VanillaSkinUrlMap[ownSkinKey];
                     if (ownSkinUrl) {
                         window.lastusednameforskin = ogarcopythelb.nick;
-                        core.registerSkin(ogarcopythelb.nick, null, ownSkinUrl, null);
+                        application.customSkinsMap[ogarcopythelb.nick] = ownSkinUrl;
+                        application.loadSkin(application.customSkinsCache, ownSkinUrl);
                     }
                 }
             } else {
@@ -14716,11 +14712,14 @@ Game name     : ${i.displayName}<br/>
                     g1 = makeUpperCaseAfterUnderline(g1);
                     var customskinanimated = true;
                     core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png?", customskinanimated);
-                } else if (g != null && defaultmapsettings.vanillaSkins === true && window.VanillaSkinUrlMap) {
+                } else if (g != null && g !== '%empty' && defaultmapsettings.vanillaSkins === true && window.VanillaSkinUrlMap) {
                     var skinUrl = window.VanillaSkinUrlMap[g];
                     if (skinUrl) {
                         window.lastusednameforskin = y;
-                        core.registerSkin(y, null, skinUrl, null);
+                        if (!application.customSkinsMap[y]) {
+                            application.customSkinsMap[y] = skinUrl;
+                            application.loadSkin(application.customSkinsCache, skinUrl);
+                        }
                     }
                 }
             }
