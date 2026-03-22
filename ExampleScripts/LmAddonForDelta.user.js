@@ -600,7 +600,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
 
         const entry = document.createElement('div');
         entry.id = ENTRY_ID;
-        entry.textContent = 'Legend FFA';
+        entry.textContent = 'Expanding Land FFA';
         entry.style.color = '#01d9cc';
         entry.style.fontWeight = 'bold';
         entry.style.cursor = 'pointer';
@@ -620,7 +620,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
             }
         });
         listEl.appendChild(entry);
-        console.log(win.LOG_TAG + "✓ Legend FFA appended to Private tab list");
+        console.log(win.LOG_TAG + "✓ Expanding Land FFA appended to Private tab list");
     }
 
     // MutationObserver: re-append when Preact re-renders the list

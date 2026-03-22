@@ -6693,7 +6693,7 @@ function LMLegendFFAPromo() {
         '</button>' +
 
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
-        '\ud83d\udc51 Legend FFA Server' +
+        '\ud83d\udc51 Expanding Land FFA Server' +
         '</h4>' +
 
         '</div>' +

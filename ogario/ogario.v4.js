@@ -637,7 +637,7 @@ function deleteGamemode(temp) {
 
     privateModOptions = [
         {
-            text: '👑 Legend FFA',
+            text: '👑 Expanding Land FFA',
             value: 5001
         }, {
             text: 'Arctida',
@@ -796,7 +796,7 @@ function deleteGamemode(temp) {
         } else { }
         // Reset gameMode to FFA (default) — Agar2 servers override below with the correct mode
         legendmod.gameMode = ':ffa';
-        // Legend FFA - only active private server
+        // Expanding Land FFA - only active private server
         if ($('#gamemode').val() == 5001) {
             core.connect('wss://ffa.legendmod.ml:8080');
         }
