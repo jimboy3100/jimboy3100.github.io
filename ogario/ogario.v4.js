@@ -105,13 +105,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         window.master.doLoginWithGPlus(accessToken);
                     }
 
-                    /* Send opcode 102 directly to game server */
-                    var view = legendmod.createView(1 + accessToken.length);
-                    view.setUint8(0, 102);
-                    for (var ti = 0; ti < accessToken.length; ti++) {
-                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
-                    }
-                    legendmod.sendMessage(view);
+                    /* Send opcode 102 directly to game server with social ID and name */
+                    _lw_sendLogin102(accessToken, profile.sub, profile.name);
 
 
                     /* Update profile UI (replaces doGl() which uses old gapi.auth2) */
@@ -197,12 +192,19 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The server's fallback parser scans for the longest printable ASCII run
      * in the opcode 102 payload, so we just embed the token as raw bytes.
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
-    function _lw_sendLogin102(token) {
+    function _lw_sendLogin102(token, socialId, displayName) {
         var sendFn = function() {
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                /* Prepend social ID and display name as header lines before the token.
+                 * Format: "SID:<socialId>\nNAME:<displayName>\n<token>"
+                 * Server parses these prefixes before hashing the token. */
+                var prefix = '';
+                if (socialId) prefix += 'SID:' + socialId + '\n';
+                if (displayName) prefix += 'NAME:' + displayName + '\n';
+                var payload = prefix + token;
                 var tokenBytes = [];
-                for (var i = 0; i < token.length; i++) {
-                    tokenBytes.push(token.charCodeAt(i) & 0xFF);
+                for (var i = 0; i < payload.length; i++) {
+                    tokenBytes.push(payload.charCodeAt(i) & 0xFF);
                 }
                 var view = legendmod.createView(1 + tokenBytes.length);
                 view.setUint8(0, 102); // opcode
@@ -210,7 +212,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     view.setUint8(1 + j, tokenBytes[j]);
                 }
                 legendmod.sendMessage(view);
-                console.log('[LW Login] Sent opcode 102 directly (token_len=' + token.length + ')');
+                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId||'none') + ')');
             } else {
                 setTimeout(sendFn, 1000);
             }
@@ -223,16 +225,30 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     function _lw_sendDiscordProfile(discordUser) {
         var sendFn = function() {
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                /* Extended format: [204][provider][socialId\0][displayName\0][avatarUrl\0]
+                 * Server parses null-separated fields after the provider byte. */
+                var socialId = discordUser.id || '';
+                var displayName = discordUser.globalName || discordUser.username || '';
                 var avatarStr = discordUser.avatar || '';
-                var view = legendmod.createView(2 + avatarStr.length + 1);
-                view.setUint8(0, 204);
-                view.setUint8(1, 3); // auth_provider = discord
-                for (var ci = 0; ci < avatarStr.length; ci++) {
-                    view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
-                }
-                view.setUint8(2 + avatarStr.length, 0);
+                var totalLen = 2 + socialId.length + 1 + displayName.length + 1 + avatarStr.length + 1;
+                var view = legendmod.createView(totalLen);
+                var offset = 0;
+                view.setUint8(offset++, 204);
+                view.setUint8(offset++, 3); // auth_provider = discord
+                // Social ID
+                for (var ci = 0; ci < socialId.length; ci++)
+                    view.setUint8(offset++, socialId.charCodeAt(ci) & 0xFF);
+                view.setUint8(offset++, 0); // null terminator
+                // Display name
+                for (var ni = 0; ni < displayName.length; ni++)
+                    view.setUint8(offset++, displayName.charCodeAt(ni) & 0xFF);
+                view.setUint8(offset++, 0); // null terminator
+                // Avatar URL
+                for (var ai = 0; ai < avatarStr.length; ai++)
+                    view.setUint8(offset++, avatarStr.charCodeAt(ai) & 0xFF);
+                view.setUint8(offset++, 0); // null terminator
                 legendmod.sendMessage(view);
-                console.log('[LW Discord] Sent opcode 204 (avatar=' + avatarStr.substring(0, 60) + '...)');
+                console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ' avatar=' + avatarStr.substring(0, 40) + '...)');
             } else {
                 setTimeout(sendFn, 2000);
             }
@@ -260,7 +276,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             });
         } else {
             /* expanding.land path: MC unavailable, send opcode 102 directly */
-            _lw_sendLogin102(discordUser.token);
+            _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username);
         }
 
         /* UI updates — work on both domains */
@@ -335,7 +351,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         if (window.MC) {
                             MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
                         } else {
-                            _lw_sendLogin102(user.token);
+                            _lw_sendLogin102(user.token, user.id, user.globalName || user.username);
                         }
                         _lw_sendDiscordProfile(user);
                         console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
