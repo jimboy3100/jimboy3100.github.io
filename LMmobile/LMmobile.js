@@ -321,12 +321,17 @@
             function fixInput(el) {
                 if (!el || el._lmFixed) return;
                 el._lmFixed = true;
-                el.setAttribute('autocomplete', 'off');
-                /* Some mobile browsers ignore autocomplete="off",
-                 * so also set these attributes as extra hints: */
+                /* Android Autofill Framework ignores autocomplete="off".
+                 * Using "one-time-code" tricks it into suppressing all
+                 * autofill suggestions (passwords, cards, GPS). Paste still works. */
+                el.setAttribute('autocomplete', 'one-time-code');
                 el.setAttribute('autocorrect', 'off');
                 el.setAttribute('autocapitalize', 'off');
                 el.setAttribute('spellcheck', 'false');
+                /* Suppress third-party password managers */
+                el.setAttribute('data-lpignore', 'true');      /* LastPass */
+                el.setAttribute('data-1p-ignore', '');          /* 1Password */
+                el.setAttribute('data-form-type', 'other');     /* Dashlane */
             }
 
             function scanAll() {
