@@ -1835,8 +1835,8 @@ setTimeout(function () {
                     }
                 }
             }
-            console.log('[LM] SpineSkinMap built with ' + Object.keys(window.SpineSkinMap).length + ' entries');
-        } catch(e) { console.warn('[LM] Failed to build SpineSkinMap', e); }
+            //console.log('[LM] SpineSkinMap built with ' + Object.keys(window.SpineSkinMap).length + ' entries');
+        } catch(e) { /*console.warn('[LM] Failed to build SpineSkinMap', e);*/ }
 
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
@@ -12768,7 +12768,7 @@ function thelegendmodproject() {
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        console.error('[LW 102 DBG] onMobileData error:', e102);
+                        //console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
