@@ -12,6 +12,24 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
     }
 
+    /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
+     * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
+    window.gapiAsyncInit = function() {
+        console.log('[LW Google] Blocked old gapiAsyncInit on our domain');
+    };
+    /* Remove old gapi script tags from DOM before they load */
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+                if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
+                    node.remove();
+                    console.log('[LW Google] Removed old gapi script tag');
+                }
+            });
+        });
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
     /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
