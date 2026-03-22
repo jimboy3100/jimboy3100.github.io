@@ -300,6 +300,80 @@
             setTimeout(apply, 6000);
         })();
 
+        /* ═══════════════════════════════════════════════════════
+         *  MOBILE INPUT GUARD — suppress keyboard on quick tap
+         *  Inputs are made readonly so a single tap doesn't open
+         *  the keyboard or context menu. Long-press (≥500ms) or
+         *  the browser's native "Paste" (contextmenu) removes
+         *  readonly and focuses the input for editing.
+         *  Only runs on mobile (this file is gated by touch check).
+         * ═══════════════════════════════════════════════════════ */
+        (function mobileInputGuard() {
+            var HOLD_MS = 500;
+            var guardedInputs = ['#nick', '#skin', '#server-token'];
+
+            function guard(input) {
+                if (!input || input._lmGuarded) return;
+                input._lmGuarded = true;
+                input.setAttribute('readonly', '');
+
+                var holdTimer = null;
+
+                function unlock() {
+                    input.removeAttribute('readonly');
+                    input.focus();
+                    /* select all text so paste replaces it */
+                    try { input.setSelectionRange(0, input.value.length); } catch (e) {}
+                }
+
+                /* long-press: start timer on touchstart, unlock after HOLD_MS */
+                input.addEventListener('touchstart', function (e) {
+                    holdTimer = setTimeout(function () {
+                        holdTimer = null;
+                        unlock();
+                    }, HOLD_MS);
+                }, { passive: true });
+
+                input.addEventListener('touchend', function () {
+                    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+                }, { passive: true });
+
+                input.addEventListener('touchcancel', function () {
+                    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+                }, { passive: true });
+
+                /* also unlock on native contextmenu (covers "Paste" in some browsers) */
+                input.addEventListener('contextmenu', function () {
+                    unlock();
+                });
+
+                /* re-lock when input loses focus */
+                input.addEventListener('blur', function () {
+                    input.setAttribute('readonly', '');
+                });
+            }
+
+            function scan() {
+                guardedInputs.forEach(function (sel) {
+                    var el = document.querySelector(sel);
+                    if (el) guard(el);
+                });
+            }
+
+            /* scan immediately + re-scan for dynamically created inputs (#skin) */
+            scan();
+            /* remove autofocus from nick input so it doesn't grab keyboard on load */
+            var nickInput = document.getElementById('nick');
+            if (nickInput) { nickInput.removeAttribute('autofocus'); nickInput.blur(); }
+            setTimeout(scan, 2000);
+            setTimeout(scan, 5000);
+            /* MutationObserver for #skin which is created by ogario after DOM ready */
+            var obs = new MutationObserver(function () { scan(); });
+            obs.observe(document.body, { childList: true, subtree: true });
+            /* stop observing after 30s to save resources */
+            setTimeout(function () { obs.disconnect(); }, 30000);
+        })();
+
         document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
         document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });

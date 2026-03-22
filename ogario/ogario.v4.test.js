@@ -2083,8 +2083,8 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
-        showStatsWorldSize: 'World Size (LegendWorld)',
-        showStatsDecayInfo: 'Decay Info (LegendWorld)',
+        showStatsWorldSize: 'World Size (Expanding Land)',
+        showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -2570,8 +2570,8 @@ var displayText = {
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
-        showStatsWorldSize: 'World Size (LegendWorld)',
-        showStatsDecayInfo: 'Decay Info (LegendWorld)',
+        showStatsWorldSize: 'World Size (Expanding Land)',
+        showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
         showStatsRender: 'Time percentage % consumed for Drawing',
@@ -7311,7 +7311,7 @@ function thelegendmodproject() {
             if (ogarcopythelb.clanTag.length > 0) {
                 ogario.clanTag = ogarcopythelb.clanTag;
             }
-            /* LegendWorld: send clan tag to game server via opcode 203 (0xCB)
+            /* Expanding Land: send clan tag to game server via opcode 203 (0xCB)
              * [203][UTF-8 tag bytes][0x00] — server stores in player->clan_tag */
             if (LM.isLegendWorld && legendmod.isSocketOpen()) {
                 var tagStr = ogarcopythelb.clanTag || '';
@@ -7689,7 +7689,7 @@ function thelegendmodproject() {
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
-                    /* ── LegendWorld: Draw zone on minimap (all phases) ── */
+                    /* ── Expanding Land: Draw zone on minimap (all phases) ── */
                     LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
@@ -9138,7 +9138,7 @@ function thelegendmodproject() {
         sendChatMessage(type, message) {
             //console.log(type);console.log(message);
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
-                /* LegendWorld + has clan tag → send via game server opcode 202 (0xCA)
+                /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
@@ -11195,7 +11195,7 @@ function thelegendmodproject() {
         mapMaxX: 7071,
         mapMaxY: 7071,
 
-        /* LegendWorld dynamic map state */
+        /* Expanding Land dynamic map state */
         mapEvent: {
             phase: 0,        // 0=normal, 1=expanding, 2=warning, 3=danger, 4=shrinking
             currentSize: 0,
@@ -11209,7 +11209,7 @@ function thelegendmodproject() {
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
 
-        /* LegendWorld decay info — populated by opcode 202 (0xCA) */
+        /* Expanding Land decay info — populated by opcode 202 (0xCA) */
         decayInfo: {
             active: false,
             totalScore: 0,     // ×10 (350 = 35.0)
@@ -11225,7 +11225,7 @@ function thelegendmodproject() {
             decayIntervalSecs: 4
         },
 
-        /* LegendWorld server identification — set true when server sends
+        /* Expanding Land server identification — set true when server sends
          * the LW beacon (opcode 0xF0 + 'LW') during handshake */
         isLegendWorld: false,
 
@@ -11366,7 +11366,7 @@ function thelegendmodproject() {
             this.accessTokenSent = false;
             this.connectionOpened = false;
             this.mapOffsetFixed = false;
-            this.isLegendWorld = false; // reset LegendWorld state on new connection
+            this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
             LM.mapEvent.active = false;
             LM.mapEvent.phase = 0;
@@ -11381,7 +11381,7 @@ function thelegendmodproject() {
             this.serverType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
                 : t.includes('agar2.com') ? 'agar2'
-                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'legendworld'
+                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                 : 'private';
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
@@ -11881,7 +11881,7 @@ function thelegendmodproject() {
                 console.log('%c[MultiProto]%c Spawn sent: nick=%s skin=%s party=%s', 'color:#3f3', 'color:inherit', nick, skinName, partyCode);
                 return;
             }
-            // Default (agar.io / LegendWorld / other): just nick
+            // Default (agar.io / Expanding Land / other): just nick
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
@@ -12261,7 +12261,7 @@ function thelegendmodproject() {
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
                 */
         },
-        /* ── LegendWorld: Handle map resize events (opcode 200) ── */
+        /* ── Expanding Land: Handle map resize events (opcode 200) ── */
         handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
             var me = this.mapEvent;
             if (currentTier >= 0) LM.mapTier = currentTier;
@@ -13471,14 +13471,14 @@ function thelegendmodproject() {
                 //2020 jimboy3100
 
                 default:
-                    /* ── LegendWorld opcodes handled in default: so they never
+                    /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
                     if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
-                        /* LW Beacon — sets isLegendWorld */
+                        /* LW Beacon — sets isLegendWorld (Expanding Land) */
                         LM.isLegendWorld = true;
-                        this.gameMode = ':legendworld';
-                        console.log('%c[LegendWorld]%c Connected to LegendWorld server!',
+                        this.gameMode = ':expandingland';
+                        console.log('%c[Expanding Land]%c Connected to Expanding Land server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
                     } else if (LM.isLegendWorld && _lwOp === 200) {
                         /* Map Event */
@@ -14543,7 +14543,7 @@ Game name     : ${i.displayName}<br/>
             }
 
             if (LM.isLegendWorld) {
-                /* LegendWorld: dynamic sizing from border values */
+                /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~Math.abs(right - left);
                 this.mapOffset = 0;
                 /* If map size changed (LW resize), reset the fixed flag */
@@ -15517,7 +15517,7 @@ Game name     : ${i.displayName}<br/>
                 var tempborderwidthradius = defaultSettings.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
-            /* ── LegendWorld: Draw warning/danger zone overlay ── */
+            /* ── Expanding Land: Draw warning/danger zone overlay ── */
             if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
                 this.drawLegendWorldZone(this.ctx);
             }
@@ -16187,7 +16187,7 @@ Game name     : ${i.displayName}<br/>
                 "skrrt";
             }
         },
-        /* ── LegendWorld: Warning/Danger zone overlay ── */
+        /* ── Expanding Land: Warning/Danger zone overlay ── */
         drawLegendWorldZone(ctx) {
             if (!LM.mapEvent || !LM.mapEvent.active) return;
             var me = LM.mapEvent;
