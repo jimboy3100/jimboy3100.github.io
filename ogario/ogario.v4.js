@@ -7298,8 +7298,7 @@ function thelegendmodproject() {
                     var ownSkinUrl = window.VanillaSkinUrlMap && window.VanillaSkinUrlMap[ownSkinKey];
                     if (ownSkinUrl) {
                         window.lastusednameforskin = ogarcopythelb.nick;
-                        application.customSkinsMap[ogarcopythelb.nick] = ownSkinUrl;
-                        application.loadSkin(application.customSkinsCache, ownSkinUrl);
+                        core.registerSkin(ogarcopythelb.nick, null, ownSkinUrl, null);
                     }
                 }
             } else {
@@ -14682,11 +14681,7 @@ Game name     : ${i.displayName}<br/>
                     var skinUrl = window.VanillaSkinUrlMap[g];
                     if (skinUrl) {
                         window.lastusednameforskin = y;
-                        var skinKey = y;
-                        if (!application.customSkinsMap[skinKey]) {
-                            application.customSkinsMap[skinKey] = skinUrl;
-                            application.loadSkin(application.customSkinsCache, skinUrl);
-                        }
+                        core.registerSkin(y, null, skinUrl, null);
                     }
                 }
             }
