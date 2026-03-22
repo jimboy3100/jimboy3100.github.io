@@ -106,18 +106,6 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     legendmod.sendMessage(view);
                     console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
-
-                    /* Update UI to logged-in state (same as agar.io after Google login) */
-                    var hello = document.getElementById('helloContainer');
-                    if (hello) hello.setAttribute('data-logged-in', '1');
-                    /* Show profile name */
-                    var nameEls = document.querySelectorAll('.agario-profile-name');
-                    for (var ni = 0; ni < nameEls.length; ni++) nameEls[ni].textContent = profile.name || profile.email || 'Player';
-                    /* Hide social login buttons, show settings (Spectate/Logout) */
-                    var socialContainer = document.getElementById('socialLoginContainer');
-                    if (socialContainer) socialContainer.style.display = 'none';
-                    var settingsDiv = document.getElementById('settings');
-                    if (settingsDiv) settingsDiv.style.display = 'block';
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
                 }
