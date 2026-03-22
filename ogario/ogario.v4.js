@@ -1836,6 +1836,19 @@ setTimeout(function () {
             }
         } catch(e) { }
 
+        /* Build VanillaSkinUrlMap: %skinname -> full CDN URL (like Delta's vanillaSkinMap) */
+        window.VanillaSkinUrlMap = {};
+        var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "v15/10890/");
+        for (var i = 0; i < window.EquippableSkins.length; i++) {
+            var skin = window.EquippableSkins[i];
+            var key = skin.productId.replace('skin_', '%');
+            if (skin.image && skin.image !== "uses_spine") {
+                window.VanillaSkinUrlMap[key] = cdnBase + skin.image + "?";
+            } else if (skin.image === "uses_spine" && window.SpineSkinMap[skin.productId]) {
+                window.VanillaSkinUrlMap[key] = cdnBase + window.SpineSkinMap[skin.productId] + ".png?";
+            }
+        }
+
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
         for (var player = 0; player < window.FreeSkins.length; player++) {
@@ -7281,16 +7294,12 @@ function thelegendmodproject() {
                     //core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
                     //window.UserVanillaSkin=null;
                 } else {
-                    for (player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === "skin_" + window.UserVanillaSkin) {
-                            var skinImg = window.EquippableSkins[player].image;
-                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) { skinImg = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png"; }
-                            if (skinImg && skinImg !== "uses_spine") {
-                                window.lastusednameforskin = ogarcopythelb.nick;
-                                application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
-                            }
-                        }
+                    var ownSkinKey = '%' + window.UserVanillaSkin;
+                    var ownSkinUrl = window.VanillaSkinUrlMap && window.VanillaSkinUrlMap[ownSkinKey];
+                    if (ownSkinUrl) {
+                        window.lastusednameforskin = ogarcopythelb.nick;
+                        application.customSkinsMap[ogarcopythelb.nick] = ownSkinUrl;
+                        application.loadSkin(application.customSkinsCache, ownSkinUrl);
                     }
                 }
             } else {
@@ -14157,14 +14166,10 @@ function thelegendmodproject() {
                     link1 = link1.charAt(0).toUpperCase() + link1.slice(1);
                     link1 = makeUpperCaseAfterUnderline(link1);
                     return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + link1 + ".png", type];
-                } else if (window.LMAgarGameConfiguration != undefined) {
-                    for (var player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === link) {
-                            var skinImg = window.EquippableSkins[player].image;
-                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[link]) { skinImg = window.SpineSkinMap[link] + ".png"; }
-                            if (skinImg && skinImg !== "uses_spine") { return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg, type]; }
-                        }
-                    }
+                } else if (window.VanillaSkinUrlMap) {
+                    var mapKey = link.replace('skin_', '%');
+                    var mapUrl = window.VanillaSkinUrlMap[mapKey];
+                    if (mapUrl) { return [mapUrl, type]; }
                 }
             }
         },
@@ -14673,22 +14678,14 @@ Game name     : ${i.displayName}<br/>
                     g1 = makeUpperCaseAfterUnderline(g1);
                     var customskinanimated = true;
                     core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png?", customskinanimated);
-                } else if (g != null && defaultmapsettings.vanillaSkins === true && window.LMAgarGameConfiguration != undefined) {
-                    for (var player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === "skin_" + g.replace('%', '')) {
-                            var skinImg = window.EquippableSkins[player].image;
-                            if (skinImg === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[window.EquippableSkins[player].productId]) { skinImg = window.SpineSkinMap[window.EquippableSkins[player].productId] + ".png"; }
-                            if (skinImg && skinImg !== "uses_spine") {
-                                window.lastusednameforskin = y;
-                                var skinKey = y;
-                                if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
-                                    application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
-                                    application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
-                                } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
-                                    application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?";
-                                    application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + skinImg + "?");
-                                }
-                            }
+                } else if (g != null && defaultmapsettings.vanillaSkins === true && window.VanillaSkinUrlMap) {
+                    var skinUrl = window.VanillaSkinUrlMap[g];
+                    if (skinUrl) {
+                        window.lastusednameforskin = y;
+                        var skinKey = y;
+                        if (!application.customSkinsMap[skinKey]) {
+                            application.customSkinsMap[skinKey] = skinUrl;
+                            application.loadSkin(application.customSkinsCache, skinUrl);
                         }
                     }
                 }
