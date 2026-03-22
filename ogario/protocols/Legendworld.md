@@ -1,8 +1,8 @@
-# LegendWorld.md
+# Expanding Land
 
 ## Overview
 
-LegendWorld is a dynamically scaling Agar-style game server where the
+Expanding Land is a dynamically scaling Agar-style game server where the
 playable map expands and contracts based on the number of active
 players.
 
@@ -315,7 +315,7 @@ During expansion:
 
 # Design Goals
 
-LegendWorld map scaling aims to:
+Expanding Land map scaling aims to:
 
 -   keep gameplay density balanced
 -   avoid empty oversized maps
@@ -336,7 +336,7 @@ server (C) and client (JS).
 
 ## Server Architecture
 
-All LegendWorld logic lives in `LegendWorld/src/` and is controlled by
+All Expanding Land logic lives in `LegendWorld/src/` and is controlled by
 the `MapScaler` module.
 
 ### Files
@@ -395,7 +395,7 @@ to map area: `new_amount = base_amount * (new_area / base_area)`.
 ### Config Defaults (config.c)
 
 ```c
-cfg->lw_enabled = 1;               // enabled for LegendWorld
+cfg->lw_enabled = 1;               // enabled for Expanding Land
 cfg->lw_warning_duration = 1500;   // 60 seconds at 25Hz
 cfg->lw_danger_duration = 375;     // 15 seconds at 25Hz
 cfg->lw_transition_duration = 150; // 6 seconds at 25Hz
@@ -405,7 +405,7 @@ cfg->lw_transition_duration = 150; // 6 seconds at 25Hz
 
 ## Opcode 200 (0xC8) — MapEvent Packet
 
-Custom opcode sent by the LegendWorld server at each phase transition.
+Custom opcode sent by the Expanding Land server at each phase transition.
 
 ### Binary Format
 
@@ -436,7 +436,7 @@ Total: 42 bytes
 
 ## Client Implementation (ogario.test.v4.js)
 
-All client changes are **dormant on non-LegendWorld servers**. The opcode 200
+All client changes are **dormant on non-Expanding Land servers**. The opcode 200
 handler is guarded by `!LM.integrity` (private server only) and all rendering
 checks `LM.mapEvent.active` which defaults to `false`.
 
@@ -454,7 +454,7 @@ checks `LM.mapEvent.active` which defaults to `false`.
 3. **`case 200` in `handleMessage()`** — Parses the 42-byte opcode 200 packet
    using `DataView.getFloat64()` for the f64le values
 
-4. **`drawLegendWorldZone()`** in `drawRender` — Renders the zone overlay on
+4. **`drawLegendWorldZone()`** in `drawRender` (function name kept for compat) — Renders the zone overlay on
    the main game canvas:
    - Warning phase: semi-transparent light green (`rgba(100,255,100,0.15)`)
    - Danger phase: pulsing red (`rgba(255,50,50, 0.12-0.20)`)
@@ -467,7 +467,7 @@ checks `LM.mapEvent.active` which defaults to `false`.
 
 ### No Impact on Other Game Modes
 
-- Opcode 200 is custom to LegendWorld; no other server sends it
+- Opcode 200 is custom to Expanding Land; no other server sends it
 - All rendering is gated behind `LM.mapEvent.active === true`
 - `handleMapEvent()` is never called unless opcode 200 is received
 
