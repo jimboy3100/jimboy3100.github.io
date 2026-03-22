@@ -97,8 +97,15 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     window.MC.onGoogleLoginComplete(true);
                     window.MC.showInstructionsPanel(true);
                 } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    /* MC unavailable (expanding.land) — send opcode 102 directly */
+                    /* MC unavailable (expanding.land / private server) */
                     console.log('[LW Google DBG] MC unavailable, sending opcode 102 directly');
+
+                    /* Store token in master so login() can resend on Play clicks */
+                    if (window.master && window.master.doLoginWithGPlus) {
+                        window.master.doLoginWithGPlus(accessToken);
+                    }
+
+                    /* Send opcode 102 directly to game server */
                     var view = legendmod.createView(1 + accessToken.length);
                     view.setUint8(0, 102);
                     for (var ti = 0; ti < accessToken.length; ti++) {
@@ -106,6 +113,25 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     legendmod.sendMessage(view);
                     console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
+
+                    /* Update profile UI (replaces doGl() which uses old gapi.auth2) */
+                    if (profile.picture) {
+                        $('.agario-profile-picture').attr('src', profile.picture);
+                    }
+                    if (profile.name) {
+                        $('#UserProfileName1').text(profile.name);
+                        window.userfirstname = profile.name;
+                        localStorage.setItem('userfirstname', profile.name);
+                    }
+                    if (profile.sub) {
+                        $('#UserProfileUID1').val(profile.sub);
+                        $('#replayuid').val(profile.sub);
+                        window.userid = profile.sub;
+                        localStorage.setItem('userid', profile.sub);
+                    }
+                    /* Set logged-in state so Play/Logout buttons appear */
+                    $('#helloContainer').attr('data-logged-in', '1');
+                    console.log('[LW Google] UI updated for private server login');
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
                 }
