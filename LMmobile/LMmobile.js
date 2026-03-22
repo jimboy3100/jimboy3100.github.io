@@ -246,22 +246,33 @@
 
         /* ── Scale #helloContainer to fit viewport (preserves internal layout) ── */
         (function fitHelloContainer() {
+            var lastVh = window.innerHeight; // remember viewport height before keyboard opens
             function fit() {
                 var hc = document.getElementById('helloContainer');
                 if (!hc) return;
+                /* Skip re-fit when an input/textarea inside helloContainer is focused.
+                 * The mobile keyboard shrinks innerHeight, which would rescale the
+                 * container to a tiny size, effectively hiding it. */
+                var active = document.activeElement;
+                if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
+                    if (hc.contains(active)) return;
+                }
                 var vw = window.innerWidth;
                 var vh = window.innerHeight;
+                /* Use the larger of current and last-known height to avoid keyboard shrinkage */
+                if (vh > lastVh * 0.6) lastVh = vh;
+                var useVh = Math.max(vh, lastVh);
                 var baseW = 740; // original width from legend.css
                 var baseH = hc.scrollHeight || 600; // actual content height
                 var ratioW = (vw - 16) / baseW;
-                var ratioH = (vh - 16) / baseH;
+                var ratioH = (useVh - 16) / baseH;
                 var ratio = Math.min(1, ratioW, ratioH);
                 hc.style.transform = 'translate(-50%,-50%) scale(' + ratio + ')';
                 hc.style.transformOrigin = 'center center';
                 hc.style.position = 'fixed';
                 hc.style.top = '50%';
                 hc.style.left = '50%';
-                hc.style.maxHeight = Math.floor(vh / ratio) + 'px';
+                hc.style.maxHeight = Math.floor(useVh / ratio) + 'px';
                 hc.style.overflowY = 'auto';
             }
             fit();
