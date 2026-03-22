@@ -15,7 +15,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
      * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
     window.gapiAsyncInit = function() {
-        console.log('[LW Google] Blocked old gapiAsyncInit on our domain');
+
     };
     /* Remove old gapi script tags from DOM before they load */
     var observer = new MutationObserver(function(mutations) {
@@ -23,7 +23,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             m.addedNodes.forEach(function(node) {
                 if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
                     node.remove();
-                    console.log('[LW Google] Removed old gapi script tag');
+
                 }
             });
         });
@@ -61,7 +61,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 return;
             }
             var accessToken = response.access_token;
-            console.log('[LW Google DBG] Got access token, length:', accessToken.length);
+
 
             /* Fetch user profile for picture and social ID */
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -69,7 +69,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             })
             .then(function(r) { return r.json(); })
             .then(function(profile) {
-                console.log('[LW Google DBG] Profile fetched:', profile.email, profile.sub);
+
 
                 /* Update storage info like the old flow does */
                 var st = window.storageInfo || window.defaultSt;
@@ -98,7 +98,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     window.MC.showInstructionsPanel(true);
                 } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
                     /* MC unavailable (expanding.land / private server) */
-                    console.log('[LW Google DBG] MC unavailable, sending opcode 102 directly');
+
 
                     /* Store token in master so login() can resend on Play clicks */
                     if (window.master && window.master.doLoginWithGPlus) {
@@ -112,7 +112,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         view.setUint8(1 + ti, accessToken.charCodeAt(ti));
                     }
                     legendmod.sendMessage(view);
-                    console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
+
 
                     /* Update profile UI (replaces doGl() which uses old gapi.auth2) */
                     if (profile.picture) {
@@ -131,12 +131,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     /* Set logged-in state so Play/Logout buttons appear */
                     $('#helloContainer').attr('data-logged-in', '1');
-                    console.log('[LW Google] UI updated for private server login');
+
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
                 }
 
-                console.log('[LW Google] Login successful:', profile.email);
+
             })
             .catch(function(err) {
                 console.error('[LW Google] Profile fetch failed:', err);
@@ -173,16 +173,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 e.preventDefault();
                 e.stopPropagation();
                 if (!gisLoaded || !tokenClient) {
-                    console.warn('[LW Google] GIS not loaded yet, retrying...');
+
                     setTimeout(function() { newBtn.click(); }, 500);
                     return;
                 }
-                console.log('[LW Google DBG] Login button clicked');
+
                 /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
                 tokenClient.requestAccessToken();
             }, true);
 
-            console.log('[LW Google] Login override installed (GIS)');
+
         }
 
         if (document.readyState === 'loading') {
