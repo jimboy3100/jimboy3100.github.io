@@ -6357,6 +6357,12 @@ function thelegendmodproject() {
                 placement: "bottom"
             });
             $("#locationKnown, #locationUnknown").insertAfter($(".skin"));
+            /* Mobile: disable autocomplete on ogario inputs to prevent
+             * browser from suggesting passwords/cards/GPS on mobile keyboards.
+             * Only affects inputs created by ogario.v4.js, not LMExpress. */
+            if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                $('#clantag, #nick, #skin').attr('autocomplete', 'off');
+            }
             $("#region").before('<button class="btn btn-warning btn-server-info ogicon-cogs" style="display: none;"></button>');
             $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons");
             $("#agario-main-buttons").addClass("clearfix").before('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS" style="display: none;">' +
