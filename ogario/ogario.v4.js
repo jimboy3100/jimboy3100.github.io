@@ -12592,7 +12592,7 @@ function thelegendmodproject() {
             var s = 0;
             var opcode = data.getUint8(s++);
             /* LW DEBUG: trace all opcodes > 90 to find the 102 response */
-            if (opcode >= 100) console.log('[LW DBG] handleMessage opcode=' + opcode + ' len=' + data.byteLength);
+            // if (opcode >= 100) console.log('[LW DBG] handleMessage opcode=' + opcode + ' len=' + data.byteLength);
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
