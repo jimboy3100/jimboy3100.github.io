@@ -107,6 +107,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (window.MC) window.MC.onGoogleLoginComplete(false);
                 return;
             }
+            /* Validate this callback belongs to the current Google login attempt */
+            if (!window._lwAuth || window._lwAuth.provider !== 'google' ||
+                (window._lwAuth.state !== 'waiting_oauth' && window._lwAuth.state !== 'waiting_server')) {
+                console.log('[LW Google] Ignoring stale token response (not current attempt)');
+                return;
+            }
             var accessToken = response.access_token;
 
 
@@ -165,7 +171,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                      * server (with refreshed profile from 204→102 resend),
                      * updateUserInfo() becomes the single source of truth.
                      * Do NOT set agarioUID here — it must come from server. */
-                    if (!window._lw_protobuf102Received) {
+                    if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
                         console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
                         if (profile.picture) {
                             $('.agario-profile-picture').attr('src', profile.picture);
@@ -319,7 +325,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         if (!discordUser || !discordUser.token) return;
         /* Reset protobuf flag so temporary fallback can run for this new login.
          * It will be set back to true when the server's type-11 response arrives. */
-        window._lw_protobuf102Received = false;
+        window._lw_protobuf102Received = false; /* debug marker */
         window.legendmod_discordUser = discordUser;
 
         if (window.MC) {
@@ -362,7 +368,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
          * overwrite these values with authoritative server data.
          * The server UID and this fallback UID are DIFFERENT identifiers,
          * so we do NOT set window.agarioUID here — that must come from protobuf. */
-        if ((window.expandingLand || window.legendModFromWebsite) && !window._lw_protobuf102Received) {
+        if ((window.expandingLand || window.legendModFromWebsite) && (!window._lwAuth || window._lwAuth.state !== 'logged_in')) {
             console.log('[LW Discord FALLBACK] Setting temporary profile (protobuf not received yet)');
             /* Social ID = Discord user ID (temporary until server confirms) */
             if (discordUser.id) {
@@ -512,8 +518,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
                     if (discordUser && discordUser.id && discordUser.token) {
-                        if (window._discordLoginDone) return; /* already handled by another relay */
-                        window._discordLoginDone = true;
+                        /* Only accept if a Discord login attempt is active */
+                        if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                            window._lwAuth.state !== 'waiting_oauth') {
+                            console.log('[LW Discord] BroadcastChannel ignored (not current discord attempt)');
+                            return;
+                        }
+                        window._discordLoginDone = true; /* debug only */
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
@@ -563,8 +574,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
-                    if (window._discordLoginDone) return; /* already handled by another relay */
-                    window._discordLoginDone = true;
+                    /* Only accept if a Discord login attempt is active */
+                    if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                        window._lwAuth.state !== 'waiting_oauth') {
+                        console.log('[LW Discord] postMessage ignored (not current discord attempt)');
+                        return;
+                    }
+                    window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
 
@@ -611,8 +627,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             var discordUser = JSON.parse(data);
                             console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
-                                if (window._discordLoginDone) { clearInterval(poll); return; } /* already handled */
-                                window._discordLoginDone = true;
+                                /* Only accept if a Discord login attempt is active */
+                                if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                                    window._lwAuth.state !== 'waiting_oauth') {
+                                    clearInterval(poll);
+                                    console.log('[LW Discord] localStorage poll ignored (not current discord attempt)');
+                                    return;
+                                }
+                                window._discordLoginDone = true; /* debug only */
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
                                 console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
