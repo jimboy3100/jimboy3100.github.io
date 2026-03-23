@@ -109,23 +109,30 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     _lw_sendLogin102(accessToken, profile.sub, profile.name);
 
 
-                    /* Update profile UI (replaces doGl() which uses old gapi.auth2) */
-                    if (profile.picture) {
-                        $('.agario-profile-picture').attr('src', profile.picture);
+                    /* Update profile UI — TEMPORARY fallback only.
+                     * Once protobuf type-11 login response arrives from the
+                     * server (with refreshed profile from 204→102 resend),
+                     * updateUserInfo() becomes the single source of truth.
+                     * Do NOT set agarioUID here — it must come from server. */
+                    if (!window._lw_protobuf102Received) {
+                        console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
+                        if (profile.picture) {
+                            $('.agario-profile-picture').attr('src', profile.picture);
+                        }
+                        if (profile.name) {
+                            $('#UserProfileName1').text(profile.name);
+                            window.userfirstname = profile.name;
+                            localStorage.setItem('userfirstname', profile.name);
+                        }
+                        if (profile.sub) {
+                            $('#UserProfileUID1').val(profile.sub);
+                            $('#replayuid').val(profile.sub);
+                            window.userid = profile.sub;
+                            localStorage.setItem('userid', profile.sub);
+                        }
+                        /* Set logged-in state so Play/Logout buttons appear */
+                        $('#helloContainer').attr('data-logged-in', '1');
                     }
-                    if (profile.name) {
-                        $('#UserProfileName1').text(profile.name);
-                        window.userfirstname = profile.name;
-                        localStorage.setItem('userfirstname', profile.name);
-                    }
-                    if (profile.sub) {
-                        $('#UserProfileUID1').val(profile.sub);
-                        $('#replayuid').val(profile.sub);
-                        window.userid = profile.sub;
-                        localStorage.setItem('userid', profile.sub);
-                    }
-                    /* Set logged-in state so Play/Logout buttons appear */
-                    $('#helloContainer').attr('data-logged-in', '1');
 
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
@@ -292,36 +299,27 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         var slc = document.getElementById('socialLoginContainer');
         if (slc) slc.style.display = 'none';
 
-        /* [DEBUG FALLBACK] LW: Populate profile panel fields from Discord user data.
-         * This is a temporary fallback while the opcode 102 login response path
-         * is being fixed. Once Fix 3 (state-based login trigger) works properly,
-         * the server's 102 response should populate all these fields instead. */
-        if (window.expandingLand || window.legendModFromWebsite) {
-            /* Social ID = Discord user ID */
+        /* [DEBUG FALLBACK] LW: Temporary profile fields from Discord user data.
+         * This ONLY runs if the server's protobuf type-11 profile response
+         * has NOT arrived yet. Once pkt_102_login_response arrives (with the
+         * refreshed profile from opcode 204→102), updateUserInfo() will
+         * overwrite these values with authoritative server data.
+         * The server UID and this fallback UID are DIFFERENT identifiers,
+         * so we do NOT set window.agarioUID here — that must come from protobuf. */
+        if ((window.expandingLand || window.legendModFromWebsite) && !window._lw_protobuf102Received) {
+            console.log('[LW Discord FALLBACK] Setting temporary profile (protobuf not received yet)');
+            /* Social ID = Discord user ID (temporary until server confirms) */
             if (discordUser.id) {
                 window.agarioID = discordUser.id;
                 localStorage.setItem("agarioID", discordUser.id);
-                console.log('[LW Discord] Social ID set:', discordUser.id);
             }
-            /* UID = hash the token to create a stable identifier.
-             * This matches what the server does (playerdb_hash_uid). */
-            if (discordUser.token) {
-                var hash = 0;
-                for (var hi = 0; hi < discordUser.token.length; hi++) {
-                    hash = ((hash << 5) - hash) + discordUser.token.charCodeAt(hi);
-                    hash |= 0;
-                }
-                var uid = 'discord-' + Math.abs(hash).toString(16).padStart(8, '0');
-                window.agarioUID = uid;
-                localStorage.setItem("agarioUID", uid);
-                $("#UserProfileUUID1").val(uid);
-                console.log('[LW Discord] UID set:', uid);
-            }
-            /* Display name for profile panel */
+            /* Do NOT set window.agarioUID here — authoritative UID comes from server protobuf.
+             * The old code hashed the token into 'discord-XXXXXXXX' which didn't match
+             * the server's uid_hex_to_numeric() format at all. */
+            /* Display name for profile panel (temporary until server confirms) */
             if (discordUser.globalName || discordUser.username) {
                 var name = discordUser.globalName || discordUser.username;
                 $('.agario-profile-name').text(name);
-                console.log('[LW Discord] Profile name set:', name);
             }
         }
 
@@ -13664,6 +13662,10 @@ function thelegendmodproject() {
             if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
+                    if (LM.isLegendWorld) {
+                        window._lw_protobuf102Received = true;
+                        console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
+                    }
                     this.user = {
                         coins: 0,
                         dna: 0,
