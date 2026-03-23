@@ -10,7 +10,7 @@ window.EnvConfig.configVersion = self.localStorage.getItem("EnvConfig.configVers
 
 var window = this;
 window.loggedIn=false;
-if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){
+if (!(document.URL && (document.URL.includes('jimboy3100.github.io') || document.URL.includes('expanding.land') || document.URL.includes('legendmod.ml')))){
 $.ajax("//agar.io/index.html", {
     error() {},
     success(sketchContents) {
@@ -264,7 +264,7 @@ function legendmaster(self) {
                 this.protocolVersion = self.localStorage.getItem("ogarioProtocolVersion");
             }					
             var window = this;
-			if (!(document.URL && document.URL.includes('jimboy3100.github.io'))){	
+			if (!(document.URL && (document.URL.includes('jimboy3100.github.io') || document.URL.includes('expanding.land') || document.URL.includes('legendmod.ml')))){	
 			setTimeout(function() {
 				ajaxrequestMaster();
 			}, 500);	
