@@ -34,12 +34,27 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * One _lwAuth object tracks the current login attempt.
      * No sticky provider flags — every login click starts fresh.
      * Only protobuf type-11 from the server confirms login. */
+
+    /* Hardened auth guard: attemptId + done + tabId + timestamp.
+     * Every async callback must pass all 5 checks:
+     *   1. attemptId matches current attempt
+     *   2. provider matches
+     *   3. state matches expected (not idle, not logged_in already)
+     *   4. not already consumed (done flag)
+     *   5. tabId matches (cross-tab isolation)
+     *   6. timestamp within window (stale rejection) */
+    var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
     window._lwResetAuthState = function() {
         window._lwAuth = {
             attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
             provider: null,
             state: 'idle', /* idle | waiting_oauth | waiting_server | logged_in */
-            startedAt: 0
+            startedAt: 0,
+            done: false,           /* single-use: true after first callback */
+            tabId: _lwTabId,       /* cross-tab isolation */
+            googleAttemptId: 0,    /* snapshot for Google callbacks */
+            discordAttemptId: 0    /* snapshot for Discord callbacks */
         };
         window._lw_protobuf102Received = false;
         window._discordLoginDone = false;
@@ -53,16 +68,29 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window._lwAuth.provider = provider;
         window._lwAuth.state = 'waiting_oauth';
         window._lwAuth.startedAt = Date.now();
+        window._lwAuth.done = false; /* new attempt = not consumed */
+        window._lwAuth.tabId = _lwTabId;
         window._lw_protobuf102Received = false;
         window._discordLoginDone = false;
         console.log('[LW AUTH] Begin login attempt #' + window._lwAuth.attemptId + ' provider=' + provider);
         return window._lwAuth.attemptId;
     };
+    /* Hardened validation: 5 checks (attemptId, provider, not-done, tabId, timestamp) */
     window._lwIsCurrentAttempt = function(attemptId, provider) {
-        return window._lwAuth &&
-               window._lwAuth.attemptId === attemptId &&
-               window._lwAuth.provider === provider &&
-               (window._lwAuth.state === 'waiting_oauth' || window._lwAuth.state === 'waiting_server');
+        if (!window._lwAuth) return false;
+        if (window._lwAuth.attemptId !== attemptId) return false;
+        if (window._lwAuth.provider !== provider) return false;
+        if (window._lwAuth.done) return false; /* already consumed */
+        if (window._lwAuth.tabId !== _lwTabId) return false; /* cross-tab */
+        if (Date.now() - window._lwAuth.startedAt > 30000) return false; /* 30s stale */
+        return (window._lwAuth.state === 'waiting_oauth' || window._lwAuth.state === 'waiting_server');
+    };
+    /* Mark attempt as consumed — prevents double callback execution */
+    window._lwConsumeAttempt = function(provider) {
+        if (window._lwAuth && window._lwAuth.provider === provider) {
+            window._lwAuth.done = true;
+            console.log('[LW AUTH] Attempt #' + window._lwAuth.attemptId + ' consumed (' + provider + ')');
+        }
     };
     window._lwArmLoginTimeout = function(attemptId) {
         setTimeout(function() {
@@ -113,6 +141,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
                 return;
             }
+            /* Consume immediately — no second callback can pass */
+            window._lwConsumeAttempt('google');
             var accessToken = response.access_token;
 
 
@@ -525,6 +555,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             console.log('[LW Discord] BroadcastChannel ignored (stale attemptId)');
                             return;
                         }
+                        window._lwConsumeAttempt('discord'); /* lock before apply */
                         window._discordLoginDone = true; /* debug only */
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
@@ -581,6 +612,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         console.log('[LW Discord] postMessage ignored (stale attemptId)');
                         return;
                     }
+                    window._lwConsumeAttempt('discord'); /* lock before apply */
                     window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
@@ -636,6 +668,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                     console.log('[LW Discord] localStorage poll ignored (stale attemptId)');
                                     return;
                                 }
+                                window._lwConsumeAttempt('discord'); /* lock before apply */
                                 window._discordLoginDone = true; /* debug only */
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
@@ -665,6 +698,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 try {
                                     var discordUser = JSON.parse(finalData);
                                     if (discordUser && discordUser.id && discordUser.token) {
+                                        /* Guard late popup-close fallback with full validation */
+                                        if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                                            console.log('[LW Discord] Late popup-close ignored (stale/consumed)');
+                                            return;
+                                        }
+                                        window._lwConsumeAttempt('discord');
                                         window._lw_applyDiscordLogin(discordUser);
                                         console.log('[LW Discord DBG] Late login applied successfully');
                                     }
