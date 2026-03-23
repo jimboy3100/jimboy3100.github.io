@@ -108,9 +108,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 return;
             }
             /* Validate this callback belongs to the current Google login attempt */
-            if (!window._lwAuth || window._lwAuth.provider !== 'google' ||
+            if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.googleAttemptId, 'google') ||
                 (window._lwAuth.state !== 'waiting_oauth' && window._lwAuth.state !== 'waiting_server')) {
-                console.log('[LW Google] Ignoring stale token response (not current attempt)');
+                console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
                 return;
             }
             var accessToken = response.access_token;
@@ -240,6 +240,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 /* Start fresh login attempt */
                 var attemptId = window._lwBeginLogin('google');
                 window._lwArmLoginTimeout(attemptId);
+                window._lwAuth.googleAttemptId = attemptId;
 
                 /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
                 tokenClient.requestAccessToken();
@@ -518,10 +519,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
                     if (discordUser && discordUser.id && discordUser.token) {
-                        /* Only accept if a Discord login attempt is active */
-                        if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                        /* Only accept if this is the current Discord login attempt */
+                        if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
                             window._lwAuth.state !== 'waiting_oauth') {
-                            console.log('[LW Discord] BroadcastChannel ignored (not current discord attempt)');
+                            console.log('[LW Discord] BroadcastChannel ignored (stale attemptId)');
                             return;
                         }
                         window._discordLoginDone = true; /* debug only */
@@ -574,10 +575,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
-                    /* Only accept if a Discord login attempt is active */
-                    if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                    /* Only accept if this is the current Discord login attempt */
+                    if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
                         window._lwAuth.state !== 'waiting_oauth') {
-                        console.log('[LW Discord] postMessage ignored (not current discord attempt)');
+                        console.log('[LW Discord] postMessage ignored (stale attemptId)');
                         return;
                     }
                     window._discordLoginDone = true; /* debug only */
@@ -604,6 +605,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 /* Start fresh login attempt */
                 var attemptId = window._lwBeginLogin('discord');
                 window._lwArmLoginTimeout(attemptId);
+                window._lwAuth.discordAttemptId = attemptId;
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
@@ -627,11 +629,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             var discordUser = JSON.parse(data);
                             console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
-                                /* Only accept if a Discord login attempt is active */
-                                if (!window._lwAuth || window._lwAuth.provider !== 'discord' ||
+                                /* Only accept if this is the current Discord login attempt */
+                                if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
                                     window._lwAuth.state !== 'waiting_oauth') {
                                     clearInterval(poll);
-                                    console.log('[LW Discord] localStorage poll ignored (not current discord attempt)');
+                                    console.log('[LW Discord] localStorage poll ignored (stale attemptId)');
                                     return;
                                 }
                                 window._discordLoginDone = true; /* debug only */
