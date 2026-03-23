@@ -30,6 +30,53 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
 
+    /* ── LW: Stateless login state machine ──────────────────────────
+     * One _lwAuth object tracks the current login attempt.
+     * No sticky provider flags — every login click starts fresh.
+     * Only protobuf type-11 from the server confirms login. */
+    window._lwResetAuthState = function() {
+        window._lwAuth = {
+            attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
+            provider: null,
+            state: 'idle', /* idle | waiting_oauth | waiting_server | logged_in */
+            startedAt: 0
+        };
+        window._lw_protobuf102Received = false;
+        window._discordLoginDone = false;
+        window.legendmod_discordUser = null;
+        try { localStorage.removeItem('legendmod_discord'); } catch(e) {}
+        console.log('[LW AUTH] State reset to idle');
+    };
+    window._lwBeginLogin = function(provider) {
+        if (!window._lwAuth) window._lwResetAuthState();
+        window._lwAuth.attemptId += 1;
+        window._lwAuth.provider = provider;
+        window._lwAuth.state = 'waiting_oauth';
+        window._lwAuth.startedAt = Date.now();
+        window._lw_protobuf102Received = false;
+        window._discordLoginDone = false;
+        console.log('[LW AUTH] Begin login attempt #' + window._lwAuth.attemptId + ' provider=' + provider);
+        return window._lwAuth.attemptId;
+    };
+    window._lwIsCurrentAttempt = function(attemptId, provider) {
+        return window._lwAuth &&
+               window._lwAuth.attemptId === attemptId &&
+               window._lwAuth.provider === provider &&
+               (window._lwAuth.state === 'waiting_oauth' || window._lwAuth.state === 'waiting_server');
+    };
+    window._lwArmLoginTimeout = function(attemptId) {
+        setTimeout(function() {
+            if (window._lwAuth &&
+                window._lwAuth.attemptId === attemptId &&
+                window._lwAuth.state !== 'logged_in') {
+                console.warn('[LW AUTH] Login attempt #' + attemptId + ' timed out');
+                window._lwResetAuthState();
+            }
+        }, 20000);
+    };
+    /* Initialize on page load */
+    window._lwResetAuthState();
+
     /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
@@ -107,6 +154,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                     /* Send opcode 102 directly to game server with social ID and name */
                     _lw_sendLogin102(accessToken, profile.sub, profile.name);
+                    /* Transition: OAuth done → waiting for server confirmation */
+                    if (window._lwAuth && window._lwAuth.provider === 'google') {
+                        window._lwAuth.state = 'waiting_server';
+                    }
 
 
                     /* Update profile UI — TEMPORARY fallback only.
@@ -179,6 +230,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     setTimeout(function() { newBtn.click(); }, 500);
                     return;
                 }
+
+                /* Start fresh login attempt */
+                var attemptId = window._lwBeginLogin('google');
+                window._lwArmLoginTimeout(attemptId);
 
                 /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
                 tokenClient.requestAccessToken();
@@ -281,6 +336,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         } else {
             /* expanding.land path: MC unavailable, send opcode 102 directly */
             _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username);
+            /* Transition: OAuth done → waiting for server confirmation */
+            if (window._lwAuth && window._lwAuth.provider === 'discord') {
+                window._lwAuth.state = 'waiting_server';
+            }
         }
 
         /* UI updates — work on both domains */
@@ -418,10 +477,17 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
     };
 
-    /* Reset notification flag on logout so it shows again on next login */
+    /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function() {
         window._lw_loginNotifShown = false;
+        window._lwResetAuthState();
+        /* Reset UI */
+        var hello = document.getElementById('helloContainer');
+        if (hello) hello.removeAttribute('data-logged-in');
+        var slc = document.getElementById('socialLoginContainer');
+        if (slc) slc.style.display = '';
+        console.log('[LW AUTH] Logout — all login state cleared');
         if (_origLogout) _origLogout.apply(this, arguments);
     };
 
@@ -519,12 +585,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Button clicked');
                 console.log('[LW Discord DBG] Auth URL:', DISCORD_AUTH_URL);
 
-                /* Clear any stale Discord data from a previous session */
-                localStorage.removeItem('legendmod_discord');
-                window._discordLoginDone = false;
-                window._lw_protobuf102Received = false;
-                window.legendmod_discordUser = null;
-                console.log('[LW Discord DBG] Cleared old state (localStorage + flags)');
+                /* Start fresh login attempt */
+                var attemptId = window._lwBeginLogin('discord');
+                window._lwArmLoginTimeout(attemptId);
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
@@ -13731,7 +13794,12 @@ function thelegendmodproject() {
             switch (type) {
                 case 11:
                     if (LM.isLegendWorld) {
-                        window._lw_protobuf102Received = true;
+                        window._lw_protobuf102Received = true; /* debug marker */
+                        /* Transition: login confirmed by server */
+                        if (window._lwAuth && window._lwAuth.state === 'waiting_server') {
+                            window._lwAuth.state = 'logged_in';
+                            console.log('[LW AUTH] Login confirmed by server, provider=' + window._lwAuth.provider);
+                        }
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
                     }
                     this.user = {
