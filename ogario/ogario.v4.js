@@ -13651,7 +13651,17 @@ function thelegendmodproject() {
             if (msg == null) {
                 return
             }
-            const response = window.decodeMobileData(msg);
+            /* DEBUG: hex dump before decode to catch broken packets */
+            var response;
+            try {
+                response = window.decodeMobileData(msg);
+            } catch(decodeErr) {
+                if (LM.isLegendWorld) {
+                    var hex = Array.from(new Uint8Array(msg)).map(function(b){return b.toString(16).padStart(2,'0')}).join(' ');
+                    console.error('[LW 102 DECODE FAIL] len=' + msg.byteLength + ' hex=' + hex, decodeErr);
+                }
+                return;
+            }
             if (LM.isLegendWorld) console.log('[LW 102 TRACE] onMobileData decoded, type=' + (response && response.uncompressedData ? response.uncompressedData.type : 'null'));
             this.unpackageMessage(response);
         },
