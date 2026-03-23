@@ -288,6 +288,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
     function _lw_sendLogin102(token, socialId, displayName) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 /* Prepend social ID and display name as header lines before the token.
                  * Format: "SID:<socialId>\nNAME:<displayName>\n<token>"
@@ -319,6 +323,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Avatar is NOT sent — profile picture is rendered client-side only. */
     function _lw_sendDiscordProfile(discordUser) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var socialId = discordUser.id || '';
                 var displayName = discordUser.globalName || discordUser.username || '';

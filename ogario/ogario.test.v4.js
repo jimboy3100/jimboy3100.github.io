@@ -161,6 +161,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
     function _lw_sendLogin102(token) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var tokenBytes = [];
                 for (var i = 0; i < token.length; i++) {
@@ -184,6 +188,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Format: [204][auth_provider=3][avatar URL bytes][0x00] */
     function _lw_sendDiscordProfile(discordUser) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var avatarStr = discordUser.avatar || '';
                 var view = legendmod.createView(2 + avatarStr.length + 1);
