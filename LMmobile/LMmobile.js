@@ -271,8 +271,10 @@
                 hc.style.maxHeight = Math.floor(vh / ratio) + 'px';
                 hc.style.overflowY = 'auto';
             }
+            /* Expose globally so other code (menu toggle) can call it instantly */
+            window._lm_fitHC = fit;
             fit();
-            setInterval(fit, 2000);
+            setInterval(fit, 4000); /* slow fallback — main triggers are events below */
             window.addEventListener('resize', fit);
             window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
         })();
@@ -596,6 +598,7 @@
             if (hc) {
                 if (hc.style.display === 'none' || hc.style.display === '') {
                     hc.style.display = 'block';
+                    if (window._lm_fitHC) window._lm_fitHC(); /* scale instantly */
                     if (typeof application !== 'undefined' && application.showMenu) {
                         application.showMenu();
                     }
