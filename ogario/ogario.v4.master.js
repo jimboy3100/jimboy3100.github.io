@@ -224,11 +224,11 @@ function legendmaster(self) {
 			protocolVersion: 23
         };		
     }
-	/* LW: Override Google OAuth client ID on our domains.
-	 * The default headers use agar.io's client ID which rejects our origins.
-	 * Our Google app (legend-mod-490514) authorizes expanding.land, legendmod.ml, jimboy3100.github.io. */
+	/* LW: Use the SAME Google OAuth client ID as GIS in ogario.v4.js (477064...).
+	 * Previously used 317663... which was a different Google project,
+	 * causing login state mismatch between GIS auth and master state. */
 	if (window.legendModFromWebsite) {
-		headers.gplus_client_id = "317663835351-aurr32dabsfaan9b367vmamutq692hcm.apps.googleusercontent.com";
+		headers.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
 	}
 	window.LMagarioheaders=headers;
     var l = false;

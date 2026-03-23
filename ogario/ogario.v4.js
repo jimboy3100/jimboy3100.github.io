@@ -292,10 +292,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         var slc = document.getElementById('socialLoginContainer');
         if (slc) slc.style.display = 'none';
 
-        /* LW: Populate profile panel fields from Discord user data.
-         * On expanding.land, the opcode 102 login response from the server
-         * doesn't reach the client's case 102: handler, so we set these
-         * directly from the Discord OAuth data we already have. */
+        /* [DEBUG FALLBACK] LW: Populate profile panel fields from Discord user data.
+         * This is a temporary fallback while the opcode 102 login response path
+         * is being fixed. Once Fix 3 (state-based login trigger) works properly,
+         * the server's 102 response should populate all these fields instead. */
         if (window.expandingLand || window.legendModFromWebsite) {
             /* Social ID = Discord user ID */
             if (discordUser.id) {
@@ -11569,13 +11569,19 @@ function thelegendmodproject() {
             this.connectionOpened = true;
 
             /* Private server login: trigger Google/Facebook OAuth.
-             * On real agar.io this is called from opcode 241 handler,
-             * but private servers use 0xFE/0xFF handshake instead.
-             * Small delay to let the server finish handshake processing. */
+             * On real agar.io this is called from opcode 241 handler.
+             * On Expanding Land, login is deferred until the LW beacon
+             * (opcode 240+'LW') arrives — see the LW beacon handler in
+             * the default: case of the message switch.
+             * For OTHER private servers (imsolo etc.), use a delayed fallback. */
             if (window.master && window.master.login) {
-                setTimeout(function() {
-                    window.master.login();
-                }, 200);
+                /* Only use timeout fallback for NON-EL private servers.
+                 * EL triggers login from the LW beacon handler instead. */
+                if (this.serverType !== 'expandingland') {
+                    setTimeout(function() {
+                        window.master.login();
+                    }, 200);
+                }
             }
         },
         onMessage(message) {
@@ -13570,6 +13576,12 @@ function thelegendmodproject() {
                         this.gameMode = ':expandingland';
                         console.log('%c[Expanding Land]%c Connected to Expanding Land server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
+                        /* State-based login: trigger AFTER beacon confirms server is ready.
+                         * This replaces the old 200ms blind timeout in onOpen(). */
+                        if (window.master && window.master.login) {
+                            console.log('[LW Auth] Triggering master.login() after LW beacon');
+                            window.master.login();
+                        }
                     } else if (LM.isLegendWorld && _lwOp === 200) {
                         /* Map Event */
                         var s2 = 1;
@@ -13638,12 +13650,13 @@ function thelegendmodproject() {
                 return
             }
             const response = window.decodeMobileData(msg);
-
+            if (LM.isLegendWorld) console.log('[LW 102 TRACE] onMobileData decoded, type=' + (response && response.uncompressedData ? response.uncompressedData.type : 'null'));
             this.unpackageMessage(response);
         },
         unpackageMessage: function (r) {
             //var returnMessage = r;
             var type = r.uncompressedData.type;
+            if (LM.isLegendWorld) console.log('[LW 102 TRACE] unpackageMessage type=' + type);
             if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
@@ -13704,7 +13717,10 @@ function thelegendmodproject() {
 
                     try { this.updateUserSettings(u.userSettings); } catch(e) { console.error('[LW 102] updateUserSettings error:', e); }
 
-                    try { this.updateUserInfo(u.userInfo); } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
+                    try {
+                        if (LM.isLegendWorld && u.userInfo) console.log('[LW 102 TRACE] userInfo.userId=' + (u.userInfo.userId || 'EMPTY') + ' realmInfo=' + JSON.stringify(u.userInfo.realmInfo || {}));
+                        this.updateUserInfo(u.userInfo);
+                    } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
 
                     try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
                     break;
