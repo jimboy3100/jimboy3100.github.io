@@ -13554,7 +13554,17 @@ function thelegendmodproject() {
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
-                    if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                    /* Fallback: if opcode 102 reaches default: (e.g. on expanding.land),
+                     * handle the protobuf login/game-over response here too. */
+                    if (_lwOp === 102 && data.byteLength > 10) {
+                        console.log('[LW 102 FALLBACK] opcode 102 in default: handler, len=' + data.byteLength);
+                        var msg102 = new buffer.Buffer(data.buffer.slice(1));
+                        try {
+                            this.onMobileData(msg102);
+                        } catch (e102f) {
+                            console.error('[LW 102 FALLBACK] onMobileData error:', e102f);
+                        }
+                    } else if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
                         /* LW Beacon — sets isLegendWorld (Expanding Land) */
                         LM.isLegendWorld = true;
                         this.gameMode = ':expandingland';
