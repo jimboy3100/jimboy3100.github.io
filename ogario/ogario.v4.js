@@ -268,6 +268,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
     window._lw_applyDiscordLogin = function(discordUser) {
         if (!discordUser || !discordUser.token) return;
+        /* Reset protobuf flag so temporary fallback can run for this new login.
+         * It will be set back to true when the server's type-11 response arrives. */
+        window._lw_protobuf102Received = false;
         window.legendmod_discordUser = discordUser;
 
         if (window.MC) {
@@ -464,7 +467,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                 /* Clear any stale Discord data from a previous session */
                 localStorage.removeItem('legendmod_discord');
-                console.log('[LW Discord DBG] Cleared old localStorage data');
+                window._discordLoginDone = false;
+                window._lw_protobuf102Received = false;
+                window.legendmod_discordUser = null;
+                console.log('[LW Discord DBG] Cleared old state (localStorage + flags)');
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
