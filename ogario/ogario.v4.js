@@ -387,6 +387,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
                     if (discordUser && discordUser.id && discordUser.token) {
+                        if (window._discordLoginDone) return; /* already handled by another relay */
+                        window._discordLoginDone = true;
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
@@ -438,6 +440,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
+                    if (window._discordLoginDone) return; /* already handled by another relay */
+                    window._discordLoginDone = true;
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
 
@@ -486,11 +490,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             var discordUser = JSON.parse(data);
                             console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
+                                if (window._discordLoginDone) { clearInterval(poll); return; } /* already handled */
+                                window._discordLoginDone = true;
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
                                 console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
-                                console.log('[LW Discord DBG] MC available:', !!window.MC);
-                                console.log('[LW Discord DBG] legendmod available:', typeof legendmod !== 'undefined');
 
                                 window._lw_applyDiscordLogin(discordUser);
                                 console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
