@@ -75,22 +75,20 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW AUTH] Begin login attempt #' + window._lwAuth.attemptId + ' provider=' + provider);
         return window._lwAuth.attemptId;
     };
-    /* Hardened validation: 5 checks (attemptId, provider, not-done, tabId, timestamp) */
-    window._lwIsCurrentAttempt = function(attemptId, provider) {
-        if (!window._lwAuth) return false;
-        if (window._lwAuth.attemptId !== attemptId) return false;
-        if (window._lwAuth.provider !== provider) return false;
-        if (window._lwAuth.done) return false; /* already consumed */
-        if (window._lwAuth.tabId !== _lwTabId) return false; /* cross-tab */
-        if (Date.now() - window._lwAuth.startedAt > 30000) return false; /* 30s stale */
-        return (window._lwAuth.state === 'waiting_oauth' || window._lwAuth.state === 'waiting_server');
-    };
-    /* Mark attempt as consumed — prevents double callback execution */
-    window._lwConsumeAttempt = function(provider) {
-        if (window._lwAuth && window._lwAuth.provider === provider) {
-            window._lwAuth.done = true;
-            console.log('[LW AUTH] Attempt #' + window._lwAuth.attemptId + ' consumed (' + provider + ')');
-        }
+    /* Atomic check+consume: validates ALL conditions AND sets done=true in one call.
+     * Returns true exactly once — the first handler to call this wins. */
+    window._lwTryConsume = function(attemptId, provider) {
+        var a = window._lwAuth;
+        if (!a) return false;
+        if (a.attemptId !== attemptId) return false;
+        if (a.provider !== provider) return false;
+        if (a.done) return false;
+        if (a.tabId !== _lwTabId) return false;
+        if (Date.now() - a.startedAt > 30000) return false;
+        if (a.state !== 'waiting_oauth' && a.state !== 'waiting_server') return false;
+        a.done = true; /* consumed — no other handler can pass from here */
+        console.log('[LW AUTH] Attempt #' + a.attemptId + ' consumed (' + provider + ')');
+        return true;
     };
     window._lwArmLoginTimeout = function(attemptId) {
         setTimeout(function() {
@@ -135,14 +133,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (window.MC) window.MC.onGoogleLoginComplete(false);
                 return;
             }
-            /* Validate this callback belongs to the current Google login attempt */
-            if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.googleAttemptId, 'google') ||
-                (window._lwAuth.state !== 'waiting_oauth' && window._lwAuth.state !== 'waiting_server')) {
+            /* Atomic check+consume — only the first handler wins */
+            if (!window._lwTryConsume(window._lwAuth && window._lwAuth.googleAttemptId, 'google')) {
                 console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
                 return;
             }
-            /* Consume immediately — no second callback can pass */
-            window._lwConsumeAttempt('google');
             var accessToken = response.access_token;
 
 
@@ -549,13 +544,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
                     if (discordUser && discordUser.id && discordUser.token) {
-                        /* Only accept if this is the current Discord login attempt */
-                        if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
-                            window._lwAuth.state !== 'waiting_oauth') {
-                            console.log('[LW Discord] BroadcastChannel ignored (stale attemptId)');
+                        /* Atomic check+consume — only the first handler wins */
+                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                            console.log('[LW Discord] BroadcastChannel ignored (stale/consumed)');
                             return;
                         }
-                        window._lwConsumeAttempt('discord'); /* lock before apply */
                         window._discordLoginDone = true; /* debug only */
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
@@ -606,13 +599,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
-                    /* Only accept if this is the current Discord login attempt */
-                    if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
-                        window._lwAuth.state !== 'waiting_oauth') {
-                        console.log('[LW Discord] postMessage ignored (stale attemptId)');
+                    /* Atomic check+consume — only the first handler wins */
+                    if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                        console.log('[LW Discord] postMessage ignored (stale/consumed)');
                         return;
                     }
-                    window._lwConsumeAttempt('discord'); /* lock before apply */
                     window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
@@ -661,14 +652,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             var discordUser = JSON.parse(data);
                             console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
-                                /* Only accept if this is the current Discord login attempt */
-                                if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord') ||
-                                    window._lwAuth.state !== 'waiting_oauth') {
+                                /* Atomic check+consume — only the first handler wins */
+                                if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
                                     clearInterval(poll);
-                                    console.log('[LW Discord] localStorage poll ignored (stale attemptId)');
+                                    console.log('[LW Discord] localStorage poll ignored (stale/consumed)');
                                     return;
                                 }
-                                window._lwConsumeAttempt('discord'); /* lock before apply */
                                 window._discordLoginDone = true; /* debug only */
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
@@ -698,12 +687,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 try {
                                     var discordUser = JSON.parse(finalData);
                                     if (discordUser && discordUser.id && discordUser.token) {
-                                        /* Guard late popup-close fallback with full validation */
-                                        if (!window._lwIsCurrentAttempt(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                                        /* Atomic check+consume — only the first handler wins */
+                                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
                                             console.log('[LW Discord] Late popup-close ignored (stale/consumed)');
                                             return;
                                         }
-                                        window._lwConsumeAttempt('discord');
                                         window._lw_applyDiscordLogin(discordUser);
                                         console.log('[LW Discord DBG] Late login applied successfully');
                                     }
