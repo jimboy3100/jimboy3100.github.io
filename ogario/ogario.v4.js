@@ -367,6 +367,70 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
     };
 
+    /* ── LW: Agar.io-style login success notification ─────────────────
+     * Triggered ONLY after confirmed protobuf type-11 login response.
+     * Uses server-confirmed provider/name, NOT raw OAuth callback data.
+     * Visually matches agar.io's native blue login notification. */
+    window._lw_showLoginSuccess = function(provider, displayName) {
+        /* De-duplicate: don't show if we already showed for this session */
+        if (window._lw_loginNotifShown) return;
+        window._lw_loginNotifShown = true;
+
+        /* Inject CSS once */
+        if (!document.getElementById('lw-login-notif-css')) {
+            var style = document.createElement('style');
+            style.id = 'lw-login-notif-css';
+            style.textContent =
+                '#lw-login-notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);' +
+                'z-index:99999;background:linear-gradient(135deg,#4285f4,#356ac3);border-radius:8px;' +
+                'padding:14px 28px;box-shadow:0 4px 24px rgba(66,133,244,.45);display:flex;align-items:center;gap:12px;' +
+                'font-family:"Inter","Segoe UI",sans-serif;color:#fff;opacity:0;' +
+                'transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .5s ease;}' +
+                '#lw-login-notif.show{transform:translateX(-50%) translateY(0);opacity:1;}' +
+                '#lw-login-notif.hide{transform:translateX(-50%) translateY(-40px);opacity:0;}' +
+                '#lw-login-notif .lw-ln-icon{width:28px;height:28px;border-radius:50%;' +
+                'display:flex;align-items:center;justify-content:center;font-size:16px;' +
+                'background:rgba(255,255,255,.2);flex-shrink:0;}' +
+                '#lw-login-notif .lw-ln-text{font-size:14px;font-weight:500;white-space:nowrap;}' +
+                '#lw-login-notif .lw-ln-name{font-weight:700;}';
+            document.head.appendChild(style);
+        }
+
+        /* Provider icon */
+        var iconMap = { Google: '🔵', Discord: '🟣', Facebook: '🔷' };
+        var icon = iconMap[provider] || '✓';
+
+        /* Build notification element */
+        var el = document.createElement('div');
+        el.id = 'lw-login-notif';
+        el.innerHTML =
+            '<span class="lw-ln-icon">' + icon + '</span>' +
+            '<span class="lw-ln-text">Logged in to <b>' + provider + '</b> as ' +
+            '<span class="lw-ln-name">' + (displayName || 'Player').replace(/</g, '&lt;') + '</span></span>';
+        document.body.appendChild(el);
+
+        /* Animate in */
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() { el.classList.add('show'); });
+        });
+
+        /* Fade out after 4 seconds */
+        setTimeout(function() {
+            el.classList.remove('show');
+            el.classList.add('hide');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+        }, 4000);
+
+        console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
+    };
+
+    /* Reset notification flag on logout so it shows again on next login */
+    var _origLogout = window.logout;
+    window.logout = function() {
+        window._lw_loginNotifShown = false;
+        if (_origLogout) _origLogout.apply(this, arguments);
+    };
+
     /* LW: Auto-login removed — users must explicitly click Sign In.
      * Cached Discord data in localStorage is only used for gplusRelogin reconnects. */
 
@@ -13739,6 +13803,22 @@ function thelegendmodproject() {
                     } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
 
                     try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
+
+                    /* LW: Show agar.io-style login notification after confirmed
+                     * server login (protobuf type-11). Uses server-confirmed data. */
+                    if (window.expandingLand || window.legendModFromWebsite) {
+                        try {
+                            var _provider = 'Unknown';
+                            if (u.userInfo && u.userInfo.userId) {
+                                var _prov = u.userInfo.userId.split('$')[0];
+                                if (_prov === 'google') _provider = 'Google';
+                                else if (_prov === 'facebook') _provider = 'Facebook';
+                                else if (_prov === 'discord') _provider = 'Discord';
+                            }
+                            var _name = (u.userInfo && u.userInfo.displayName) || 'Player';
+                            window._lw_showLoginSuccess(_provider, _name);
+                        } catch(e) { console.error('[LW 102] loginSuccess notification error:', e); }
+                    }
                     break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
@@ -14430,6 +14510,10 @@ Most cells eaten   : ${mostCellsEaten}
                 'Game name       : ' + gameName + '<br/>'
             )
         },
+        /* ── LW: Agar.io-style login success notification ──────────── */
+        /* Called after confirmed protobuf type-11 login response from server.
+         * Styled to visually match agar.io's native blue notification panel.
+         * Uses only server-confirmed data (provider, displayName). */
         agarExp(q) {
             var s = {};
             var i = 0,
