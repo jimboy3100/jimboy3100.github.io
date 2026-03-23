@@ -393,9 +393,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
-                        if (typeof toastr !== 'undefined') {
-                            toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
-                        }
+                        /* Login message now comes from server via chat (opcode 204 handler) */
                     }
                 };
                 console.log('[LW Discord] BroadcastChannel listener registered');
@@ -453,9 +451,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     /* Close popup */
                     try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch(ex) {}
 
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
-                    }
+                    /* Login message now comes from server via chat (opcode 204 handler) */
                 }
             });
 
@@ -506,9 +502,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 /* Close the popup if still open */
                                 try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
 
-                                if (typeof toastr !== 'undefined') {
-                                    toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
-                                }
+                                /* Login message now comes from server via chat (opcode 204 handler) */
                             }
                         }
                     } catch(err) {
