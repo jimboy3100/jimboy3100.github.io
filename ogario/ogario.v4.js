@@ -228,16 +228,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
 
     /* LW: Send opcode 204 (Discord profile data) via legendmod's socket.
-     * Format: [204][auth_provider=3][avatar URL bytes][0x00] */
+     * Format: [204][auth_provider=3][socialId\0][displayName\0]
+     * Avatar is NOT sent — profile picture is rendered client-side only. */
     function _lw_sendDiscordProfile(discordUser) {
         var sendFn = function() {
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
-                /* Extended format: [204][provider][socialId\0][displayName\0][avatarUrl\0]
-                 * Server parses null-separated fields after the provider byte. */
                 var socialId = discordUser.id || '';
                 var displayName = discordUser.globalName || discordUser.username || '';
-                var avatarStr = discordUser.avatar || '';
-                var totalLen = 2 + socialId.length + 1 + displayName.length + 1 + avatarStr.length + 1;
+                var totalLen = 2 + socialId.length + 1 + displayName.length + 1;
                 var view = legendmod.createView(totalLen);
                 var offset = 0;
                 view.setUint8(offset++, 204);
@@ -250,12 +248,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 for (var ni = 0; ni < displayName.length; ni++)
                     view.setUint8(offset++, displayName.charCodeAt(ni) & 0xFF);
                 view.setUint8(offset++, 0); // null terminator
-                // Avatar URL
-                for (var ai = 0; ai < avatarStr.length; ai++)
-                    view.setUint8(offset++, avatarStr.charCodeAt(ai) & 0xFF);
-                view.setUint8(offset++, 0); // null terminator
                 legendmod.sendMessage(view);
-                console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ' avatar=' + avatarStr.substring(0, 40) + '...)');
+                console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ')');
             } else {
                 setTimeout(sendFn, 2000);
             }
