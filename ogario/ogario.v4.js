@@ -15726,6 +15726,16 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
+    try {
+        if (window.top !== window.self) {
+            window.top.legendmod = LM;
+            if (typeof defaultSettings !== 'undefined') window.top.defaultSettings = defaultSettings;
+            if (typeof core !== 'undefined') window.top.core = core;
+            if (typeof application !== 'undefined') window.top.application = application;
+        }
+    } catch(e) {
+        // Cross-origin restriction blocks this unless CORS is disabled
+    }
 
     window.sendAction = function (action) {
         LM.sendAction(action);
