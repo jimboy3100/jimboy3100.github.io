@@ -494,18 +494,25 @@
         var bChat = mkd('💬');
         var bAI = mkd('►');
         var bPaus = mkd('❚❚');
-        var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
         
-        drawer.appendChild(bStop);
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
         drawer.appendChild(bChat);
+
+        var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
+        drawer.appendChild(bStop);
         
         bStop.addEventListener('touchstart', function(e) {
             e.preventDefault(); e.stopPropagation();
             prefs.targetMode = !prefs.targetMode;
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             savePrefs();
+            // Optional: reset target state immediately
+            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+            } else {
+                activeWorldTarget = null;
+            }
         }, { passive: false });
 
         var activeWorldTarget = null;
@@ -838,7 +845,10 @@
             activeWorldTarget = null;
             org.x = t.clientX; org.y = t.clientY;
             mouseAt(t.clientX, t.clientY);
-            jShow(org.x, org.y, org.x, org.y);
+            
+            if (!prefs.targetMode) {
+                jShow(org.x, org.y, org.x, org.y);
+            }
             swStart = null; // cancel any swipe tracking when joystick starts
         }, { passive: true });
 
@@ -869,25 +879,29 @@
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
-            var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
-            var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
-            // dead zone: ignore tiny movements to prevent accidental direction change
-            if (rawD < 8) return;
-
-            var dx = rx0 * prefs.jsSensitivity;
-            var dy = ry0 * prefs.jsSensitivity;
-            // Apply aspect ratio correction (landscape screens need wider X moves)
-            var cx = window.innerWidth / 2 + dx / asp;
-            var cy = window.innerHeight / 2 + dy;
-            mouseAt(cx, cy);
-
-            var rx = t.clientX - org.x, ry = t.clientY - org.y;
-            var d = Math.sqrt(rx * rx + ry * ry);
-            if (d > JR) {
-                var a = Math.atan2(ry, rx);
-                jShow(org.x, org.y, org.x + Math.cos(a) * JR, org.y + Math.sin(a) * JR);
+            if (prefs.targetMode) {
+                // Absolute Tap-to-move mapping (no joystick scaling)
+                mouseAt(t.clientX, t.clientY);
             } else {
-                jShow(org.x, org.y, t.clientX, t.clientY);
+                // Virtual Joystick Coast Mode scaling
+                var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
+                var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
+                if (rawD < 8) return;
+
+                var dx = rx0 * prefs.jsSensitivity;
+                var dy = ry0 * prefs.jsSensitivity;
+                var cx = window.innerWidth / 2 + dx / asp;
+                var cy = window.innerHeight / 2 + dy;
+                mouseAt(cx, cy);
+
+                var rx = t.clientX - org.x, ry = t.clientY - org.y;
+                var d = Math.sqrt(rx * rx + ry * ry);
+                if (d > JR) {
+                    var a = Math.atan2(ry, rx);
+                    jShow(org.x, org.y, org.x + Math.cos(a) * JR, org.y + Math.sin(a) * JR);
+                } else {
+                    jShow(org.x, org.y, t.clientX, t.clientY);
+                }
             }
         }, { passive: true });
 
