@@ -641,6 +641,7 @@ class Spect {
                         isMe = 'isPlayer'
                     }
                     let nick = window.decodeURIComponent(window.escape(encode()));
+                    temp = null;
 
                     if (nick.includes('}')) {
                         temp = nick.split('}')[0].split('{')[1]

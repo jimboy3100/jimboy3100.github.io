@@ -12754,7 +12754,7 @@ function thelegendmodproject() {
                         } catch (e) {
                             nick = rawNick;
                         }
-                        var temp;
+                        var temp = null;
 
                         if (nick.includes('}')) {
                             temp = nick.split('}')[0].split('{')[1]
