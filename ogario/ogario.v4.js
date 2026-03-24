@@ -16633,13 +16633,13 @@ Most cells eaten   : ${mostCellsEaten}
 
                 var alpha, color;
                 if (me.phase === 2) {
-                    alpha = 0.08 + 0.04 * pulse;
+                    alpha = 0.25 + 0.05 * pulse;
                     color = '#44dd66';
                 } else if (me.phase === 3) {
-                    alpha = 0.12 + 0.08 * fastPulse;
+                    alpha = 0.35 + 0.1 * fastPulse;
                     color = '#ff3333';
                 } else {
-                    alpha = 0.18 + 0.1 * fastPulse;
+                    alpha = 0.45 + 0.15 * fastPulse;
                     color = '#ff2222';
                 }
 
