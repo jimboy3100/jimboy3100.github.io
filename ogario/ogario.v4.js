@@ -12747,7 +12747,13 @@ function thelegendmodproject() {
                         if (isMe) {
                             isMe = 'isPlayer'
                         }
-                        let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+                        var rawNick = encode();
+                        let nick = "";
+                        try {
+                            nick = window.decodeURIComponent(window.escape(rawNick));
+                        } catch (e) {
+                            nick = rawNick;
+                        }
                         var temp;
 
                         if (nick.includes('}')) {
