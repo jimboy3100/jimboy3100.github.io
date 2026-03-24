@@ -464,7 +464,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5 };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false };
         try {
             var saved = JSON.parse(localStorage.getItem(PREF_KEY));
             if (saved) {
@@ -472,6 +472,7 @@
                 if (saved.btnOpacity !== undefined) prefs.btnOpacity = saved.btnOpacity;
                 if (saved.btnScale !== undefined) prefs.btnScale = saved.btnScale;
                 if (saved.hudFade !== undefined) prefs.hudFade = saved.hudFade;
+                if (saved.targetMode !== undefined) prefs.targetMode = saved.targetMode;
             }
         } catch (e) { }
         function savePrefs() {
@@ -493,9 +494,30 @@
         var bChat = mkd('💬');
         var bAI = mkd('►');
         var bPaus = mkd('❚❚');
+        var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
+        
+        drawer.appendChild(bStop);
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
         drawer.appendChild(bChat);
+        
+        bStop.addEventListener('touchstart', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            prefs.targetMode = !prefs.targetMode;
+            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
+            savePrefs();
+        }, { passive: false });
+
+        var activeWorldTarget = null;
+        function trackTargetMode() {
+            requestAnimationFrame(trackTargetMode);
+            if (prefs.targetMode && activeWorldTarget && window.LM) {
+                var screenX = (activeWorldTarget.x - window.LM.viewX) * window.LM.viewScale + (window.innerWidth / 2);
+                var screenY = (activeWorldTarget.y - window.LM.viewY) * window.LM.viewScale + (window.innerHeight / 2);
+                mouseAt(screenX, screenY);
+            }
+        }
+        trackTargetMode();
 
         /* ☰ menu button: leftmost, always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
@@ -813,6 +835,7 @@
             if (chatOn || e.touches.length !== 1) return;
             var t = e.changedTouches[0];
             jId = t.identifier;
+            activeWorldTarget = null;
             org.x = t.clientX; org.y = t.clientY;
             mouseAt(t.clientX, t.clientY);
             jShow(org.x, org.y, org.x, org.y);
@@ -823,6 +846,9 @@
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
+                    if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                        activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+                    }
                     // DO NOT reset mouse to center — direction persists
                     jHide();
                     break;
@@ -832,6 +858,9 @@
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
+            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+            }
             jHide();
         }, { passive: true });
 
