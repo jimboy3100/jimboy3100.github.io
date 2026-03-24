@@ -14958,7 +14958,21 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                    this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
+                    
+                    /* LEGENDWORLD FIX: 
+                     * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
+                     * during active dynamic map rescaling (Expanding Land).
+                     * This caused violent 25Hz juddering when the map border shrunk!
+                     */
+                    if (!this.mapOffsetFixed) {
+                         // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                         // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
+                         if (this.mapSize === 0 || !LM.isLegendWorld) {
+                             this.viewX = (right + left) / 2;
+                             this.viewY = (bottom + top) / 2;
+                         }
+                    }
+                    
                     this.mapOffsetFixed = true;
                 }
             }
