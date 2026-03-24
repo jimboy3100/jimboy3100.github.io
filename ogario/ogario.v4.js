@@ -5808,7 +5808,7 @@ function thelegendmodproject() {
                                 }
                             }                            //t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>';
 
-                            if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
+                            if (flag === false && ((this.top5[o].lbgpi >= 0) || !LM.integrity)) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
@@ -5891,7 +5891,7 @@ function thelegendmodproject() {
                                     }
                                 }
                             }
-                            if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
+                            if (flag === false && ((this.top5[o].lbgpi >= 0) || !LM.integrity)) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
