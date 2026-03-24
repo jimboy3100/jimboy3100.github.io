@@ -12902,7 +12902,7 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
-                case 200: // 0xC8 — ShopResponse (Agar2 only)
+                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2)
                     if (this.serverType === 'agar2') {
                         // Parse shop response but don't act on it (no shop UI yet)
                         var shopAction = data.getUint8(s++);
@@ -12912,6 +12912,18 @@ function thelegendmodproject() {
                         var shopMsg = encode();
                         console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit', 
                             'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
+                    } else {
+                        // Expanding Land MapEvent — parse 42-byte packet
+                        var meEventType     = data.getUint8(s++);
+                        var meCurrentSize   = data.getFloat64(s, true); s += 8;
+                        var meTargetSize    = data.getFloat64(s, true); s += 8;
+                        var meCenterX       = data.getFloat64(s, true); s += 8;
+                        var meCenterY       = data.getFloat64(s, true); s += 8;
+                        var meTransDur      = data.getUint32(s, true);  s += 4;
+                        var meWarnDur       = data.getUint32(s, true);  s += 4;
+                        var meTier          = data.getUint8(s++);
+                        this.handleMapEvent(meEventType, meCurrentSize, meTargetSize,
+                            meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
                     }
                     break;
                 case 201: // 0xC9 — AuthSuccess (Agar2 only)
