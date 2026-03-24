@@ -507,7 +507,23 @@
             prefs.targetMode = !prefs.targetMode;
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             savePrefs();
+            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+            } else {
+                activeWorldTarget = null;
+            }
         }, { passive: false });
+
+        var activeWorldTarget = null;
+        function trackTargetMode() {
+            requestAnimationFrame(trackTargetMode);
+            if (prefs.targetMode && activeWorldTarget && window.LM) {
+                var screenX = (activeWorldTarget.x - window.LM.viewX) * window.LM.viewScale + (window.innerWidth / 2);
+                var screenY = (activeWorldTarget.y - window.LM.viewY) * window.LM.viewScale + (window.innerHeight / 2);
+                mouseAt(screenX, screenY);
+            }
+        }
+        trackTargetMode();
 
         /* ☰ menu button: leftmost, always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
@@ -825,10 +841,13 @@
             if (chatOn || e.touches.length !== 1) return;
             var t = e.changedTouches[0];
             jId = t.identifier;
+            activeWorldTarget = null;
             org.x = t.clientX; org.y = t.clientY;
             mouseAt(t.clientX, t.clientY);
             
-            jShow(org.x, org.y, org.x, org.y);
+            if (!prefs.targetMode) {
+                jShow(org.x, org.y, org.x, org.y);
+            }
             swStart = null; // cancel any swipe tracking when joystick starts
         }, { passive: true });
 
@@ -836,8 +855,8 @@
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
-                    if (prefs.targetMode) {
-                        mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+                    if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                        activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
                     }
                     jHide();
                     break;
@@ -847,8 +866,8 @@
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            if (prefs.targetMode) {
-                mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
+                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
             }
             jHide();
         }, { passive: true });
