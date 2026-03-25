@@ -15025,8 +15025,11 @@ Most cells eaten   : ${mostCellsEaten}
                 if (LM.gameMode === ":party") {
                     y = y + (cellColor || "#000000");
                 }
-                //console.log(g)		
-                if (legendflags.includes(LowerCase(y))) {
+                /* Direct URL skin (e.g. https://i.imgur.com/xxx.png from bots/players) */
+                if (g != null && g.includes && (g.startsWith('http://') || g.startsWith('https://'))) {
+                    application.customSkinsMap[y] = g;
+                    application.loadSkin(application.customSkinsCache, g);
+                } else if (legendflags.includes(LowerCase(y))) {
                     core.registerSkin(y, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
                 } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
