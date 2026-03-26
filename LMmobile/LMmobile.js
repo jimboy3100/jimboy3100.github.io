@@ -836,24 +836,29 @@
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
-                    if (prefs.targetMode && window.legendmod) {
-                        window.legendmod.clientX = window.innerWidth / 2;
-                        window.legendmod.clientY = window.innerHeight / 2;
-                    }
                     jHide();
                     break;
                 }
             }
-        }, { passive: true });
+            // Target mode: snap cursor to center on ANY touchend (matches old commit 5d9872b)
+            if (prefs.targetMode && e.touches.length === 0) {
+                canvas.dispatchEvent(new MouseEvent('mousemove', {
+                    clientX: window.innerWidth / 2,
+                    clientY: window.innerHeight / 2
+                }));
+            }
+        }, false);
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            if (prefs.targetMode && window.legendmod) {
-                window.legendmod.clientX = window.innerWidth / 2;
-                window.legendmod.clientY = window.innerHeight / 2;
+            if (prefs.targetMode) {
+                canvas.dispatchEvent(new MouseEvent('mousemove', {
+                    clientX: window.innerWidth / 2,
+                    clientY: window.innerHeight / 2
+                }));
             }
             jHide();
-        }, { passive: true });
+        }, false);
 
         canvas.addEventListener('touchmove', function (e) {
             if (e.touches.length >= 2) return;
