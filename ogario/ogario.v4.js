@@ -7357,7 +7357,10 @@ function thelegendmodproject() {
                 }
                 app.onPlay();
             });
-            $(document).on("click", ".btn-spectate", function () {
+            if ($(".btn-full-map-spec").length === 0) {
+                $(".btn-spectate").after('<button class="btn btn-info btn-full-map-spec btn-needs-server" style="display:none; margin-left:10px;" title="Full Map Spectate"><i class="fa fa-crosshairs"></i> Full Map</button>');
+            }
+            $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 if (isLegend) {
                     app.hideMenu();
@@ -7366,8 +7369,7 @@ function thelegendmodproject() {
                     }
                     var doSpectate = function() {
                         if (app.isSocketOpen()) {
-                            if (!app.isSpectateEnabled) app.sendSpectate();
-                            if (!app.isFreeSpectate) app.sendFreeSpectate();
+                            app.sendAction(56);
                         } else {
                             setTimeout(doSpectate, 50);
                         }
@@ -7376,8 +7378,9 @@ function thelegendmodproject() {
                     
                     if (window.addKeyListeners) window.addKeyListeners();
                     if (defaultmapsettings.autoHideFood) ogario.showFood = false;
-                    return;
                 }
+            });
+            $(document).on("click", ".btn-spectate", function () {
                 app.onSpectate();
             });
             $(document).on("click", "#create-party-btn-2", function () {
@@ -11676,9 +11679,9 @@ function thelegendmodproject() {
                 : 'private';
 
             if (this.serverType === 'expandingland') {
-                $(".btn-spectate").text("Full Map Spec").removeClass("btn-warning").addClass("btn-info");
+                $(".btn-full-map-spec").show();
             } else {
-                $(".btn-spectate").text(typeof i18n === "function" ? i18n("page_spectate") : "Spectate").removeClass("btn-info").addClass("btn-warning");
+                $(".btn-full-map-spec").hide();
             }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
