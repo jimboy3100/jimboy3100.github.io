@@ -7358,15 +7358,27 @@ function thelegendmodproject() {
                 app.onPlay();
             });
             $(document).on("click", ".btn-spectate", function () {
-                app.onSpectate();
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 if (isLegend) {
-                    if (!app.isFreeSpectate) {
-                        setTimeout(function() {
-                            if (typeof app.sendFreeSpectate === "function") app.sendFreeSpectate();
-                        }, 50);
+                    app.hideMenu();
+                    if (!app.isSocketOpen()) {
+                        app.connect();
                     }
+                    var doSpectate = function() {
+                        if (app.isSocketOpen()) {
+                            if (!app.isSpectateEnabled) app.sendSpectate();
+                            if (!app.isFreeSpectate) app.sendFreeSpectate();
+                        } else {
+                            setTimeout(doSpectate, 50);
+                        }
+                    };
+                    doSpectate();
+                    
+                    if (window.addKeyListeners) window.addKeyListeners();
+                    if (defaultmapsettings.autoHideFood) ogario.showFood = false;
+                    return;
                 }
+                app.onSpectate();
             });
             $(document).on("click", "#create-party-btn-2", function () {
                 app.onCreate();
@@ -11662,6 +11674,12 @@ function thelegendmodproject() {
                 : t.includes('agar2.com') ? 'agar2'
                 : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                 : 'private';
+
+            if (this.serverType === 'expandingland') {
+                $(".btn-spectate").text("Full Map Spec").removeClass("btn-warning").addClass("btn-info");
+            } else {
+                $(".btn-spectate").text(typeof i18n === "function" ? i18n("page_spectate") : "Spectate").removeClass("btn-info").addClass("btn-warning");
+            }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
