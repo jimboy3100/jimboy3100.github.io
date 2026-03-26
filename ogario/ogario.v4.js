@@ -7343,11 +7343,26 @@ function thelegendmodproject() {
         },
         setMainButtons() {
             var app = this;
-            $(document).on("click", ".btn-play, .btn-play-guest", function () {
+            $(document).on("click", ".btn-play", function () {
+                app.onPlay();
+            });
+            $(document).on("click", ".btn-play-guest", function () {
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend && app.play) {
+                    return;
+                }
                 app.onPlay();
             });
             $(document).on("click", ".btn-spectate", function () {
                 app.onSpectate();
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend) {
+                    if (!app.isFreeSpectate) {
+                        setTimeout(function() {
+                            if (typeof app.sendFreeSpectate === "function") app.sendFreeSpectate();
+                        }, 50);
+                    }
+                }
             });
             $(document).on("click", "#create-party-btn-2", function () {
                 app.onCreate();
