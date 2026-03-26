@@ -14009,8 +14009,8 @@ function thelegendmodproject() {
                     var u = r.uncompressedData.disconnectField;
                     this.disconnectMessage(u.reason);
 
-                    window.loggedIn = false;
-                    window.logout && window.logout();
+                    //window.loggedIn = false;
+                    //window.logout && window.logout();
                     break;
                 case 22:
                     console.log("returnMessage = r.get_noProperResponseField();");
