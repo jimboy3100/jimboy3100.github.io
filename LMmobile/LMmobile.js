@@ -836,14 +836,9 @@
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
-                    if (prefs.targetMode) {
-                        var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-                        mouseAt(cx, cy);
-                        if (window.legendmod) {
-                            window.legendmod.clientX = cx;
-                            window.legendmod.clientY = cy;
-                            if (window.legendmod.getCursorPosition) window.legendmod.getCursorPosition();
-                        }
+                    if (prefs.targetMode && window.legendmod) {
+                        window.legendmod.clientX = window.innerWidth / 2;
+                        window.legendmod.clientY = window.innerHeight / 2;
                     }
                     jHide();
                     break;
@@ -853,14 +848,9 @@
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            if (prefs.targetMode) {
-                var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-                mouseAt(cx, cy);
-                if (window.legendmod) {
-                    window.legendmod.clientX = cx;
-                    window.legendmod.clientY = cy;
-                    if (window.legendmod.getCursorPosition) window.legendmod.getCursorPosition();
-                }
+            if (prefs.targetMode && window.legendmod) {
+                window.legendmod.clientX = window.innerWidth / 2;
+                window.legendmod.clientY = window.innerHeight / 2;
             }
             jHide();
         }, { passive: true });
