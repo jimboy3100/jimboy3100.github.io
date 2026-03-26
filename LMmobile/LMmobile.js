@@ -500,6 +500,7 @@
         drawer.appendChild(bChat);
 
         var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
+        bStop.style.display = 'none';
         drawer.appendChild(bStop);
         
         bStop.addEventListener('touchstart', function(e) {
@@ -840,25 +841,12 @@
                     break;
                 }
             }
-            // Target mode: snap cursor to center on ANY touchend (matches old commit 5d9872b)
-            if (prefs.targetMode && e.touches.length === 0) {
-                canvas.dispatchEvent(new MouseEvent('mousemove', {
-                    clientX: window.innerWidth / 2,
-                    clientY: window.innerHeight / 2
-                }));
-            }
-        }, false);
+        }, { passive: true });
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            if (prefs.targetMode) {
-                canvas.dispatchEvent(new MouseEvent('mousemove', {
-                    clientX: window.innerWidth / 2,
-                    clientY: window.innerHeight / 2
-                }));
-            }
             jHide();
-        }, false);
+        }, { passive: true });
 
         canvas.addEventListener('touchmove', function (e) {
             if (e.touches.length >= 2) return;
