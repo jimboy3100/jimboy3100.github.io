@@ -11984,6 +11984,9 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                    self.flushCellsData();
+                }
                 self.sendMessage(view);
             }
             var sendSpawnPrivateServer = function () {
@@ -11996,6 +11999,9 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                    self.flushCellsData();
+                }
                 self.sendMessage(view);
             }
 
@@ -12148,6 +12154,9 @@ function thelegendmodproject() {
                 return;
             }
             // Default (agar.io / Expanding Land / other): just nick
+            if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                this.flushCellsData();
+            }
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
