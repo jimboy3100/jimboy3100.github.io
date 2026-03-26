@@ -7344,6 +7344,10 @@ function thelegendmodproject() {
         setMainButtons() {
             var app = this;
             $(document).on("click", ".btn-play", function () {
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend && app.play) {
+                    return;
+                }
                 app.onPlay();
             });
             $(document).on("click", ".btn-play-guest", function () {
