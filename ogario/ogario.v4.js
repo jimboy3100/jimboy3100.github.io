@@ -7368,14 +7368,7 @@ function thelegendmodproject() {
                     if (!app.isSocketOpen()) {
                         app.connect();
                     }
-                    var doSpectate = function() {
-                        if (app.isSocketOpen()) {
-                            legendmod.sendAction(56);
-                        } else {
-                            setTimeout(doSpectate, 50);
-                        }
-                    };
-                    doSpectate();
+                    legendmod.sendAction(56);
                     
                     if (window.addKeyListeners) window.addKeyListeners();
                     if (defaultmapsettings.autoHideFood) ogario.showFood = false;
