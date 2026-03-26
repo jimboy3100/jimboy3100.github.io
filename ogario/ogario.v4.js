@@ -7359,7 +7359,7 @@ function thelegendmodproject() {
             });
             if ($(".btn-full-map-spec").length === 0) {
                 // Dimensions exact matching normal spectate button (btn-warning) 
-                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width: 100%; margin-left: 0; margin-top: 10px;" title="Full Map Spectate"><i class="fa fa-globe"></i> Full Map</button>');
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width: 100%; margin-left: 0; margin-top: 5px; margin-bottom: 5px;" title="Full Map Spectate"><i class="fa fa-globe"></i> Full Map</button>');
             }
             $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
