@@ -808,17 +808,17 @@
         <div id="Scripts" class="skins-wrapper" style="display: block;">
             <!-- ═══ Expanding Land Promo Banner ═══ -->
             <div id="expanding-land-promo" style="
-                background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-                border-radius: 14px; padding: 20px 22px; margin: 8px 0 14px;
+                background: var(--bg-card) !important;
+                border-radius: var(--radius); padding: 24px 28px; margin: 16px auto 24px !important;
                 position: relative; overflow: hidden;
-                box-shadow: 0 8px 32px rgba(48,43,99,0.5), 0 0 60px rgba(124,58,237,0.15);
-                border: 1px solid rgba(167,139,250,0.2);
+                box-shadow: var(--shadow-sm);
+                border: 1px solid var(--border);
             ">
                 <!-- Animated background particles -->
-                <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
-                    <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.15),transparent 70%);top:-60px;right:-40px;animation:elFloat 6s ease-in-out infinite;"></div>
-                    <div style="position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,0.1),transparent 70%);bottom:-30px;left:-20px;animation:elFloat 8s ease-in-out infinite reverse;"></div>
-                    <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.08),transparent 70%);top:40%;left:60%;animation:elFloat 5s ease-in-out infinite 1s;"></div>
+                <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.6;">
+                    <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.12),transparent 70%);top:-60px;right:-40px;animation:elFloat 6s ease-in-out infinite;"></div>
+                    <div style="position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,0.08),transparent 70%);bottom:-30px;left:-20px;animation:elFloat 8s ease-in-out infinite reverse;"></div>
+                    <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.06),transparent 70%);top:40%;left:60%;animation:elFloat 5s ease-in-out infinite 1s;"></div>
                 </div>
                 <style>
                     @keyframes elFloat { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.1)} }
@@ -830,49 +830,49 @@
 
                 <!-- Live indicator + Title -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;animation:elSlideUp 0.6s ease both;">
-                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#f87171;letter-spacing:0.05em;text-transform:uppercase;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#ef4444;letter-spacing:0.05em;text-transform:uppercase;">
                         <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;animation:elPulse 1.5s ease-in-out infinite;"></span>
                         LIVE
                     </span>
-                    <span style="font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:500;">New Game by Legend Clan</span>
+                    <span style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;">New Game by Legend Clan</span>
                 </div>
 
                 <!-- Game title -->
-                <h2 style="font-family:'Inter',sans-serif !important;font-size:1.4rem !important;font-weight:800 !important;color:#fff !important;margin:6px 0 2px !important;padding:0 !important;border:none !important;letter-spacing:-0.03em;line-height:1.2;animation:elSlideUp 0.6s ease 0.1s both;border-image:none !important;">
+                <h2 style="font-family:var(--font) !important;font-size:1.6rem !important;font-weight:800 !important;color:var(--text) !important;margin:8px 0 4px !important;padding:0 !important;border:none !important;letter-spacing:-0.03em;line-height:1.2;animation:elSlideUp 0.6s ease 0.1s both;">
                     🌍 Expanding Land
                 </h2>
-                <p style="color:rgba(255,255,255,0.65);font-size:0.84rem;margin:0 0 12px;line-height:1.4;max-width:500px;animation:elSlideUp 0.6s ease 0.2s both;">
+                <p style="color:var(--text-secondary);font-size:0.9rem;margin:0 0 16px;line-height:1.5;max-width:560px;animation:elSlideUp 0.6s ease 0.2s both;">
                     The ultimate agar.io private server experience — massive maps that grow with you.
                 </p>
 
                 <!-- Stats row -->
-                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;animation:elSlideUp 0.6s ease 0.3s both;">
-                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;flex:1;min-width:110px;text-align:center;">
-                        <div style="font-size:1.3rem;font-weight:800;color:#a78bfa;line-height:1;animation:elCount 0.8s ease 0.5s both;">720</div>
-                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;">Real Players</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;animation:elSlideUp 0.6s ease 0.3s both;">
+                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
+                        <div style="font-size:1.35rem;font-weight:800;color:var(--accent);line-height:1;animation:elCount 0.8s ease 0.5s both;">720</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Real Players</div>
                     </div>
-                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;flex:1;min-width:110px;text-align:center;">
-                        <div style="font-size:1.3rem;font-weight:800;color:#14b8a6;line-height:1;animation:elCount 0.8s ease 0.6s both;">200+</div>
-                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
+                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
+                        <div style="font-size:1.35rem;font-weight:800;color:var(--teal);line-height:1;animation:elCount 0.8s ease 0.6s both;">200+</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
                     </div>
-                    <div style="background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 16px;flex:1;min-width:110px;text-align:center;">
-                        <div style="font-size:1.3rem;font-weight:800;color:#fbbf24;line-height:1;animation:elCount 0.8s ease 0.7s both;">∞</div>
-                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;">Resizable Map</div>
+                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
+                        <div style="font-size:1.35rem;font-weight:800;color:#eab308;line-height:1;animation:elCount 0.8s ease 0.7s both;">∞</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Resizable Map</div>
                     </div>
                 </div>
 
                 <!-- Feature pills -->
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;animation:elSlideUp 0.6s ease 0.35s both;">
-                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#c4b5fd;">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;animation:elSlideUp 0.6s ease 0.35s both;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--accent);">
                         <i class="fas fa-expand-arrows-alt" style="font-size:0.65rem;"></i> Dynamic Map
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(20,184,166,0.12);border:1px solid rgba(20,184,166,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#5eead4;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:var(--teal);">
                         <i class="fas fa-flask" style="font-size:0.65rem;"></i> Potions
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.25);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:600;color:#fde68a;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#ca8a04;">
                         <i class="fas fa-users" style="font-size:0.65rem;"></i> 720 Real Players
                     </span>
-                    <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:20px;padding:5px 14px;font-size:0.76rem;font-weight:600;color:#fca5a5;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;color:#dc2626;">
                         <i class="fas fa-shield-alt" style="font-size:0.65rem;"></i> Anti-Team
                     </span>
                 </div>
@@ -881,33 +881,43 @@
                 <div style="display:flex;flex-wrap:wrap;gap:12px;animation:elSlideUp 0.6s ease 0.4s both;">
                     <a href="https://expanding.land/" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
-                        padding:11px 26px;
+                        padding:12px 28px;
                         background:linear-gradient(135deg,#7c3aed,#9333ea,#a855f7) !important;
-                        color:#fff !important;font-weight:700;font-size:0.88rem;
+                        color:#fff !important;font-weight:700;font-size:0.9rem;
                         border-radius:12px;border:none !important;
-                        box-shadow:0 4px 20px rgba(124,58,237,0.4);
+                        box-shadow:0 4px 15px rgba(124,58,237,0.3);
                         transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
                         text-decoration:none !important;letter-spacing:-0.01em;
-                        background-image:linear-gradient(135deg,#7c3aed,#9333ea,#a855f7) !important;
-                        background-size:100% 100% !important;
-                    " onmouseover="this.style.transform='translateY(-3px) scale(1.03)';this.style.boxShadow='0 8px 30px rgba(124,58,237,0.5)'"
-                       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(124,58,237,0.4)'">
+                    " onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 6px 20px rgba(124,58,237,0.4)';"
+                       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 15px rgba(124,58,237,0.3)';">
                         <i class="fas fa-play" style="font-size:0.85rem;"></i>
                         <span style="color:#fff !important;">Play Now</span>
                     </a>
                     <a href="https://help.expanding.land/" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
-                        padding:11px 22px;
-                        background:rgba(255,255,255,0.08) !important;
-                        color:rgba(255,255,255,0.85) !important;font-weight:600;font-size:0.84rem;
-                        border-radius:12px;border:1px solid rgba(255,255,255,0.15) !important;
+                        padding:12px 22px;
+                        background:var(--btn-bg) !important;
+                        color:var(--text) !important;font-weight:600;font-size:0.88rem;
+                        border-radius:12px;border:1px solid var(--btn-border) !important;
                         transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
                         text-decoration:none !important;
-                        background-image:none !important;background-size:unset !important;
-                    " onmouseover="this.style.transform='translateY(-2px)';this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(255,255,255,0.3)'"
-                       onmouseout="this.style.transform='';this.style.background='rgba(255,255,255,0.08)';this.style.borderColor='rgba(255,255,255,0.15)'">
-                        <i class="fas fa-book-open" style="font-size:0.8rem;"></i>
-                        <span style="color:rgba(255,255,255,0.85) !important;">Game Info & Help</span>
+                    " onmouseover="this.style.transform='translateY(-2px)';this.style.background='var(--bg-subtle)';this.style.borderColor='var(--accent-light)';"
+                       onmouseout="this.style.transform='';this.style.background='var(--btn-bg)';this.style.borderColor='var(--btn-border)';">
+                        <i class="fas fa-book-open" style="font-size:0.8rem;color:var(--text-muted);"></i>
+                        <span style="color:var(--text) !important;">Game Info & Help</span>
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=fWlrAHVtZHc" target="_blank" style="
+                        display:inline-flex;align-items:center;gap:10px;
+                        padding:12px 22px;
+                        background:var(--btn-bg) !important;
+                        color:var(--text) !important;font-weight:600;font-size:0.88rem;
+                        border-radius:12px;border:1px solid var(--btn-border) !important;
+                        transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+                        text-decoration:none !important;
+                    " onmouseover="this.style.transform='translateY(-2px)';this.style.background='var(--bg-subtle)';this.style.borderColor='var(--accent-light)';"
+                       onmouseout="this.style.transform='';this.style.background='var(--btn-bg)';this.style.borderColor='var(--btn-border)';">
+                        <i class="fab fa-youtube" style="font-size:0.9rem;color:#ef4444;"></i>
+                        <span style="color:var(--text) !important;">Promo Video</span>
                     </a>
                 </div>
             </div>
