@@ -7358,7 +7358,8 @@ function thelegendmodproject() {
                 app.onPlay();
             });
             if ($(".btn-full-map-spec").length === 0) {
-                $(".btn-spectate").after('<button class="btn btn-info btn-full-map-spec btn-needs-server" style="display:none; margin-left:10px;" title="Full Map Spectate"><i class="fa fa-crosshairs"></i> Full Map</button>');
+                // Dimensions exact matching normal spectate button (btn-warning) 
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none;" title="Full Map Spectate"><i class="fa fa-globe"></i> Full Map</button>');
             }
             $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
@@ -7369,7 +7370,11 @@ function thelegendmodproject() {
                     }
                     var doSpectate = function() {
                         if (app.isSocketOpen()) {
-                            app.sendAction(56);
+                            app.sendSpectate(); // Init spectator on server
+                            setTimeout(function() {
+                                if (typeof legendmod !== "undefined" && typeof legendmod.sendAction === "function") legendmod.sendAction(56);
+                                else if (typeof app.sendAction === "function") app.sendAction(56);
+                            }, 50);
                         } else {
                             setTimeout(doSpectate, 50);
                         }
@@ -11679,8 +11684,10 @@ function thelegendmodproject() {
                 : 'private';
 
             if (this.serverType === 'expandingland') {
+                $(".btn-spectate").hide();
                 $(".btn-full-map-spec").show();
             } else {
+                $(".btn-spectate").show();
                 $(".btn-full-map-spec").hide();
             }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
