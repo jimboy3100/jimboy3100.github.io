@@ -837,7 +837,13 @@
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
                     if (prefs.targetMode) {
-                        mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+                        var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                        mouseAt(cx, cy);
+                        if (window.LM) {
+                            window.LM.clientX = cx;
+                            window.LM.clientY = cy;
+                            if (window.LM.getCursorPosition) window.LM.getCursorPosition();
+                        }
                     }
                     jHide();
                     break;
@@ -848,7 +854,13 @@
         canvas.addEventListener('touchcancel', function () {
             jId = null;
             if (prefs.targetMode) {
-                mouseAt(window.innerWidth / 2, window.innerHeight / 2);
+                var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                mouseAt(cx, cy);
+                if (window.LM) {
+                    window.LM.clientX = cx;
+                    window.LM.clientY = cy;
+                    if (window.LM.getCursorPosition) window.LM.getCursorPosition();
+                }
             }
             jHide();
         }, { passive: true });
