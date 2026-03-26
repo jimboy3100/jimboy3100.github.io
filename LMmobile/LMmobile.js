@@ -507,23 +507,7 @@
             prefs.targetMode = !prefs.targetMode;
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             savePrefs();
-            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
-                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
-            } else {
-                activeWorldTarget = null;
-            }
         }, { passive: false });
-
-        var activeWorldTarget = null;
-        function trackTargetMode() {
-            requestAnimationFrame(trackTargetMode);
-            if (prefs.targetMode && activeWorldTarget && window.LM) {
-                var screenX = (activeWorldTarget.x - window.LM.viewX) * window.LM.viewScale + (window.innerWidth / 2);
-                var screenY = (activeWorldTarget.y - window.LM.viewY) * window.LM.viewScale + (window.innerHeight / 2);
-                mouseAt(screenX, screenY);
-            }
-        }
-        trackTargetMode();
 
         /* ☰ menu button: leftmost, always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
@@ -841,13 +825,10 @@
             if (chatOn || e.touches.length !== 1) return;
             var t = e.changedTouches[0];
             jId = t.identifier;
-            activeWorldTarget = null;
             org.x = t.clientX; org.y = t.clientY;
             mouseAt(t.clientX, t.clientY);
             
-            if (!prefs.targetMode) {
-                jShow(org.x, org.y, org.x, org.y);
-            }
+            jShow(org.x, org.y, org.x, org.y);
             swStart = null; // cancel any swipe tracking when joystick starts
         }, { passive: true });
 
@@ -855,8 +836,8 @@
             for (var i = 0; i < e.changedTouches.length; i++) {
                 if (e.changedTouches[i].identifier === jId) {
                     jId = null;
-                    if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
-                        activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+                    if (prefs.targetMode) {
+                        mouseAt(window.innerWidth / 2, window.innerHeight / 2);
                     }
                     jHide();
                     break;
@@ -866,8 +847,8 @@
 
         canvas.addEventListener('touchcancel', function () {
             jId = null;
-            if (prefs.targetMode && window.LM && window.LM.cursorX !== undefined) {
-                activeWorldTarget = { x: window.LM.cursorX, y: window.LM.cursorY };
+            if (prefs.targetMode) {
+                mouseAt(window.innerWidth / 2, window.innerHeight / 2);
             }
             jHide();
         }, { passive: true });
@@ -877,29 +858,24 @@
             var t = tById(e.changedTouches, jId);
             if (!t) return;
 
-            if (prefs.targetMode) {
-                // Target Mode: raw 1:1 finger-to-cursor mapping
-                mouseAt(t.clientX, t.clientY);
+            // Both modes use virtual joystick scaling
+            var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
+            var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
+            if (rawD < 8) return;
+
+            var dx = rx0 * prefs.jsSensitivity;
+            var dy = ry0 * prefs.jsSensitivity;
+            var cx = window.innerWidth / 2 + dx / asp;
+            var cy = window.innerHeight / 2 + dy;
+            mouseAt(cx, cy);
+
+            var rx = t.clientX - org.x, ry = t.clientY - org.y;
+            var d = Math.sqrt(rx * rx + ry * ry);
+            if (d > JR) {
+                var a = Math.atan2(ry, rx);
+                jShow(org.x, org.y, org.x + Math.cos(a) * JR, org.y + Math.sin(a) * JR);
             } else {
-                // Coast Mode: virtual joystick scaling
-                var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
-                var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
-                if (rawD < 8) return;
-
-                var dx = rx0 * prefs.jsSensitivity;
-                var dy = ry0 * prefs.jsSensitivity;
-                var cx = window.innerWidth / 2 + dx / asp;
-                var cy = window.innerHeight / 2 + dy;
-                mouseAt(cx, cy);
-
-                var rx = t.clientX - org.x, ry = t.clientY - org.y;
-                var d = Math.sqrt(rx * rx + ry * ry);
-                if (d > JR) {
-                    var a = Math.atan2(ry, rx);
-                    jShow(org.x, org.y, org.x + Math.cos(a) * JR, org.y + Math.sin(a) * JR);
-                } else {
-                    jShow(org.x, org.y, t.clientX, t.clientY);
-                }
+                jShow(org.x, org.y, t.clientX, t.clientY);
             }
         }, { passive: true });
 
