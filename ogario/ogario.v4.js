@@ -13270,6 +13270,7 @@ function thelegendmodproject() {
                                 window.testobjects10262 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game over");
                                 LegendModDeath();
+                                if (window.application) application.onPlayerDeath();
                                 //$('#pause-hud').text("PAUSE!");							
                                 break;
                             case 63:
