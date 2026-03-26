@@ -839,10 +839,10 @@
                     if (prefs.targetMode) {
                         var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
                         mouseAt(cx, cy);
-                        if (window.LM) {
-                            window.LM.clientX = cx;
-                            window.LM.clientY = cy;
-                            if (window.LM.getCursorPosition) window.LM.getCursorPosition();
+                        if (window.legendmod) {
+                            window.legendmod.clientX = cx;
+                            window.legendmod.clientY = cy;
+                            if (window.legendmod.getCursorPosition) window.legendmod.getCursorPosition();
                         }
                     }
                     jHide();
@@ -856,10 +856,10 @@
             if (prefs.targetMode) {
                 var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
                 mouseAt(cx, cy);
-                if (window.LM) {
-                    window.LM.clientX = cx;
-                    window.LM.clientY = cy;
-                    if (window.LM.getCursorPosition) window.LM.getCursorPosition();
+                if (window.legendmod) {
+                    window.legendmod.clientX = cx;
+                    window.legendmod.clientY = cy;
+                    if (window.legendmod.getCursorPosition) window.legendmod.getCursorPosition();
                 }
             }
             jHide();
