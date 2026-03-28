@@ -12001,6 +12001,13 @@ function thelegendmodproject() {
             }
         },
         sendNick(nick) {
+            /* LW: Don't send spawn if already alive — flushCellsData clears
+             * client view and causes cells to disappear even though server
+             * ignores the join (cell_count > 0). */
+            if (ogario.play) {
+                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
 
             var self = this
             this.playerNick = nick;
@@ -12160,6 +12167,10 @@ function thelegendmodproject() {
             })*/
         },
         sendNick2(nick) {
+            if (ogario.play) {
+                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
             this.playerNick = nick,
                 nick = window.unescape(window.encodeURIComponent(nick));
             window.Bufferdata = nick;
