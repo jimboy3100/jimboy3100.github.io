@@ -6042,16 +6042,44 @@ function initializeLM(modVersion) {
     languagemodfun();
     $('[data-toggle="tooltip"]').tooltip();
 
-    $("body").on('DOMNodeInserted', ".toast.toast-success", function () {
-        MSGCOMMANDS = $(".toast.toast-success").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
+    /* Chat embed shortcodes: [yut], [url], [tag], [skype], [discord], etc.
+     * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
+     * NEW: MutationObserver — standard API, works in all browsers. */
+    var _chatObserverActive = false;
+    function _processChatEmbeds() {
+        if (_chatObserverActive) return;
+        _chatObserverActive = true;
+        setTimeout(function() {
+            MSGCOMMANDS = $(".toast.toast-success").last().text() || $(".message-text").last().text();
+            MSGNICK = $(".message-nick").last().text().replace(": ", "");
+            if (MSGCOMMANDS) MsgCommands1(MSGCOMMANDS, MSGNICK);
+            _chatObserverActive = false;
+        }, 50);
+    }
+
+    /* Observe toast notifications (toastr success messages) */
+    var _chatToastObs = new MutationObserver(function(mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+            if (mutations[i].addedNodes.length > 0) { _processChatEmbeds(); return; }
+        }
     });
-    $("body").on('DOMSubtreeModified', "#chat-box", function () {
-        MSGCOMMANDS = $(".message-text").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
-    });
+    var _toastEl = document.getElementById('toast-container');
+    if (_toastEl) {
+        _chatToastObs.observe(_toastEl, { childList: true, subtree: true });
+    } else {
+        /* toast-container may not exist yet — wait for it */
+        var _waitToast = new MutationObserver(function(muts) {
+            var el = document.getElementById('toast-container');
+            if (el) { _chatToastObs.observe(el, { childList: true, subtree: true }); _waitToast.disconnect(); }
+        });
+        _waitToast.observe(document.body, { childList: true, subtree: false });
+    }
+
+    /* Observe chat box content changes */
+    var _chatBoxEl = document.getElementById('chat-box');
+    if (_chatBoxEl) {
+        new MutationObserver(function() { _processChatEmbeds(); }).observe(_chatBoxEl, { childList: true, subtree: true, characterData: true });
+    }
 }
 
 
