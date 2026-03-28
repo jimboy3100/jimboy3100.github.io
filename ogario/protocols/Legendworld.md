@@ -507,3 +507,48 @@ checks `LM.mapEvent.active` which defaults to `false`.
 If players return above `shrink_threshold + 10` during the WARNING phase,
 contraction is cancelled and the server returns to NORMAL. A
 MAP_RESIZE_COMPLETE event is sent so the client clears the zone overlay.
+
+------------------------------------------------------------------------
+
+## Anti-Teaming System
+
+Event-based system that penalizes rapid teaming actions (splits, W presses,
+virus pops) with extra mass decay. Communicated to clients via opcode 202.
+
+### Event Triggers
+
+| Action | Penalty | Duration | Threshold Splits |
+|--------|---------|----------|-----------------|
+| **Split** | `0.004` (0.4%/4s) | 2m30s (3750 ticks) | 7 splits triggers AT |
+| **W/Eject** | `0.0016` (0.16%/4s) | 1m15s (1875 ticks) | 18 W presses triggers AT |
+| **Virus pop** | `0.016` (1.6%/4s) | 2m30s (3750 ticks) | 2 pops nearly triggers AT |
+| **Danger zone** | accumulated/tick | 2m30s (3750 ticks) | Proximity-based |
+
+### Config Values (`config.c`)
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `at_split_penalty` | `0.004` | Decay fraction added per split |
+| `at_eject_penalty` | `0.0016` | Decay fraction added per W press |
+| `at_threshold` | `0.028` | Free allowance — no penalty below this |
+| `at_virus_lifespan` | `3750` | Virus pop event lifetime (2m30s) |
+| `at_split_lifespan` | `3750` | Split event lifetime (2m30s) |
+| `at_eject_lifespan` | `1875` | Eject event lifetime (1m15s) |
+| `at_danger_lifespan` | `3750` | Danger zone event lifetime (2m30s) |
+| `player_decay_rate` | `0.002` | Base decay (scales ×√(32/alive)) |
+| `decay_interval` | `100` | How often decay runs (4s at 25Hz) |
+
+### Decay Formula
+
+```
+anti_team_score = sum of all active (non-expired) event penalties
+AT_penalty      = max(0, anti_team_score - at_threshold)
+base_decay      = 0.002 × √(32 / alive_players)
+total_decay     = base_decay + AT_penalty
+new_mass        = mass - mass × total_decay   (applied every 4 seconds)
+```
+
+Events accumulate over their lifespan and expire individually. Only the
+**excess above `at_threshold`** is applied as extra decay. With 1000
+players, base decay drops to ~0.00036 (very low), making AT the primary
+mass penalty for teamers.
