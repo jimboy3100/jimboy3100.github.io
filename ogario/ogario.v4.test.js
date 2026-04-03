@@ -11336,6 +11336,32 @@ function thelegendmodproject() {
         chatableServer: false,
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
+
+            /* Pre-flight: determine server type early so we can gate login. */
+            var _earlyType = t.includes('agario.miniclippt') ? 'agario'
+                : t.includes('imsolo.pro') ? 'imsolo'
+                : t.includes('agar2.com') ? 'agar2'
+                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                : 'private';
+
+            /* Auto-logout when joining a server that doesn't support login.
+             * Logout BEFORE tearing down the old connection, then re-invoke
+             * connect() after 500ms so the logout side-effects settle first. */
+            if (_earlyType !== 'agario' && _earlyType !== 'expandingland') {
+                var _isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
+                                  (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+                if (_isLoggedIn && typeof window.logout === 'function') {
+                    console.log('[LW] Auto-logout before joining non-EL server, will reconnect in 500ms');
+                    window.logout();
+                    var self = this;
+                    setTimeout(function() {
+                        console.log('[LW] Logout complete, now connecting to: ' + t);
+                        self.connect(t);
+                    }, 500);
+                    return; // stop — don't open the socket yet
+                }
+            }
+
             var app = this;
             setTimeout(function () {
                 application.Socket3connect(t);
@@ -11378,23 +11404,7 @@ function thelegendmodproject() {
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
             this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
             // Multi-protocol server type detection (2026)
-            this.serverType = t.includes('agario.miniclippt') ? 'agario'
-                : t.includes('imsolo.pro') ? 'imsolo'
-                : t.includes('agar2.com') ? 'agar2'
-                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                : 'private';
-
-            /* Auto-logout when joining a private server that is NOT Expanding Land.
-             * Non-EL private servers can't handle opcode 102 (login), so we sign
-             * out first to prevent the login packet from being sent after connect. */
-            if (this.serverType === 'private') {
-                var isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
-                                 (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
-                if (isLoggedIn && typeof window.logout === 'function') {
-                    console.log('[LW] Auto-logout: joining non-EL private server while logged in');
-                    window.logout();
-                }
-            }
+            this.serverType = _earlyType;
 
             /* Enable/disable social login buttons based on server type.
              * Only original agario and expandingland servers support login.
