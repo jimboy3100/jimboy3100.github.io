@@ -2892,6 +2892,7 @@ var displayText = {
         'hk-chatMessage': 'Enter chat message',
         'hk-quickResp': 'Quick respawn',
         'hk-autoResp': 'Toggle auto respawn',
+        'hk-quitGame': 'Quit game (Expanding Land)',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -5381,6 +5382,10 @@ function thelegendmodproject() {
                 ogario.play = false;
                 this.tryResp();
             }
+        },
+        quitGame() {
+            window._forceGameOverStats = true;
+            LM.sendQuitGame();
         },
         autoResp() {
             if (!defaultmapsettings.autoResp) {
@@ -11925,6 +11930,9 @@ function thelegendmodproject() {
             this.isFreeSpectate = !this.isFreeSpectate;
             this.sendAction(18);
         },
+        sendQuitGame() {
+            this.sendAction(57);
+        },
         sendBotEject() {
             //this.sendPosition();
             this.sendAction(23);
@@ -14047,8 +14055,9 @@ function thelegendmodproject() {
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
                     };
-                    if (defaultmapsettings.gameOverStats) {
+                    if (defaultmapsettings.gameOverStats || window._forceGameOverStats) {
                         this.showSessionStats(u.gameSessionStats);
+                        window._forceGameOverStats = false;
                     }
                     break;
                 case 71:

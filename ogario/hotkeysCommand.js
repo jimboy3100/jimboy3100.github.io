@@ -416,6 +416,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-quitGame': {
+                label: textLanguage['hk-quitGame'] || 'Quit game (Expanding Land)',
+                defaultKey: '=',
+                keyDown() {
+                    application && application.quitGame();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-zoom1': {
                 label: textLanguage['hk-zoomLevel'] + ' 1',
                 defaultKey: 'ALT+1',
