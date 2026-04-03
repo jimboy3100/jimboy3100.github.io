@@ -11677,6 +11677,18 @@ function thelegendmodproject() {
                 : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                 : 'private';
 
+            /* Auto-logout when joining a private server that is NOT Expanding Land.
+             * Non-EL private servers can't handle opcode 102 (login), so we sign
+             * out first to prevent the login packet from being sent after connect. */
+            if (this.serverType === 'private') {
+                var isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
+                                 (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+                if (isLoggedIn && typeof window.logout === 'function') {
+                    console.log('[LW] Auto-logout: joining non-EL private server while logged in');
+                    window.logout();
+                }
+            }
+
             if (this.serverType === 'expandingland') {
                 $(".btn-spectate").show();
                 $(".btn-full-map-spec").hide();

@@ -11383,6 +11383,19 @@ function thelegendmodproject() {
                 : t.includes('agar2.com') ? 'agar2'
                 : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                 : 'private';
+
+            /* Auto-logout when joining a private server that is NOT Expanding Land.
+             * Non-EL private servers can't handle opcode 102 (login), so we sign
+             * out first to prevent the login packet from being sent after connect. */
+            if (this.serverType === 'private') {
+                var isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
+                                 (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+                if (isLoggedIn && typeof window.logout === 'function') {
+                    console.log('[LW] Auto-logout: joining non-EL private server while logged in');
+                    window.logout();
+                }
+            }
+
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
