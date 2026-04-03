@@ -11678,8 +11678,8 @@ function thelegendmodproject() {
                 : 'private';
 
             if (this.serverType === 'expandingland') {
-                $(".btn-spectate").hide();
-                $(".btn-full-map-spec").show();
+                $(".btn-spectate").show();
+                $(".btn-full-map-spec").hide();
             } else {
                 $(".btn-spectate").show();
                 $(".btn-full-map-spec").hide();
