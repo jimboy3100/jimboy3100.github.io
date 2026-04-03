@@ -310,10 +310,7 @@
                         batched every 4 seconds, lasts <span class="strong">2 minutes 30 seconds</span>. Only applies when the map is contracting and you have cells in the outer ring. 4 seconds in the danger zone = same penalty as one virus pop.</li>
                     <li><span class="strong">&#8734; Constant Decay</span> &mdash; always active, never expires. This is the natural mass loss.
                         It's a flat percentage of your mass &mdash; a 10,000 mass cell loses ~80, a 100 mass cell loses ~0.8.
-                        <span class="accent">Decay gets less as more players join</span> &mdash; the base rate scales down dynamically using a square-root curve so that large arenas don't punish you unfairly:
-                        <span class="accent">&minus;0.8%/4s</span> with &le;32 players (vanilla Agar.io rate, verified from 97,806 real packets),
-                        dropping to <span class="accent">0.57%</span> at 64, <span class="accent">0.40%</span> at 128, <span class="accent">0.28%</span> at 256, <span class="accent">0.20%</span> at 512, and only <span class="accent">0.14%</span> at 1024 players.
-                        Formula: <span class="accent">decay = 0.8% &times; &radic;(32 / players)</span> when players &gt; 32.</li>
+                        The rate is <span class="accent">&minus;0.8%/4s</span> (vanilla Agar.io rate, verified from 97,806 real packets) &mdash; the same regardless of how many players are in the arena.</li>
                 </ul>
 
                 <div class="divider"></div>
@@ -365,9 +362,8 @@
                     <li><span class="strong">&#9888; Zone 120s (+1.6%, &#9203;2m30s)</span>
                         &mdash; You're in the <span class="warn">danger zone</span> (120s left in the phase).
                         The danger zone has accumulated <span class="accent">+1.6%/4s</span> of penalty.</li>
-                    <li><span class="strong">&#8734; &minus;X%/4s</span>
-                        &mdash; The constant base decay. Always present. Decay gets less as more players join:
-                        0.8%/4s with &le;32 players (vanilla), dropping to 0.57% at 64, 0.40% at 128, 0.28% at 256, etc.
+                    <li><span class="strong">&#8734; &minus;0.8%/4s</span>
+                        &mdash; The constant base decay. Always present, always the same rate.
                         This is the natural game decay and is <span class="strong">independent</span> of the anti-team system.</li>
                 </ul>
 
@@ -413,7 +409,7 @@
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">&#8734; Constant Decay</td>
-                            <td style="text-align:center; padding:6px 10px;">&minus;0.8%/4s (&le;32 players, scales down with &radic;)</td>
+                            <td style="text-align:center; padding:6px 10px;">&minus;0.8%/4s (vanilla Agar.io rate)</td>
                             <td style="text-align:center; padding:6px 10px;">Always</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
