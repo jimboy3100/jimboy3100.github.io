@@ -11396,6 +11396,15 @@ function thelegendmodproject() {
                 }
             }
 
+            /* Enable/disable social login buttons based on server type.
+             * Only original agario and expandingland servers support login.
+             * We disable (not hide) the buttons so users can still see them. */
+            if (this.serverType === 'agario' || this.serverType === 'expandingland') {
+                $('.btn-fb, .btn-discord, .btn-gplus, #gplusLogin').prop('disabled', false);
+            } else {
+                $('.btn-fb, .btn-discord, .btn-gplus, #gplusLogin').prop('disabled', true);
+            }
+
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
