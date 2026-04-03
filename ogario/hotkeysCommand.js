@@ -418,7 +418,7 @@
             },
             'hk-quitGame': {
                 label: textLanguage['hk-quitGame'] || 'Quit game (Expanding Land)',
-                defaultKey: '=',
+                defaultKey: '+',
                 keyDown() {
                     application && application.quitGame();
                 },
