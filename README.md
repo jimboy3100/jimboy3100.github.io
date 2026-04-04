@@ -76,3 +76,25 @@ Website: [www.jimboy3100.github.io](https://jimboy3100.github.io/)
 ![alt tag](https://jimboy3100.github.io/banners/dyinglightad4.jpg)
 
 ###### Legend mod is based on many scripts ([ogario](http://ogario.ovh/), [kitty](https://kittymod.github.io/), [turtle clan scripts](https://www.youtube.com/channel/UCQ-V2VrQawc8Xi6b_mH8Law) and others that can be found on [greasyfork](https://greasyfork.org/tr/scripts/by-site/agar.io) website).
+
+---
+
+## 🌍 Expanding Land — The World's Largest IO Game
+
+**[Expanding Land](https://expanding.land/)** is a free multiplayer IO game built from scratch in **pure C** — capable of handling **720 real players** per arena with **zero bots**.
+
+| Feature | Details |
+|---|---|
+| 👥 Players | 720 real players per server — no bots |
+| ⚡ Performance | ~5ms tick time (8× faster than Node.js) |
+| 🗺️ Map | Resizable from 0.25× to 8× based on player count |
+| 🛡️ Security | Encrypted WSS/TLS + coordinate scramble anti-cheat |
+| 🎨 Mods | Full Legend Mod & Delta compatibility |
+| 💰 Price | 100% Free — no pay-to-win |
+
+### Links
+
+- 🎮 **Play:** [expanding.land](https://expanding.land/)
+- 📖 **Help & Guide:** [help.expanding.land](https://help.expanding.land/)
+- 💬 **Discord:** [discord.com/invite/JUfpR9k](https://discord.com/invite/JUfpR9k)
+- 📋 **Changelog:** [help.expanding.land/changelog.html](https://help.expanding.land/changelog.html)
