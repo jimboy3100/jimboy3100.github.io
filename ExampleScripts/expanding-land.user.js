@@ -8,6 +8,29 @@
 // @match        https://expanding.land/*
 // @match        https://www.expanding.land/*
 // @match        https://agar.io/*
+// @match        *://moomoo.io/*
+// @match        *://surviv.io/*
+// @match        *://slither.io/*
+// @match        *://diep.io/*
+// @match        *://zombs.io/*
+// @match        *://krunker.io/*
+// @match        *://shellshock.io/*
+// @match        *://paper-io.com/*
+// @match        *://hole-io.com/*
+// @match        *://skribbl.io/*
+// @match        *://ev.io/*
+// @match        *://deeeep.io/*
+// @match        *://florr.io/*
+// @match        *://starve.io/*
+// @match        *://sploop.io/*
+// @match        *://yohoho.io/*
+// @match        *://cellcraft.io/*
+// @match        *://agma.io/*
+// @match        *://agar.pro/*
+// @match        *://agarx.biz/*
+// @match        *://germs.io/*
+// @match        *://senpa.io/*
+// @match        *://generals.io/*
 // @connect      expanding.land
 // @connect      legendmod.ml
 // @grant        none
@@ -61,11 +84,11 @@
     //  • Works on agar.io too (shows Expanding Land banner)
     // ═══════════════════════════════════════════════════════
 
-    const IS_AGARIO = window.location.hostname === 'agar.io';
     const IS_EL = window.location.hostname.includes('expanding.land');
+    const IS_OTHER_GAME = !IS_EL; // Show banner on any other IO game
 
-    // ── If user is on agar.io, show Expanding Land banner ──
-    if (IS_AGARIO) {
+    // ── If user is on another IO game, show Expanding Land banner ──
+    if (IS_OTHER_GAME) {
         window.addEventListener('DOMContentLoaded', function() {
             const banner = document.createElement('div');
             banner.id = 'el-banner';
