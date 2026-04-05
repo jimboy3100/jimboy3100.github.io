@@ -473,6 +473,15 @@
     iframe.result-iframe { border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg); border: none !important; }
 
+    /* RESPONSIVE YOUTUBE — proper 16:9 aspect ratio containers */
+    .yt-responsive { position: relative; width: 90%; max-width: 900px;
+        margin: 16px auto; aspect-ratio: 16 / 9; border-radius: var(--radius);
+        overflow: hidden; box-shadow: var(--shadow-lg);
+        background: #000; }
+    .yt-responsive iframe { position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%; border: none; border-radius: var(--radius); }
+    @media (max-width: 600px) { .yt-responsive { width: 100%; } }
+
     /* SECTIONS — glass cards */
     section { max-width: var(--max-w) !important; margin: 0 auto !important;
         padding: 36px 32px !important; }
@@ -1173,9 +1182,9 @@
         <section style="text-align: center;">
             <strong>Mod for Agar.io multiplayer action browsergame</strong>
             <h2 class="project-tagline">About Mod</h2>
-            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/-OHbflAMDiU" frameborder="0"
+            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/-OHbflAMDiU"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen=""></iframe>
+                allowfullscreen></iframe></div>
             <br>
             Author: <a href="https://github.com/kyriakidisdimitrios" target="_blank" rel="noopener noreferrer">Jimboy3100</a>
             <br>This mod combines many scripts for agario game. It is based on ogario.ovh platform with all features,
@@ -1219,9 +1228,9 @@
             <strong>LME is the biggest and quickest mod for agario</strong>
             <br>
             <br>
-            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/CN5-RFGsqcY" frameborder="0"
+            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/CN5-RFGsqcY"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen=""></iframe>
+                allowfullscreen></iframe></div>
             <h2 class="project-tagline">Legend Mod Express Features</h2>
             Auto Updates
             <br><b>Unlimited FPS</b>&nbsp;unlocked (<i>quicker than Vanilla</i>)
@@ -1364,9 +1373,9 @@
             <h3 class="project-tagline">Make your own server</h3>
             <img width="60%" height="40%" src="https://jimboy3100.github.io/banners/MultiOgarExp.png">
             <br>
-            <br><iframe width="60%" height="40%" src="https://www.youtube.com/embed/vpjfGYrKqO8" frameborder="0"
+            <br><div class="yt-responsive"><iframe src="https://www.youtube.com/embed/vpjfGYrKqO8"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+                allowfullscreen></iframe></div>
             <br>
             <br>
         </section>
@@ -1456,9 +1465,9 @@
             <strong>Do more...</strong>
             <br>
             <br>
-            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0"
+            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/B87655tH0Lg"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+                allowfullscreen></iframe></div>
             <h3 class="project-tagline">Legend mod Devs</h3>
             <b>We need:</b>
             <br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a
@@ -1520,9 +1529,9 @@
             <strong>Play Agario on tablet / mobile</strong>
             <br>
             <br>
-            <iframe width="40%" height="40%" src="https://www.youtube.com/embed/JOAPoEXXRYw" frameborder="0"
+            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/JOAPoEXXRYw"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe>
+                allowfullscreen></iframe></div>
             <h3 class="project-tagline">Agario Mobile</h3>
             On chrome mobile choose setting 'for PC'
             <br>Go to www.agar.io
