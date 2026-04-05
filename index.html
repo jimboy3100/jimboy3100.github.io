@@ -857,8 +857,8 @@
                         <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Uptime</div>
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
-                        <div style="font-size:1.35rem;font-weight:800;color:#f472b6;line-height:1;animation:elCount 0.8s ease 0.8s both;">1/4–8×</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Resizable Map</div>
+                        <div id="el-map" style="font-size:1.35rem;font-weight:800;color:#f472b6;line-height:1;animation:elCount 0.8s ease 0.8s both;">—</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Map (up to 8×)</div>
                     </div>
                 </div>
 
@@ -1670,6 +1670,7 @@
       var alive = document.getElementById('el-alive');
       var specs = document.getElementById('el-spectators');
       var upt   = document.getElementById('el-uptime');
+      var mapEl = document.getElementById('el-map');
       if (!badge) return;
 
       function fmtUptime(s) {
@@ -1678,6 +1679,13 @@
         var m = Math.floor((s % 3600) / 60);
         if (h > 0) return h + 'h ' + m + 'm';
         return m + 'm';
+      }
+
+      function fmtScale(x100) {
+        if (x100 <= 25) return '1/4';
+        if (x100 <= 50) return '1/2';
+        if (x100 <= 100) return '1×';
+        return Math.round(x100 / 100) + '×';
       }
 
       function setOnline(d) {
@@ -1690,6 +1698,7 @@
         alive.textContent = (d.alive || '0') + '/1024';
         specs.textContent = (d.spectators || '0') + '/200';
         upt.textContent = fmtUptime(d.uptime || 0);
+        if (d.map_scale) mapEl.textContent = fmtScale(d.map_scale);
       }
 
       function setOffline() {
@@ -1702,6 +1711,7 @@
         alive.textContent = '—';
         specs.textContent = '—';
         upt.textContent = '—';
+        mapEl.textContent = '—';
       }
 
       function fetchStatus() {
