@@ -836,9 +836,9 @@
 
                 <!-- Live indicator + Title (dynamic) -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;animation:elSlideUp 0.6s ease both;">
-                    <span id="el-status-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(100,100,100,0.12);border:1px solid rgba(100,100,100,0.25);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#94a3b8;letter-spacing:0.05em;text-transform:uppercase;transition:all .4s ease;">
-                        <span id="el-status-dot" style="width:7px;height:7px;border-radius:50%;background:#94a3b8;transition:background .4s ease;"></span>
-                        <span id="el-status-text">CHECKING...</span>
+                    <span id="el-status-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.30);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#22c55e;letter-spacing:0.05em;text-transform:uppercase;transition:all .4s ease;">
+                        <span id="el-status-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;animation:elPulse 1.5s ease-in-out infinite;transition:background .4s ease;"></span>
+                        <span id="el-status-text">LIVE</span>
                     </span>
                     <span style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;">New Game by Legend Clan</span>
                 </div>
@@ -1716,8 +1716,11 @@
       function fetchStatus() {
         fetch('https://expanding.land/status', { mode: 'cors' })
           .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
-          .then(function(d) { setOnline(d); })
-          .catch(function() { setOffline(); });
+          .then(function(d) {
+            if (d.status === 'offline') { setOffline(); }
+            else { setOnline(d); }
+          })
+          .catch(function() { /* /status not deployed yet — keep default LIVE */ });
       }
 
       fetchStatus();
