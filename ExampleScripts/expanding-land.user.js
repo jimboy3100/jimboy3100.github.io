@@ -2,7 +2,7 @@
 // @name         Expanding Land - IO Games Mod | Free Bots, Macros, Auto-Respawn
 // @namespace    https://expanding.land/
 // @version      2.0
-// @description  The ultimate IO games toolkit. Auto-fill nicknames, rapid eject, quad split, freeze cell, auto-respawn, FPS counter — works on Agar.io, MooMoo.io, Slither.io, Diep.io, Surviv.io, and 20+ IO games. Includes FREE 50 bots for Expanding Land (1024 real players, zero bots). Best agario mod alternative.
+// @description  The ultimate IO games toolkit. Auto-fill nicknames, rapid eject, quad split, freeze cell, auto-respawn, FPS counter — works on Agar.io, MooMoo.io, Slither.io, Diep.io, Surviv.io, and 20+ IO games. Includes FREE 50 bots for Expanding Land (1024 real players limit per area). Best agario mod alternative.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
 // @match        https://expanding.land/*
