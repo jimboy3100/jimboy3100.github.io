@@ -473,15 +473,6 @@
     iframe.result-iframe { border-radius: var(--radius) !important;
         box-shadow: var(--shadow-lg); border: none !important; }
 
-    /* RESPONSIVE YOUTUBE — proper 16:9 aspect ratio containers */
-    .yt-responsive { position: relative; width: 90%; max-width: 900px;
-        margin: 16px auto; aspect-ratio: 16 / 9; border-radius: var(--radius);
-        overflow: hidden; box-shadow: var(--shadow-lg);
-        background: #000; }
-    .yt-responsive iframe { position: absolute; top: 0; left: 0;
-        width: 100%; height: 100%; border: none; border-radius: var(--radius); }
-    @media (max-width: 600px) { .yt-responsive { width: 100%; } }
-
     /* SECTIONS — glass cards */
     section { max-width: var(--max-w) !important; margin: 0 auto !important;
         padding: 36px 32px !important; }
@@ -834,11 +825,11 @@
                     #expanding-land-promo * { position: relative; z-index: 1; }
                 </style>
 
-                <!-- Live indicator + Title (dynamic) -->
+                <!-- Live indicator + Title -->
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;animation:elSlideUp 0.6s ease both;">
-                    <span id="el-status-badge" style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.30);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#22c55e;letter-spacing:0.05em;text-transform:uppercase;transition:all .4s ease;">
-                        <span id="el-status-dot" style="width:7px;height:7px;border-radius:50%;background:#22c55e;animation:elPulse 1.5s ease-in-out infinite;transition:background .4s ease;"></span>
-                        <span id="el-status-text">LIVE</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);border-radius:20px;padding:4px 12px;font-size:0.72rem;font-weight:700;color:#ef4444;letter-spacing:0.05em;text-transform:uppercase;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;animation:elPulse 1.5s ease-in-out infinite;"></span>
+                        LIVE
                     </span>
                     <span style="font-size:0.78rem;color:var(--text-secondary);font-weight:600;">New Game by Legend Clan</span>
                 </div>
@@ -851,22 +842,18 @@
                     The ultimate agar.io private server experience — massive maps that grow with you.
                 </p>
 
-                <!-- Stats row (dynamic) -->
+                <!-- Stats row -->
                 <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;animation:elSlideUp 0.6s ease 0.3s both;">
-                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
-                        <div id="el-alive" style="font-size:1.35rem;font-weight:800;color:var(--accent);line-height:1;animation:elCount 0.8s ease 0.5s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Playing</div>
-                    </div>
-                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
-                        <div id="el-spectators" style="font-size:1.35rem;font-weight:800;color:var(--teal);line-height:1;animation:elCount 0.8s ease 0.6s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
-                    </div>
-                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center;box-shadow:var(--shadow-xs);">
-                        <div id="el-uptime" style="font-size:1.35rem;font-weight:800;color:#eab308;line-height:1;animation:elCount 0.8s ease 0.7s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Uptime</div>
+                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
+                        <div style="font-size:1.35rem;font-weight:800;color:var(--accent);line-height:1;animation:elCount 0.8s ease 0.5s both;">1024</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Real Players</div>
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
-                        <div style="font-size:1.35rem;font-weight:800;color:#f472b6;line-height:1;animation:elCount 0.8s ease 0.8s both;">1/4–8×</div>
+                        <div style="font-size:1.35rem;font-weight:800;color:var(--teal);line-height:1;animation:elCount 0.8s ease 0.6s both;">200+</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Spectators</div>
+                    </div>
+                    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
+                        <div style="font-size:1.35rem;font-weight:800;color:#eab308;line-height:1;animation:elCount 0.8s ease 0.7s both;">1/4 to 8 times the official</div>
                         <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Resizable Map</div>
                     </div>
                 </div>
@@ -1186,9 +1173,9 @@
         <section style="text-align: center;">
             <strong>Mod for Agar.io multiplayer action browsergame</strong>
             <h2 class="project-tagline">About Mod</h2>
-            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/-OHbflAMDiU"
+            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/-OHbflAMDiU" frameborder="0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe></div>
+                allowfullscreen=""></iframe>
             <br>
             Author: <a href="https://github.com/kyriakidisdimitrios" target="_blank" rel="noopener noreferrer">Jimboy3100</a>
             <br>This mod combines many scripts for agario game. It is based on ogario.ovh platform with all features,
@@ -1232,9 +1219,9 @@
             <strong>LME is the biggest and quickest mod for agario</strong>
             <br>
             <br>
-            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/CN5-RFGsqcY"
+            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/CN5-RFGsqcY" frameborder="0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe></div>
+                allowfullscreen=""></iframe>
             <h2 class="project-tagline">Legend Mod Express Features</h2>
             Auto Updates
             <br><b>Unlimited FPS</b>&nbsp;unlocked (<i>quicker than Vanilla</i>)
@@ -1377,9 +1364,9 @@
             <h3 class="project-tagline">Make your own server</h3>
             <img width="60%" height="40%" src="https://jimboy3100.github.io/banners/MultiOgarExp.png">
             <br>
-            <br><div class="yt-responsive"><iframe src="https://www.youtube.com/embed/vpjfGYrKqO8"
+            <br><iframe width="60%" height="40%" src="https://www.youtube.com/embed/vpjfGYrKqO8" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe></div>
+                allowfullscreen></iframe>
             <br>
             <br>
         </section>
@@ -1469,9 +1456,9 @@
             <strong>Do more...</strong>
             <br>
             <br>
-            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/B87655tH0Lg"
+            <iframe width="60%" height="40%" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe></div>
+                allowfullscreen></iframe>
             <h3 class="project-tagline">Legend mod Devs</h3>
             <b>We need:</b>
             <br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a
@@ -1533,9 +1520,9 @@
             <strong>Play Agario on tablet / mobile</strong>
             <br>
             <br>
-            <div class="yt-responsive"><iframe src="https://www.youtube.com/embed/JOAPoEXXRYw"
+            <iframe width="40%" height="40%" src="https://www.youtube.com/embed/JOAPoEXXRYw" frameborder="0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen></iframe></div>
+                allowfullscreen></iframe>
             <h3 class="project-tagline">Agario Mobile</h3>
             On chrome mobile choose setting 'for PC'
             <br>Go to www.agar.io
@@ -1669,63 +1656,6 @@
         });
         // Inject footer
         $('body').append('<div class="lm-footer">© 2026 Legend Mod Project · <a href="https://github.com/jimboy3100" target="_blank">GitHub</a> · <a href="https://jimboy3100.github.io/privacy.html">Privacy Policy</a></div>');
-    </script>
-    <script>
-    /* ── Expanding Land /status endpoint ──────────────────────── */
-    (function() {
-      var badge = document.getElementById('el-status-badge');
-      var dot   = document.getElementById('el-status-dot');
-      var text  = document.getElementById('el-status-text');
-      var alive = document.getElementById('el-alive');
-      var specs = document.getElementById('el-spectators');
-      var upt   = document.getElementById('el-uptime');
-      if (!badge) return;
-
-      function fmtUptime(s) {
-        if (!s || s < 60) return s + 's';
-        var h = Math.floor(s / 3600);
-        var m = Math.floor((s % 3600) / 60);
-        if (h > 0) return h + 'h ' + m + 'm';
-        return m + 'm';
-      }
-
-      function setOnline(d) {
-        badge.style.background = 'rgba(34,197,94,0.10)';
-        badge.style.borderColor = 'rgba(34,197,94,0.30)';
-        badge.style.color = '#22c55e';
-        dot.style.background = '#22c55e';
-        dot.style.animation = 'elPulse 1.5s ease-in-out infinite';
-        text.textContent = 'ONLINE';
-        alive.textContent = d.alive || '0';
-        specs.textContent = d.spectators || '0';
-        upt.textContent = fmtUptime(d.uptime || 0);
-      }
-
-      function setOffline() {
-        badge.style.background = 'rgba(239,68,68,0.10)';
-        badge.style.borderColor = 'rgba(239,68,68,0.30)';
-        badge.style.color = '#ef4444';
-        dot.style.background = '#ef4444';
-        dot.style.animation = 'none';
-        text.textContent = 'OFFLINE';
-        alive.textContent = '—';
-        specs.textContent = '—';
-        upt.textContent = '—';
-      }
-
-      function fetchStatus() {
-        fetch('https://expanding.land/status', { mode: 'cors' })
-          .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
-          .then(function(d) {
-            if (d.status === 'offline') { setOffline(); }
-            else { setOnline(d); }
-          })
-          .catch(function() { /* /status not deployed yet — keep default LIVE */ });
-      }
-
-      fetchStatus();
-      setInterval(fetchStatus, 60000);
-    })();
     </script>
 </body>
 
