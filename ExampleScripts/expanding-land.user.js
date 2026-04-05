@@ -182,9 +182,17 @@
             <div><span style="color:#6366f1">[W]</span> Eject Mass</div>
             <div><span style="color:#6366f1">[Q]</span> Free Spectate</div>
             <div><span style="color:#6366f1">[H]</span> Hide Panel</div>
-            <div style="margin-top:6px;">
-                <a href="https://www.legendmod.ml/" target="_blank" style="color:#a855f7; pointer-events:auto;">🤖 Get Bots</a>
-                <span style="margin:0 4px;">|</span>
+            <div style="margin-top:8px;">
+                <a href="https://www.mediafire.com/file/gc6nuy6jbz1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
+                    display:block; text-align:center; padding:6px 0; border-radius:8px;
+                    background: linear-gradient(135deg, #22c55e, #16a34a);
+                    color:#fff; text-decoration:none; font-weight:700; font-size:11px;
+                    pointer-events:auto; margin-bottom:6px;
+                ">🤖 Download 50 FREE Bots</a>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a href="https://www.legendmod.ml/" target="_blank" style="color:#a855f7; pointer-events:auto;">⚙️ Legend Mod</a>
+                <span style="margin:0 2px;">|</span>
                 <a href="https://discord.com/invite/JUfpR9k" target="_blank" style="color:#6366f1; pointer-events:auto;">💬 Discord</a>
             </div>
         `;
