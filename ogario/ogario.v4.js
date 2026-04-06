@@ -1,4 +1,4 @@
-window.OgVer = 3.340;
+window.OgVer = 3.341;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11183,13 +11183,23 @@ function thelegendmodproject() {
                     style.lineJoin = "miter"
                     var pointCount = 120;
                     var incremental = this.pi2 / pointCount;
+                    /* Use pre-computed sin/cos table to avoid 240 trig calls
+                     * per virus per frame. Table is shared across all viruses. */
+                    if (!ogarbasicassembly._virusSinTable || ogarbasicassembly._virusSinTable.length !== pointCount) {
+                        ogarbasicassembly._virusSinTable = new Float32Array(pointCount);
+                        ogarbasicassembly._virusCosTable = new Float32Array(pointCount);
+                        for (var t = 0; t < pointCount; t++) {
+                            var a = t * incremental;
+                            ogarbasicassembly._virusSinTable[t] = Math.sin(a);
+                            ogarbasicassembly._virusCosTable[t] = Math.cos(a);
+                        }
+                    }
                     style.moveTo(this.x, this.y + this.size + 3);
                     for (var i = 1; i < pointCount; i++) {
-                        var angle = i * incremental;
                         var dist = this.size - 3 + (i % 2 === 0) * 6;
                         style.lineTo(
-                            this.x + dist * Math.sin(angle),
-                            this.y + dist * Math.cos(angle)
+                            this.x + dist * ogarbasicassembly._virusSinTable[i],
+                            this.y + dist * ogarbasicassembly._virusCosTable[i]
                         )
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
@@ -16038,16 +16048,35 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            for (i = 0; i < LM.cells.length; i++) {
+            /* Compute viewport bounds in world-space for culling.
+             * Cells entirely outside these bounds produce no visible pixels,
+             * so we skip their expensive draw/jelly calls. */
+            var halfW = (this.canvasWidth / 2) / this.scale;
+            var halfH = (this.canvasHeight / 2) / this.scale;
+            var viewMinX = this.camX - halfW;
+            var viewMaxX = this.camX + halfW;
+            var viewMinY = this.camY - halfH;
+            var viewMaxY = this.camY + halfH;
 
-                if (defaultmapsettings.jellyPhisycs) {
-                    LM.cells[i].updateNumPoints();
-                    LM.cells[i].movePoints();
+            for (i = 0; i < LM.cells.length; i++) {
+                var cell = LM.cells[i];
+                /* Viewport culling: skip cells entirely outside the canvas.
+                 * The cell's visual radius includes its maxPointRad (jelly)
+                 * or just size. Using a generous 1.5× margin avoids popping. */
+                var margin = (cell.maxPointRad || cell.size) * 1.5;
+                if (cell.x + margin < viewMinX || cell.x - margin > viewMaxX ||
+                    cell.y + margin < viewMinY || cell.y - margin > viewMaxY) {
+                    continue;
                 }
 
-                LM.cells[i].draw(this.ctx);
+                if (defaultmapsettings.jellyPhisycs) {
+                    cell.updateNumPoints();
+                    cell.movePoints();
+                }
 
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                cell.draw(this.ctx);
+
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
                     //
                     //console.log("LM.selected") 
                     //
