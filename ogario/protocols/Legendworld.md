@@ -190,7 +190,7 @@ Implements the Agar.io binary WebSocket protocol (version 6, accepts up to 22).
 | `0xC8` (200)  | S→C       | Map event (expansion/contraction notifications) |
 | `0xC9` (201)  | S→C       | LM stats (alive players + bot count) |
 | `0xC9` (201)  | C→S       | LM identification (`[201, type]` — 1=client, 2=bot) |
-| `0xCA` (202)  | S→C       | Decay info (anti-team breakdown per player) |
+| `0xCA` (202)  | S→C       | Decay info (extra decay multiplier per player) |
 | `0xCA` (202)  | C→S       | Team message (`[202][u8 type][UTF-16LE message...]`) |
 | `0xCB` (203)  | C→S       | Set clan tag (`[203][UTF-8 tag, null-terminated]`, max 15 chars) |
 | `0xCC` (204)  | C→S       | Profile info (`[204][provider][socialId\0][displayName\0]`) |
@@ -264,57 +264,34 @@ Total: 2 bytes
 
 ## Opcode 202 (0xCA) — Decay Info (S→C)
 
-Per-player anti-team and decay breakdown. Sent every leaderboard interval
-(~1 second) to alive players only. Uses a compact format with per-type
-breakdown instead of individual event entries.
+Per-player extra decay multiplier info. Sent every leaderboard interval
+(~1 second) to alive players only. The wire format is backward-compatible
+with legacy clients — per-type fields are zeroed, and the multiplier is
+reported via the existing score/threshold/multiplier fields.
 
 ### Binary Format
 
 ```
 Offset  Size   Type    Field
 0       1      u8      Opcode (202 / 0xCA)
-1       2      u16le   Anti-team score (total × 10000)
-3       2      u16le   AT threshold (× 10000)
-5       2      u16le   Decay multiplier (× 100, e.g. 100 = 1.0×)
-7       5×5    types   Per-type breakdown (5 types, 5 bytes each — see below)
+1       2      u16le   Extra decay multiplier (× 10000, e.g. 5000 = 0.5)
+3       2      u16le   AT threshold (always 0 — no threshold in new system)
+5       2      u16le   Effective decay multiplier (× 100, from pow(base, multiplier))
+7       5×5    types   Per-type breakdown (zeroed for backward compatibility)
 32      1      u8      In danger zone (0 or 1)
 33      2      u16le   Danger phase seconds remaining
 35      1      u8      Decay interval (seconds between decay cycles)
 Total: 36 bytes
 ```
 
-### Per-Type Breakdown (5 bytes each, types 1–5)
+### Decay Calculation
 
 ```
-Offset  Size   Type    Field
-0       1      u8      Active event count of this type
-1       2      u16le   Total score for this type (× 10000)
-3       2      u16le   Max remaining seconds (0xFFFF for ANTI_DECAY = infinite)
+effective_decay = base_decay × pow(1.086, extra_decay_multiplier)
 ```
 
-Type index:
-1. `ANTI_VIRUS` — popped on a virus
-2. `ANTI_SPLIT` — player split
-3. `ANTI_EJECT` — W / mass eject
-4. `ANTI_DANGER` — in danger zone during contraction
-5. `ANTI_DECAY` — constant base decay (infinite lifespan, remaining = `0xFFFF`)
-
-### Score Encoding
-
-Scores are fractions multiplied by 10000 for integer precision:
-- `0.004` (0.4%/4s) → `40`
-- `0.028` (2.8%/4s threshold) → `280`
-- `0.0016` (0.16%/4s) → `16`
-
-### Multiplier Calculation
-
-```
-base_per_cycle = 0.008  (reference: 0.8%/4s = 0.002 × 4 seconds)
-excess = max(0, anti_team_score - threshold)
-multiplier = 1.0 + excess / base_per_cycle
-```
-
-Sent as `uint16 × 100` (e.g. `100` = 1.0×, `250` = 2.5×).
+The multiplier increases with teaming actions and decreases by 0.005
+per decay cycle (compensation constant).
 
 ---
 
@@ -541,49 +518,44 @@ are immediately removed from the leaderboard.
 
 ---
 
-# Anti-Teaming System
+# Anti-Teaming System (Delta Extra Decay)
 
-Event-based system penalizing rapid teaming actions with extra mass decay.
-Communicated to clients via opcode 202. Each player tracks up to **64
-concurrent events**.
+Exponential multiplier-based anti-teaming ported from Delta Server. Each player
+has a single `extra_decay_multiplier` float — teaming actions increase it, time
+naturally decreases it. Communicated to clients via opcode 202.
 
-### Event Triggers
+### Formula
 
-| Action | Penalty | Duration | Threshold |
-|--------|---------|----------|-----------| 
-| **Split** | `0.004` (0.4%/4s) | 2m30s (3750 ticks) | ~7 splits triggers AT |
-| **W/Eject** | `0.0016` (0.16%/4s) | 1m15s (1875 ticks) | ~18 W presses triggers AT |
-| **Virus pop** | configured | 2m30s (3750 ticks) | 2 pops nearly triggers AT |
-| **Danger zone** | accumulated/tick | 2m30s (3750 ticks) | Proximity-based |
+```
+effective_decay = base_decay × pow(1.086, extra_decay_multiplier)
+```
+
+### Multiplier Bumps
+
+| Action | Bump | Notes |
+|--------|------|-------|
+| **Split** | `+0.5` | Per split action |
+| **W/Eject** | `+0.1` | Per W press (flat, not per cell) |
+| **Virus pop** | `+0.5` | Per virus consumed |
+| **Danger zone** | `+0.01` | Per decay cycle in outer ring |
 
 ### Config Values
 
 | Setting | Value | Description |
 |---------|-------|-------------|
-| `at_split_penalty` | `0.004` | Decay fraction added per split |
-| `at_eject_penalty` | `0.0016` | Decay fraction added per W press (flat, not per cell) |
-| `at_threshold` | `0.028` | Free allowance — no penalty below this |
-| `at_virus_lifespan` | `3750` | Virus pop event lifetime (2m30s) |
-| `at_split_lifespan` | `3750` | Split event lifetime (2m30s) |
-| `at_eject_lifespan` | `1875` | Eject event lifetime (1m15s) |
-| `at_danger_lifespan` | `3750` | Danger zone event lifetime (2m30s) |
-| `player_decay_rate` | `0.002` | Base decay (scales ×√(32/alive)) |
+| `at_extra_decay_base` | `1.086` | Exponential curve steepness |
+| `at_compensation` | `0.005` | Multiplier recovery per decay cycle |
+| `at_split_loss` | `0.5` | Multiplier bump per split |
+| `at_eject_loss` | `0.1` | Multiplier bump per W press |
+| `at_virus_pop_loss` | `0.5` | Multiplier bump per virus pop |
+| `at_danger_loss` | `0.01` | Multiplier bump per danger zone cycle |
+| `player_decay_rate` | `0.002` | Base decay (0.8%/4s) |
 | `decay_interval` | `100` | How often decay runs (4s at 25Hz) |
 
-### Decay Formula
+### Recovery
 
-```
-anti_team_score = sum of all active (non-expired) event penalties
-AT_penalty      = max(0, anti_team_score - at_threshold)
-base_decay      = 0.002 × √(32 / alive_players)
-total_decay     = base_decay + AT_penalty
-new_mass        = mass - mass × total_decay   (applied every 4 seconds)
-```
-
-Events accumulate over their lifespan and expire individually. Only the
-**excess above `at_threshold`** is applied as extra decay. With 1000
-players, base decay drops to ~0.00036 (very low), making AT the primary
-mass penalty for teamers.
+Multiplier decreases by `0.005` per decay cycle. At multiplier=0, decay is 1×
+base. At multiplier=5, decay is 1.51×. At multiplier=10, decay is 2.28×.
 
 ---
 
@@ -665,7 +637,7 @@ Max 262,144 unique players. Journal-based persistence with dirty tracking.
 | `net.c / .h` | WebSocket server (epoll on Linux, select on Windows) |
 | `client.c / .h` | Client message handling (opcodes) |
 | `cell.c / .h` | Cell struct (cache-optimized), physics |
-| `player.c / .h` | Player state, anti-teaming events, potions, boosts |
+| `player.c / .h` | Player state, extra decay multiplier, potions, boosts |
 | `playerdb.c / .h` | Persistent player database (journal + snapshot) |
 | `proto102.c / .h` | Protobuf encoder for opcode 102 economy |
 | `discord_oauth.c / .h` | Discord OAuth2 callback handler |
@@ -799,8 +771,8 @@ checks `LM.mapEvent.active` which defaults to `false`.
 - **Fix:** Stale leaderboard — dead players (all cells eaten) now
   immediately removed. `cell_count` is rebuilt from live cells during
   leaderboard update.
-- **Tuning:** Anti-team penalties doubled — `at_split_penalty` 0.002 → 0.004,
-  `at_eject_penalty` 0.00016 → 0.0016 (10×).
+- **Migration:** Anti-teaming system rewritten — replaced discrete event-based
+  system with Delta exponential multiplier (`at_extra_decay_base=1.086`).
 - **Tuning:** Contraction phases shortened — warning 120s → 60s, danger 30s → 15s.
 - **Tuning:** Tier 1 expand threshold 0 → 1 (needs at least 1 player).
 
@@ -812,7 +784,7 @@ checks `LM.mapEvent.active` which defaults to `false`.
 - Economy system (opcode 102) — XP, potions, boosts, wallet
 - Discord OAuth integration
 - Player persistence (playerdb V5)
-- Anti-teaming discrete event system
+- Anti-teaming exponential multiplier system (Delta architecture)
 - Potion drop cells
 - LW beacon handshake (opcode 0xF0)
 - Team chat (opcode 202 C→S), clan tags (opcode 203)

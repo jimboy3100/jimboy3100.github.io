@@ -5657,35 +5657,28 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
-                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
+                    /* Delta multiplier system:
+                     * di.totalScore = extra_decay_multiplier × 10000
+                     * di.multiplier = effective decay multiplier × 100 (pow(1.086, m))
+                     * di.threshold  = always 0 (unused in new system)
+                     * Per-type fields are zeroed — no event counts or timers */
+                    var rawMultiplier = di.totalScore / 10000;  // e.g. 5000 → 0.5
+                    var effectiveMult = di.multiplier / 100;    // e.g. 228 → 2.28×
                     var basePct = (di.decayScore / 100).toFixed(2);
-                    var isAbove = di.totalScore > di.threshold;
 
-                    if (isAbove) {
-                        var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
-                        var totalDecay = (parseFloat(basePct) + parseFloat(excessPct)).toFixed(2);
-                        atStr += '<span style="color:#ff4c4c">\u2697 Anti: \u2212' + excessPct + '%/' + di.decayIntervalSecs + 's extra</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' +' + (di.virusScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' +' + (di.splitScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' +' + (di.ejectScore / 100).toFixed(2) + '% \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + totalDecay + '%/' + di.decayIntervalSecs + 's';
-                    } else if (di.totalScore > 0) {
-                        var scoreVal = (di.totalScore / 100).toFixed(2);
-                        var threshVal = (di.threshold / 100).toFixed(2);
-                        atStr += '<span style="color:#33ff33">\u2697 ' + scoreVal + '/' + threshVal + '%</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    if (rawMultiplier > 0.01) {
+                        var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
+                        atStr += '<span style="color:' + mColor + '">\u2697 \u00d7' + rawMultiplier.toFixed(2) + '</span>';
+                        atStr += ' (' + effectiveMult.toFixed(2) + '\u00d7 decay)';
                     } else {
-                        atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                        atStr += '<span style="color:#33ff33">\u2697 clean</span>';
                     }
+
+                    atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
-                    } else if (di.dangerCount > 0) {
-                        atStr += ' | \u26a0 \u23f3' + _fmtSecs(di.dangerMaxSecs);
                     }
 
                     if (t) t += atStr + ' | ';
@@ -14062,7 +14055,7 @@ function thelegendmodproject() {
                             botEl2.textContent = botCount2;
                         }
                     } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
+                        /* Opcode 0xCA: LM Decay Info — per-player extra decay multiplier */
                         var di = LM.decayInfo;
                         var _off = 1;
                         di.totalScore = data.getUint16(_off, true); _off += 2;

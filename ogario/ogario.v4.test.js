@@ -1,4 +1,4 @@
-window.OgVer = 3.340;
+window.OgVer = 3.345;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11,6 +11,97 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (window.EnvConfig) {
         window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
     }
+
+    /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
+     * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
+    window.gapiAsyncInit = function() {
+
+    };
+    /* Remove old gapi script tags from DOM before they load */
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+                if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
+                    node.remove();
+
+                }
+            });
+        });
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    /* ── LW: Stateless login state machine ──────────────────────────
+     * One _lwAuth object tracks the current login attempt.
+     * No sticky provider flags — every login click starts fresh.
+     * Only protobuf type-11 from the server confirms login. */
+
+    /* Hardened auth guard: attemptId + done + tabId + timestamp.
+     * Every async callback must pass all 5 checks:
+     *   1. attemptId matches current attempt
+     *   2. provider matches
+     *   3. state matches expected (not idle, not logged_in already)
+     *   4. not already consumed (done flag)
+     *   5. tabId matches (cross-tab isolation)
+     *   6. timestamp within window (stale rejection) */
+    var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+    window._lwResetAuthState = function() {
+        window._lwAuth = {
+            attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
+            provider: null,
+            state: 'idle', /* idle | waiting_oauth | waiting_server | logged_in */
+            startedAt: 0,
+            done: false,           /* single-use: true after first callback */
+            tabId: _lwTabId,       /* cross-tab isolation */
+            googleAttemptId: 0,    /* snapshot for Google callbacks */
+            discordAttemptId: 0    /* snapshot for Discord callbacks */
+        };
+        window._lw_protobuf102Received = false;
+        window._discordLoginDone = false;
+        window.legendmod_discordUser = null;
+        try { localStorage.removeItem('legendmod_discord'); } catch(e) {}
+        console.log('[LW AUTH] State reset to idle');
+    };
+    window._lwBeginLogin = function(provider) {
+        if (!window._lwAuth) window._lwResetAuthState();
+        window._lwAuth.attemptId += 1;
+        window._lwAuth.provider = provider;
+        window._lwAuth.state = 'waiting_oauth';
+        window._lwAuth.startedAt = Date.now();
+        window._lwAuth.done = false; /* new attempt = not consumed */
+        window._lwAuth.tabId = _lwTabId;
+        window._lw_protobuf102Received = false;
+        window._discordLoginDone = false;
+        console.log('[LW AUTH] Begin login attempt #' + window._lwAuth.attemptId + ' provider=' + provider);
+        return window._lwAuth.attemptId;
+    };
+    /* Atomic check+consume: validates ALL conditions AND sets done=true in one call.
+     * Returns true exactly once — the first handler to call this wins. */
+    window._lwTryConsume = function(attemptId, provider) {
+        var a = window._lwAuth;
+        if (!a) return false;
+        if (a.attemptId !== attemptId) return false;
+        if (a.provider !== provider) return false;
+        if (a.done) return false;
+        if (a.tabId !== _lwTabId) return false;
+        if (Date.now() - a.startedAt > 30000) return false;
+        if (a.state !== 'waiting_oauth' && a.state !== 'waiting_server') return false;
+        a.done = true; /* consumed — no other handler can pass from here */
+        console.log('[LW AUTH] Attempt #' + a.attemptId + ' consumed (' + provider + ')');
+        return true;
+    };
+    window._lwArmLoginTimeout = function(attemptId) {
+        setTimeout(function() {
+            if (window._lwAuth &&
+                window._lwAuth.attemptId === attemptId &&
+                window._lwAuth.state !== 'logged_in') {
+                console.warn('[LW AUTH] Login attempt #' + attemptId + ' timed out');
+                window._lwResetAuthState();
+            }
+        }, 20000);
+    };
+    /* Initialize on page load */
+    window._lwResetAuthState();
 
     /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
@@ -42,8 +133,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (window.MC) window.MC.onGoogleLoginComplete(false);
                 return;
             }
+            /* Atomic check+consume — only the first handler wins */
+            if (!window._lwTryConsume(window._lwAuth && window._lwAuth.googleAttemptId, 'google')) {
+                console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
+                return;
+            }
             var accessToken = response.access_token;
-            console.log('[LW Google DBG] Got access token, length:', accessToken.length);
+
 
             /* Fetch user profile for picture and social ID */
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -51,7 +147,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             })
             .then(function(r) { return r.json(); })
             .then(function(profile) {
-                console.log('[LW Google DBG] Profile fetched:', profile.email, profile.sub);
+
 
                 /* Update storage info like the old flow does */
                 var st = window.storageInfo || window.defaultSt;
@@ -79,26 +175,52 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     window.MC.onGoogleLoginComplete(true);
                     window.MC.showInstructionsPanel(true);
                 } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    /* MC unavailable (expanding.land) — send opcode 102 directly */
-                    console.log('[LW Google DBG] MC unavailable, sending opcode 102 directly');
-                    var view = legendmod.createView(1 + accessToken.length);
-                    view.setUint8(0, 102);
-                    for (var ti = 0; ti < accessToken.length; ti++) {
-                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
-                    }
-                    legendmod.sendMessage(view);
-                    console.log('[LW Google] Sent opcode 102 directly (token_len=' + accessToken.length + ')');
+                    /* MC unavailable (expanding.land / private server) */
 
-                    /* Update UI manually */
-                    var menuInner = document.getElementById('main-menu');
-                    if (menuInner) menuInner.style.display = 'none';
-                    var overlays = document.querySelectorAll('.agario-promo-overlay');
-                    for (var oi = 0; oi < overlays.length; oi++) overlays[oi].style.display = 'none';
+
+                    /* Store token in master so login() can resend on Play clicks */
+                    if (window.master && window.master.doLoginWithGPlus) {
+                        window.master.doLoginWithGPlus(accessToken);
+                    }
+
+                    /* Send opcode 102 directly to game server with social ID and name */
+                    _lw_sendLogin102(accessToken, profile.sub, profile.name);
+                    /* Transition: OAuth done → waiting for server confirmation */
+                    if (window._lwAuth && window._lwAuth.provider === 'google') {
+                        window._lwAuth.state = 'waiting_server';
+                    }
+
+
+                    /* Update profile UI — TEMPORARY fallback only.
+                     * Once protobuf type-11 login response arrives from the
+                     * server (with refreshed profile from 204→102 resend),
+                     * updateUserInfo() becomes the single source of truth.
+                     * Do NOT set agarioUID here — it must come from server. */
+                    if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
+                        console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
+                        if (profile.picture) {
+                            $('.agario-profile-picture').attr('src', profile.picture);
+                        }
+                        if (profile.name) {
+                            $('#UserProfileName1').text(profile.name);
+                            window.userfirstname = profile.name;
+                            localStorage.setItem('userfirstname', profile.name);
+                        }
+                        if (profile.sub) {
+                            $('#UserProfileUID1').val(profile.sub);
+                            $('#replayuid').val(profile.sub);
+                            window.userid = profile.sub;
+                            localStorage.setItem('userid', profile.sub);
+                        }
+                        /* Set logged-in state so Play/Logout buttons appear */
+                        $('#helloContainer').attr('data-logged-in', '1');
+                    }
+
                 } else {
                     console.error('[LW Google] No MC or legendmod available to send token');
                 }
 
-                console.log('[LW Google] Login successful:', profile.email);
+
             })
             .catch(function(err) {
                 console.error('[LW Google] Profile fetch failed:', err);
@@ -135,16 +257,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 e.preventDefault();
                 e.stopPropagation();
                 if (!gisLoaded || !tokenClient) {
-                    console.warn('[LW Google] GIS not loaded yet, retrying...');
+
                     setTimeout(function() { newBtn.click(); }, 500);
                     return;
                 }
-                console.log('[LW Google DBG] Login button clicked');
-                if (window.MC && window.MC.googleLogin) window.MC.googleLogin();
+
+                /* Start fresh login attempt */
+                var attemptId = window._lwBeginLogin('google');
+                window._lwArmLoginTimeout(attemptId);
+                window._lwAuth.googleAttemptId = attemptId;
+
+                /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
                 tokenClient.requestAccessToken();
             }, true);
 
-            console.log('[LW Google] Login override installed (GIS)');
+
         }
 
         if (document.readyState === 'loading') {
@@ -159,12 +286,23 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The server's fallback parser scans for the longest printable ASCII run
      * in the opcode 102 payload, so we just embed the token as raw bytes.
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
-    function _lw_sendLogin102(token) {
+    function _lw_sendLogin102(token, socialId, displayName) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
+                /* Prepend social ID and display name as header lines before the token.
+                 * Format: "SID:<socialId>\nNAME:<displayName>\n<token>"
+                 * Server parses these prefixes before hashing the token. */
+                var prefix = '';
+                if (socialId) prefix += 'SID:' + socialId + '\n';
+                if (displayName) prefix += 'NAME:' + displayName + '\n';
+                var payload = prefix + token;
                 var tokenBytes = [];
-                for (var i = 0; i < token.length; i++) {
-                    tokenBytes.push(token.charCodeAt(i) & 0xFF);
+                for (var i = 0; i < payload.length; i++) {
+                    tokenBytes.push(payload.charCodeAt(i) & 0xFF);
                 }
                 var view = legendmod.createView(1 + tokenBytes.length);
                 view.setUint8(0, 102); // opcode
@@ -172,7 +310,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     view.setUint8(1 + j, tokenBytes[j]);
                 }
                 legendmod.sendMessage(view);
-                console.log('[LW Login] Sent opcode 102 directly (token_len=' + token.length + ')');
+                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId||'none') + ')');
             } else {
                 setTimeout(sendFn, 1000);
             }
@@ -181,20 +319,32 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     }
 
     /* LW: Send opcode 204 (Discord profile data) via legendmod's socket.
-     * Format: [204][auth_provider=3][avatar URL bytes][0x00] */
+     * Format: [204][auth_provider=3][socialId\0][displayName\0]
+     * Avatar is NOT sent — profile picture is rendered client-side only. */
     function _lw_sendDiscordProfile(discordUser) {
         var sendFn = function() {
+            if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
+                console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
+                return;
+            }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
-                var avatarStr = discordUser.avatar || '';
-                var view = legendmod.createView(2 + avatarStr.length + 1);
-                view.setUint8(0, 204);
-                view.setUint8(1, 3); // auth_provider = discord
-                for (var ci = 0; ci < avatarStr.length; ci++) {
-                    view.setUint8(2 + ci, avatarStr.charCodeAt(ci) & 0xFF);
-                }
-                view.setUint8(2 + avatarStr.length, 0);
+                var socialId = discordUser.id || '';
+                var displayName = discordUser.globalName || discordUser.username || '';
+                var totalLen = 2 + socialId.length + 1 + displayName.length + 1;
+                var view = legendmod.createView(totalLen);
+                var offset = 0;
+                view.setUint8(offset++, 204);
+                view.setUint8(offset++, 3); // auth_provider = discord
+                // Social ID
+                for (var ci = 0; ci < socialId.length; ci++)
+                    view.setUint8(offset++, socialId.charCodeAt(ci) & 0xFF);
+                view.setUint8(offset++, 0); // null terminator
+                // Display name
+                for (var ni = 0; ni < displayName.length; ni++)
+                    view.setUint8(offset++, displayName.charCodeAt(ni) & 0xFF);
+                view.setUint8(offset++, 0); // null terminator
                 legendmod.sendMessage(view);
-                console.log('[LW Discord] Sent opcode 204 (avatar=' + avatarStr.substring(0, 60) + '...)');
+                console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ')');
             } else {
                 setTimeout(sendFn, 2000);
             }
@@ -207,6 +357,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
     window._lw_applyDiscordLogin = function(discordUser) {
         if (!discordUser || !discordUser.token) return;
+        /* Reset protobuf flag so temporary fallback can run for this new login.
+         * It will be set back to true when the server's type-11 response arrives. */
+        window._lw_protobuf102Received = false; /* debug marker */
         window.legendmod_discordUser = discordUser;
 
         if (window.MC) {
@@ -222,7 +375,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             });
         } else {
             /* expanding.land path: MC unavailable, send opcode 102 directly */
-            _lw_sendLogin102(discordUser.token);
+            _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username);
+            /* Transition: OAuth done → waiting for server confirmation */
+            if (window._lwAuth && window._lwAuth.provider === 'discord') {
+                window._lwAuth.state = 'waiting_server';
+            }
         }
 
         /* UI updates — work on both domains */
@@ -238,36 +395,27 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         var slc = document.getElementById('socialLoginContainer');
         if (slc) slc.style.display = 'none';
 
-        /* LW: Populate profile panel fields from Discord user data.
-         * On expanding.land, the opcode 102 login response from the server
-         * doesn't reach the client's case 102: handler, so we set these
-         * directly from the Discord OAuth data we already have. */
-        if (window.expandingLand || window.legendModFromWebsite) {
-            /* Social ID = Discord user ID */
+        /* [DEBUG FALLBACK] LW: Temporary profile fields from Discord user data.
+         * This ONLY runs if the server's protobuf type-11 profile response
+         * has NOT arrived yet. Once pkt_102_login_response arrives (with the
+         * refreshed profile from opcode 204→102), updateUserInfo() will
+         * overwrite these values with authoritative server data.
+         * The server UID and this fallback UID are DIFFERENT identifiers,
+         * so we do NOT set window.agarioUID here — that must come from protobuf. */
+        if ((window.expandingLand || window.legendModFromWebsite) && (!window._lwAuth || window._lwAuth.state !== 'logged_in')) {
+            console.log('[LW Discord FALLBACK] Setting temporary profile (protobuf not received yet)');
+            /* Social ID = Discord user ID (temporary until server confirms) */
             if (discordUser.id) {
                 window.agarioID = discordUser.id;
                 localStorage.setItem("agarioID", discordUser.id);
-                console.log('[LW Discord] Social ID set:', discordUser.id);
             }
-            /* UID = hash the token to create a stable identifier.
-             * This matches what the server does (playerdb_hash_uid). */
-            if (discordUser.token) {
-                var hash = 0;
-                for (var hi = 0; hi < discordUser.token.length; hi++) {
-                    hash = ((hash << 5) - hash) + discordUser.token.charCodeAt(hi);
-                    hash |= 0;
-                }
-                var uid = 'discord-' + Math.abs(hash).toString(16).padStart(8, '0');
-                window.agarioUID = uid;
-                localStorage.setItem("agarioUID", uid);
-                $("#UserProfileUUID1").val(uid);
-                console.log('[LW Discord] UID set:', uid);
-            }
-            /* Display name for profile panel */
+            /* Do NOT set window.agarioUID here — authoritative UID comes from server protobuf.
+             * The old code hashed the token into 'discord-XXXXXXXX' which didn't match
+             * the server's uid_hex_to_numeric() format at all. */
+            /* Display name for profile panel (temporary until server confirms) */
             if (discordUser.globalName || discordUser.username) {
                 var name = discordUser.globalName || discordUser.username;
                 $('.agario-profile-name').text(name);
-                console.log('[LW Discord] Profile name set:', name);
             }
         }
 
@@ -297,7 +445,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         if (window.MC) {
                             MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
                         } else {
-                            _lw_sendLogin102(user.token);
+                            _lw_sendLogin102(user.token, user.id, user.globalName || user.username);
                         }
                         _lw_sendDiscordProfile(user);
                         console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
@@ -310,6 +458,77 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         };
 
         console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
+    };
+
+    /* ── LW: Agar.io-style login success notification ─────────────────
+     * Triggered ONLY after confirmed protobuf type-11 login response.
+     * Uses server-confirmed provider/name, NOT raw OAuth callback data.
+     * Visually matches agar.io's native blue login notification. */
+    window._lw_showLoginSuccess = function(provider, displayName) {
+        /* De-duplicate: don't show if we already showed for this session */
+        if (window._lw_loginNotifShown) return;
+        window._lw_loginNotifShown = true;
+
+        /* Inject CSS once */
+        if (!document.getElementById('lw-login-notif-css')) {
+            var style = document.createElement('style');
+            style.id = 'lw-login-notif-css';
+            style.textContent =
+                '#lw-login-notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);' +
+                'z-index:99999;background:linear-gradient(135deg,#4285f4,#356ac3);border-radius:8px;' +
+                'padding:14px 28px;box-shadow:0 4px 24px rgba(66,133,244,.45);display:flex;align-items:center;gap:12px;' +
+                'font-family:"Inter","Segoe UI",sans-serif;color:#fff;opacity:0;' +
+                'transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .5s ease;}' +
+                '#lw-login-notif.show{transform:translateX(-50%) translateY(0);opacity:1;}' +
+                '#lw-login-notif.hide{transform:translateX(-50%) translateY(-40px);opacity:0;}' +
+                '#lw-login-notif .lw-ln-icon{width:28px;height:28px;border-radius:50%;' +
+                'display:flex;align-items:center;justify-content:center;font-size:16px;' +
+                'background:rgba(255,255,255,.2);flex-shrink:0;}' +
+                '#lw-login-notif .lw-ln-text{font-size:14px;font-weight:500;white-space:nowrap;}' +
+                '#lw-login-notif .lw-ln-name{font-weight:700;}';
+            document.head.appendChild(style);
+        }
+
+        /* Provider icon */
+        var iconMap = { Google: '🔵', Discord: '🟣', Facebook: '🔷' };
+        var icon = iconMap[provider] || '✓';
+
+        /* Build notification element */
+        var el = document.createElement('div');
+        el.id = 'lw-login-notif';
+        el.innerHTML =
+            '<span class="lw-ln-icon">' + icon + '</span>' +
+            '<span class="lw-ln-text">Logged in to <b>' + provider + '</b> as ' +
+            '<span class="lw-ln-name">' + (displayName || 'Player').replace(/</g, '&lt;') + '</span></span>';
+        document.body.appendChild(el);
+
+        /* Animate in */
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() { el.classList.add('show'); });
+        });
+
+        /* Fade out after 4 seconds */
+        setTimeout(function() {
+            el.classList.remove('show');
+            el.classList.add('hide');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+        }, 4000);
+
+        console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
+    };
+
+    /* Reset ALL login state on logout so provider switching works */
+    var _origLogout = window.logout;
+    window.logout = function() {
+        window._lw_loginNotifShown = false;
+        window._lwResetAuthState();
+        /* Reset UI */
+        var hello = document.getElementById('helloContainer');
+        if (hello) hello.removeAttribute('data-logged-in');
+        var slc = document.getElementById('socialLoginContainer');
+        if (slc) slc.style.display = '';
+        console.log('[LW AUTH] Logout — all login state cleared');
+        if (_origLogout) _origLogout.apply(this, arguments);
     };
 
     /* LW: Auto-login removed — users must explicitly click Sign In.
@@ -333,12 +552,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
                     if (discordUser && discordUser.id && discordUser.token) {
+                        /* Atomic check+consume — only the first handler wins */
+                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                            console.log('[LW Discord] BroadcastChannel ignored (stale/consumed)');
+                            return;
+                        }
+                        window._discordLoginDone = true; /* debug only */
                         try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
-                        if (typeof toastr !== 'undefined') {
-                            toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
-                        }
+                        /* Login message now comes from server via chat (opcode 204 handler) */
                     }
                 };
                 console.log('[LW Discord] BroadcastChannel listener registered');
@@ -384,6 +607,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
 
                 if (discordUser && discordUser.id && discordUser.token) {
+                    /* Atomic check+consume — only the first handler wins */
+                    if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                        console.log('[LW Discord] postMessage ignored (stale/consumed)');
+                        return;
+                    }
+                    window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
                     try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
 
@@ -394,9 +623,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     /* Close popup */
                     try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch(ex) {}
 
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success('<b>Discord:</b> Logged in as ' + (discordUser.globalName || discordUser.username));
-                    }
+                    /* Login message now comes from server via chat (opcode 204 handler) */
                 }
             });
 
@@ -406,9 +633,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 console.log('[LW Discord DBG] Button clicked');
                 console.log('[LW Discord DBG] Auth URL:', DISCORD_AUTH_URL);
 
-                /* Clear any stale Discord data from a previous session */
-                localStorage.removeItem('legendmod_discord');
-                console.log('[LW Discord DBG] Cleared old localStorage data');
+                /* Start fresh login attempt */
+                var attemptId = window._lwBeginLogin('discord');
+                window._lwArmLoginTimeout(attemptId);
+                window._lwAuth.discordAttemptId = attemptId;
 
                 /* Open Discord auth in a popup */
                 var w = 500, h = 700;
@@ -432,11 +660,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             var discordUser = JSON.parse(data);
                             console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
                             if (discordUser && discordUser.id && discordUser.token) {
+                                /* Atomic check+consume — only the first handler wins */
+                                if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                                    clearInterval(poll);
+                                    console.log('[LW Discord] localStorage poll ignored (stale/consumed)');
+                                    return;
+                                }
+                                window._discordLoginDone = true; /* debug only */
                                 clearInterval(poll);
                                 window.legendmod_discordUser = discordUser;
                                 console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
-                                console.log('[LW Discord DBG] MC available:', !!window.MC);
-                                console.log('[LW Discord DBG] legendmod available:', typeof legendmod !== 'undefined');
 
                                 window._lw_applyDiscordLogin(discordUser);
                                 console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
@@ -444,9 +677,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 /* Close the popup if still open */
                                 try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
 
-                                if (typeof toastr !== 'undefined') {
-                                    toastr.success('<b>Discord:</b> Logged in as ' + discordUser.globalName);
-                                }
+                                /* Login message now comes from server via chat (opcode 204 handler) */
                             }
                         }
                     } catch(err) {
@@ -464,6 +695,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 try {
                                     var discordUser = JSON.parse(finalData);
                                     if (discordUser && discordUser.id && discordUser.token) {
+                                        /* Atomic check+consume — only the first handler wins */
+                                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
+                                            console.log('[LW Discord] Late popup-close ignored (stale/consumed)');
+                                            return;
+                                        }
                                         window._lw_applyDiscordLogin(discordUser);
                                         console.log('[LW Discord DBG] Late login applied successfully');
                                     }
@@ -1824,6 +2060,31 @@ setTimeout(function () {
         window.LMAgarGameConfiguration = window.LMGameConfiguration;
         window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
 
+        window.SpineSkinMap = {};
+        try {
+            var spineAnims = LMAgarGameConfiguration.gameConfig["Visual - Prod. Spine Animations"];
+            if (spineAnims) {
+                for (var s = 0; s < spineAnims.length; s++) {
+                    if (spineAnims[s].productId && spineAnims[s].spineFileName) {
+                        window.SpineSkinMap[spineAnims[s].productId] = spineAnims[s].spineFileName;
+                    }
+                }
+            }
+        } catch(e) { }
+
+        /* Build VanillaSkinUrlMap: %skinname -> full CDN URL (like Delta's vanillaSkinMap) */
+        window.VanillaSkinUrlMap = {};
+        var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "v15/10890/");
+        for (var i = 0; i < window.EquippableSkins.length; i++) {
+            var skin = window.EquippableSkins[i];
+            var key = skin.productId.replace('skin_', '%');
+            if (skin.image && skin.image !== "uses_spine") {
+                window.VanillaSkinUrlMap[key] = cdnBase + skin.image + "?";
+            } else if (skin.image === "uses_spine" && window.SpineSkinMap[skin.productId]) {
+                window.VanillaSkinUrlMap[key] = cdnBase + window.SpineSkinMap[skin.productId] + ".png?";
+            }
+        }
+
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
         for (var player = 0; player < window.FreeSkins.length; player++) {
@@ -2062,6 +2323,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
+        jelloPhysics: 'Jello physics (needs jelly disabled)',
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
@@ -2551,6 +2813,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
+        jelloPhysics: 'Jello physics (needs jelly disabled)',
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
@@ -2631,6 +2894,7 @@ var displayText = {
         'hk-chatMessage': 'Enter chat message',
         'hk-quickResp': 'Quick respawn',
         'hk-autoResp': 'Toggle auto respawn',
+        'hk-quitGame': 'Quit game (Expanding Land)',
         'hk-switchServerMode': 'Switch server [public/private]',
         'hk-showTargeting': 'Show/hide targeting panel',
         'hk-voiceChat': 'Voice to text',
@@ -3414,19 +3678,19 @@ var defaultSettings = {
     virMassScale: 3,
     strokeScale: 1,
     foodSize: 5,
-    bordersWidth: 14,
-    sectorsWidth: 40,
-    sectorsFontSize: 1200,
+    bordersWidth: 30,
+    sectorsWidth: 6,
+    sectorsFontSize: 820,
     cellsAlpha: 1,
     skinsAlpha: 1,
-    virusAlpha: 0.6,
+    virusAlpha: 0.45,
     textAlpha: 1,
     backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
     virusGlowSize: 14,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
-    virusStrokeSize: 14,
+    virusStrokeSize: 11,
     menuPreset: 'legendv2',
     graphics: 'high',
     indicators: 'normal',
@@ -3458,7 +3722,7 @@ var defaultSettings = {
     hudFont: 'ubuntu-bold',
     hudFontFamily: 'Ubuntu',
     hudFontWeight: 700,
-    hudScale: 1,
+    hudScale: 1.1,
     messageColor: 'rgba(0,0,0,0.4)',
     messageTextColor: '#ffffff',
     messageTimeColor: '#018cf6',
@@ -3682,6 +3946,7 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
+    jelloPhysics: false,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
@@ -3715,7 +3980,7 @@ var defaultmapsettings = {
     hideMyMass: false,
     hideEnemiesMass: false,
     vanillaSkins: true,
-    ownVanillaSkin: false,
+    ownVanillaSkin: true,
     universalChat: true,
     customSkins: true,
     videoSkins: true,
@@ -3743,10 +4008,10 @@ var defaultmapsettings = {
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
-    oppColors: false,
+    oppColors: true,
     oppRings: true,
     virColors: false,
-    splitRange: false,
+    splitRange: true,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
@@ -5121,6 +5386,10 @@ function thelegendmodproject() {
                 this.tryResp();
             }
         },
+        quitGame() {
+            window._forceGameOverStats = true;
+            LM.sendQuitGame();
+        },
         autoResp() {
             if (!defaultmapsettings.autoResp) {
                 return;
@@ -5388,35 +5657,28 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
-                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
+                    /* Delta multiplier system:
+                     * di.totalScore = extra_decay_multiplier × 10000
+                     * di.multiplier = effective decay multiplier × 100 (pow(1.086, m))
+                     * di.threshold  = always 0 (unused in new system)
+                     * Per-type fields are zeroed — no event counts or timers */
+                    var rawMultiplier = di.totalScore / 10000;  // e.g. 5000 → 0.5
+                    var effectiveMult = di.multiplier / 100;    // e.g. 228 → 2.28×
                     var basePct = (di.decayScore / 100).toFixed(2);
-                    var isAbove = di.totalScore > di.threshold;
 
-                    if (isAbove) {
-                        var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
-                        var totalDecay = (parseFloat(basePct) + parseFloat(excessPct)).toFixed(2);
-                        atStr += '<span style="color:#ff4c4c">\u2697 Anti: \u2212' + excessPct + '%/' + di.decayIntervalSecs + 's extra</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' +' + (di.virusScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' +' + (di.splitScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' +' + (di.ejectScore / 100).toFixed(2) + '% \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + totalDecay + '%/' + di.decayIntervalSecs + 's';
-                    } else if (di.totalScore > 0) {
-                        var scoreVal = (di.totalScore / 100).toFixed(2);
-                        var threshVal = (di.threshold / 100).toFixed(2);
-                        atStr += '<span style="color:#33ff33">\u2697 ' + scoreVal + '/' + threshVal + '%</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    if (rawMultiplier > 0.01) {
+                        var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
+                        atStr += '<span style="color:' + mColor + '">\u2697 \u00d7' + rawMultiplier.toFixed(2) + '</span>';
+                        atStr += ' (' + effectiveMult.toFixed(2) + '\u00d7 decay)';
                     } else {
-                        atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                        atStr += '<span style="color:#33ff33">\u2697 clean</span>';
                     }
+
+                    atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
-                    } else if (di.dangerCount > 0) {
-                        atStr += ' | \u26a0 \u23f3' + _fmtSecs(di.dangerMaxSecs);
                     }
 
                     if (t) t += atStr + ' | ';
@@ -5547,7 +5809,7 @@ function thelegendmodproject() {
                                 }
                             }                            //t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>';
 
-                            if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
+                            if (flag === false && ((this.top5[o].lbgpi >= 0) || !LM.integrity)) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
@@ -5630,7 +5892,7 @@ function thelegendmodproject() {
                                     }
                                 }
                             }
-                            if (flag === false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
+                            if (flag === false && ((this.top5[o].lbgpi >= 0) || !LM.integrity)) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             else if (flag === false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) === "C3" || legendmod.gameMode === ":party")) {
@@ -6381,7 +6643,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jelloPhysics", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -7082,8 +7344,36 @@ function thelegendmodproject() {
         },
         setMainButtons() {
             var app = this;
-            $(document).on("click", ".btn-play, .btn-play-guest", function () {
+            $(document).on("click", ".btn-play", function () {
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend && app.play) {
+                    return;
+                }
                 app.onPlay();
+            });
+            $(document).on("click", ".btn-play-guest", function () {
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend && app.play) {
+                    return;
+                }
+                app.onPlay();
+            });
+            if ($(".btn-full-map-spec").length === 0) {
+                // Dimensions exact matching normal spectate button (btn-warning) 
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width: 100%; margin-left: 0; margin-top: 5px; margin-bottom: 5px;" title="Full Map Spectate"><i class="fa fa-globe"></i> Full Map</button>');
+            }
+            $(document).on("click", ".btn-full-map-spec", function () {
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend) {
+                    app.hideMenu();
+                    if (!app.isSocketOpen()) {
+                        app.connect();
+                    }
+                    legendmod.sendAction(56);
+                    
+                    if (window.addKeyListeners) window.addKeyListeners();
+                    if (defaultmapsettings.autoHideFood) ogario.showFood = false;
+                }
             });
             $(document).on("click", ".btn-spectate", function () {
                 app.onSpectate();
@@ -7258,26 +7548,23 @@ function thelegendmodproject() {
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
-                        core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
+                        core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
                     }
                 }
             } else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
-                    application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin;
-                    application.loadSkin(application.customSkinsCache, window.UserVanillaSkin);
+                    application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?');
+                    application.loadSkin(application.customSkinsCache, window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?'));
                     //core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
                     //window.UserVanillaSkin=null;
                 } else {
-                    for (player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === "skin_" + window.UserVanillaSkin && window.EquippableSkins[player].image !== "uses_spine") {
-                            //console.log("2. " + window.EquippableSkins[player].image);	
-                            window.lastusednameforskin = ogarcopythelb.nick;
-                            application.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                            application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
-                            //core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);   
-                            //window.UserVanillaSkin=null;								
-                        }
+                    var ownSkinKey = '%' + window.UserVanillaSkin;
+                    var ownSkinUrl = window.VanillaSkinUrlMap && window.VanillaSkinUrlMap[ownSkinKey];
+                    if (ownSkinUrl) {
+                        window.lastusednameforskin = ogarcopythelb.nick;
+                        application.customSkinsMap[ogarcopythelb.nick] = ownSkinUrl;
+                        application.loadSkin(application.customSkinsCache, ownSkinUrl);
                     }
                 }
             } else {
@@ -7395,7 +7682,8 @@ function thelegendmodproject() {
 
                 },
                     img[url].onerror = function () {
-                        //console.log("error loading image: "+ url);
+                        console.warn("[LM] Failed to load skin image: " + url);
+                        /* OLD FALLBACK (commented out — now using ? cache-buster on CDN URLs instead)
                         if (url && url.includes(window.EnvConfig.config_url)) {
                             url = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is: " + url);
@@ -7411,6 +7699,7 @@ function thelegendmodproject() {
                             return url;
 
                         }
+                        */
                     };
                 img[url].src = url;
             }
@@ -9948,9 +10237,20 @@ function thelegendmodproject() {
         this.redrawed = 0;
         this.time = 0;
         this.skin = null;
-        this.pi2 = 2 * Math.PI;
+        this.pi2 = ogarbasicassembly.PI2;
         this.virusColor = null;
         this.virusStroke = null;
+        /* Reusable buffer for movePoints velocity smoothing —
+         * avoids this.pointsVel.slice() on every frame */
+        this._velBuf = [];
+        /* Jello physics: lightweight pre-allocated arrays */
+        this._jelloPoints = null;
+        this._jelloVel = null;
+        this._jelloSin = null;
+        this._jelloCos = null;
+        this._jelloLen = 0;
+        this._prevX = 0;
+        this._prevY = 0;
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -9989,73 +10289,166 @@ function thelegendmodproject() {
         this.sqDist = function (a, b) {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
+
+        /* ========== JELLO PHYSICS (lightweight alternative) ========== */
+        this.initJelloPoints = function () {
+            var N = 24;
+            if (this._jelloLen === N) return;
+            this._jelloLen = N;
+            this._jelloPoints = new Array(N);
+            this._jelloVel = new Float64Array(N);
+            this._jelloSin = new Float64Array(N);
+            this._jelloCos = new Float64Array(N);
+            var step = 6.283185307179586 / N;
+            for (var i = 0; i < N; i++) {
+                var a = step * i;
+                this._jelloSin[i] = Math.sin(a);
+                this._jelloCos[i] = Math.cos(a);
+                this._jelloPoints[i] = {
+                    x: this.x + this._jelloCos[i] * this.size,
+                    y: this.y + this._jelloSin[i] * this.size,
+                    rl: this.size,
+                    parent: this
+                };
+                this._jelloVel[i] = 0;
+            }
+            this._prevX = this.x;
+            this._prevY = this.y;
+        };
+
+        this.moveJelloPoints = function () {
+            if (!this._jelloPoints) return;
+            var N = this._jelloLen;
+            var sz = this.size;
+            var cx = this.x;
+            var cy = this.y;
+            /* Movement delta — drives wobble intensity */
+            var dx = cx - this._prevX;
+            var dy = cy - this._prevY;
+            this._prevX = cx;
+            this._prevY = cy;
+            var speed = Math.sqrt(dx * dx + dy * dy);
+            /* Normalize movement direction */
+            var ndx = speed > 0.1 ? dx / speed : 0;
+            var ndy = speed > 0.1 ? dy / speed : 0;
+            /* Wobble impulse from movement (capped) */
+            var impulse = Math.min(speed * 0.15, 8);
+
+            this.maxPointRad = 0;
+            var cosArr = this._jelloCos;
+            var sinArr = this._jelloSin;
+            var pts = this._jelloPoints;
+            var vel = this._jelloVel;
+
+            for (var i = 0; i < N; i++) {
+                /* Point direction (unit vector from center) */
+                var pcx = cosArr[i];
+                var pcy = sinArr[i];
+
+                /* Movement influence: points facing movement compress,
+                 * opposing points stretch. Dot product gives alignment. */
+                var dot = pcx * ndx + pcy * ndy;
+                vel[i] += -dot * impulse;
+
+                /* Spring force: pull toward base radius */
+                var rl = pts[i].rl;
+                vel[i] += (sz - rl) * 0.15;
+
+                /* Neighbor smoothing */
+                var prevRl = pts[(i - 1 + N) % N].rl;
+                var nextRl = pts[(i + 1) % N].rl;
+                vel[i] += (prevRl + nextRl - 2 * rl) * 0.05;
+
+                /* Damping */
+                vel[i] *= 0.82;
+
+                /* Small random jitter for organic feel */
+                vel[i] += (Math.random() - 0.5) * 0.3;
+
+                /* Update radius */
+                rl += vel[i];
+                /* Clamp to prevent extreme distortion */
+                if (rl < sz * 0.85) rl = sz * 0.85;
+                else if (rl > sz * 1.15) rl = sz * 1.15;
+                pts[i].rl = rl;
+
+                if (rl > this.maxPointRad) this.maxPointRad = rl;
+
+                /* Update world position */
+                pts[i].x = cx + cosArr[i] * rl;
+                pts[i].y = cy + sinArr[i] * rl;
+            }
+        };
         this.movePoints = function () {
             //console.log(this.id)
-            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
+            if (len === 0) return;
+            /* Reuse a pre-allocated buffer instead of slice() —
+             * eliminates one full array copy per cell per frame */
+            var buf = this._velBuf;
+            if (buf.length !== len) buf.length = len;
+            for (var i = 0; i < len; ++i) buf[i] = this.pointsVel[i];
+
             for (var i = 0; i < len; ++i) {
-                var prevVel = pointsVel[(i - 1 + len) % len];
-                var nextVel = pointsVel[(i + 1) % len];
+                var prevVel = buf[(i - 1 + len) % len];
+                var nextVel = buf[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                newVel = Math.max(Math.min(newVel, 10), -10);
+                if (newVel > 10) newVel = 10;
+                else if (newVel < -10) newVel = -10;
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-            this.maxPointRad = 0
+            this.maxPointRad = 0;
+            /* Cache self + sqDist outside the point loop to avoid
+             * per-point closure allocation from .bind() */
+            var self = this;
+            var selfX = this.x;
+            var selfY = this.y;
+            var selfSize = this.size;
+            var isVirus = this.isVirus;
+            var qt = LM.quadtree;
+            /* Pre-compute angle step — all points are evenly spaced */
+            var angleStep = 6.283185307179586 / len; // 2*PI/len
+
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var nextRl = this.points[(i + 1) % len].rl;
-                var self = this;
-                var affected
-                if (LM.quadtree) {
-                    affected = LM.quadtree.some({
-                        x: curP.x - 5,
-                        y: curP.y - 5,
+                var affected = false;
+                if (qt) {
+                    var cpx = curP.x;
+                    var cpy = curP.y;
+                    affected = qt.some({
+                        x: cpx - 5,
+                        y: cpy - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        return item.parent != self && this.sqDist(item, curP) <= 25;
-                    }.bind(this));
+                        if (item.parent === self) return false;
+                        var dx = item.x - cpx;
+                        var dy = item.y - cpy;
+                        return dx * dx + dy * dy <= 25;
+                    });
                 }
-                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
-
-                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-
-
-                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
-                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
-
-                /*if (!affected &&
-                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-                {
-                    affected = true;
-                }*/
                 if (affected) {
-                    //console.log('affected!!!!!')
-                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                curRl = Math.max(curRl, 0);
+                if (curRl < 0) curRl = 0;
 
-                curRl = (9 * curRl + this.size) / 10; //??????
+                curRl = (9 * curRl + selfSize) / 10;
 
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
+                curP.rl = (prevRl + selfSize + 8 * curRl) / 10;
 
-                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
-
-                var angle = 2 * Math.PI * i / len;
+                var angle = angleStep * i;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl
-                if (this.isVirus && i % 2 === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl;
+                if (isVirus && (i & 1) === 0) {
                     rl += 5;
                 }
 
-                curP.x = this.x + Math.cos(angle) * rl;
-                curP.y = this.y + Math.sin(angle) * rl;
+                curP.x = selfX + Math.cos(angle) * rl;
+                curP.y = selfY + Math.sin(angle) * rl;
             }
         };
 
@@ -10172,7 +10565,7 @@ function thelegendmodproject() {
                 if (this.mass <= 200) {
                     this.virusColor = defaultSettings.virusColor;
                     this.virusStroke = defaultSettings.virusStrokeColor;
-                } else if (this.mass > 220) {
+                } else {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
@@ -10807,7 +11200,7 @@ function thelegendmodproject() {
             //ctx.lineTo(x, y);
             //ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, 0, ogarbasicassembly.PI2);
             ctx.fill();
             //ctx.closePath();
             //ctx.stroke();
@@ -10850,6 +11243,7 @@ function thelegendmodproject() {
                     node = application.getCustomSkin(this.targetNick, this.color);
                 }
                 var node2;
+                var isVideoSkin = false;
                 if (defaultmapsettings.videoSkins) {
                     if (LM.gameMode != ":party") {
                         node2 = application.customSkinsMap[this.targetNick];
@@ -10857,6 +11251,9 @@ function thelegendmodproject() {
                     else {
                         node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
+                    /* Cache video skin check — avoids 6 string.includes() calls
+                     * per cell per frame (called again at lines ~11210, ~11212) */
+                    isVideoSkin = !!(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")));
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -10878,7 +11275,21 @@ function thelegendmodproject() {
                 }
 
                 if (!node) style.beginPath();
-                if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                if (defaultmapsettings.jelloPhysics && this._jelloPoints) {
+                    /* Jello: smooth bezier curves between 24 points */
+                    var jp = this._jelloPoints;
+                    var jN = this._jelloLen;
+                    var mx = (jp[jN - 1].x + jp[0].x) / 2;
+                    var my = (jp[jN - 1].y + jp[0].y) / 2;
+                    style.moveTo(mx, my);
+                    for (var i = 0; i < jN; i++) {
+                        var next = jp[(i + 1) % jN];
+                        var nmx = (jp[i].x + next.x) / 2;
+                        var nmy = (jp[i].y + next.y) / 2;
+                        style.quadraticCurveTo(jp[i].x, jp[i].y, nmx, nmy);
+                    }
+                }
+                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
                     var point = this.points[0];
                     style.moveTo(point.x, point.y);
                     for (var i = 0; i < this.points.length; ++i) {
@@ -10890,13 +11301,23 @@ function thelegendmodproject() {
                     style.lineJoin = "miter"
                     var pointCount = 120;
                     var incremental = this.pi2 / pointCount;
+                    /* Use pre-computed sin/cos table to avoid 240 trig calls
+                     * per virus per frame. Table is shared across all viruses. */
+                    if (!ogarbasicassembly._virusSinTable || ogarbasicassembly._virusSinTable.length !== pointCount) {
+                        ogarbasicassembly._virusSinTable = new Float32Array(pointCount);
+                        ogarbasicassembly._virusCosTable = new Float32Array(pointCount);
+                        for (var t = 0; t < pointCount; t++) {
+                            var a = t * incremental;
+                            ogarbasicassembly._virusSinTable[t] = Math.sin(a);
+                            ogarbasicassembly._virusCosTable[t] = Math.cos(a);
+                        }
+                    }
                     style.moveTo(this.x, this.y + this.size + 3);
                     for (var i = 1; i < pointCount; i++) {
-                        var angle = i * incremental;
                         var dist = this.size - 3 + (i % 2 === 0) * 6;
                         style.lineTo(
-                            this.x + dist * Math.sin(angle),
-                            this.y + dist * Math.cos(angle)
+                            this.x + dist * ogarbasicassembly._virusSinTable[i],
+                            this.y + dist * ogarbasicassembly._virusCosTable[i]
                         )
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
@@ -10904,9 +11325,9 @@ function thelegendmodproject() {
                 else {
                     if (!node) {
                         //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                        if (this.isVirus || isVideoSkin || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))) {
+                            if (!this.isVirus && !defaultmapsettings.cellContours && !isVideoSkin) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
@@ -10924,7 +11345,7 @@ function thelegendmodproject() {
                 if (!node) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                    if (defaultmapsettings.jellyPhisycs) {
+                    if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
@@ -10964,7 +11385,19 @@ function thelegendmodproject() {
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+                        /* Cache the spike Path2D — only regenerate when size
+                         * or spike setting changes. Eliminates ~40 trig calls
+                         * and a Path2D allocation per virus per frame. */
+                        if (!this._cachedSpikePath || this._lastSpikeSize !== this.size ||
+                            this._lastSpikeScale !== defaultSettings.virusSpikesSize) {
+                            this._cachedSpikePath = this.createStrokeVirusPath(0, 0, this.size - 2, defaultSettings.virusSpikesSize);
+                            this._lastSpikeSize = this.size;
+                            this._lastSpikeScale = defaultSettings.virusSpikesSize;
+                        }
+                        style.save();
+                        style.translate(this.x, this.y);
+                        style.stroke(this._cachedSpikePath);
+                        style.restore();
                     }
                     else {
                         style.stroke()
@@ -11004,7 +11437,8 @@ function thelegendmodproject() {
                         style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
+                         (defaultmapsettings.jelloPhysics && this._jelloPoints)) {
                     //else{			
                     style.fillStyle = color2;
                     style.fill();
@@ -11045,7 +11479,7 @@ function thelegendmodproject() {
                             //s = true;
                         }
                         if (legendmod.gameMode != ":teams") {
-                            if (defaultmapsettings.jellyPhisycs) {
+                            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
                                 var lineWidth = Math.max(~~(y / 50), 10);
                                 style.save();
                                 style.clip();
@@ -11083,7 +11517,7 @@ function thelegendmodproject() {
                     else {
                         if (defaultmapsettings.videoSkins) {
                             if (node2) {
-                                if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
+                                if (isVideoSkin) {
                                     checkVideos(node2, this.targetNick);
                                     try {
                                         style.save();
@@ -11147,6 +11581,8 @@ function thelegendmodproject() {
                 style.restore();
             }
     }
+    /* Static constant shared by all cell instances — avoids per-cell 2*Math.PI storage */
+    ogarbasicassembly.PI2 = 2 * Math.PI;
     window.legendmod1 = ogarbasicassembly;
 
 
@@ -11156,6 +11592,10 @@ function thelegendmodproject() {
     }
     var LM = {
         integrity: true,
+        /* Pre-allocated sort comparator — avoids creating a closure on every frame */
+        _cellSortCmp: function(a, b) {
+            return a.size === b.size ? a.id - b.id : a.size - b.size;
+        },
         quadtree: null,
         updateQuadtree: function (cells) {
             var w = drawRender.canvasWidth / drawRender.scale;
@@ -11337,7 +11777,8 @@ function thelegendmodproject() {
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
 
-            /* Pre-flight: determine server type early so we can gate login. */
+            /* Pre-flight: determine server type early so we can gate login.
+             * This duplicates the detection below but runs BEFORE anything else. */
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
                 : t.includes('agar2.com') ? 'agar2'
@@ -11345,8 +11786,10 @@ function thelegendmodproject() {
                 : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
-             * Logout BEFORE tearing down the old connection, then re-invoke
-             * connect() after 500ms so the logout side-effects settle first. */
+             * We must logout BEFORE tearing down the old connection, otherwise
+             * the logout handler triggers a disconnect on the NEW socket.
+             * After logout completes we re-invoke connect() — by then the user
+             * is no longer logged in so we skip this block and proceed normally. */
             if (_earlyType !== 'agario' && _earlyType !== 'expandingland') {
                 var _isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
                                   (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
@@ -11415,6 +11858,13 @@ function thelegendmodproject() {
                 $('.btn-fb, .btn-discord, .btn-gplus, #gplusLogin').prop('disabled', true);
             }
 
+            if (this.serverType === 'expandingland') {
+                $(".btn-spectate").show();
+                $(".btn-full-map-spec").hide();
+            } else {
+                $(".btn-spectate").show();
+                $(".btn-full-map-spec").hide();
+            }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
@@ -11523,13 +11973,19 @@ function thelegendmodproject() {
             this.connectionOpened = true;
 
             /* Private server login: trigger Google/Facebook OAuth.
-             * On real agar.io this is called from opcode 241 handler,
-             * but private servers use 0xFE/0xFF handshake instead.
-             * Small delay to let the server finish handshake processing. */
+             * On real agar.io this is called from opcode 241 handler.
+             * On Expanding Land, login is deferred until the LW beacon
+             * (opcode 240+'LW') arrives — see the LW beacon handler in
+             * the default: case of the message switch.
+             * For OTHER private servers (imsolo etc.), use a delayed fallback. */
             if (window.master && window.master.login) {
-                setTimeout(function() {
-                    window.master.login();
-                }, 200);
+                /* Only use timeout fallback for NON-EL private servers.
+                 * EL triggers login from the LW beacon handler instead. */
+                if (this.serverType !== 'expandingland') {
+                    setTimeout(function() {
+                        window.master.login();
+                    }, 200);
+                }
             }
         },
         onMessage(message) {
@@ -11655,6 +12111,9 @@ function thelegendmodproject() {
             this.isFreeSpectate = !this.isFreeSpectate;
             this.sendAction(18);
         },
+        sendQuitGame() {
+            this.sendAction(57);
+        },
         sendBotEject() {
             //this.sendPosition();
             this.sendAction(23);
@@ -11731,6 +12190,13 @@ function thelegendmodproject() {
             }
         },
         sendNick(nick) {
+            /* LW: Don't send spawn if already alive — flushCellsData clears
+             * client view and causes cells to disappear even though server
+             * ignores the join (cell_count > 0). */
+            if (ogario.play) {
+                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
 
             var self = this
             this.playerNick = nick;
@@ -11750,6 +12216,9 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                    self.flushCellsData();
+                }
                 self.sendMessage(view);
             }
             var sendSpawnPrivateServer = function () {
@@ -11762,6 +12231,9 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                    self.flushCellsData();
+                }
                 self.sendMessage(view);
             }
 
@@ -11884,6 +12356,10 @@ function thelegendmodproject() {
             })*/
         },
         sendNick2(nick) {
+            if (ogario.play) {
+                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
             this.playerNick = nick,
                 nick = window.unescape(window.encodeURIComponent(nick));
             window.Bufferdata = nick;
@@ -11914,6 +12390,9 @@ function thelegendmodproject() {
                 return;
             }
             // Default (agar.io / Expanding Land / other): just nick
+            if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                this.flushCellsData();
+            }
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
@@ -12366,6 +12845,7 @@ function thelegendmodproject() {
             var s = 0;
             var opcode = data.getUint8(s++);
             /* LW DEBUG: trace all opcodes > 90 to find the 102 response */
+            // if (opcode >= 100) console.log('[LW DBG] handleMessage opcode=' + opcode + ' len=' + data.byteLength);
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
@@ -12512,7 +12992,13 @@ function thelegendmodproject() {
                         if (isMe) {
                             isMe = 'isPlayer'
                         }
-                        let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+                        var rawNick = encode();
+                        let nick = "";
+                        try {
+                            nick = window.decodeURIComponent(window.escape(rawNick));
+                        } catch (e) {
+                            nick = rawNick;
+                        }
                         var temp = null;
 
                         if (nick.includes('}')) {
@@ -12661,7 +13147,7 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
-                case 200: // 0xC8 — ShopResponse (Agar2 only)
+                case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2)
                     if (this.serverType === 'agar2') {
                         // Parse shop response but don't act on it (no shop UI yet)
                         var shopAction = data.getUint8(s++);
@@ -12671,6 +13157,18 @@ function thelegendmodproject() {
                         var shopMsg = encode();
                         console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit', 
                             'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
+                    } else {
+                        // Expanding Land MapEvent — parse 42-byte packet
+                        var meEventType     = data.getUint8(s++);
+                        var meCurrentSize   = data.getFloat64(s, true); s += 8;
+                        var meTargetSize    = data.getFloat64(s, true); s += 8;
+                        var meCenterX       = data.getFloat64(s, true); s += 8;
+                        var meCenterY       = data.getFloat64(s, true); s += 8;
+                        var meTransDur      = data.getUint32(s, true);  s += 4;
+                        var meWarnDur       = data.getUint32(s, true);  s += 4;
+                        var meTier          = data.getUint8(s++);
+                        this.handleMapEvent(meEventType, meCurrentSize, meTargetSize,
+                            meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
                     }
                     break;
                 case 201: // 0xC9 — AuthSuccess (Agar2 only)
@@ -12774,12 +13272,12 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
-                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
+                    //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        console.error('[LW 102 DBG] onMobileData error:', e102);
+                        //console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
@@ -12798,7 +13296,8 @@ function thelegendmodproject() {
                             var temp = window.testobjects2.split('').pop().split('R')[0].replace('', "");
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
-                                window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png';
+                                //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
+                                window.UserVanillaSkin = "https://configs.agario.miniclippt.com/live/custom_skins/" + temp.substring(1) + '.png?';
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
@@ -12815,15 +13314,15 @@ function thelegendmodproject() {
                             }
                         } catch (error) {
                             if (window.expandingLand || window.legendModFromWebsite) {
-                                console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
+                                //console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
                             }
                         }
                         /* LW: Fallback extraction for our server's protobuf format.
                          * Server sends userId="provider$UID" in userInfo field.
                          * Only runs on our domains — doesn't affect agar.io parsing. */
                         if (window.expandingLand || window.legendModFromWebsite) {
-                            console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
-                                'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
+                            //console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
+                            //    'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
                             var rawText = window.testobjects2;
                             if (!window.agarioUID && rawText.includes('$')) {
                                 try {
@@ -12832,10 +13331,10 @@ function thelegendmodproject() {
                                         window.agarioUID = uidMatch[1].substr(0, 36);
                                         localStorage.setItem("agarioUID", window.agarioUID);
                                         $("#UserProfileUUID1").val(window.agarioUID);
-                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                        //console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
                                     }
                                 } catch (lwErr) {
-                                    console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
+                                    //console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
                                 }
                             }
                         }
@@ -13007,6 +13506,7 @@ function thelegendmodproject() {
                                 window.testobjects10262 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game over");
                                 LegendModDeath();
+                                if (window.application) application.onPlayerDeath();
                                 //$('#pause-hud').text("PAUSE!");							
                                 break;
                             case 63:
@@ -13506,12 +14006,28 @@ function thelegendmodproject() {
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
-                    if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
+                    /* Fallback: if opcode 102 reaches default: (e.g. on expanding.land),
+                     * handle the protobuf login/game-over response here too. */
+                    if (_lwOp === 102 && data.byteLength > 10) {
+                        console.log('[LW 102 FALLBACK] opcode 102 in default: handler, len=' + data.byteLength);
+                        var msg102 = new buffer.Buffer(data.buffer.slice(1));
+                        try {
+                            this.onMobileData(msg102);
+                        } catch (e102f) {
+                            console.error('[LW 102 FALLBACK] onMobileData error:', e102f);
+                        }
+                    } else if (_lwOp === 240 && data.byteLength >= 3 && data.getUint8(1) === 0x4C && data.getUint8(2) === 0x57) {
                         /* LW Beacon — sets isLegendWorld (Expanding Land) */
                         LM.isLegendWorld = true;
                         this.gameMode = ':expandingland';
                         console.log('%c[Expanding Land]%c Connected to Expanding Land server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
+                        /* State-based login: trigger AFTER beacon confirms server is ready.
+                         * This replaces the old 200ms blind timeout in onOpen(). */
+                        if (window.master && window.master.login) {
+                            console.log('[LW Auth] Triggering master.login() after LW beacon');
+                            window.master.login();
+                        }
                     } else if (LM.isLegendWorld && _lwOp === 200) {
                         /* Map Event */
                         var s2 = 1;
@@ -13539,7 +14055,7 @@ function thelegendmodproject() {
                             botEl2.textContent = botCount2;
                         }
                     } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
+                        /* Opcode 0xCA: LM Decay Info — per-player extra decay multiplier */
                         var di = LM.decayInfo;
                         var _off = 1;
                         di.totalScore = data.getUint16(_off, true); _off += 2;
@@ -13579,16 +14095,36 @@ function thelegendmodproject() {
             if (msg == null) {
                 return
             }
-            const response = window.decodeMobileData(msg);
-
+            /* DEBUG: hex dump before decode to catch broken packets */
+            var response;
+            try {
+                response = window.decodeMobileData(msg);
+            } catch(decodeErr) {
+                if (LM.isLegendWorld) {
+                    var hex = Array.from(new Uint8Array(msg)).map(function(b){return b.toString(16).padStart(2,'0')}).join(' ');
+                    console.error('[LW 102 DECODE FAIL] len=' + msg.byteLength + ' hex=' + hex, decodeErr);
+                }
+                return;
+            }
+            if (LM.isLegendWorld) console.log('[LW 102 TRACE] onMobileData decoded, type=' + (response && response.uncompressedData ? response.uncompressedData.type : 'null'));
             this.unpackageMessage(response);
         },
         unpackageMessage: function (r) {
             //var returnMessage = r;
             var type = r.uncompressedData.type;
+            if (LM.isLegendWorld) console.log('[LW 102 TRACE] unpackageMessage type=' + type);
             if (defaultmapsettings.showDevConsole) console.log(r);
             switch (type) {
                 case 11:
+                    if (LM.isLegendWorld) {
+                        window._lw_protobuf102Received = true; /* debug marker */
+                        /* Transition: login confirmed by server */
+                        if (window._lwAuth && window._lwAuth.state === 'waiting_server') {
+                            window._lwAuth.state = 'logged_in';
+                            console.log('[LW AUTH] Login confirmed by server, provider=' + window._lwAuth.provider);
+                        }
+                        console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
+                    }
                     this.user = {
                         coins: 0,
                         dna: 0,
@@ -13610,31 +14146,71 @@ function thelegendmodproject() {
 
                     window.localStorage.setItem("getLatestID", u.latestConfiguration);
 
-                    this.updateWalletInfo(u.userWallet);
+                    /* Update agarversion with fresh configId from server and rebuild skin map */
+                    if (u.latestConfiguration) {
+                        var freshVersion = "v" + (window.getLatestconfigVersion || "15") + "/" + u.latestConfiguration + "/";
+                        window.agarversion = freshVersion;
+                        window.localStorage.setItem("getLatestID", u.latestConfiguration);
+                        /* Rebuild VanillaSkinUrlMap with correct CDN version */
+                        if (window.EquippableSkins) {
+                            window.VanillaSkinUrlMap = {};
+                            var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + freshVersion;
+                            for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
+                                var skn = window.EquippableSkins[sk];
+                                var skKey = skn.productId.replace('skin_', '%');
+                                if (skn.image && skn.image !== "uses_spine") {
+                                    window.VanillaSkinUrlMap[skKey] = cdnBase + skn.image + "?";
+                                } else if (skn.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skn.productId]) {
+                                    window.VanillaSkinUrlMap[skKey] = cdnBase + window.SpineSkinMap[skn.productId] + ".png?";
+                                }
+                            }
+                        }
+                    }
 
-                    this.displayActiveBoosts(u.userBoosts);
+                    try { this.updateWalletInfo(u.userWallet); } catch(e) { console.error('[LW 102] updateWalletInfo error:', e); }
+
+                    try { this.displayActiveBoosts(u.userBoosts); } catch(e) { console.error('[LW 102] displayActiveBoosts error:', e); }
 
                     this.user.stats = u.userStats;
-                    this.displayStats(u.userStats);
+                    try { this.displayStats(u.userStats); } catch(e) { console.error('[LW 102] displayStats error:', e); }
 
-                    this.updateEvents(u.userTimedEvents)
+                    try { this.updateEvents(u.userTimedEvents); } catch(e) { console.error('[LW 102] updateEvents error:', e); }
 
-                    this.displayActiveQuests(u.userActiveQuests); //FIX IT
+                    try { this.displayActiveQuests(u.userActiveQuests); } catch(e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
-                    this.createSkinsHTML();
+                    try { this.createSkinsHTML(); } catch(e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
-                    this.updateUserSettings(u.userSettings)
+                    try { this.updateUserSettings(u.userSettings); } catch(e) { console.error('[LW 102] updateUserSettings error:', e); }
 
-                    this.updateUserInfo(u.userInfo)
+                    try {
+                        if (LM.isLegendWorld && u.userInfo) console.log('[LW 102 TRACE] userInfo.userId=' + (u.userInfo.userId || 'EMPTY') + ' realmInfo=' + JSON.stringify(u.userInfo.realmInfo || {}));
+                        this.updateUserInfo(u.userInfo);
+                    } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
 
-                    this.updatePotions(u.userPotions)
+                    try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
+
+                    /* LW: Show agar.io-style login notification after confirmed
+                     * server login (protobuf type-11). Uses server-confirmed data. */
+                    if (window.expandingLand || window.legendModFromWebsite) {
+                        try {
+                            var _provider = 'Unknown';
+                            if (u.userInfo && u.userInfo.userId) {
+                                var _prov = u.userInfo.userId.split('$')[0];
+                                if (_prov === 'google') _provider = 'Google';
+                                else if (_prov === 'facebook') _provider = 'Facebook';
+                                else if (_prov === 'discord') _provider = 'Discord';
+                            }
+                            var _name = (u.userInfo && u.userInfo.displayName) || 'Player';
+                            window._lw_showLoginSuccess(_provider, _name);
+                        } catch(e) { console.error('[LW 102] loginSuccess notification error:', e); }
+                    }
                     break;
                 case 20:
                     var u = r.uncompressedData.disconnectField;
                     this.disconnectMessage(u.reason);
 
-                    window.loggedIn = false;
-                    window.logout && window.logout();
+                    //window.loggedIn = false;
+                    //window.logout && window.logout();
                     break;
                 case 22:
                     console.log("returnMessage = r.get_noProperResponseField();");
@@ -13660,8 +14236,9 @@ function thelegendmodproject() {
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
                     };
-                    if (defaultmapsettings.gameOverStats) {
+                    if (defaultmapsettings.gameOverStats || window._forceGameOverStats) {
                         this.showSessionStats(u.gameSessionStats);
+                        window._forceGameOverStats = false;
                     }
                     break;
                 case 71:
@@ -14173,12 +14750,10 @@ function thelegendmodproject() {
                     link1 = link1.charAt(0).toUpperCase() + link1.slice(1);
                     link1 = makeUpperCaseAfterUnderline(link1);
                     return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + link1 + ".png", type];
-                } else if (window.LMAgarGameConfiguration != undefined) {
-                    for (var player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === link && window.EquippableSkins[player].image != "uses_spine") {
-                            return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, type];
-                        }
-                    }
+                } else if (window.VanillaSkinUrlMap) {
+                    var mapKey = link.replace('skin_', '%');
+                    var mapUrl = window.VanillaSkinUrlMap[mapKey];
+                    if (mapUrl) { return [mapUrl, type]; }
                 }
             }
         },
@@ -14234,6 +14809,7 @@ function thelegendmodproject() {
             }
         },
         displayStats(s) {
+            if (!s) s = {}; /* guard: protobuf may not decode userStats */
             /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.
              * Convert to Number so arithmetic and template literals work correctly. */
             var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
@@ -14260,12 +14836,15 @@ Most cells eaten   : ${mostCellsEaten}
       `)
         },
         updateUserInfo(i) {
+            if (!i) i = {}; /* guard: protobuf may not decode userInfo */
             var exp = 100;
-            if (i.level != 100) exp = ~~(i.xp * 100 / this.agarExp(i.level));
+            var level = Number(i.level) || 1;
+            var xp = Number(i.xp) || 0;
+            if (level != 100) exp = ~~(xp * 100 / this.agarExp(level));
             $('.progress-bar-striped').width(exp + '%');
             //$('.progress-bar-striped2').width(exp + '%');
 
-            $('.progress-bar-star3').text(i.level); $('.progress-bar-star').text(i.level);
+            $('.progress-bar-star3').text(level); $('.progress-bar-star').text(level);
             //$('.progress-bar-star2').text(i.finalLevel);
             this.user.actionCounters = i.actionCounters;
 
@@ -14299,15 +14878,28 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            $("#user-info").html(`
-Account age     : ${~~(i.accountAge / 3600 / 24)}D<br/>
-Potions obtained : ${i.actionCounters.potionsObtained}<br/>
-Quests completed      : ${i.actionCounters.questsCompleted}<br/>
-Skins created : ${i.actionCounters.skinsCreated}<br/>
-Country     : ${i.latestCountryCode}<br/>
-Game name     : ${i.displayName}<br/>
-      `)
+            /* Null-safe access to actionCounters (protobuf may not decode nested submessage) */
+            var ac = i.actionCounters || {};
+            var potions = Number(ac.potionsObtained) || 0;
+            var quests = Number(ac.questsCompleted) || 0;
+            var skins = Number(ac.skinsCreated) || 0;
+            var accountAge = ~~((Number(i.accountAge) || 0) / 3600 / 24);
+            var country = i.latestCountryCode || 'N/A';
+            var gameName = i.displayName || 'Player';
+
+            $("#user-info").html(
+                'Account age     : ' + accountAge + 'D<br/>' +
+                'Potions obtained : ' + potions + '<br/>' +
+                'Quests completed : ' + quests + '<br/>' +
+                'Skins created   : ' + skins + '<br/>' +
+                'Country         : ' + country + '<br/>' +
+                'Game name       : ' + gameName + '<br/>'
+            )
         },
+        /* ── LW: Agar.io-style login success notification ──────────── */
+        /* Called after confirmed protobuf type-11 login response from server.
+         * Styled to visually match agar.io's native blue notification panel.
+         * Uses only server-confirmed data (provider, displayName). */
         agarExp(q) {
             var s = {};
             var i = 0,
@@ -14487,7 +15079,7 @@ Game name     : ${i.displayName}<br/>
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
-                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
+                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < this.leaderboard.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
@@ -14625,7 +15217,21 @@ Game name     : ${i.displayName}<br/>
                     }
                     this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                    this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
+                    
+                    /* LEGENDWORLD FIX: 
+                     * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
+                     * during active dynamic map rescaling (Expanding Land).
+                     * This caused violent 25Hz juddering when the map border shrunk!
+                     */
+                    if (!this.mapOffsetFixed) {
+                         // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                         // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
+                         if (this.mapSize === 0 || !LM.isLegendWorld) {
+                             this.viewX = (right + left) / 2;
+                             this.viewY = (bottom + top) / 2;
+                         }
+                    }
+                    
                     this.mapOffsetFixed = true;
                 }
             }
@@ -14666,42 +15272,37 @@ Game name     : ${i.displayName}<br/>
                 if (LM.gameMode === ":party") {
                     y = y + (cellColor || "#000000");
                 }
-                //console.log(g)		
-                if (legendflags.includes(LowerCase(y))) {
+                /* Direct URL skin (e.g. https://i.imgur.com/xxx.png from bots/players) */
+                if (g != null && g.includes && (g.startsWith('http://') || g.startsWith('https://'))) {
+                    application.customSkinsMap[y] = g;
+                    application.loadSkin(application.customSkinsCache, g);
+                } else if (legendflags.includes(LowerCase(y))) {
                     core.registerSkin(y, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
                 } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
                         if (LowerCase(y) === window.FreeSkins[player].id) {
-                            core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
+                            core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
                             //console.log("https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image)
                         }
                     }
                 } else if (g != null && g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%custom_', 'skin_custom_')
-                    core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null);
-                    //core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png", null);
+                    //core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null); // OLD — may point to wrong domain
+                    core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?", null);
                 } else if (g != null && g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%', '')
                     g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
                     g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
                     g1 = makeUpperCaseAfterUnderline(g1);
                     var customskinanimated = true;
-                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", customskinanimated);
-                } else if (g != null && defaultmapsettings.vanillaSkins === true && window.LMAgarGameConfiguration != undefined) {
-                    for (var player = 0; player < window.EquippableSkins.length; player++) {
-                        if (window.EquippableSkins[player].productId === "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
-                            //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
-                            window.lastusednameforskin = y;
-                            //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
-                            var skinKey = y;
-                            if (LM.gameMode === ":party" && !application.customSkinsMap[skinKey]) {
-                                // In party mode, y already has color appended, so register with that key
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
-                            } else if (LM.gameMode != ":party" && !application.customSkinsMap[skinKey]) {
-                                application.customSkinsMap[skinKey] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
-                            }
+                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png?", customskinanimated);
+                } else if (g != null && g !== '%empty' && defaultmapsettings.vanillaSkins === true && window.VanillaSkinUrlMap) {
+                    var skinUrl = window.VanillaSkinUrlMap[g];
+                    if (skinUrl) {
+                        window.lastusednameforskin = y;
+                        if (!application.customSkinsMap[y]) {
+                            application.customSkinsMap[y] = skinUrl;
+                            application.loadSkin(application.customSkinsCache, skinUrl);
                         }
                     }
                 }
@@ -15103,9 +15704,7 @@ Game name     : ${i.displayName}<br/>
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(function (row, conf) {
-                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
-            });
+            this.cells.sort(LM._cellSortCmp);
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -15139,9 +15738,7 @@ Game name     : ${i.displayName}<br/>
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
                 var CellLength = cells.length;
-                cells.sort(function (cells, CellLength) {
-                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-                });
+                cells.sort(LM._cellSortCmp);
                 this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
                 this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
                 this.playerSplitCells = CellLength;
@@ -15401,6 +15998,16 @@ Game name     : ${i.displayName}<br/>
         }
     };
     window.legendmod = LM; // look at this
+    try {
+        if (window.top !== window.self) {
+            window.top.legendmod = LM;
+            if (typeof defaultSettings !== 'undefined') window.top.defaultSettings = defaultSettings;
+            if (typeof core !== 'undefined') window.top.core = core;
+            if (typeof application !== 'undefined') window.top.application = application;
+        }
+    } catch(e) {
+        // Cross-origin restriction blocks this unless CORS is disabled
+    }
 
     window.sendAction = function (action) {
         LM.sendAction(action);
@@ -15451,6 +16058,8 @@ Game name     : ${i.displayName}<br/>
             this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
+            /* Invalidate grid cache on resize so it re-renders at new size */
+            this._gridCacheDirty = true;
             //this.renderFrame();
         },
         setView() {
@@ -15518,7 +16127,40 @@ Game name     : ${i.displayName}<br/>
                 //
             }
             else if (defaultmapsettings.showGrid) {
-                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                /* Cached grid canvas: render grid to an offscreen canvas and
+                 * reuse it until camera/zoom changes significantly. On most
+                 * frames this is a single drawImage() instead of 300+ lines. */
+                var camDx = this.camX - (this._gridCamX || 0);
+                var camDy = this.camY - (this._gridCamY || 0);
+                var scaleDelta = Math.abs(this.scale - (this._gridScale || 0));
+                var needsRedraw = this._gridCacheDirty ||
+                    !this._gridCanvas ||
+                    scaleDelta > this.scale * 0.02 ||
+                    (camDx * camDx + camDy * camDy) > 625; /* 25^2 */
+
+                if (needsRedraw) {
+                    if (!this._gridCanvas) {
+                        this._gridCanvas = document.createElement('canvas');
+                        this._gridCtx = this._gridCanvas.getContext('2d');
+                    }
+                    var gw = this.canvasWidth * (this.dpr || 1);
+                    var gh = this.canvasHeight * (this.dpr || 1);
+                    if (this._gridCanvas.width !== gw || this._gridCanvas.height !== gh) {
+                        this._gridCanvas.width = gw;
+                        this._gridCanvas.height = gh;
+                    }
+                    this._gridCtx.clearRect(0, 0, gw, gh);
+                    this._gridCtx.save();
+                    this._gridCtx.scale(this.dpr || 1, this.dpr || 1);
+                    this.drawGrid(this._gridCtx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                    this._gridCtx.restore();
+                    this._gridCamX = this.camX;
+                    this._gridCamY = this.camY;
+                    this._gridScale = this.scale;
+                    this._gridCacheDirty = false;
+                }
+                /* Blit cached grid — single drawImage() on cache hit */
+                this.ctx.drawImage(this._gridCanvas, 0, 0);
             }
             this.ctx.save();
 
@@ -15574,16 +16216,57 @@ Game name     : ${i.displayName}<br/>
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            for (i = 0; i < LM.cells.length; i++) {
+            /* Compute viewport bounds in world-space for culling.
+             * Cells entirely outside these bounds produce no visible pixels,
+             * so we skip their expensive draw/jelly calls. */
+            var halfW = (this.canvasWidth / 2) / this.scale;
+            var halfH = (this.canvasHeight / 2) / this.scale;
+            var viewMinX = this.camX - halfW;
+            var viewMaxX = this.camX + halfW;
+            var viewMinY = this.camY - halfH;
+            var viewMaxY = this.camY + halfH;
 
+            for (i = 0; i < LM.cells.length; i++) {
+                var cell = LM.cells[i];
+                /* Jelly physics must run for ALL cells every frame, even
+                 * off-screen ones. Otherwise cells scrolling into view
+                 * have stale points and look jagged/non-circular. */
                 if (defaultmapsettings.jellyPhisycs) {
-                    LM.cells[i].updateNumPoints();
-                    LM.cells[i].movePoints();
+                    cell.updateNumPoints();
+                    cell.movePoints();
+                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 38) {
+                    /* Jello physics: init once, then spring simulation.
+                     * No quadtree needed — no updateNumPoints/splice.
+                     * Skip food, viruses, and tiny cells.
+                     * Unlike jelly, jello has no cell-to-cell interaction,
+                     * so we can also skip off-screen cells. */
+                    var jelloMargin = cell.size * 1.5;
+                    if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
+                        cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
+                        /* Only simulate if cell is large enough on screen
+                         * to see the wobble (>= 15px radius on canvas) */
+                        if (cell.size * drawRender.scale >= 15) {
+                            cell.initJelloPoints();
+                            cell.moveJelloPoints();
+                        } else if (cell._jelloPoints) {
+                            /* Clear jello data for cells that zoomed out too far */
+                            cell._jelloPoints = null;
+                            cell._jelloLen = 0;
+                        }
+                    }
                 }
 
-                LM.cells[i].draw(this.ctx);
+                /* Viewport culling: skip draw() for cells entirely outside
+                 * the canvas. Using a generous 1.5× margin avoids popping. */
+                var margin = (cell.maxPointRad || cell.size) * 1.5;
+                if (cell.x + margin < viewMinX || cell.x - margin > viewMaxX ||
+                    cell.y + margin < viewMinY || cell.y - margin > viewMaxY) {
+                    continue;
+                }
 
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                cell.draw(this.ctx);
+
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
                     //
                     //console.log("LM.selected") 
                     //
@@ -15985,18 +16668,30 @@ Game name     : ${i.displayName}<br/>
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
+            /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
+             * and alpha is near-zero, wasting GPU on invisible geometry */
+            if (scale < 0.02) return;
+
             const reWidth = width / scale;
             const reHeigth = heigth / scale;
-            let x = (-camX + reWidth / 2) % 50;
-            let y = (-camY + reHeigth / 2) % 50;
+
+            /* Dynamically increase grid step so lines are at least 4px apart.
+             * At normal zoom (scale 0.2), step=50, spacing=10px — fine.
+             * At extreme zoom (scale 0.03), base spacing=1.5px, so step
+             * doubles to 200 (6px spacing) — 4× fewer lines. */
+            let step = 50;
+            while (step * scale < 4) step *= 2;
+
+            let x = (-camX + reWidth / 2) % step;
+            let y = (-camY + reHeigth / 2) % step;
             ctx.strokeStyle = defaultSettings.gridColor;
             ctx.globalAlpha = 1 * scale;
             ctx.beginPath();
-            for (; x < reWidth; x += 50) {
+            for (; x < reWidth; x += step) {
                 ctx.moveTo(x * scale - 0.5, 0);
                 ctx.lineTo(x * scale - 0.5, reHeigth * scale);
             }
-            for (; y < reHeigth; y += 50) {
+            for (; y < reHeigth; y += step) {
                 ctx.moveTo(0, y * scale - 0.5);
                 ctx.lineTo(reWidth * scale, y * scale - 0.5);
             }
@@ -16284,13 +16979,13 @@ Game name     : ${i.displayName}<br/>
 
                 var alpha, color;
                 if (me.phase === 2) {
-                    alpha = 0.08 + 0.04 * pulse;
+                    alpha = 0.25 + 0.05 * pulse;
                     color = '#44dd66';
                 } else if (me.phase === 3) {
-                    alpha = 0.12 + 0.08 * fastPulse;
+                    alpha = 0.35 + 0.1 * fastPulse;
                     color = '#ff3333';
                 } else {
-                    alpha = 0.18 + 0.1 * fastPulse;
+                    alpha = 0.45 + 0.15 * fastPulse;
                     color = '#ff2222';
                 }
 
@@ -16495,38 +17190,42 @@ Game name     : ${i.displayName}<br/>
 
                 ctx.strokeStyle = defaultSettings.foodColor;
             }
-            for (var length = 0; length < food.length; length++) {
-                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                //ctx.beginPath();
-                if (!food[length].invisible) {
-                    var temp;
-                    if (defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = food[length].color
-                        temp = food[length].color
+            if (defaultmapsettings.rainbowFood) {
+                /* Batch rainbow food by color: one beginPath+fill per color
+                 * group instead of per particle. Reduces canvas calls from
+                 * ~3000 (1000 food × 3 ops) to ~60 (20 colors × 3 ops). */
+                var colorBuckets = {};
+                var foodSize = defaultSettings.foodSize;
+                for (var length = 0; length < food.length; length++) {
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    if (!food[length].invisible) {
+                        var c = food[length].color;
+                        if (!colorBuckets[c]) colorBuckets[c] = [];
+                        colorBuckets[c].push(food[length]);
                     }
-                    else if (!defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = defaultSettings.foodColor;
-                        temp = defaultSettings.foodColor;
-                    }
-
-                    var x = food[length].x;
-                    var y = food[length].y;
-                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    /*ctx.moveTo(x, y);
-                    if (scale < 0.08) {
-                        const size = food[length].size + defaultSettings.foodSize;
-                    	
-                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                        //continue;
-                    }
-                    else{*/
-
-                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
-                    //}
                 }
-
-                //ctx.fill();					
+                var pi2 = 2 * Math.PI;
+                for (var col in colorBuckets) {
+                    var bucket = colorBuckets[col];
+                    ctx.fillStyle = col;
+                    ctx.beginPath();
+                    for (var j = 0; j < bucket.length; j++) {
+                        var r = bucket[j].size + foodSize;
+                        ctx.moveTo(bucket[j].x + r, bucket[j].y);
+                        ctx.arc(bucket[j].x, bucket[j].y, r, 0, pi2);
+                    }
+                    ctx.fill();
+                }
+            } else {
+                for (var length = 0; length < food.length; length++) {
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    if (!food[length].invisible) {
+                        ctx.fillStyle = defaultSettings.foodColor;
+                        var x = food[length].x;
+                        var y = food[length].y;
+                        this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, defaultSettings.foodColor);
+                    }
+                }
             }
             if (!defaultmapsettings.rainbowFood) ctx.stroke();
             //}
@@ -16725,15 +17424,16 @@ Game name     : ${i.displayName}<br/>
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
+            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.beginPath();
+                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
             }
+            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
@@ -16783,27 +17483,27 @@ Game name     : ${i.displayName}<br/>
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
-            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //760+2*cell.size is the correct
                 }
+                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
+                ctx.setLineDash([20, 30]);
+                ctx.lineWidth = 2 * width;
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.setLineDash([20, 30]);
-                    ctx.lineWidth = 2 * width;
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //Sonia2
                 }
+                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -16813,11 +17513,11 @@ Game name     : ${i.displayName}<br/>
             var pi2 = this.pi2 / times;
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
+            ctx.beginPath();
             for (var length = 0; length < times; length += 2) {
-                ctx.beginPath();
                 ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
-                ctx.stroke();
             }
+            ctx.stroke();
         },
         drawTeammatesInd(ctx, x, y, size) {
             if (this.indicator) {
@@ -16917,54 +17617,103 @@ Game name     : ${i.displayName}<br/>
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
+                if (!ghostsCells.length) return;
+
+                /* --- Pass 1: Draw ghost cell circles with cheap glow --- */
+                /* Pre-render a radial gradient glow sprite once, reuse for
+                 * all ghost cells. This replaces shadowBlur=40 which does
+                 * an expensive CPU Gaussian blur on every filled pixel. */
+                var glowColor = defaultSettings.ghostCellsColor;
+                var glowAlpha = defaultSettings.ghostCellsAlpha;
+                if (!this._ghostGlowCanvas || this._ghostGlowColor !== glowColor) {
+                    this._ghostGlowCanvas = document.createElement('canvas');
+                    this._ghostGlowCanvas.width = 128;
+                    this._ghostGlowCanvas.height = 128;
+                    var gctx = this._ghostGlowCanvas.getContext('2d');
+                    var grad = gctx.createRadialGradient(64, 64, 32, 64, 64, 64);
+                    grad.addColorStop(0, glowColor);
+                    grad.addColorStop(1, glowColor + '00');
+                    gctx.fillStyle = grad;
+                    gctx.fillRect(0, 0, 128, 128);
+                    this._ghostGlowColor = glowColor;
+                }
+
+                /* Compute viewport bounds for culling off-screen ghosts */
+                var halfW = (this.canvasWidth / 2) / this.scale;
+                var halfH = (this.canvasHeight / 2) / this.scale;
+                var vMinX = this.camX - halfW;
+                var vMaxX = this.camX + halfW;
+                var vMinY = this.camY - halfH;
+                var vMaxY = this.camY + halfH;
+
+                this.ctx.globalAlpha = glowAlpha;
+
+                /* Draw glow sprites for each visible ghost cell */
+                for (var length = 0; length < ghostsCells.length; length++) {
+                    if (ghostsCells[length].inView) continue;
+                    var x = ghostsCells[length].x;
+                    var y = ghostsCells[length].y;
+                    var sz = ghostsCells[length].size;
+                    /* Viewport culling */
+                    if (x + sz < vMinX || x - sz > vMaxX ||
+                        y + sz < vMinY || y - sz > vMaxY) continue;
+                    /* Draw glow sprite (stretched to cell size + margin) */
+                    var glowSz = sz * 1.5;
+                    this.ctx.drawImage(this._ghostGlowCanvas, x - glowSz, y - glowSz, glowSz * 2, glowSz * 2);
+                }
+
+                /* Draw solid ghost circles — batched, no shadow */
+                this.ctx.fillStyle = glowColor;
                 this.ctx.beginPath();
-                var length = 0;
-                for (; length < ghostsCells.length; length++) {
-                    if (!ghostsCells[length].inView) {
+                for (length = 0; length < ghostsCells.length; length++) {
+                    if (ghostsCells[length].inView) continue;
+                    var x = ghostsCells[length].x;
+                    var y = ghostsCells[length].y;
+                    var sz = ghostsCells[length].size;
+                    if (x + sz < vMinX || x - sz > vMaxX ||
+                        y + sz < vMinY || y - sz > vMaxY) continue;
+                    this.ctx.moveTo(x + sz, y);
+                    this.ctx.arc(x, y, sz, 0, this.pi2, false);
+                }
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+
+                /* --- Pass 2: Ghost cell info (names, skins) --- */
+                if (defaultmapsettings.showGhostCellsInfo) {
+                    for (length = 0; length < ghostsCells.length; length++) {
+                        if (ghostsCells[length].inView) continue;
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
-                        this.ctx.moveTo(x, y);
-                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
-                        //
-                        if (defaultmapsettings.showGhostCellsInfo) {
-                            this.nickScale = 1;
-                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
-                            this.nickSize = ~~(this.fontSize * this.nickScale);
-                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                            this.ctx.textAlign = 'center';
-                            this.ctx.fillStyle = defaultSettings.namesColor;
-                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                            this.ctx.lineWidth = 4;
-                            angle = Math.PI * 0.8;
+                        var sz = ghostsCells[length].size;
+                        if (x + sz < vMinX || x - sz > vMaxX ||
+                            y + sz < vMinY || y - sz > vMaxY) continue;
 
-                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
+                        this.nickScale = 1;
+                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
+                        this.nickSize = ~~(this.fontSize * this.nickScale);
+                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                        this.ctx.textAlign = 'center';
+                        this.ctx.fillStyle = defaultSettings.namesColor;
+                        this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                        this.ctx.lineWidth = 4;
+                        var angle = Math.PI * 0.8;
 
-                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
-                            } else {
-                                this.ghostcellstext = "Ghost cell";
-                            }
-                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                                if (LM.leaderboard[length] != undefined) {
-                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                    if (node) {
-                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
-                                    }
+                        if (LM.leaderboard[length] != undefined) {
+                            this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
+                        } else {
+                            this.ghostcellstext = "Ghost cell";
+                        }
+                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            if (LM.leaderboard[length] != undefined) {
+                                node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                if (node) {
+                                    this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
                                 }
                             }
                         }
-                        //
                     }
                 }
-                this.ctx.fillStyle = defaultSettings.ghostCellsColor;
-                this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
-                this.ctx.shadowColor = defaultSettings.ghostCellsColor;
-                this.ctx.shadowBlur = 40;
-                this.ctx.shadowOffsetX = 0;
-                this.ctx.shadowOffsetY = 0;
-                this.ctx.fill();
-                this.ctx.globalAlpha = 1;
-                this.ctx.shadowBlur = 0;
             }
         },
         preDrawPellet() {
@@ -17000,18 +17749,19 @@ Game name     : ${i.displayName}<br/>
             canvas = null;
         },
         preDrawCellsColors(color) {
-            this.cellsColored[color] = null;
             var size = 128;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            canvas.width = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
+            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
-            this.cellsColored[color] = new Image();
-            this.cellsColored[color].src = canvas.toDataURL();
-            canvas = null;
+            /* Use canvas directly as image source — drawImage() accepts
+             * canvas elements. Avoids expensive toDataURL() PNG encode
+             * and async Image decode. */
+            this.cellsColored[color] = canvas;
         },
         preDrawIndicator() {
             this.indicator = null;

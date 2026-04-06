@@ -267,12 +267,12 @@
 <body translate="no">
 
     <nav class="site-nav">
-        <a href="https://help.expanding.land/guide.html">Guide</a>
-        <a href="https://help.expanding.land/changelog.html">Changelog</a>
-        <a href="https://help.expanding.land/best-io-games.html">Best IO Games</a>
-        <a href="https://help.expanding.land/glossary.html">Glossary</a>
-        <a href="https://help.expanding.land/no-bots.html">No Bots</a>
-        <a href="https://help.expanding.land/alternative.html">Alternative</a>
+        <a href="https://help.expanding.land/guide.html" target="_top">Guide</a>
+        <a href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
+        <a href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
+        <a href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
+        <a href="https://help.expanding.land/no-bots.html" target="_top">No Bots</a>
+        <a href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
     </nav>
 
     <div class="panel">
@@ -327,99 +327,96 @@
 
         <div class="row">
             <div class="card" style="width:min(940px, 100%);">
-                <h3><span class="emoji">&#128737;&#65039;</span> Anti-Teaming System &mdash; Discrete Events</h3>
+                <h3><span class="emoji">&#128737;&#65039;</span> Anti-Teaming System &mdash; Exponential Decay</h3>
                 <p>
-                    This server uses a <span class="accent">discrete event-based anti-teaming system</span>.
-                    Instead of a single bucket that accumulates forever, <span class="strong">every action is tracked
-                    as a separate event with its own lifespan</span>. When an event expires, its penalty is removed
-                    &mdash; older actions don't get extended by newer ones.
+                    This server uses an <span class="accent">exponential multiplier-based anti-teaming system</span>
+                    (ported from the Delta Server architecture).
+                    Each player has a single <span class="strong">extra decay multiplier</span> &mdash; teaming actions increase it,
+                    time naturally decreases it. No event arrays, no thresholds &mdash; just a smooth, continuous curve.
                 </p>
-
-                <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Penalty Sources</span></p>
-                <p>Each of these actions adds a discrete anti-team event. All penalties are expressed as <span class="accent">direct extra decay %/4s</span>:</p>
-                <ul>
-                    <li><span class="strong">&#9763; Virus (pop)</span> &mdash; <span class="accent">+1.6%/4s</span>,
-                        lasts <span class="strong">2 minutes 30 seconds</span>. Triggered when you eat a virus.</li>
-                    <li><span class="strong">&#9673;&#10138;&#9673; Split</span> &mdash; <span class="accent">+0.2%/4s</span>,
-                        lasts <span class="strong">2 minutes 30 seconds</span>. Triggered each time you split.</li>
-                    <li><span class="strong">&#11044; W (eject mass)</span> &mdash; <span class="accent">+0.016%/4s</span> per W press,
-                        lasts <span class="strong">1 minute 15 seconds</span>. Flat per press &mdash; same penalty whether you have 1 cell or 16.</li>
-                    <li><span class="strong">&#9888; Danger Zone</span> &mdash; <span class="accent">+0.4%/sec</span> (flat per player),
-                        batched every 4 seconds, lasts <span class="strong">2 minutes 30 seconds</span>. Only applies when the map is contracting and you have cells in the outer ring. 4 seconds in the danger zone = same penalty as one virus pop.</li>
-                    <li><span class="strong">&#8734; Constant Decay</span> &mdash; always active, never expires. This is the natural mass loss.
-                        It's a flat percentage of your mass &mdash; a 10,000 mass cell loses ~80, a 100 mass cell loses ~0.8.
-                        The rate is <span class="accent">&minus;0.8%/4s</span> (vanilla Agar.io rate, verified from 97,806 real packets) &mdash; the same regardless of how many players are in the arena.</li>
-                </ul>
 
                 <div class="divider"></div>
                 <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">How It Works</span></p>
                 <p>
-                    Your total anti-team penalty is the <span class="strong">sum of all currently active events</span> (in %/4s).
-                    When the total exceeds the threshold (<span class="accent">2.8%/4s</span>), you start losing
-                    <span class="warn">extra mass</span> &mdash; but <span class="strong">only the excess above the threshold</span> is applied:
+                    Every decay cycle (every 4 seconds), your effective decay is calculated as:
                 </p>
                 <p style="text-align:center; font-size:1.2em; margin:10px 0;">
-                    <span class="accent">extra decay = max(0, total &minus; 2.8%)</span>
+                    <span class="accent">effective decay = base decay &times; pow(1.086, multiplier)</span>
                 </p>
                 <p>
-                    <span class="strong">Example:</span> You eat a virus (<span class="accent">+1.6%</span>) and split twice (<span class="accent">+0.4%</span>) = total <span class="accent">2.0%</span>.
-                    Still below 2.8% threshold &mdash; <span class="strong">no extra penalty</span>.
-                    Add another virus pop (<span class="accent">+1.6%</span>) = total <span class="accent">3.6%</span>.
-                    Extra = 3.6% &minus; 2.8% = <span class="warn">0.8%/4s extra decay</span> on top of your constant decay.
-                </p>
-                <p>
-                    <span class="strong">Key:</span> Each event expires <span class="accent">independently</span>.
-                    If you eat a virus at t=0 and another at t=60, the first virus event expires at t=150 and the second at t=210.
-                    They don't extend each other. Once all events expire, your penalties return to 0 and decay goes back to normal.
+                    When your multiplier is <span class="accent">0</span>, your decay is exactly the base rate (<span class="accent">&minus;0.8%/4s</span>).
+                    As the multiplier grows, decay increases <span class="strong">exponentially</span> &mdash; light play barely notices,
+                    but heavy teamers get punished fast.
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Live Stats HUD &mdash; Reading the Display</span></p>
-                <p>
-                    When connected to Expanding Land FFA, you can see your live anti-team status in the stats bar.
-                    Here is an example of what it looks like:
-                </p>
-                <div class="wss-box" style="text-align:left; display:block; font-size:1.15em;">
-                    <code style="color:#fff;">
-                        &#9879; Anti: (<span style="color:#ff4c4c;">3.6%</span>/2.8%, &minus;1.6%/4s) | &#9763; Virus: 2 (+3.2%, &#9203;2m30s) | &#9673;&#10138;&#9673; Split: 2 (+0.4%, &#9203;2m20s) | &#8734; &minus;0.8%/4s
-                    </code>
-                </div>
-                <p style="margin-top:10px;">What each part means:</p>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Multiplier Bumps</span></p>
+                <p>These actions increase your multiplier:</p>
                 <ul>
-                    <li><span class="strong">&#9879; Anti: (<span style="color:#ff4c4c;">3.6%</span>/2.8%, &minus;1.6%/4s)</span>
-                        &mdash; Your total penalty is <span class="warn">3.6%/4s</span> (above the 2.8% threshold).
-                        The <span class="warn">&minus;1.6%/4s</span> is your extra decay on top of constant decay (3.6% &minus; 2.8% = 0.8%, plus constant).
-                        When below threshold, the score appears in <span style="color:#33ff33;">green</span> and no extra decay is shown.</li>
-                    <li><span class="strong">&#9763; Virus: 2 (+3.2%, &#9203;2m30s)</span>
-                        &mdash; <span class="strong">2</span> active virus events contributing <span class="accent">+3.2%/4s</span> (1.6% each).
-                        <span class="accent">&#9203;2m30s</span> = the <span class="strong">last</span> virus event expires in 2m30s.</li>
-                    <li><span class="strong">&#9673;&#10138;&#9673; Split: 2 (+0.4%, &#9203;2m20s)</span>
-                        &mdash; <span class="strong">2</span> active split events contributing <span class="accent">+0.4%</span> (0.2% each).</li>
-                    <li><span class="strong">&#11044; W: 5 (+0.08%, &#9203;1m10s)</span>
-                        &mdash; <span class="strong">5</span> active W events. Flat per press, not per cell.</li>
-                    <li><span class="strong">&#9888; Zone 120s (+1.6%, &#9203;2m30s)</span>
-                        &mdash; You're in the <span class="warn">danger zone</span> (120s left in the phase).
-                        The danger zone has accumulated <span class="accent">+1.6%/4s</span> of penalty.</li>
-                    <li><span class="strong">&#8734; &minus;0.8%/4s</span>
-                        &mdash; The constant base decay. Always present, always the same rate.
-                        This is the natural game decay and is <span class="strong">independent</span> of the anti-team system.</li>
+                    <li><span class="strong">&#9673;&#10138;&#9673; Split</span> &mdash; <span class="accent">+0.5</span> per split action</li>
+                    <li><span class="strong">&#11044; W (eject mass)</span> &mdash; <span class="accent">+0.1</span> per W press (flat, not per cell)</li>
+                    <li><span class="strong">&#9763; Virus (pop)</span> &mdash; <span class="accent">+0.5</span> per virus consumed</li>
+                    <li><span class="strong">&#9888; Danger Zone</span> &mdash; <span class="accent">+0.01</span> per decay cycle while in the outer ring during map contraction</li>
                 </ul>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;">
-                    <span class="strong" style="font-size:1.2em;">&#9203; Important: "Last Expires" Explained</span>
-                </p>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Natural Recovery</span></p>
                 <p>
-                    The <span class="accent">&#9203;</span> timer shows when the <span class="strong">last (most recent) event of that type</span> expires.
-                    It does <span class="warn">NOT</span> mean all events of that type expire at once.
+                    Every decay cycle, the multiplier decreases by <span class="accent">0.005</span> (the <span class="strong">compensation</span> constant).
+                    This means your multiplier naturally cools down during normal play. If you stop teaming, your decay
+                    returns to normal &mdash; no waiting for event timers to expire.
                 </p>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Decay Examples</span></p>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.2);">
+                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Multiplier</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Decay Rate</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">What It Means</th>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">0 (clean)</td>
+                            <td style="text-align:center; padding:6px 10px;">1.00&times; base (0.8%/4s)</td>
+                            <td style="text-align:center; padding:6px 10px;">Normal play</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">1</td>
+                            <td style="text-align:center; padding:6px 10px;">1.09&times; base</td>
+                            <td style="text-align:center; padding:6px 10px;">Barely noticeable</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">5</td>
+                            <td style="text-align:center; padding:6px 10px;">1.51&times; base</td>
+                            <td style="text-align:center; padding:6px 10px;">Moderate teaming</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">10</td>
+                            <td style="text-align:center; padding:6px 10px;">2.28&times; base</td>
+                            <td style="text-align:center; padding:6px 10px;">Heavy teaming</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:6px 10px;">20</td>
+                            <td style="text-align:center; padding:6px 10px;">5.19&times; base</td>
+                            <td style="text-align:center; padding:6px 10px;">Extreme &mdash; mass melts</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">&#8734; Constant Decay</span></p>
                 <p>
-                    <span class="strong">Example:</span> You eat a virus at t=0 and another at t=60.
-                    The display might show <span class="accent">&#9763; Virus: 2 (+3.2%, &#9203;2m30s)</span>.
-                    The &#9203;2m30s is the second virus's timer. The first virus
-                    actually expires at t=150 (90 seconds from now), while the second expires at t=210 (150 seconds from now).
-                    When the first expires, the display updates to <span class="accent">&#9763; Virus: 1 (+1.6%, &#9203;1m30s)</span>.
+                    The base decay is always active: <span class="accent">&minus;0.8%/4s</span> (vanilla Agar.io rate, verified from 97,806 real packets).
+                    A 10,000 mass cell loses ~80, a 100 mass cell loses ~0.8.
+                    This rate is the same regardless of how many players are in the arena.
+                </p>
+
+                <div class="divider"></div>
+                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Live Stats HUD</span></p>
+                <p>
+                    When connected to Expanding Land FFA, the stats bar shows your current multiplier and effective decay rate.
+                    Multiplier = 0 means you're clean. The higher the number, the more extra decay you're taking.
                 </p>
 
                 <div class="divider"></div>
@@ -442,38 +439,44 @@
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
                         <tr style="border-bottom:1px solid rgba(255,255,255,.2);">
-                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Source</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Penalty</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Lifespan</th>
+                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Setting</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Value</th>
+                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Description</th>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">&#8734; Constant Decay</td>
-                            <td style="text-align:center; padding:6px 10px;">&minus;0.8%/4s (vanilla Agar.io rate)</td>
-                            <td style="text-align:center; padding:6px 10px;">Always</td>
+                            <td style="padding:6px 10px;">at_extra_decay_base</td>
+                            <td style="text-align:center; padding:6px 10px;">1.086</td>
+                            <td style="text-align:center; padding:6px 10px;">Exponential curve steepness</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">&#9763; Virus (pop)</td>
-                            <td style="text-align:center; padding:6px 10px;">+1.6%/4s</td>
-                            <td style="text-align:center; padding:6px 10px;">2m30s</td>
+                            <td style="padding:6px 10px;">at_compensation</td>
+                            <td style="text-align:center; padding:6px 10px;">0.005</td>
+                            <td style="text-align:center; padding:6px 10px;">Multiplier recovery per decay cycle</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">&#9673;&#10138;&#9673; Split</td>
-                            <td style="text-align:center; padding:6px 10px;">+0.2%/4s</td>
-                            <td style="text-align:center; padding:6px 10px;">2m30s</td>
+                            <td style="padding:6px 10px;">at_split_loss</td>
+                            <td style="text-align:center; padding:6px 10px;">0.5</td>
+                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per split</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">&#11044; W (per press)</td>
-                            <td style="text-align:center; padding:6px 10px;">+0.016%/4s</td>
-                            <td style="text-align:center; padding:6px 10px;">1m15s</td>
+                            <td style="padding:6px 10px;">at_eject_loss</td>
+                            <td style="text-align:center; padding:6px 10px;">0.1</td>
+                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per W press</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">&#9888; Danger Zone</td>
-                            <td style="text-align:center; padding:6px 10px;">+0.4%/sec (flat per player)</td>
-                            <td style="text-align:center; padding:6px 10px;">2m30s</td>
+                            <td style="padding:6px 10px;">at_virus_pop_loss</td>
+                            <td style="text-align:center; padding:6px 10px;">0.5</td>
+                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per virus pop</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                            <td style="padding:6px 10px;">at_danger_loss</td>
+                            <td style="text-align:center; padding:6px 10px;">0.01</td>
+                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per danger zone cycle</td>
                         </tr>
                         <tr>
-                            <td style="padding:6px 10px;">Threshold</td>
-                            <td style="text-align:center; padding:6px 10px;" colspan="2">2.8%/4s (only the excess above this is applied)</td>
+                            <td style="padding:6px 10px;">player_decay_rate</td>
+                            <td style="text-align:center; padding:6px 10px;">0.002 (0.8%/4s)</td>
+                            <td style="text-align:center; padding:6px 10px;">Base decay rate</td>
                         </tr>
                     </table>
                 </div>
@@ -486,13 +489,12 @@
                         <span class="strong">We Need YOUR Help to Tune These Numbers!</span>
                     </p>
                     <p style="margin:0 0 10px;">
-                        The anti-teaming system is new and we need the community's input to get the values right.
-                        Are the penalties too harsh? Too soft? Should virus events last shorter?
+                        The anti-teaming system uses Delta Server's exponential curve and we need the community's input to fine-tune the values.
+                        Does the multiplier grow too fast? Too slow? Is recovery too quick?
                         <span class="strong">Your gameplay experience is crucial.</span>
                     </p>
                     <p style="margin:0 0 6px;">
-                        Use the live stats display to see exactly how each action affects your decay,
-                        then tell us what you think:
+                        Watch your multiplier in the stats bar and tell us what you think:
                     </p>
                     <p style="margin:0;">
                         <a class="link" href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener"
@@ -501,7 +503,7 @@
                         </a>
                     </p>
                     <p class="tiny" style="margin:8px 0 0;">
-                        Post your suggestions with specific %/4s numbers (e.g., "virus should be +1.0%/4s for 1m instead of +1.6%/4s for 2m30s").
+                        Tell us your multiplier numbers (e.g., "after 10 splits my multiplier was 5.0 and it felt too harsh").
                         Screenshots of your stats display are very helpful!
                     </p>
                 </div>
@@ -573,15 +575,15 @@
     </div>
 
     <footer class="site-footer">
-        <a href="https://help.expanding.land/guide.html">Guide</a>
-        <a href="https://help.expanding.land/changelog.html">Changelog</a>
-        <a href="https://help.expanding.land/best-io-games.html">Best IO Games</a>
-        <a href="https://help.expanding.land/glossary.html">Glossary</a>
-        <a href="https://help.expanding.land/no-bots.html">No Bots</a>
-        <a href="https://help.expanding.land/alternative.html">Alternative</a>
-        <a href="https://expanding.land/terms.html">Terms of Service</a>
-        <a href="https://discord.com/invite/JUfpR9k">Discord</a>
-        <a href="https://expanding.land">Expanding Land</a>
+        <a href="https://help.expanding.land/guide.html" target="_top">Guide</a>
+        <a href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
+        <a href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
+        <a href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
+        <a href="https://help.expanding.land/no-bots.html" target="_top">No Bots</a>
+        <a href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
+        <a href="https://expanding.land/terms.html" target="_top">Terms of Service</a>
+        <a href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener">Discord</a>
+        <a href="https://expanding.land" target="_top">Expanding Land</a>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>

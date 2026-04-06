@@ -288,15 +288,14 @@ These values are also in `config.c`:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `at_split_penalty` | `0.004` | Extra decay per split (0.4%/4s) |
-| `at_eject_penalty` | `0.0016` | Extra decay per W press (0.16%/4s) - flat, not per cell |
-| `at_threshold` | `0.028` | Free allowance (2.8%/4s) - only excess above this is applied |
-| `at_virus_lifespan` | `3750` | Virus event duration (2m30s) |
-| `at_split_lifespan` | `3750` | Split event duration (2m30s) |
-| `at_eject_lifespan` | `1875` | Eject event duration (1m15s) |
-| `at_danger_lifespan` | `3750` | Danger zone event duration (2m30s) |
+| `at_extra_decay_base` | `1.086` | Exponential AT curve steepness — `pow(base, multiplier)` |
+| `at_compensation` | `0.005` | Multiplier recovery per decay cycle (natural cooldown) |
+| `at_eject_loss` | `0.1` | Multiplier bump per W press (flat, not per cell) |
+| `at_split_loss` | `0.5` | Multiplier bump per split action |
+| `at_virus_pop_loss` | `0.5` | Multiplier bump per virus pop |
+| `at_danger_loss` | `0.01` | Multiplier bump per danger zone cycle |
 | `spectator_camera_speed` | `35.0` | Free-roam camera speed (units/tick) |
-| `decay_interval` | `100` | Ticks between decay cycles (4 sec) — base decay is **0.8% mass per 4 seconds** with ≤32 alive players (vanilla Agar.io rate, verified from 97,806 real packets). **Scales dynamically** with player count: `decay = 0.8% × √(32/players)` when players > 32 |
+| `decay_interval` | `100` | Ticks between decay cycles (4 sec) — base decay is **0.8% mass per 4 seconds** (vanilla Agar.io rate, verified from 97,806 real packets) |
 | `leaderboard_interval` | `25` | Ticks between leaderboard updates (1 sec) |
 | `potion_cell_count` | `3` | Potion drop cells per wave |
 | `potion_cell_spawn_interval` | `90000` | Ticks between potion waves (1 hour) |
@@ -327,19 +326,25 @@ Full Agar.io economy replication via protobuf opcode 102:
 | **Skin Changes** | User settings update for equipped skins |
 | **Ping/Pong** | Keep-alive heartbeat (sub-op 30/31) |
 
-### Anti-Teaming System
+### Anti-Teaming System (Delta Extra Decay)
 
-Discrete event-based anti-teaming with 5 event types:
+Exponential multiplier-based anti-teaming ported from Delta Server. Instead of tracking discrete events with lifespans, each player has a single `extra_decay_multiplier` float. Teaming actions increase it, time naturally decreases it.
 
-| Event | Penalty | Lifespan | Trigger |
-|-------|---------|----------|---------|
-| `ANTI_VIRUS` | configured | 2m30s | Popped on a virus |
-| `ANTI_SPLIT` | 0.4%/4s | 2m30s | Player split |
-| `ANTI_EJECT` | 0.16%/4s | 1m15s | W / mass eject |
-| `ANTI_DANGER` | batched | 2m30s | In danger zone during contraction |
-| `ANTI_DECAY` | base rate | forever | Constant base decay |
+**How it works:**
+```
+effective_decay = base_decay × pow(1.086, extra_decay_multiplier)
+```
 
-Each player tracks up to 64 concurrent events. Events have individual lifespans and accumulate. A free allowance threshold prevents false positives on normal gameplay. Clients receive detailed decay info via opcode `0xCA` (202).
+| Action | Multiplier bump | Effect at multiplier=5 |
+|--------|----------------|------------------------|
+| **Split** | `+0.5` | 1.51× decay |
+| **W/Eject** | `+0.1` per press | — |
+| **Virus pop** | `+0.5` | — |
+| **Danger zone** | `+0.01` per cycle | — |
+
+**Recovery:** Multiplier decreases by `0.005` per decay cycle (every 4 seconds). Normal play recovers naturally. No threshold — any teaming action has immediate effect, but the exponential curve means light play barely notices while heavy teamers get punished exponentially.
+
+Clients receive decay info via opcode `0xCA` (202) with the effective multiplier value.
 
 ### Player Persistence (`playerdb`)
 
@@ -420,7 +425,7 @@ legendworld/
     ├── net.c / .h              # WebSocket server (epoll on Linux, select on Windows)
     ├── client.c / .h           # Client message handling (opcodes)
     ├── cell.c / .h             # Cell struct (cache-optimized), physics, cached speed
-    ├── player.c / .h           # Player state, anti-teaming events, potions, boosts
+    ├── player.c / .h           # Player state, extra decay multiplier, potions, boosts
     ├── playerdb.c / .h         # Persistent player database (journal + snapshot)
     ├── proto102.c / .h         # Protobuf encoder for opcode 102 economy
     ├── discord_oauth.c / .h    # Discord OAuth2 callback handler
@@ -478,7 +483,7 @@ Implements the Agar.io binary WebSocket protocol (protocol version 6, accepts up
 |--------|-----------|-------------|
 | `0xC8` (200) | S→C | Map event (expansion/contraction notifications) |
 | `0xC9` (201) | S→C | LM stats (alive players + bot count) |
-| `0xCA` (202) | S→C | Decay info (anti-team breakdown per player) |
+| `0xCA` (202) | S→C | Decay info (extra decay multiplier per player) |
 
 ---
 
