@@ -17482,54 +17482,103 @@ Most cells eaten   : ${mostCellsEaten}
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
+                if (!ghostsCells.length) return;
+
+                /* --- Pass 1: Draw ghost cell circles with cheap glow --- */
+                /* Pre-render a radial gradient glow sprite once, reuse for
+                 * all ghost cells. This replaces shadowBlur=40 which does
+                 * an expensive CPU Gaussian blur on every filled pixel. */
+                var glowColor = defaultSettings.ghostCellsColor;
+                var glowAlpha = defaultSettings.ghostCellsAlpha;
+                if (!this._ghostGlowCanvas || this._ghostGlowColor !== glowColor) {
+                    this._ghostGlowCanvas = document.createElement('canvas');
+                    this._ghostGlowCanvas.width = 128;
+                    this._ghostGlowCanvas.height = 128;
+                    var gctx = this._ghostGlowCanvas.getContext('2d');
+                    var grad = gctx.createRadialGradient(64, 64, 32, 64, 64, 64);
+                    grad.addColorStop(0, glowColor);
+                    grad.addColorStop(1, glowColor + '00');
+                    gctx.fillStyle = grad;
+                    gctx.fillRect(0, 0, 128, 128);
+                    this._ghostGlowColor = glowColor;
+                }
+
+                /* Compute viewport bounds for culling off-screen ghosts */
+                var halfW = (this.canvasWidth / 2) / this.scale;
+                var halfH = (this.canvasHeight / 2) / this.scale;
+                var vMinX = this.camX - halfW;
+                var vMaxX = this.camX + halfW;
+                var vMinY = this.camY - halfH;
+                var vMaxY = this.camY + halfH;
+
+                this.ctx.globalAlpha = glowAlpha;
+
+                /* Draw glow sprites for each visible ghost cell */
+                for (var length = 0; length < ghostsCells.length; length++) {
+                    if (ghostsCells[length].inView) continue;
+                    var x = ghostsCells[length].x;
+                    var y = ghostsCells[length].y;
+                    var sz = ghostsCells[length].size;
+                    /* Viewport culling */
+                    if (x + sz < vMinX || x - sz > vMaxX ||
+                        y + sz < vMinY || y - sz > vMaxY) continue;
+                    /* Draw glow sprite (stretched to cell size + margin) */
+                    var glowSz = sz * 1.5;
+                    this.ctx.drawImage(this._ghostGlowCanvas, x - glowSz, y - glowSz, glowSz * 2, glowSz * 2);
+                }
+
+                /* Draw solid ghost circles — batched, no shadow */
+                this.ctx.fillStyle = glowColor;
                 this.ctx.beginPath();
-                var length = 0;
-                for (; length < ghostsCells.length; length++) {
-                    if (!ghostsCells[length].inView) {
+                for (length = 0; length < ghostsCells.length; length++) {
+                    if (ghostsCells[length].inView) continue;
+                    var x = ghostsCells[length].x;
+                    var y = ghostsCells[length].y;
+                    var sz = ghostsCells[length].size;
+                    if (x + sz < vMinX || x - sz > vMaxX ||
+                        y + sz < vMinY || y - sz > vMaxY) continue;
+                    this.ctx.moveTo(x + sz, y);
+                    this.ctx.arc(x, y, sz, 0, this.pi2, false);
+                }
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+
+                /* --- Pass 2: Ghost cell info (names, skins) --- */
+                if (defaultmapsettings.showGhostCellsInfo) {
+                    for (length = 0; length < ghostsCells.length; length++) {
+                        if (ghostsCells[length].inView) continue;
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
-                        this.ctx.moveTo(x, y);
-                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
-                        //
-                        if (defaultmapsettings.showGhostCellsInfo) {
-                            this.nickScale = 1;
-                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
-                            this.nickSize = ~~(this.fontSize * this.nickScale);
-                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                            this.ctx.textAlign = 'center';
-                            this.ctx.fillStyle = defaultSettings.namesColor;
-                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                            this.ctx.lineWidth = 4;
-                            angle = Math.PI * 0.8;
+                        var sz = ghostsCells[length].size;
+                        if (x + sz < vMinX || x - sz > vMaxX ||
+                            y + sz < vMinY || y - sz > vMaxY) continue;
 
-                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
+                        this.nickScale = 1;
+                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
+                        this.nickSize = ~~(this.fontSize * this.nickScale);
+                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                        this.ctx.textAlign = 'center';
+                        this.ctx.fillStyle = defaultSettings.namesColor;
+                        this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                        this.ctx.lineWidth = 4;
+                        var angle = Math.PI * 0.8;
 
-                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
-                            } else {
-                                this.ghostcellstext = "Ghost cell";
-                            }
-                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                                if (LM.leaderboard[length] != undefined) {
-                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                    if (node) {
-                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
-                                    }
+                        if (LM.leaderboard[length] != undefined) {
+                            this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
+                        } else {
+                            this.ghostcellstext = "Ghost cell";
+                        }
+                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            if (LM.leaderboard[length] != undefined) {
+                                node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                if (node) {
+                                    this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
                                 }
                             }
                         }
-                        //
                     }
                 }
-                this.ctx.fillStyle = defaultSettings.ghostCellsColor;
-                this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
-                this.ctx.shadowColor = defaultSettings.ghostCellsColor;
-                this.ctx.shadowBlur = 40;
-                this.ctx.shadowOffsetX = 0;
-                this.ctx.shadowOffsetY = 0;
-                this.ctx.fill();
-                this.ctx.globalAlpha = 1;
-                this.ctx.shadowBlur = 0;
             }
         },
         preDrawPellet() {
