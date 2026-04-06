@@ -10244,6 +10244,9 @@ function thelegendmodproject() {
         this.pi2 = ogarbasicassembly.PI2;
         this.virusColor = null;
         this.virusStroke = null;
+        /* Reusable buffer for movePoints velocity smoothing —
+         * avoids this.pointsVel.slice() on every frame */
+        this._velBuf = [];
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -10284,71 +10287,74 @@ function thelegendmodproject() {
         }
         this.movePoints = function () {
             //console.log(this.id)
-            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
+            if (len === 0) return;
+            /* Reuse a pre-allocated buffer instead of slice() —
+             * eliminates one full array copy per cell per frame */
+            var buf = this._velBuf;
+            if (buf.length !== len) buf.length = len;
+            for (var i = 0; i < len; ++i) buf[i] = this.pointsVel[i];
+
             for (var i = 0; i < len; ++i) {
-                var prevVel = pointsVel[(i - 1 + len) % len];
-                var nextVel = pointsVel[(i + 1) % len];
+                var prevVel = buf[(i - 1 + len) % len];
+                var nextVel = buf[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                newVel = Math.max(Math.min(newVel, 10), -10);
+                if (newVel > 10) newVel = 10;
+                else if (newVel < -10) newVel = -10;
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-            this.maxPointRad = 0
+            this.maxPointRad = 0;
+            /* Cache self + sqDist outside the point loop to avoid
+             * per-point closure allocation from .bind() */
+            var self = this;
+            var selfX = this.x;
+            var selfY = this.y;
+            var selfSize = this.size;
+            var isVirus = this.isVirus;
+            var qt = LM.quadtree;
+            /* Pre-compute angle step — all points are evenly spaced */
+            var angleStep = 6.283185307179586 / len; // 2*PI/len
+
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var nextRl = this.points[(i + 1) % len].rl;
-                var self = this;
-                var affected
-                if (LM.quadtree) {
-                    affected = LM.quadtree.some({
-                        x: curP.x - 5,
-                        y: curP.y - 5,
+                var affected = false;
+                if (qt) {
+                    var cpx = curP.x;
+                    var cpy = curP.y;
+                    affected = qt.some({
+                        x: cpx - 5,
+                        y: cpy - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        return item.parent != self && this.sqDist(item, curP) <= 25;
-                    }.bind(this));
+                        if (item.parent === self) return false;
+                        var dx = item.x - cpx;
+                        var dy = item.y - cpy;
+                        return dx * dx + dy * dy <= 25;
+                    });
                 }
-                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
-
-                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-
-
-                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
-                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
-
-                /*if (!affected &&
-                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-                {
-                    affected = true;
-                }*/
                 if (affected) {
-                    //console.log('affected!!!!!')
-                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                curRl = Math.max(curRl, 0);
+                if (curRl < 0) curRl = 0;
 
-                curRl = (9 * curRl + this.size) / 10; //??????
+                curRl = (9 * curRl + selfSize) / 10;
 
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
+                curP.rl = (prevRl + selfSize + 8 * curRl) / 10;
 
-                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
-
-                var angle = 2 * Math.PI * i / len;
+                var angle = angleStep * i;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl
-                if (this.isVirus && i % 2 === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl;
+                if (isVirus && (i & 1) === 0) {
                     rl += 5;
                 }
 
-                curP.x = this.x + Math.cos(angle) * rl;
-                curP.y = this.y + Math.sin(angle) * rl;
+                curP.x = selfX + Math.cos(angle) * rl;
+                curP.y = selfY + Math.sin(angle) * rl;
             }
         };
 
@@ -10465,7 +10471,7 @@ function thelegendmodproject() {
                 if (this.mass <= 200) {
                     this.virusColor = defaultSettings.virusColor;
                     this.virusStroke = defaultSettings.virusStrokeColor;
-                } else if (this.mass > 220) {
+                } else {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
