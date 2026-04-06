@@ -16449,18 +16449,30 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
+            /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
+             * and alpha is near-zero, wasting GPU on invisible geometry */
+            if (scale < 0.02) return;
+
             const reWidth = width / scale;
             const reHeigth = heigth / scale;
-            let x = (-camX + reWidth / 2) % 50;
-            let y = (-camY + reHeigth / 2) % 50;
+
+            /* Dynamically increase grid step so lines are at least 4px apart.
+             * At normal zoom (scale 0.2), step=50, spacing=10px — fine.
+             * At extreme zoom (scale 0.03), base spacing=1.5px, so step
+             * doubles to 200 (6px spacing) — 4× fewer lines. */
+            let step = 50;
+            while (step * scale < 4) step *= 2;
+
+            let x = (-camX + reWidth / 2) % step;
+            let y = (-camY + reHeigth / 2) % step;
             ctx.strokeStyle = defaultSettings.gridColor;
             ctx.globalAlpha = 1 * scale;
             ctx.beginPath();
-            for (; x < reWidth; x += 50) {
+            for (; x < reWidth; x += step) {
                 ctx.moveTo(x * scale - 0.5, 0);
                 ctx.lineTo(x * scale - 0.5, reHeigth * scale);
             }
-            for (; y < reHeigth; y += 50) {
+            for (; y < reHeigth; y += step) {
                 ctx.moveTo(0, y * scale - 0.5);
                 ctx.lineTo(reWidth * scale, y * scale - 0.5);
             }
@@ -16959,38 +16971,42 @@ Most cells eaten   : ${mostCellsEaten}
 
                 ctx.strokeStyle = defaultSettings.foodColor;
             }
-            for (var length = 0; length < food.length; length++) {
-                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                //ctx.beginPath();
-                if (!food[length].invisible) {
-                    var temp;
-                    if (defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = food[length].color
-                        temp = food[length].color
+            if (defaultmapsettings.rainbowFood) {
+                /* Batch rainbow food by color: one beginPath+fill per color
+                 * group instead of per particle. Reduces canvas calls from
+                 * ~3000 (1000 food × 3 ops) to ~60 (20 colors × 3 ops). */
+                var colorBuckets = {};
+                var foodSize = defaultSettings.foodSize;
+                for (var length = 0; length < food.length; length++) {
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    if (!food[length].invisible) {
+                        var c = food[length].color;
+                        if (!colorBuckets[c]) colorBuckets[c] = [];
+                        colorBuckets[c].push(food[length]);
                     }
-                    else if (!defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = defaultSettings.foodColor;
-                        temp = defaultSettings.foodColor;
-                    }
-
-                    var x = food[length].x;
-                    var y = food[length].y;
-                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    /*ctx.moveTo(x, y);
-                    if (scale < 0.08) {
-                        const size = food[length].size + defaultSettings.foodSize;
-                    	
-                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                        //continue;
-                    }
-                    else{*/
-
-                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
-                    //}
                 }
-
-                //ctx.fill();					
+                var pi2 = 2 * Math.PI;
+                for (var col in colorBuckets) {
+                    var bucket = colorBuckets[col];
+                    ctx.fillStyle = col;
+                    ctx.beginPath();
+                    for (var j = 0; j < bucket.length; j++) {
+                        var r = bucket[j].size + foodSize;
+                        ctx.moveTo(bucket[j].x + r, bucket[j].y);
+                        ctx.arc(bucket[j].x, bucket[j].y, r, 0, pi2);
+                    }
+                    ctx.fill();
+                }
+            } else {
+                for (var length = 0; length < food.length; length++) {
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    if (!food[length].invisible) {
+                        ctx.fillStyle = defaultSettings.foodColor;
+                        var x = food[length].x;
+                        var y = food[length].y;
+                        this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, defaultSettings.foodColor);
+                    }
+                }
             }
             if (!defaultmapsettings.rainbowFood) ctx.stroke();
             //}
@@ -17189,15 +17205,16 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
+            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.beginPath();
+                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
             }
+            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
