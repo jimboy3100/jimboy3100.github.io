@@ -16241,12 +16241,26 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.jellyPhisycs) {
                     cell.updateNumPoints();
                     cell.movePoints();
-                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && cell.size > 38) {
+                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 38) {
                     /* Jello physics: init once, then spring simulation.
                      * No quadtree needed — no updateNumPoints/splice.
-                     * Skip food and tiny cells for performance. */
-                    cell.initJelloPoints();
-                    cell.moveJelloPoints();
+                     * Skip food, viruses, and tiny cells.
+                     * Unlike jelly, jello has no cell-to-cell interaction,
+                     * so we can also skip off-screen cells. */
+                    var jelloMargin = cell.size * 1.5;
+                    if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
+                        cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
+                        /* Only simulate if cell is large enough on screen
+                         * to see the wobble (>= 15px radius on canvas) */
+                        if (cell.size * drawRender.scale >= 15) {
+                            cell.initJelloPoints();
+                            cell.moveJelloPoints();
+                        } else if (cell._jelloPoints) {
+                            /* Clear jello data for cells that zoomed out too far */
+                            cell._jelloPoints = null;
+                            cell._jelloLen = 0;
+                        }
+                    }
                 }
 
                 /* Viewport culling: skip draw() for cells entirely outside
