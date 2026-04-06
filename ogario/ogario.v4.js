@@ -14932,7 +14932,7 @@ Most cells eaten   : ${mostCellsEaten}
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
-                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
+                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < this.leaderboard.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
