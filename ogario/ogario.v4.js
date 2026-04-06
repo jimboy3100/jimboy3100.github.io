@@ -1,4 +1,4 @@
-window.OgVer = 3.341;
+window.OgVer = 3.342;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16095,18 +16095,20 @@ Most cells eaten   : ${mostCellsEaten}
 
             for (i = 0; i < LM.cells.length; i++) {
                 var cell = LM.cells[i];
-                /* Viewport culling: skip cells entirely outside the canvas.
-                 * The cell's visual radius includes its maxPointRad (jelly)
-                 * or just size. Using a generous 1.5× margin avoids popping. */
+                /* Jelly physics must run for ALL cells every frame, even
+                 * off-screen ones. Otherwise cells scrolling into view
+                 * have stale points and look jagged/non-circular. */
+                if (defaultmapsettings.jellyPhisycs) {
+                    cell.updateNumPoints();
+                    cell.movePoints();
+                }
+
+                /* Viewport culling: skip draw() for cells entirely outside
+                 * the canvas. Using a generous 1.5× margin avoids popping. */
                 var margin = (cell.maxPointRad || cell.size) * 1.5;
                 if (cell.x + margin < viewMinX || cell.x - margin > viewMaxX ||
                     cell.y + margin < viewMinY || cell.y - margin > viewMaxY) {
                     continue;
-                }
-
-                if (defaultmapsettings.jellyPhisycs) {
-                    cell.updateNumPoints();
-                    cell.movePoints();
                 }
 
                 cell.draw(this.ctx);
