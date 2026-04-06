@@ -17330,27 +17330,27 @@ Most cells eaten   : ${mostCellsEaten}
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
-            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //760+2*cell.size is the correct
                 }
+                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
+                ctx.setLineDash([20, 30]);
+                ctx.lineWidth = 2 * width;
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.setLineDash([20, 30]);
-                    ctx.lineWidth = 2 * width;
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //Sonia2
                 }
+                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -17360,11 +17360,11 @@ Most cells eaten   : ${mostCellsEaten}
             var pi2 = this.pi2 / times;
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
+            ctx.beginPath();
             for (var length = 0; length < times; length += 2) {
-                ctx.beginPath();
                 ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
-                ctx.stroke();
             }
+            ctx.stroke();
         },
         drawTeammatesInd(ctx, x, y, size) {
             if (this.indicator) {
