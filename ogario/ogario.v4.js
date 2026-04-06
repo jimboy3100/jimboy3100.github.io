@@ -3943,7 +3943,7 @@ var SkinExplain = [{
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
-    jellyPhisycs: true,
+    jellyPhisycs: false,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
