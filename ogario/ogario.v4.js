@@ -1,4 +1,4 @@
-window.OgVer = 3.342;
+window.OgVer = 3.343;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10241,7 +10241,7 @@ function thelegendmodproject() {
         this.redrawed = 0;
         this.time = 0;
         this.skin = null;
-        this.pi2 = 2 * Math.PI;
+        this.pi2 = ogarbasicassembly.PI2;
         this.virusColor = null;
         this.virusStroke = null;
         //this.nHeight = 6;
@@ -11100,7 +11100,7 @@ function thelegendmodproject() {
             //ctx.lineTo(x, y);
             //ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, 0, ogarbasicassembly.PI2);
             ctx.fill();
             //ctx.closePath();
             //ctx.stroke();
@@ -11143,6 +11143,7 @@ function thelegendmodproject() {
                     node = application.getCustomSkin(this.targetNick, this.color);
                 }
                 var node2;
+                var isVideoSkin = false;
                 if (defaultmapsettings.videoSkins) {
                     if (LM.gameMode != ":party") {
                         node2 = application.customSkinsMap[this.targetNick];
@@ -11150,6 +11151,9 @@ function thelegendmodproject() {
                     else {
                         node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
+                    /* Cache video skin check — avoids 6 string.includes() calls
+                     * per cell per frame (called again at lines ~11210, ~11212) */
+                    isVideoSkin = !!(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")));
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -11207,9 +11211,9 @@ function thelegendmodproject() {
                 else {
                     if (!node) {
                         //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                        if (this.isVirus || isVideoSkin || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))) {
+                            if (!this.isVirus && !defaultmapsettings.cellContours && !isVideoSkin) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
@@ -11267,7 +11271,19 @@ function thelegendmodproject() {
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+                        /* Cache the spike Path2D — only regenerate when size
+                         * or spike setting changes. Eliminates ~40 trig calls
+                         * and a Path2D allocation per virus per frame. */
+                        if (!this._cachedSpikePath || this._lastSpikeSize !== this.size ||
+                            this._lastSpikeScale !== defaultSettings.virusSpikesSize) {
+                            this._cachedSpikePath = this.createStrokeVirusPath(0, 0, this.size - 2, defaultSettings.virusSpikesSize);
+                            this._lastSpikeSize = this.size;
+                            this._lastSpikeScale = defaultSettings.virusSpikesSize;
+                        }
+                        style.save();
+                        style.translate(this.x, this.y);
+                        style.stroke(this._cachedSpikePath);
+                        style.restore();
                     }
                     else {
                         style.stroke()
@@ -11386,7 +11402,7 @@ function thelegendmodproject() {
                     else {
                         if (defaultmapsettings.videoSkins) {
                             if (node2) {
-                                if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
+                                if (isVideoSkin) {
                                     checkVideos(node2, this.targetNick);
                                     try {
                                         style.save();
@@ -11450,6 +11466,8 @@ function thelegendmodproject() {
                 style.restore();
             }
     }
+    /* Static constant shared by all cell instances — avoids per-cell 2*Math.PI storage */
+    ogarbasicassembly.PI2 = 2 * Math.PI;
     window.legendmod1 = ogarbasicassembly;
 
 
@@ -17547,18 +17565,19 @@ Most cells eaten   : ${mostCellsEaten}
             canvas = null;
         },
         preDrawCellsColors(color) {
-            this.cellsColored[color] = null;
             var size = 128;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            canvas.width = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
+            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
-            this.cellsColored[color] = new Image();
-            this.cellsColored[color].src = canvas.toDataURL();
-            canvas = null;
+            /* Use canvas directly as image source — drawImage() accepts
+             * canvas elements. Avoids expensive toDataURL() PNG encode
+             * and async Image decode. */
+            this.cellsColored[color] = canvas;
         },
         preDrawIndicator() {
             this.indicator = null;
