@@ -11459,6 +11459,10 @@ function thelegendmodproject() {
     }
     var LM = {
         integrity: true,
+        /* Pre-allocated sort comparator — avoids creating a closure on every frame */
+        _cellSortCmp: function(a, b) {
+            return a.size === b.size ? a.id - b.id : a.size - b.size;
+        },
         quadtree: null,
         updateQuadtree: function (cells) {
             var w = drawRender.canvasWidth / drawRender.scale;
@@ -15567,9 +15571,7 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(function (row, conf) {
-                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
-            });
+            this.cells.sort(LM._cellSortCmp);
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -15603,9 +15605,7 @@ Most cells eaten   : ${mostCellsEaten}
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
                 var CellLength = cells.length;
-                cells.sort(function (cells, CellLength) {
-                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-                });
+                cells.sort(LM._cellSortCmp);
                 this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
                 this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
                 this.playerSplitCells = CellLength;
@@ -15925,6 +15925,8 @@ Most cells eaten   : ${mostCellsEaten}
             this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
+            /* Invalidate grid cache on resize so it re-renders at new size */
+            this._gridCacheDirty = true;
             //this.renderFrame();
         },
         setView() {
@@ -15992,7 +15994,40 @@ Most cells eaten   : ${mostCellsEaten}
                 //
             }
             else if (defaultmapsettings.showGrid) {
-                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                /* Cached grid canvas: render grid to an offscreen canvas and
+                 * reuse it until camera/zoom changes significantly. On most
+                 * frames this is a single drawImage() instead of 300+ lines. */
+                var camDx = this.camX - (this._gridCamX || 0);
+                var camDy = this.camY - (this._gridCamY || 0);
+                var scaleDelta = Math.abs(this.scale - (this._gridScale || 0));
+                var needsRedraw = this._gridCacheDirty ||
+                    !this._gridCanvas ||
+                    scaleDelta > this.scale * 0.02 ||
+                    (camDx * camDx + camDy * camDy) > 625; /* 25^2 */
+
+                if (needsRedraw) {
+                    if (!this._gridCanvas) {
+                        this._gridCanvas = document.createElement('canvas');
+                        this._gridCtx = this._gridCanvas.getContext('2d');
+                    }
+                    var gw = this.canvasWidth * (this.dpr || 1);
+                    var gh = this.canvasHeight * (this.dpr || 1);
+                    if (this._gridCanvas.width !== gw || this._gridCanvas.height !== gh) {
+                        this._gridCanvas.width = gw;
+                        this._gridCanvas.height = gh;
+                    }
+                    this._gridCtx.clearRect(0, 0, gw, gh);
+                    this._gridCtx.save();
+                    this._gridCtx.scale(this.dpr || 1, this.dpr || 1);
+                    this.drawGrid(this._gridCtx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                    this._gridCtx.restore();
+                    this._gridCamX = this.camX;
+                    this._gridCamY = this.camY;
+                    this._gridScale = this.scale;
+                    this._gridCacheDirty = false;
+                }
+                /* Blit cached grid — single drawImage() on cache hit */
+                this.ctx.drawImage(this._gridCanvas, 0, 0);
             }
             this.ctx.save();
 
