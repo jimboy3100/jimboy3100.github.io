@@ -1,4 +1,4 @@
-window.OgVer = 3.344;
+window.OgVer = 3.345;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -2323,6 +2323,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
+        jelloPhysics: 'Jello physics (lightweight)',
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
@@ -2812,6 +2813,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
+        jelloPhysics: 'Jello physics (lightweight)',
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
@@ -3944,6 +3946,7 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
+    jelloPhysics: false,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
@@ -6647,7 +6650,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jelloPhysics", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -10247,6 +10250,14 @@ function thelegendmodproject() {
         /* Reusable buffer for movePoints velocity smoothing —
          * avoids this.pointsVel.slice() on every frame */
         this._velBuf = [];
+        /* Jello physics: lightweight pre-allocated arrays */
+        this._jelloPoints = null;
+        this._jelloVel = null;
+        this._jelloSin = null;
+        this._jelloCos = null;
+        this._jelloLen = 0;
+        this._prevX = 0;
+        this._prevY = 0;
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -10285,6 +10296,96 @@ function thelegendmodproject() {
         this.sqDist = function (a, b) {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
+
+        /* ========== JELLO PHYSICS (lightweight alternative) ========== */
+        this.initJelloPoints = function () {
+            var N = 24;
+            if (this._jelloLen === N) return;
+            this._jelloLen = N;
+            this._jelloPoints = new Array(N);
+            this._jelloVel = new Float64Array(N);
+            this._jelloSin = new Float64Array(N);
+            this._jelloCos = new Float64Array(N);
+            var step = 6.283185307179586 / N;
+            for (var i = 0; i < N; i++) {
+                var a = step * i;
+                this._jelloSin[i] = Math.sin(a);
+                this._jelloCos[i] = Math.cos(a);
+                this._jelloPoints[i] = {
+                    x: this.x + this._jelloCos[i] * this.size,
+                    y: this.y + this._jelloSin[i] * this.size,
+                    rl: this.size,
+                    parent: this
+                };
+                this._jelloVel[i] = 0;
+            }
+            this._prevX = this.x;
+            this._prevY = this.y;
+        };
+
+        this.moveJelloPoints = function () {
+            if (!this._jelloPoints) return;
+            var N = this._jelloLen;
+            var sz = this.size;
+            var cx = this.x;
+            var cy = this.y;
+            /* Movement delta — drives wobble intensity */
+            var dx = cx - this._prevX;
+            var dy = cy - this._prevY;
+            this._prevX = cx;
+            this._prevY = cy;
+            var speed = Math.sqrt(dx * dx + dy * dy);
+            /* Normalize movement direction */
+            var ndx = speed > 0.1 ? dx / speed : 0;
+            var ndy = speed > 0.1 ? dy / speed : 0;
+            /* Wobble impulse from movement (capped) */
+            var impulse = Math.min(speed * 0.15, 8);
+
+            this.maxPointRad = 0;
+            var cosArr = this._jelloCos;
+            var sinArr = this._jelloSin;
+            var pts = this._jelloPoints;
+            var vel = this._jelloVel;
+
+            for (var i = 0; i < N; i++) {
+                /* Point direction (unit vector from center) */
+                var pcx = cosArr[i];
+                var pcy = sinArr[i];
+
+                /* Movement influence: points facing movement compress,
+                 * opposing points stretch. Dot product gives alignment. */
+                var dot = pcx * ndx + pcy * ndy;
+                vel[i] += -dot * impulse;
+
+                /* Spring force: pull toward base radius */
+                var rl = pts[i].rl;
+                vel[i] += (sz - rl) * 0.15;
+
+                /* Neighbor smoothing */
+                var prevRl = pts[(i - 1 + N) % N].rl;
+                var nextRl = pts[(i + 1) % N].rl;
+                vel[i] += (prevRl + nextRl - 2 * rl) * 0.05;
+
+                /* Damping */
+                vel[i] *= 0.82;
+
+                /* Small random jitter for organic feel */
+                vel[i] += (Math.random() - 0.5) * 0.3;
+
+                /* Update radius */
+                rl += vel[i];
+                /* Clamp to prevent extreme distortion */
+                if (rl < sz * 0.85) rl = sz * 0.85;
+                else if (rl > sz * 1.15) rl = sz * 1.15;
+                pts[i].rl = rl;
+
+                if (rl > this.maxPointRad) this.maxPointRad = rl;
+
+                /* Update world position */
+                pts[i].x = cx + cosArr[i] * rl;
+                pts[i].y = cy + sinArr[i] * rl;
+            }
+        };
         this.movePoints = function () {
             //console.log(this.id)
             var len = this.points.length;
@@ -11181,7 +11282,21 @@ function thelegendmodproject() {
                 }
 
                 if (!node) style.beginPath();
-                if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                if (defaultmapsettings.jelloPhysics && this._jelloPoints) {
+                    /* Jello: smooth bezier curves between 24 points */
+                    var jp = this._jelloPoints;
+                    var jN = this._jelloLen;
+                    var mx = (jp[jN - 1].x + jp[0].x) / 2;
+                    var my = (jp[jN - 1].y + jp[0].y) / 2;
+                    style.moveTo(mx, my);
+                    for (var i = 0; i < jN; i++) {
+                        var next = jp[(i + 1) % jN];
+                        var nmx = (jp[i].x + next.x) / 2;
+                        var nmy = (jp[i].y + next.y) / 2;
+                        style.quadraticCurveTo(jp[i].x, jp[i].y, nmx, nmy);
+                    }
+                }
+                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
                     var point = this.points[0];
                     style.moveTo(point.x, point.y);
                     for (var i = 0; i < this.points.length; ++i) {
@@ -11237,7 +11352,7 @@ function thelegendmodproject() {
                 if (!node) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                    if (defaultmapsettings.jellyPhisycs) {
+                    if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
@@ -11329,7 +11444,8 @@ function thelegendmodproject() {
                         style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
+                         (defaultmapsettings.jelloPhysics && this._jelloPoints)) {
                     //else{			
                     style.fillStyle = color2;
                     style.fill();
@@ -11370,7 +11486,7 @@ function thelegendmodproject() {
                             //s = true;
                         }
                         if (legendmod.gameMode != ":teams") {
-                            if (defaultmapsettings.jellyPhisycs) {
+                            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
                                 var lineWidth = Math.max(~~(y / 50), 10);
                                 style.save();
                                 style.clip();
@@ -16125,6 +16241,12 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.jellyPhisycs) {
                     cell.updateNumPoints();
                     cell.movePoints();
+                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && cell.size > 38) {
+                    /* Jello physics: init once, then spring simulation.
+                     * No quadtree needed — no updateNumPoints/splice.
+                     * Skip food and tiny cells for performance. */
+                    cell.initJelloPoints();
+                    cell.moveJelloPoints();
                 }
 
                 /* Viewport culling: skip draw() for cells entirely outside
