@@ -1,4 +1,4 @@
-window.OgVer = 3.343;
+window.OgVer = 3.344;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -13163,12 +13163,12 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
-                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
+                    //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        console.error('[LW 102 DBG] onMobileData error:', e102);
+                        //console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
@@ -13205,15 +13205,15 @@ function thelegendmodproject() {
                             }
                         } catch (error) {
                             if (window.expandingLand || window.legendModFromWebsite) {
-                                console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
+                                //console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
                             }
                         }
                         /* LW: Fallback extraction for our server's protobuf format.
                          * Server sends userId="provider$UID" in userInfo field.
                          * Only runs on our domains — doesn't affect agar.io parsing. */
                         if (window.expandingLand || window.legendModFromWebsite) {
-                            console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
-                                'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
+                            //console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
+                            //    'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
                             var rawText = window.testobjects2;
                             if (!window.agarioUID && rawText.includes('$')) {
                                 try {
@@ -13222,10 +13222,10 @@ function thelegendmodproject() {
                                         window.agarioUID = uidMatch[1].substr(0, 36);
                                         localStorage.setItem("agarioUID", window.agarioUID);
                                         $("#UserProfileUUID1").val(window.agarioUID);
-                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                        //console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
                                     }
                                 } catch (lwErr) {
-                                    console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
+                                    //console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
                                 }
                             }
                         }
