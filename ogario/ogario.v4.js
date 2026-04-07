@@ -5665,16 +5665,11 @@ function thelegendmodproject() {
                      * Per-type fields are zeroed — no event counts or timers */
                     var rawMultiplier = di.totalScore / 10000;  // e.g. 5000 → 0.5
                     var effectiveMult = di.multiplier / 100;    // e.g. 228 → 2.28×
-                    var basePct = (di.decayScore / 100).toFixed(2);
+                    var basePct = di.decayScore / 100;           // e.g. 80 → 0.80
+                    var actualPct = (basePct * effectiveMult).toFixed(2);
 
-                    if (rawMultiplier > 0.01) {
-                        var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
-                        atStr += '<span style="color:' + mColor + '">\u2697 \u00d7' + effectiveMult.toFixed(2) + '</span>';
-                    } else {
-                        atStr += '<span style="color:#33ff33">\u2697 clean</span>';
-                    }
-
-                    atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
+                    atStr += '<span style="color:' + mColor + '">\u2697 \u2212' + actualPct + '%/' + di.decayIntervalSecs + 's</span>';
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
