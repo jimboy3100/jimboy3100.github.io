@@ -11304,7 +11304,10 @@ function thelegendmodproject() {
                     }
                 }
 
-                if (!node) style.beginPath();
+                /* Jello always needs a path for fill + outline,
+                 * even when a skin exists. Non-jello skinned cells
+                 * skip the path since they just draw the image. */
+                if (!node || (defaultmapsettings.jelloPhysics && this._jelloRl)) style.beginPath();
                 if (defaultmapsettings.jelloPhysics && this._jelloRl) {
                     /* Jello: smooth bezier curves between SoA points */
                     var jX = this._jelloX;
@@ -11373,7 +11376,7 @@ function thelegendmodproject() {
                         }
                     }
                 }
-                if (!node) style.closePath();
+                if (!node || (defaultmapsettings.jelloPhysics && this._jelloRl)) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
                     if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
@@ -11470,13 +11473,11 @@ function thelegendmodproject() {
                 }
                 else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
                          (defaultmapsettings.jelloPhysics && this._jelloRl)) {
-                    /* Jello/jelly: fill with cell color as fallback
-                     * only when no skin is available. When a skin exists,
-                     * it will be clipped to the deformed path instead. */
-                    if (!node) {
-                        style.fillStyle = color2;
-                        style.fill();
-                    }
+                    /* Jello/jelly: always fill the deformed path with cell color.
+                     * Skin (if any) is drawn as a circle on top — the fill ensures
+                     * no gaps at deformed edges. */
+                    style.fillStyle = color2;
+                    style.fill();
                 }
                 //}
                 if (s) {
@@ -11515,21 +11516,13 @@ function thelegendmodproject() {
                         }
                         if (legendmod.gameMode != ":teams") {
                             if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
-                                /* Clip skin to deformed path — skin distorts
-                                 * with the wobble instead of bleeding color. */
-                                style.save();
-                                style.clip();
-                                var drawR = this.maxPointRad || y;
+                                /* Draw skin as circle on top of filled deformed path.
+                                 * NO clip() — clip is extremely expensive on canvas
+                                 * and was causing freezes. The deformed fill underneath
+                                 * provides the wobble silhouette; the skin sits on top. */
                                 try {
-                                    style.drawImage(node, this.x - drawR, this.y - drawR, 2 * drawR, 2 * drawR);
+                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
                                 } catch (e) { }
-                                style.restore();
-                                /* Thin proportional outline — clean, professional */
-                                var lineWidth = Math.max(~~(y * 0.02), 2);
-                                if (lineWidth > 4) lineWidth = 4;
-                                style.lineWidth = lineWidth;
-                                style.strokeStyle = color2;
-                                style.stroke();
 
                             } else {
                                 try {
