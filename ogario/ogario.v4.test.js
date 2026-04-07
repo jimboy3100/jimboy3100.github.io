@@ -1,4 +1,4 @@
-window.OgVer = 3.345;
+window.OgVer = 3.346;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10243,8 +10243,11 @@ function thelegendmodproject() {
         /* Reusable buffer for movePoints velocity smoothing —
          * avoids this.pointsVel.slice() on every frame */
         this._velBuf = [];
-        /* Jello physics: lightweight pre-allocated arrays */
-        this._jelloPoints = null;
+        /* Jello physics: SoA (Struct-of-Arrays) layout for cache locality.
+         * 3× Float64Array instead of Array-of-{x,y,rl} objects — zero GC. */
+        this._jelloX = null;
+        this._jelloY = null;
+        this._jelloRl = null;
         this._jelloVel = null;
         this._jelloSin = null;
         this._jelloCos = null;
@@ -10296,16 +10299,17 @@ function thelegendmodproject() {
         this._jelloRng = 0xDEADBEEF | 0;
 
         this.initJelloPoints = function (screenPx) {
-            /* Adaptive point count based on screen size:
-             * < 60px  →  8 points (barely visible wobble)
-             * < 120px → 12 points
-             * >= 120px → 16 points
-             * This is the single biggest perf win — fewer points means
-             * fewer spring calcs AND fewer quadraticCurveTo calls. */
-            var N = screenPx >= 120 ? 16 : screenPx >= 60 ? 12 : 8;
+            /* Adaptive point count — higher counts for smoother curves:
+             * < 60px  → 12 points
+             * < 120px → 20 points
+             * >= 120px → 28 points */
+            var N = screenPx >= 120 ? 28 : screenPx >= 60 ? 20 : 12;
             if (this._jelloLen === N) return;
             this._jelloLen = N;
-            this._jelloPoints = new Array(N);
+            /* SoA: 3 flat Float64Arrays — no object allocation, no GC */
+            this._jelloX = new Float64Array(N);
+            this._jelloY = new Float64Array(N);
+            this._jelloRl = new Float64Array(N);
             this._jelloVel = new Float64Array(N);
             this._jelloSin = new Float64Array(N);
             this._jelloCos = new Float64Array(N);
@@ -10314,11 +10318,9 @@ function thelegendmodproject() {
                 var a = step * i;
                 this._jelloSin[i] = Math.sin(a);
                 this._jelloCos[i] = Math.cos(a);
-                this._jelloPoints[i] = {
-                    x: this.x + this._jelloCos[i] * this.size,
-                    y: this.y + this._jelloSin[i] * this.size,
-                    rl: this.size
-                };
+                this._jelloRl[i] = this.size;
+                this._jelloX[i] = this.x + this._jelloCos[i] * this.size;
+                this._jelloY[i] = this.y + this._jelloSin[i] * this.size;
                 this._jelloVel[i] = 0;
             }
             this._prevX = this.x;
@@ -10326,7 +10328,7 @@ function thelegendmodproject() {
         };
 
         this.moveJelloPoints = function () {
-            if (!this._jelloPoints) return;
+            if (!this._jelloRl) return;
             var N = this._jelloLen;
             var sz = this.size;
             var cx = this.x;
@@ -10336,68 +10338,65 @@ function thelegendmodproject() {
             var dy = cy - this._prevY;
             this._prevX = cx;
             this._prevY = cy;
-            /* Squared speed — avoid Math.sqrt() entirely.
-             * Compare against 0.01 (was 0.1 before sqrt). */
             var speedSq = dx * dx + dy * dy;
             var ndx = 0, ndy = 0, impulse = 0;
             if (speedSq > 0.01) {
-                /* Fast inverse sqrt approximation: 1/sqrt via one Newton step.
-                 * Good enough for visual wobble direction. */
-                var invSpeed = 1.0 / Math.sqrt(speedSq); // still one sqrt but only if moving
+                var invSpeed = 1.0 / Math.sqrt(speedSq);
                 ndx = dx * invSpeed;
                 ndy = dy * invSpeed;
-                var speed = speedSq * invSpeed; // = sqrt(speedSq)
-                impulse = speed * 0.15;
-                if (impulse > 8) impulse = 8;
+                var speed = speedSq * invSpeed;
+                impulse = speed * 0.18;
+                if (impulse > 12) impulse = 12;
             }
 
-            this.maxPointRad = 0;
             var cosArr = this._jelloCos;
             var sinArr = this._jelloSin;
-            var pts = this._jelloPoints;
+            var rlArr = this._jelloRl;
+            var xArr = this._jelloX;
+            var yArr = this._jelloY;
             var vel = this._jelloVel;
-            /* Fast xorshift PRNG state */
             var rng = this._jelloRng;
-            var clampLo = sz * 0.85;
-            var clampHi = sz * 1.15;
+            var clampLo = sz * 0.80;
+            var clampHi = sz * 1.20;
             var maxRad = 0;
+            /* Pre-fetch edge values to eliminate modulo in loop */
+            var lastRl = rlArr[N - 1];
+            var firstRl = rlArr[0];
 
             for (var i = 0; i < N; i++) {
-                /* Point direction (unit vector from center) */
                 var pcx = cosArr[i];
                 var pcy = sinArr[i];
 
                 /* Movement influence */
-                var dot = pcx * ndx + pcy * ndy;
-                vel[i] += -dot * impulse;
+                vel[i] += -(pcx * ndx + pcy * ndy) * impulse;
 
                 /* Spring force: pull toward base radius */
-                var rl = pts[i].rl;
-                vel[i] += (sz - rl) * 0.15;
+                var rl = rlArr[i];
+                vel[i] += (sz - rl) * 0.14;
 
-                /* Neighbor smoothing */
-                var prevRl = pts[(i - 1 + N) % N].rl;
-                var nextRl = pts[(i + 1) % N].rl;
-                vel[i] += (prevRl + nextRl - 2 * rl) * 0.05;
+                /* Neighbor smoothing — no modulo needed */
+                var prevRl = i > 0 ? rlArr[i - 1] : lastRl;
+                var nextRl = i < N - 1 ? rlArr[i + 1] : firstRl;
+                vel[i] += (prevRl + nextRl - 2 * rl) * 0.06;
 
-                /* Damping */
-                vel[i] *= 0.82;
+                /* Softer damping — wobble lasts longer */
+                vel[i] *= 0.88;
 
-                /* Cheap jitter via xorshift32 — replaces Math.random() */
+                /* Stronger jitter for organic feel */
                 rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * 0.3;
+                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * 0.6;
 
-                /* Update radius with clamping */
+                /* Update radius with wider clamp */
                 rl += vel[i];
                 if (rl < clampLo) rl = clampLo;
                 else if (rl > clampHi) rl = clampHi;
-                pts[i].rl = rl;
+                rlArr[i] = rl;
 
                 if (rl > maxRad) maxRad = rl;
 
-                /* Update world position */
-                pts[i].x = cx + cosArr[i] * rl;
-                pts[i].y = cy + sinArr[i] * rl;
+                /* Update world position (SoA write) */
+                xArr[i] = cx + cosArr[i] * rl;
+                yArr[i] = cy + sinArr[i] * rl;
             }
             this._jelloRng = rng;
             this.maxPointRad = maxRad;
@@ -11298,18 +11297,19 @@ function thelegendmodproject() {
                 }
 
                 if (!node) style.beginPath();
-                if (defaultmapsettings.jelloPhysics && this._jelloPoints) {
-                    /* Jello: smooth bezier curves between 24 points */
-                    var jp = this._jelloPoints;
+                if (defaultmapsettings.jelloPhysics && this._jelloRl) {
+                    /* Jello: smooth bezier curves between SoA points */
+                    var jX = this._jelloX;
+                    var jY = this._jelloY;
                     var jN = this._jelloLen;
-                    var mx = (jp[jN - 1].x + jp[0].x) / 2;
-                    var my = (jp[jN - 1].y + jp[0].y) / 2;
+                    var mx = (jX[jN - 1] + jX[0]) * 0.5;
+                    var my = (jY[jN - 1] + jY[0]) * 0.5;
                     style.moveTo(mx, my);
                     for (var i = 0; i < jN; i++) {
-                        var next = jp[(i + 1) % jN];
-                        var nmx = (jp[i].x + next.x) / 2;
-                        var nmy = (jp[i].y + next.y) / 2;
-                        style.quadraticCurveTo(jp[i].x, jp[i].y, nmx, nmy);
+                        var ni = i < jN - 1 ? i + 1 : 0;
+                        var nmx = (jX[i] + jX[ni]) * 0.5;
+                        var nmy = (jY[i] + jY[ni]) * 0.5;
+                        style.quadraticCurveTo(jX[i], jY[i], nmx, nmy);
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.points.length) {
@@ -11461,7 +11461,7 @@ function thelegendmodproject() {
                     }
                 }
                 else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
-                         (defaultmapsettings.jelloPhysics && this._jelloPoints)) {
+                         (defaultmapsettings.jelloPhysics && this._jelloRl)) {
                     //else{			
                     style.fillStyle = color2;
                     style.fill();
@@ -16250,9 +16250,11 @@ Most cells eaten   : ${mostCellsEaten}
                                 cell.initJelloPoints(screenPx);
                                 cell.moveJelloPoints();
                             }
-                        } else if (cell._jelloPoints) {
+                        } else if (cell._jelloRl) {
                             /* Clear jello data for cells that zoomed out too far */
-                            cell._jelloPoints = null;
+                            cell._jelloX = null;
+                            cell._jelloY = null;
+                            cell._jelloRl = null;
                             cell._jelloLen = 0;
                         }
                     }
