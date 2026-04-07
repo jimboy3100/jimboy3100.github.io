@@ -312,8 +312,13 @@
             panel.style.cssText = baseStyle + `
                 position: relative; width: 100%; margin: 5px 0;
             `;
-            // For agar.io grid layout — insert as a new card below #mainui-play
+            // For agar.io — use white card style to match native UI
             if (host.includes('agar.io')) {
+                panel.style.background = '#fff';
+                panel.style.border = 'none';
+                panel.style.color = '#343434';
+                panel.style.boxShadow = 'none';
+                panel.style.backdropFilter = 'none';
                 const playCard = document.getElementById('mainui-play');
                 if (playCard && playCard.parentNode) {
                     playCard.parentNode.insertBefore(panel, playCard.nextSibling);
