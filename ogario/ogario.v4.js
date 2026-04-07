@@ -18896,7 +18896,7 @@ function leftClickRun() {
 }
 
 function openContextMenu(evt) {
-    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity)) {
+    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity || LM.isLegendWorld)) {
         evt.preventDefault();
         const time = menuLeft.isOpen() ? 100 : 0;
         menuLeft.hide();
