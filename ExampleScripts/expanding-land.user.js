@@ -2,7 +2,7 @@
 // @name         Expanding Land - IO Games Mod | Free Bots, Macros, Auto-Respawn
 // @namespace    https://expanding.land/
 // @version      2.0
-// @description  The ultimate IO games toolkit. Auto-fill nicknames, rapid eject, quad split, freeze cell, auto-respawn, FPS counter — works on Agar.io, MooMoo.io, Slither.io, Diep.io, Surviv.io, and 20+ IO games. Includes FREE 50 bots for Expanding Land (1024 real players limit per area). Best agario mod alternative.
+// @description  The ultimate IO games toolkit. Auto-fill nicknames, rapid eject, quad split, freeze cell, auto-respawn, FPS counter — works on Agar.io, MooMoo.io, Diep.io, Surviv.io, and more. Includes FREE 50 bots for Expanding Land (1024 real players limit per area). Custom skin uploader & auto coin collector for Agar.io. Best agario mod alternative.
 // @author       Jimboy3100
 // @icon         https://www.legendmod.ml/banners/icon48.png
 // @match        https://expanding.land/*
@@ -11,27 +11,13 @@
 // @match        *://moomoo.io/*
 // @match        *://*.moomoo.io/*
 // @match        *://surviv.io/*
-// @match        *://slither.io/*
 // @match        *://diep.io/*
 // @match        *://zombs.io/*
-// @match        *://krunker.io/*
-// @match        *://shellshock.io/*
-// @match        *://paper-io.com/*
-// @match        *://hole-io.com/*
-// @match        *://skribbl.io/*
-// @match        *://ev.io/*
 // @match        *://deeeep.io/*
-// @match        *://florr.io/*
-// @match        *://starve.io/*
-// @match        *://sploop.io/*
-// @match        *://yohoho.io/*
-// @match        *://cellcraft.io/*
 // @match        *://agma.io/*
 // @match        *://agar.pro/*
 // @match        *://germs.io/*
 // @match        *://senpa.io/*
-// @match        *://generals.io/*
-// @match        *://evowars.io/*
 // @connect      expanding.land
 // @connect      legendmod.ml
 // @grant        GM_setValue
@@ -66,9 +52,10 @@
 // @tag          agario cheat
 // @tag          mass overlay
 // @tag          moomoo.io
-// @tag          slither.io
 // @tag          diep.io
 // @tag          surviv.io
+// @tag          custom skin
+// @tag          coin collector
 // ==/UserScript==
 
 (function() {
@@ -134,17 +121,12 @@
         if (!savedName) return;
         const selectors = {
             'agar.io':          '#nick',
-            'slither.io':       '#nick',
             'moomoo.io':        '#nameInput',
             'sandbox.moomoo.io':'#nameInput',
             'dev.moomoo.io':    '#nameInput',
             'surviv.io':        '#player-name-input-solo',
             'diep.io':          '#textInput',
-            'starve.io':        '#nickname_input',
             'zombs.io':         '.hud-intro-name',
-            'paper-io.com':     '#paperio_p1',
-            'skribbl.io':       '#inputName',
-            'sploop.io':        '#nickname',
         };
         // Try exact host match
         let sel = selectors[host];
@@ -165,11 +147,6 @@
         // For deeeep.io (class-based)
         if (host.includes('deeeep.io')) {
             const el = document.querySelector('.name input, input.name');
-            if (el) el.value = savedName;
-        }
-        // For evowars.io (first input)
-        if (host.includes('evowars.io')) {
-            const el = document.querySelector('input');
             if (el) el.value = savedName;
         }
     }
@@ -292,14 +269,10 @@
     function findGameContainer() {
         const containers = {
             'agar.io':       ['#mainPanel', '#overlays', '#helloContainer'],
-            'moomoo.io':     ['#gameUI', '#menuContainer', '#mainMenu'],
-            'slither.io':    ['#login', '#grqv'],
+            'moomoo.io':     ['#menuCardHolder', '#gameUI', '#menuContainer'],
             'diep.io':       ['#textInputContainer'],
-            'surviv.io':     ['#ui-game', '#start-main'],
-            'starve.io':     ['#game_menu', '#client'],
-            'zombs.io':      ['.hud-intro', '.hud'],
-            'skribbl.io':    ['#game-toolbar', '#game'],
-            'sploop.io':     ['#homepage', '#gameUI'],
+            'surviv.io':     ['.play-loading-outer', '#ui-game', '#start-main'],
+            'zombs.io':      ['.hud-intro-form', '.hud-intro', '.hud'],
             'deeeep.io':     ['#app', '.home'],
         };
         for (const [gameHost, selectors] of Object.entries(containers)) {
