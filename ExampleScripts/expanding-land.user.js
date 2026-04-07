@@ -13,7 +13,6 @@
 // @match        *://surviv.io/*
 // @match        *://diep.io/*
 // @match        *://zombs.io/*
-// @match        *://deeeep.io/*
 // @match        *://agma.io/*
 // @match        *://agar.pro/*
 // @match        *://germs.io/*
@@ -144,11 +143,6 @@
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
         }
-        // For deeeep.io (class-based)
-        if (host.includes('deeeep.io')) {
-            const el = document.querySelector('.name input, input.name');
-            if (el) el.value = savedName;
-        }
     }
 
     // ── Canvas detection ──
@@ -273,7 +267,7 @@
             'diep.io':       ['#textInputContainer'],
             'surviv.io':     ['.play-loading-outer', '#ui-game', '#start-main'],
             'zombs.io':      ['.hud-intro-form', '.hud-intro', '.hud'],
-            'deeeep.io':     ['#app', '.home'],
+            'agma.io':       ['.panel.panel-default.bg-transparent'],
         };
         for (const [gameHost, selectors] of Object.entries(containers)) {
             if (host.includes(gameHost.replace('www.', ''))) {
