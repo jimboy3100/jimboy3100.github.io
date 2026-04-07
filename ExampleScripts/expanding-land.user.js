@@ -359,12 +359,12 @@
             <div style="color:#475569; margin:4px 0;">── Other ──</div>
             <div><span style="color:#6366f1">[H]</span> Hide/Show Panel</div>
             <div style="margin-top:8px;">
-                <a href="https://www.mediafire.com/file/gc6nuy6jbz1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
+                <a href="https://www.mediafire.com/file/gc6nuy6j6z1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
                     display:block; text-align:center; padding:6px 0; border-radius:8px;
                     background: linear-gradient(135deg, #22c55e, #16a34a);
                     color:#fff; text-decoration:none; font-weight:700; font-size:11px;
                     margin-bottom:6px;
-                ">🤖 Download 50 FREE Bots</a>
+                ">🤖 Download 50 FREE EL Bots</a>
                 <a href="https://expanding.land/" target="_blank" style="
                     display:block; text-align:center; padding:6px 0; border-radius:8px;
                     background: linear-gradient(135deg, #6366f1, #a855f7);
