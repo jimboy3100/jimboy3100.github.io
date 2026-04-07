@@ -10299,11 +10299,11 @@ function thelegendmodproject() {
         this._jelloRng = 0xDEADBEEF | 0;
 
         this.initJelloPoints = function (screenPx) {
-            /* Adaptive point count — higher counts for smoother curves:
-             * < 60px  → 12 points
-             * < 120px → 20 points
-             * >= 120px → 28 points */
-            var N = screenPx >= 120 ? 28 : screenPx >= 60 ? 20 : 12;
+            /* Adaptive point count — balance smoothness vs cost:
+             * < 60px  → 10 points (small on screen)
+             * < 120px → 16 points
+             * >= 120px → 22 points (hero cells) */
+            var N = screenPx >= 120 ? 22 : screenPx >= 60 ? 16 : 10;
             if (this._jelloLen === N) return;
             this._jelloLen = N;
             /* SoA: 3 flat Float64Arrays — no object allocation, no GC */
@@ -10356,8 +10356,15 @@ function thelegendmodproject() {
             var yArr = this._jelloY;
             var vel = this._jelloVel;
             var rng = this._jelloRng;
-            var clampLo = sz * 0.80;
-            var clampHi = sz * 1.20;
+            /* Size-adaptive clamp: small cells wobble less (tight),
+             * large cells wobble more (wide). Prevents small cell
+             * color spilling out of bounds.
+             * size<=100 → ±8%, size>=300 → ±18%, linear between */
+            var t = (sz - 100) / 200;
+            if (t < 0) t = 0; else if (t > 1) t = 1;
+            var wobble = 0.08 + t * 0.10; /* 0.08 to 0.18 */
+            var clampLo = sz * (1.0 - wobble);
+            var clampHi = sz * (1.0 + wobble);
             var maxRad = 0;
             /* Pre-fetch edge values to eliminate modulo in loop */
             var lastRl = rlArr[N - 1];
@@ -16228,30 +16235,23 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.jellyPhisycs) {
                     cell.updateNumPoints();
                     cell.movePoints();
-                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 38) {
-                    /* Jello physics: init once, then spring simulation.
-                     * No quadtree needed — no updateNumPoints/splice.
-                     * Skip food, viruses, and tiny cells.
-                     * Unlike jelly, jello has no cell-to-cell interaction,
-                     * so we can also skip off-screen cells. */
+                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 80) {
+                    /* Jello physics: skip food, viruses, and cells < 80.
+                     * Small cells don't benefit from wobble — it just
+                     * makes them look broken and wastes CPU. */
                     var jelloMargin = cell.size * 1.5;
                     if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
                         cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
-                        /* Screen-size thresholds:
-                         * < 25px on screen → not visible, skip entirely
-                         * < 50px on screen → skip every other frame
-                         * >= 50px → simulate every frame */
                         var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 25) {
-                            /* Frame-skip for small-on-screen cells: simulate
-                             * every 2nd frame. Uses cell id for phase offset
-                             * so not all cells skip the same frame. */
-                            if (screenPx >= 50 || ((drawRender._jelloFrame ^ cell.id) & 1) === 0) {
+                        if (screenPx >= 40) {
+                            /* Aggressive frame-skipping:
+                             * < 80px on screen → every 3rd frame
+                             * >= 80px → every frame */
+                            if (screenPx >= 80 || ((drawRender._jelloFrame + cell.id) % 3) === 0) {
                                 cell.initJelloPoints(screenPx);
                                 cell.moveJelloPoints();
                             }
                         } else if (cell._jelloRl) {
-                            /* Clear jello data for cells that zoomed out too far */
                             cell._jelloX = null;
                             cell._jelloY = null;
                             cell._jelloRl = null;
