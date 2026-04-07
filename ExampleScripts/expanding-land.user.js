@@ -358,19 +358,19 @@
             <div><span style="color:#6366f1">[Ctrl+Shift+\`]</span> Set name</div>
             <div style="color:#475569; margin:4px 0;">── Other ──</div>
             <div><span style="color:#6366f1">[H]</span> Hide/Show Panel</div>
-            <div style="margin-top:8px;">
+            <div style="margin-top:8px; display:flex; gap:6px;">
                 <a href="https://www.mediafire.com/file/gc6nuy6j6z1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
                     display:block; text-align:center; padding:6px 0; border-radius:8px;
                     background: linear-gradient(135deg, #22c55e, #16a34a);
                     color:#fff; text-decoration:none; font-weight:700; font-size:11px;
-                    margin-bottom:6px;
-                ">🤖 Download 50 FREE EL Bots</a>
+                    width:48%;
+                ">🤖 50 EL Bots</a>
                 <a href="https://expanding.land/" target="_blank" style="
                     display:block; text-align:center; padding:6px 0; border-radius:8px;
                     background: linear-gradient(135deg, #6366f1, #a855f7);
                     color:#fff; text-decoration:none; font-weight:700; font-size:11px;
-                    margin-bottom:6px;
-                ">🎮 Play Expanding Land</a>
+                    width:48%;
+                ">🎮 Play EL</a>
             </div>
             <div style="display:flex; gap:6px; justify-content:center;">
                 <a href="https://www.legendmod.ml/" target="_blank" style="color:#a855f7; font-size:10px;">⚙️ Legend Mod</a>
