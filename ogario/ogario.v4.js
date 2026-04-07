@@ -18871,8 +18871,7 @@ function leftClickOpen3() {
 function leftClickAttack() {
     var temp = legendmod.cursorX + legendmod.mapOffsetX
     var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    application.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
-    ogario.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
+    window.application.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
@@ -18880,8 +18879,7 @@ function leftClickAttack() {
 function leftClickFight() {
     var temp = legendmod.cursorX + legendmod.mapOffsetX
     var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    application.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
-    ogario.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
+    window.application.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
@@ -18889,8 +18887,7 @@ function leftClickFight() {
 function leftClickRun() {
     var temp = legendmod.cursorX + legendmod.mapOffsetX
     var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    application.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
-    ogario.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
+    window.application.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
     //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
     hideContextMenu()
 }
