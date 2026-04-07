@@ -420,8 +420,305 @@
         // Auto-fill nickname after a short delay (wait for game UI to load)
         setTimeout(fillNickname, 2000);
 
+        // Start skin uploader observer on agar.io
+        if (host.includes('agar.io')) {
+            startSkinObserver();
+        }
+
         console.log('[IO Toolkit v2.0] Loaded — by Expanding Land');
         console.log('[IO Toolkit] Press H to toggle panel, Ctrl+` to fill name');
     });
+
+    // ═══════════════════════════════════════════════════════
+    //  CUSTOM SKIN IMAGE UPLOADER (agar.io only)
+    //  Detects skin editor canvas, injects image upload UI.
+    //  Supports: URL input, file upload, drag & drop.
+    //  Original concept by New Jack 🕹️
+    // ═══════════════════════════════════════════════════════
+
+    const skinCfg = {
+        containerWidth: '400px',
+        maxPreviewSize: 180,
+        dropZoneHeight: '120px',
+        colors: {
+            green: '#54c800', blue: '#0078fa',
+            yellow: '#ffcc00', background: 'rgb(255,255,255)', text: '#000'
+        }
+    };
+
+    function startSkinObserver() {
+        const obs = new MutationObserver(mutations => {
+            for (const m of mutations) {
+                for (const node of m.addedNodes) {
+                    if (node.nodeType === Node.ELEMENT_NODE &&
+                        (node.id === 'skin-editor-canvas' ||
+                         (node.querySelector && node.querySelector('#skin-editor-canvas')))) {
+                        setTimeout(initSkinUploader, 500);
+                        return;
+                    }
+                }
+                for (const node of m.removedNodes) {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if ((node.querySelector && node.querySelector('#skin-editor-canvas')) ||
+                            node.id === 'skin-editor-canvas' ||
+                            (node.classList && (node.classList.contains('skin-editor') ||
+                             node.classList.contains('skin-editor-dialog')))) {
+                            removeSkinUploader();
+                            return;
+                        }
+                        const indicators = ['.sk-app', '.editor-app', '.skin-editor', '[data-v-skin-editor]', '#skin-editor'];
+                        for (const sel of indicators) {
+                            if (node.matches && node.matches(sel)) {
+                                setTimeout(() => {
+                                    if (!document.getElementById('skin-editor-canvas')) removeSkinUploader();
+                                }, 100);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        if (document.body) {
+            obs.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    function initSkinUploader() {
+        if (document.getElementById('lm-skin-uploader')) return;
+        const container = buildSkinUI();
+        document.body.appendChild(container);
+        const canvas = document.getElementById('skin-editor-canvas');
+        if (canvas) {
+            const rect = canvas.getBoundingClientRect();
+            container.style.top = rect.top + 'px';
+            container.style.right = '20px';
+            container.style.left = 'auto';
+        }
+        console.log('[IO Toolkit] ✓ Skin image uploader injected');
+    }
+
+    function removeSkinUploader() {
+        const el = document.getElementById('lm-skin-uploader');
+        if (el) el.remove();
+    }
+
+    function buildSkinUI() {
+        const C = skinCfg.colors;
+        const container = document.createElement('div');
+        container.id = 'lm-skin-uploader';
+        Object.assign(container.style, {
+            position: 'absolute', right: '50px', top: '70px',
+            width: skinCfg.containerWidth, padding: '15px',
+            backgroundColor: C.background, color: C.text,
+            borderRadius: '8px', boxSizing: 'border-box', zIndex: '9999',
+            boxShadow: '0 0 15px rgba(0,0,0,0.5)',
+            fontFamily: 'Ubuntu, Arial, sans-serif',
+            border: '2px solid ' + C.green
+        });
+
+        // Header
+        const header = document.createElement('div');
+        Object.assign(header.style, {
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: '15px', borderBottom: '1px solid ' + C.green, paddingBottom: '8px'
+        });
+        const title = document.createElement('h3');
+        title.textContent = '🎨 Skin Image Upload';
+        Object.assign(title.style, { margin: '0', color: C.blue, fontSize: '20px', fontWeight: 'bold' });
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.textContent = '−';
+        Object.assign(toggleBtn.style, {
+            backgroundColor: C.green, border: 'none', color: '#fff', fontSize: '18px',
+            cursor: 'pointer', width: '24px', height: '24px', display: 'flex',
+            justifyContent: 'center', alignItems: 'center', borderRadius: '4px'
+        });
+
+        const content = document.createElement('div');
+        content.id = 'lm-skin-content';
+        toggleBtn.addEventListener('click', () => {
+            const hidden = content.style.display === 'none';
+            content.style.display = hidden ? 'block' : 'none';
+            toggleBtn.textContent = hidden ? '−' : '+';
+        });
+
+        header.appendChild(title);
+        header.appendChild(toggleBtn);
+        container.appendChild(header);
+        container.appendChild(content);
+
+        // URL input row
+        const urlRow = document.createElement('div');
+        Object.assign(urlRow.style, { marginBottom: '12px', display: 'flex' });
+        const urlInput = document.createElement('input');
+        urlInput.type = 'text';
+        urlInput.placeholder = 'Enter image URL... (ibb.co works best)';
+        Object.assign(urlInput.style, {
+            flex: '1', padding: '10px', border: '1px solid #444',
+            backgroundColor: 'rgba(135,135,135,0.3)', color: '#000',
+            borderRadius: '4px', marginRight: '5px', fontSize: '14px'
+        });
+        const urlBtn = document.createElement('button');
+        urlBtn.textContent = 'Load';
+        Object.assign(urlBtn.style, {
+            padding: '10px', backgroundColor: C.green, color: '#000',
+            border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+        });
+        urlRow.appendChild(urlInput);
+        urlRow.appendChild(urlBtn);
+        content.appendChild(urlRow);
+
+        // File upload button
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file'; fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        const fileBtn = document.createElement('button');
+        fileBtn.textContent = '📁 Upload From Computer';
+        Object.assign(fileBtn.style, {
+            width: '100%', padding: '10px', backgroundColor: C.blue,
+            color: '#fff', border: 'none', borderRadius: '4px',
+            cursor: 'pointer', fontWeight: 'bold', marginBottom: '12px'
+        });
+        content.appendChild(fileInput);
+        content.appendChild(fileBtn);
+
+        // Drop zone
+        const dropZone = document.createElement('div');
+        Object.assign(dropZone.style, {
+            height: skinCfg.dropZoneHeight, border: '2px dashed ' + C.yellow,
+            borderRadius: '4px', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', color: '#999',
+            marginBottom: '12px', fontSize: '14px', backgroundColor: 'rgba(255,255,255,0.5)'
+        });
+        dropZone.innerHTML = '<div style="font-size:24px;margin-bottom:6px;">⬇️</div>Drag & Drop Image Here';
+        content.appendChild(dropZone);
+
+        // Preview
+        const previewWrap = document.createElement('div');
+        Object.assign(previewWrap.style, {
+            textAlign: 'center', marginTop: '12px', display: 'none',
+            backgroundColor: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '4px'
+        });
+        const previewLabel = document.createElement('div');
+        previewLabel.textContent = 'Preview:';
+        Object.assign(previewLabel.style, { marginBottom: '8px', color: C.yellow, fontSize: '14px', fontWeight: 'bold' });
+        const previewImg = document.createElement('img');
+        previewImg.id = 'lm-skin-preview';
+        Object.assign(previewImg.style, {
+            maxWidth: '100%', maxHeight: skinCfg.maxPreviewSize + 'px',
+            border: '1px solid #444', borderRadius: '50%'
+        });
+        previewWrap.appendChild(previewLabel);
+        previewWrap.appendChild(previewImg);
+        content.appendChild(previewWrap);
+
+        // Tips
+        const tips = document.createElement('div');
+        Object.assign(tips.style, {
+            fontSize: '12px', color: '#555', marginTop: '12px', lineHeight: '1.5',
+            padding: '8px', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '4px',
+            borderLeft: '3px solid ' + C.yellow
+        });
+        tips.innerHTML = `
+            <b style="color:${C.blue}">Tips:</b><br>
+            • If image doesn't appear clearly, try <a href="https://picwish.com/unblur-image-portrait" target="_blank" style="color:${C.blue};">unblurring it on PicWish</a><br>
+            • Use <a href="https://crop-circle.imageonline.co/" target="_blank" style="color:${C.blue};">Crop Circle Tool</a> for best results<br>
+            • Simple designs with few colors work best<br>
+            • The image will be centered and scaled to fit
+        `;
+        content.appendChild(tips);
+
+        // ── Events ──
+        urlInput.addEventListener('keypress', e => { if (e.key === 'Enter') loadSkinUrl(urlInput.value); });
+        urlBtn.addEventListener('click', () => loadSkinUrl(urlInput.value));
+        fileBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) handleSkinFile(fileInput.files[0]);
+        });
+        dropZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropZone.style.borderColor = C.green;
+            dropZone.style.backgroundColor = 'rgba(84,200,0,0.1)';
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = C.yellow;
+            dropZone.style.backgroundColor = 'rgba(255,255,255,0.5)';
+        });
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.style.borderColor = C.yellow;
+            dropZone.style.backgroundColor = 'rgba(255,255,255,0.5)';
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) handleSkinFile(e.dataTransfer.files[0]);
+        });
+
+        // Hover effects
+        [fileBtn, urlBtn].forEach(btn => {
+            const orig = btn.style.backgroundColor;
+            btn.addEventListener('mouseover', () => btn.style.opacity = '0.85');
+            btn.addEventListener('mouseout', () => btn.style.opacity = '1');
+        });
+
+        // Draggable
+        makeSkinDraggable(container, header);
+        return container;
+    }
+
+    function loadSkinUrl(url) {
+        if (!url || !/^https?:\/\/.+\..+/i.test(url)) { alert('Please enter a valid URL'); return; }
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => { showSkinPreview(img.src); drawSkinToCanvas(img); };
+        img.onerror = () => alert('Error loading image. URL may be invalid or CORS-blocked.');
+        img.src = url;
+    }
+
+    function handleSkinFile(file) {
+        if (!file || !file.type.startsWith('image/')) { alert('Please select a valid image file'); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => { showSkinPreview(e.target.result); drawSkinToCanvas(img); };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function showSkinPreview(src) {
+        const preview = document.getElementById('lm-skin-preview');
+        if (!preview) return;
+        preview.src = src;
+        preview.parentElement.style.display = 'block';
+    }
+
+    function drawSkinToCanvas(img) {
+        const canvas = document.getElementById('skin-editor-canvas');
+        if (!canvas) { console.error('[IO Toolkit] Skin editor canvas not found'); return; }
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        const x = (canvas.width - w) / 2, y = (canvas.height - h) / 2;
+        ctx.drawImage(img, x, y, w, h);
+        canvas.dispatchEvent(new Event('change', { bubbles: true }));
+        try { if (window.drawApp && typeof window.drawApp.render === 'function') window.drawApp.render(true); } catch(e) {}
+    }
+
+    function makeSkinDraggable(el, handle) {
+        let x2 = 0, y2 = 0;
+        handle.style.cursor = 'move';
+        handle.onmousedown = e => {
+            e.preventDefault();
+            x2 = e.clientX; y2 = e.clientY;
+            document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
+            document.onmousemove = ev => {
+                ev.preventDefault();
+                el.style.top = (el.offsetTop - (y2 - ev.clientY)) + 'px';
+                el.style.left = (el.offsetLeft - (x2 - ev.clientX)) + 'px';
+                el.style.right = 'auto';
+                x2 = ev.clientX; y2 = ev.clientY;
+            };
+        };
+    }
 
 })();
