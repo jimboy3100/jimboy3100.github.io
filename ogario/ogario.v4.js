@@ -13199,6 +13199,35 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
                     }
                     break;
+                case 205: // 0xCD — Team Command (Expanding Land)
+                    /* Format: [205][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
+                     * cmd: 1=Attack, 2=Fight, 3=Run
+                     * Server broadcasts to same-tag teammates only */
+                    if (data.byteLength >= 10) {
+                        var tcCmd = data.getUint8(s++);
+                        var tcX = data.getInt32(s, true); s += 4;
+                        var tcY = data.getInt32(s, true); s += 4;
+                        var tcLabels = { 1: '\u2694\uFE0F Attack', 2: '\u{1F94A} Fight', 3: '\u{1F3C3} Run' };
+                        var tcColors = { 1: '#ff4444', 2: '#ffaa33', 3: '#33ff33' };
+                        var tcLabel = tcLabels[tcCmd] || 'Command';
+                        var tcColor = tcColors[tcCmd] || '#ffffff';
+
+                        /* Show as team chat notification */
+                        var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+                        application.displayChatMessage(time, 101, 0,
+                            '<span style="color:' + tcColor + '">' + tcLabel + '</span> at (' + tcX + ', ' + tcY + ')');
+
+                        /* Store for minimap marker rendering */
+                        if (!legendmod.teamCommands) legendmod.teamCommands = [];
+                        legendmod.teamCommands.push({
+                            cmd: tcCmd, x: tcX, y: tcY,
+                            time: Date.now(), expire: Date.now() + 8000
+                        });
+                        /* Clean expired markers */
+                        var now = Date.now();
+                        legendmod.teamCommands = legendmod.teamCommands.filter(function(c) { return c.expire > now; });
+                    }
+                    break;
                 case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 10 > data.byteLength) break; // need 2+2+2+4 bytes
@@ -18864,14 +18893,14 @@ function leftClickOpen3() {
 
 function sendTeamCommand(cmdType, x, y) {
     if (LM.isLegendWorld && legendmod.isSocketOpen()) {
-        /* Expanding Land: binary opcode 203 (0xCB)
-         * Format: [203][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
+        /* Expanding Land: binary opcode 205 (0xCD)
+         * Format: [205][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
          * cmdType: 1=Attack, 2=Fight, 3=Run
          * Server uses sender's clan tag to broadcast only to same-tag teammates.
          * No tag = no teammates = no point sending. */
         if (!ogarcopythelb.clanTag || ogarcopythelb.clanTag.length === 0) return;
         var view = legendmod.createView(10);
-        view.setUint8(0, 203);          // opcode 0xCB
+        view.setUint8(0, 205);          // opcode 0xCD
         view.setUint8(1, cmdType);
         view.setInt32(2, x, true);
         view.setInt32(6, y, true);
