@@ -10356,15 +10356,17 @@ function thelegendmodproject() {
             var yArr = this._jelloY;
             var vel = this._jelloVel;
             var rng = this._jelloRng;
-            /* Size-adaptive clamp: small cells wobble less (tight),
-             * large cells wobble more (wide). Prevents small cell
-             * color spilling out of bounds.
-             * size<=100 → ±8%, size>=300 → ±18%, linear between */
-            var t = (sz - 100) / 200;
+            /* Size-adaptive clamp: small cells barely wobble,
+             * large cells deform freely. Prevents color/skin
+             * bleeding on small cells.
+             * size 80 → ±3%, size 400+ → ±18% */
+            var t = (sz - 80) / 320;
             if (t < 0) t = 0; else if (t > 1) t = 1;
-            var wobble = 0.08 + t * 0.10; /* 0.08 to 0.18 */
+            var wobble = 0.03 + t * 0.15;
             var clampLo = sz * (1.0 - wobble);
             var clampHi = sz * (1.0 + wobble);
+            /* Scale jitter with size — small cells stay clean */
+            var jitterAmt = 0.15 + t * 0.55; /* 0.15 to 0.70 */
             var maxRad = 0;
             /* Pre-fetch edge values to eliminate modulo in loop */
             var lastRl = rlArr[N - 1];
@@ -10389,9 +10391,9 @@ function thelegendmodproject() {
                 /* Softer damping — wobble lasts longer */
                 vel[i] *= 0.88;
 
-                /* Stronger jitter for organic feel */
+                /* Size-proportional jitter — small cells clean, large cells organic */
                 rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * 0.6;
+                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * jitterAmt;
 
                 /* Update radius with wider clamp */
                 rl += vel[i];
