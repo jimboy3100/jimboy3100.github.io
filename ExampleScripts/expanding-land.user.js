@@ -65,9 +65,9 @@
     'use strict';
 
     // ═══════════════════════════════════════════════════════
-    //  IO GAMES TOOLKIT v2.0 — by Expanding Land
-    //  Works on: Agar.io, MooMoo.io, Slither.io, Diep.io,
-    //  Surviv.io, Zombs.io, Skribbl.io, and 20+ more
+    //  IO GAMES TOOLKIT v2.1 — by Expanding Land
+    //  Works on: Agar.io, MooMoo.io, Diep.io, Surviv.io,
+    //  Zombs.io, Agma.io, Agar.pro, Germs.io, Senpa.io
     //
     //  FEATURES (all IO games):
     //  [E]  Rapid Eject / Feed
@@ -78,6 +78,11 @@
     //  [Ctrl+`]       Auto-fill saved nickname
     //  [Ctrl+Shift+`] Set new nickname
     //  [H]  Hide/Show Panel
+    //
+    //  AGAR.IO EXTRAS:
+    //  🎨  Custom Skin Image Uploader
+    //  🪙  Auto Free Coin Collector
+    //  💬  Discord Server IP Poster
     //
     //  EXPANDING LAND FEATURES:
     //  [X]  Freeze Cell (EL specific)
@@ -290,28 +295,38 @@
         const panel = document.createElement('div');
         panel.id = 'io-panel';
 
+        // Common panel styles (flows naturally, no absolute/fixed)
+        const baseStyle = `
+            z-index: 999998;
+            background: rgba(10,14,23,0.92); border: 1px solid #1e293b;
+            border-radius: 12px; padding: 12px 16px;
+            font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
+            line-height: 1.9; min-width: 210px; max-width: 325px; backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5); pointer-events: auto;
+            box-sizing: border-box;
+        `;
+
         const container = findGameContainer();
         if (container) {
-            // Docked mode: absolute inside the game container
-            container.style.position = container.style.position || 'relative';
-            panel.style.cssText = `
-                position: absolute; top: 8px; right: 8px; z-index: 999998;
-                background: rgba(10,14,23,0.92); border: 1px solid #1e293b;
-                border-radius: 12px; padding: 12px 16px;
-                font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
-                line-height: 1.9; min-width: 210px; backdrop-filter: blur(8px);
-                box-shadow: 0 8px 32px rgba(0,0,0,0.5); pointer-events: auto;
+            // Embedded mode: inserted as a natural child, flows with game UI
+            panel.style.cssText = baseStyle + `
+                position: relative; width: 100%; margin: 5px 0;
             `;
-            container.appendChild(panel);
+            // For agar.io grid layout — insert as a new card below #mainui-play
+            if (host.includes('agar.io')) {
+                const playCard = document.getElementById('mainui-play');
+                if (playCard && playCard.parentNode) {
+                    playCard.parentNode.insertBefore(panel, playCard.nextSibling);
+                } else {
+                    container.appendChild(panel);
+                }
+            } else {
+                container.appendChild(panel);
+            }
         } else {
             // Fallback: fixed on body
-            panel.style.cssText = `
-                position: fixed; top: 8px; right: 8px; z-index: 999998;
-                background: rgba(10,14,23,0.92); border: 1px solid #1e293b;
-                border-radius: 12px; padding: 12px 16px;
-                font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
-                line-height: 1.9; min-width: 210px; backdrop-filter: blur(8px);
-                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            panel.style.cssText = baseStyle + `
+                position: fixed; top: 8px; right: 8px;
             `;
             document.body.appendChild(panel);
         }
@@ -319,7 +334,7 @@
         panel.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <div style="color:#a855f7; font-weight:700; font-size:13px;">
-                    ⚡ IO Toolkit v2.0
+                    ⚡ IO Toolkit v2.1
                     <span style="color:#475569; font-weight:400; font-size:10px;"> by Expanding Land</span>
                 </div>
                 <button id="io-panel-close" style="
@@ -548,14 +563,23 @@
                 serverChannel = localStorage.getItem('discwebhook2') || serverChannel;
             }
 
+            // Create a wrapper card styled like agar.io's UI cards
+            const wrapper = document.createElement('div');
+            Object.assign(wrapper.style, {
+                backgroundColor: '#fff', borderRadius: '10px',
+                margin: '5px 0', padding: '12px 16px', width: '325px',
+                boxSizing: 'border-box', textAlign: 'center'
+            });
+
             const btn = document.createElement('button');
             btn.textContent = '💬 Post Server IP to Discord';
             btn.className = 'btn btn-primary';
             Object.assign(btn.style, {
-                width: '100%', marginTop: '6px', padding: '8px',
+                width: '100%', padding: '10px 12px',
                 backgroundColor: '#5865F2', borderColor: '#5865F2',
-                color: '#fff', fontWeight: '700', fontSize: '13px',
-                borderRadius: '6px', cursor: 'pointer', border: 'none'
+                color: '#fff', fontWeight: '700', fontSize: '14px',
+                borderRadius: '6px', cursor: 'pointer', border: 'none',
+                lineHeight: '1.4'
             });
             btn.addEventListener('mouseover', () => btn.style.backgroundColor = '#4752C4');
             btn.addEventListener('mouseout', () => btn.style.backgroundColor = '#5865F2');
@@ -572,15 +596,14 @@
                 showDiscordNotification();
             });
 
-            // Try to place after the play button area
-            const mainButtons = document.getElementById('agario-main-buttons');
-            if (mainButtons) {
-                mainButtons.appendChild(btn);
+            wrapper.appendChild(btn);
+
+            // Insert below the play card in the grid column
+            const playCard = document.getElementById('mainui-play');
+            if (playCard && playCard.parentNode) {
+                playCard.parentNode.insertBefore(wrapper, playCard.nextSibling);
             } else {
-                const playBtn = document.querySelector('.btn-play, .btn-play-btn, #playBtn');
-                if (playBtn && playBtn.parentNode) {
-                    playBtn.parentNode.insertBefore(btn, playBtn.nextSibling);
-                }
+                document.body.appendChild(wrapper);
             }
 
             console.log('[IO Toolkit] ✓ Discord SIP poster ready');
