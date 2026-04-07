@@ -5669,8 +5669,7 @@ function thelegendmodproject() {
 
                     if (rawMultiplier > 0.01) {
                         var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
-                        atStr += '<span style="color:' + mColor + '">\u2697 AT: ' + (rawMultiplier * 100).toFixed(0) + '%</span>';
-                        atStr += ' (decay \u00d7' + effectiveMult.toFixed(2) + ')';
+                        atStr += '<span style="color:' + mColor + '">\u2697 \u00d7' + effectiveMult.toFixed(2) + '</span>';
                     } else {
                         atStr += '<span style="color:#33ff33">\u2697 clean</span>';
                     }
