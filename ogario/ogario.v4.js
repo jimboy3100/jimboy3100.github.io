@@ -1,4 +1,4 @@
-window.OgVer = 3.349;
+window.OgVer = 3.350;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10299,14 +10299,16 @@ function thelegendmodproject() {
         this._jelloRng = 0xDEADBEEF | 0;
 
         this.initJelloPoints = function (screenPx) {
-            /* Lean point counts — minimal for perf, enough for smooth curves:
-             * < 80px  → 8 points (cheap, nearly circular)
-             * < 160px → 12 points
-             * >= 160px → 18 points (hero cells) */
-            var N = screenPx >= 160 ? 18 : screenPx >= 80 ? 12 : 8;
+            /* Adaptive point count — mirrors jelly's approach:
+             * Uses screen size to decide, capped at [10, 40].
+             * 40 points with lineTo gives a perfectly smooth polygon
+             * that clips fast (vs 120 points in jelly). */
+            var N = screenPx | 0;
+            if (N < 10) N = 10;
+            else if (N > 40) N = 40;
             if (this._jelloLen === N) return;
+            /* SoA: Float64Arrays — no object allocation, no GC */
             this._jelloLen = N;
-            /* SoA: 3 flat Float64Arrays — no object allocation, no GC */
             this._jelloX = new Float64Array(N);
             this._jelloY = new Float64Array(N);
             this._jelloRl = new Float64Array(N);
@@ -10321,7 +10323,10 @@ function thelegendmodproject() {
                 this._jelloRl[i] = this.size;
                 this._jelloX[i] = this.x + this._jelloCos[i] * this.size;
                 this._jelloY[i] = this.y + this._jelloSin[i] * this.size;
-                this._jelloVel[i] = 0;
+                this._jelloVel[i] = (this._jelloRng ^= this._jelloRng << 13,
+                    this._jelloRng ^= this._jelloRng >> 17,
+                    this._jelloRng ^= this._jelloRng << 5,
+                    ((this._jelloRng & 0xFFFF) / 65536.0 - 0.5));
             }
             this._prevX = this.x;
             this._prevY = this.y;
@@ -10333,21 +10338,8 @@ function thelegendmodproject() {
             var sz = this.size;
             var cx = this.x;
             var cy = this.y;
-            /* Movement delta — drives wobble intensity */
-            var dx = cx - this._prevX;
-            var dy = cy - this._prevY;
             this._prevX = cx;
             this._prevY = cy;
-            var speedSq = dx * dx + dy * dy;
-            var ndx = 0, ndy = 0, impulse = 0;
-            if (speedSq > 0.01) {
-                var invSpeed = 1.0 / Math.sqrt(speedSq);
-                ndx = dx * invSpeed;
-                ndy = dy * invSpeed;
-                var speed = speedSq * invSpeed;
-                impulse = speed * 0.18;
-                if (impulse > 12) impulse = 12;
-            }
 
             var cosArr = this._jelloCos;
             var sinArr = this._jelloSin;
@@ -10356,56 +10348,55 @@ function thelegendmodproject() {
             var yArr = this._jelloY;
             var vel = this._jelloVel;
             var rng = this._jelloRng;
-            /* Size-adaptive clamp — small cells nearly circular,
-             * large cells deform freely. Prevents color/skin bleed.
-             * size 150 → ±1%, size 500+ → ±15% */
-            var t = (sz - 150) / 350;
-            if (t < 0) t = 0; else if (t > 1) t = 1;
-            var wobble = 0.01 + t * 0.14;
-            var clampLo = sz * (1.0 - wobble);
-            var clampHi = sz * (1.0 + wobble);
-            /* Jitter scales with size — small cells stay perfectly clean */
-            var jitterAmt = 0.05 + t * 0.55; /* 0.05 to 0.60 */
-            var maxRad = 0;
-            /* Pre-fetch edge values to eliminate modulo in loop */
-            var lastRl = rlArr[N - 1];
-            var firstRl = rlArr[0];
 
+            /* ---- Phase 1: velocity smoothing (jelly's exact algorithm) ----
+             * Snapshot velocities, then smooth each with neighbors:
+             *   newVel = (vel[i] + random - 0.5) * 0.7
+             *   vel[i] = (prevVel + nextVel + 8 * newVel) / 10
+             * Uses xorshift PRNG instead of Math.random() (~10× faster). */
+            var lastVel = vel[N - 1];
+            var firstNewVel;
             for (var i = 0; i < N; i++) {
-                var pcx = cosArr[i];
-                var pcy = sinArr[i];
-
-                /* Movement influence */
-                vel[i] += -(pcx * ndx + pcy * ndy) * impulse;
-
-                /* Spring force: pull toward base radius */
-                var rl = rlArr[i];
-                vel[i] += (sz - rl) * 0.14;
-
-                /* Neighbor smoothing — no modulo needed */
-                var prevRl = i > 0 ? rlArr[i - 1] : lastRl;
-                var nextRl = i < N - 1 ? rlArr[i + 1] : firstRl;
-                vel[i] += (prevRl + nextRl - 2 * rl) * 0.06;
-
-                /* Softer damping — wobble lasts longer */
-                vel[i] *= 0.88;
-
-                /* Size-proportional jitter — small cells clean, large cells organic */
                 rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * jitterAmt;
+                var rand = (rng & 0xFFFF) / 65536.0 - 0.5;
+                var newVel = (vel[i] + rand) * 0.7;
+                if (newVel > 10) newVel = 10;
+                else if (newVel < -10) newVel = -10;
+                /* Store newVel back temporarily; we read prev from lastVel */
+                var prevV = (i > 0) ? vel[i - 1] : lastVel;
+                /* For nextVel, we peek ahead (not yet smoothed) */
+                rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
+                var nextRand = (rng & 0xFFFF) / 65536.0 - 0.5;
+                var nextIdx = (i < N - 1) ? i + 1 : 0;
+                var nextNewVel = (vel[nextIdx] + nextRand) * 0.7;
+                if (nextNewVel > 10) nextNewVel = 10;
+                else if (nextNewVel < -10) nextNewVel = -10;
+                vel[i] = (prevV + nextNewVel + 8 * newVel) / 10;
+                if (i === 0) firstNewVel = newVel;
+            }
 
-                /* Update radius with wider clamp */
+            /* ---- Phase 2: radius update (jelly's exact algorithm) ----
+             *   rl += vel[i]
+             *   if rl < 0: rl = 0
+             *   rl = (9 * rl + size) / 10     (pull toward base)
+             *   rl = (prevRl + size + 8*rl)/10 (neighbor smoothing) */
+            var maxRad = 0;
+            var prevRl = rlArr[N - 1]; /* wrap-around for first iteration */
+            for (var i = 0; i < N; i++) {
+                var rl = rlArr[i];
                 rl += vel[i];
-                if (rl < clampLo) rl = clampLo;
-                else if (rl > clampHi) rl = clampHi;
+                if (rl < 0) rl = 0;
+                rl = (9 * rl + sz) / 10;
+                rl = (prevRl + sz + 8 * rl) / 10;
                 rlArr[i] = rl;
-
+                prevRl = rl;
                 if (rl > maxRad) maxRad = rl;
 
-                /* Update world position (SoA write) */
+                /* Update world position */
                 xArr[i] = cx + cosArr[i] * rl;
                 yArr[i] = cy + sinArr[i] * rl;
             }
+
             this._jelloRng = rng;
             this.maxPointRad = maxRad;
         };
@@ -11304,23 +11295,20 @@ function thelegendmodproject() {
                     }
                 }
 
-                /* Jello always needs a path for fill + outline,
-                 * even when a skin exists. Non-jello skinned cells
-                 * skip the path since they just draw the image. */
-                if (!node || (defaultmapsettings.jelloPhysics && this._jelloRl)) style.beginPath();
-                if (defaultmapsettings.jelloPhysics && this._jelloRl) {
-                    /* Jello: smooth bezier curves between SoA points */
+                /* Jello needs a path for fill + clip + outline.
+                 * Non-jello skinned cells skip path (just draw image). */
+                if (!node || this._jelloRl) style.beginPath();
+                if (this._jelloRl) {
+                    /* Jello: lineTo polygon (same as jelly's approach).
+                     * LineTo is ~10× cheaper to clip than quadraticCurveTo
+                     * because the GPU clips a polygon, not bezier curves.
+                     * With 10-40 points this looks perfectly smooth. */
                     var jX = this._jelloX;
                     var jY = this._jelloY;
                     var jN = this._jelloLen;
-                    var mx = (jX[jN - 1] + jX[0]) * 0.5;
-                    var my = (jY[jN - 1] + jY[0]) * 0.5;
-                    style.moveTo(mx, my);
-                    for (var i = 0; i < jN; i++) {
-                        var ni = i < jN - 1 ? i + 1 : 0;
-                        var nmx = (jX[i] + jX[ni]) * 0.5;
-                        var nmy = (jY[i] + jY[ni]) * 0.5;
-                        style.quadraticCurveTo(jX[i], jY[i], nmx, nmy);
+                    style.moveTo(jX[0], jY[0]);
+                    for (var i = 1; i < jN; i++) {
+                        style.lineTo(jX[i], jY[i]);
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.points.length) {
@@ -11376,7 +11364,7 @@ function thelegendmodproject() {
                         }
                     }
                 }
-                if (!node || (defaultmapsettings.jelloPhysics && this._jelloRl)) style.closePath();
+                if (!node || this._jelloRl) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
                     if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
@@ -11471,11 +11459,8 @@ function thelegendmodproject() {
                         style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-                else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
-                         (defaultmapsettings.jelloPhysics && this._jelloRl)) {
-                    /* Jello/jelly: always fill the deformed path with cell color.
-                     * Skin (if any) is drawn as a circle on top — the fill ensures
-                     * no gaps at deformed edges. */
+                else if (this._jelloRl) {
+                    /* Jello: fill deformed path with cell color */
                     style.fillStyle = color2;
                     style.fill();
                 }
@@ -11515,15 +11500,29 @@ function thelegendmodproject() {
                             //s = true;
                         }
                         if (legendmod.gameMode != ":teams") {
-                            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
-                                /* Draw skin as circle on top of filled deformed path.
-                                 * NO clip() — clip is extremely expensive on canvas
-                                 * and was causing freezes. The deformed fill underneath
-                                 * provides the wobble silhouette; the skin sits on top. */
+                            if (this._jelloRl) {
+                                /* Clip skin to deformed lineTo polygon path.
+                                 * LineTo polygon clips ~10× faster than bezier
+                                 * (the old bezier clip was causing freezes).
+                                 * Skin distorts with the wobble = no color bleed. */
+                                var drawR = this.maxPointRad || y;
+                                style.save();
+                                style.clip();
+                                try {
+                                    style.drawImage(node, this.x - drawR, this.y - drawR, 2 * drawR, 2 * drawR);
+                                } catch (e) { }
+                                style.restore();
+                                /* Thin proportional outline */
+                                var lw = Math.max(~~(y * 0.02), 2);
+                                if (lw > 6) lw = 6;
+                                style.lineWidth = lw;
+                                style.strokeStyle = color2;
+                                style.stroke();
+                            } else if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
+                                /* Fallback for jelly/jello cells without _jelloRl data */
                                 try {
                                     style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
                                 } catch (e) { }
-
                             } else {
                                 try {
                                     style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
@@ -16228,27 +16227,20 @@ Most cells eaten   : ${mostCellsEaten}
 
             for (i = 0; i < LM.cells.length; i++) {
                 var cell = LM.cells[i];
-                /* Jelly physics must run for ALL cells every frame, even
-                 * off-screen ones. Otherwise cells scrolling into view
-                 * have stale points and look jagged/non-circular. */
-                if (defaultmapsettings.jellyPhisycs) {
-                    cell.updateNumPoints();
-                    cell.movePoints();
-                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 150) {
-                    /* Jello physics: only cells > 150 (mass ~225+).
-                     * Below this, wobble is invisible and wastes CPU.
-                     * For 1000-player servers this cuts ~70% of cells. */
+                /* Jello physics: activated by EITHER jellyPhisycs or jelloPhysics.
+                 * Replaces old jelly's updateNumPoints/movePoints with optimized
+                 * SoA Float64Array approach. Runs for all non-food non-virus cells. */
+                if ((defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) && !cell.isFood && !cell.isVirus) {
                     var jelloMargin = cell.size * 1.3;
                     if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
                         cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
                         var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 50) {
-                            /* 3-tier frame-skip for max throughput:
-                             * < 100px on screen → every 4th frame
-                             * < 200px on screen → every 2nd frame
-                             * >= 200px → every frame (hero cells) */
-                            var skip = screenPx >= 200 || (screenPx >= 100 ? ((drawRender._jelloFrame + cell.id) & 1) === 0 : ((drawRender._jelloFrame + cell.id) & 3) === 0);
-                            if (skip) {
+                        if (screenPx >= 5) {
+                            /* Frame-skip for distant/small cells:
+                             * < 100px on screen → every 2nd frame
+                             * >= 100px → every frame */
+                            var shouldUpdate = screenPx >= 100 || ((drawRender._jelloFrame + cell.id) & 1) === 0;
+                            if (shouldUpdate) {
                                 cell.initJelloPoints(screenPx);
                                 cell.moveJelloPoints();
                             }
