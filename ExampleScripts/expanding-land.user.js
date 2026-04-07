@@ -286,21 +286,73 @@
 
     // ── Control Panel ──
     let panelVisible = true;
+    let panelClosed = false;
+
+    // Find the best container for each game to dock the panel into
+    function findGameContainer() {
+        const containers = {
+            'agar.io':       ['#mainPanel', '#overlays', '#helloContainer'],
+            'moomoo.io':     ['#gameUI', '#menuContainer', '#mainMenu'],
+            'slither.io':    ['#login', '#grqv'],
+            'diep.io':       ['#textInputContainer'],
+            'surviv.io':     ['#ui-game', '#start-main'],
+            'starve.io':     ['#game_menu', '#client'],
+            'zombs.io':      ['.hud-intro', '.hud'],
+            'skribbl.io':    ['#game-toolbar', '#game'],
+            'sploop.io':     ['#homepage', '#gameUI'],
+            'deeeep.io':     ['#app', '.home'],
+        };
+        for (const [gameHost, selectors] of Object.entries(containers)) {
+            if (host.includes(gameHost.replace('www.', ''))) {
+                for (const sel of selectors) {
+                    const el = document.querySelector(sel);
+                    if (el) return el;
+                }
+            }
+        }
+        return null; // fallback to body with fixed positioning
+    }
+
     function createPanel() {
         const panel = document.createElement('div');
         panel.id = 'io-panel';
-        panel.style.cssText = `
-            position: fixed; top: 8px; right: 8px; z-index: 999998;
-            background: rgba(10,14,23,0.9); border: 1px solid #1e293b;
-            border-radius: 12px; padding: 12px 16px;
-            font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
-            line-height: 1.9; min-width: 210px; backdrop-filter: blur(8px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        `;
+
+        const container = findGameContainer();
+        if (container) {
+            // Docked mode: absolute inside the game container
+            container.style.position = container.style.position || 'relative';
+            panel.style.cssText = `
+                position: absolute; top: 8px; right: 8px; z-index: 999998;
+                background: rgba(10,14,23,0.92); border: 1px solid #1e293b;
+                border-radius: 12px; padding: 12px 16px;
+                font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
+                line-height: 1.9; min-width: 210px; backdrop-filter: blur(8px);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5); pointer-events: auto;
+            `;
+            container.appendChild(panel);
+        } else {
+            // Fallback: fixed on body
+            panel.style.cssText = `
+                position: fixed; top: 8px; right: 8px; z-index: 999998;
+                background: rgba(10,14,23,0.92); border: 1px solid #1e293b;
+                border-radius: 12px; padding: 12px 16px;
+                font-family: 'Segoe UI', Arial, sans-serif; color: #94a3b8; font-size: 11px;
+                line-height: 1.9; min-width: 210px; backdrop-filter: blur(8px);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            `;
+            document.body.appendChild(panel);
+        }
+
         panel.innerHTML = `
-            <div style="color:#a855f7; font-weight:700; font-size:13px; margin-bottom:6px;">
-                ⚡ IO Toolkit v2.0
-                <span style="color:#475569; font-weight:400; font-size:10px;"> by Expanding Land</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="color:#a855f7; font-weight:700; font-size:13px;">
+                    ⚡ IO Toolkit v2.0
+                    <span style="color:#475569; font-weight:400; font-size:10px;"> by Expanding Land</span>
+                </div>
+                <button id="io-panel-close" style="
+                    background:none; border:none; color:#ef4444; font-size:16px;
+                    cursor:pointer; padding:0 0 0 8px; line-height:1;
+                " title="Close panel">✕</button>
             </div>
             <div style="color:#475569; margin-bottom:4px;">── Macros ──</div>
             <div><span style="color:#6366f1">[E]</span> Rapid Eject: <span id="io-re" style="color:#94a3b8">hold</span></div>
@@ -312,7 +364,7 @@
             <div><span style="color:#6366f1">[Ctrl+\`]</span> Fill name</div>
             <div><span style="color:#6366f1">[Ctrl+Shift+\`]</span> Set name</div>
             <div style="color:#475569; margin:4px 0;">── Other ──</div>
-            <div><span style="color:#6366f1">[H]</span> Hide Panel</div>
+            <div><span style="color:#6366f1">[H]</span> Hide/Show Panel</div>
             <div style="margin-top:8px;">
                 <a href="https://www.mediafire.com/file/gc6nuy6jbz1o8ou/ExpandingLand-Bots.exe/file" target="_blank" style="
                     display:block; text-align:center; padding:6px 0; border-radius:8px;
@@ -335,7 +387,13 @@
                 <a href="https://help.expanding.land/guide.html" target="_blank" style="color:#22c55e; font-size:10px;">📖 Guide</a>
             </div>
         `;
-        document.body.appendChild(panel);
+
+        // Close button handler
+        document.getElementById('io-panel-close').addEventListener('click', function() {
+            panel.style.display = 'none';
+            panelVisible = false;
+            panelClosed = true;
+        });
     }
 
     function updatePanel() {
@@ -392,7 +450,8 @@
                     showFPS = !showFPS;
                     updatePanel();
                     break;
-                case 'h': // Hide panel
+                case 'h': // Hide/show panel (also reopens if closed)
+                    panelClosed = false;
                     panelVisible = !panelVisible;
                     const p = document.getElementById('io-panel');
                     if (p) p.style.display = panelVisible ? 'block' : 'none';
@@ -411,18 +470,38 @@
     // ── Quit protection ──
     window.onbeforeunload = function() { return 'Leave game?'; };
 
+    // ── Agar.io Free Coin Collector ──
+    function startCoinCollector() {
+        const collectCoins = () => {
+            if (window.agarApp && window.agarApp.API) {
+                try {
+                    window.agarApp.API.getFreeCoins();
+                    window.agarApp.API.closeTopView();
+                    console.log('[IO Toolkit] 🪙 Free coins collected');
+                } catch(e) {}
+            }
+        };
+        window.addEventListener('login', collectCoins);
+        window.addEventListener('free_coins_timer', collectCoins);
+        setInterval(collectCoins, 60000);
+        // Try immediately in case already logged in
+        setTimeout(collectCoins, 5000);
+    }
+
     // ── Init ──
     window.addEventListener('DOMContentLoaded', function() {
         createFPSOverlay();
-        createPanel();
+        // Delay panel creation slightly so game containers exist
+        setTimeout(createPanel, 800);
         requestAnimationFrame(tickFPS);
 
         // Auto-fill nickname after a short delay (wait for game UI to load)
         setTimeout(fillNickname, 2000);
 
-        // Start skin uploader observer on agar.io
+        // Agar.io specific features
         if (host.includes('agar.io')) {
             startSkinObserver();
+            startCoinCollector();
         }
 
         console.log('[IO Toolkit v2.0] Loaded — by Expanding Land');
