@@ -268,6 +268,8 @@
             'surviv.io':     ['.play-loading-outer', '#ui-game', '#start-main'],
             'zombs.io':      ['.hud-intro-form', '.hud-intro', '.hud'],
             'agma.io':       ['.panel.panel-default.bg-transparent'],
+            'senpa.io':      ['.Home_content__2fqOz'],
+            'germs.io':      ['.card'],
         };
         for (const [gameHost, selectors] of Object.entries(containers)) {
             if (host.includes(gameHost.replace('www.', ''))) {
