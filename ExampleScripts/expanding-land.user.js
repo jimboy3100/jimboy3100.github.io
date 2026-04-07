@@ -19,10 +19,14 @@
 // @match        *://senpa.io/*
 // @connect      expanding.land
 // @connect      legendmod.ml
+// @connect      discord.com
+// @connect      discordapp.com
+// @connect      agar.io
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM.setValue
 // @grant        GM.getValue
+// @grant        GM_xmlhttpRequest
 // @license      MIT
 // @supportURL   https://discord.com/invite/JUfpR9k
 // @homepageURL  https://expanding.land/
@@ -457,6 +461,132 @@
         setTimeout(collectCoins, 5000);
     }
 
+    // ── Agar.io Discord SIP Poster ──
+    // Posts server IP link to Discord webhooks (original by σмg ι ℓσνє уσυ!, published by Jimboy3100)
+    function startDiscordSIP() {
+        let generalChannel = localStorage.getItem('discwebhook1') || '';
+        let serverChannel = localStorage.getItem('discwebhook2') || '';
+
+        // Intercept WebSocket to capture server URL
+        let capturedServerLink = '';
+        const origSend = WebSocket.prototype.send;
+        WebSocket.prototype.send = function(data) {
+            try {
+                const match = /[^:\/]+\.agar\.io/.exec(this.url);
+                if (match) {
+                    capturedServerLink = 'https://agar.io/?sip=' + match[0];
+                    // Also check for Legend Mod clan tag
+                    const tagEl = document.getElementById('clantag');
+                    if (tagEl && tagEl.value) {
+                        capturedServerLink = window.location.href + '&?pass=' + tagEl.value;
+                    }
+                }
+            } catch(e) {}
+            return origSend.apply(this, [data]);
+        };
+
+        function showDiscordNotification() {
+            const div = document.createElement('div');
+            div.id = 'io-discord-notif';
+            Object.assign(div.style, {
+                position: 'fixed', bottom: '100px', right: '20px', zIndex: '999999',
+                background: 'rgba(88,101,242,0.9)', color: '#fff', padding: '10px 18px',
+                borderRadius: '8px', fontWeight: 'bold', fontSize: '13px',
+                fontFamily: 'Segoe UI, Arial, sans-serif',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            });
+            div.textContent = '✅ Server IP sent to Discord!';
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        function postToDiscord(webhookUrl) {
+            if (!webhookUrl || !capturedServerLink) return;
+            const nickEl = document.getElementById('nick');
+            const nick = nickEl ? nickEl.value : 'Unknown';
+            const skinEl = document.getElementById('skin');
+            const skin = skinEl ? skinEl.value : '';
+            const tagEl = document.getElementById('clantag');
+            const tag = tagEl ? tagEl.value : '';
+            const regionEl = document.getElementById('region');
+            const modeEl = document.getElementById('gamemode');
+            const regmod = (regionEl ? regionEl.value : '') + (modeEl ? modeEl.value : '');
+            const profilePic = document.querySelector('.agario-profile-picture');
+            const avatar = profilePic ? profilePic.getAttribute('src') : '';
+
+            const fields = [];
+            if (tag) fields.push({ name: 'Tag / Password', value: tag, inline: true });
+            if (regmod) fields.push({ name: 'Region / Mode', value: regmod, inline: true });
+
+            const payload = {
+                embeds: [{
+                    author: { name: nick, url: capturedServerLink, icon_url: avatar },
+                    title: tag ? capturedServerLink : 'Join my agario server',
+                    url: capturedServerLink,
+                    color: 15258703,
+                    fields: fields,
+                    thumbnail: skin ? { url: skin } : undefined,
+                    footer: { text: '• Discord webhook by IO Toolkit / Expanding Land' }
+                }]
+            };
+
+            try {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', webhookUrl, true);
+                xhr.setRequestHeader('Content-type', 'application/json');
+                xhr.send(JSON.stringify(payload));
+            } catch(e) {
+                console.error('[IO Toolkit] Discord post failed:', e);
+            }
+        }
+
+        // Inject button after game UI loads
+        setTimeout(function() {
+            // Check if Legend Mod webhooks are stored
+            if (window.messageone === '0' || window.messageone === '1') {
+                generalChannel = localStorage.getItem('discwebhook1') || generalChannel;
+                serverChannel = localStorage.getItem('discwebhook2') || serverChannel;
+            }
+
+            const btn = document.createElement('button');
+            btn.textContent = '💬 Post Server IP to Discord';
+            btn.className = 'btn btn-primary';
+            Object.assign(btn.style, {
+                width: '100%', marginTop: '6px', padding: '8px',
+                backgroundColor: '#5865F2', borderColor: '#5865F2',
+                color: '#fff', fontWeight: '700', fontSize: '13px',
+                borderRadius: '6px', cursor: 'pointer', border: 'none'
+            });
+            btn.addEventListener('mouseover', () => btn.style.backgroundColor = '#4752C4');
+            btn.addEventListener('mouseout', () => btn.style.backgroundColor = '#5865F2');
+            btn.addEventListener('click', function() {
+                if (!generalChannel && !serverChannel) {
+                    const wh = prompt('Enter your Discord webhook URL:');
+                    if (wh) {
+                        generalChannel = wh;
+                        localStorage.setItem('discwebhook1', wh);
+                    } else return;
+                }
+                if (serverChannel) postToDiscord(serverChannel);
+                if (generalChannel) postToDiscord(generalChannel);
+                showDiscordNotification();
+            });
+
+            // Try to place after the play button area
+            const mainButtons = document.getElementById('agario-main-buttons');
+            if (mainButtons) {
+                mainButtons.appendChild(btn);
+            } else {
+                const playBtn = document.querySelector('.btn-play, .btn-play-btn, #playBtn');
+                if (playBtn && playBtn.parentNode) {
+                    playBtn.parentNode.insertBefore(btn, playBtn.nextSibling);
+                }
+            }
+
+            console.log('[IO Toolkit] ✓ Discord SIP poster ready');
+        }, 4000);
+    }
+
     // ── Init ──
     window.addEventListener('DOMContentLoaded', function() {
         createFPSOverlay();
@@ -471,6 +601,7 @@
         if (host.includes('agar.io')) {
             startSkinObserver();
             startCoinCollector();
+            startDiscordSIP();
         }
 
         console.log('[IO Toolkit v2.0] Loaded — by Expanding Land');
