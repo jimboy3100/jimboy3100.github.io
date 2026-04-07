@@ -11470,9 +11470,13 @@ function thelegendmodproject() {
                 }
                 else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
                          (defaultmapsettings.jelloPhysics && this._jelloRl)) {
-                    //else{			
-                    style.fillStyle = color2;
-                    style.fill();
+                    /* Jello/jelly: fill with cell color as fallback
+                     * only when no skin is available. When a skin exists,
+                     * it will be clipped to the deformed path instead. */
+                    if (!node) {
+                        style.fillStyle = color2;
+                        style.fill();
+                    }
                 }
                 //}
                 if (s) {
@@ -11511,20 +11515,21 @@ function thelegendmodproject() {
                         }
                         if (legendmod.gameMode != ":teams") {
                             if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
-                                var lineWidth = Math.max(~~(y / 50), 10);
+                                /* Clip skin to deformed path — skin distorts
+                                 * with the wobble instead of bleeding color. */
                                 style.save();
                                 style.clip();
-                                this.maxPointRad && (y = this.maxPointRad);
+                                var drawR = this.maxPointRad || y;
                                 try {
-                                    style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                                    style.drawImage(node, this.x - drawR, this.y - drawR, 2 * drawR, 2 * drawR);
                                 } catch (e) { }
-                                style.globalCompositeOperation = 'luminosity';
-
-                                style.lineWidth = lineWidth
+                                style.restore();
+                                /* Thin proportional outline — clean, professional */
+                                var lineWidth = Math.max(~~(y * 0.02), 2);
+                                if (lineWidth > 4) lineWidth = 4;
+                                style.lineWidth = lineWidth;
                                 style.strokeStyle = color2;
                                 style.stroke();
-                                style.globalCompositeOperation = '';
-                                style.restore();
 
                             } else {
                                 try {
