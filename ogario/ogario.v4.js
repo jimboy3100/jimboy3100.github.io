@@ -3946,7 +3946,7 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
-    jelloPhysics: false,
+    jelloPhysics: true,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
