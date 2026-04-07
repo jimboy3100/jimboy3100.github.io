@@ -18862,28 +18862,47 @@ function leftClickOpen3() {
     window.open(temp12, '_blank');
 }
 
+function sendTeamCommand(cmdType, x, y) {
+    if (LM.isLegendWorld && legendmod.isSocketOpen()) {
+        /* Expanding Land: binary opcode 203 (0xCB)
+         * Format: [203][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
+         * cmdType: 1=Attack, 2=Fight, 3=Run
+         * Server uses sender's clan tag to broadcast only to same-tag teammates.
+         * No tag = no teammates = no point sending. */
+        if (!ogarcopythelb.clanTag || ogarcopythelb.clanTag.length === 0) return;
+        var view = legendmod.createView(10);
+        view.setUint8(0, 203);          // opcode 0xCB
+        view.setUint8(1, cmdType);
+        view.setInt32(2, x, true);
+        view.setInt32(6, y, true);
+        legendmod.sendMessage(view);
+    } else {
+        /* Other servers: text-based through chat */
+        var labels = { 1: 'DosAttack', 2: 'DosFight', 3: 'DosRun' };
+        var label = labels[cmdType];
+        window.application.sendChatMessage(101, "[" + label + "]" + x + "," + y + "[/" + label + "]");
+    }
+}
+
 function leftClickAttack() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    window.application.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
-    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
-    hideContextMenu()
+    var x = legendmod.cursorX + legendmod.mapOffsetX;
+    var y = legendmod.cursorY + legendmod.mapOffsetY;
+    sendTeamCommand(1, x, y);
+    hideContextMenu();
 }
 
 function leftClickFight() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    window.application.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
-    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
-    hideContextMenu()
+    var x = legendmod.cursorX + legendmod.mapOffsetX;
+    var y = legendmod.cursorY + legendmod.mapOffsetY;
+    sendTeamCommand(2, x, y);
+    hideContextMenu();
 }
 
 function leftClickRun() {
-    var temp = legendmod.cursorX + legendmod.mapOffsetX
-    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
-    window.application.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
-    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
-    hideContextMenu()
+    var x = legendmod.cursorX + legendmod.mapOffsetX;
+    var y = legendmod.cursorY + legendmod.mapOffsetY;
+    sendTeamCommand(3, x, y);
+    hideContextMenu();
 }
 
 function openContextMenu(evt) {
