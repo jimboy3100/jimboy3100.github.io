@@ -10294,12 +10294,12 @@ function thelegendmodproject() {
 
         this.initJelloPoints = function (screenPx) {
             /* Adaptive point count — mirrors jelly's approach:
-             * Uses screen size to decide, capped at [10, 40].
-             * 40 points with lineTo gives a perfectly smooth polygon
+             * Uses screen size to decide, capped at [10, 30].
+             * 30 points with lineTo gives a smooth polygon
              * that clips fast (vs 120 points in jelly). */
             var N = screenPx | 0;
             if (N < 10) N = 10;
-            else if (N > 40) N = 40;
+            else if (N > 30) N = 30;
             if (this._jelloLen === N) return;
             /* SoA: Float64Arrays — no object allocation, no GC */
             this._jelloLen = N;
@@ -16250,19 +16250,21 @@ Most cells eaten   : ${mostCellsEaten}
 
             for (i = 0; i < LM.cells.length; i++) {
                 var cell = LM.cells[i];
-                /* Jello physics: activated by EITHER jellyPhisycs or jelloPhysics.
-                 * Replaces old jelly's updateNumPoints/movePoints with optimized
-                 * SoA Float64Array approach. Runs for all non-food non-virus cells. */
-                if ((defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) && !cell.isFood && !cell.isVirus) {
+                /* Jello physics: lightweight alternative to jelly.
+                 * Only runs when jelloPhysics is ON and jellyPhisycs is OFF.
+                 * If jelly is enabled, it takes priority (has collision detection). */
+                if (defaultmapsettings.jelloPhysics && !defaultmapsettings.jellyPhisycs && !cell.isFood && !cell.isVirus) {
                     var jelloMargin = cell.size * 1.3;
                     if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
                         cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
                         var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 5) {
-                            /* Frame-skip for distant/small cells:
+                        if (screenPx >= 8) {
+                            /* 3-tier frame-skip for performance:
+                             * < 40px on screen  → every 4th frame
                              * < 100px on screen → every 2nd frame
-                             * >= 100px → every frame */
-                            var shouldUpdate = screenPx >= 100 || ((drawRender._jelloFrame + cell.id) & 1) === 0;
+                             * >= 100px          → every frame */
+                            var skip = screenPx >= 100 ? 0 : screenPx >= 40 ? 1 : 3;
+                            var shouldUpdate = skip === 0 || ((drawRender._jelloFrame + cell.id) & skip) === 0;
                             if (shouldUpdate) {
                                 cell.initJelloPoints(screenPx);
                                 cell.moveJelloPoints();
