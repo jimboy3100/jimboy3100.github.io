@@ -18892,7 +18892,7 @@ function leftClickOpen3() {
 }
 
 function sendTeamCommand(cmdType, x, y) {
-    if (LM.isLegendWorld && legendmod.isSocketOpen()) {
+    if (legendmod.isLegendWorld && legendmod.isSocketOpen()) {
         /* Expanding Land: binary opcode 205 (0xCD)
          * Format: [205][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
          * cmdType: 1=Attack, 2=Fight, 3=Run
@@ -18935,7 +18935,7 @@ function leftClickRun() {
 }
 
 function openContextMenu(evt) {
-    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity || LM.isLegendWorld)) {
+    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity || legendmod.isLegendWorld)) {
         evt.preventDefault();
         const time = menuLeft.isOpen() ? 100 : 0;
         menuLeft.hide();
