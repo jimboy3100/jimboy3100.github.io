@@ -10299,11 +10299,11 @@ function thelegendmodproject() {
         this._jelloRng = 0xDEADBEEF | 0;
 
         this.initJelloPoints = function (screenPx) {
-            /* Adaptive point count — balance smoothness vs cost:
-             * < 60px  → 10 points (small on screen)
-             * < 120px → 16 points
-             * >= 120px → 22 points (hero cells) */
-            var N = screenPx >= 120 ? 22 : screenPx >= 60 ? 16 : 10;
+            /* Lean point counts — minimal for perf, enough for smooth curves:
+             * < 80px  → 8 points (cheap, nearly circular)
+             * < 160px → 12 points
+             * >= 160px → 18 points (hero cells) */
+            var N = screenPx >= 160 ? 18 : screenPx >= 80 ? 12 : 8;
             if (this._jelloLen === N) return;
             this._jelloLen = N;
             /* SoA: 3 flat Float64Arrays — no object allocation, no GC */
@@ -10356,17 +10356,16 @@ function thelegendmodproject() {
             var yArr = this._jelloY;
             var vel = this._jelloVel;
             var rng = this._jelloRng;
-            /* Size-adaptive clamp: small cells barely wobble,
-             * large cells deform freely. Prevents color/skin
-             * bleeding on small cells.
-             * size 80 → ±3%, size 400+ → ±18% */
-            var t = (sz - 80) / 320;
+            /* Size-adaptive clamp — small cells nearly circular,
+             * large cells deform freely. Prevents color/skin bleed.
+             * size 150 → ±1%, size 500+ → ±15% */
+            var t = (sz - 150) / 350;
             if (t < 0) t = 0; else if (t > 1) t = 1;
-            var wobble = 0.03 + t * 0.15;
+            var wobble = 0.01 + t * 0.14;
             var clampLo = sz * (1.0 - wobble);
             var clampHi = sz * (1.0 + wobble);
-            /* Scale jitter with size — small cells stay clean */
-            var jitterAmt = 0.15 + t * 0.55; /* 0.15 to 0.70 */
+            /* Jitter scales with size — small cells stay perfectly clean */
+            var jitterAmt = 0.05 + t * 0.55; /* 0.05 to 0.60 */
             var maxRad = 0;
             /* Pre-fetch edge values to eliminate modulo in loop */
             var lastRl = rlArr[N - 1];
@@ -16237,19 +16236,21 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.jellyPhisycs) {
                     cell.updateNumPoints();
                     cell.movePoints();
-                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 80) {
-                    /* Jello physics: skip food, viruses, and cells < 80.
-                     * Small cells don't benefit from wobble — it just
-                     * makes them look broken and wastes CPU. */
-                    var jelloMargin = cell.size * 1.5;
+                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 150) {
+                    /* Jello physics: only cells > 150 (mass ~225+).
+                     * Below this, wobble is invisible and wastes CPU.
+                     * For 1000-player servers this cuts ~70% of cells. */
+                    var jelloMargin = cell.size * 1.3;
                     if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
                         cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
                         var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 40) {
-                            /* Aggressive frame-skipping:
-                             * < 80px on screen → every 3rd frame
-                             * >= 80px → every frame */
-                            if (screenPx >= 80 || ((drawRender._jelloFrame + cell.id) % 3) === 0) {
+                        if (screenPx >= 50) {
+                            /* 3-tier frame-skip for max throughput:
+                             * < 100px on screen → every 4th frame
+                             * < 200px on screen → every 2nd frame
+                             * >= 200px → every frame (hero cells) */
+                            var skip = screenPx >= 200 || (screenPx >= 100 ? ((drawRender._jelloFrame + cell.id) & 1) === 0 : ((drawRender._jelloFrame + cell.id) & 3) === 0);
+                            if (skip) {
                                 cell.initJelloPoints(screenPx);
                                 cell.moveJelloPoints();
                             }
