@@ -15446,15 +15446,16 @@ Most cells eaten   : ${mostCellsEaten}
                 this.Waves[0].moreAnimation = moreAnimation
             }
         },
-        /* ===== Garix UpdateNodes — Protocol 6-10 format =====
-         * Two separate terminated lists: updated nodes (existing) + added nodes (new).
-         * Both use UInt16 flags. Remove list uses UInt16 count. */
+        /* ===== Garix UpdateNodes — Protocol ≤ 4 format (protocol 1) =====
+         * Single combined update+add loop terminated by nodeID=0.
+         * Int16 x/y, UInt8 flags, UTF-16z names, UInt32 removeCount. */
         garixUpdateCells(data, offset) {
             this.megaFFAscore();
-            var encode = function () {
+            // UTF-16z string reader (null-terminated UInt16 chars)
+            var encodeUTF16 = function () {
                 var text = '';
-                while (offset < data.byteLength) {
-                    var ch = data.getUint8(offset++);
+                while (offset + 1 < data.byteLength) {
+                    var ch = data.getUint16(offset, true); offset += 2;
                     if (ch === 0) break;
                     text += String.fromCharCode(ch);
                 }
@@ -15480,114 +15481,72 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            // 2. Updated nodes (loop until nodeID = 0)
-            while (true) {
+            // 2. Combined update + add nodes (loop until nodeID = 0)
+            while (offset + 3 < data.byteLength) {
                 var id = data.getUint32(offset, true); offset += 4;
                 if (id === 0) break;
-                var x = data.getInt32(offset, true); offset += 4;
-                var y = data.getInt32(offset, true); offset += 4;
+                var x = data.getInt16(offset, true); offset += 2;
+                var y = data.getInt16(offset, true); offset += 2;
                 var size = data.getUint16(offset, true); offset += 2;
-                var flags = data.getUint16(offset, true); offset += 2;
-                // flag 0x0002 = has color
-                var color = null;
-                if (flags & 0x0002) {
-                    var r = data.getUint8(offset++);
-                    var g = data.getUint8(offset++);
-                    var b = data.getUint8(offset++);
-                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-                }
+                var r = data.getUint8(offset++);
+                var g = data.getUint8(offset++);
+                var b = data.getUint8(offset++);
+                var flags = data.getUint8(offset++);
+                var color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+                var isVirus = !!(flags & 0x01);
+                var isAgitated = !!(flags & 0x10);
+                var isEjected = !!(flags & 0x20);
+
                 var cell = this.indexedCells[id];
                 if (cell) {
+                    // Existing cell — update position/size/color
                     cell.targetX = x;
                     cell.targetY = y;
                     cell.targetSize = size;
-                    if (color) cell.color = color;
-                }
-            }
-
-            // 3. Added nodes (loop until nodeID = 0)
-            while (true) {
-                var id = data.getUint32(offset, true); offset += 4;
-                if (id === 0) break;
-                var x = data.getInt32(offset, true); offset += 4;
-                var y = data.getInt32(offset, true); offset += 4;
-                var size = data.getUint16(offset, true); offset += 2;
-                var flags = data.getUint16(offset, true); offset += 2;
-
-                var color = null, skin = null, name = '';
-                var isVirus = !!(flags & 0x0001);
-                var isAgitated = !!(flags & 0x0010);
-                var isEjected = !!(flags & 0x0020);
-                var isFood = !!(flags & 0x0080);
-
-                // flag 0x0002 = has color (always set for added nodes)
-                if (flags & 0x0002) {
-                    var r = data.getUint8(offset++);
-                    var g = data.getUint8(offset++);
-                    var b = data.getUint8(offset++);
-                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-                }
-                // flag 0x0004 = has skin
-                if (flags & 0x0004) {
-                    skin = encode();
-                }
-                // flag 0x0008 = has name
-                if (flags & 0x0008) {
-                    name = window.decodeURIComponent(escape(encode()));
-                    if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
-                        this.vanillaskins(name, skin, color);
-                    }
-                }
-                // tabID (always present in protocol 6-10 added nodes)
-                var tabID = data.getUint16(offset, true); offset += 2;
-                // flag 0x0100 = has nickColor
-                var nickColor = null;
-                if (flags & 0x0100) {
-                    var nr = data.getUint8(offset++);
-                    var ng = data.getUint8(offset++);
-                    var nb = data.getUint8(offset++);
-                    nickColor = this.rgb2Hex(nr, ng, nb);
-                }
-
-                var cellObj = null;
-                if (this.indexedCells.hasOwnProperty(id)) {
-                    cellObj = this.indexedCells[id];
+                    cell.color = color;
                 } else {
-                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                    cellObj.time = this.time;
-                    cellObj.spectator = false;
+                    // New cell — read name (UTF-16z, only on ADD)
+                    var name = encodeUTF16();
+                    var isFood = (size <= 20 && !isVirus && !name);
+                    cell = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cell.time = this.time;
+                    cell.spectator = false;
                     if (!isFood) {
                         if (isVirus && defaultmapsettings.virusesRange) {
-                            this.viruses.push(cellObj);
+                            this.viruses.push(cell);
                         }
-                        this.cells.push(cellObj);
-                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
-                            cellObj.isPlayerCell = true;
+                        this.cells.push(cell);
+                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cell) === -1) {
+                            cell.isPlayerCell = true;
                             this.playerColor = color;
-                            cellObj.color = color;
-                            this.playerCells.push(cellObj);
+                            cell.color = color;
+                            this.playerCells.push(cell);
                         }
                     } else {
-                        this.food.push(cellObj);
+                        this.food.push(cell);
                     }
-                    this.indexedCells[id] = cellObj;
+                    this.indexedCells[id] = cell;
+                    if (cell.isPlayerCell) name = this.playerNick;
+                    if (name) cell.targetNick = name;
+                    cell.targetX = x;
+                    cell.targetY = y;
+                    cell.targetSize = size;
+                    cell.isFood = isFood ? 1 : 0;
+                    cell.isVirus = isVirus;
+                    if (name && legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
+                        this.vanillaskins(name, null, color);
+                    }
                 }
-                if (cellObj.isPlayerCell) name = this.playerNick;
-                if (name) cellObj.targetNick = name;
-                cellObj.targetX = x;
-                cellObj.targetY = y;
-                cellObj.targetSize = size;
-                cellObj.isFood = isFood ? 1 : 0;
-                cellObj.isVirus = isVirus;
-                if (skin) cellObj.skin = skin;
             }
 
-            // 4. Remove list (UInt16 count)
-            var removeCount = data.getUint16(offset, true); offset += 2;
-            for (var ri = 0; ri < removeCount; ri++) {
-                var removeID = data.getUint32(offset, true); offset += 4;
-                var cell = this.indexedCells[removeID];
-                if (cell) cell.removeCell();
+            // 3. Remove list (UInt32 count in protocol ≤ 4)
+            if (offset + 3 < data.byteLength) {
+                var removeCount = data.getUint32(offset, true); offset += 4;
+                for (var ri = 0; ri < removeCount && offset + 3 < data.byteLength; ri++) {
+                    var removeID = data.getUint32(offset, true); offset += 4;
+                    var rcell = this.indexedCells[removeID];
+                    if (rcell) rcell.removeCell();
+                }
             }
 
             // Death check
