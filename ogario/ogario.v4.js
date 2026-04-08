@@ -1,4 +1,4 @@
-window.OgVer = 3.392;
+window.OgVer = 3.393;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -15446,13 +15446,14 @@ Most cells eaten   : ${mostCellsEaten}
                 this.Waves[0].moreAnimation = moreAnimation
             }
         },
-        /* ===== Garix UpdateNodes — Protocol 6-10 format =====
+        /* ===== Garix UpdateNodes — Protocol 6 format =====
          * Handshake sends protocol 1, server converts to 6 internally.
-         * Two separate terminated lists: updated + added nodes.
-         * Int32 x/y, UInt16 flags, UTF-8z strings, UInt16 removeCount. */
+         * Server writes updNodes then addNodes then ONE writeUInt32(0) terminator.
+         * Flag 0x40 distinguishes added nodes (has tabID/skin/name) from updates. */
         garixUpdateCells(data, offset) {
             this.megaFFAscore();
-            // UTF-8z string reader
+            var self = this;
+            // UTF-8z string reader (null-terminated)
             var encode = function () {
                 var text = '';
                 while (offset < data.byteLength) {
@@ -15482,7 +15483,8 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            // 2. Updated nodes (existing, loop until nodeID = 0)
+            // 2. Combined update + add nodes (single loop, ONE terminator)
+            // Flag 0x40 = added node (has tabID, possibly skin/name/nickColor)
             while (offset + 3 < data.byteLength) {
                 var id = data.getUint32(offset, true); offset += 4;
                 if (id === 0) break;
@@ -15491,109 +15493,93 @@ Most cells eaten   : ${mostCellsEaten}
                 var y = data.getInt32(offset, true); offset += 4;
                 var size = data.getUint16(offset, true); offset += 2;
                 var flags = data.getUint16(offset, true); offset += 2;
-                // flag 0x0002 = has color
+
                 var color = null;
-                if (flags & 0x0002) {
+                // flag 0x02 = has color
+                if (flags & 0x02) {
                     if (offset + 2 >= data.byteLength) break;
                     var r = data.getUint8(offset++);
                     var g = data.getUint8(offset++);
                     var b = data.getUint8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
-                var cell = this.indexedCells[id];
-                if (cell) {
-                    cell.targetX = x;
-                    cell.targetY = y;
-                    cell.targetSize = size;
-                    if (color) cell.color = color;
-                }
-            }
 
-            // 3. Added nodes (new, loop until nodeID = 0)
-            while (offset + 3 < data.byteLength) {
-                var id = data.getUint32(offset, true); offset += 4;
-                if (id === 0) break;
-                if (offset + 11 >= data.byteLength) break;
-                var x = data.getInt32(offset, true); offset += 4;
-                var y = data.getInt32(offset, true); offset += 4;
-                var size = data.getUint16(offset, true); offset += 2;
-                var flags = data.getUint16(offset, true); offset += 2;
+                if (flags & 0x40) {
+                    // ── ADDED NODE ──
+                    var skin = null, name = '';
+                    var isVirus = !!(flags & 0x0001);
+                    var isAgitated = !!(flags & 0x0010);
+                    var isEjected = !!(flags & 0x0020);
+                    var isFood = !!(flags & 0x0080);
 
-                var color = null, skin = null, name = '';
-                var isVirus = !!(flags & 0x0001);
-                var isAgitated = !!(flags & 0x0010);
-                var isEjected = !!(flags & 0x0020);
-                var isFood = !!(flags & 0x0080);
-
-                // flag 0x0002 = has color (always set for added nodes)
-                if (flags & 0x0002) {
-                    if (offset + 2 >= data.byteLength) break;
-                    var r = data.getUint8(offset++);
-                    var g = data.getUint8(offset++);
-                    var b = data.getUint8(offset++);
-                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-                }
-                // flag 0x0004 = has skin
-                if (flags & 0x0004) {
-                    skin = encode();
-                }
-                // flag 0x0008 = has name
-                if (flags & 0x0008) {
-                    name = encode();
-                    try { name = window.decodeURIComponent(escape(name)); } catch(e) {}
-                    if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
-                        this.vanillaskins(name, skin, color);
+                    // flag 0x04 = has skin
+                    if (flags & 0x04) {
+                        skin = encode();
                     }
-                }
-                // flag 0x0040 = has tabID (always set in proto 6-10)
-                if (flags & 0x0040) {
+                    // flag 0x08 = has name
+                    if (flags & 0x08) {
+                        name = encode();
+                        try { name = window.decodeURIComponent(escape(name)); } catch(e) {}
+                        if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
+                            this.vanillaskins(name, skin, color);
+                        }
+                    }
+                    // tabID (always present for added nodes, flag 0x40)
                     if (offset + 1 < data.byteLength) {
                         var tabID = data.getUint16(offset, true); offset += 2;
                     }
-                }
-                // flag 0x0100 = has nickColor
-                if (flags & 0x0100) {
-                    if (offset + 2 < data.byteLength) {
-                        var nr = data.getUint8(offset++);
-                        var ng = data.getUint8(offset++);
-                        var nb = data.getUint8(offset++);
+                    // flag 0x100 = has nickColor
+                    if (flags & 0x100) {
+                        if (offset + 2 < data.byteLength) {
+                            offset += 3; // skip r,g,b
+                        }
                     }
-                }
 
-                var cellObj = null;
-                if (this.indexedCells.hasOwnProperty(id)) {
-                    cellObj = this.indexedCells[id];
-                } else {
-                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                    cellObj.time = this.time;
-                    cellObj.spectator = false;
-                    if (!isFood) {
-                        if (isVirus && defaultmapsettings.virusesRange) {
-                            this.viruses.push(cellObj);
-                        }
-                        this.cells.push(cellObj);
-                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
-                            cellObj.isPlayerCell = true;
-                            this.playerColor = color;
-                            cellObj.color = color;
-                            this.playerCells.push(cellObj);
-                        }
+                    var cellObj = null;
+                    if (this.indexedCells.hasOwnProperty(id)) {
+                        cellObj = this.indexedCells[id];
                     } else {
-                        this.food.push(cellObj);
+                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                        cellObj.time = this.time;
+                        cellObj.spectator = false;
+                        if (!isFood) {
+                            if (isVirus && defaultmapsettings.virusesRange) {
+                                this.viruses.push(cellObj);
+                            }
+                            this.cells.push(cellObj);
+                            if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
+                                cellObj.isPlayerCell = true;
+                                this.playerColor = color;
+                                cellObj.color = color;
+                                this.playerCells.push(cellObj);
+                            }
+                        } else {
+                            this.food.push(cellObj);
+                        }
+                        this.indexedCells[id] = cellObj;
                     }
-                    this.indexedCells[id] = cellObj;
+                    if (cellObj.isPlayerCell) name = this.playerNick;
+                    if (name) cellObj.targetNick = name;
+                    cellObj.targetX = x;
+                    cellObj.targetY = y;
+                    cellObj.targetSize = size;
+                    cellObj.isFood = isFood ? 1 : 0;
+                    cellObj.isVirus = isVirus;
+                    if (color) cellObj.color = color;
+                    if (skin) cellObj.skin = skin;
+                } else {
+                    // ── UPDATED NODE ──
+                    var cell = this.indexedCells[id];
+                    if (cell) {
+                        cell.targetX = x;
+                        cell.targetY = y;
+                        cell.targetSize = size;
+                        if (color) cell.color = color;
+                    }
                 }
-                if (cellObj.isPlayerCell) name = this.playerNick;
-                if (name) cellObj.targetNick = name;
-                cellObj.targetX = x;
-                cellObj.targetY = y;
-                cellObj.targetSize = size;
-                cellObj.isFood = isFood ? 1 : 0;
-                cellObj.isVirus = isVirus;
-                if (skin) cellObj.skin = skin;
             }
 
-            // 4. Remove list (UInt16 count in protocol 6-10)
+            // 3. Remove list (UInt16 count)
             if (offset + 1 < data.byteLength) {
                 var removeCount = data.getUint16(offset, true); offset += 2;
                 for (var ri = 0; ri < removeCount && offset + 3 < data.byteLength; ri++) {
