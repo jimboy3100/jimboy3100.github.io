@@ -1,4 +1,4 @@
-window.OgVer = 3.380;
+window.OgVer = 3.390;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12802,9 +12802,12 @@ function thelegendmodproject() {
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
-
-
-
+                // ── Garix: catch unknown opcodes so RangeErrors don't crash ──
+                default:
+                    if (this.serverType === 'garix') {
+                        // Garix may send opcodes we haven't implemented yet — silently ignore
+                        break;
+                    }
                 case 5: //Yahnych
                     window.testobjectsOpcode5 = data;
                     this.fbOnline = [];
@@ -13193,9 +13196,8 @@ function thelegendmodproject() {
                     if (this.serverType === 'garix') {
                         console.log('%c[Garix]%c Handshake confirmed! Sending auth...', 'color:#3f3', 'color:inherit');
                         // Step 5: Send opcode 221 (auth — empty for guest)
-                        var authView = this.createView(2);
-                        authView.setUint8(0, 221); // 0xDD
-                        authView.setUint8(1, 0);   // null = guest
+                        var authView = this.createView(1);
+                        authView.setUint8(0, 221); // 0xDD — just opcode, no payload = guest
                         this.sendBuffer(authView);
                         this.garixHandshakeDone = true;
                     }
