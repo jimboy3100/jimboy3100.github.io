@@ -11831,7 +11831,7 @@ function thelegendmodproject() {
 
             // ===== Garix Handshake: opcode 171 instead of 254/255 =====
             if (this.serverType === 'garix') {
-                this.garixProtocol = window.customProtol || 6;
+                this.garixProtocol = 1;
                 this.garixClientTime = Math.floor(Date.now() / 1000);
                 var gView = this.createView(9);
                 gView.setUint8(0, 171); // 0xAB
