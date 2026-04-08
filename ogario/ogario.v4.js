@@ -11501,6 +11501,7 @@ function thelegendmodproject() {
         isSpectateEnabled: false,
         ws: null,
         socket: null,
+        garixFingerprint: null,
         protocolKey: null,
         clientKey: null,
         connectionOpened: false,
@@ -11763,7 +11764,11 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            this.socket = new WebSocket(t);
+            if (this.serverType === 'garix' && this.garixFingerprint) {
+                this.socket = new WebSocket(t, [this.garixFingerprint]);
+            } else {
+                this.socket = new WebSocket(t);
+            }
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
                 app.onOpen();
@@ -16202,6 +16207,38 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
+    // ── Garix fingerprint: generate once at startup, cache for connections ──
+    (async function() {
+        try {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.textBaseline = "top";
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("garix.io fp", 2, 15);
+            ctx.fillStyle = "rgba(102,204,0,0.7)";
+            ctx.fillText("garix.io fp", 4, 17);
+            var canvasData = canvas.toDataURL();
+            var webgl = "";
+            try {
+                var gl = document.createElement("canvas").getContext("webgl");
+                var ext = gl.getExtension("WEBGL_debug_renderer_info");
+                if (ext) webgl = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+            } catch (e) {}
+            var raw = [navigator.userAgent, screen.width + "x" + screen.height + "x" + screen.colorDepth, navigator.language, navigator.hardwareConcurrency || 0, new Date().getTimezoneOffset(), canvasData.slice(-50), webgl].join("|");
+            var encoder = new TextEncoder();
+            var data = encoder.encode(raw);
+            var hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            var hashArray = Array.from(new Uint8Array(hashBuffer));
+            var hex = hashArray.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+            LM.garixFingerprint = hex.slice(0, 32);
+            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
+        } catch (e) {
+            console.warn('[Garix] Fingerprint generation failed:', e);
+        }
+    })();
     try {
         if (window.top !== window.self) {
             window.top.legendmod = LM;
