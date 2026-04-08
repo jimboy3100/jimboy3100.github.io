@@ -1,4 +1,4 @@
-window.OgVer = 3.351;
+window.OgVer = 3.344;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -2323,7 +2323,6 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
@@ -2813,7 +2812,6 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
@@ -3946,7 +3944,6 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
-
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
@@ -4011,7 +4008,7 @@ var defaultmapsettings = {
     oppColors: true,
     oppRings: true,
     virColors: false,
-    splitRange: false,
+    splitRange: true,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
@@ -5657,22 +5654,35 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
+                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
 
-                    /* Delta multiplier system:
-                     * di.totalScore = extra_decay_multiplier × 10000
-                     * di.multiplier = effective decay multiplier × 100 (pow(1.086, m))
-                     * di.threshold  = always 0 (unused in new system)
-                     * Per-type fields are zeroed — no event counts or timers */
-                    var rawMultiplier = di.totalScore / 10000;  // e.g. 5000 → 0.5
-                    var effectiveMult = di.multiplier / 100;    // e.g. 228 → 2.28×
-                    var basePct = di.decayScore / 100;           // e.g. 80 → 0.80
-                    var actualPct = (basePct * effectiveMult).toFixed(2);
+                    var basePct = (di.decayScore / 100).toFixed(2);
+                    var isAbove = di.totalScore > di.threshold;
 
-                    var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
-                    atStr += '<span style="color:' + mColor + '">\u2697 \u2212' + actualPct + '%/' + di.decayIntervalSecs + 's</span>';
+                    if (isAbove) {
+                        var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
+                        var totalDecay = (parseFloat(basePct) + parseFloat(excessPct)).toFixed(2);
+                        atStr += '<span style="color:#ff4c4c">\u2697 Anti: \u2212' + excessPct + '%/' + di.decayIntervalSecs + 's extra</span>';
+                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' +' + (di.virusScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.virusMaxSecs);
+                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' +' + (di.splitScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.splitMaxSecs);
+                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' +' + (di.ejectScore / 100).toFixed(2) + '% \u23f3' + _fmtSecs(di.ejectMaxSecs);
+                        atStr += ' | \u221e \u2212' + totalDecay + '%/' + di.decayIntervalSecs + 's';
+                    } else if (di.totalScore > 0) {
+                        var scoreVal = (di.totalScore / 100).toFixed(2);
+                        var threshVal = (di.threshold / 100).toFixed(2);
+                        atStr += '<span style="color:#33ff33">\u2697 ' + scoreVal + '/' + threshVal + '%</span>';
+                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' \u23f3' + _fmtSecs(di.virusMaxSecs);
+                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' \u23f3' + _fmtSecs(di.splitMaxSecs);
+                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' \u23f3' + _fmtSecs(di.ejectMaxSecs);
+                        atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    } else {
+                        atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    }
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
+                    } else if (di.dangerCount > 0) {
+                        atStr += ' | \u26a0 \u23f3' + _fmtSecs(di.dangerMaxSecs);
                     }
 
                     if (t) t += atStr + ' | ';
@@ -7432,10 +7442,6 @@ function thelegendmodproject() {
             //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
             this.play();
             this.hideMenu();
-            /* Force-hide helloContainer — native hideMenu() sometimes fails
-             * when clicking Play while already alive on LegendWorld. */
-            var hc = document.getElementById('helloContainer');
-            if (hc) hc.style.display = 'none';
             if (window.addKeyListeners) {
                 window.addKeyListeners();
             }
@@ -7526,9 +7532,6 @@ function thelegendmodproject() {
             //
             pauseVideos();
             ogario.play = false;
-            /* Restore helloContainer visibility (hidden by onPlay) */
-            var hc = document.getElementById('helloContainer');
-            if (hc) hc.style.display = '';
             ogario.playerColor = null;
             ogario.foodIsHidden = false;
             ogario.playerMass = 0;
@@ -10282,8 +10285,6 @@ function thelegendmodproject() {
         this.sqDist = function (a, b) {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
-
-
         this.movePoints = function () {
             //console.log(this.id)
             var len = this.points.length;
@@ -11329,7 +11330,7 @@ function thelegendmodproject() {
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                    /* Jelly: fill deformed path with cell color */
+                    //else{			
                     style.fillStyle = color2;
                     style.fill();
                 }
@@ -11370,9 +11371,21 @@ function thelegendmodproject() {
                         }
                         if (legendmod.gameMode != ":teams") {
                             if (defaultmapsettings.jellyPhisycs) {
+                                var lineWidth = Math.max(~~(y / 50), 10);
+                                style.save();
+                                style.clip();
+                                this.maxPointRad && (y = this.maxPointRad);
                                 try {
-                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
                                 } catch (e) { }
+                                style.globalCompositeOperation = 'luminosity';
+
+                                style.lineWidth = lineWidth
+                                style.strokeStyle = color2;
+                                style.stroke();
+                                style.globalCompositeOperation = '';
+                                style.restore();
+
                             } else {
                                 try {
                                     style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
@@ -13055,35 +13068,6 @@ function thelegendmodproject() {
                         console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
                     }
                     break;
-                case 205: // 0xCD — Team Command (Expanding Land)
-                    /* Format: [205][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
-                     * cmd: 1=Attack, 2=Fight, 3=Run
-                     * Server broadcasts to same-tag teammates only */
-                    if (data.byteLength >= 10) {
-                        var tcCmd = data.getUint8(s++);
-                        var tcX = data.getInt32(s, true); s += 4;
-                        var tcY = data.getInt32(s, true); s += 4;
-                        var tcLabels = { 1: '\u2694\uFE0F Attack', 2: '\u{1F94A} Fight', 3: '\u{1F3C3} Run' };
-                        var tcColors = { 1: '#ff4444', 2: '#ffaa33', 3: '#33ff33' };
-                        var tcLabel = tcLabels[tcCmd] || 'Command';
-                        var tcColor = tcColors[tcCmd] || '#ffffff';
-
-                        /* Show as team chat notification */
-                        var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-                        application.displayChatMessage(time, 101, 0,
-                            '<span style="color:' + tcColor + '">' + tcLabel + '</span> at (' + tcX + ', ' + tcY + ')');
-
-                        /* Store for minimap marker rendering */
-                        if (!legendmod.teamCommands) legendmod.teamCommands = [];
-                        legendmod.teamCommands.push({
-                            cmd: tcCmd, x: tcX, y: tcY,
-                            time: Date.now(), expire: Date.now() + 8000
-                        });
-                        /* Clean expired markers */
-                        var now = Date.now();
-                        legendmod.teamCommands = legendmod.teamCommands.filter(function(c) { return c.expire > now; });
-                    }
-                    break;
                 case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 10 > data.byteLength) break; // need 2+2+2+4 bytes
@@ -13962,7 +13946,7 @@ function thelegendmodproject() {
                             botEl2.textContent = botCount2;
                         }
                     } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info — per-player extra decay multiplier */
+                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
                         var di = LM.decayInfo;
                         var _off = 1;
                         di.totalScore = data.getUint16(_off, true); _off += 2;
@@ -15085,7 +15069,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 /* Derive tier from actual border size — guarantees tier
                  * always matches the real map, regardless of map events */
-                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000];
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
                     if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
@@ -15944,7 +15928,6 @@ Most cells eaten   : ${mostCellsEaten}
         averageRenderTime: 0,
         renderingDelay: 0,
         lastRenderingDelay: 0,
-
         pelletColored: [],
         cellsColored: [],
         setCanvas() {
@@ -16035,10 +16018,40 @@ Most cells eaten   : ${mostCellsEaten}
                 //
             }
             else if (defaultmapsettings.showGrid) {
-                /* Draw grid directly — caching caused grid/camera desync
-                 * (grid frozen while camera moves = dizziness). Direct
-                 * drawing is ~100 lines per frame — negligible cost. */
-                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                /* Cached grid canvas: render grid to an offscreen canvas and
+                 * reuse it until camera/zoom changes significantly. On most
+                 * frames this is a single drawImage() instead of 300+ lines. */
+                var camDx = this.camX - (this._gridCamX || 0);
+                var camDy = this.camY - (this._gridCamY || 0);
+                var scaleDelta = Math.abs(this.scale - (this._gridScale || 0));
+                var needsRedraw = this._gridCacheDirty ||
+                    !this._gridCanvas ||
+                    scaleDelta > this.scale * 0.02 ||
+                    (camDx * camDx + camDy * camDy) > 625; /* 25^2 */
+
+                if (needsRedraw) {
+                    if (!this._gridCanvas) {
+                        this._gridCanvas = document.createElement('canvas');
+                        this._gridCtx = this._gridCanvas.getContext('2d');
+                    }
+                    var gw = this.canvasWidth * (this.dpr || 1);
+                    var gh = this.canvasHeight * (this.dpr || 1);
+                    if (this._gridCanvas.width !== gw || this._gridCanvas.height !== gh) {
+                        this._gridCanvas.width = gw;
+                        this._gridCanvas.height = gh;
+                    }
+                    this._gridCtx.clearRect(0, 0, gw, gh);
+                    this._gridCtx.save();
+                    this._gridCtx.scale(this.dpr || 1, this.dpr || 1);
+                    this.drawGrid(this._gridCtx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                    this._gridCtx.restore();
+                    this._gridCamX = this.camX;
+                    this._gridCamY = this.camY;
+                    this._gridScale = this.scale;
+                    this._gridCacheDirty = false;
+                }
+                /* Blit cached grid — single drawImage() on cache hit */
+                this.ctx.drawImage(this._gridCanvas, 0, 0);
             }
             this.ctx.save();
 
@@ -16106,9 +16119,9 @@ Most cells eaten   : ${mostCellsEaten}
 
             for (i = 0; i < LM.cells.length; i++) {
                 var cell = LM.cells[i];
-                /* Jelly physics: update deformed points every frame.
-                 * Must run for ALL cells (including off-screen) so
-                 * cells scrolling into view have correct geometry. */
+                /* Jelly physics must run for ALL cells every frame, even
+                 * off-screen ones. Otherwise cells scrolling into view
+                 * have stale points and look jagged/non-circular. */
                 if (defaultmapsettings.jellyPhisycs) {
                     cell.updateNumPoints();
                     cell.movePoints();
@@ -17706,7 +17719,6 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 this.renderedFrames++;
 
-
             }
         },
         //'renderFrame': async function() { //Sonia5
@@ -18729,51 +18741,35 @@ function leftClickOpen3() {
     window.open(temp12, '_blank');
 }
 
-function sendTeamCommand(cmdType, x, y) {
-    if (legendmod.isLegendWorld && legendmod.isSocketOpen()) {
-        /* Expanding Land: binary opcode 205 (0xCD)
-         * Format: [205][u8 cmd][i32 x LE][i32 y LE] = 10 bytes
-         * cmdType: 1=Attack, 2=Fight, 3=Run
-         * Server uses sender's clan tag to broadcast only to same-tag teammates.
-         * No tag = no teammates = no point sending. */
-        if (!ogarcopythelb.clanTag || ogarcopythelb.clanTag.length === 0) return;
-        var view = legendmod.createView(10);
-        view.setUint8(0, 205);          // opcode 0xCD
-        view.setUint8(1, cmdType);
-        view.setInt32(2, x, true);
-        view.setInt32(6, y, true);
-        legendmod.sendMessage(view);
-    } else {
-        /* Other servers: text-based through chat */
-        var labels = { 1: 'DosAttack', 2: 'DosFight', 3: 'DosRun' };
-        var label = labels[cmdType];
-        window.application.sendChatMessage(101, "[" + label + "]" + x + "," + y + "[/" + label + "]");
-    }
-}
-
 function leftClickAttack() {
-    var x = legendmod.cursorX + legendmod.mapOffsetX;
-    var y = legendmod.cursorY + legendmod.mapOffsetY;
-    sendTeamCommand(1, x, y);
-    hideContextMenu();
+    var temp = legendmod.cursorX + legendmod.mapOffsetX
+    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    application.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
+    ogario.sendChatMessage(101, "[DosAttack]" + temp + "," + temp2 + "[/DosAttack]")
+    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+    hideContextMenu()
 }
 
 function leftClickFight() {
-    var x = legendmod.cursorX + legendmod.mapOffsetX;
-    var y = legendmod.cursorY + legendmod.mapOffsetY;
-    sendTeamCommand(2, x, y);
-    hideContextMenu();
+    var temp = legendmod.cursorX + legendmod.mapOffsetX
+    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    application.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
+    ogario.sendChatMessage(101, "[DosFight]" + temp + "," + temp2 + "[/DosFight]")
+    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+    hideContextMenu()
 }
 
 function leftClickRun() {
-    var x = legendmod.cursorX + legendmod.mapOffsetX;
-    var y = legendmod.cursorY + legendmod.mapOffsetY;
-    sendTeamCommand(3, x, y);
-    hideContextMenu();
+    var temp = legendmod.cursorX + legendmod.mapOffsetX
+    var temp2 = legendmod.cursorY + legendmod.mapOffsetY
+    application.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
+    ogario.sendChatMessage(101, "[DosRun]" + temp + "," + temp2 + "[/DosRun]")
+    //console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+    hideContextMenu()
 }
 
 function openContextMenu(evt) {
-    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity || legendmod.isLegendWorld)) {
+    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity)) {
         evt.preventDefault();
         const time = menuLeft.isOpen() ? 100 : 0;
         menuLeft.hide();
