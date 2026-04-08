@@ -1,4 +1,4 @@
-window.OgVer = 3.393;
+window.OgVer = 3.394;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11738,6 +11738,11 @@ function thelegendmodproject() {
             this.garixProtocol = 6;
             this.garixHandshakeDone = false;
             this.garixPingCounter = 0;
+            // Clear any existing Garix ping interval
+            if (this.garixPingInterval) {
+                clearInterval(this.garixPingInterval);
+                this.garixPingInterval = null;
+            }
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
             this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
@@ -13162,6 +13167,21 @@ function thelegendmodproject() {
                         this.garixTabID1 = data.getUint16(s, true); s += 2;
                         this.garixTabID2 = data.getUint16(s, true); s += 2;
                         console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
+                        // Start Garix ping keepalive (server disconnects after 8s without opcode 200)
+                        var self = this;
+                        if (this.garixPingInterval) clearInterval(this.garixPingInterval);
+                        this.garixPingInterval = setInterval(function() {
+                            if (self.isSocketOpen() && self.serverType === 'garix') {
+                                self.garixPingCounter++;
+                                var pv = self.createView(5);
+                                pv.setUint8(0, 200); // 0xC8
+                                pv.setUint32(1, self.garixPingCounter, true);
+                                self.sendBuffer(pv);
+                            } else {
+                                clearInterval(self.garixPingInterval);
+                                self.garixPingInterval = null;
+                            }
+                        }, 3000);
                     }
                     break;
                 case 172: // 0xAC — Handshake Seed (Garix)
