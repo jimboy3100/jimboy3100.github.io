@@ -1,4 +1,4 @@
-window.OgVer = 3.394;
+window.OgVer = 3.395;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12452,8 +12452,9 @@ function thelegendmodproject() {
                     this.distY = cursorY - this.viewYTrue
                 }
                 // Garix: mouse packet includes tabID at bytes 1-2
+                // Total: 1(opcode) + 2(tabID) + 4(x) + 4(y) = 11 bytes
                 if (this.serverType === 'garix') {
-                    var gv = this.createView(11); // [0x10][tabID LE16][x Int32LE][y Int32LE]
+                    var gv = this.createView(11);
                     gv.setUint8(0, 16);
                     gv.setUint16(1, this.garixTabID1 || 0, true);
                     gv.setInt32(3, cursorX, true);
