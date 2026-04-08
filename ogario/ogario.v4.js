@@ -1,4 +1,4 @@
-window.OgVer = 3.340;
+window.OgVer = 3.360;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -873,6 +873,25 @@ function deleteGamemode(temp) {
         }, {
             text: 'Agar2 NA Party',
             value: 8008
+        }, {
+            text: '── Garix ──',
+            value: '',
+            disabled: true
+        }, {
+            text: 'Garix Teams',
+            value: 9001
+        }, {
+            text: 'Garix Mega',
+            value: 9002
+        }, {
+            text: 'Garix Dual',
+            value: 9003
+        }, {
+            text: 'Garix FFA',
+            value: 9004
+        }, {
+            text: 'Garix Selffeed',
+            value: 9005
         }
         /* Other private servers (commented out)
         , {
@@ -964,7 +983,9 @@ function deleteGamemode(temp) {
     }
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
-        $('#gamemode').append(new Option(el.text, el.value));
+        var opt = new Option(el.text, el.value);
+        if (el.disabled) opt.disabled = true;
+        $('#gamemode').append(opt);
     });
     $('#gamemode').val('5001');
     $('#gamemode option[value="5001"]').prop('selected', true);
@@ -1117,6 +1138,23 @@ function deleteGamemode(temp) {
                     core.connect(cfg.fallback);
                 });
             })(parseInt($('#gamemode').val()));
+        }
+        // Garix servers (9001-9005)
+        else if ($('#gamemode').val() == 9001) {
+            legendmod.gameMode = ':teams';
+            core.connect('wss://garix.io:8084');
+        } else if ($('#gamemode').val() == 9002) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8087');
+        } else if ($('#gamemode').val() == 9003) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8088');
+        } else if ($('#gamemode').val() == 9004) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8089');
+        } else if ($('#gamemode').val() == 9005) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8090');
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
@@ -11635,6 +11673,7 @@ function thelegendmodproject() {
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
                 : t.includes('agar2.com') ? 'agar2'
+                : t.includes('garix.io') ? 'garix'
                 : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                 : 'private';
 
@@ -11696,6 +11735,12 @@ function thelegendmodproject() {
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
             this.leaderboard = [];
+            // Garix state reset
+            this.garixTabID1 = 0;
+            this.garixTabID2 = 0;
+            this.garixProtocol = 6;
+            this.garixHandshakeDone = false;
+            this.garixPingCounter = 0;
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
             this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
@@ -11783,6 +11828,19 @@ function thelegendmodproject() {
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
 
+            // ===== Garix Handshake: opcode 171 instead of 254/255 =====
+            if (this.serverType === 'garix') {
+                this.garixProtocol = window.customProtol || 6;
+                this.garixClientTime = Math.floor(Date.now() / 1000);
+                var gView = this.createView(9);
+                gView.setUint8(0, 171); // 0xAB
+                gView.setUint32(1, this.garixProtocol, true);
+                gView.setUint32(5, this.garixClientTime, true);
+                this.sendBuffer(gView);
+                this.connectionOpened = true;
+                console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
+            } else {
+            // ===== Standard Handshake: 0xFE + 0xFF =====
             var view = this.createView(5);
             view.setUint8(0, 254);
             if (!this.integrity) {
@@ -11824,6 +11882,7 @@ function thelegendmodproject() {
             this.sendMessage(view);
 
             this.connectionOpened = true;
+            } // end of non-garix handshake
 
             /* Private server login: trigger Google/Facebook OAuth.
              * On real agar.io this is called from opcode 241 handler.
@@ -11908,6 +11967,11 @@ function thelegendmodproject() {
                 clearInterval(this.imsoloHeartbeatInterval);
                 this.imsoloHeartbeatInterval = null;
             }
+            // Clear Garix heartbeat interval on disconnect
+            if (this.garixHeartbeatInterval) {
+                clearInterval(this.garixHeartbeatInterval);
+                this.garixHeartbeatInterval = null;
+            }
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
@@ -11952,6 +12016,14 @@ function thelegendmodproject() {
             if (!this.isSocketOpen()) {
                 return;
             }
+            // Garix: split (17) and eject (21) require tabID
+            if (this.serverType === 'garix' && (action === 17 || action === 21)) {
+                var gv = this.createView(3);
+                gv.setUint8(0, action);
+                gv.setUint16(1, this.garixTabID1 || 0, true);
+                this.sendBuffer(gv);
+                return;
+            }
             const view = this.createView(1);
             view.setUint8(0, action);
             this.sendMessage(view);
@@ -11983,9 +12055,9 @@ function thelegendmodproject() {
             this.sendPosition();
             this.sendAction(17);
         },
-        // Multi-protocol split macros for Imsolo/Agar2 (opcodes 0x1A, 0x1B, 0x1C)
+        // Multi-protocol split macros for Imsolo/Agar2/Garix (opcodes 0x1A, 0x1B, 0x1C)
         sendDoubleSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(28); // 0x1C
             } else {
@@ -11993,7 +12065,7 @@ function thelegendmodproject() {
             }
         },
         sendTripleSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(26); // 0x1A
             } else {
@@ -12001,7 +12073,7 @@ function thelegendmodproject() {
             }
         },
         sendQuadSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(27); // 0x1B
             } else {
@@ -12009,7 +12081,7 @@ function thelegendmodproject() {
             }
         },
         sendPlayerFreeze() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendAction(32); // 0x20 — player freeze toggle
             }
         },
@@ -12048,6 +12120,22 @@ function thelegendmodproject() {
              * ignores the join (cell_count > 0). */
             if (ogario.play) {
                 window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
+
+            // ===== Garix join: [0x00][tabID LE16][nick UTF-8 null-terminated] =====
+            if (this.serverType === 'garix') {
+                this.playerNick = nick;
+                var encoded = window.unescape(window.encodeURIComponent(nick));
+                var gv = this.createView(3 + encoded.length + 1); // opcode + tabID + nick + null
+                gv.setUint8(0, 0); // opcode 0
+                gv.setUint16(1, this.garixTabID1 || 0, true);
+                for (var gi = 0; gi < encoded.length; gi++) {
+                    gv.setUint8(3 + gi, encoded.charCodeAt(gi));
+                }
+                gv.setUint8(3 + encoded.length, 0); // null terminator
+                this.sendBuffer(gv);
+                console.log('%c[Garix]%c Join sent (tabID=' + (this.garixTabID1 || 0) + ' nick=' + nick + ')', 'color:#f8a', 'color:inherit');
                 return;
             }
 
@@ -12357,12 +12445,22 @@ function thelegendmodproject() {
                     this.distX = cursorX - this.viewXTrue
                     this.distY = cursorY - this.viewYTrue
                 }
-                var view = this.createView(13);
-                view.setUint8(0, 16);
-                view.setInt32(1, cursorX, true);
-                view.setInt32(5, cursorY, true);
-                view.setUint32(9, this.protocolKey, true);
-                this.sendMessage(view);
+                // Garix: mouse packet includes tabID at bytes 1-2
+                if (this.serverType === 'garix') {
+                    var gv = this.createView(11); // [0x10][tabID LE16][x Int32LE][y Int32LE]
+                    gv.setUint8(0, 16);
+                    gv.setUint16(1, this.garixTabID1 || 0, true);
+                    gv.setInt32(3, cursorX, true);
+                    gv.setInt32(7, cursorY, true);
+                    this.sendBuffer(gv);
+                } else {
+                    var view = this.createView(13);
+                    view.setUint8(0, 16);
+                    view.setInt32(1, cursorX, true);
+                    view.setInt32(5, cursorY, true);
+                    view.setUint32(9, this.protocolKey, true);
+                    this.sendMessage(view);
+                }
             }
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
@@ -12839,6 +12937,25 @@ function thelegendmodproject() {
                     this.leaderboard = [];
                     var count = data.getUint32(s, true);
                     s += 4;
+                    // Garix protocol 6-10: [playerID UInt32][name UTF-8z][mass UInt32][sector UTF-8z][color UTF-8z]
+                    if (this.serverType === 'garix') {
+                        for (i = 0; i < count; ++i) {
+                            var gPlayerID = data.getUint32(s, true); s += 4;
+                            var gNick = window.decodeURIComponent(window.escape(encode()));
+                            var gMass = data.getUint32(s, true); s += 4;
+                            var gSector = encode();
+                            var gColor = encode();
+                            var isMe = (this.playerCellIDs.length > 0) ? false : false;
+                            // Check if this is our player by matching tabID
+                            this.leaderboard.push({
+                                id: false,
+                                nick: gNick,
+                                mass: gMass,
+                                sector: gSector,
+                                color: gColor
+                            });
+                        }
+                    } else {
                     for (i = 0; i < count; ++i) {
                         var isMe = !!data.getUint32(s, true);
                         s += 4;
@@ -12869,6 +12986,7 @@ function thelegendmodproject() {
                             nick: nick
                         });
                     }
+                    } // end non-garix
                     this.handleLeaderboard();
                     break;
                 /*    
@@ -13024,10 +13142,71 @@ function thelegendmodproject() {
                             meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
                     }
                     break;
-                case 201: // 0xC9 — AuthSuccess (Agar2 only)
+                case 201: // 0xC9 — AuthSuccess (Agar2) / Pong (Garix)
                     if (this.serverType === 'agar2') {
                         this.imsoloAuthSuccess = true;
                         console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
+                    } else if (this.serverType === 'garix') {
+                        // Garix pong: [0xC9][echo LE32]
+                        if (s + 4 <= data.byteLength) {
+                            var pongEcho = data.getUint32(s, true);
+                            // Can calculate RTT if needed
+                        }
+                    }
+                    break;
+
+                // ===== Garix Protocol Opcodes (2026) =====
+                case 161: // 0xA1 — DualInfo (Garix)
+                    if (this.serverType === 'garix') {
+                        var gTabCount = data.getUint8(s++);
+                        this.garixTabID1 = data.getUint16(s, true); s += 2;
+                        this.garixTabID2 = data.getUint16(s, true); s += 2;
+                        console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
+                    }
+                    break;
+                case 172: // 0xAC — Handshake Seed (Garix)
+                    if (this.serverType === 'garix') {
+                        var garixSeed = data.getUint32(s, true); s += 4;
+                        console.log('%c[Garix]%c Handshake step 2: received seed=' + garixSeed, 'color:#f8a', 'color:inherit');
+
+                        // Step 3: Send opcode 205 (key)
+                        var garixKey = ((this.garixProtocol ^ this.garixClientTime) ^ 0x6F67) & 0xFFFFFFFF;
+                        var keyView = this.createView(5);
+                        keyView.setUint8(0, 205); // 0xCD
+                        keyView.setUint32(1, garixKey >>> 0, true);
+                        this.sendBuffer(keyView);
+                        console.log('%c[Garix]%c Handshake step 3: sent key=' + (garixKey >>> 0), 'color:#f8a', 'color:inherit');
+
+                        // Step 4: Send opcode 187 (answer)
+                        var garixAnswer = (garixSeed ^ this.garixProtocol) & 0xFFFFFFFF;
+                        var ansView = this.createView(5);
+                        ansView.setUint8(0, 187); // 0xBB
+                        ansView.setUint32(1, garixAnswer >>> 0, true);
+                        this.sendBuffer(ansView);
+                        console.log('%c[Garix]%c Handshake step 4: sent answer=' + (garixAnswer >>> 0), 'color:#f8a', 'color:inherit');
+                    }
+                    break;
+                case 220: // 0xDC — Handshake OK (Garix)
+                    if (this.serverType === 'garix') {
+                        console.log('%c[Garix]%c Handshake confirmed! Sending auth...', 'color:#3f3', 'color:inherit');
+                        // Step 5: Send opcode 221 (auth — empty for guest)
+                        var authView = this.createView(2);
+                        authView.setUint8(0, 221); // 0xDD
+                        authView.setUint8(1, 0);   // null = guest
+                        this.sendBuffer(authView);
+                        this.garixHandshakeDone = true;
+                    }
+                    break;
+                case 222: // 0xDE — Auth Result (Garix)
+                    if (this.serverType === 'garix') {
+                        var authSuccess = data.getUint8(s++);
+                        var authReason = '';
+                        while (s < data.byteLength) {
+                            var ch = data.getUint8(s++);
+                            if (ch === 0) break;
+                            authReason += String.fromCharCode(ch);
+                        }
+                        console.log('%c[Garix]%c Auth result: ' + (authSuccess ? 'SUCCESS' : 'FAIL') + (authReason ? ' reason=' + authReason : ''), authSuccess ? 'color:#3f3' : 'color:#f33', 'color:inherit');
                     }
                     break;
                 case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
@@ -13094,12 +13273,22 @@ function thelegendmodproject() {
                     var flag = data.getUint8(s++);
                     var color2 = this.rgb2Hex(data.getUint8(s++), data.getUint8(s++), data.getUint8(s++));
 
+                    // Garix: flag bit 2 (0x04) = prefix and nick have different colors
+                    if (this.serverType === 'garix' && (flag & 0x04)) {
+                        // Extra 3 bytes for nick color + 1 byte prefix length
+                        var nickColorR = data.getUint8(s++);
+                        var nickColorG = data.getUint8(s++);
+                        var nickColorB = data.getUint8(s++);
+                        var prefixLen = data.getUint8(s++);
+                        // color2 = prefix color, nickColor = name color
+                    }
+
                     var name = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
 
                     var message = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();	
-                    var server = !!(flags & 128),
-                        admin = !!(flags & 64),
-                        // Imsolo/Agar2 uses bit 2 (0x04) for moderator, others use bit 5 (0x20)
+                    var server = !!(flag & 128),
+                        admin = !!(flag & 64),
+                        // Imsolo/Agar2 uses bit 2 (0x04) for moderator, Garix uses its own flags
                         mod = (this.serverType === 'imsolo' || this.serverType === 'agar2') ? !!(flag & 4) : !!(flag & 32);
 
                     if (server && name !== "SERVER") name = "[SERVER] " + name;
@@ -13830,8 +14019,13 @@ function thelegendmodproject() {
 
 
                 case 16: //2020 jimboy3100 specific private servers
-                    //this.updateCells(new LMbuffer(data['buffer']), s);
-                    this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                    // Garix: use dedicated parser for protocol 6-10 format
+                    if (this.serverType === 'garix') {
+                        this.garixUpdateCells(data, s);
+                    } else {
+                        //this.updateCells(new LMbuffer(data['buffer']), s);
+                        this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                    }
                     //this.countPps()
                     break;
                 case 64: //2020 jimboy3100 specific private servers
@@ -15250,6 +15444,161 @@ Most cells eaten   : ${mostCellsEaten}
                 this.Waves[0].wavelength = length;
                 this.Waves[0].moreAnimation = moreAnimation
             }
+        },
+        /* ===== Garix UpdateNodes — Protocol 6-10 format =====
+         * Two separate terminated lists: updated nodes (existing) + added nodes (new).
+         * Both use UInt16 flags. Remove list uses UInt16 count. */
+        garixUpdateCells(data, offset) {
+            this.megaFFAscore();
+            var encode = function () {
+                var text = '';
+                while (offset < data.byteLength) {
+                    var ch = data.getUint8(offset++);
+                    if (ch === 0) break;
+                    text += String.fromCharCode(ch);
+                }
+                return text;
+            };
+            this.time = Date.now();
+            this.removePlayerCell = false;
+
+            // 1. Eat list
+            var eatCount = data.getUint16(offset, true); offset += 2;
+            for (var ei = 0; ei < eatCount; ei++) {
+                var eaterID = data.getUint32(offset, true);
+                var eatenID = data.getUint32(offset + 4, true);
+                offset += 8;
+                var eater = this.indexedCells[eaterID];
+                var eaten = this.indexedCells[eatenID];
+                if (eater && eaten) {
+                    eaten.targetX = eater.x;
+                    eaten.targetY = eater.y;
+                    eaten.targetSize = eaten.size;
+                    eaten.time = this.time;
+                    eaten.removeCell();
+                }
+            }
+
+            // 2. Updated nodes (loop until nodeID = 0)
+            while (true) {
+                var id = data.getUint32(offset, true); offset += 4;
+                if (id === 0) break;
+                var x = data.getInt32(offset, true); offset += 4;
+                var y = data.getInt32(offset, true); offset += 4;
+                var size = data.getUint16(offset, true); offset += 2;
+                var flags = data.getUint16(offset, true); offset += 2;
+                // flag 0x0002 = has color
+                var color = null;
+                if (flags & 0x0002) {
+                    var r = data.getUint8(offset++);
+                    var g = data.getUint8(offset++);
+                    var b = data.getUint8(offset++);
+                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+                }
+                var cell = this.indexedCells[id];
+                if (cell) {
+                    cell.targetX = x;
+                    cell.targetY = y;
+                    cell.targetSize = size;
+                    if (color) cell.color = color;
+                }
+            }
+
+            // 3. Added nodes (loop until nodeID = 0)
+            while (true) {
+                var id = data.getUint32(offset, true); offset += 4;
+                if (id === 0) break;
+                var x = data.getInt32(offset, true); offset += 4;
+                var y = data.getInt32(offset, true); offset += 4;
+                var size = data.getUint16(offset, true); offset += 2;
+                var flags = data.getUint16(offset, true); offset += 2;
+
+                var color = null, skin = null, name = '';
+                var isVirus = !!(flags & 0x0001);
+                var isAgitated = !!(flags & 0x0010);
+                var isEjected = !!(flags & 0x0020);
+                var isFood = !!(flags & 0x0080);
+
+                // flag 0x0002 = has color (always set for added nodes)
+                if (flags & 0x0002) {
+                    var r = data.getUint8(offset++);
+                    var g = data.getUint8(offset++);
+                    var b = data.getUint8(offset++);
+                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+                }
+                // flag 0x0004 = has skin
+                if (flags & 0x0004) {
+                    skin = encode();
+                }
+                // flag 0x0008 = has name
+                if (flags & 0x0008) {
+                    name = window.decodeURIComponent(escape(encode()));
+                    if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
+                        this.vanillaskins(name, skin, color);
+                    }
+                }
+                // tabID (always present in protocol 6-10 added nodes)
+                var tabID = data.getUint16(offset, true); offset += 2;
+                // flag 0x0100 = has nickColor
+                var nickColor = null;
+                if (flags & 0x0100) {
+                    var nr = data.getUint8(offset++);
+                    var ng = data.getUint8(offset++);
+                    var nb = data.getUint8(offset++);
+                    nickColor = this.rgb2Hex(nr, ng, nb);
+                }
+
+                var cellObj = null;
+                if (this.indexedCells.hasOwnProperty(id)) {
+                    cellObj = this.indexedCells[id];
+                } else {
+                    cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellObj.time = this.time;
+                    cellObj.spectator = false;
+                    if (!isFood) {
+                        if (isVirus && defaultmapsettings.virusesRange) {
+                            this.viruses.push(cellObj);
+                        }
+                        this.cells.push(cellObj);
+                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
+                            cellObj.isPlayerCell = true;
+                            this.playerColor = color;
+                            cellObj.color = color;
+                            this.playerCells.push(cellObj);
+                        }
+                    } else {
+                        this.food.push(cellObj);
+                    }
+                    this.indexedCells[id] = cellObj;
+                }
+                if (cellObj.isPlayerCell) name = this.playerNick;
+                if (name) cellObj.targetNick = name;
+                cellObj.targetX = x;
+                cellObj.targetY = y;
+                cellObj.targetSize = size;
+                cellObj.isFood = isFood ? 1 : 0;
+                cellObj.isVirus = isVirus;
+                if (skin) cellObj.skin = skin;
+            }
+
+            // 4. Remove list (UInt16 count)
+            var removeCount = data.getUint16(offset, true); offset += 2;
+            for (var ri = 0; ri < removeCount; ri++) {
+                var removeID = data.getUint32(offset, true); offset += 4;
+                var cell = this.indexedCells[removeID];
+                if (cell) cell.removeCell();
+            }
+
+            // Death check
+            if (this.removePlayerCell && !this.playerCells.length) {
+                this.play = false;
+                application.onPlayerDeath();
+                application.showMenu(300);
+                window.userBots.isAlive = false;
+                if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+            }
+            if (window.autoPlay && legendmod.play) calcTarget();
+            if (defaultmapsettings.reverseTrick) reverseTrick.check();
         },
         updateCells(view, offset) {
 
