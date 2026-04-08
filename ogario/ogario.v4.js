@@ -1,4 +1,4 @@
-window.OgVer = 3.397;
+window.OgVer = 3.398;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -9478,6 +9478,21 @@ function thelegendmodproject() {
                     }
                     teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
                     legendmod.sendMessage(teamView);
+                    this.lastMessageSentTime = Date.now();
+                }
+                /* Garix: send chat via game socket opcode 99 (0x63)
+                 * Format: [0x63][flags=0][UTF-8 null-terminated text] */
+                else if (legendmod.serverType === 'garix' && legendmod.isSocketOpen()) {
+                    var chatText = message;
+                    var utf8 = window.unescape(window.encodeURIComponent(chatText));
+                    var gView = legendmod.createView(2 + utf8.length + 1); // opcode + flags + text + null
+                    gView.setUint8(0, 99);  // 0x63
+                    gView.setUint8(1, 0);   // flags = 0 (no tabID, no reserved)
+                    for (var gi = 0; gi < utf8.length; gi++) {
+                        gView.setUint8(2 + gi, utf8.charCodeAt(gi));
+                    }
+                    gView.setUint8(2 + utf8.length, 0); // null terminator
+                    legendmod.sendMessage(gView);
                     this.lastMessageSentTime = Date.now();
                 }
                 /* Fallback: use relay socket (original behavior) */
