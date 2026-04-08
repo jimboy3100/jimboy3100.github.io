@@ -1,4 +1,4 @@
-window.OgVer = 3.350;
+window.OgVer = 3.351;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -2323,7 +2323,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-        jelloPhysics: 'Jello physics (needs jelly disabled)',
+
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
@@ -2813,7 +2813,7 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-        jelloPhysics: 'Jello physics (needs jelly disabled)',
+
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
@@ -3946,7 +3946,7 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
-    jelloPhysics: true,
+
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
@@ -4011,7 +4011,7 @@ var defaultmapsettings = {
     oppColors: true,
     oppRings: true,
     virColors: false,
-    splitRange: true,
+    splitRange: false,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
@@ -6637,7 +6637,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jelloPhysics", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -7432,6 +7432,10 @@ function thelegendmodproject() {
             //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
             this.play();
             this.hideMenu();
+            /* Force-hide helloContainer — native hideMenu() sometimes fails
+             * when clicking Play while already alive on LegendWorld. */
+            var hc = document.getElementById('helloContainer');
+            if (hc) hc.style.display = 'none';
             if (window.addKeyListeners) {
                 window.addKeyListeners();
             }
@@ -7522,6 +7526,9 @@ function thelegendmodproject() {
             //
             pauseVideos();
             ogario.play = false;
+            /* Restore helloContainer visibility (hidden by onPlay) */
+            var hc = document.getElementById('helloContainer');
+            if (hc) hc.style.display = '';
             ogario.playerColor = null;
             ogario.foodIsHidden = false;
             ogario.playerMass = 0;
@@ -9424,7 +9431,7 @@ function thelegendmodproject() {
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
-                if (LM.isLegendWorld && legendmod.isSocketOpen()) {
+                if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
                     var fullMsg = ogarcopythelb.nick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
@@ -10237,17 +10244,6 @@ function thelegendmodproject() {
         /* Reusable buffer for movePoints velocity smoothing —
          * avoids this.pointsVel.slice() on every frame */
         this._velBuf = [];
-        /* Jello physics: SoA (Struct-of-Arrays) layout for cache locality.
-         * 3× Float64Array instead of Array-of-{x,y,rl} objects — zero GC. */
-        this._jelloX = null;
-        this._jelloY = null;
-        this._jelloRl = null;
-        this._jelloVel = null;
-        this._jelloSin = null;
-        this._jelloCos = null;
-        this._jelloLen = 0;
-        this._prevX = 0;
-        this._prevY = 0;
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -10287,113 +10283,7 @@ function thelegendmodproject() {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
 
-        /* ========== JELLO PHYSICS (lightweight alternative) ========== */
-        /* Fast xorshift32 PRNG — replaces Math.random() in hot loop.
-         * ~10× faster, no crypto quality needed for visual wobble. */
-        this._jelloRng = 0xDEADBEEF | 0;
 
-        this.initJelloPoints = function (screenPx) {
-            /* Adaptive point count — mirrors jelly's approach:
-             * Uses screen size to decide, capped at [10, 30].
-             * 30 points with lineTo gives a smooth polygon
-             * that clips fast (vs 120 points in jelly). */
-            var N = screenPx | 0;
-            if (N < 10) N = 10;
-            else if (N > 30) N = 30;
-            if (this._jelloLen === N) return;
-            /* SoA: Float64Arrays — no object allocation, no GC */
-            this._jelloLen = N;
-            this._jelloX = new Float64Array(N);
-            this._jelloY = new Float64Array(N);
-            this._jelloRl = new Float64Array(N);
-            this._jelloVel = new Float64Array(N);
-            this._jelloSin = new Float64Array(N);
-            this._jelloCos = new Float64Array(N);
-            var step = 6.283185307179586 / N;
-            for (var i = 0; i < N; i++) {
-                var a = step * i;
-                this._jelloSin[i] = Math.sin(a);
-                this._jelloCos[i] = Math.cos(a);
-                this._jelloRl[i] = this.size;
-                this._jelloX[i] = this.x + this._jelloCos[i] * this.size;
-                this._jelloY[i] = this.y + this._jelloSin[i] * this.size;
-                this._jelloVel[i] = (this._jelloRng ^= this._jelloRng << 13,
-                    this._jelloRng ^= this._jelloRng >> 17,
-                    this._jelloRng ^= this._jelloRng << 5,
-                    ((this._jelloRng & 0xFFFF) / 65536.0 - 0.5));
-            }
-            this._prevX = this.x;
-            this._prevY = this.y;
-        };
-
-        this.moveJelloPoints = function () {
-            if (!this._jelloRl) return;
-            var N = this._jelloLen;
-            var sz = this.size;
-            var cx = this.x;
-            var cy = this.y;
-            this._prevX = cx;
-            this._prevY = cy;
-
-            var cosArr = this._jelloCos;
-            var sinArr = this._jelloSin;
-            var rlArr = this._jelloRl;
-            var xArr = this._jelloX;
-            var yArr = this._jelloY;
-            var vel = this._jelloVel;
-            var rng = this._jelloRng;
-
-            /* ---- Phase 1: velocity smoothing (jelly's exact algorithm) ----
-             * Snapshot velocities, then smooth each with neighbors:
-             *   newVel = (vel[i] + random - 0.5) * 0.7
-             *   vel[i] = (prevVel + nextVel + 8 * newVel) / 10
-             * Uses xorshift PRNG instead of Math.random() (~10× faster). */
-            var lastVel = vel[N - 1];
-            var firstNewVel;
-            for (var i = 0; i < N; i++) {
-                rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                var rand = (rng & 0xFFFF) / 65536.0 - 0.5;
-                var newVel = (vel[i] + rand) * 0.7;
-                if (newVel > 10) newVel = 10;
-                else if (newVel < -10) newVel = -10;
-                /* Store newVel back temporarily; we read prev from lastVel */
-                var prevV = (i > 0) ? vel[i - 1] : lastVel;
-                /* For nextVel, we peek ahead (not yet smoothed) */
-                rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                var nextRand = (rng & 0xFFFF) / 65536.0 - 0.5;
-                var nextIdx = (i < N - 1) ? i + 1 : 0;
-                var nextNewVel = (vel[nextIdx] + nextRand) * 0.7;
-                if (nextNewVel > 10) nextNewVel = 10;
-                else if (nextNewVel < -10) nextNewVel = -10;
-                vel[i] = (prevV + nextNewVel + 8 * newVel) / 10;
-                if (i === 0) firstNewVel = newVel;
-            }
-
-            /* ---- Phase 2: radius update (jelly's exact algorithm) ----
-             *   rl += vel[i]
-             *   if rl < 0: rl = 0
-             *   rl = (9 * rl + size) / 10     (pull toward base)
-             *   rl = (prevRl + size + 8*rl)/10 (neighbor smoothing) */
-            var maxRad = 0;
-            var prevRl = rlArr[N - 1]; /* wrap-around for first iteration */
-            for (var i = 0; i < N; i++) {
-                var rl = rlArr[i];
-                rl += vel[i];
-                if (rl < 0) rl = 0;
-                rl = (9 * rl + sz) / 10;
-                rl = (prevRl + sz + 8 * rl) / 10;
-                rlArr[i] = rl;
-                prevRl = rl;
-                if (rl > maxRad) maxRad = rl;
-
-                /* Update world position */
-                xArr[i] = cx + cosArr[i] * rl;
-                yArr[i] = cy + sinArr[i] * rl;
-            }
-
-            this._jelloRng = rng;
-            this.maxPointRad = maxRad;
-        };
         this.movePoints = function () {
             //console.log(this.id)
             var len = this.points.length;
@@ -11289,23 +11179,8 @@ function thelegendmodproject() {
                     }
                 }
 
-                /* Jello needs a path for fill + clip + outline.
-                 * Non-jello skinned cells skip path (just draw image). */
-                if (!node || this._jelloRl) style.beginPath();
-                if (this._jelloRl) {
-                    /* Jello: lineTo polygon (same as jelly's approach).
-                     * LineTo is ~10× cheaper to clip than quadraticCurveTo
-                     * because the GPU clips a polygon, not bezier curves.
-                     * With 10-40 points this looks perfectly smooth. */
-                    var jX = this._jelloX;
-                    var jY = this._jelloY;
-                    var jN = this._jelloLen;
-                    style.moveTo(jX[0], jY[0]);
-                    for (var i = 1; i < jN; i++) {
-                        style.lineTo(jX[i], jY[i]);
-                    }
-                }
-                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                if (!node) style.beginPath();
+                if (defaultmapsettings.jellyPhisycs && this.points.length) {
                     var point = this.points[0];
                     style.moveTo(point.x, point.y);
                     for (var i = 0; i < this.points.length; ++i) {
@@ -11358,10 +11233,10 @@ function thelegendmodproject() {
                         }
                     }
                 }
-                if (!node || this._jelloRl) style.closePath();
+                if (!node) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                    if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
+                    if (defaultmapsettings.jellyPhisycs) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
@@ -11453,8 +11328,8 @@ function thelegendmodproject() {
                         style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-                else if (this._jelloRl) {
-                    /* Jello: fill deformed path with cell color */
+                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                    /* Jelly: fill deformed path with cell color */
                     style.fillStyle = color2;
                     style.fill();
                 }
@@ -11494,26 +11369,7 @@ function thelegendmodproject() {
                             //s = true;
                         }
                         if (legendmod.gameMode != ":teams") {
-                            if (this._jelloRl) {
-                                /* Clip skin to deformed lineTo polygon path.
-                                 * LineTo polygon clips ~10× faster than bezier
-                                 * (the old bezier clip was causing freezes).
-                                 * Skin distorts with the wobble = no color bleed. */
-                                var drawR = this.maxPointRad || y;
-                                style.save();
-                                style.clip();
-                                try {
-                                    style.drawImage(node, this.x - drawR, this.y - drawR, 2 * drawR, 2 * drawR);
-                                } catch (e) { }
-                                style.restore();
-                                /* Thin proportional outline */
-                                var lw = Math.max(~~(y * 0.02), 2);
-                                if (lw > 6) lw = 6;
-                                style.lineWidth = lw;
-                                style.strokeStyle = color2;
-                                style.stroke();
-                            } else if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
-                                /* Fallback for jelly/jello cells without _jelloRl data */
+                            if (defaultmapsettings.jellyPhisycs) {
                                 try {
                                     style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
                                 } catch (e) { }
@@ -16088,7 +15944,7 @@ Most cells eaten   : ${mostCellsEaten}
         averageRenderTime: 0,
         renderingDelay: 0,
         lastRenderingDelay: 0,
-        _jelloFrame: 0,
+
         pelletColored: [],
         cellsColored: [],
         setCanvas() {
@@ -16250,32 +16106,12 @@ Most cells eaten   : ${mostCellsEaten}
 
             for (i = 0; i < LM.cells.length; i++) {
                 var cell = LM.cells[i];
-                /* Jello physics: lightweight alternative to jelly.
-                 * Only runs when jelloPhysics is ON and jellyPhisycs is OFF.
-                 * If jelly is enabled, it takes priority (has collision detection). */
-                if (defaultmapsettings.jelloPhysics && !defaultmapsettings.jellyPhisycs && !cell.isFood && !cell.isVirus) {
-                    var jelloMargin = cell.size * 1.3;
-                    if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
-                        cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
-                        var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 8) {
-                            /* 3-tier frame-skip for performance:
-                             * < 40px on screen  → every 4th frame
-                             * < 100px on screen → every 2nd frame
-                             * >= 100px          → every frame */
-                            var skip = screenPx >= 100 ? 0 : screenPx >= 40 ? 1 : 3;
-                            var shouldUpdate = skip === 0 || ((drawRender._jelloFrame + cell.id) & skip) === 0;
-                            if (shouldUpdate) {
-                                cell.initJelloPoints(screenPx);
-                                cell.moveJelloPoints();
-                            }
-                        } else if (cell._jelloRl) {
-                            cell._jelloX = null;
-                            cell._jelloY = null;
-                            cell._jelloRl = null;
-                            cell._jelloLen = 0;
-                        }
-                    }
+                /* Jelly physics: update deformed points every frame.
+                 * Must run for ALL cells (including off-screen) so
+                 * cells scrolling into view have correct geometry. */
+                if (defaultmapsettings.jellyPhisycs) {
+                    cell.updateNumPoints();
+                    cell.movePoints();
                 }
 
                 /* Viewport culling: skip draw() for cells entirely outside
@@ -17869,7 +17705,7 @@ Most cells eaten   : ${mostCellsEaten}
                     this.fpsLastRequest = Time;
                 }
                 this.renderedFrames++;
-                this._jelloFrame++;
+
 
             }
         },
