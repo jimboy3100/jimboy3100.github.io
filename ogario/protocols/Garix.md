@@ -5,6 +5,10 @@
 Binary WebSocket connection. All multi-byte integers are **Little Endian** unless noted otherwise.  
 The handshake must complete within **8 seconds** or the server closes with code 1002.
 
+> **Important:** The handshake uses `clientProtocol = 1`, but the server internally
+> converts this to **protocol 6** for all packet formats. All in-game packets
+> (UpdateNodes, Leaderboard, Border, Chat, etc.) use the **Protocol 6–10** wire format.
+
 ---
 
 ## Handshake (4 steps)
@@ -73,14 +77,20 @@ The server verifies it. If correct → sends `[0xDC=220]` (1 byte) as confirmati
 **4-second timeout** from receiving opcode 220.
 
 ```
-[1B: 0xDD=221] [N bytes: JWT as UTF-8, null-terminated or until end]
+Guest:  [1B: 0xDD=221]                              ← just the opcode, NO payload
+Login:  [1B: 0xDD=221] [N bytes: JWT as UTF-8]       ← JWT starting with "ey"
 ```
 
-- If the token is empty or does not start with `"ey"` → authenticated as guest.
+> **Critical:** For guest auth, send exactly **1 byte** `[0xDD]`. Sending `[0xDD, 0x00]`
+> is treated as a 1-byte token that fails validation.
+
 - The server responds with `opcode 222`:
   ```
   [1B: 0xDE=222] [1B: success 0|1] [N bytes: reason UTF-8]
   ```
+  - Guest auth returns `success=0, reason="guest"` — this is **normal** and the
+    connection proceeds. The server still sends DualInfo and enables all in-game opcodes.
+  - JWT auth returns `success=1` on success, or `success=0, reason="invalid token"` on failure.
 
 Once auth is complete → the server enables all in-game opcodes.
 
@@ -345,54 +355,72 @@ Format varies by protocol version.
 
 ---
 
-### Protocol 6–10
+### Protocol 6–10 (Active format — server converts protocol 1 → 6)
+
+> **Wire structure:** The server writes updated nodes, then added nodes,
+> then **ONE** `writeUInt32(0)` terminator. There are **no separate terminators**
+> between the update and add sections. Use **flag 0x40** to distinguish:
+> - `flags & 0x40` → **Added node** (has tabID, possibly skin/name/nickColor)
+> - `!(flags & 0x40)` → **Updated node** (position/size/color only)
 
 ```
 [0x10]
 
 --- Eat list ---
 [eatCount UInt16]
-  for each: [hunterID UInt32] [eatenID UInt32]
+  for each: [hunterID UInt32] [eatenID UInt32]   ← both XOR scrambleID
 
---- Updated nodes (existing, loop until nodeID = 0) ---
-  [nodeID   UInt32]
-  [x        Int32]
-  [y        Int32]
+--- Nodes (single loop: updates then adds, read until nodeID = 0) ---
+  [nodeID   UInt32]   ← XOR scrambleID; 0 = end of ALL nodes
+  [x        UInt32]   ← position.x + scrambleX (signed via >> 0)
+  [y        UInt32]   ← position.y + scrambleY (signed via >> 0)
   [size     UInt16]
-  [flags    UInt16]   ← upgraded to UInt16
-    bit  0 (0x0001) = spiked
+  [flags    UInt16]
+
+  Common flag bits:
+    bit  0 (0x0001) = spiked (virus)
     bit  1 (0x0002) = has color
     bit  4 (0x0010) = agitated
     bit  5 (0x0020) = ejected mass
-    bit  7 (0x0080) = pellet/food
-  [if flag 0x0002] [r UInt8][g UInt8][b UInt8]
+    bit  7 (0x0080) = pellet/food (cellType === 1)
 
---- Added nodes (new, loop until nodeID = 0) ---
-  [nodeID   UInt32]
-  [x        Int32]
-  [y        Int32]
-  [size     UInt16]
-  [flags    UInt16]
-    bit  0 (0x0001) = spiked
-    bit  1 (0x0002) = has color        ← always set
+  Added-node-only flag bits (when flag 0x40 is set):
     bit  2 (0x0004) = has skin
     bit  3 (0x0008) = has name
-    bit  4 (0x0010) = agitated
-    bit  5 (0x0020) = ejected mass
-    bit  6 (0x0040) = has tabID        ← always set
-    bit  7 (0x0080) = pellet/food
+    bit  6 (0x0040) = has tabID        ← always set for adds
     bit  8 (0x0100) = has nickColor
+
   [if flag 0x0002] [r UInt8][g UInt8][b UInt8]
-  [if flag 0x0004] [skin  UTF-8z]
-  [if flag 0x0008] [name  UTF-8z]
+
+  --- Only when flag 0x0040 is set (ADDED node) ---
+  [if flag 0x0004] [skin  UTF-8z]      ← _skinUtf8 from owner
+  [if flag 0x0008] [name  UTF-8z]      ← _nameUtf8 from owner
   [tabID           UInt16]             ← owner's tabID (0 if no owner)
   [if flag 0x0100] [r UInt8][g UInt8][b UInt8]   ← nick color
-[0x00 0x00 0x00 0x00]
+
+[0x00 0x00 0x00 0x00]   ← single terminator for both sections
 
 --- Remove list ---
 [removeCount UInt16]   ← downgraded to UInt16 (was UInt32 in proto < 6)
-  for each: [nodeID UInt32]
+  for each: [nodeID UInt32]   ← XOR scrambleID
   (includes both eaten + deleted nodes)
+```
+
+**Server-side flag construction (from `writeUpdateItems6`):**
+```
+Updated nodes:
+  cellType === 0 (player) → flags |= 0x02 (has color)
+  node.spiked             → flags |= 0x01
+  node.isAgitated         → flags |= 0x10
+  cellType === 3 (eject)  → flags |= 0x20
+  cellType === 1 (food)   → flags |= 0x80
+
+Added nodes (all of the above, plus):
+  flags |= 0x02           always (color always sent)
+  flags |= 0x40           always (tabID always sent)
+  has skin                → flags |= 0x04
+  has name                → flags |= 0x08
+  has nickColor           → flags |= 0x100
 ```
 
 ---
