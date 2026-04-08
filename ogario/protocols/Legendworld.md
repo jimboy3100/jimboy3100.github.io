@@ -45,15 +45,18 @@ packet encoding remains (each client has its own scramble values for anti-cheat)
 
 Scale 1.0 = 14142 = real Agar.io map size. Each tier scales by ×√2.
 
-| Tier | Side  | Scale | Food  | Virus | Expand >N | Shrink <N |
-|------|-------|-------|-------|-------|-----------|-----------|
-| 0    | 7071  | 0.25  | 1000  | 12    | (base)    | (never)   |
-| 1    | 10000 | 0.50  | 2000  | 25    | 1         | 0 (never) |
-| 2    | 14142 | 1.00  | 4000  | 50    | 30        | 20        |
-| 3    | 20000 | 2.00  | 8000  | 100   | 150       | 120       |
-| 4    | 28284 | 4.00  | 16000 | 200   | 300       | 240       |
-| 5    | 40000 | 8.00  | 32000 | 400   | 600       | 480       |
-| 6    | 56569 | 16.00 | 64000 | 800   | 1200      | 960       |
+| Tier | Side   | Scale  | Food   | Virus | Expand >N | Shrink <N |
+|------|--------|--------|--------|-------|-----------|-----------|
+| 0    | 7071   | 0.25   | 1000   | 12    | (base)    | (never)   |
+| 1    | 10000  | 0.50   | 2000   | 25    | 1         | 0 (never) |
+| 2    | 14142  | 1.00   | 4000   | 50    | 30        | 20        |
+| 3    | 20000  | 2.00   | 8000   | 100   | 120       | 90        |
+| 4    | 28284  | 4.00   | 16000  | 200   | 240       | 180       |
+| 5    | 40000  | 8.00   | 32000  | 400   | 480       | 360       |
+| 6    | 56569  | 16.00  | 64000  | 800   | 960       | 720       |
+| 7    | 80000  | 32.00  | 128000 | 1600  | 1920      | 1440      |
+| 8    | 113137 | 64.00  | 256000 | 3200  | 3840      | 2880      |
+| 9    | 160000 | 128.00 | 512000 | 6400  | 7680      | 5760      |
 
 The map always expands or contracts **symmetrically from the center**.
 Tier 0 is the boot tier — the server instantly expands to tier 1 when the
@@ -64,17 +67,21 @@ first player connects. Tier 1 never shrinks back to tier 0.
 # Hysteresis Thresholds
 
 Separate thresholds prevent constant resizing when player counts fluctuate
-near boundaries.
+near boundaries. Starting from tier 3, thresholds follow a doubling pattern
+(base: expand 120, shrink 90).
 
-| Map Size | Scale | Player Range |
-|----------|-------|--------------|
-| 7071     | 0.25  | 0–30         |
-| 10000    | 0.50  | 1–150        |
-| 14142    | 1.00  | 20–300       |
-| 20000    | 2.00  | 120–600      |
-| 28284    | 4.00  | 240–1200     |
-| 40000    | 8.00  | 480+         |
-| 56569    | 16.00 | 960+         |
+| Map Size | Scale  | Player Range |
+|----------|--------|--------------|
+| 7071     | 0.25   | 0–30         |
+| 10000    | 0.50   | 1–120        |
+| 14142    | 1.00   | 20–240       |
+| 20000    | 2.00   | 90–480       |
+| 28284    | 4.00   | 180–960      |
+| 40000    | 8.00   | 360–1920     |
+| 56569    | 16.00  | 720–3840     |
+| 80000    | 32.00  | 1440–7680    |
+| 113137   | 64.00  | 2880+        |
+| 160000   | 128.00 | 5760+        |
 
 ---
 
@@ -216,7 +223,7 @@ Offset  Size   Type    Field
 26      8      f64le   Center Y (always 0.0)
 34      4      u32le   Transition duration (ticks)
 38      4      u32le   Warning duration (ticks)
-42      1      u8      Current tier index (0-6)
+42      1      u8      Current tier index (0-9)
 Total: 43 bytes
 ```
 
