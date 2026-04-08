@@ -12783,6 +12783,7 @@ function thelegendmodproject() {
 */
             var encode = function () {
                 for (var text = ''; ;) {
+                    if (s >= data.byteLength) break;
                     var i = data.getUint8(s++);
                     if (0 === i) break;
                     text += String.fromCharCode(i);
@@ -12933,6 +12934,7 @@ function thelegendmodproject() {
                     this.leaderboard = [];
                     var count = data.getUint32(s, true);
                     s += 4;
+                    if (count > 200 || s > data.byteLength) { break; }
                     // Garix protocol 6-10: [playerID UInt32][name UTF-8z][mass UInt32][sector UTF-8z][color UTF-8z]
                     if (this.serverType === 'garix') {
                         for (i = 0; i < count; ++i) {
@@ -12952,7 +12954,7 @@ function thelegendmodproject() {
                             });
                         }
                     } else {
-                    for (i = 0; i < count; ++i) {
+                    for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
                         var isMe = !!data.getUint32(s, true);
                         s += 4;
                         if (isMe) {

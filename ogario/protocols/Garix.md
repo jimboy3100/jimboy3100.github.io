@@ -729,3 +729,31 @@ JSON payload:
   "botsTotal":    5,
   "playersLimit": 100
 }
+
+ws = new WebSocket(wsUrl, [fingerprint]);
+    async function generateFingerprint() {
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d");
+        ctx.textBaseline = "top";
+        ctx.font = "14px Arial";
+        ctx.fillStyle = "#f60";
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = "#069";
+        ctx.fillText("garix.io fp", 2, 15);
+        ctx.fillStyle = "rgba(102,204,0,0.7)";
+        ctx.fillText("garix.io fp", 4, 17);
+        let canvasData = canvas.toDataURL();
+        let webgl = "";
+        try {
+            let gl = document.createElement("canvas").getContext("webgl");
+            let ext = gl.getExtension("WEBGL_debug_renderer_info");
+            if (ext) webgl = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+        } catch (e) {}
+        let raw = [navigator.userAgent, screen.width + "x" + screen.height + "x" + screen.colorDepth, navigator.language, navigator.hardwareConcurrency || 0, new Date().getTimezoneOffset(), canvasData.slice(-50), webgl].join("|");
+        let encoder = new TextEncoder();
+        let data = encoder.encode(raw);
+        let hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        let hashArray = Array.from(new Uint8Array(hashBuffer));
+        let hex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        return hex.slice(0, 32)
+    }
