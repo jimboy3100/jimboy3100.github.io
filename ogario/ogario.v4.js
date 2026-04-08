@@ -1,4 +1,4 @@
-window.OgVer = 3.345;
+window.OgVer = 3.340;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -3676,19 +3676,19 @@ var defaultSettings = {
     virMassScale: 3,
     strokeScale: 1,
     foodSize: 5,
-    bordersWidth: 30,
-    sectorsWidth: 6,
-    sectorsFontSize: 820,
+    bordersWidth: 14,
+    sectorsWidth: 40,
+    sectorsFontSize: 1200,
     cellsAlpha: 1,
     skinsAlpha: 1,
-    virusAlpha: 0.45,
+    virusAlpha: 0.6,
     textAlpha: 1,
     backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
     virusGlowSize: 14,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
-    virusStrokeSize: 11,
+    virusStrokeSize: 14,
     menuPreset: 'legendv2',
     graphics: 'high',
     indicators: 'normal',
@@ -3720,7 +3720,7 @@ var defaultSettings = {
     hudFont: 'ubuntu-bold',
     hudFontFamily: 'Ubuntu',
     hudFontWeight: 700,
-    hudScale: 1.1,
+    hudScale: 1,
     messageColor: 'rgba(0,0,0,0.4)',
     messageTextColor: '#ffffff',
     messageTimeColor: '#018cf6',
@@ -3977,7 +3977,7 @@ var defaultmapsettings = {
     hideMyMass: false,
     hideEnemiesMass: false,
     vanillaSkins: true,
-    ownVanillaSkin: true,
+    ownVanillaSkin: false,
     universalChat: true,
     customSkins: true,
     videoSkins: true,
@@ -4005,10 +4005,10 @@ var defaultmapsettings = {
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
-    oppColors: true,
+    oppColors: false,
     oppRings: true,
     virColors: false,
-    splitRange: true,
+    splitRange: false,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
@@ -10241,12 +10241,9 @@ function thelegendmodproject() {
         this.redrawed = 0;
         this.time = 0;
         this.skin = null;
-        this.pi2 = ogarbasicassembly.PI2;
+        this.pi2 = 2 * Math.PI;
         this.virusColor = null;
         this.virusStroke = null;
-        /* Reusable buffer for movePoints velocity smoothing —
-         * avoids this.pointsVel.slice() on every frame */
-        this._velBuf = [];
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -10287,74 +10284,71 @@ function thelegendmodproject() {
         }
         this.movePoints = function () {
             //console.log(this.id)
+            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
-            if (len === 0) return;
-            /* Reuse a pre-allocated buffer instead of slice() —
-             * eliminates one full array copy per cell per frame */
-            var buf = this._velBuf;
-            if (buf.length !== len) buf.length = len;
-            for (var i = 0; i < len; ++i) buf[i] = this.pointsVel[i];
-
             for (var i = 0; i < len; ++i) {
-                var prevVel = buf[(i - 1 + len) % len];
-                var nextVel = buf[(i + 1) % len];
+                var prevVel = pointsVel[(i - 1 + len) % len];
+                var nextVel = pointsVel[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                if (newVel > 10) newVel = 10;
-                else if (newVel < -10) newVel = -10;
+                newVel = Math.max(Math.min(newVel, 10), -10);
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-            this.maxPointRad = 0;
-            /* Cache self + sqDist outside the point loop to avoid
-             * per-point closure allocation from .bind() */
-            var self = this;
-            var selfX = this.x;
-            var selfY = this.y;
-            var selfSize = this.size;
-            var isVirus = this.isVirus;
-            var qt = LM.quadtree;
-            /* Pre-compute angle step — all points are evenly spaced */
-            var angleStep = 6.283185307179586 / len; // 2*PI/len
-
+            this.maxPointRad = 0
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var affected = false;
-                if (qt) {
-                    var cpx = curP.x;
-                    var cpy = curP.y;
-                    affected = qt.some({
-                        x: cpx - 5,
-                        y: cpy - 5,
+                var nextRl = this.points[(i + 1) % len].rl;
+                var self = this;
+                var affected
+                if (LM.quadtree) {
+                    affected = LM.quadtree.some({
+                        x: curP.x - 5,
+                        y: curP.y - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        if (item.parent === self) return false;
-                        var dx = item.x - cpx;
-                        var dy = item.y - cpy;
-                        return dx * dx + dy * dy <= 25;
-                    });
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
                 }
+                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+
+                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+
+
+                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
+                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
+
+                /*if (!affected &&
+                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+                {
+                    affected = true;
+                }*/
                 if (affected) {
-                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
+                    //console.log('affected!!!!!')
+                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                if (curRl < 0) curRl = 0;
+                curRl = Math.max(curRl, 0);
 
-                curRl = (9 * curRl + selfSize) / 10;
+                curRl = (9 * curRl + this.size) / 10; //??????
 
-                curP.rl = (prevRl + selfSize + 8 * curRl) / 10;
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
 
-                var angle = angleStep * i;
+                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                var angle = 2 * Math.PI * i / len;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl;
-                if (isVirus && (i & 1) === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl
+                if (this.isVirus && i % 2 === 0) {
                     rl += 5;
                 }
 
-                curP.x = selfX + Math.cos(angle) * rl;
-                curP.y = selfY + Math.sin(angle) * rl;
+                curP.x = this.x + Math.cos(angle) * rl;
+                curP.y = this.y + Math.sin(angle) * rl;
             }
         };
 
@@ -10471,7 +10465,7 @@ function thelegendmodproject() {
                 if (this.mass <= 200) {
                     this.virusColor = defaultSettings.virusColor;
                     this.virusStroke = defaultSettings.virusStrokeColor;
-                } else {
+                } else if (this.mass > 220) {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
@@ -11106,7 +11100,7 @@ function thelegendmodproject() {
             //ctx.lineTo(x, y);
             //ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.arc(x, y, radius, 0, ogarbasicassembly.PI2);
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
             ctx.fill();
             //ctx.closePath();
             //ctx.stroke();
@@ -11149,7 +11143,6 @@ function thelegendmodproject() {
                     node = application.getCustomSkin(this.targetNick, this.color);
                 }
                 var node2;
-                var isVideoSkin = false;
                 if (defaultmapsettings.videoSkins) {
                     if (LM.gameMode != ":party") {
                         node2 = application.customSkinsMap[this.targetNick];
@@ -11157,9 +11150,6 @@ function thelegendmodproject() {
                     else {
                         node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
-                    /* Cache video skin check — avoids 6 string.includes() calls
-                     * per cell per frame (called again at lines ~11210, ~11212) */
-                    isVideoSkin = !!(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")));
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -11193,23 +11183,13 @@ function thelegendmodproject() {
                     style.lineJoin = "miter"
                     var pointCount = 120;
                     var incremental = this.pi2 / pointCount;
-                    /* Use pre-computed sin/cos table to avoid 240 trig calls
-                     * per virus per frame. Table is shared across all viruses. */
-                    if (!ogarbasicassembly._virusSinTable || ogarbasicassembly._virusSinTable.length !== pointCount) {
-                        ogarbasicassembly._virusSinTable = new Float32Array(pointCount);
-                        ogarbasicassembly._virusCosTable = new Float32Array(pointCount);
-                        for (var t = 0; t < pointCount; t++) {
-                            var a = t * incremental;
-                            ogarbasicassembly._virusSinTable[t] = Math.sin(a);
-                            ogarbasicassembly._virusCosTable[t] = Math.cos(a);
-                        }
-                    }
                     style.moveTo(this.x, this.y + this.size + 3);
                     for (var i = 1; i < pointCount; i++) {
+                        var angle = i * incremental;
                         var dist = this.size - 3 + (i % 2 === 0) * 6;
                         style.lineTo(
-                            this.x + dist * ogarbasicassembly._virusSinTable[i],
-                            this.y + dist * ogarbasicassembly._virusCosTable[i]
+                            this.x + dist * Math.sin(angle),
+                            this.y + dist * Math.cos(angle)
                         )
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
@@ -11217,9 +11197,9 @@ function thelegendmodproject() {
                 else {
                     if (!node) {
                         //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || isVideoSkin || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                        if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            if (!this.isVirus && !defaultmapsettings.cellContours && !isVideoSkin) {
+                            if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
@@ -11277,19 +11257,7 @@ function thelegendmodproject() {
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        /* Cache the spike Path2D — only regenerate when size
-                         * or spike setting changes. Eliminates ~40 trig calls
-                         * and a Path2D allocation per virus per frame. */
-                        if (!this._cachedSpikePath || this._lastSpikeSize !== this.size ||
-                            this._lastSpikeScale !== defaultSettings.virusSpikesSize) {
-                            this._cachedSpikePath = this.createStrokeVirusPath(0, 0, this.size - 2, defaultSettings.virusSpikesSize);
-                            this._lastSpikeSize = this.size;
-                            this._lastSpikeScale = defaultSettings.virusSpikesSize;
-                        }
-                        style.save();
-                        style.translate(this.x, this.y);
-                        style.stroke(this._cachedSpikePath);
-                        style.restore();
+                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
                     }
                     else {
                         style.stroke()
@@ -11408,7 +11376,7 @@ function thelegendmodproject() {
                     else {
                         if (defaultmapsettings.videoSkins) {
                             if (node2) {
-                                if (isVideoSkin) {
+                                if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
                                     checkVideos(node2, this.targetNick);
                                     try {
                                         style.save();
@@ -11472,8 +11440,6 @@ function thelegendmodproject() {
                 style.restore();
             }
     }
-    /* Static constant shared by all cell instances — avoids per-cell 2*Math.PI storage */
-    ogarbasicassembly.PI2 = 2 * Math.PI;
     window.legendmod1 = ogarbasicassembly;
 
 
@@ -11483,10 +11449,6 @@ function thelegendmodproject() {
     }
     var LM = {
         integrity: true,
-        /* Pre-allocated sort comparator — avoids creating a closure on every frame */
-        _cellSortCmp: function(a, b) {
-            return a.size === b.size ? a.id - b.id : a.size - b.size;
-        },
         quadtree: null,
         updateQuadtree: function (cells) {
             var w = drawRender.canvasWidth / drawRender.scale;
@@ -13163,12 +13125,12 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
-                    //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
+                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        //console.error('[LW 102 DBG] onMobileData error:', e102);
+                        console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
@@ -13205,15 +13167,15 @@ function thelegendmodproject() {
                             }
                         } catch (error) {
                             if (window.expandingLand || window.legendModFromWebsite) {
-                                //console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
+                                console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
                             }
                         }
                         /* LW: Fallback extraction for our server's protobuf format.
                          * Server sends userId="provider$UID" in userInfo field.
                          * Only runs on our domains — doesn't affect agar.io parsing. */
                         if (window.expandingLand || window.legendModFromWebsite) {
-                            //console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
-                            //    'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
+                            console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
+                                'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
                             var rawText = window.testobjects2;
                             if (!window.agarioUID && rawText.includes('$')) {
                                 try {
@@ -13222,10 +13184,10 @@ function thelegendmodproject() {
                                         window.agarioUID = uidMatch[1].substr(0, 36);
                                         localStorage.setItem("agarioUID", window.agarioUID);
                                         $("#UserProfileUUID1").val(window.agarioUID);
-                                        //console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
                                     }
                                 } catch (lwErr) {
-                                    //console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
+                                    console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
                                 }
                             }
                         }
@@ -14970,7 +14932,7 @@ Most cells eaten   : ${mostCellsEaten}
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
-                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < this.leaderboard.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
+                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
@@ -15595,7 +15557,9 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(LM._cellSortCmp);
+            this.cells.sort(function (row, conf) {
+                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
+            });
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -15629,7 +15593,9 @@ Most cells eaten   : ${mostCellsEaten}
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
                 var CellLength = cells.length;
-                cells.sort(LM._cellSortCmp);
+                cells.sort(function (cells, CellLength) {
+                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
+                });
                 this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
                 this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
                 this.playerSplitCells = CellLength;
@@ -15949,8 +15915,6 @@ Most cells eaten   : ${mostCellsEaten}
             this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
-            /* Invalidate grid cache on resize so it re-renders at new size */
-            this._gridCacheDirty = true;
             //this.renderFrame();
         },
         setView() {
@@ -16018,9 +15982,6 @@ Most cells eaten   : ${mostCellsEaten}
                 //
             }
             else if (defaultmapsettings.showGrid) {
-                /* Draw grid directly — caching caused grid/camera desync
-                 * (grid frozen while camera moves = dizziness). Direct
-                 * drawing is ~100 lines per frame — negligible cost. */
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
             }
             this.ctx.save();
@@ -16077,37 +16038,16 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            /* Compute viewport bounds in world-space for culling.
-             * Cells entirely outside these bounds produce no visible pixels,
-             * so we skip their expensive draw/jelly calls. */
-            var halfW = (this.canvasWidth / 2) / this.scale;
-            var halfH = (this.canvasHeight / 2) / this.scale;
-            var viewMinX = this.camX - halfW;
-            var viewMaxX = this.camX + halfW;
-            var viewMinY = this.camY - halfH;
-            var viewMaxY = this.camY + halfH;
-
             for (i = 0; i < LM.cells.length; i++) {
-                var cell = LM.cells[i];
-                /* Jelly physics must run for ALL cells every frame, even
-                 * off-screen ones. Otherwise cells scrolling into view
-                 * have stale points and look jagged/non-circular. */
+
                 if (defaultmapsettings.jellyPhisycs) {
-                    cell.updateNumPoints();
-                    cell.movePoints();
+                    LM.cells[i].updateNumPoints();
+                    LM.cells[i].movePoints();
                 }
 
-                /* Viewport culling: skip draw() for cells entirely outside
-                 * the canvas. Using a generous 1.5× margin avoids popping. */
-                var margin = (cell.maxPointRad || cell.size) * 1.5;
-                if (cell.x + margin < viewMinX || cell.x - margin > viewMaxX ||
-                    cell.y + margin < viewMinY || cell.y - margin > viewMaxY) {
-                    continue;
-                }
+                LM.cells[i].draw(this.ctx);
 
-                cell.draw(this.ctx);
-
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
                     //
                     //console.log("LM.selected") 
                     //
@@ -16509,30 +16449,18 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
-            /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
-             * and alpha is near-zero, wasting GPU on invisible geometry */
-            if (scale < 0.02) return;
-
             const reWidth = width / scale;
             const reHeigth = heigth / scale;
-
-            /* Dynamically increase grid step so lines are at least 4px apart.
-             * At normal zoom (scale 0.2), step=50, spacing=10px — fine.
-             * At extreme zoom (scale 0.03), base spacing=1.5px, so step
-             * doubles to 200 (6px spacing) — 4× fewer lines. */
-            let step = 50;
-            while (step * scale < 4) step *= 2;
-
-            let x = (-camX + reWidth / 2) % step;
-            let y = (-camY + reHeigth / 2) % step;
+            let x = (-camX + reWidth / 2) % 50;
+            let y = (-camY + reHeigth / 2) % 50;
             ctx.strokeStyle = defaultSettings.gridColor;
             ctx.globalAlpha = 1 * scale;
             ctx.beginPath();
-            for (; x < reWidth; x += step) {
+            for (; x < reWidth; x += 50) {
                 ctx.moveTo(x * scale - 0.5, 0);
                 ctx.lineTo(x * scale - 0.5, reHeigth * scale);
             }
-            for (; y < reHeigth; y += step) {
+            for (; y < reHeigth; y += 50) {
                 ctx.moveTo(0, y * scale - 0.5);
                 ctx.lineTo(reWidth * scale, y * scale - 0.5);
             }
@@ -17031,42 +16959,38 @@ Most cells eaten   : ${mostCellsEaten}
 
                 ctx.strokeStyle = defaultSettings.foodColor;
             }
-            if (defaultmapsettings.rainbowFood) {
-                /* Batch rainbow food by color: one beginPath+fill per color
-                 * group instead of per particle. Reduces canvas calls from
-                 * ~3000 (1000 food × 3 ops) to ~60 (20 colors × 3 ops). */
-                var colorBuckets = {};
-                var foodSize = defaultSettings.foodSize;
-                for (var length = 0; length < food.length; length++) {
-                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                    if (!food[length].invisible) {
-                        var c = food[length].color;
-                        if (!colorBuckets[c]) colorBuckets[c] = [];
-                        colorBuckets[c].push(food[length]);
+            for (var length = 0; length < food.length; length++) {
+                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                //ctx.beginPath();
+                if (!food[length].invisible) {
+                    var temp;
+                    if (defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = food[length].color
+                        temp = food[length].color
                     }
-                }
-                var pi2 = 2 * Math.PI;
-                for (var col in colorBuckets) {
-                    var bucket = colorBuckets[col];
-                    ctx.fillStyle = col;
-                    ctx.beginPath();
-                    for (var j = 0; j < bucket.length; j++) {
-                        var r = bucket[j].size + foodSize;
-                        ctx.moveTo(bucket[j].x + r, bucket[j].y);
-                        ctx.arc(bucket[j].x, bucket[j].y, r, 0, pi2);
-                    }
-                    ctx.fill();
-                }
-            } else {
-                for (var length = 0; length < food.length; length++) {
-                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                    if (!food[length].invisible) {
+                    else if (!defaultmapsettings.rainbowFood) {
                         ctx.fillStyle = defaultSettings.foodColor;
-                        var x = food[length].x;
-                        var y = food[length].y;
-                        this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, defaultSettings.foodColor);
+                        temp = defaultSettings.foodColor;
                     }
+
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    /*ctx.moveTo(x, y);
+                    if (scale < 0.08) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                    	
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        //continue;
+                    }
+                    else{*/
+
+                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                    //}
                 }
+
+                //ctx.fill();					
             }
             if (!defaultmapsettings.rainbowFood) ctx.stroke();
             //}
@@ -17265,16 +17189,15 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
-            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
-            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
+                ctx.beginPath();
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
             }
-            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
@@ -17324,27 +17247,27 @@ Most cells eaten   : ${mostCellsEaten}
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
-            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
+            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //760+2*cell.size is the correct
                 }
-                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
-                ctx.setLineDash([20, 30]);
-                ctx.lineWidth = 2 * width;
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
+                    ctx.setLineDash([20, 30]);
+                    ctx.lineWidth = 2 * width;
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //Sonia2
                 }
-                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -17354,11 +17277,11 @@ Most cells eaten   : ${mostCellsEaten}
             var pi2 = this.pi2 / times;
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
-            ctx.beginPath();
             for (var length = 0; length < times; length += 2) {
+                ctx.beginPath();
                 ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
+                ctx.stroke();
             }
-            ctx.stroke();
         },
         drawTeammatesInd(ctx, x, y, size) {
             if (this.indicator) {
@@ -17458,103 +17381,54 @@ Most cells eaten   : ${mostCellsEaten}
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
-                if (!ghostsCells.length) return;
-
-                /* --- Pass 1: Draw ghost cell circles with cheap glow --- */
-                /* Pre-render a radial gradient glow sprite once, reuse for
-                 * all ghost cells. This replaces shadowBlur=40 which does
-                 * an expensive CPU Gaussian blur on every filled pixel. */
-                var glowColor = defaultSettings.ghostCellsColor;
-                var glowAlpha = defaultSettings.ghostCellsAlpha;
-                if (!this._ghostGlowCanvas || this._ghostGlowColor !== glowColor) {
-                    this._ghostGlowCanvas = document.createElement('canvas');
-                    this._ghostGlowCanvas.width = 128;
-                    this._ghostGlowCanvas.height = 128;
-                    var gctx = this._ghostGlowCanvas.getContext('2d');
-                    var grad = gctx.createRadialGradient(64, 64, 32, 64, 64, 64);
-                    grad.addColorStop(0, glowColor);
-                    grad.addColorStop(1, glowColor + '00');
-                    gctx.fillStyle = grad;
-                    gctx.fillRect(0, 0, 128, 128);
-                    this._ghostGlowColor = glowColor;
-                }
-
-                /* Compute viewport bounds for culling off-screen ghosts */
-                var halfW = (this.canvasWidth / 2) / this.scale;
-                var halfH = (this.canvasHeight / 2) / this.scale;
-                var vMinX = this.camX - halfW;
-                var vMaxX = this.camX + halfW;
-                var vMinY = this.camY - halfH;
-                var vMaxY = this.camY + halfH;
-
-                this.ctx.globalAlpha = glowAlpha;
-
-                /* Draw glow sprites for each visible ghost cell */
-                for (var length = 0; length < ghostsCells.length; length++) {
-                    if (ghostsCells[length].inView) continue;
-                    var x = ghostsCells[length].x;
-                    var y = ghostsCells[length].y;
-                    var sz = ghostsCells[length].size;
-                    /* Viewport culling */
-                    if (x + sz < vMinX || x - sz > vMaxX ||
-                        y + sz < vMinY || y - sz > vMaxY) continue;
-                    /* Draw glow sprite (stretched to cell size + margin) */
-                    var glowSz = sz * 1.5;
-                    this.ctx.drawImage(this._ghostGlowCanvas, x - glowSz, y - glowSz, glowSz * 2, glowSz * 2);
-                }
-
-                /* Draw solid ghost circles — batched, no shadow */
-                this.ctx.fillStyle = glowColor;
                 this.ctx.beginPath();
-                for (length = 0; length < ghostsCells.length; length++) {
-                    if (ghostsCells[length].inView) continue;
-                    var x = ghostsCells[length].x;
-                    var y = ghostsCells[length].y;
-                    var sz = ghostsCells[length].size;
-                    if (x + sz < vMinX || x - sz > vMaxX ||
-                        y + sz < vMinY || y - sz > vMaxY) continue;
-                    this.ctx.moveTo(x + sz, y);
-                    this.ctx.arc(x, y, sz, 0, this.pi2, false);
-                }
-                this.ctx.fill();
-                this.ctx.globalAlpha = 1;
-
-                /* --- Pass 2: Ghost cell info (names, skins) --- */
-                if (defaultmapsettings.showGhostCellsInfo) {
-                    for (length = 0; length < ghostsCells.length; length++) {
-                        if (ghostsCells[length].inView) continue;
+                var length = 0;
+                for (; length < ghostsCells.length; length++) {
+                    if (!ghostsCells[length].inView) {
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
-                        var sz = ghostsCells[length].size;
-                        if (x + sz < vMinX || x - sz > vMaxX ||
-                            y + sz < vMinY || y - sz > vMaxY) continue;
+                        this.ctx.moveTo(x, y);
+                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
+                        //
+                        if (defaultmapsettings.showGhostCellsInfo) {
+                            this.nickScale = 1;
+                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
+                            this.nickSize = ~~(this.fontSize * this.nickScale);
+                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.fillStyle = defaultSettings.namesColor;
+                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                            this.ctx.lineWidth = 4;
+                            angle = Math.PI * 0.8;
 
-                        this.nickScale = 1;
-                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
-                        this.nickSize = ~~(this.fontSize * this.nickScale);
-                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                        this.ctx.textAlign = 'center';
-                        this.ctx.fillStyle = defaultSettings.namesColor;
-                        this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                        this.ctx.lineWidth = 4;
-                        var angle = Math.PI * 0.8;
+                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
 
-                        if (LM.leaderboard[length] != undefined) {
-                            this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
-                        } else {
-                            this.ghostcellstext = "Ghost cell";
-                        }
-                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                            if (LM.leaderboard[length] != undefined) {
-                                node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                if (node) {
-                                    this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
+                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
+                            } else {
+                                this.ghostcellstext = "Ghost cell";
+                            }
+                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
+                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                                if (LM.leaderboard[length] != undefined) {
+                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                    if (node) {
+                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
+                                    }
                                 }
                             }
                         }
+                        //
                     }
                 }
+                this.ctx.fillStyle = defaultSettings.ghostCellsColor;
+                this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
+                this.ctx.shadowColor = defaultSettings.ghostCellsColor;
+                this.ctx.shadowBlur = 40;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+                this.ctx.shadowBlur = 0;
             }
         },
         preDrawPellet() {
@@ -17590,19 +17464,18 @@ Most cells eaten   : ${mostCellsEaten}
             canvas = null;
         },
         preDrawCellsColors(color) {
+            this.cellsColored[color] = null;
             var size = 128;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size;
-            canvas.height = 2 * size;
+            canvas.width = 2 * size,
+                canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
-            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
-            /* Use canvas directly as image source — drawImage() accepts
-             * canvas elements. Avoids expensive toDataURL() PNG encode
-             * and async Image decode. */
-            this.cellsColored[color] = canvas;
+            this.cellsColored[color] = new Image();
+            this.cellsColored[color].src = canvas.toDataURL();
+            canvas = null;
         },
         preDrawIndicator() {
             this.indicator = null;
