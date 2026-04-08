@@ -1,4 +1,4 @@
-window.OgVer = 3.370;
+window.OgVer = 3.380;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -14,13 +14,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
     /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
      * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
-    window.gapiAsyncInit = function() {
+    window.gapiAsyncInit = function () {
 
     };
     /* Remove old gapi script tags from DOM before they load */
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            m.addedNodes.forEach(function (node) {
                 if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
                     node.remove();
 
@@ -45,7 +45,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      *   6. timestamp within window (stale rejection) */
     var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-    window._lwResetAuthState = function() {
+    window._lwResetAuthState = function () {
         window._lwAuth = {
             attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
             provider: null,
@@ -59,10 +59,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window._lw_protobuf102Received = false;
         window._discordLoginDone = false;
         window.legendmod_discordUser = null;
-        try { localStorage.removeItem('legendmod_discord'); } catch(e) {}
+        try { localStorage.removeItem('legendmod_discord'); } catch (e) { }
         console.log('[LW AUTH] State reset to idle');
     };
-    window._lwBeginLogin = function(provider) {
+    window._lwBeginLogin = function (provider) {
         if (!window._lwAuth) window._lwResetAuthState();
         window._lwAuth.attemptId += 1;
         window._lwAuth.provider = provider;
@@ -77,7 +77,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     };
     /* Atomic check+consume: validates ALL conditions AND sets done=true in one call.
      * Returns true exactly once — the first handler to call this wins. */
-    window._lwTryConsume = function(attemptId, provider) {
+    window._lwTryConsume = function (attemptId, provider) {
         var a = window._lwAuth;
         if (!a) return false;
         if (a.attemptId !== attemptId) return false;
@@ -90,8 +90,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW AUTH] Attempt #' + a.attemptId + ' consumed (' + provider + ')');
         return true;
     };
-    window._lwArmLoginTimeout = function(attemptId) {
-        setTimeout(function() {
+    window._lwArmLoginTimeout = function (attemptId) {
+        setTimeout(function () {
             if (window._lwAuth &&
                 window._lwAuth.attemptId === attemptId &&
                 window._lwAuth.state !== 'logged_in') {
@@ -107,7 +107,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
      * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
-    (function() {
+    (function () {
         var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
         var gisLoaded = false;
         var tokenClient = null;
@@ -117,7 +117,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
         script.defer = true;
-        script.onload = function() {
+        script.onload = function () {
             gisLoaded = true;
             tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: LW_CLIENT_ID,
@@ -145,98 +145,98 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                 headers: { 'Authorization': 'Bearer ' + accessToken }
             })
-            .then(function(r) { return r.json(); })
-            .then(function(profile) {
+                .then(function (r) { return r.json(); })
+                .then(function (profile) {
 
 
-                /* Update storage info like the old flow does */
-                var st = window.storageInfo || window.defaultSt;
-                if (st) {
-                    st.context = 'google';
-                    st.loginIntent = '1';
-                    if (profile.picture) st.userInfo.picture = profile.picture;
-                    if (profile.sub) st.userInfo.socialId = profile.sub;
-                    if (window.updateStorage) window.updateStorage();
-                }
-
-                /* Set profile picture */
-                if (profile.picture) {
-                    var pics = document.querySelectorAll('.agario-profile-picture');
-                    for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
-                    window.googlePic = profile.picture;
-                }
-
-                /* Send token to game server */
-                if (window.MC && window.MC.doLoginWithGPlus) {
-                    /* MC available (agar.io or domains with agario.core.js) */
-                    if (profile.sub) window.MC.setSocialId(profile.sub);
-                    if (profile.picture) window.MC.setProfilePicture(profile.picture);
-                    window.MC.doLoginWithGPlus(accessToken);
-                    window.MC.onGoogleLoginComplete(true);
-                    window.MC.showInstructionsPanel(true);
-                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    /* MC unavailable (expanding.land / private server) */
-
-
-                    /* Store token in master so login() can resend on Play clicks */
-                    if (window.master && window.master.doLoginWithGPlus) {
-                        window.master.doLoginWithGPlus(accessToken);
+                    /* Update storage info like the old flow does */
+                    var st = window.storageInfo || window.defaultSt;
+                    if (st) {
+                        st.context = 'google';
+                        st.loginIntent = '1';
+                        if (profile.picture) st.userInfo.picture = profile.picture;
+                        if (profile.sub) st.userInfo.socialId = profile.sub;
+                        if (window.updateStorage) window.updateStorage();
                     }
 
-                    /* Send opcode 102 directly to game server with social ID and name */
-                    _lw_sendLogin102(accessToken, profile.sub, profile.name);
-                    /* Transition: OAuth done → waiting for server confirmation */
-                    if (window._lwAuth && window._lwAuth.provider === 'google') {
-                        window._lwAuth.state = 'waiting_server';
+                    /* Set profile picture */
+                    if (profile.picture) {
+                        var pics = document.querySelectorAll('.agario-profile-picture');
+                        for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
+                        window.googlePic = profile.picture;
                     }
 
+                    /* Send token to game server */
+                    if (window.MC && window.MC.doLoginWithGPlus) {
+                        /* MC available (agar.io or domains with agario.core.js) */
+                        if (profile.sub) window.MC.setSocialId(profile.sub);
+                        if (profile.picture) window.MC.setProfilePicture(profile.picture);
+                        window.MC.doLoginWithGPlus(accessToken);
+                        window.MC.onGoogleLoginComplete(true);
+                        window.MC.showInstructionsPanel(true);
+                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                        /* MC unavailable (expanding.land / private server) */
 
-                    /* Update profile UI — TEMPORARY fallback only.
-                     * Once protobuf type-11 login response arrives from the
-                     * server (with refreshed profile from 204→102 resend),
-                     * updateUserInfo() becomes the single source of truth.
-                     * Do NOT set agarioUID here — it must come from server. */
-                    if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
-                        console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
-                        if (profile.picture) {
-                            $('.agario-profile-picture').attr('src', profile.picture);
+
+                        /* Store token in master so login() can resend on Play clicks */
+                        if (window.master && window.master.doLoginWithGPlus) {
+                            window.master.doLoginWithGPlus(accessToken);
                         }
-                        if (profile.name) {
-                            $('#UserProfileName1').text(profile.name);
-                            window.userfirstname = profile.name;
-                            localStorage.setItem('userfirstname', profile.name);
+
+                        /* Send opcode 102 directly to game server with social ID and name */
+                        _lw_sendLogin102(accessToken, profile.sub, profile.name);
+                        /* Transition: OAuth done → waiting for server confirmation */
+                        if (window._lwAuth && window._lwAuth.provider === 'google') {
+                            window._lwAuth.state = 'waiting_server';
                         }
-                        if (profile.sub) {
-                            $('#UserProfileUID1').val(profile.sub);
-                            $('#replayuid').val(profile.sub);
-                            window.userid = profile.sub;
-                            localStorage.setItem('userid', profile.sub);
+
+
+                        /* Update profile UI — TEMPORARY fallback only.
+                         * Once protobuf type-11 login response arrives from the
+                         * server (with refreshed profile from 204→102 resend),
+                         * updateUserInfo() becomes the single source of truth.
+                         * Do NOT set agarioUID here — it must come from server. */
+                        if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
+                            console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
+                            if (profile.picture) {
+                                $('.agario-profile-picture').attr('src', profile.picture);
+                            }
+                            if (profile.name) {
+                                $('#UserProfileName1').text(profile.name);
+                                window.userfirstname = profile.name;
+                                localStorage.setItem('userfirstname', profile.name);
+                            }
+                            if (profile.sub) {
+                                $('#UserProfileUID1').val(profile.sub);
+                                $('#replayuid').val(profile.sub);
+                                window.userid = profile.sub;
+                                localStorage.setItem('userid', profile.sub);
+                            }
+                            /* Set logged-in state so Play/Logout buttons appear */
+                            $('#helloContainer').attr('data-logged-in', '1');
                         }
-                        /* Set logged-in state so Play/Logout buttons appear */
-                        $('#helloContainer').attr('data-logged-in', '1');
+
+                    } else {
+                        console.error('[LW Google] No MC or legendmod available to send token');
                     }
 
-                } else {
-                    console.error('[LW Google] No MC or legendmod available to send token');
-                }
 
-
-            })
-            .catch(function(err) {
-                console.error('[LW Google] Profile fetch failed:', err);
-                /* Still try to log in with just the token */
-                if (window.MC && window.MC.doLoginWithGPlus) {
-                    window.MC.doLoginWithGPlus(accessToken);
-                    window.MC.onGoogleLoginComplete(true);
-                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    var view = legendmod.createView(1 + accessToken.length);
-                    view.setUint8(0, 102);
-                    for (var ti = 0; ti < accessToken.length; ti++) {
-                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                })
+                .catch(function (err) {
+                    console.error('[LW Google] Profile fetch failed:', err);
+                    /* Still try to log in with just the token */
+                    if (window.MC && window.MC.doLoginWithGPlus) {
+                        window.MC.doLoginWithGPlus(accessToken);
+                        window.MC.onGoogleLoginComplete(true);
+                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                        var view = legendmod.createView(1 + accessToken.length);
+                        view.setUint8(0, 102);
+                        for (var ti = 0; ti < accessToken.length; ti++) {
+                            view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                        }
+                        legendmod.sendMessage(view);
                     }
-                    legendmod.sendMessage(view);
-                }
-            });
+                });
         }
 
         /* Intercept the Google login button click on our domains.
@@ -253,12 +253,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             var newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
 
-            newBtn.addEventListener('click', function(e) {
+            newBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!gisLoaded || !tokenClient) {
 
-                    setTimeout(function() { newBtn.click(); }, 500);
+                    setTimeout(function () { newBtn.click(); }, 500);
                     return;
                 }
 
@@ -275,7 +275,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { setTimeout(setupLoginOverride, 1000); });
+            document.addEventListener('DOMContentLoaded', function () { setTimeout(setupLoginOverride, 1000); });
         } else {
             setTimeout(setupLoginOverride, 1000);
         }
@@ -287,7 +287,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * in the opcode 102 payload, so we just embed the token as raw bytes.
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
     function _lw_sendLogin102(token, socialId, displayName) {
-        var sendFn = function() {
+        var sendFn = function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
                 return;
@@ -310,7 +310,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     view.setUint8(1 + j, tokenBytes[j]);
                 }
                 legendmod.sendMessage(view);
-                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId||'none') + ')');
+                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId || 'none') + ')');
             } else {
                 setTimeout(sendFn, 1000);
             }
@@ -322,7 +322,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Format: [204][auth_provider=3][socialId\0][displayName\0]
      * Avatar is NOT sent — profile picture is rendered client-side only. */
     function _lw_sendDiscordProfile(discordUser) {
-        var sendFn = function() {
+        var sendFn = function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
                 return;
@@ -355,7 +355,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* LW: Core Discord login function — used by both initial auth and reconnects.
      * On agar.io: uses MC.doLoginWithGPlus() (agario.core.js available).
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
-    window._lw_applyDiscordLogin = function(discordUser) {
+    window._lw_applyDiscordLogin = function (discordUser) {
         if (!discordUser || !discordUser.token) return;
         /* Reset protobuf flag so temporary fallback can run for this new login.
          * It will be set back to true when the server's type-11 response arrives. */
@@ -436,7 +436,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
         /* Register gplusRelogin for reconnects.
          * On agar.io the engine calls this; on expanding.land our hook calls it. */
-        window.gplusRelogin = function(callback) {
+        window.gplusRelogin = function (callback) {
             var cached = localStorage.getItem('legendmod_discord');
             if (cached) {
                 try {
@@ -450,7 +450,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         _lw_sendDiscordProfile(user);
                         console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error('[LW Discord] gplusRelogin error:', e);
                 }
             }
@@ -464,7 +464,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Triggered ONLY after confirmed protobuf type-11 login response.
      * Uses server-confirmed provider/name, NOT raw OAuth callback data.
      * Visually matches agar.io's native blue login notification. */
-    window._lw_showLoginSuccess = function(provider, displayName) {
+    window._lw_showLoginSuccess = function (provider, displayName) {
         /* De-duplicate: don't show if we already showed for this session */
         if (window._lw_loginNotifShown) return;
         window._lw_loginNotifShown = true;
@@ -503,15 +503,15 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         document.body.appendChild(el);
 
         /* Animate in */
-        requestAnimationFrame(function() {
-            requestAnimationFrame(function() { el.classList.add('show'); });
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { el.classList.add('show'); });
         });
 
         /* Fade out after 4 seconds */
-        setTimeout(function() {
+        setTimeout(function () {
             el.classList.remove('show');
             el.classList.add('hide');
-            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+            setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
         }, 4000);
 
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
@@ -519,7 +519,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
-    window.logout = function() {
+    window.logout = function () {
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
         /* Reset UI */
@@ -538,7 +538,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * On agar.io the original Facebook button is left untouched.
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
      * which sends it to the game server via opcode 102 — same path as Google. */
-    (function() {
+    (function () {
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
 
         function replaceWithDiscord() {
@@ -547,7 +547,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
              * 100% reliable for same-origin communication. */
             try {
                 var bc = new BroadcastChannel('legendmod_discord');
-                bc.onmessage = function(event) {
+                bc.onmessage = function (event) {
                     if (!event.data || event.data.type !== 'legendmod_discord_login') return;
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
@@ -558,14 +558,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             return;
                         }
                         window._discordLoginDone = true; /* debug only */
-                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
                         /* Login message now comes from server via chat (opcode 204 handler) */
                     }
                 };
                 console.log('[LW Discord] BroadcastChannel listener registered');
-            } catch(e) {
+            } catch (e) {
                 console.log('[LW Discord] BroadcastChannel not supported:', e.message);
             }
 
@@ -590,21 +590,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.className = btnEl.className.replace('btn-fb', 'btn-discord');
             discordBtn.style.cssText = 'background-color: #5865F2; border-color: #4752C4; color: #fff;';
             discordBtn.innerHTML = '<span class="discord-icon" style="display:inline-block;width:24px;height:24px;position:absolute;left:18px;top:50%;margin-top:-12px;margin-left:-8px;background-size:contain;background-repeat:no-repeat;background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTIwLjMxNyA0LjM2OTVhMTkuNzkgMTkuNzkgMCAwMC00Ljg4NS0xLjUxNTUuMDc1Ljc1IDAgMDAtLjA3My4wMzY1Yy0uMjEuMzc0LS40NDQuNzY1LS42MDggMS4yMjQ1LTEuNzY1LS4yNjQ1LTMuNTAyLS4yNjQ1LTUuMjI3IDBhMTIuMzYgMTIuMzYgMCAwMC0uNjE3LTEuMjI0NS4wNzguMDc4IDAgMDAtLjA3NC0uMDM2NSAxOS43MzUgMTkuNzM1IDAgMDAtNC44ODUgMS41MTU1LjA3LjA3IDAgMDAtLjAzMjcuMDI4QzEuMjcxOCA5Ljg0MzUuMjkyNyAxNS4xNjA1Ljc2NTcgMjAuNDA4NWEuMDgyLjA4MiAwIDAwLjAzMS4wNTYgMTkuOSAxOS45IDAgMDA1Ljk5MyAzLjAzLjA3OC4wNzggMCAwMC4wODQtLjAyOCAxNC4wOSAxNC4wOSAwIDAwMS4yMjYtMS45OTQuMDc2LjA3NiAwIDAwLS4wNDItLjEwNjUgMTMuMSAxMy4xIDAgMDEtMS44NzItLjg5MjUuMDc3LjA3NyAwIDAxLS4wMDc1LS4xMjhjLjEyNi0uMDk0LjI1Mi0uMTkxNS4zNzItLjI5YS4wNzQuMDc0IDAgMDEuMDc3NS0uMDFjMy45MjcgMS43OTIgOC4xOCAxLjc5MiAxMi4wNjEgMGEuMDc0LjA3NCAwIDAxLjA3ODUuMDA5Yy4xMi4wOTkuMjQ2LjE5Ny4zNzMuMjkxYS4wNzcuMDc3IDAgMDEtLjAwNjUuMTI4IDEyLjMgMTIuMyAwIDAxLTEuODczLjg5MjUuMDc2LjA3NiAwIDAwLS4wNDEuMTA3NSAxNS45IDE1LjkgMCAwMDEuMjI2IDEuOTkzLjA3Ni4wNzYgMCAwMC4wODQuMDI4IDEuODQ0IDEuODQ0IDAgMDA1Ljk5NC0zLjAzLjA3Ny4wNzcgMCAwMC4wMzItLjA1NWMuNTYtNS44MDUtLjkzOC0xMC44NS00LjE3Mi0xNi4wMTVhLjA2MS4wNjEgMCAwMC0uMDMxLS4wMjkyek04LjAyIDE2LjczMTVjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6bTcuOTc1IDBjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6Ii8+PC9zdmc+)"></span>' +
-                                   '<span class="btn-text">Sign in with Discord</span>';
+                '<span class="btn-text">Sign in with Discord</span>';
 
             /* Listen for postMessage from the callback popup (primary channel).
              * Chrome's storage partitioning blocks localStorage sharing between
              * popup and parent when the popup navigates through a cross-origin
              * redirect (discord.com). postMessage bypasses this entirely. */
             var discordPopupRef = null;
-            window.addEventListener('message', function(event) {
+            window.addEventListener('message', function (event) {
                 /* Accept messages from our domains (relay page or callback) */
                 var trusted = ['https://expanding.land', 'https://jimboy3100.github.io', 'https://legendmod.ml'];
                 if (trusted.indexOf(event.origin) === -1) return;
                 if (!event.data || event.data.type !== 'legendmod_discord_login') return;
 
                 var discordUser = event.data.data;
-                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
+                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({ id: discordUser.id, hasToken: !!discordUser.token }));
 
                 if (discordUser && discordUser.id && discordUser.token) {
                     /* Atomic check+consume — only the first handler wins */
@@ -614,20 +614,20 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
-                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
 
                     window.legendmod_discordUser = discordUser;
                     console.log('[LW Discord DBG] Applying login via postMessage...');
                     window._lw_applyDiscordLogin(discordUser);
 
                     /* Close popup */
-                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch(ex) {}
+                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch (ex) { }
 
                     /* Login message now comes from server via chat (opcode 204 handler) */
                 }
             });
 
-            discordBtn.addEventListener('click', function(e) {
+            discordBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('[LW Discord DBG] Button clicked');
@@ -649,7 +649,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                 var pollCount = 0;
                 /* Poll localStorage for the Discord auth result from the callback page */
-                var poll = setInterval(function() {
+                var poll = setInterval(function () {
                     pollCount++;
                     try {
                         var data = localStorage.getItem('legendmod_discord');
@@ -658,7 +658,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         }
                         if (data) {
                             var discordUser = JSON.parse(data);
-                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
+                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({ id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0 }));
                             if (discordUser && discordUser.id && discordUser.token) {
                                 /* Atomic check+consume — only the first handler wins */
                                 if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
@@ -675,12 +675,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
 
                                 /* Close the popup if still open */
-                                try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
+                                try { if (popup && !popup.closed) popup.close(); } catch (ex) { }
 
                                 /* Login message now comes from server via chat (opcode 204 handler) */
                             }
                         }
-                    } catch(err) {
+                    } catch (err) {
                         console.error('[LW Discord DBG] Poll error:', err);
                     }
                     /* Stop polling if popup closed without completing */
@@ -688,7 +688,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         clearInterval(poll);
                         console.log('[LW Discord DBG] Popup closed after ' + pollCount + ' polls');
                         /* Check one last time after popup closes */
-                        setTimeout(function() {
+                        setTimeout(function () {
                             var finalData = localStorage.getItem('legendmod_discord');
                             if (finalData) {
                                 console.log('[LW Discord DBG] Found data after popup close! Processing...');
@@ -703,7 +703,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                         window._lw_applyDiscordLogin(discordUser);
                                         console.log('[LW Discord DBG] Late login applied successfully');
                                     }
-                                } catch(e) { console.error('[LW Discord DBG] Late parse error:', e); }
+                                } catch (e) { console.error('[LW Discord DBG] Late parse error:', e); }
                             } else {
                                 console.log('[LW Discord DBG] Popup closed without completing auth - NO DATA in localStorage');
                             }
@@ -718,7 +718,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { setTimeout(replaceWithDiscord, 1500); });
+            document.addEventListener('DOMContentLoaded', function () { setTimeout(replaceWithDiscord, 1500); });
         } else {
             setTimeout(replaceWithDiscord, 1500);
         }
@@ -1025,7 +1025,7 @@ function deleteGamemode(temp) {
                 };
                 var cfg = imsoloLbMap[val];
                 if (!cfg) return;
-                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
                     if (data && data.gameurl) {
                         console.log('%c[ImSolo]%c Load balancer: ' + data.gameurl, 'color:#f3a', 'color:inherit');
                         core.connect(data.gameurl);
@@ -1033,7 +1033,7 @@ function deleteGamemode(temp) {
                         console.log('%c[ImSolo]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
                         core.connect(cfg.fallback);
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     console.log('%c[ImSolo]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     core.connect(cfg.fallback);
                 });
@@ -1113,7 +1113,7 @@ function deleteGamemode(temp) {
                 };
                 var cfg = agar2ApiMap[val];
                 if (!cfg) return;
-                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
                     if (data && data.gameurl) {
                         // Extract token from URL: wss://live-arena-{token}-{region}.agar2.com
                         var tokenMatch = data.gameurl.match(/live-arena-([a-z0-9]+)-/i);
@@ -1128,7 +1128,7 @@ function deleteGamemode(temp) {
                         legendmod.gameMode = cfg.gm;
                         core.connect(cfg.fallback);
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     legendmod.gameMode = cfg.gm;
                     core.connect(cfg.fallback);
@@ -2104,7 +2104,7 @@ setTimeout(function () {
                     }
                 }
             }
-        } catch(e) { }
+        } catch (e) { }
 
         /* Build VanillaSkinUrlMap: %skinname -> full CDN URL (like Delta's vanillaSkinMap) */
         window.VanillaSkinUrlMap = {};
@@ -5139,7 +5139,7 @@ function thelegendmodproject() {
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
-                setTimeout(function() { window.lockPosition = false; }, 40);
+                setTimeout(function () { window.lockPosition = false; }, 40);
                 return;
             }
             window.lockPosition = true
@@ -5688,7 +5688,7 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
-                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s/60) + 'm' + (s%60 > 0 ? (s%60) + 's' : '') : s + 's'; }
+                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s / 60) + 'm' + (s % 60 > 0 ? (s % 60) + 's' : '') : s + 's'; }
 
                     var basePct = (di.decayScore / 100).toFixed(2);
                     var isAbove = di.totalScore > di.threshold;
@@ -7408,7 +7408,7 @@ function thelegendmodproject() {
                         app.connect();
                     }
                     legendmod.sendAction(56);
-                    
+
                     if (window.addKeyListeners) window.addKeyListeners();
                     if (defaultmapsettings.autoHideFood) ogario.showFood = false;
                 }
@@ -8017,7 +8017,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
                     /* ── Expanding Land: Draw zone on minimap (all phases) ── */
-                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function () {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
                         var tMinX = (-targetHalf + r) * n;
@@ -11669,10 +11669,10 @@ function thelegendmodproject() {
              * This duplicates the detection below but runs BEFORE anything else. */
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
-                : t.includes('agar2.com') ? 'agar2'
-                : t.includes('garix.io') ? 'garix'
-                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                : 'private';
+                    : t.includes('agar2.com') ? 'agar2'
+                        : t.includes('garix.io') ? 'garix'
+                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
@@ -11681,12 +11681,12 @@ function thelegendmodproject() {
              * is no longer logged in so we skip this block and proceed normally. */
             if (_earlyType !== 'agario' && _earlyType !== 'expandingland') {
                 var _isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
-                                  (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+                    (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
                 if (_isLoggedIn && typeof window.logout === 'function') {
                     console.log('[LW] Auto-logout before joining non-EL server, will reconnect in 500ms');
                     window.logout();
                     var self = this;
-                    setTimeout(function() {
+                    setTimeout(function () {
                         console.log('[LW] Logout complete, now connecting to: ' + t);
                         self.connect(t);
                     }, 500);
@@ -11790,7 +11790,7 @@ function thelegendmodproject() {
             if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 var self = this;
-                this.imsoloHeartbeatInterval = setInterval(function() {
+                this.imsoloHeartbeatInterval = setInterval(function () {
                     if (self.socket && self.socket.readyState === WebSocket.OPEN) {
                         var hb = self.createView(1);
                         hb.setUint8(0, 254); // 0xFE
@@ -11841,48 +11841,48 @@ function thelegendmodproject() {
                 this.connectionOpened = true;
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
             } else {
-            // ===== Standard Handshake: 0xFE + 0xFF =====
-            var view = this.createView(5);
-            view.setUint8(0, 254);
-            if (!this.integrity) {
-                view.setUint32(1, window.customProtol, true);
-                window.gameBots.protocolVersion = window.customProtol
-            } else {
-                view.setUint32(1, this.protocolVersion, true);
-                window.gameBots.protocolVersion = master.protocolVersion;
-            }
-            //			
-            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
-            //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
-
-
-            this.sendMessage(view);
-            view = this.createView(5);
-            view.setUint8(0, 255);
-            if (!this.integrity) {
-                view.setUint32(1, window.customClient, true);
-                window.gameBots.clientVersion = window.customClient
-
-                if (LM.ws.includes("cellz.io")) {
-                    this.sendMessage(view);
-                    view.setUint8(0, 80);
+                // ===== Standard Handshake: 0xFE + 0xFF =====
+                var view = this.createView(5);
+                view.setUint8(0, 254);
+                if (!this.integrity) {
+                    view.setUint32(1, window.customProtol, true);
+                    window.gameBots.protocolVersion = window.customProtol
+                } else {
+                    view.setUint32(1, this.protocolVersion, true);
+                    window.gameBots.protocolVersion = master.protocolVersion;
                 }
-            } //protocol 6 and 5
-            else {
-                view.setUint32(1, this.clientVersion, true);
-                window.gameBots.clientVersion = this.clientVersion;
-                //new
-                if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
-                //this.sendPong();				
-            }
+                //			
+                //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
+                //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
 
-            //
-            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
-            //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 
-            this.sendMessage(view);
+                this.sendMessage(view);
+                view = this.createView(5);
+                view.setUint8(0, 255);
+                if (!this.integrity) {
+                    view.setUint32(1, window.customClient, true);
+                    window.gameBots.clientVersion = window.customClient
 
-            this.connectionOpened = true;
+                    if (LM.ws.includes("cellz.io")) {
+                        this.sendMessage(view);
+                        view.setUint8(0, 80);
+                    }
+                } //protocol 6 and 5
+                else {
+                    view.setUint32(1, this.clientVersion, true);
+                    window.gameBots.clientVersion = this.clientVersion;
+                    //new
+                    if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
+                    //this.sendPong();				
+                }
+
+                //
+                //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
+                //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
+
+                this.sendMessage(view);
+
+                this.connectionOpened = true;
             } // end of non-garix handshake
 
             /* Private server login: trigger Google/Facebook OAuth.
@@ -11895,7 +11895,7 @@ function thelegendmodproject() {
                 /* Only use timeout fallback for NON-EL private servers.
                  * EL triggers login from the LW beacon handler instead. */
                 if (this.serverType !== 'expandingland') {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         window.master.login();
                     }, 200);
                 }
@@ -12959,36 +12959,36 @@ function thelegendmodproject() {
                             });
                         }
                     } else {
-                    for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
-                        var isMe = !!data.getUint32(s, true);
-                        s += 4;
-                        if (isMe) {
-                            isMe = 'isPlayer'
-                        }
-                        var rawNick = encode();
-                        let nick = "";
-                        try {
-                            nick = window.decodeURIComponent(window.escape(rawNick));
-                        } catch (e) {
-                            nick = rawNick;
-                        }
-                        var temp = null;
+                        for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
+                            var isMe = !!data.getUint32(s, true);
+                            s += 4;
+                            if (isMe) {
+                                isMe = 'isPlayer'
+                            }
+                            var rawNick = encode();
+                            let nick = "";
+                            try {
+                                nick = window.decodeURIComponent(window.escape(rawNick));
+                            } catch (e) {
+                                nick = rawNick;
+                            }
+                            var temp = null;
 
-                        if (nick.includes('}')) {
-                            temp = nick.split('}')[0].split('{')[1]
-                            nick = nick.split('}')[1]
-                        }
-                        if (!application.customSkinsMap[nick] && temp) {
-                            core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
-                            application.customSkinsMap[nick + "\'s imsolo.pro bot"] = "https://dkyriak.github.io/imsolo/" + temp + ".png"
-                            //core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
-                        }
+                            if (nick.includes('}')) {
+                                temp = nick.split('}')[0].split('{')[1]
+                                nick = nick.split('}')[1]
+                            }
+                            if (!application.customSkinsMap[nick] && temp) {
+                                core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
+                                application.customSkinsMap[nick + "\'s imsolo.pro bot"] = "https://dkyriak.github.io/imsolo/" + temp + ".png"
+                                //core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
+                            }
 
-                        this.leaderboard.push({
-                            id: isMe,
-                            nick: nick
-                        });
-                    }
+                            this.leaderboard.push({
+                                id: isMe,
+                                nick: nick
+                            });
+                        }
                     } // end non-garix
                     this.handleLeaderboard();
                     break;
@@ -13129,18 +13129,18 @@ function thelegendmodproject() {
                         var shopCoins = data.getInt32(s, true); s += 4;
                         var shopRemaining = data.getInt32(s, true); s += 4;
                         var shopMsg = encode();
-                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit', 
+                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit',
                             'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
                     } else {
                         // Expanding Land MapEvent — parse 42-byte packet
-                        var meEventType     = data.getUint8(s++);
-                        var meCurrentSize   = data.getFloat64(s, true); s += 8;
-                        var meTargetSize    = data.getFloat64(s, true); s += 8;
-                        var meCenterX       = data.getFloat64(s, true); s += 8;
-                        var meCenterY       = data.getFloat64(s, true); s += 8;
-                        var meTransDur      = data.getUint32(s, true);  s += 4;
-                        var meWarnDur       = data.getUint32(s, true);  s += 4;
-                        var meTier          = data.getUint8(s++);
+                        var meEventType = data.getUint8(s++);
+                        var meCurrentSize = data.getFloat64(s, true); s += 8;
+                        var meTargetSize = data.getFloat64(s, true); s += 8;
+                        var meCenterX = data.getFloat64(s, true); s += 8;
+                        var meCenterY = data.getFloat64(s, true); s += 8;
+                        var meTransDur = data.getUint32(s, true); s += 4;
+                        var meWarnDur = data.getUint32(s, true); s += 4;
+                        var meTier = data.getUint8(s++);
                         this.handleMapEvent(meEventType, meCurrentSize, meTargetSize,
                             meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
                     }
@@ -14149,9 +14149,9 @@ function thelegendmodproject() {
             var response;
             try {
                 response = window.decodeMobileData(msg);
-            } catch(decodeErr) {
+            } catch (decodeErr) {
                 if (LM.isLegendWorld) {
-                    var hex = Array.from(new Uint8Array(msg)).map(function(b){return b.toString(16).padStart(2,'0')}).join(' ');
+                    var hex = Array.from(new Uint8Array(msg)).map(function (b) { return b.toString(16).padStart(2, '0') }).join(' ');
                     console.error('[LW 102 DECODE FAIL] len=' + msg.byteLength + ' hex=' + hex, decodeErr);
                 }
                 return;
@@ -14217,27 +14217,27 @@ function thelegendmodproject() {
                         }
                     }
 
-                    try { this.updateWalletInfo(u.userWallet); } catch(e) { console.error('[LW 102] updateWalletInfo error:', e); }
+                    try { this.updateWalletInfo(u.userWallet); } catch (e) { console.error('[LW 102] updateWalletInfo error:', e); }
 
-                    try { this.displayActiveBoosts(u.userBoosts); } catch(e) { console.error('[LW 102] displayActiveBoosts error:', e); }
+                    try { this.displayActiveBoosts(u.userBoosts); } catch (e) { console.error('[LW 102] displayActiveBoosts error:', e); }
 
                     this.user.stats = u.userStats;
-                    try { this.displayStats(u.userStats); } catch(e) { console.error('[LW 102] displayStats error:', e); }
+                    try { this.displayStats(u.userStats); } catch (e) { console.error('[LW 102] displayStats error:', e); }
 
-                    try { this.updateEvents(u.userTimedEvents); } catch(e) { console.error('[LW 102] updateEvents error:', e); }
+                    try { this.updateEvents(u.userTimedEvents); } catch (e) { console.error('[LW 102] updateEvents error:', e); }
 
-                    try { this.displayActiveQuests(u.userActiveQuests); } catch(e) { console.error('[LW 102] displayActiveQuests error:', e); }
+                    try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
-                    try { this.createSkinsHTML(); } catch(e) { console.error('[LW 102] createSkinsHTML error:', e); }
+                    try { this.createSkinsHTML(); } catch (e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
-                    try { this.updateUserSettings(u.userSettings); } catch(e) { console.error('[LW 102] updateUserSettings error:', e); }
+                    try { this.updateUserSettings(u.userSettings); } catch (e) { console.error('[LW 102] updateUserSettings error:', e); }
 
                     try {
                         if (LM.isLegendWorld && u.userInfo) console.log('[LW 102 TRACE] userInfo.userId=' + (u.userInfo.userId || 'EMPTY') + ' realmInfo=' + JSON.stringify(u.userInfo.realmInfo || {}));
                         this.updateUserInfo(u.userInfo);
-                    } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
+                    } catch (e) { console.error('[LW 102] updateUserInfo error:', e); }
 
-                    try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
+                    try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
                     /* LW: Show agar.io-style login notification after confirmed
                      * server login (protobuf type-11). Uses server-confirmed data. */
@@ -14252,7 +14252,7 @@ function thelegendmodproject() {
                             }
                             var _name = (u.userInfo && u.userInfo.displayName) || 'Player';
                             window._lw_showLoginSuccess(_provider, _name);
-                        } catch(e) { console.error('[LW 102] loginSuccess notification error:', e); }
+                        } catch (e) { console.error('[LW 102] loginSuccess notification error:', e); }
                     }
                     break;
                 case 20:
@@ -15267,21 +15267,21 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                    
+
                     /* LEGENDWORLD FIX: 
                      * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
                      * during active dynamic map rescaling (Expanding Land).
                      * This caused violent 25Hz juddering when the map border shrunk!
                      */
                     if (!this.mapOffsetFixed) {
-                         // Only center camera if we genuinely haven't fixed the offset yet (very first load)
-                         // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
-                         if (this.mapSize === 0 || !LM.isLegendWorld) {
-                             this.viewX = (right + left) / 2;
-                             this.viewY = (bottom + top) / 2;
-                         }
+                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
+                        if (this.mapSize === 0 || !LM.isLegendWorld) {
+                            this.viewX = (right + left) / 2;
+                            this.viewY = (bottom + top) / 2;
+                        }
                     }
-                    
+
                     this.mapOffsetFixed = true;
                 }
             }
@@ -16208,7 +16208,7 @@ Most cells eaten   : ${mostCellsEaten}
     };
     window.legendmod = LM; // look at this
     // ── Garix fingerprint: generate once at startup, cache for connections ──
-    (async function() {
+    (async function () {
         try {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
@@ -16226,13 +16226,13 @@ Most cells eaten   : ${mostCellsEaten}
                 var gl = document.createElement("canvas").getContext("webgl");
                 var ext = gl.getExtension("WEBGL_debug_renderer_info");
                 if (ext) webgl = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-            } catch (e) {}
+            } catch (e) { }
             var raw = [navigator.userAgent, screen.width + "x" + screen.height + "x" + screen.colorDepth, navigator.language, navigator.hardwareConcurrency || 0, new Date().getTimezoneOffset(), canvasData.slice(-50), webgl].join("|");
             var encoder = new TextEncoder();
             var data = encoder.encode(raw);
             var hashBuffer = await crypto.subtle.digest("SHA-256", data);
             var hashArray = Array.from(new Uint8Array(hashBuffer));
-            var hex = hashArray.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
             LM.garixFingerprint = hex.slice(0, 32);
             console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
         } catch (e) {
@@ -16246,7 +16246,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (typeof core !== 'undefined') window.top.core = core;
             if (typeof application !== 'undefined') window.top.application = application;
         }
-    } catch(e) {
+    } catch (e) {
         // Cross-origin restriction blocks this unless CORS is disabled
     }
 
@@ -17155,7 +17155,7 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.save();
                 var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
                 var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
-                                                 : 'rgba(255, 80, 80, ' + borderAlpha + ')';
+                    : 'rgba(255, 80, 80, ' + borderAlpha + ')';
                 ctx.strokeStyle = borderColor;
                 ctx.lineWidth = me.phase >= 3 ? 5 : 3;
                 ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
@@ -19875,14 +19875,14 @@ Array.prototype.stDev = function stDev() {
 if (window.expandingLand) {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
-        { match: /(?:www\.)?legendmod\.ml\/skins/g,  replace: 'skins.expanding.land'  },
-        { match: /(?:www\.)?legendmod\.ml/g,          replace: 'expanding.land'        }
+        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'skins.expanding.land' },
+        { match: /(?:www\.)?legendmod\.ml/g, replace: 'expanding.land' }
     ];
     function _rewriteExpandingLinks(root) {
-        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function(el) {
-            _elRewriteMap.forEach(function(r) {
-                if (el.href)  el.href  = el.href.replace(r.match, r.replace);
-                if (el.src)   el.src   = el.src.replace(r.match, r.replace);
+        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function (el) {
+            _elRewriteMap.forEach(function (r) {
+                if (el.href) el.href = el.href.replace(r.match, r.replace);
+                if (el.src) el.src = el.src.replace(r.match, r.replace);
                 if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(r.match, r.replace);
             });
         });
@@ -19890,9 +19890,9 @@ if (window.expandingLand) {
     /* Initial pass */
     _rewriteExpandingLinks();
     /* Watch for new elements added to the DOM */
-    new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(n) {
+    new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            m.addedNodes.forEach(function (n) {
                 if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
             });
         });
