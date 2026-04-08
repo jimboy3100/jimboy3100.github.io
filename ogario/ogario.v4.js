@@ -1,4 +1,4 @@
-window.OgVer = 3.396;
+window.OgVer = 3.397;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -15528,7 +15528,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (flags & 0x40) {
                     // ── ADDED NODE ──
-                    var skin = null, name = '';
+                    var skin = null, name = '', namePresent = false;
                     var isVirus = !!(flags & 0x0001);
                     var isAgitated = !!(flags & 0x0010);
                     var isEjected = !!(flags & 0x0020);
@@ -15540,7 +15540,7 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     // flag 0x08 = has name
                     if (flags & 0x08) {
-                        name = encode();
+                        name = encode(); namePresent = true;
                         try { name = window.decodeURIComponent(escape(name)); } catch(e) {}
                         if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
                             this.vanillaskins(name, skin, color);
@@ -15581,7 +15581,7 @@ Most cells eaten   : ${mostCellsEaten}
                         this.indexedCells[id] = cellObj;
                     }
                     if (cellObj.isPlayerCell) name = this.playerNick;
-                    if (name) cellObj.targetNick = name;
+                    if (name || namePresent) cellObj.targetNick = name;
                     cellObj.targetX = x;
                     cellObj.targetY = y;
                     cellObj.targetSize = size;
@@ -15680,6 +15680,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var color = null;
                 var skin = null;
                 var name = '';
+                var namePresent = false;
                 var accountID = null;
                 var isAgitated = false;
                 var isOwnEjected = false;
@@ -15698,7 +15699,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 }
                 if (8 & flags) {
-                    name = window.decodeURIComponent(escape(encode()));
+                    name = window.decodeURIComponent(escape(encode())); namePresent = true;
                     //console.log('name '+name+ 'skin '+skin);
                     //if (LM.ws.includes("imsolo.pro") && name.includes('}')){
                     if (!LM.integrity && name.includes('}')) {
@@ -15820,7 +15821,7 @@ Most cells eaten   : ${mostCellsEaten}
                         name = window.RecordedArenasSpecifications[legendmod.playingReplayServer][3]
                     }
                 }
-                if (name) {
+                if (name || namePresent) {
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
