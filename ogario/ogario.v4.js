@@ -1,4 +1,4 @@
-window.OgVer = 3.395;
+window.OgVer = 3.396;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12452,13 +12452,14 @@ function thelegendmodproject() {
                     this.distY = cursorY - this.viewYTrue
                 }
                 // Garix: mouse packet includes tabID at bytes 1-2
-                // Total: 1(opcode) + 2(tabID) + 4(x) + 4(y) = 11 bytes
+                // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
                 if (this.serverType === 'garix') {
-                    var gv = this.createView(11);
+                    var gv = this.createView(15); // 15 bytes → server reads Int32
                     gv.setUint8(0, 16);
                     gv.setUint16(1, this.garixTabID1 || 0, true);
                     gv.setInt32(3, cursorX, true);
                     gv.setInt32(7, cursorY, true);
+                    // bytes 11-14 unused padding (server only checks length)
                     this.sendBuffer(gv);
                 } else {
                     var view = this.createView(13);
