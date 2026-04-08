@@ -1,4 +1,4 @@
-window.OgVer = 3.390;
+window.OgVer = 3.391;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12802,12 +12802,6 @@ function thelegendmodproject() {
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
-                // ── Garix: catch unknown opcodes so RangeErrors don't crash ──
-                default:
-                    if (this.serverType === 'garix') {
-                        // Garix may send opcodes we haven't implemented yet — silently ignore
-                        break;
-                    }
                 case 5: //Yahnych
                     window.testobjectsOpcode5 = data;
                     this.fbOnline = [];
@@ -14055,6 +14049,8 @@ function thelegendmodproject() {
                 //2020 jimboy3100
 
                 default:
+                    // Garix: unknown opcodes silently ignored
+                    if (this.serverType === 'garix') break;
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
