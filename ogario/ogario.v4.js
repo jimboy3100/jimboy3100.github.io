@@ -874,10 +874,6 @@ function deleteGamemode(temp) {
             text: 'Agar2 NA Party',
             value: 8008
         }, {
-            text: '── Garix ──',
-            value: '',
-            disabled: true
-        }, {
             text: 'Garix Teams',
             value: 9001
         }, {
