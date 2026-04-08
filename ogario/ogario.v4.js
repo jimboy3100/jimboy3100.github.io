@@ -15229,7 +15229,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 /* Derive tier from actual border size — guarantees tier
                  * always matches the real map, regardless of map events */
-                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
                     if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
