@@ -11,6 +11,18 @@ The handshake must complete within **8 seconds** or the server closes with code 
 
 ---
 
+## Servers
+
+| Name             | WebSocket URL           | Game Mode |
+|------------------|-------------------------|-----------|
+| Garix Teams      | `wss://garix.io:8084`   | `:teams`  |
+| Garix Mega       | `wss://garix.io:8087`   | `:ffa`    |
+| Garix Dual       | `wss://garix.io:8088`   | `:ffa`    |
+| Garix FFA        | `wss://garix.io:8089`   | `:ffa`    |
+| Garix Selffeed   | `wss://garix.io:8090`   | `:ffa`    |
+
+---
+
 ## Handshake (4 steps)
 
 ### Step 1 — Client → Server: `opcode 171` (Protocol)
