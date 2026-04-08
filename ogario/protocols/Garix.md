@@ -136,20 +136,53 @@ Once auth is complete → the server enables all in-game opcodes.
 | 221 | 0xDD | `onAuthToken`   | var   | Re-authenticate with JWT while in-game |
 | 254 | 0xFE | `onStat`        | 1     | Request server stats |
 
+> [!CAUTION]
+> **Ping keepalive is mandatory.** The server disconnects (code 1002) if no `opcode 200`
+> is received within **8 seconds** of entering the in-game state. Send pings every 3–5 seconds.
+
 ---
 
 ## `onMouse` format (opcode 16)
 
+> **Critical:** The server uses `message.length` to determine coordinate precision.
+> It does NOT parse x/y in the handler — it stores the raw buffer and parses later
+> in the game tick. Sending the wrong packet size causes coordinates to be read
+> at the wrong precision.
+
 ```
 [0x10][tabID LE16] + coordinates depending on total message length:
 
-11 bytes → x = Int16LE,   y = Int16LE    (low precision)
-15 bytes → x = Int32LE,   y = Int32LE    (medium precision)
-23 bytes → x = Float64LE, y = Float64LE  (high precision)
+11 bytes → x = Int16LE(3),  y = Int16LE(5)   + 4 trailing bytes
+15 bytes → x = Int32LE(3),  y = Int32LE(7)   + 4 trailing bytes
+23 bytes → x = Float64LE(3), y = Float64LE(11) + 4 trailing bytes
+
+Byte layout (15-byte / Int32 example):
+  [0]    opcode 0x10
+  [1-2]  tabID  UInt16LE
+  [3-6]  x      Int32LE
+  [7-10] y      Int32LE
+  [11-14] padding / unused (4 bytes to reach 15 total)
 ```
 
-Coordinates are in world space (scramble already applied on the client side).  
-The server subtracts `scrambleX` / `scrambleY` internally.
+**Server-side handler (`onMouse`):**
+```js
+onMouse(message) {
+    if (message.length === 15 || message.length === 11 || message.length === 23) {
+        let tabID = message.readUInt16LE(1);
+        if (dualMode && playerTracker2 && tabID === playerTracker2.tabID) {
+            this.mouseData2 = Buffer.concat([message]);
+        } else {
+            this.mouseData = Buffer.concat([message]);
+        }
+    }
+}
+```
+
+**Implementation notes:**
+- Use **15-byte** packets for Int32 precision (recommended).
+- The `tabID` determines which player tracker receives the mouse data (dual tab support).
+- Coordinates are in scrambled world space — the server subtracts `scrambleX` / `scrambleY` internally.
+- Any message length other than 11/15/23 is silently ignored.
 
 ---
 
