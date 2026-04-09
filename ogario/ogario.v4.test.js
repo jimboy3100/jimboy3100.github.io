@@ -7391,7 +7391,13 @@ function thelegendmodproject() {
                 //$("#helloContainer").attr("data-party-state", "6");
             })
             $(document).on("click", "#statsContinue2", function () {
-                $("#stats, #main-panel").toggle();
+                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
+                if (isLegend) {
+                    // On private LW server: spawn and hide menu, same as spectate hides it
+                    app.onPlay();
+                } else {
+                    $("#stats, #main-panel").toggle();
+                }
             });
         },
         play() {
