@@ -8502,16 +8502,9 @@ function thelegendmodproject() {
             if (this.privateMode && this.privateIP) {
                 this.socket = new WebSocket(this.privateIP);
                 /* For private servers the game socket doesn't talk to the relay.
-                 * Open (or reuse) a dedicated relay connection. */
-                var NativeWS = (ws && ws.prototype && ws.prototype.WebSocket) || window.WebSocket;
-                var relayQuery = '?02' + (!!window.scver ? '1' : '0');
-                if (!window.LMchatRelay || window.LMchatRelay.readyState > 1) {
-                    window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + relayQuery);
-                    window.LMchatRelay.binaryType = 'arraybuffer';
-                    window.LMchatRelay.onmessage = function(ev) {
-                        try { application.handleMessage(ev); } catch(e) {}
-                    };
-                }
+                 * Open (or reuse) a dedicated relay connection with its own
+                 * isolated handler – never touches game state. */
+                application.connectPrivateRelay();
             } else {
                 this.socket = new WebSocket(this.publicIP);
             }
@@ -8550,6 +8543,31 @@ function thelegendmodproject() {
                 window.noOgarioSocket = true;
             };
 
+        },
+        connectPrivateRelay() {
+            var NativeWS = (window.ws && window.ws.prototype && window.ws.prototype.WebSocket) || window.WebSocket;
+            var relayQuery = '?02' + (!!window.scver ? '1' : '0');
+            if (window.LMchatRelay && window.LMchatRelay.readyState <= 1) return; // already open or connecting
+            window.LMchatRelayPlayerID = 0;
+            window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + relayQuery);
+            window.LMchatRelay.binaryType = 'arraybuffer';
+            window.LMchatRelay.onmessage = function(ev) {
+                try {
+                    var msg = new DataView(ev.data);
+                    var op = msg.getUint8(0);
+                    if (op === 0) {
+                        /* Relay assigns us a playerID — store separately */
+                        window.LMchatRelayPlayerID = msg.getUint32(1, true);
+                    } else if (op === 100) {
+                        /* Incoming chat from relay — display it */
+                        application.readChatMessage(msg);
+                    } else if (op === 20) {
+                        application.updateTeamPlayer(msg);
+                    } else if (op === 30) {
+                        application.updateTeamPlayerPosition(msg);
+                    }
+                } catch(e) {}
+            };
         },
         Socket3connect(srv) {
             //if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
@@ -9500,26 +9518,23 @@ function thelegendmodproject() {
                     for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
                     
                     if (this.privateMode) {
-                        /* Private servers: game socket doesn't relay chat.
-                         * Send directly to the chat relay (ogarioWS) if available,
-                         * or create a dedicated relay socket. */
-                        var relaySocket = window.ogarioWS && window.ogarioWS.sockets && window.ogarioWS.sockets[0];
-                        if (relaySocket && relaySocket.readyState === 1) {
-                            relaySocket.send(view.buffer);
-                        } else if (window.LMchatRelay && window.LMchatRelay.readyState === 1) {
+                        /* Private servers: send chat through dedicated relay.
+                         * Stamp the relay playerID (not the game server's). */
+                        if (window.LMchatRelayPlayerID) {
+                            view.setUint32(2, window.LMchatRelayPlayerID, true);
+                        }
+                        if (window.LMchatRelay && window.LMchatRelay.readyState === 1) {
                             window.LMchatRelay.send(view.buffer);
                         } else {
-                            /* Create persistent relay for private server chat */
-                            var NativeWS = (ws && ws.prototype && ws.prototype.WebSocket) || window.WebSocket;
-                            var query = '?0' + (this.privateMode ? '2' : '0') + (!!window.scver ? '1' : '0');
-                            window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + query);
-                            window.LMchatRelay.binaryType = 'arraybuffer';
-                            window.LMchatRelay.onmessage = function(ev) {
-                                try { application.handleMessage(ev); } catch(e) {}
-                            };
-                            window.LMchatRelay.onopen = function() {
-                                window.LMchatRelay.send(view.buffer);
-                            };
+                            /* Not yet connected – reconnect then send */
+                            this.connectPrivateRelay();
+                            var pendingView = view;
+                            var relayRef = window.LMchatRelay;
+                            if (relayRef) {
+                                relayRef.addEventListener('open', function() {
+                                    relayRef.send(pendingView.buffer);
+                                }, { once: true });
+                            }
                         }
                     } else {
                         this.sendBuffer(view);
