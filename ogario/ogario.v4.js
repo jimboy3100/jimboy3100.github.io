@@ -7387,8 +7387,9 @@ function thelegendmodproject() {
                 app.onPlay();
             });
             if ($(".btn-full-map-spec").length === 0) {
-                // Dimensions exact matching normal spectate button (btn-warning) 
-                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width: 100%; margin-left: 0; margin-top: 5px; margin-bottom: 5px;" title="Full Map Spectate"><i class="fa fa-globe"></i> Full Map</button>');
+                /* World Spectate — identical styling to .btn-spectate (btn-warning),
+                 * only small top margin added. No up/down nav arrows. */
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; margin-top: 5px;" title="World Spectate"><i class="fa fa-globe"></i> World Spectate</button>');
             }
             $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
@@ -11782,9 +11783,11 @@ function thelegendmodproject() {
             }
 
             if (this.serverType === 'expandingland') {
+                /* LegendWorld: show both Spectate and World Spectate buttons */
                 $(".btn-spectate").show();
-                $(".btn-full-map-spec").hide();
+                $(".btn-full-map-spec").show();
             } else {
+                /* Other servers: only regular spectate, hide world spectate */
                 $(".btn-spectate").show();
                 $(".btn-full-map-spec").hide();
             }
