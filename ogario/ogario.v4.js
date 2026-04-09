@@ -7398,7 +7398,15 @@ function thelegendmodproject() {
                     var url = $("#server-url-text").val() || "";
                     var isEl = url.includes("legendmod.ml") || url.includes("expanding.land");
                     if (isEl) {
-                        $(".btn-full-map-spec").show();
+                        /* Force-set text + tooltip each time we show the button.
+                         * agar.io's native code overwrites our injected content with
+                         * glyphicon-globe and data-original-title="Spectate" — we
+                         * override it here so the button always reads "World Spectate". */
+                        $(".btn-full-map-spec")
+                            .html("World Spectate")
+                            .attr("title", "World Spectate")
+                            .attr("data-original-title", "World Spectate")
+                            .show();
                     } else {
                         $(".btn-full-map-spec").hide();
                     }
@@ -11800,9 +11808,16 @@ function thelegendmodproject() {
             }
 
             if (this.serverType === 'expandingland') {
-                /* LegendWorld: show both Spectate and World Spectate buttons */
+                /* LegendWorld: show both Spectate and World Spectate buttons.
+                 * Force-set text + tooltip on World Spectate — agar.io's native
+                 * btn-full-map-spec injection overwrites content with glyphicon-globe
+                 * and data-original-title="Spectate". We override it here. */
                 $(".btn-spectate").show();
-                $(".btn-full-map-spec").show();
+                $(".btn-full-map-spec")
+                    .html("World Spectate")
+                    .attr("title", "World Spectate")
+                    .attr("data-original-title", "World Spectate")
+                    .show();
             } else {
                 /* Other servers: only regular spectate, hide world spectate */
                 $(".btn-spectate").show();
