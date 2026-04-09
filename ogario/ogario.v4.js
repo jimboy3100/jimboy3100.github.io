@@ -7394,19 +7394,23 @@ function thelegendmodproject() {
                 /* Show/hide World Spectate button reactively as the user types the server URL.
                  * The connect() handler only fires after connecting — this runs immediately
                  * so the button is visible as soon as a LegendWorld URL is in the field. */
+                function _applyWorldSpecStyle($btn) {
+                    /* Match height of native Spectate button (tall due to glyphicon line-height) */
+                    var specH = $(".btn-spectate").outerHeight();
+                    $btn.html("World Spectate")
+                        .attr("title", "World Spectate")
+                        .attr("data-original-title", "World Spectate");
+                    if (specH && specH > 0) {
+                        $btn.css({ "height": specH + "px", "line-height": specH + "px", "padding-top": "0", "padding-bottom": "0" });
+                    }
+                }
                 function updateWorldSpecButton() {
                     var url = $("#server-url-text").val() || "";
                     var isEl = url.includes("legendmod.ml") || url.includes("expanding.land");
                     if (isEl) {
-                        /* Force-set text + tooltip each time we show the button.
-                         * agar.io's native code overwrites our injected content with
-                         * glyphicon-globe and data-original-title="Spectate" — we
-                         * override it here so the button always reads "World Spectate". */
-                        $(".btn-full-map-spec")
-                            .html("World Spectate")
-                            .attr("title", "World Spectate")
-                            .attr("data-original-title", "World Spectate")
-                            .show();
+                        var $btn = $(".btn-full-map-spec");
+                        _applyWorldSpecStyle($btn);
+                        $btn.show();
                     } else {
                         $(".btn-full-map-spec").hide();
                     }
@@ -11813,11 +11817,15 @@ function thelegendmodproject() {
                  * btn-full-map-spec injection overwrites content with glyphicon-globe
                  * and data-original-title="Spectate". We override it here. */
                 $(".btn-spectate").show();
-                $(".btn-full-map-spec")
-                    .html("World Spectate")
+                var $wsBtn = $(".btn-full-map-spec");
+                var specH = $(".btn-spectate").outerHeight();
+                $wsBtn.html("World Spectate")
                     .attr("title", "World Spectate")
-                    .attr("data-original-title", "World Spectate")
-                    .show();
+                    .attr("data-original-title", "World Spectate");
+                if (specH && specH > 0) {
+                    $wsBtn.css({ "height": specH + "px", "line-height": specH + "px", "padding-top": "0", "padding-bottom": "0" });
+                }
+                $wsBtn.show();
             } else {
                 /* Other servers: only regular spectate, hide world spectate */
                 $(".btn-spectate").show();
