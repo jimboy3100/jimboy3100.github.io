@@ -8512,37 +8512,39 @@ function thelegendmodproject() {
             this.socket.ogarioWS = true;
             this.socket.binaryType = 'arraybuffer';
             var app = this;
-            this.socket.onopen = () => {
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Ogario socket open:', application.publicIP);
-                var buf = app.createView(3);
-                buf.setUint8(0, 0);
-                //console.log("socket",this.socket.url)
-                //console.log("window.wsinjected",window.wsinjected)
-                //if (!window.wsinjected) { //if delta socket injected
-                buf.setUint16(1, 401, true);
-                //} else {
-                //    buf.setUint16(1, 404, true);
-                //}
-                app.sendBuffer(buf);
+            if (!this.privateMode) {
+                /* Public server: send ogario handshake and wire handleMessage */
+                this.socket.onopen = () => {
+                    var buf = app.createView(3);
+                    buf.setUint8(0, 0);
+                    buf.setUint16(1, 401, true);
+                    app.sendBuffer(buf);
 
-                buf.setUint8(0, 5);
-                buf.setUint16(1, 20, true);
-                app.sendBuffer(buf);
+                    buf.setUint8(0, 5);
+                    buf.setUint16(1, 20, true);
+                    app.sendBuffer(buf);
 
-                app.sendPartyData();
-            }
-            this.socket.onmessage = function (buf) {
-                app.handleMessage(buf);
+                    app.sendPartyData();
+                }
+                this.socket.onmessage = function (buf) {
+                    app.handleMessage(buf);
+                }
+            } else {
+                /* Private server: legendmod owns the game socket.
+                 * We wire handleMessage into ogarioWS relay instead. */
+                this.socket.onopen = () => { app.sendPartyData(); };
             }
             this.socket.onclose = function (buf) {
                 //app.flushData();
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket close', buf);
             }
             this.socket.onerror = function (buf) {
-                //app.flushData();
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
                 window.noOgarioSocket = true;
             };
+            /* Must be after all native socket setup — ogarioWS relay handler for private */
+            if (this.privateMode && window.ogarioWS) {
+                window.ogarioWS.onmessage = function(buf) { app.handleMessage(buf); };
+            }
 
         },
         Socket3connect(srv) {
