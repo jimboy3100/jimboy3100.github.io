@@ -7389,7 +7389,7 @@ function thelegendmodproject() {
             if ($(".btn-full-map-spec").length === 0) {
                 /* World Spectate — same inline style as .btn-spectate needs:
                  * width:100% + margin overrides required by the parent container. */
-                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width:100%; margin-left:0; margin-top:2px; margin-bottom:5px;" title="World Spectate"><i class="fa fa-globe"></i> World Spectate</button>');
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width:100%; margin-left:0; margin-top:2px; margin-bottom:5px;" title="World Spectate">World Spectate</button>');
 
                 /* Show/hide World Spectate button reactively as the user types the server URL.
                  * The connect() handler only fires after connecting — this runs immediately
