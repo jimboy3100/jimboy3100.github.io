@@ -8974,7 +8974,12 @@ function thelegendmodproject() {
                 encode(ogarcopythelb.skinURL);
                 encode(ogarcopythelb.color);
                 encode(ogario.playerColor);
-                this.sendBuffer(view);
+                /* Route op20 to relay (not game server) when on private server */
+                if (this.privateMode && window.ogarioWS) {
+                    window.ogarioWS.send(view.buffer);
+                } else {
+                    this.sendBuffer(view);
+                }
             }
         },
         sendPlayerPosition() {
@@ -8991,7 +8996,12 @@ function thelegendmodproject() {
                 } else {
                     view.setUint32(13, this.playerMass, true);
                 }
-                this.sendBuffer(view);
+                /* Route op30 to relay (not game server) when on private server */
+                if (this.privateMode && window.ogarioWS) {
+                    window.ogarioWS.send(view.buffer);
+                } else {
+                    this.sendBuffer(view);
+                }
             }
         },
         packInt(x, m) {
