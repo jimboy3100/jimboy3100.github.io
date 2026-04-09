@@ -7405,8 +7405,13 @@ function thelegendmodproject() {
                     }
                 }
                 function updateWorldSpecButton() {
+                    /* Check URL field AND already-connected server type.
+                     * This ensures the button appears on auto-connect from
+                     * expanding.land even when the URL field is empty. */
                     var url = $("#server-url-text").val() || "";
-                    var isEl = url.includes("legendmod.ml") || url.includes("expanding.land");
+                    var isEl = url.includes("legendmod.ml") || url.includes("expanding.land")
+                        || app.serverType === "expandingland"
+                        || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                     if (isEl) {
                         var $btn = $(".btn-full-map-spec");
                         _applyWorldSpecStyle($btn);
@@ -7415,6 +7420,8 @@ function thelegendmodproject() {
                         $(".btn-full-map-spec").hide();
                     }
                 }
+                /* Expose so onOpen() can trigger after auto-connect */
+                window._lwUpdateWorldSpecBtn = updateWorldSpecButton;
                 /* React to typing in the URL field */
                 $(document).on("input change", "#server-url-text", updateWorldSpecButton);
                 /* Also check once right now in case URL is already pre-filled */
@@ -11971,6 +11978,10 @@ function thelegendmodproject() {
                     }, 200);
                 }
             }
+            /* Show/hide World Spectate button reactively on server connect.
+             * Handles auto-connect from expanding.land where the URL field
+             * may be empty at the time setMainButtons() first checks it. */
+            if (window._lwUpdateWorldSpecBtn) window._lwUpdateWorldSpecBtn();
         },
         onMessage(message) {
 
