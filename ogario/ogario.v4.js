@@ -16878,18 +16878,30 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
+            /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
+             * and globalAlpha is near-zero, wasting GPU on invisible geometry */
+            if (scale < 0.02) return;
+
             const reWidth = width / scale;
             const reHeigth = heigth / scale;
-            let x = (-camX + reWidth / 2) % 50;
-            let y = (-camY + reHeigth / 2) % 50;
+
+            /* Dynamically increase step so lines stay at least 4px apart.
+             * At scale 0.3 (normal play): step=50, spacing=15px — unchanged.
+             * At scale 0.03 (extreme zoom-out): step doubles 50→200,
+             * reducing line count from ~2560 to ~320. */
+            let step = 50;
+            while (step * scale < 4) step *= 2;
+
+            let x = (-camX + reWidth / 2) % step;
+            let y = (-camY + reHeigth / 2) % step;
             ctx.strokeStyle = defaultSettings.gridColor;
             ctx.globalAlpha = 1 * scale;
             ctx.beginPath();
-            for (; x < reWidth; x += 50) {
+            for (; x < reWidth; x += step) {
                 ctx.moveTo(x * scale - 0.5, 0);
                 ctx.lineTo(x * scale - 0.5, reHeigth * scale);
             }
-            for (; y < reHeigth; y += 50) {
+            for (; y < reHeigth; y += step) {
                 ctx.moveTo(0, y * scale - 0.5);
                 ctx.lineTo(reWidth * scale, y * scale - 0.5);
             }
