@@ -9463,13 +9463,13 @@ function thelegendmodproject() {
             }
         },
         sendChatMessage(type, message) {
-            //console.log(type);console.log(message);
-            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
+            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
+                var currentNick = ogarcopythelb.nick || 'Unnamed';
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
-                    var fullMsg = ogarcopythelb.nick + ': ' + message;
+                    var fullMsg = currentNick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
                     teamView.setUint8(1, type); // 101=party chat, 102=command
@@ -9482,13 +9482,13 @@ function thelegendmodproject() {
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
                 else if (this.isSocketOpen()) {
-                    message = ogarcopythelb.nick + ': ' + message;
-                    var view = this.createView(10 + 2 * message.length);
+                    var fullMessage = currentNick + ': ' + message;
+                    var view = this.createView(10 + 2 * fullMessage.length);
                     view.setUint8(0, 100),
                         view.setUint8(1, type),
                         view.setUint32(2, this.playerID, true),
                         view.setUint32(6, 0, true);
-                    for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
+                    for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
                     this.sendBuffer(view),
                         this.lastMessageSentTime = Date.now();
                 }

@@ -247,7 +247,7 @@ if (!window.recovery) {
         var socketInit = function (s, i) {
             var socketCloseListener = function () {
                 var so = (self.sockets[i] = new self.WebSocket(s, weirdoitem ? weirdoitem : undefined));
-                so.master = masterid == i; //(s.indexOf('ogario.eu') > -1)
+                so.master = (self.sockets.length === 1) || (masterid == i); //(s.indexOf('ogario.eu') > -1)
                 so.playerID = 0;
                 so.binaryType = 'arraybuffer';
                 so.queue = [];
