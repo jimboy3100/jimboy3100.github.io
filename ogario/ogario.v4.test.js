@@ -1,4 +1,4 @@
-window.OgVer = 3.346;
+window.OgVer = 3.399;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -14,13 +14,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
     /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
      * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
-    window.gapiAsyncInit = function() {
+    window.gapiAsyncInit = function () {
 
     };
     /* Remove old gapi script tags from DOM before they load */
-    var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(node) {
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            m.addedNodes.forEach(function (node) {
                 if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
                     node.remove();
 
@@ -45,7 +45,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      *   6. timestamp within window (stale rejection) */
     var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-    window._lwResetAuthState = function() {
+    window._lwResetAuthState = function () {
         window._lwAuth = {
             attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
             provider: null,
@@ -59,10 +59,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window._lw_protobuf102Received = false;
         window._discordLoginDone = false;
         window.legendmod_discordUser = null;
-        try { localStorage.removeItem('legendmod_discord'); } catch(e) {}
+        try { localStorage.removeItem('legendmod_discord'); } catch (e) { }
         console.log('[LW AUTH] State reset to idle');
     };
-    window._lwBeginLogin = function(provider) {
+    window._lwBeginLogin = function (provider) {
         if (!window._lwAuth) window._lwResetAuthState();
         window._lwAuth.attemptId += 1;
         window._lwAuth.provider = provider;
@@ -77,7 +77,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     };
     /* Atomic check+consume: validates ALL conditions AND sets done=true in one call.
      * Returns true exactly once — the first handler to call this wins. */
-    window._lwTryConsume = function(attemptId, provider) {
+    window._lwTryConsume = function (attemptId, provider) {
         var a = window._lwAuth;
         if (!a) return false;
         if (a.attemptId !== attemptId) return false;
@@ -90,8 +90,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW AUTH] Attempt #' + a.attemptId + ' consumed (' + provider + ')');
         return true;
     };
-    window._lwArmLoginTimeout = function(attemptId) {
-        setTimeout(function() {
+    window._lwArmLoginTimeout = function (attemptId) {
+        setTimeout(function () {
             if (window._lwAuth &&
                 window._lwAuth.attemptId === attemptId &&
                 window._lwAuth.state !== 'logged_in') {
@@ -107,7 +107,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
      * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
-    (function() {
+    (function () {
         var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
         var gisLoaded = false;
         var tokenClient = null;
@@ -117,7 +117,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         script.src = 'https://accounts.google.com/gsi/client';
         script.async = true;
         script.defer = true;
-        script.onload = function() {
+        script.onload = function () {
             gisLoaded = true;
             tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: LW_CLIENT_ID,
@@ -145,98 +145,98 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                 headers: { 'Authorization': 'Bearer ' + accessToken }
             })
-            .then(function(r) { return r.json(); })
-            .then(function(profile) {
+                .then(function (r) { return r.json(); })
+                .then(function (profile) {
 
 
-                /* Update storage info like the old flow does */
-                var st = window.storageInfo || window.defaultSt;
-                if (st) {
-                    st.context = 'google';
-                    st.loginIntent = '1';
-                    if (profile.picture) st.userInfo.picture = profile.picture;
-                    if (profile.sub) st.userInfo.socialId = profile.sub;
-                    if (window.updateStorage) window.updateStorage();
-                }
-
-                /* Set profile picture */
-                if (profile.picture) {
-                    var pics = document.querySelectorAll('.agario-profile-picture');
-                    for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
-                    window.googlePic = profile.picture;
-                }
-
-                /* Send token to game server */
-                if (window.MC && window.MC.doLoginWithGPlus) {
-                    /* MC available (agar.io or domains with agario.core.js) */
-                    if (profile.sub) window.MC.setSocialId(profile.sub);
-                    if (profile.picture) window.MC.setProfilePicture(profile.picture);
-                    window.MC.doLoginWithGPlus(accessToken);
-                    window.MC.onGoogleLoginComplete(true);
-                    window.MC.showInstructionsPanel(true);
-                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    /* MC unavailable (expanding.land / private server) */
-
-
-                    /* Store token in master so login() can resend on Play clicks */
-                    if (window.master && window.master.doLoginWithGPlus) {
-                        window.master.doLoginWithGPlus(accessToken);
+                    /* Update storage info like the old flow does */
+                    var st = window.storageInfo || window.defaultSt;
+                    if (st) {
+                        st.context = 'google';
+                        st.loginIntent = '1';
+                        if (profile.picture) st.userInfo.picture = profile.picture;
+                        if (profile.sub) st.userInfo.socialId = profile.sub;
+                        if (window.updateStorage) window.updateStorage();
                     }
 
-                    /* Send opcode 102 directly to game server with social ID and name */
-                    _lw_sendLogin102(accessToken, profile.sub, profile.name);
-                    /* Transition: OAuth done → waiting for server confirmation */
-                    if (window._lwAuth && window._lwAuth.provider === 'google') {
-                        window._lwAuth.state = 'waiting_server';
+                    /* Set profile picture */
+                    if (profile.picture) {
+                        var pics = document.querySelectorAll('.agario-profile-picture');
+                        for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
+                        window.googlePic = profile.picture;
                     }
 
+                    /* Send token to game server */
+                    if (window.MC && window.MC.doLoginWithGPlus) {
+                        /* MC available (agar.io or domains with agario.core.js) */
+                        if (profile.sub) window.MC.setSocialId(profile.sub);
+                        if (profile.picture) window.MC.setProfilePicture(profile.picture);
+                        window.MC.doLoginWithGPlus(accessToken);
+                        window.MC.onGoogleLoginComplete(true);
+                        window.MC.showInstructionsPanel(true);
+                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                        /* MC unavailable (expanding.land / private server) */
 
-                    /* Update profile UI — TEMPORARY fallback only.
-                     * Once protobuf type-11 login response arrives from the
-                     * server (with refreshed profile from 204→102 resend),
-                     * updateUserInfo() becomes the single source of truth.
-                     * Do NOT set agarioUID here — it must come from server. */
-                    if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
-                        console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
-                        if (profile.picture) {
-                            $('.agario-profile-picture').attr('src', profile.picture);
+
+                        /* Store token in master so login() can resend on Play clicks */
+                        if (window.master && window.master.doLoginWithGPlus) {
+                            window.master.doLoginWithGPlus(accessToken);
                         }
-                        if (profile.name) {
-                            $('#UserProfileName1').text(profile.name);
-                            window.userfirstname = profile.name;
-                            localStorage.setItem('userfirstname', profile.name);
+
+                        /* Send opcode 102 directly to game server with social ID and name */
+                        _lw_sendLogin102(accessToken, profile.sub, profile.name);
+                        /* Transition: OAuth done → waiting for server confirmation */
+                        if (window._lwAuth && window._lwAuth.provider === 'google') {
+                            window._lwAuth.state = 'waiting_server';
                         }
-                        if (profile.sub) {
-                            $('#UserProfileUID1').val(profile.sub);
-                            $('#replayuid').val(profile.sub);
-                            window.userid = profile.sub;
-                            localStorage.setItem('userid', profile.sub);
+
+
+                        /* Update profile UI — TEMPORARY fallback only.
+                         * Once protobuf type-11 login response arrives from the
+                         * server (with refreshed profile from 204→102 resend),
+                         * updateUserInfo() becomes the single source of truth.
+                         * Do NOT set agarioUID here — it must come from server. */
+                        if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
+                            console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
+                            if (profile.picture) {
+                                $('.agario-profile-picture').attr('src', profile.picture);
+                            }
+                            if (profile.name) {
+                                $('#UserProfileName1').text(profile.name);
+                                window.userfirstname = profile.name;
+                                localStorage.setItem('userfirstname', profile.name);
+                            }
+                            if (profile.sub) {
+                                $('#UserProfileUID1').val(profile.sub);
+                                $('#replayuid').val(profile.sub);
+                                window.userid = profile.sub;
+                                localStorage.setItem('userid', profile.sub);
+                            }
+                            /* Set logged-in state so Play/Logout buttons appear */
+                            $('#helloContainer').attr('data-logged-in', '1');
                         }
-                        /* Set logged-in state so Play/Logout buttons appear */
-                        $('#helloContainer').attr('data-logged-in', '1');
+
+                    } else {
+                        console.error('[LW Google] No MC or legendmod available to send token');
                     }
 
-                } else {
-                    console.error('[LW Google] No MC or legendmod available to send token');
-                }
 
-
-            })
-            .catch(function(err) {
-                console.error('[LW Google] Profile fetch failed:', err);
-                /* Still try to log in with just the token */
-                if (window.MC && window.MC.doLoginWithGPlus) {
-                    window.MC.doLoginWithGPlus(accessToken);
-                    window.MC.onGoogleLoginComplete(true);
-                } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                    var view = legendmod.createView(1 + accessToken.length);
-                    view.setUint8(0, 102);
-                    for (var ti = 0; ti < accessToken.length; ti++) {
-                        view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                })
+                .catch(function (err) {
+                    console.error('[LW Google] Profile fetch failed:', err);
+                    /* Still try to log in with just the token */
+                    if (window.MC && window.MC.doLoginWithGPlus) {
+                        window.MC.doLoginWithGPlus(accessToken);
+                        window.MC.onGoogleLoginComplete(true);
+                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
+                        var view = legendmod.createView(1 + accessToken.length);
+                        view.setUint8(0, 102);
+                        for (var ti = 0; ti < accessToken.length; ti++) {
+                            view.setUint8(1 + ti, accessToken.charCodeAt(ti));
+                        }
+                        legendmod.sendMessage(view);
                     }
-                    legendmod.sendMessage(view);
-                }
-            });
+                });
         }
 
         /* Intercept the Google login button click on our domains.
@@ -253,12 +253,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             var newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
 
-            newBtn.addEventListener('click', function(e) {
+            newBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!gisLoaded || !tokenClient) {
 
-                    setTimeout(function() { newBtn.click(); }, 500);
+                    setTimeout(function () { newBtn.click(); }, 500);
                     return;
                 }
 
@@ -275,7 +275,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { setTimeout(setupLoginOverride, 1000); });
+            document.addEventListener('DOMContentLoaded', function () { setTimeout(setupLoginOverride, 1000); });
         } else {
             setTimeout(setupLoginOverride, 1000);
         }
@@ -287,7 +287,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * in the opcode 102 payload, so we just embed the token as raw bytes.
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
     function _lw_sendLogin102(token, socialId, displayName) {
-        var sendFn = function() {
+        var sendFn = function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
                 return;
@@ -310,7 +310,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     view.setUint8(1 + j, tokenBytes[j]);
                 }
                 legendmod.sendMessage(view);
-                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId||'none') + ')');
+                console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId || 'none') + ')');
             } else {
                 setTimeout(sendFn, 1000);
             }
@@ -322,7 +322,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Format: [204][auth_provider=3][socialId\0][displayName\0]
      * Avatar is NOT sent — profile picture is rendered client-side only. */
     function _lw_sendDiscordProfile(discordUser) {
-        var sendFn = function() {
+        var sendFn = function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
                 return;
@@ -355,7 +355,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* LW: Core Discord login function — used by both initial auth and reconnects.
      * On agar.io: uses MC.doLoginWithGPlus() (agario.core.js available).
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
-    window._lw_applyDiscordLogin = function(discordUser) {
+    window._lw_applyDiscordLogin = function (discordUser) {
         if (!discordUser || !discordUser.token) return;
         /* Reset protobuf flag so temporary fallback can run for this new login.
          * It will be set back to true when the server's type-11 response arrives. */
@@ -436,7 +436,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
         /* Register gplusRelogin for reconnects.
          * On agar.io the engine calls this; on expanding.land our hook calls it. */
-        window.gplusRelogin = function(callback) {
+        window.gplusRelogin = function (callback) {
             var cached = localStorage.getItem('legendmod_discord');
             if (cached) {
                 try {
@@ -450,7 +450,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         _lw_sendDiscordProfile(user);
                         console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error('[LW Discord] gplusRelogin error:', e);
                 }
             }
@@ -464,7 +464,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * Triggered ONLY after confirmed protobuf type-11 login response.
      * Uses server-confirmed provider/name, NOT raw OAuth callback data.
      * Visually matches agar.io's native blue login notification. */
-    window._lw_showLoginSuccess = function(provider, displayName) {
+    window._lw_showLoginSuccess = function (provider, displayName) {
         /* De-duplicate: don't show if we already showed for this session */
         if (window._lw_loginNotifShown) return;
         window._lw_loginNotifShown = true;
@@ -503,15 +503,15 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         document.body.appendChild(el);
 
         /* Animate in */
-        requestAnimationFrame(function() {
-            requestAnimationFrame(function() { el.classList.add('show'); });
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { el.classList.add('show'); });
         });
 
         /* Fade out after 4 seconds */
-        setTimeout(function() {
+        setTimeout(function () {
             el.classList.remove('show');
             el.classList.add('hide');
-            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+            setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
         }, 4000);
 
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
@@ -519,7 +519,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
-    window.logout = function() {
+    window.logout = function () {
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
         /* Reset UI */
@@ -538,7 +538,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * On agar.io the original Facebook button is left untouched.
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
      * which sends it to the game server via opcode 102 — same path as Google. */
-    (function() {
+    (function () {
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
 
         function replaceWithDiscord() {
@@ -547,7 +547,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
              * 100% reliable for same-origin communication. */
             try {
                 var bc = new BroadcastChannel('legendmod_discord');
-                bc.onmessage = function(event) {
+                bc.onmessage = function (event) {
                     if (!event.data || event.data.type !== 'legendmod_discord_login') return;
                     var discordUser = event.data.data;
                     console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
@@ -558,14 +558,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                             return;
                         }
                         window._discordLoginDone = true; /* debug only */
-                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
                         window.legendmod_discordUser = discordUser;
                         window._lw_applyDiscordLogin(discordUser);
                         /* Login message now comes from server via chat (opcode 204 handler) */
                     }
                 };
                 console.log('[LW Discord] BroadcastChannel listener registered');
-            } catch(e) {
+            } catch (e) {
                 console.log('[LW Discord] BroadcastChannel not supported:', e.message);
             }
 
@@ -590,21 +590,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             discordBtn.className = btnEl.className.replace('btn-fb', 'btn-discord');
             discordBtn.style.cssText = 'background-color: #5865F2; border-color: #4752C4; color: #fff;';
             discordBtn.innerHTML = '<span class="discord-icon" style="display:inline-block;width:24px;height:24px;position:absolute;left:18px;top:50%;margin-top:-12px;margin-left:-8px;background-size:contain;background-repeat:no-repeat;background-image:url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTIwLjMxNyA0LjM2OTVhMTkuNzkgMTkuNzkgMCAwMC00Ljg4NS0xLjUxNTUuMDc1Ljc1IDAgMDAtLjA3My4wMzY1Yy0uMjEuMzc0LS40NDQuNzY1LS42MDggMS4yMjQ1LTEuNzY1LS4yNjQ1LTMuNTAyLS4yNjQ1LTUuMjI3IDBhMTIuMzYgMTIuMzYgMCAwMC0uNjE3LTEuMjI0NS4wNzguMDc4IDAgMDAtLjA3NC0uMDM2NSAxOS43MzUgMTkuNzM1IDAgMDAtNC44ODUgMS41MTU1LjA3LjA3IDAgMDAtLjAzMjcuMDI4QzEuMjcxOCA5Ljg0MzUuMjkyNyAxNS4xNjA1Ljc2NTcgMjAuNDA4NWEuMDgyLjA4MiAwIDAwLjAzMS4wNTYgMTkuOSAxOS45IDAgMDA1Ljk5MyAzLjAzLjA3OC4wNzggMCAwMC4wODQtLjAyOCAxNC4wOSAxNC4wOSAwIDAwMS4yMjYtMS45OTQuMDc2LjA3NiAwIDAwLS4wNDItLjEwNjUgMTMuMSAxMy4xIDAgMDEtMS44NzItLjg5MjUuMDc3LjA3NyAwIDAxLS4wMDc1LS4xMjhjLjEyNi0uMDk0LjI1Mi0uMTkxNS4zNzItLjI5YS4wNzQuMDc0IDAgMDEuMDc3NS0uMDFjMy45MjcgMS43OTIgOC4xOCAxLjc5MiAxMi4wNjEgMGEuMDc0LjA3NCAwIDAxLjA3ODUuMDA5Yy4xMi4wOTkuMjQ2LjE5Ny4zNzMuMjkxYS4wNzcuMDc3IDAgMDEtLjAwNjUuMTI4IDEyLjMgMTIuMyAwIDAxLTEuODczLjg5MjUuMDc2LjA3NiAwIDAwLS4wNDEuMTA3NSAxNS45IDE1LjkgMCAwMDEuMjI2IDEuOTkzLjA3Ni4wNzYgMCAwMC4wODQuMDI4IDEuODQ0IDEuODQ0IDAgMDA1Ljk5NC0zLjAzLjA3Ny4wNzcgMCAwMC4wMzItLjA1NWMuNTYtNS44MDUtLjkzOC0xMC44NS00LjE3Mi0xNi4wMTVhLjA2MS4wNjEgMCAwMC0uMDMxLS4wMjkyek04LjAyIDE2LjczMTVjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6bTcuOTc1IDBjLTEuMTgzIDAtMi4xNTctMS4wODUtMi4xNTctMi40MTlzLjk1NS0yLjQxOTUgMi4xNTctMi40MTk1IDIuMTc2IDEuMDg2IDIuMTU3IDIuNDE5NWMwIDEuMzM0LS45NTUgMi40MTktMi4xNTcgMi40MTl6Ii8+PC9zdmc+)"></span>' +
-                                   '<span class="btn-text">Sign in with Discord</span>';
+                '<span class="btn-text">Sign in with Discord</span>';
 
             /* Listen for postMessage from the callback popup (primary channel).
              * Chrome's storage partitioning blocks localStorage sharing between
              * popup and parent when the popup navigates through a cross-origin
              * redirect (discord.com). postMessage bypasses this entirely. */
             var discordPopupRef = null;
-            window.addEventListener('message', function(event) {
+            window.addEventListener('message', function (event) {
                 /* Accept messages from our domains (relay page or callback) */
                 var trusted = ['https://expanding.land', 'https://jimboy3100.github.io', 'https://legendmod.ml'];
                 if (trusted.indexOf(event.origin) === -1) return;
                 if (!event.data || event.data.type !== 'legendmod_discord_login') return;
 
                 var discordUser = event.data.data;
-                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({id: discordUser.id, hasToken: !!discordUser.token}));
+                console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({ id: discordUser.id, hasToken: !!discordUser.token }));
 
                 if (discordUser && discordUser.id && discordUser.token) {
                     /* Atomic check+consume — only the first handler wins */
@@ -614,20 +614,20 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                     }
                     window._discordLoginDone = true; /* debug only */
                     /* Also save to localStorage for reconnect/reload */
-                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch(e) {}
+                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
 
                     window.legendmod_discordUser = discordUser;
                     console.log('[LW Discord DBG] Applying login via postMessage...');
                     window._lw_applyDiscordLogin(discordUser);
 
                     /* Close popup */
-                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch(ex) {}
+                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch (ex) { }
 
                     /* Login message now comes from server via chat (opcode 204 handler) */
                 }
             });
 
-            discordBtn.addEventListener('click', function(e) {
+            discordBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('[LW Discord DBG] Button clicked');
@@ -649,7 +649,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                 var pollCount = 0;
                 /* Poll localStorage for the Discord auth result from the callback page */
-                var poll = setInterval(function() {
+                var poll = setInterval(function () {
                     pollCount++;
                     try {
                         var data = localStorage.getItem('legendmod_discord');
@@ -658,7 +658,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         }
                         if (data) {
                             var discordUser = JSON.parse(data);
-                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0}));
+                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({ id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0 }));
                             if (discordUser && discordUser.id && discordUser.token) {
                                 /* Atomic check+consume — only the first handler wins */
                                 if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
@@ -675,12 +675,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                 console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
 
                                 /* Close the popup if still open */
-                                try { if (popup && !popup.closed) popup.close(); } catch(ex) {}
+                                try { if (popup && !popup.closed) popup.close(); } catch (ex) { }
 
                                 /* Login message now comes from server via chat (opcode 204 handler) */
                             }
                         }
-                    } catch(err) {
+                    } catch (err) {
                         console.error('[LW Discord DBG] Poll error:', err);
                     }
                     /* Stop polling if popup closed without completing */
@@ -688,7 +688,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         clearInterval(poll);
                         console.log('[LW Discord DBG] Popup closed after ' + pollCount + ' polls');
                         /* Check one last time after popup closes */
-                        setTimeout(function() {
+                        setTimeout(function () {
                             var finalData = localStorage.getItem('legendmod_discord');
                             if (finalData) {
                                 console.log('[LW Discord DBG] Found data after popup close! Processing...');
@@ -703,7 +703,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                                         window._lw_applyDiscordLogin(discordUser);
                                         console.log('[LW Discord DBG] Late login applied successfully');
                                     }
-                                } catch(e) { console.error('[LW Discord DBG] Late parse error:', e); }
+                                } catch (e) { console.error('[LW Discord DBG] Late parse error:', e); }
                             } else {
                                 console.log('[LW Discord DBG] Popup closed without completing auth - NO DATA in localStorage');
                             }
@@ -718,7 +718,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() { setTimeout(replaceWithDiscord, 1500); });
+            document.addEventListener('DOMContentLoaded', function () { setTimeout(replaceWithDiscord, 1500); });
         } else {
             setTimeout(replaceWithDiscord, 1500);
         }
@@ -873,6 +873,21 @@ function deleteGamemode(temp) {
         }, {
             text: 'Agar2 NA Party',
             value: 8008
+        }, {
+            text: 'Garix Teams',
+            value: 9001
+        }, {
+            text: 'Garix Mega',
+            value: 9002
+        }, {
+            text: 'Garix Dual',
+            value: 9003
+        }, {
+            text: 'Garix FFA',
+            value: 9004
+        }, {
+            text: 'Garix Selffeed',
+            value: 9005
         }
         /* Other private servers (commented out)
         , {
@@ -964,7 +979,9 @@ function deleteGamemode(temp) {
     }
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
-        $('#gamemode').append(new Option(el.text, el.value));
+        var opt = new Option(el.text, el.value);
+        if (el.disabled) opt.disabled = true;
+        $('#gamemode').append(opt);
     });
     $('#gamemode').val('5001');
     $('#gamemode option[value="5001"]').prop('selected', true);
@@ -1008,7 +1025,7 @@ function deleteGamemode(temp) {
                 };
                 var cfg = imsoloLbMap[val];
                 if (!cfg) return;
-                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
                     if (data && data.gameurl) {
                         console.log('%c[ImSolo]%c Load balancer: ' + data.gameurl, 'color:#f3a', 'color:inherit');
                         core.connect(data.gameurl);
@@ -1016,7 +1033,7 @@ function deleteGamemode(temp) {
                         console.log('%c[ImSolo]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
                         core.connect(cfg.fallback);
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     console.log('%c[ImSolo]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     core.connect(cfg.fallback);
                 });
@@ -1096,7 +1113,7 @@ function deleteGamemode(temp) {
                 };
                 var cfg = agar2ApiMap[val];
                 if (!cfg) return;
-                fetch(cfg.url).then(function(r) { return r.json(); }).then(function(data) {
+                fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
                     if (data && data.gameurl) {
                         // Extract token from URL: wss://live-arena-{token}-{region}.agar2.com
                         var tokenMatch = data.gameurl.match(/live-arena-([a-z0-9]+)-/i);
@@ -1111,12 +1128,29 @@ function deleteGamemode(temp) {
                         legendmod.gameMode = cfg.gm;
                         core.connect(cfg.fallback);
                     }
-                }).catch(function(err) {
+                }).catch(function (err) {
                     console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
                     legendmod.gameMode = cfg.gm;
                     core.connect(cfg.fallback);
                 });
             })(parseInt($('#gamemode').val()));
+        }
+        // Garix servers (9001-9005)
+        else if ($('#gamemode').val() == 9001) {
+            legendmod.gameMode = ':teams';
+            core.connect('wss://garix.io:8084');
+        } else if ($('#gamemode').val() == 9002) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8087');
+        } else if ($('#gamemode').val() == 9003) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8088');
+        } else if ($('#gamemode').val() == 9004) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8089');
+        } else if ($('#gamemode').val() == 9005) {
+            legendmod.gameMode = ':ffa';
+            core.connect('wss://garix.io:8090');
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
@@ -2070,7 +2104,7 @@ setTimeout(function () {
                     }
                 }
             }
-        } catch(e) { }
+        } catch (e) { }
 
         /* Build VanillaSkinUrlMap: %skinname -> full CDN URL (like Delta's vanillaSkinMap) */
         window.VanillaSkinUrlMap = {};
@@ -2323,7 +2357,6 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-        jelloPhysics: 'Jello physics (needs jelly disabled)',
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
@@ -2813,7 +2846,6 @@ var displayText = {
         //massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
-        jelloPhysics: 'Jello physics (needs jelly disabled)',
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
@@ -3678,19 +3710,19 @@ var defaultSettings = {
     virMassScale: 3,
     strokeScale: 1,
     foodSize: 5,
-    bordersWidth: 30,
-    sectorsWidth: 6,
-    sectorsFontSize: 820,
+    bordersWidth: 14,
+    sectorsWidth: 40,
+    sectorsFontSize: 1200,
     cellsAlpha: 1,
     skinsAlpha: 1,
-    virusAlpha: 0.45,
+    virusAlpha: 0.6,
     textAlpha: 1,
     backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
     virusGlowSize: 14,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
-    virusStrokeSize: 11,
+    virusStrokeSize: 14,
     menuPreset: 'legendv2',
     graphics: 'high',
     indicators: 'normal',
@@ -3722,7 +3754,7 @@ var defaultSettings = {
     hudFont: 'ubuntu-bold',
     hudFontFamily: 'Ubuntu',
     hudFontWeight: 700,
-    hudScale: 1.1,
+    hudScale: 1,
     messageColor: 'rgba(0,0,0,0.4)',
     messageTextColor: '#ffffff',
     messageTimeColor: '#018cf6',
@@ -3946,7 +3978,6 @@ var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
     jellyPhisycs: false,
-    jelloPhysics: false,
     virusSound: false,
     onlineStatus: true,
     potionsDrinker: true,
@@ -3980,7 +4011,7 @@ var defaultmapsettings = {
     hideMyMass: false,
     hideEnemiesMass: false,
     vanillaSkins: true,
-    ownVanillaSkin: true,
+    ownVanillaSkin: false,
     universalChat: true,
     customSkins: true,
     videoSkins: true,
@@ -4008,10 +4039,10 @@ var defaultmapsettings = {
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
-    oppColors: true,
+    oppColors: false,
     oppRings: true,
     virColors: false,
-    splitRange: true,
+    splitRange: false,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
@@ -5108,7 +5139,7 @@ function thelegendmodproject() {
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
-                setTimeout(function() { window.lockPosition = false; }, 40);
+                setTimeout(function () { window.lockPosition = false; }, 40);
                 return;
             }
             window.lockPosition = true
@@ -5663,7 +5694,7 @@ function thelegendmodproject() {
                      *   di.multiplier  = effective multiplier ×100  (e.g. 100 = 1.00×,
                      *                    150 = 1.50× when anti has built up)
                      *   di.decayIntervalSecs = interval in seconds (e.g. 4)
-                     * Show: "−0.80%/4s" baseline, red badge if multiplier > 1× */
+                     * Show: "−0.80%/4s" baseline, orange badge if multiplier > 1× */
                     var basePct = (di.decayScore / 100).toFixed(2);
                     var mult = di.multiplier / 100;   // e.g. 1.00, 1.50
 
@@ -6015,10 +6046,8 @@ function thelegendmodproject() {
                     //
 
                     this.sendChatMessage(101, value);
-                    if (ogario.play) {
-                        message.blur();
-                        messageBox.hide();
-                    }
+                    message.blur();
+                    messageBox.hide();
                 } else {
                     message.blur();
                     messageBox.hide();
@@ -6642,7 +6671,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jelloPhysics", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
@@ -7369,7 +7398,7 @@ function thelegendmodproject() {
                         app.connect();
                     }
                     legendmod.sendAction(56);
-                    
+
                     if (window.addKeyListeners) window.addKeyListeners();
                     if (defaultmapsettings.autoHideFood) ogario.showFood = false;
                 }
@@ -7984,7 +8013,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.save(),
                     this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
                     /* ── Expanding Land: Draw zone on minimap (all phases) ── */
-                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function() {
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function () {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
                         var tMinX = (-targetHalf + r) * n;
@@ -8470,43 +8499,50 @@ function thelegendmodproject() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
             if (this.privateMode && this.privateIP) {
                 this.socket = new WebSocket(this.privateIP);
+                /* Ensure the standby-server relay (window.ogarioWS) routes
+                 * incoming chat/minimap messages to our handler. */
+                if (window.ogarioWS) {
+                    window.ogarioWS.onmessage = this.handleMessage.bind(this);
+                }
             } else {
                 this.socket = new WebSocket(this.publicIP);
             }
             this.socket.ogarioWS = true;
             this.socket.binaryType = 'arraybuffer';
             var app = this;
-            this.socket.onopen = () => {
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Ogario socket open:', application.publicIP);
-                var buf = app.createView(3);
-                buf.setUint8(0, 0);
-                //console.log("socket",this.socket.url)
-                //console.log("window.wsinjected",window.wsinjected)
-                //if (!window.wsinjected) { //if delta socket injected
-                buf.setUint16(1, 401, true);
-                //} else {
-                //    buf.setUint16(1, 404, true);
-                //}
-                app.sendBuffer(buf);
+            if (!this.privateMode) {
+                /* Public server: send ogario handshake and wire handleMessage */
+                this.socket.onopen = () => {
+                    var buf = app.createView(3);
+                    buf.setUint8(0, 0);
+                    buf.setUint16(1, 401, true);
+                    app.sendBuffer(buf);
 
-                buf.setUint8(0, 5);
-                buf.setUint16(1, 20, true);
-                app.sendBuffer(buf);
+                    buf.setUint8(0, 5);
+                    buf.setUint16(1, 20, true);
+                    app.sendBuffer(buf);
 
-                app.sendPartyData();
-            }
-            this.socket.onmessage = function (buf) {
-                app.handleMessage(buf);
+                    app.sendPartyData();
+                }
+                this.socket.onmessage = function (buf) {
+                    app.handleMessage(buf);
+                }
+            } else {
+                /* Private server: legendmod owns the game socket.
+                 * We wire handleMessage into ogarioWS relay instead. */
+                this.socket.onopen = () => { app.sendPartyData(); };
             }
             this.socket.onclose = function (buf) {
                 //app.flushData();
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket close', buf);
             }
             this.socket.onerror = function (buf) {
-                //app.flushData();
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
                 window.noOgarioSocket = true;
             };
+            /* Must be after all native socket setup — ogarioWS relay handler for private */
+            if (this.privateMode && window.ogarioWS) {
+                window.ogarioWS.onmessage = function(buf) { app.handleMessage(buf); };
+            }
 
         },
         Socket3connect(srv) {
@@ -8938,7 +8974,12 @@ function thelegendmodproject() {
                 encode(ogarcopythelb.skinURL);
                 encode(ogarcopythelb.color);
                 encode(ogario.playerColor);
-                this.sendBuffer(view);
+                /* Route op20 to relay (not game server) when on private server */
+                if (this.privateMode && window.ogarioWS) {
+                    window.ogarioWS.send(view.buffer);
+                } else {
+                    this.sendBuffer(view);
+                }
             }
         },
         sendPlayerPosition() {
@@ -8955,7 +8996,12 @@ function thelegendmodproject() {
                 } else {
                     view.setUint32(13, this.playerMass, true);
                 }
-                this.sendBuffer(view);
+                /* Route op30 to relay (not game server) when on private server */
+                if (this.privateMode && window.ogarioWS) {
+                    window.ogarioWS.send(view.buffer);
+                } else {
+                    this.sendBuffer(view);
+                }
             }
         },
         packInt(x, m) {
@@ -9430,13 +9476,13 @@ function thelegendmodproject() {
             }
         },
         sendChatMessage(type, message) {
-            //console.log(type);console.log(message);
-            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
+            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
+                var currentNick = ogarcopythelb.nick || 'Unnamed';
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
-                    var fullMsg = ogarcopythelb.nick + ': ' + message;
+                    var fullMsg = currentNick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
                     teamView.setUint8(1, type); // 101=party chat, 102=command
@@ -9447,17 +9493,27 @@ function thelegendmodproject() {
                     legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
                 }
-                /* Fallback: use relay socket (original behavior) */
-                else if (this.isSocketOpen()) {
-                    message = ogarcopythelb.nick + ': ' + message;
-                    var view = this.createView(10 + 2 * message.length);
-                    view.setUint8(0, 100),
-                        view.setUint8(1, type),
-                        view.setUint32(2, this.playerID, true),
-                        view.setUint32(6, 0, true);
-                    for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
-                    this.sendBuffer(view),
-                        this.lastMessageSentTime = Date.now();
+                /* All other servers: use chat relay websocket (shared with Delta) */
+                else if (this.isSocketOpen() || (this.privateMode && window.ogarioWS)) {
+                    var fullMessage = currentNick + ': ' + message;
+                    var view = this.createView(10 + 2 * fullMessage.length);
+                    view.setUint8(0, 100);
+                    view.setUint8(1, type);
+                    view.setUint32(2, this.playerID, true);
+                    view.setUint32(6, 0, true);
+                    for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
+                    
+                    if (this.privateMode) {
+                        /* Private servers: route chat through window.ogarioWS (standby-server relay).
+                         * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
+                         * and stamps the correct relay playerID automatically. */
+                        if (window.ogarioWS) {
+                            window.ogarioWS.send(view.buffer);
+                        }
+                    } else {
+                        this.sendBuffer(view);
+                    }
+                    this.lastMessageSentTime = Date.now();
                 }
             }
         },
@@ -10242,23 +10298,9 @@ function thelegendmodproject() {
         this.redrawed = 0;
         this.time = 0;
         this.skin = null;
-        this.pi2 = ogarbasicassembly.PI2;
+        this.pi2 = 2 * Math.PI;
         this.virusColor = null;
         this.virusStroke = null;
-        /* Reusable buffer for movePoints velocity smoothing —
-         * avoids this.pointsVel.slice() on every frame */
-        this._velBuf = [];
-        /* Jello physics: SoA (Struct-of-Arrays) layout for cache locality.
-         * 3× Float64Array instead of Array-of-{x,y,rl} objects — zero GC. */
-        this._jelloX = null;
-        this._jelloY = null;
-        this._jelloRl = null;
-        this._jelloVel = null;
-        this._jelloSin = null;
-        this._jelloCos = null;
-        this._jelloLen = 0;
-        this._prevX = 0;
-        this._prevY = 0;
         //this.nHeight = 6;
 
         this.updateNumPoints = function () {
@@ -10297,193 +10339,73 @@ function thelegendmodproject() {
         this.sqDist = function (a, b) {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
-
-        /* ========== JELLO PHYSICS (lightweight alternative) ========== */
-        /* Fast xorshift32 PRNG — replaces Math.random() in hot loop.
-         * ~10× faster, no crypto quality needed for visual wobble. */
-        this._jelloRng = 0xDEADBEEF | 0;
-
-        this.initJelloPoints = function (screenPx) {
-            /* Lean point counts — minimal for perf, enough for smooth curves:
-             * < 80px  → 8 points (cheap, nearly circular)
-             * < 160px → 12 points
-             * >= 160px → 18 points (hero cells) */
-            var N = screenPx >= 160 ? 18 : screenPx >= 80 ? 12 : 8;
-            if (this._jelloLen === N) return;
-            this._jelloLen = N;
-            /* SoA: 3 flat Float64Arrays — no object allocation, no GC */
-            this._jelloX = new Float64Array(N);
-            this._jelloY = new Float64Array(N);
-            this._jelloRl = new Float64Array(N);
-            this._jelloVel = new Float64Array(N);
-            this._jelloSin = new Float64Array(N);
-            this._jelloCos = new Float64Array(N);
-            var step = 6.283185307179586 / N;
-            for (var i = 0; i < N; i++) {
-                var a = step * i;
-                this._jelloSin[i] = Math.sin(a);
-                this._jelloCos[i] = Math.cos(a);
-                this._jelloRl[i] = this.size;
-                this._jelloX[i] = this.x + this._jelloCos[i] * this.size;
-                this._jelloY[i] = this.y + this._jelloSin[i] * this.size;
-                this._jelloVel[i] = 0;
-            }
-            this._prevX = this.x;
-            this._prevY = this.y;
-        };
-
-        this.moveJelloPoints = function () {
-            if (!this._jelloRl) return;
-            var N = this._jelloLen;
-            var sz = this.size;
-            var cx = this.x;
-            var cy = this.y;
-            /* Movement delta — drives wobble intensity */
-            var dx = cx - this._prevX;
-            var dy = cy - this._prevY;
-            this._prevX = cx;
-            this._prevY = cy;
-            var speedSq = dx * dx + dy * dy;
-            var ndx = 0, ndy = 0, impulse = 0;
-            if (speedSq > 0.01) {
-                var invSpeed = 1.0 / Math.sqrt(speedSq);
-                ndx = dx * invSpeed;
-                ndy = dy * invSpeed;
-                var speed = speedSq * invSpeed;
-                impulse = speed * 0.18;
-                if (impulse > 12) impulse = 12;
-            }
-
-            var cosArr = this._jelloCos;
-            var sinArr = this._jelloSin;
-            var rlArr = this._jelloRl;
-            var xArr = this._jelloX;
-            var yArr = this._jelloY;
-            var vel = this._jelloVel;
-            var rng = this._jelloRng;
-            /* Size-adaptive clamp — small cells nearly circular,
-             * large cells deform freely. Prevents color/skin bleed.
-             * size 150 → ±1%, size 500+ → ±15% */
-            var t = (sz - 150) / 350;
-            if (t < 0) t = 0; else if (t > 1) t = 1;
-            var wobble = 0.01 + t * 0.14;
-            var clampLo = sz * (1.0 - wobble);
-            var clampHi = sz * (1.0 + wobble);
-            /* Jitter scales with size — small cells stay perfectly clean */
-            var jitterAmt = 0.05 + t * 0.55; /* 0.05 to 0.60 */
-            var maxRad = 0;
-            /* Pre-fetch edge values to eliminate modulo in loop */
-            var lastRl = rlArr[N - 1];
-            var firstRl = rlArr[0];
-
-            for (var i = 0; i < N; i++) {
-                var pcx = cosArr[i];
-                var pcy = sinArr[i];
-
-                /* Movement influence */
-                vel[i] += -(pcx * ndx + pcy * ndy) * impulse;
-
-                /* Spring force: pull toward base radius */
-                var rl = rlArr[i];
-                vel[i] += (sz - rl) * 0.14;
-
-                /* Neighbor smoothing — no modulo needed */
-                var prevRl = i > 0 ? rlArr[i - 1] : lastRl;
-                var nextRl = i < N - 1 ? rlArr[i + 1] : firstRl;
-                vel[i] += (prevRl + nextRl - 2 * rl) * 0.06;
-
-                /* Softer damping — wobble lasts longer */
-                vel[i] *= 0.88;
-
-                /* Size-proportional jitter — small cells clean, large cells organic */
-                rng ^= rng << 13; rng ^= rng >> 17; rng ^= rng << 5;
-                vel[i] += ((rng & 0xFFFF) / 65536.0 - 0.5) * jitterAmt;
-
-                /* Update radius with wider clamp */
-                rl += vel[i];
-                if (rl < clampLo) rl = clampLo;
-                else if (rl > clampHi) rl = clampHi;
-                rlArr[i] = rl;
-
-                if (rl > maxRad) maxRad = rl;
-
-                /* Update world position (SoA write) */
-                xArr[i] = cx + cosArr[i] * rl;
-                yArr[i] = cy + sinArr[i] * rl;
-            }
-            this._jelloRng = rng;
-            this.maxPointRad = maxRad;
-        };
         this.movePoints = function () {
             //console.log(this.id)
+            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
-            if (len === 0) return;
-            /* Reuse a pre-allocated buffer instead of slice() —
-             * eliminates one full array copy per cell per frame */
-            var buf = this._velBuf;
-            if (buf.length !== len) buf.length = len;
-            for (var i = 0; i < len; ++i) buf[i] = this.pointsVel[i];
-
             for (var i = 0; i < len; ++i) {
-                var prevVel = buf[(i - 1 + len) % len];
-                var nextVel = buf[(i + 1) % len];
+                var prevVel = pointsVel[(i - 1 + len) % len];
+                var nextVel = pointsVel[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                if (newVel > 10) newVel = 10;
-                else if (newVel < -10) newVel = -10;
+                newVel = Math.max(Math.min(newVel, 10), -10);
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-            this.maxPointRad = 0;
-            /* Cache self + sqDist outside the point loop to avoid
-             * per-point closure allocation from .bind() */
-            var self = this;
-            var selfX = this.x;
-            var selfY = this.y;
-            var selfSize = this.size;
-            var isVirus = this.isVirus;
-            var qt = LM.quadtree;
-            /* Pre-compute angle step — all points are evenly spaced */
-            var angleStep = 6.283185307179586 / len; // 2*PI/len
-
+            this.maxPointRad = 0
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var affected = false;
-                if (qt) {
-                    var cpx = curP.x;
-                    var cpy = curP.y;
-                    affected = qt.some({
-                        x: cpx - 5,
-                        y: cpy - 5,
+                var nextRl = this.points[(i + 1) % len].rl;
+                var self = this;
+                var affected
+                if (LM.quadtree) {
+                    affected = LM.quadtree.some({
+                        x: curP.x - 5,
+                        y: curP.y - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        if (item.parent === self) return false;
-                        var dx = item.x - cpx;
-                        var dy = item.y - cpy;
-                        return dx * dx + dy * dy <= 25;
-                    });
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
                 }
+                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+
+                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+
+
+                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
+                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
+
+                /*if (!affected &&
+                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+                {
+                    affected = true;
+                }*/
                 if (affected) {
-                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
+                    //console.log('affected!!!!!')
+                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                if (curRl < 0) curRl = 0;
+                curRl = Math.max(curRl, 0);
 
-                curRl = (9 * curRl + selfSize) / 10;
+                curRl = (9 * curRl + this.size) / 10; //??????
 
-                curP.rl = (prevRl + selfSize + 8 * curRl) / 10;
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
 
-                var angle = angleStep * i;
+                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                var angle = 2 * Math.PI * i / len;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl;
-                if (isVirus && (i & 1) === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl
+                if (this.isVirus && i % 2 === 0) {
                     rl += 5;
                 }
 
-                curP.x = selfX + Math.cos(angle) * rl;
-                curP.y = selfY + Math.sin(angle) * rl;
+                curP.x = this.x + Math.cos(angle) * rl;
+                curP.y = this.y + Math.sin(angle) * rl;
             }
         };
 
@@ -10600,7 +10522,7 @@ function thelegendmodproject() {
                 if (this.mass <= 200) {
                     this.virusColor = defaultSettings.virusColor;
                     this.virusStroke = defaultSettings.virusStrokeColor;
-                } else {
+                } else if (this.mass > 220) {
                     this.virusColor = defaultSettings.mVirusColor;
                     this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
@@ -11235,7 +11157,7 @@ function thelegendmodproject() {
             //ctx.lineTo(x, y);
             //ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.arc(x, y, radius, 0, ogarbasicassembly.PI2);
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
             ctx.fill();
             //ctx.closePath();
             //ctx.stroke();
@@ -11278,7 +11200,6 @@ function thelegendmodproject() {
                     node = application.getCustomSkin(this.targetNick, this.color);
                 }
                 var node2;
-                var isVideoSkin = false;
                 if (defaultmapsettings.videoSkins) {
                     if (LM.gameMode != ":party") {
                         node2 = application.customSkinsMap[this.targetNick];
@@ -11286,9 +11207,6 @@ function thelegendmodproject() {
                     else {
                         node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
-                    /* Cache video skin check — avoids 6 string.includes() calls
-                     * per cell per frame (called again at lines ~11210, ~11212) */
-                    isVideoSkin = !!(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")));
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -11310,22 +11228,7 @@ function thelegendmodproject() {
                 }
 
                 if (!node) style.beginPath();
-                if (defaultmapsettings.jelloPhysics && this._jelloRl) {
-                    /* Jello: smooth bezier curves between SoA points */
-                    var jX = this._jelloX;
-                    var jY = this._jelloY;
-                    var jN = this._jelloLen;
-                    var mx = (jX[jN - 1] + jX[0]) * 0.5;
-                    var my = (jY[jN - 1] + jY[0]) * 0.5;
-                    style.moveTo(mx, my);
-                    for (var i = 0; i < jN; i++) {
-                        var ni = i < jN - 1 ? i + 1 : 0;
-                        var nmx = (jX[i] + jX[ni]) * 0.5;
-                        var nmy = (jY[i] + jY[ni]) * 0.5;
-                        style.quadraticCurveTo(jX[i], jY[i], nmx, nmy);
-                    }
-                }
-                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                if (defaultmapsettings.jellyPhisycs && this.points.length) {
                     var point = this.points[0];
                     style.moveTo(point.x, point.y);
                     for (var i = 0; i < this.points.length; ++i) {
@@ -11337,23 +11240,13 @@ function thelegendmodproject() {
                     style.lineJoin = "miter"
                     var pointCount = 120;
                     var incremental = this.pi2 / pointCount;
-                    /* Use pre-computed sin/cos table to avoid 240 trig calls
-                     * per virus per frame. Table is shared across all viruses. */
-                    if (!ogarbasicassembly._virusSinTable || ogarbasicassembly._virusSinTable.length !== pointCount) {
-                        ogarbasicassembly._virusSinTable = new Float32Array(pointCount);
-                        ogarbasicassembly._virusCosTable = new Float32Array(pointCount);
-                        for (var t = 0; t < pointCount; t++) {
-                            var a = t * incremental;
-                            ogarbasicassembly._virusSinTable[t] = Math.sin(a);
-                            ogarbasicassembly._virusCosTable[t] = Math.cos(a);
-                        }
-                    }
                     style.moveTo(this.x, this.y + this.size + 3);
                     for (var i = 1; i < pointCount; i++) {
+                        var angle = i * incremental;
                         var dist = this.size - 3 + (i % 2 === 0) * 6;
                         style.lineTo(
-                            this.x + dist * ogarbasicassembly._virusSinTable[i],
-                            this.y + dist * ogarbasicassembly._virusCosTable[i]
+                            this.x + dist * Math.sin(angle),
+                            this.y + dist * Math.cos(angle)
                         )
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
@@ -11361,9 +11254,9 @@ function thelegendmodproject() {
                 else {
                     if (!node) {
                         //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || isVideoSkin || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                        if (this.isVirus || (node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv"))) || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            if (!this.isVirus && !defaultmapsettings.cellContours && !isVideoSkin) {
+                            if (!this.isVirus && !defaultmapsettings.cellContours && !(node2 && (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")))) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
@@ -11381,7 +11274,7 @@ function thelegendmodproject() {
                 if (!node) style.closePath();
                 //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                    if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
+                    if (defaultmapsettings.jellyPhisycs) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
@@ -11421,19 +11314,7 @@ function thelegendmodproject() {
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        /* Cache the spike Path2D — only regenerate when size
-                         * or spike setting changes. Eliminates ~40 trig calls
-                         * and a Path2D allocation per virus per frame. */
-                        if (!this._cachedSpikePath || this._lastSpikeSize !== this.size ||
-                            this._lastSpikeScale !== defaultSettings.virusSpikesSize) {
-                            this._cachedSpikePath = this.createStrokeVirusPath(0, 0, this.size - 2, defaultSettings.virusSpikesSize);
-                            this._lastSpikeSize = this.size;
-                            this._lastSpikeScale = defaultSettings.virusSpikesSize;
-                        }
-                        style.save();
-                        style.translate(this.x, this.y);
-                        style.stroke(this._cachedSpikePath);
-                        style.restore();
+                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
                     }
                     else {
                         style.stroke()
@@ -11473,8 +11354,7 @@ function thelegendmodproject() {
                         style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
                     }
                 }
-                else if ((defaultmapsettings.jellyPhisycs && this.points.length) ||
-                         (defaultmapsettings.jelloPhysics && this._jelloRl)) {
+                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
                     //else{			
                     style.fillStyle = color2;
                     style.fill();
@@ -11515,7 +11395,7 @@ function thelegendmodproject() {
                             //s = true;
                         }
                         if (legendmod.gameMode != ":teams") {
-                            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.jelloPhysics) {
+                            if (defaultmapsettings.jellyPhisycs) {
                                 var lineWidth = Math.max(~~(y / 50), 10);
                                 style.save();
                                 style.clip();
@@ -11553,7 +11433,7 @@ function thelegendmodproject() {
                     else {
                         if (defaultmapsettings.videoSkins) {
                             if (node2) {
-                                if (isVideoSkin) {
+                                if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
                                     checkVideos(node2, this.targetNick);
                                     try {
                                         style.save();
@@ -11617,8 +11497,6 @@ function thelegendmodproject() {
                 style.restore();
             }
     }
-    /* Static constant shared by all cell instances — avoids per-cell 2*Math.PI storage */
-    ogarbasicassembly.PI2 = 2 * Math.PI;
     window.legendmod1 = ogarbasicassembly;
 
 
@@ -11628,10 +11506,6 @@ function thelegendmodproject() {
     }
     var LM = {
         integrity: true,
-        /* Pre-allocated sort comparator — avoids creating a closure on every frame */
-        _cellSortCmp: function(a, b) {
-            return a.size === b.size ? a.id - b.id : a.size - b.size;
-        },
         quadtree: null,
         updateQuadtree: function (cells) {
             var w = drawRender.canvasWidth / drawRender.scale;
@@ -11650,6 +11524,7 @@ function thelegendmodproject() {
         isSpectateEnabled: false,
         ws: null,
         socket: null,
+        garixFingerprint: null,
         protocolKey: null,
         clientKey: null,
         connectionOpened: false,
@@ -11817,9 +11692,10 @@ function thelegendmodproject() {
              * This duplicates the detection below but runs BEFORE anything else. */
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
-                : t.includes('agar2.com') ? 'agar2'
-                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                : 'private';
+                    : t.includes('agar2.com') ? 'agar2'
+                        : t.includes('garix.io') ? 'garix'
+                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
@@ -11828,12 +11704,12 @@ function thelegendmodproject() {
              * is no longer logged in so we skip this block and proceed normally. */
             if (_earlyType !== 'agario' && _earlyType !== 'expandingland') {
                 var _isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
-                                  (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+                    (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
                 if (_isLoggedIn && typeof window.logout === 'function') {
                     console.log('[LW] Auto-logout before joining non-EL server, will reconnect in 500ms');
                     window.logout();
                     var self = this;
-                    setTimeout(function() {
+                    setTimeout(function () {
                         console.log('[LW] Logout complete, now connecting to: ' + t);
                         self.connect(t);
                     }, 500);
@@ -11879,6 +11755,17 @@ function thelegendmodproject() {
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
             this.leaderboard = [];
+            // Garix state reset
+            this.garixTabID1 = 0;
+            this.garixTabID2 = 0;
+            this.garixProtocol = 6;
+            this.garixHandshakeDone = false;
+            this.garixPingCounter = 0;
+            // Clear any existing Garix ping interval
+            if (this.garixPingInterval) {
+                clearInterval(this.garixPingInterval);
+                this.garixPingInterval = null;
+            }
             this.ws = t;
             //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
             this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
@@ -11905,7 +11792,11 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            this.socket = new WebSocket(t);
+            if (this.serverType === 'garix' && this.garixFingerprint) {
+                this.socket = new WebSocket(t, [this.garixFingerprint]);
+            } else {
+                this.socket = new WebSocket(t);
+            }
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
                 app.onOpen();
@@ -11927,7 +11818,7 @@ function thelegendmodproject() {
             if (this.imsoloHeartbeatInterval) clearInterval(this.imsoloHeartbeatInterval);
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 var self = this;
-                this.imsoloHeartbeatInterval = setInterval(function() {
+                this.imsoloHeartbeatInterval = setInterval(function () {
                     if (self.socket && self.socket.readyState === WebSocket.OPEN) {
                         var hb = self.createView(1);
                         hb.setUint8(0, 254); // 0xFE
@@ -11966,47 +11857,61 @@ function thelegendmodproject() {
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
 
-            var view = this.createView(5);
-            view.setUint8(0, 254);
-            if (!this.integrity) {
-                view.setUint32(1, window.customProtol, true);
-                window.gameBots.protocolVersion = window.customProtol
+            // ===== Garix Handshake: opcode 171 instead of 254/255 =====
+            if (this.serverType === 'garix') {
+                this.garixProtocol = 1;
+                this.garixClientTime = Math.floor(Date.now() / 1000);
+                var gView = this.createView(9);
+                gView.setUint8(0, 171); // 0xAB
+                gView.setUint32(1, this.garixProtocol, true);
+                gView.setUint32(5, this.garixClientTime, true);
+                this.sendBuffer(gView);
+                this.connectionOpened = true;
+                console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
             } else {
-                view.setUint32(1, this.protocolVersion, true);
-                window.gameBots.protocolVersion = master.protocolVersion;
-            }
-            //			
-            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
-            //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
-
-
-            this.sendMessage(view);
-            view = this.createView(5);
-            view.setUint8(0, 255);
-            if (!this.integrity) {
-                view.setUint32(1, window.customClient, true);
-                window.gameBots.clientVersion = window.customClient
-
-                if (LM.ws.includes("cellz.io")) {
-                    this.sendMessage(view);
-                    view.setUint8(0, 80);
+                // ===== Standard Handshake: 0xFE + 0xFF =====
+                var view = this.createView(5);
+                view.setUint8(0, 254);
+                if (!this.integrity) {
+                    view.setUint32(1, window.customProtol, true);
+                    window.gameBots.protocolVersion = window.customProtol
+                } else {
+                    view.setUint32(1, this.protocolVersion, true);
+                    window.gameBots.protocolVersion = master.protocolVersion;
                 }
-            } //protocol 6 and 5
-            else {
-                view.setUint32(1, this.clientVersion, true);
-                window.gameBots.clientVersion = this.clientVersion;
-                //new
-                if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
-                //this.sendPong();				
-            }
+                //			
+                //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
+                //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
 
-            //
-            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
-            //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 
-            this.sendMessage(view);
+                this.sendMessage(view);
+                view = this.createView(5);
+                view.setUint8(0, 255);
+                if (!this.integrity) {
+                    view.setUint32(1, window.customClient, true);
+                    window.gameBots.clientVersion = window.customClient
 
-            this.connectionOpened = true;
+                    if (LM.ws.includes("cellz.io")) {
+                        this.sendMessage(view);
+                        view.setUint8(0, 80);
+                    }
+                } //protocol 6 and 5
+                else {
+                    view.setUint32(1, this.clientVersion, true);
+                    window.gameBots.clientVersion = this.clientVersion;
+                    //new
+                    if (!this.pingInterval) this.pingInterval = setInterval(ReqPing, 5000);
+                    //this.sendPong();				
+                }
+
+                //
+                //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
+                //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
+
+                this.sendMessage(view);
+
+                this.connectionOpened = true;
+            } // end of non-garix handshake
 
             /* Private server login: trigger Google/Facebook OAuth.
              * On real agar.io this is called from opcode 241 handler.
@@ -12018,7 +11923,7 @@ function thelegendmodproject() {
                 /* Only use timeout fallback for NON-EL private servers.
                  * EL triggers login from the LW beacon handler instead. */
                 if (this.serverType !== 'expandingland') {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         window.master.login();
                     }, 200);
                 }
@@ -12091,6 +11996,11 @@ function thelegendmodproject() {
                 clearInterval(this.imsoloHeartbeatInterval);
                 this.imsoloHeartbeatInterval = null;
             }
+            // Clear Garix heartbeat interval on disconnect
+            if (this.garixHeartbeatInterval) {
+                clearInterval(this.garixHeartbeatInterval);
+                this.garixHeartbeatInterval = null;
+            }
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
@@ -12135,6 +12045,14 @@ function thelegendmodproject() {
             if (!this.isSocketOpen()) {
                 return;
             }
+            // Garix: split (17) and eject (21) require tabID
+            if (this.serverType === 'garix' && (action === 17 || action === 21)) {
+                var gv = this.createView(3);
+                gv.setUint8(0, action);
+                gv.setUint16(1, this.garixTabID1 || 0, true);
+                this.sendBuffer(gv);
+                return;
+            }
             const view = this.createView(1);
             view.setUint8(0, action);
             this.sendMessage(view);
@@ -12166,9 +12084,9 @@ function thelegendmodproject() {
             this.sendPosition();
             this.sendAction(17);
         },
-        // Multi-protocol split macros for Imsolo/Agar2 (opcodes 0x1A, 0x1B, 0x1C)
+        // Multi-protocol split macros for Imsolo/Agar2/Garix (opcodes 0x1A, 0x1B, 0x1C)
         sendDoubleSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(28); // 0x1C
             } else {
@@ -12176,7 +12094,7 @@ function thelegendmodproject() {
             }
         },
         sendTripleSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(26); // 0x1A
             } else {
@@ -12184,7 +12102,7 @@ function thelegendmodproject() {
             }
         },
         sendQuadSplit() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendPosition();
                 this.sendAction(27); // 0x1B
             } else {
@@ -12192,7 +12110,7 @@ function thelegendmodproject() {
             }
         },
         sendPlayerFreeze() {
-            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private') {
+            if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'garix' || this.serverType === 'private') {
                 this.sendAction(32); // 0x20 — player freeze toggle
             }
         },
@@ -12231,6 +12149,22 @@ function thelegendmodproject() {
              * ignores the join (cell_count > 0). */
             if (ogario.play) {
                 window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                return;
+            }
+
+            // ===== Garix join: [0x00][tabID LE16][nick UTF-8 null-terminated] =====
+            if (this.serverType === 'garix') {
+                this.playerNick = nick;
+                var encoded = window.unescape(window.encodeURIComponent(nick));
+                var gv = this.createView(3 + encoded.length + 1); // opcode + tabID + nick + null
+                gv.setUint8(0, 0); // opcode 0
+                gv.setUint16(1, this.garixTabID1 || 0, true);
+                for (var gi = 0; gi < encoded.length; gi++) {
+                    gv.setUint8(3 + gi, encoded.charCodeAt(gi));
+                }
+                gv.setUint8(3 + encoded.length, 0); // null terminator
+                this.sendBuffer(gv);
+                console.log('%c[Garix]%c Join sent (tabID=' + (this.garixTabID1 || 0) + ' nick=' + nick + ')', 'color:#f8a', 'color:inherit');
                 return;
             }
 
@@ -12540,12 +12474,24 @@ function thelegendmodproject() {
                     this.distX = cursorX - this.viewXTrue
                     this.distY = cursorY - this.viewYTrue
                 }
-                var view = this.createView(13);
-                view.setUint8(0, 16);
-                view.setInt32(1, cursorX, true);
-                view.setInt32(5, cursorY, true);
-                view.setUint32(9, this.protocolKey, true);
-                this.sendMessage(view);
+                // Garix: mouse packet includes tabID at bytes 1-2
+                // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
+                if (this.serverType === 'garix') {
+                    var gv = this.createView(15); // 15 bytes → server reads Int32
+                    gv.setUint8(0, 16);
+                    gv.setUint16(1, this.garixTabID1 || 0, true);
+                    gv.setInt32(3, cursorX, true);
+                    gv.setInt32(7, cursorY, true);
+                    // bytes 11-14 unused padding (server only checks length)
+                    this.sendBuffer(gv);
+                } else {
+                    var view = this.createView(13);
+                    view.setUint8(0, 16);
+                    view.setInt32(1, cursorX, true);
+                    view.setInt32(5, cursorY, true);
+                    view.setUint32(9, this.protocolKey, true);
+                    this.sendMessage(view);
+                }
             }
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
@@ -12872,6 +12818,7 @@ function thelegendmodproject() {
 */
             var encode = function () {
                 for (var text = ''; ;) {
+                    if (s >= data.byteLength) break;
                     var i = data.getUint8(s++);
                     if (0 === i) break;
                     text += String.fromCharCode(i);
@@ -12884,9 +12831,6 @@ function thelegendmodproject() {
             // if (opcode >= 100) console.log('[LW DBG] handleMessage opcode=' + opcode + ' len=' + data.byteLength);
 
             switch (54 === opcode && (opcode = 53), opcode) {
-
-
-
 
                 case 5: //Yahnych
                     window.testobjectsOpcode5 = data;
@@ -13022,36 +12966,57 @@ function thelegendmodproject() {
                     this.leaderboard = [];
                     var count = data.getUint32(s, true);
                     s += 4;
-                    for (i = 0; i < count; ++i) {
-                        var isMe = !!data.getUint32(s, true);
-                        s += 4;
-                        if (isMe) {
-                            isMe = 'isPlayer'
+                    if (count > 200 || s > data.byteLength) { break; }
+                    // Garix protocol 6-10: [playerID UInt32][name UTF-8z][mass UInt32][sector UTF-8z][color UTF-8z]
+                    if (this.serverType === 'garix') {
+                        for (i = 0; i < count; ++i) {
+                            var gPlayerID = data.getUint32(s, true); s += 4;
+                            var gNick = window.decodeURIComponent(window.escape(encode()));
+                            var gMass = data.getUint32(s, true); s += 4;
+                            var gSector = encode();
+                            var gColor = encode();
+                            var isMe = (this.playerCellIDs.length > 0) ? false : false;
+                            // Check if this is our player by matching tabID
+                            this.leaderboard.push({
+                                id: false,
+                                nick: gNick,
+                                mass: gMass,
+                                sector: gSector,
+                                color: gColor
+                            });
                         }
-                        var rawNick = encode();
-                        let nick = "";
-                        try {
-                            nick = window.decodeURIComponent(window.escape(rawNick));
-                        } catch (e) {
-                            nick = rawNick;
-                        }
-                        var temp = null;
+                    } else {
+                        for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
+                            var isMe = !!data.getUint32(s, true);
+                            s += 4;
+                            if (isMe) {
+                                isMe = 'isPlayer'
+                            }
+                            var rawNick = encode();
+                            let nick = "";
+                            try {
+                                nick = window.decodeURIComponent(window.escape(rawNick));
+                            } catch (e) {
+                                nick = rawNick;
+                            }
+                            var temp = null;
 
-                        if (nick.includes('}')) {
-                            temp = nick.split('}')[0].split('{')[1]
-                            nick = nick.split('}')[1]
-                        }
-                        if (!application.customSkinsMap[nick] && temp) {
-                            core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
-                            application.customSkinsMap[nick + "\'s imsolo.pro bot"] = "https://dkyriak.github.io/imsolo/" + temp + ".png"
-                            //core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
-                        }
+                            if (nick.includes('}')) {
+                                temp = nick.split('}')[0].split('{')[1]
+                                nick = nick.split('}')[1]
+                            }
+                            if (!application.customSkinsMap[nick] && temp) {
+                                core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
+                                application.customSkinsMap[nick + "\'s imsolo.pro bot"] = "https://dkyriak.github.io/imsolo/" + temp + ".png"
+                                //core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
+                            }
 
-                        this.leaderboard.push({
-                            id: isMe,
-                            nick: nick
-                        });
-                    }
+                            this.leaderboard.push({
+                                id: isMe,
+                                nick: nick
+                            });
+                        }
+                    } // end non-garix
                     this.handleLeaderboard();
                     break;
                 /*    
@@ -13191,26 +13156,101 @@ function thelegendmodproject() {
                         var shopCoins = data.getInt32(s, true); s += 4;
                         var shopRemaining = data.getInt32(s, true); s += 4;
                         var shopMsg = encode();
-                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit', 
+                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit',
                             'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
                     } else {
                         // Expanding Land MapEvent — parse 42-byte packet
-                        var meEventType     = data.getUint8(s++);
-                        var meCurrentSize   = data.getFloat64(s, true); s += 8;
-                        var meTargetSize    = data.getFloat64(s, true); s += 8;
-                        var meCenterX       = data.getFloat64(s, true); s += 8;
-                        var meCenterY       = data.getFloat64(s, true); s += 8;
-                        var meTransDur      = data.getUint32(s, true);  s += 4;
-                        var meWarnDur       = data.getUint32(s, true);  s += 4;
-                        var meTier          = data.getUint8(s++);
+                        var meEventType = data.getUint8(s++);
+                        var meCurrentSize = data.getFloat64(s, true); s += 8;
+                        var meTargetSize = data.getFloat64(s, true); s += 8;
+                        var meCenterX = data.getFloat64(s, true); s += 8;
+                        var meCenterY = data.getFloat64(s, true); s += 8;
+                        var meTransDur = data.getUint32(s, true); s += 4;
+                        var meWarnDur = data.getUint32(s, true); s += 4;
+                        var meTier = data.getUint8(s++);
                         this.handleMapEvent(meEventType, meCurrentSize, meTargetSize,
                             meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
                     }
                     break;
-                case 201: // 0xC9 — AuthSuccess (Agar2 only)
+                case 201: // 0xC9 — AuthSuccess (Agar2) / Pong (Garix)
                     if (this.serverType === 'agar2') {
                         this.imsoloAuthSuccess = true;
                         console.log('%c[MultiProto]%c Auth success', 'color:#3f3', 'color:inherit');
+                    } else if (this.serverType === 'garix') {
+                        // Garix pong: [0xC9][echo LE32]
+                        if (s + 4 <= data.byteLength) {
+                            var pongEcho = data.getUint32(s, true);
+                            // Can calculate RTT if needed
+                        }
+                    }
+                    break;
+
+                // ===== Garix Protocol Opcodes (2026) =====
+                case 161: // 0xA1 — DualInfo (Garix)
+                    if (this.serverType === 'garix') {
+                        var gTabCount = data.getUint8(s++);
+                        this.garixTabID1 = data.getUint16(s, true); s += 2;
+                        this.garixTabID2 = data.getUint16(s, true); s += 2;
+                        console.log('%c[Garix]%c DualInfo: tabs=' + gTabCount + ' tabID1=' + this.garixTabID1 + ' tabID2=' + this.garixTabID2, 'color:#f8a', 'color:inherit');
+                        // Start Garix ping keepalive (server disconnects after 8s without opcode 200)
+                        var self = this;
+                        if (this.garixPingInterval) clearInterval(this.garixPingInterval);
+                        this.garixPingInterval = setInterval(function() {
+                            if (self.isSocketOpen() && self.serverType === 'garix') {
+                                self.garixPingCounter++;
+                                var pv = self.createView(5);
+                                pv.setUint8(0, 200); // 0xC8
+                                pv.setUint32(1, self.garixPingCounter, true);
+                                self.sendBuffer(pv);
+                            } else {
+                                clearInterval(self.garixPingInterval);
+                                self.garixPingInterval = null;
+                            }
+                        }, 3000);
+                    }
+                    break;
+                case 172: // 0xAC — Handshake Seed (Garix)
+                    if (this.serverType === 'garix') {
+                        var garixSeed = data.getUint32(s, true); s += 4;
+                        console.log('%c[Garix]%c Handshake step 2: received seed=' + garixSeed, 'color:#f8a', 'color:inherit');
+
+                        // Step 3: Send opcode 205 (key)
+                        var garixKey = ((this.garixProtocol ^ this.garixClientTime) ^ 0x6F67) & 0xFFFFFFFF;
+                        var keyView = this.createView(5);
+                        keyView.setUint8(0, 205); // 0xCD
+                        keyView.setUint32(1, garixKey >>> 0, true);
+                        this.sendBuffer(keyView);
+                        console.log('%c[Garix]%c Handshake step 3: sent key=' + (garixKey >>> 0), 'color:#f8a', 'color:inherit');
+
+                        // Step 4: Send opcode 187 (answer)
+                        var garixAnswer = (garixSeed ^ this.garixProtocol) & 0xFFFFFFFF;
+                        var ansView = this.createView(5);
+                        ansView.setUint8(0, 187); // 0xBB
+                        ansView.setUint32(1, garixAnswer >>> 0, true);
+                        this.sendBuffer(ansView);
+                        console.log('%c[Garix]%c Handshake step 4: sent answer=' + (garixAnswer >>> 0), 'color:#f8a', 'color:inherit');
+                    }
+                    break;
+                case 220: // 0xDC — Handshake OK (Garix)
+                    if (this.serverType === 'garix') {
+                        console.log('%c[Garix]%c Handshake confirmed! Sending auth...', 'color:#3f3', 'color:inherit');
+                        // Step 5: Send opcode 221 (auth — empty for guest)
+                        var authView = this.createView(1);
+                        authView.setUint8(0, 221); // 0xDD — just opcode, no payload = guest
+                        this.sendBuffer(authView);
+                        this.garixHandshakeDone = true;
+                    }
+                    break;
+                case 222: // 0xDE — Auth Result (Garix)
+                    if (this.serverType === 'garix') {
+                        var authSuccess = data.getUint8(s++);
+                        var authReason = '';
+                        while (s < data.byteLength) {
+                            var ch = data.getUint8(s++);
+                            if (ch === 0) break;
+                            authReason += String.fromCharCode(ch);
+                        }
+                        console.log('%c[Garix]%c Auth result: ' + (authSuccess ? 'SUCCESS' : 'FAIL') + (authReason ? ' reason=' + authReason : ''), authSuccess ? 'color:#3f3' : 'color:#f33', 'color:inherit');
                     }
                     break;
                 case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
@@ -13277,12 +13317,22 @@ function thelegendmodproject() {
                     var flag = data.getUint8(s++);
                     var color2 = this.rgb2Hex(data.getUint8(s++), data.getUint8(s++), data.getUint8(s++));
 
+                    // Garix: flag bit 2 (0x04) = prefix and nick have different colors
+                    if (this.serverType === 'garix' && (flag & 0x04)) {
+                        // Extra 3 bytes for nick color + 1 byte prefix length
+                        var nickColorR = data.getUint8(s++);
+                        var nickColorG = data.getUint8(s++);
+                        var nickColorB = data.getUint8(s++);
+                        var prefixLen = data.getUint8(s++);
+                        // color2 = prefix color, nickColor = name color
+                    }
+
                     var name = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
 
                     var message = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();	
-                    var server = !!(flags & 128),
-                        admin = !!(flags & 64),
-                        // Imsolo/Agar2 uses bit 2 (0x04) for moderator, others use bit 5 (0x20)
+                    var server = !!(flag & 128),
+                        admin = !!(flag & 64),
+                        // Imsolo/Agar2 uses bit 2 (0x04) for moderator, Garix uses its own flags
                         mod = (this.serverType === 'imsolo' || this.serverType === 'agar2') ? !!(flag & 4) : !!(flag & 32);
 
                     if (server && name !== "SERVER") name = "[SERVER] " + name;
@@ -13308,12 +13358,12 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
-                    //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
+                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
-                        //console.error('[LW 102 DBG] onMobileData error:', e102);
+                        console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
                     //break;				
                     if (data.byteLength < 20) {
@@ -13350,15 +13400,15 @@ function thelegendmodproject() {
                             }
                         } catch (error) {
                             if (window.expandingLand || window.legendModFromWebsite) {
-                                //console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
+                                console.warn('[LW 102 DBG] Agar.io-style parse error:', error.message);
                             }
                         }
                         /* LW: Fallback extraction for our server's protobuf format.
                          * Server sends userId="provider$UID" in userInfo field.
                          * Only runs on our domains — doesn't affect agar.io parsing. */
                         if (window.expandingLand || window.legendModFromWebsite) {
-                            //console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
-                            //    'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
+                            console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
+                                'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
                             var rawText = window.testobjects2;
                             if (!window.agarioUID && rawText.includes('$')) {
                                 try {
@@ -13367,10 +13417,10 @@ function thelegendmodproject() {
                                         window.agarioUID = uidMatch[1].substr(0, 36);
                                         localStorage.setItem("agarioUID", window.agarioUID);
                                         $("#UserProfileUUID1").val(window.agarioUID);
-                                        //console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
                                     }
                                 } catch (lwErr) {
-                                    //console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
+                                    console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
                                 }
                             }
                         }
@@ -14013,8 +14063,13 @@ function thelegendmodproject() {
 
 
                 case 16: //2020 jimboy3100 specific private servers
-                    //this.updateCells(new LMbuffer(data['buffer']), s);
-                    this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                    // Garix: use dedicated parser for protocol 6-10 format
+                    if (this.serverType === 'garix') {
+                        this.garixUpdateCells(data, s);
+                    } else {
+                        //this.updateCells(new LMbuffer(data['buffer']), s);
+                        this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                    }
                     //this.countPps()
                     break;
                 case 64: //2020 jimboy3100 specific private servers
@@ -14039,6 +14094,8 @@ function thelegendmodproject() {
                 //2020 jimboy3100
 
                 default:
+                    // Garix: unknown opcodes silently ignored
+                    if (this.serverType === 'garix') break;
                     /* ── Expanding Land opcodes handled in default: so they never
                      * interfere with the switch on non-LW servers ── */
                     var _lwOp = data.getUint8(0);
@@ -14091,7 +14148,7 @@ function thelegendmodproject() {
                             botEl2.textContent = botCount2;
                         }
                     } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info — per-player extra decay multiplier */
+                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
                         var di = LM.decayInfo;
                         var _off = 1;
                         di.totalScore = data.getUint16(_off, true); _off += 2;
@@ -14135,9 +14192,9 @@ function thelegendmodproject() {
             var response;
             try {
                 response = window.decodeMobileData(msg);
-            } catch(decodeErr) {
+            } catch (decodeErr) {
                 if (LM.isLegendWorld) {
-                    var hex = Array.from(new Uint8Array(msg)).map(function(b){return b.toString(16).padStart(2,'0')}).join(' ');
+                    var hex = Array.from(new Uint8Array(msg)).map(function (b) { return b.toString(16).padStart(2, '0') }).join(' ');
                     console.error('[LW 102 DECODE FAIL] len=' + msg.byteLength + ' hex=' + hex, decodeErr);
                 }
                 return;
@@ -14203,27 +14260,27 @@ function thelegendmodproject() {
                         }
                     }
 
-                    try { this.updateWalletInfo(u.userWallet); } catch(e) { console.error('[LW 102] updateWalletInfo error:', e); }
+                    try { this.updateWalletInfo(u.userWallet); } catch (e) { console.error('[LW 102] updateWalletInfo error:', e); }
 
-                    try { this.displayActiveBoosts(u.userBoosts); } catch(e) { console.error('[LW 102] displayActiveBoosts error:', e); }
+                    try { this.displayActiveBoosts(u.userBoosts); } catch (e) { console.error('[LW 102] displayActiveBoosts error:', e); }
 
                     this.user.stats = u.userStats;
-                    try { this.displayStats(u.userStats); } catch(e) { console.error('[LW 102] displayStats error:', e); }
+                    try { this.displayStats(u.userStats); } catch (e) { console.error('[LW 102] displayStats error:', e); }
 
-                    try { this.updateEvents(u.userTimedEvents); } catch(e) { console.error('[LW 102] updateEvents error:', e); }
+                    try { this.updateEvents(u.userTimedEvents); } catch (e) { console.error('[LW 102] updateEvents error:', e); }
 
-                    try { this.displayActiveQuests(u.userActiveQuests); } catch(e) { console.error('[LW 102] displayActiveQuests error:', e); }
+                    try { this.displayActiveQuests(u.userActiveQuests); } catch (e) { console.error('[LW 102] displayActiveQuests error:', e); }
 
-                    try { this.createSkinsHTML(); } catch(e) { console.error('[LW 102] createSkinsHTML error:', e); }
+                    try { this.createSkinsHTML(); } catch (e) { console.error('[LW 102] createSkinsHTML error:', e); }
 
-                    try { this.updateUserSettings(u.userSettings); } catch(e) { console.error('[LW 102] updateUserSettings error:', e); }
+                    try { this.updateUserSettings(u.userSettings); } catch (e) { console.error('[LW 102] updateUserSettings error:', e); }
 
                     try {
                         if (LM.isLegendWorld && u.userInfo) console.log('[LW 102 TRACE] userInfo.userId=' + (u.userInfo.userId || 'EMPTY') + ' realmInfo=' + JSON.stringify(u.userInfo.realmInfo || {}));
                         this.updateUserInfo(u.userInfo);
-                    } catch(e) { console.error('[LW 102] updateUserInfo error:', e); }
+                    } catch (e) { console.error('[LW 102] updateUserInfo error:', e); }
 
-                    try { this.updatePotions(u.userPotions); } catch(e) { console.error('[LW 102] updatePotions error:', e); }
+                    try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
                     /* LW: Show agar.io-style login notification after confirmed
                      * server login (protobuf type-11). Uses server-confirmed data. */
@@ -14238,7 +14295,7 @@ function thelegendmodproject() {
                             }
                             var _name = (u.userInfo && u.userInfo.displayName) || 'Player';
                             window._lw_showLoginSuccess(_provider, _name);
-                        } catch(e) { console.error('[LW 102] loginSuccess notification error:', e); }
+                        } catch (e) { console.error('[LW 102] loginSuccess notification error:', e); }
                     }
                     break;
                 case 20:
@@ -15115,7 +15172,7 @@ Most cells eaten   : ${mostCellsEaten}
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
-                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < this.leaderboard.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
+                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
@@ -15253,21 +15310,21 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                    
+
                     /* LEGENDWORLD FIX: 
                      * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
                      * during active dynamic map rescaling (Expanding Land).
                      * This caused violent 25Hz juddering when the map border shrunk!
                      */
                     if (!this.mapOffsetFixed) {
-                         // Only center camera if we genuinely haven't fixed the offset yet (very first load)
-                         // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
-                         if (this.mapSize === 0 || !LM.isLegendWorld) {
-                             this.viewX = (right + left) / 2;
-                             this.viewY = (bottom + top) / 2;
-                         }
+                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
+                        if (this.mapSize === 0 || !LM.isLegendWorld) {
+                            this.viewX = (right + left) / 2;
+                            this.viewY = (bottom + top) / 2;
+                        }
                     }
-                    
+
                     this.mapOffsetFixed = true;
                 }
             }
@@ -15434,6 +15491,160 @@ Most cells eaten   : ${mostCellsEaten}
                 this.Waves[0].moreAnimation = moreAnimation
             }
         },
+        /* ===== Garix UpdateNodes — Protocol 6 format =====
+         * Handshake sends protocol 1, server converts to 6 internally.
+         * Server writes updNodes then addNodes then ONE writeUInt32(0) terminator.
+         * Flag 0x40 distinguishes added nodes (has tabID/skin/name) from updates. */
+        garixUpdateCells(data, offset) {
+            this.megaFFAscore();
+            var self = this;
+            // UTF-8z string reader (null-terminated)
+            var encode = function () {
+                var text = '';
+                while (offset < data.byteLength) {
+                    var ch = data.getUint8(offset++);
+                    if (ch === 0) break;
+                    text += String.fromCharCode(ch);
+                }
+                return text;
+            };
+            this.time = Date.now();
+            this.removePlayerCell = false;
+
+            // 1. Eat list
+            var eatCount = data.getUint16(offset, true); offset += 2;
+            for (var ei = 0; ei < eatCount && offset + 7 < data.byteLength; ei++) {
+                var eaterID = data.getUint32(offset, true);
+                var eatenID = data.getUint32(offset + 4, true);
+                offset += 8;
+                var eater = this.indexedCells[eaterID];
+                var eaten = this.indexedCells[eatenID];
+                if (eater && eaten) {
+                    eaten.targetX = eater.x;
+                    eaten.targetY = eater.y;
+                    eaten.targetSize = eaten.size;
+                    eaten.time = this.time;
+                    eaten.removeCell();
+                }
+            }
+
+            // 2. Combined update + add nodes (single loop, ONE terminator)
+            // Flag 0x40 = added node (has tabID, possibly skin/name/nickColor)
+            while (offset + 3 < data.byteLength) {
+                var id = data.getUint32(offset, true); offset += 4;
+                if (id === 0) break;
+                if (offset + 11 >= data.byteLength) break;
+                var x = data.getInt32(offset, true); offset += 4;
+                var y = data.getInt32(offset, true); offset += 4;
+                var size = data.getUint16(offset, true); offset += 2;
+                var flags = data.getUint16(offset, true); offset += 2;
+
+                var color = null;
+                // flag 0x02 = has color
+                if (flags & 0x02) {
+                    if (offset + 2 >= data.byteLength) break;
+                    var r = data.getUint8(offset++);
+                    var g = data.getUint8(offset++);
+                    var b = data.getUint8(offset++);
+                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+                }
+
+                if (flags & 0x40) {
+                    // ── ADDED NODE ──
+                    var skin = null, name = '', namePresent = false;
+                    var isVirus = !!(flags & 0x0001);
+                    var isAgitated = !!(flags & 0x0010);
+                    var isEjected = !!(flags & 0x0020);
+                    var isFood = !!(flags & 0x0080);
+
+                    // flag 0x04 = has skin
+                    if (flags & 0x04) {
+                        skin = encode();
+                    }
+                    // flag 0x08 = has name
+                    if (flags & 0x08) {
+                        name = encode(); namePresent = true;
+                        try { name = window.decodeURIComponent(escape(name)); } catch(e) {}
+                        if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
+                            this.vanillaskins(name, skin, color);
+                        }
+                    }
+                    // tabID (always present for added nodes, flag 0x40)
+                    if (offset + 1 < data.byteLength) {
+                        var tabID = data.getUint16(offset, true); offset += 2;
+                    }
+                    // flag 0x100 = has nickColor
+                    if (flags & 0x100) {
+                        if (offset + 2 < data.byteLength) {
+                            offset += 3; // skip r,g,b
+                        }
+                    }
+
+                    var cellObj = null;
+                    if (this.indexedCells.hasOwnProperty(id)) {
+                        cellObj = this.indexedCells[id];
+                    } else {
+                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                        cellObj.time = this.time;
+                        cellObj.spectator = false;
+                        if (!isFood) {
+                            if (isVirus && defaultmapsettings.virusesRange) {
+                                this.viruses.push(cellObj);
+                            }
+                            this.cells.push(cellObj);
+                            if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
+                                cellObj.isPlayerCell = true;
+                                this.playerColor = color;
+                                cellObj.color = color;
+                                this.playerCells.push(cellObj);
+                            }
+                        } else {
+                            this.food.push(cellObj);
+                        }
+                        this.indexedCells[id] = cellObj;
+                    }
+                    if (cellObj.isPlayerCell) name = this.playerNick;
+                    if (name || namePresent) cellObj.targetNick = name;
+                    cellObj.targetX = x;
+                    cellObj.targetY = y;
+                    cellObj.targetSize = size;
+                    cellObj.isFood = isFood ? 1 : 0;
+                    cellObj.isVirus = isVirus;
+                    if (color) cellObj.color = color;
+                    if (skin) cellObj.skin = skin;
+                } else {
+                    // ── UPDATED NODE ──
+                    var cell = this.indexedCells[id];
+                    if (cell) {
+                        cell.targetX = x;
+                        cell.targetY = y;
+                        cell.targetSize = size;
+                        if (color) cell.color = color;
+                    }
+                }
+            }
+
+            // 3. Remove list (UInt16 count)
+            if (offset + 1 < data.byteLength) {
+                var removeCount = data.getUint16(offset, true); offset += 2;
+                for (var ri = 0; ri < removeCount && offset + 3 < data.byteLength; ri++) {
+                    var removeID = data.getUint32(offset, true); offset += 4;
+                    var rcell = this.indexedCells[removeID];
+                    if (rcell) rcell.removeCell();
+                }
+            }
+
+            // Death check
+            if (this.removePlayerCell && !this.playerCells.length) {
+                this.play = false;
+                application.onPlayerDeath();
+                application.showMenu(300);
+                window.userBots.isAlive = false;
+                if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+            }
+            if (window.autoPlay && legendmod.play) calcTarget();
+            if (defaultmapsettings.reverseTrick) reverseTrick.check();
+        },
         updateCells(view, offset) {
 
             //window.updateCellsClock=true;
@@ -15492,6 +15703,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var color = null;
                 var skin = null;
                 var name = '';
+                var namePresent = false;
                 var accountID = null;
                 var isAgitated = false;
                 var isOwnEjected = false;
@@ -15510,7 +15722,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 }
                 if (8 & flags) {
-                    name = window.decodeURIComponent(escape(encode()));
+                    name = window.decodeURIComponent(escape(encode())); namePresent = true;
                     //console.log('name '+name+ 'skin '+skin);
                     //if (LM.ws.includes("imsolo.pro") && name.includes('}')){
                     if (!LM.integrity && name.includes('}')) {
@@ -15632,7 +15844,7 @@ Most cells eaten   : ${mostCellsEaten}
                         name = window.RecordedArenasSpecifications[legendmod.playingReplayServer][3]
                     }
                 }
-                if (name) {
+                if (name || namePresent) {
                     cellUpdateCells.targetNick = name;
                 }
                 //15/7/2020
@@ -15740,7 +15952,9 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(LM._cellSortCmp);
+            this.cells.sort(function (row, conf) {
+                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
+            });
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -15774,7 +15988,9 @@ Most cells eaten   : ${mostCellsEaten}
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
                 var CellLength = cells.length;
-                cells.sort(LM._cellSortCmp);
+                cells.sort(function (cells, CellLength) {
+                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
+                });
                 this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
                 this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
                 this.playerSplitCells = CellLength;
@@ -16034,6 +16250,38 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
+    // ── Garix fingerprint: generate once at startup, cache for connections ──
+    (async function () {
+        try {
+            var canvas = document.createElement("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.textBaseline = "top";
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("garix.io fp", 2, 15);
+            ctx.fillStyle = "rgba(102,204,0,0.7)";
+            ctx.fillText("garix.io fp", 4, 17);
+            var canvasData = canvas.toDataURL();
+            var webgl = "";
+            try {
+                var gl = document.createElement("canvas").getContext("webgl");
+                var ext = gl.getExtension("WEBGL_debug_renderer_info");
+                if (ext) webgl = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+            } catch (e) { }
+            var raw = [navigator.userAgent, screen.width + "x" + screen.height + "x" + screen.colorDepth, navigator.language, navigator.hardwareConcurrency || 0, new Date().getTimezoneOffset(), canvasData.slice(-50), webgl].join("|");
+            var encoder = new TextEncoder();
+            var data = encoder.encode(raw);
+            var hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            var hashArray = Array.from(new Uint8Array(hashBuffer));
+            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            LM.garixFingerprint = hex.slice(0, 32);
+            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
+        } catch (e) {
+            console.warn('[Garix] Fingerprint generation failed:', e);
+        }
+    })();
     try {
         if (window.top !== window.self) {
             window.top.legendmod = LM;
@@ -16041,7 +16289,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (typeof core !== 'undefined') window.top.core = core;
             if (typeof application !== 'undefined') window.top.application = application;
         }
-    } catch(e) {
+    } catch (e) {
         // Cross-origin restriction blocks this unless CORS is disabled
     }
 
@@ -16073,7 +16321,6 @@ Most cells eaten   : ${mostCellsEaten}
         averageRenderTime: 0,
         renderingDelay: 0,
         lastRenderingDelay: 0,
-        _jelloFrame: 0,
         pelletColored: [],
         cellsColored: [],
         setCanvas() {
@@ -16095,8 +16342,6 @@ Most cells eaten   : ${mostCellsEaten}
             this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
-            /* Invalidate grid cache on resize so it re-renders at new size */
-            this._gridCacheDirty = true;
             //this.renderFrame();
         },
         setView() {
@@ -16164,9 +16409,6 @@ Most cells eaten   : ${mostCellsEaten}
                 //
             }
             else if (defaultmapsettings.showGrid) {
-                /* Draw grid directly — caching caused grid/camera desync
-                 * (grid frozen while camera moves = dizziness). Direct
-                 * drawing is ~100 lines per frame — negligible cost. */
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
             }
             this.ctx.save();
@@ -16223,62 +16465,16 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            /* Compute viewport bounds in world-space for culling.
-             * Cells entirely outside these bounds produce no visible pixels,
-             * so we skip their expensive draw/jelly calls. */
-            var halfW = (this.canvasWidth / 2) / this.scale;
-            var halfH = (this.canvasHeight / 2) / this.scale;
-            var viewMinX = this.camX - halfW;
-            var viewMaxX = this.camX + halfW;
-            var viewMinY = this.camY - halfH;
-            var viewMaxY = this.camY + halfH;
-
             for (i = 0; i < LM.cells.length; i++) {
-                var cell = LM.cells[i];
-                /* Jelly physics must run for ALL cells every frame, even
-                 * off-screen ones. Otherwise cells scrolling into view
-                 * have stale points and look jagged/non-circular. */
+
                 if (defaultmapsettings.jellyPhisycs) {
-                    cell.updateNumPoints();
-                    cell.movePoints();
-                } else if (defaultmapsettings.jelloPhysics && !cell.isFood && !cell.isVirus && cell.size > 150) {
-                    /* Jello physics: only cells > 150 (mass ~225+).
-                     * Below this, wobble is invisible and wastes CPU.
-                     * For 1000-player servers this cuts ~70% of cells. */
-                    var jelloMargin = cell.size * 1.3;
-                    if (cell.x + jelloMargin >= viewMinX && cell.x - jelloMargin <= viewMaxX &&
-                        cell.y + jelloMargin >= viewMinY && cell.y - jelloMargin <= viewMaxY) {
-                        var screenPx = cell.size * drawRender.scale;
-                        if (screenPx >= 50) {
-                            /* 3-tier frame-skip for max throughput:
-                             * < 100px on screen → every 4th frame
-                             * < 200px on screen → every 2nd frame
-                             * >= 200px → every frame (hero cells) */
-                            var skip = screenPx >= 200 || (screenPx >= 100 ? ((drawRender._jelloFrame + cell.id) & 1) === 0 : ((drawRender._jelloFrame + cell.id) & 3) === 0);
-                            if (skip) {
-                                cell.initJelloPoints(screenPx);
-                                cell.moveJelloPoints();
-                            }
-                        } else if (cell._jelloRl) {
-                            cell._jelloX = null;
-                            cell._jelloY = null;
-                            cell._jelloRl = null;
-                            cell._jelloLen = 0;
-                        }
-                    }
+                    LM.cells[i].updateNumPoints();
+                    LM.cells[i].movePoints();
                 }
 
-                /* Viewport culling: skip draw() for cells entirely outside
-                 * the canvas. Using a generous 1.5× margin avoids popping. */
-                var margin = (cell.maxPointRad || cell.size) * 1.5;
-                if (cell.x + margin < viewMinX || cell.x - margin > viewMaxX ||
-                    cell.y + margin < viewMinY || cell.y - margin > viewMaxY) {
-                    continue;
-                }
+                LM.cells[i].draw(this.ctx);
 
-                cell.draw(this.ctx);
-
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
                     //
                     //console.log("LM.selected") 
                     //
@@ -16681,16 +16877,16 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
             /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
-             * and alpha is near-zero, wasting GPU on invisible geometry */
+             * and globalAlpha is near-zero, wasting GPU on invisible geometry */
             if (scale < 0.02) return;
 
             const reWidth = width / scale;
             const reHeigth = heigth / scale;
 
-            /* Dynamically increase grid step so lines are at least 4px apart.
-             * At normal zoom (scale 0.2), step=50, spacing=10px — fine.
-             * At extreme zoom (scale 0.03), base spacing=1.5px, so step
-             * doubles to 200 (6px spacing) — 4× fewer lines. */
+            /* Dynamically increase step so lines stay at least 4px apart.
+             * At scale 0.3 (normal play): step=50, spacing=15px — unchanged.
+             * At scale 0.03 (extreme zoom-out): step doubles 50→200,
+             * reducing line count from ~2560 to ~320. */
             let step = 50;
             while (step * scale < 4) step *= 2;
 
@@ -17014,7 +17210,7 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.save();
                 var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
                 var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
-                                                 : 'rgba(255, 80, 80, ' + borderAlpha + ')';
+                    : 'rgba(255, 80, 80, ' + borderAlpha + ')';
                 ctx.strokeStyle = borderColor;
                 ctx.lineWidth = me.phase >= 3 ? 5 : 3;
                 ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
@@ -17202,42 +17398,38 @@ Most cells eaten   : ${mostCellsEaten}
 
                 ctx.strokeStyle = defaultSettings.foodColor;
             }
-            if (defaultmapsettings.rainbowFood) {
-                /* Batch rainbow food by color: one beginPath+fill per color
-                 * group instead of per particle. Reduces canvas calls from
-                 * ~3000 (1000 food × 3 ops) to ~60 (20 colors × 3 ops). */
-                var colorBuckets = {};
-                var foodSize = defaultSettings.foodSize;
-                for (var length = 0; length < food.length; length++) {
-                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                    if (!food[length].invisible) {
-                        var c = food[length].color;
-                        if (!colorBuckets[c]) colorBuckets[c] = [];
-                        colorBuckets[c].push(food[length]);
+            for (var length = 0; length < food.length; length++) {
+                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                //ctx.beginPath();
+                if (!food[length].invisible) {
+                    var temp;
+                    if (defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = food[length].color
+                        temp = food[length].color
                     }
-                }
-                var pi2 = 2 * Math.PI;
-                for (var col in colorBuckets) {
-                    var bucket = colorBuckets[col];
-                    ctx.fillStyle = col;
-                    ctx.beginPath();
-                    for (var j = 0; j < bucket.length; j++) {
-                        var r = bucket[j].size + foodSize;
-                        ctx.moveTo(bucket[j].x + r, bucket[j].y);
-                        ctx.arc(bucket[j].x, bucket[j].y, r, 0, pi2);
-                    }
-                    ctx.fill();
-                }
-            } else {
-                for (var length = 0; length < food.length; length++) {
-                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                    if (!food[length].invisible) {
+                    else if (!defaultmapsettings.rainbowFood) {
                         ctx.fillStyle = defaultSettings.foodColor;
-                        var x = food[length].x;
-                        var y = food[length].y;
-                        this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, defaultSettings.foodColor);
+                        temp = defaultSettings.foodColor;
                     }
+
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    /*ctx.moveTo(x, y);
+                    if (scale < 0.08) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                    	
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        //continue;
+                    }
+                    else{*/
+
+                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                    //}
                 }
+
+                //ctx.fill();					
             }
             if (!defaultmapsettings.rainbowFood) ctx.stroke();
             //}
@@ -17436,16 +17628,15 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
-            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
-            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
+                ctx.beginPath();
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
             }
-            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
@@ -17495,27 +17686,27 @@ Most cells eaten   : ${mostCellsEaten}
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
-            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
+            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //760+2*cell.size is the correct
                 }
-                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
-                ctx.setLineDash([20, 30]);
-                ctx.lineWidth = 2 * width;
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
+                    ctx.setLineDash([20, 30]);
+                    ctx.lineWidth = 2 * width;
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //Sonia2
                 }
-                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -17525,11 +17716,11 @@ Most cells eaten   : ${mostCellsEaten}
             var pi2 = this.pi2 / times;
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
-            ctx.beginPath();
             for (var length = 0; length < times; length += 2) {
+                ctx.beginPath();
                 ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
+                ctx.stroke();
             }
-            ctx.stroke();
         },
         drawTeammatesInd(ctx, x, y, size) {
             if (this.indicator) {
@@ -17629,103 +17820,54 @@ Most cells eaten   : ${mostCellsEaten}
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
-                if (!ghostsCells.length) return;
-
-                /* --- Pass 1: Draw ghost cell circles with cheap glow --- */
-                /* Pre-render a radial gradient glow sprite once, reuse for
-                 * all ghost cells. This replaces shadowBlur=40 which does
-                 * an expensive CPU Gaussian blur on every filled pixel. */
-                var glowColor = defaultSettings.ghostCellsColor;
-                var glowAlpha = defaultSettings.ghostCellsAlpha;
-                if (!this._ghostGlowCanvas || this._ghostGlowColor !== glowColor) {
-                    this._ghostGlowCanvas = document.createElement('canvas');
-                    this._ghostGlowCanvas.width = 128;
-                    this._ghostGlowCanvas.height = 128;
-                    var gctx = this._ghostGlowCanvas.getContext('2d');
-                    var grad = gctx.createRadialGradient(64, 64, 32, 64, 64, 64);
-                    grad.addColorStop(0, glowColor);
-                    grad.addColorStop(1, glowColor + '00');
-                    gctx.fillStyle = grad;
-                    gctx.fillRect(0, 0, 128, 128);
-                    this._ghostGlowColor = glowColor;
-                }
-
-                /* Compute viewport bounds for culling off-screen ghosts */
-                var halfW = (this.canvasWidth / 2) / this.scale;
-                var halfH = (this.canvasHeight / 2) / this.scale;
-                var vMinX = this.camX - halfW;
-                var vMaxX = this.camX + halfW;
-                var vMinY = this.camY - halfH;
-                var vMaxY = this.camY + halfH;
-
-                this.ctx.globalAlpha = glowAlpha;
-
-                /* Draw glow sprites for each visible ghost cell */
-                for (var length = 0; length < ghostsCells.length; length++) {
-                    if (ghostsCells[length].inView) continue;
-                    var x = ghostsCells[length].x;
-                    var y = ghostsCells[length].y;
-                    var sz = ghostsCells[length].size;
-                    /* Viewport culling */
-                    if (x + sz < vMinX || x - sz > vMaxX ||
-                        y + sz < vMinY || y - sz > vMaxY) continue;
-                    /* Draw glow sprite (stretched to cell size + margin) */
-                    var glowSz = sz * 1.5;
-                    this.ctx.drawImage(this._ghostGlowCanvas, x - glowSz, y - glowSz, glowSz * 2, glowSz * 2);
-                }
-
-                /* Draw solid ghost circles — batched, no shadow */
-                this.ctx.fillStyle = glowColor;
                 this.ctx.beginPath();
-                for (length = 0; length < ghostsCells.length; length++) {
-                    if (ghostsCells[length].inView) continue;
-                    var x = ghostsCells[length].x;
-                    var y = ghostsCells[length].y;
-                    var sz = ghostsCells[length].size;
-                    if (x + sz < vMinX || x - sz > vMaxX ||
-                        y + sz < vMinY || y - sz > vMaxY) continue;
-                    this.ctx.moveTo(x + sz, y);
-                    this.ctx.arc(x, y, sz, 0, this.pi2, false);
-                }
-                this.ctx.fill();
-                this.ctx.globalAlpha = 1;
-
-                /* --- Pass 2: Ghost cell info (names, skins) --- */
-                if (defaultmapsettings.showGhostCellsInfo) {
-                    for (length = 0; length < ghostsCells.length; length++) {
-                        if (ghostsCells[length].inView) continue;
+                var length = 0;
+                for (; length < ghostsCells.length; length++) {
+                    if (!ghostsCells[length].inView) {
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
-                        var sz = ghostsCells[length].size;
-                        if (x + sz < vMinX || x - sz > vMaxX ||
-                            y + sz < vMinY || y - sz > vMaxY) continue;
+                        this.ctx.moveTo(x, y);
+                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
+                        //
+                        if (defaultmapsettings.showGhostCellsInfo) {
+                            this.nickScale = 1;
+                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
+                            this.nickSize = ~~(this.fontSize * this.nickScale);
+                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.fillStyle = defaultSettings.namesColor;
+                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                            this.ctx.lineWidth = 4;
+                            angle = Math.PI * 0.8;
 
-                        this.nickScale = 1;
-                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
-                        this.nickSize = ~~(this.fontSize * this.nickScale);
-                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                        this.ctx.textAlign = 'center';
-                        this.ctx.fillStyle = defaultSettings.namesColor;
-                        this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                        this.ctx.lineWidth = 4;
-                        var angle = Math.PI * 0.8;
+                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
 
-                        if (LM.leaderboard[length] != undefined) {
-                            this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
-                        } else {
-                            this.ghostcellstext = "Ghost cell";
-                        }
-                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                            if (LM.leaderboard[length] != undefined) {
-                                node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                if (node) {
-                                    this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
+                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
+                            } else {
+                                this.ghostcellstext = "Ghost cell";
+                            }
+                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
+                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                                if (LM.leaderboard[length] != undefined) {
+                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                    if (node) {
+                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
+                                    }
                                 }
                             }
                         }
+                        //
                     }
                 }
+                this.ctx.fillStyle = defaultSettings.ghostCellsColor;
+                this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
+                this.ctx.shadowColor = defaultSettings.ghostCellsColor;
+                this.ctx.shadowBlur = 40;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+                this.ctx.shadowBlur = 0;
             }
         },
         preDrawPellet() {
@@ -17761,19 +17903,18 @@ Most cells eaten   : ${mostCellsEaten}
             canvas = null;
         },
         preDrawCellsColors(color) {
+            this.cellsColored[color] = null;
             var size = 128;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size;
-            canvas.height = 2 * size;
+            canvas.width = 2 * size,
+                canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
-            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
-            /* Use canvas directly as image source — drawImage() accepts
-             * canvas elements. Avoids expensive toDataURL() PNG encode
-             * and async Image decode. */
-            this.cellsColored[color] = canvas;
+            this.cellsColored[color] = new Image();
+            this.cellsColored[color].src = canvas.toDataURL();
+            canvas = null;
         },
         preDrawIndicator() {
             this.indicator = null;
@@ -17859,7 +18000,6 @@ Most cells eaten   : ${mostCellsEaten}
                     this.fpsLastRequest = Time;
                 }
                 this.renderedFrames++;
-                this._jelloFrame++;
 
             }
         },
@@ -19790,14 +19930,14 @@ Array.prototype.stDev = function stDev() {
 if (window.expandingLand) {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
-        { match: /(?:www\.)?legendmod\.ml\/skins/g,  replace: 'skins.expanding.land'  },
-        { match: /(?:www\.)?legendmod\.ml/g,          replace: 'expanding.land'        }
+        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'skins.expanding.land' },
+        { match: /(?:www\.)?legendmod\.ml/g, replace: 'expanding.land' }
     ];
     function _rewriteExpandingLinks(root) {
-        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function(el) {
-            _elRewriteMap.forEach(function(r) {
-                if (el.href)  el.href  = el.href.replace(r.match, r.replace);
-                if (el.src)   el.src   = el.src.replace(r.match, r.replace);
+        (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function (el) {
+            _elRewriteMap.forEach(function (r) {
+                if (el.href) el.href = el.href.replace(r.match, r.replace);
+                if (el.src) el.src = el.src.replace(r.match, r.replace);
                 if (el.style && el.style.cssText) el.style.cssText = el.style.cssText.replace(r.match, r.replace);
             });
         });
@@ -19805,9 +19945,9 @@ if (window.expandingLand) {
     /* Initial pass */
     _rewriteExpandingLinks();
     /* Watch for new elements added to the DOM */
-    new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            m.addedNodes.forEach(function(n) {
+    new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            m.addedNodes.forEach(function (n) {
                 if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
             });
         });
