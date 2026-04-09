@@ -7390,6 +7390,23 @@ function thelegendmodproject() {
                 /* World Spectate — same inline style as .btn-spectate needs:
                  * width:100% + margin overrides required by the parent container. */
                 $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width:100%; margin-left:0; margin-top:2px; margin-bottom:5px;" title="World Spectate"><i class="fa fa-globe"></i> World Spectate</button>');
+
+                /* Show/hide World Spectate button reactively as the user types the server URL.
+                 * The connect() handler only fires after connecting — this runs immediately
+                 * so the button is visible as soon as a LegendWorld URL is in the field. */
+                function updateWorldSpecButton() {
+                    var url = $("#server-url-text").val() || "";
+                    var isEl = url.includes("legendmod.ml") || url.includes("expanding.land");
+                    if (isEl) {
+                        $(".btn-full-map-spec").show();
+                    } else {
+                        $(".btn-full-map-spec").hide();
+                    }
+                }
+                /* React to typing in the URL field */
+                $(document).on("input change", "#server-url-text", updateWorldSpecButton);
+                /* Also check once right now in case URL is already pre-filled */
+                setTimeout(updateWorldSpecButton, 300);
             }
             $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
