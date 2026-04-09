@@ -8501,10 +8501,11 @@ function thelegendmodproject() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
             if (this.privateMode && this.privateIP) {
                 this.socket = new WebSocket(this.privateIP);
-                /* For private servers the game socket doesn't talk to the relay.
-                 * Open (or reuse) a dedicated relay connection with its own
-                 * isolated handler – never touches game state. */
-                application.connectPrivateRelay();
+                /* Ensure the standby-server relay (window.ogarioWS) routes
+                 * incoming chat/minimap messages to our handler. */
+                if (window.ogarioWS) {
+                    window.ogarioWS.onmessage = this.handleMessage.bind(this);
+                }
             } else {
                 this.socket = new WebSocket(this.publicIP);
             }
@@ -8543,118 +8544,6 @@ function thelegendmodproject() {
                 window.noOgarioSocket = true;
             };
 
-        },
-        connectPrivateRelay() {
-            /* Get native WebSocket bypassing the standby-server fake wrapper */
-            var NativeWS = (window.ws && window.ws.prototype && window.ws.prototype.WebSocket) || window.WebSocket;
-            var relayQuery = '?02' + (!!window.scver ? '1' : '0');
-            if (window.LMchatRelay && window.LMchatRelay.readyState <= 1) return; // already open or connecting
-            window.LMchatRelayPlayerID = 0;
-            window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + relayQuery);
-            window.LMchatRelay.binaryType = 'arraybuffer';
-            window.LMchatRelay.onopen = function() {
-                /* Send room info (op9) so relay puts us on the minimap + routes our chat */
-                try {
-                    if (window.delta_packet) {
-                        var serverToken = window.legendmod && window.legendmod.serverToken || '';
-                        var clanTag = ogarcopythelb.clanTag || '';
-                        var region = (window.LM && window.LM.region) || '';
-                        var gameMode = (window.LM && window.LM.gameMode) || ':ffa';
-                        var buf = window.delta_packet.create.clientTokenTag(serverToken, clanTag, region, gameMode, '');
-                        window.LMchatRelay.send(buf);
-                    }
-                } catch(e) {}
-            };
-            window.LMchatRelay.onmessage = function(ev) {
-                try {
-                    var msg = new DataView(ev.data);
-                    var op = msg.getUint8(0);
-                    if (op === 0) {
-                        /* Relay auth: stores the relay-assigned playerID (UInt16, not UInt32) */
-                        window.LMchatRelayPlayerID = msg.getUint16(1, true);
-                    } else if (op === 25) {
-                        /* Incoming Delta chat (op25) — parse and display */
-                        if (window.delta_packet) {
-                            try {
-                                var Reader = window.delta_packet._Reader || null;
-                                /* Manually parse op25: skip op byte, then read fields */
-                                var off = 1;
-                                var typeNum = msg.getUint8(off++); // 1=msg, 2=cmd
-                                var userID = msg.getUint16(off, true); off += 2;
-                                var playerID = msg.getUint16(off, true); off += 2;
-                                var targetID = msg.getUint16(off, true); off += 2;
-                                /* Read UTF-16 length-prefixed nick */
-                                var nickLen = msg.getUint16(off, true); off += 2;
-                                var nick = '';
-                                for (var ni = 0; ni < nickLen; ni++) { nick += String.fromCharCode(msg.getUint16(off, true)); off += 2; }
-                                /* Read UTF-16 length-prefixed text */
-                                var textLen = msg.getUint16(off, true); off += 2;
-                                var text = '';
-                                for (var ti = 0; ti < textLen; ti++) { text += String.fromCharCode(msg.getUint16(off, true)); off += 2; }
-                                /* Display as a chat message */
-                                var caseof = typeNum === 2 ? 102 : 101;
-                                var fullMsg = nick + ': ' + text;
-                                application.displayChatMessage(null, caseof, playerID, fullMsg);
-                            } catch(pe) {}
-                        }
-                    } else if (op === 20) {
-                        application.updateTeamPlayer(msg);
-                    } else if (op === 30) {
-                        application.updateTeamPlayerPosition(msg);
-                    } else if ((op === 11 || op === 16) && window.delta_packet) {
-                        /* Delta ppv7 playerUpdate — parse and update minimap/teamboard */
-                        try {
-                            var Reader = window.Reader;
-                            if (!Reader) return;
-                            var reader = new Reader(msg);
-                            reader.offset = 1; // skip opcode byte
-                            var updates = (op === 16)
-                                ? window.delta_packet.ppv7.read(reader)
-                                : window.delta_packet.pp.read(reader);
-                            for (var ui = 0; ui < updates.length; ui++) {
-                                var upd = updates[ui];
-                                var pid = upd.playerID;
-                                if (!pid) continue;
-                                /* Player identity update (nick/skin/color) */
-                                if (upd.player || upd.nick !== undefined) {
-                                    var p = upd.player || upd;
-                                    var nick = (p.nick) || '';
-                                    var skin = (p.customSkin || p.pSkin || '');
-                                    var color = (p.customColor ? '#' + (p.customColor).toString(16).padStart(6, '0') : '') || (p.pColor ? '#' + (p.pColor).toString(16).padStart(6, '0') : '');
-                                    var userId = application.checkPlayerID(pid);
-                                    if (userId !== null) {
-                                        if (nick) application.teamPlayers[userId].nick = nick;
-                                        if (skin) application.teamPlayers[userId].skinURL = skin;
-                                        if (color) application.teamPlayers[userId].setColor(color, color);
-                                    } else if (nick) {
-                                        var mc = new minimapCell(pid, nick, nick, skin);
-                                        if (color) mc.setColor(color, color);
-                                        application.teamPlayers.push(mc);
-                                    }
-                                    if (nick && skin) application.cacheCustomSkin(nick, color, skin);
-                                }
-                                /* Position update */
-                                if (upd.position) {
-                                    var idx = application.checkPlayerID(pid);
-                                    if (idx !== null) {
-                                        var tp = application.teamPlayers[idx];
-                                        tp.x = upd.position.x;
-                                        tp.y = upd.position.y;
-                                        tp.mass = upd.position.mass;
-                                        tp.alive = upd.isAlive !== false;
-                                        tp.updateTime = Date.now();
-                                    }
-                                }
-                                /* Alive state */
-                                if (upd.isAlive === false) {
-                                    var deadIdx = application.checkPlayerID(pid);
-                                    if (deadIdx !== null) application.teamPlayers[deadIdx].alive = false;
-                                }
-                            }
-                        } catch(pe) {}
-                    }
-                } catch(e) {}
-            };
         },
         Socket3connect(srv) {
             //if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
@@ -9605,35 +9494,11 @@ function thelegendmodproject() {
                     for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
                     
                     if (this.privateMode) {
-                        /* Private servers: use Delta native Opcode 25 via dedicated relay.
-                         * The relay ONLY redistributes op25 — legacy op100 is silently dropped.
-                         * window.delta_packet is exposed globally by deltaProtocol.ts */
-                        var sendOp25 = function(relay) {
-                            if (!relay || relay.readyState !== 1) return false;
-                            try {
-                                if (window.delta_packet) {
-                                    var buf = window.delta_packet.create.message({
-                                        type: type === 102 ? 2 : 1,
-                                        userID: window.LMchatRelayPlayerID || 0,
-                                        playerID: window.LMchatRelayPlayerID || 0,
-                                        targetID: 0,
-                                        nick: currentNick,
-                                        text: message
-                                    });
-                                    relay.send(buf);
-                                    return true;
-                                }
-                            } catch(e) {}
-                            return false;
-                        };
-                        if (!sendOp25(window.LMchatRelay)) {
-                            /* Relay not ready — reconnect and send on open */
-                            application.connectPrivateRelay();
-                            if (window.LMchatRelay) {
-                                window.LMchatRelay.addEventListener('open', function() {
-                                    sendOp25(window.LMchatRelay);
-                                }, { once: true });
-                            }
+                        /* Private servers: route chat through window.ogarioWS (standby-server relay).
+                         * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
+                         * and stamps the correct relay playerID automatically. */
+                        if (window.ogarioWS) {
+                            window.ogarioWS.send(view.buffer);
                         }
                     } else {
                         this.sendBuffer(view);
