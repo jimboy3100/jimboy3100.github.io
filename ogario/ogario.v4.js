@@ -1,4 +1,4 @@
-window.OgVer = 3.400;
+window.OgVer = 3.398;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -886,7 +886,7 @@ function deleteGamemode(temp) {
             text: 'Garix FFA',
             value: 9004
         }, {
-            text: 'Garix Arctida',
+            text: 'Garix Selffeed',
             value: 9005
         }
         /* Other private servers (commented out)
@@ -8769,9 +8769,6 @@ function thelegendmodproject() {
                     break;
                 case 96:
                     break;
-                case 25:
-                    this.readDeltaChatMessage(message);
-                    break;
                 case 100:
                     this.readChatMessage(message);
             }
@@ -9465,52 +9462,14 @@ function thelegendmodproject() {
                 }
             }
         },
-        readDeltaChatMessage(t) {
-            if (!defaultmapsettings.disableChat) {
-                var offset = 1; // skip opcode
-                var type_num = t.getUint8(offset++);
-                var msgType = type_num === 1 ? 1 : type_num === 2 ? 102 : type_num;
-                var userID = t.getUint16(offset, true); offset += 2;
-                var playerID = t.getUint16(offset, true); offset += 2;
-                var targetID = t.getUint16(offset, true); offset += 2;
-                
-                function readUTF16StringLength() {
-                    var len = t.getUint16(offset, true); offset += 2;
-                    var str = "";
-                    for (var i = 0; i < len; i++) {
-                        str += String.fromCharCode(t.getUint16(offset, true));
-                        offset += 2;
-                    }
-                    return str;
-                }
-                
-                var nick = readUTF16StringLength();
-                var text = readUTF16StringLength();
-                
-                var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-                if (!(this.isChatUserMuted(playerID) || 0 !== targetID && targetID !== this.playerID && playerID !== this.playerID)) {
-                    var msg = nick + ': ' + text;
-                    var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
-                    var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
-                    if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
-                        if (legendmod.integrity || !LM.chatableServer) {
-                            this.displayChatMessage(time, msgType, playerID, msg);
-                        } else if (!legendmod.integrity && $("#clantag").val() !== "") {
-                            this.displayChatMessage(time, msgType, playerID, msg);
-                        }
-                    }
-                }
-            }
-        },
         sendChatMessage(type, message) {
-            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
-                var currentNick = ogarcopythelb.nick || 'Unnamed';
+            //console.log(type);console.log(message);
+            if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length || 0 === ogarcopythelb.nick.length)) {
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
                 if (LM.isLegendWorld && ogarcopythelb.clanTag && ogarcopythelb.clanTag.length > 0 && legendmod.isSocketOpen()) {
-                    var fullMsg = currentNick + ': ' + message;
+                    var fullMsg = ogarcopythelb.nick + ': ' + message;
                     var teamView = legendmod.createView(2 + 2 * fullMsg.length + 2);
                     teamView.setUint8(0, 202); // opcode 0xCA
                     teamView.setUint8(1, type); // 101=party chat, 102=command
@@ -9521,29 +9480,17 @@ function thelegendmodproject() {
                     legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
                 }
-                /* All other servers: use chat relay websocket (shared with Delta, Opcode 25 Native) */
+                /* All other servers: use chat relay websocket (shared with Delta) */
                 else if (this.isSocketOpen()) {
-                    var type_num = type === 101 ? 1 : type === 102 ? 2 : type;
-                    var view = this.createView(1 + 1 + 2 + 2 + 2 + 2 + 2 * currentNick.length + 2 + 2 * message.length);
-                    var offset = 0;
-                    view.setUint8(offset++, 25);
-                    view.setUint8(offset++, type_num); // type (1=msg, 2=cmd)
-                    view.setUint16(offset, this.playerID, true); offset += 2; // userID
-                    view.setUint16(offset, this.playerID, true); offset += 2; // playerID
-                    view.setUint16(offset, 0, true); offset += 2; // targetID
-                    
-                    view.setUint16(offset, currentNick.length, true); offset += 2;
-                    for (var i = 0; i < currentNick.length; i++) {
-                        view.setUint16(offset, currentNick.charCodeAt(i), true); offset += 2;
-                    }
-                    
-                    view.setUint16(offset, message.length, true); offset += 2;
-                    for (var i = 0; i < message.length; i++) {
-                        view.setUint16(offset, message.charCodeAt(i), true); offset += 2;
-                    }
-                    
-                    this.sendBuffer(view);
-                    this.lastMessageSentTime = Date.now();
+                    message = ogarcopythelb.nick + ': ' + message;
+                    var view = this.createView(10 + 2 * message.length);
+                    view.setUint8(0, 100),
+                        view.setUint8(1, type),
+                        view.setUint32(2, this.playerID, true),
+                        view.setUint32(6, 0, true);
+                    for (var length = 0; length < message.length; length++) view.setUint16(10 + 2 * length, message.charCodeAt(length), true);
+                    this.sendBuffer(view),
+                        this.lastMessageSentTime = Date.now();
                 }
             }
         },

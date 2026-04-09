@@ -19,7 +19,7 @@ The handshake must complete within **8 seconds** or the server closes with code 
 | Garix Mega       | `wss://garix.io:8087`   | `:ffa`    |
 | Garix Dual       | `wss://garix.io:8088`   | `:ffa`    |
 | Garix FFA        | `wss://garix.io:8089`   | `:ffa`    |
-| Garix Arctida    | `wss://garix.io:8090`   | `:ffa`    |
+| Garix Selffeed   | `wss://garix.io:8090`   | `:ffa`    |
 
 ---
 
