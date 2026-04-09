@@ -8601,9 +8601,57 @@ function thelegendmodproject() {
                         application.updateTeamPlayer(msg);
                     } else if (op === 30) {
                         application.updateTeamPlayerPosition(msg);
-                    } else if (op === 11 || op === 10) {
-                        /* Delta playerUpdate — feed to updateTeamPlayer for minimap */
-                        application.updateTeamPlayer(msg);
+                    } else if ((op === 11 || op === 16) && window.delta_packet) {
+                        /* Delta ppv7 playerUpdate — parse and update minimap/teamboard */
+                        try {
+                            var Reader = window.Reader;
+                            if (!Reader) return;
+                            var reader = new Reader(msg);
+                            reader.offset = 1; // skip opcode byte
+                            var updates = (op === 16)
+                                ? window.delta_packet.ppv7.read(reader)
+                                : window.delta_packet.pp.read(reader);
+                            for (var ui = 0; ui < updates.length; ui++) {
+                                var upd = updates[ui];
+                                var pid = upd.playerID;
+                                if (!pid) continue;
+                                /* Player identity update (nick/skin/color) */
+                                if (upd.player || upd.nick !== undefined) {
+                                    var p = upd.player || upd;
+                                    var nick = (p.nick) || '';
+                                    var skin = (p.customSkin || p.pSkin || '');
+                                    var color = (p.customColor ? '#' + (p.customColor).toString(16).padStart(6, '0') : '') || (p.pColor ? '#' + (p.pColor).toString(16).padStart(6, '0') : '');
+                                    var userId = application.checkPlayerID(pid);
+                                    if (userId !== null) {
+                                        if (nick) application.teamPlayers[userId].nick = nick;
+                                        if (skin) application.teamPlayers[userId].skinURL = skin;
+                                        if (color) application.teamPlayers[userId].setColor(color, color);
+                                    } else if (nick) {
+                                        var mc = new minimapCell(pid, nick, nick, skin);
+                                        if (color) mc.setColor(color, color);
+                                        application.teamPlayers.push(mc);
+                                    }
+                                    if (nick && skin) application.cacheCustomSkin(nick, color, skin);
+                                }
+                                /* Position update */
+                                if (upd.position) {
+                                    var idx = application.checkPlayerID(pid);
+                                    if (idx !== null) {
+                                        var tp = application.teamPlayers[idx];
+                                        tp.x = upd.position.x;
+                                        tp.y = upd.position.y;
+                                        tp.mass = upd.position.mass;
+                                        tp.alive = upd.isAlive !== false;
+                                        tp.updateTime = Date.now();
+                                    }
+                                }
+                                /* Alive state */
+                                if (upd.isAlive === false) {
+                                    var deadIdx = application.checkPlayerID(pid);
+                                    if (deadIdx !== null) application.teamPlayers[deadIdx].alive = false;
+                                }
+                            }
+                        } catch(pe) {}
                     }
                 } catch(e) {}
             };
