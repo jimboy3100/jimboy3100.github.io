@@ -5658,24 +5658,23 @@ function thelegendmodproject() {
                     var di = LM.decayInfo;
                     var atStr = '';
 
-                    /* Delta multiplier system:
-                     * di.totalScore = extra_decay_multiplier × 10000
-                     * di.multiplier = effective decay multiplier × 100 (pow(1.086, m))
-                     * di.threshold  = always 0 (unused in new system)
-                     * Per-type fields are zeroed — no event counts or timers */
-                    var rawMultiplier = di.totalScore / 10000;  // e.g. 5000 → 0.5
-                    var effectiveMult = di.multiplier / 100;    // e.g. 228 → 2.28×
+                    /* Server sends:
+                     *   di.decayScore  = base decay rate ×100  (e.g. 80 = 0.80%)
+                     *   di.multiplier  = effective multiplier ×100  (e.g. 100 = 1.00×,
+                     *                    150 = 1.50× when anti has built up)
+                     *   di.decayIntervalSecs = interval in seconds (e.g. 4)
+                     * Show: "−0.80%/4s" baseline, red badge if multiplier > 1× */
                     var basePct = (di.decayScore / 100).toFixed(2);
+                    var mult = di.multiplier / 100;   // e.g. 1.00, 1.50
 
-                    if (rawMultiplier > 0.01) {
-                        var mColor = rawMultiplier >= 5 ? '#ff4c4c' : rawMultiplier >= 1 ? '#ffaa33' : '#33ff33';
-                        atStr += '<span style="color:' + mColor + '">\u2697 \u00d7' + rawMultiplier.toFixed(2) + '</span>';
-                        atStr += ' (' + effectiveMult.toFixed(2) + '\u00d7 decay)';
+                    if (mult > 1.005) {
+                        /* Anti is active — show effective (amplified) decay rate */
+                        var effectivePct = (parseFloat(basePct) * mult).toFixed(2);
+                        atStr += '<span style="color:#ff4c4c">\u2697 Anti \u2212' + effectivePct + '%/' + di.decayIntervalSecs + 's (' + mult.toFixed(2) + '\u00d7)</span>';
                     } else {
-                        atStr += '<span style="color:#33ff33">\u2697 clean</span>';
+                        /* Normal decay — just baseline */
+                        atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
                     }
-
-                    atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';

@@ -5688,35 +5688,27 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
-                    function _fmtSecs(s) { return s >= 60 ? Math.floor(s / 60) + 'm' + (s % 60 > 0 ? (s % 60) + 's' : '') : s + 's'; }
 
+                    /* Server sends:
+                     *   di.decayScore  = base decay rate ×100  (e.g. 80 = 0.80%)
+                     *   di.multiplier  = effective multiplier ×100  (e.g. 100 = 1.00×,
+                     *                    150 = 1.50× when anti has built up)
+                     *   di.decayIntervalSecs = interval in seconds (e.g. 4)
+                     * Show: "−0.80%/4s" baseline, orange badge if multiplier > 1× */
                     var basePct = (di.decayScore / 100).toFixed(2);
-                    var isAbove = di.totalScore > di.threshold;
+                    var mult = di.multiplier / 100;   // e.g. 1.00, 1.50
 
-                    if (isAbove) {
-                        var excessPct = ((di.totalScore - di.threshold) / 100).toFixed(2);
-                        var totalDecay = (parseFloat(basePct) + parseFloat(excessPct)).toFixed(2);
-                        atStr += '<span style="color:#ff4c4c">\u2697 Anti: \u2212' + excessPct + '%/' + di.decayIntervalSecs + 's extra</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' +' + (di.virusScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' +' + (di.splitScore / 100).toFixed(1) + '% \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' +' + (di.ejectScore / 100).toFixed(2) + '% \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + totalDecay + '%/' + di.decayIntervalSecs + 's';
-                    } else if (di.totalScore > 0) {
-                        var scoreVal = (di.totalScore / 100).toFixed(2);
-                        var threshVal = (di.threshold / 100).toFixed(2);
-                        atStr += '<span style="color:#33ff33">\u2697 ' + scoreVal + '/' + threshVal + '%</span>';
-                        if (di.virusCount > 0) atStr += ' | \u2623' + di.virusCount + ' \u23f3' + _fmtSecs(di.virusMaxSecs);
-                        if (di.splitCount > 0) atStr += ' | \u25c9' + di.splitCount + ' \u23f3' + _fmtSecs(di.splitMaxSecs);
-                        if (di.ejectCount > 0) atStr += ' | \u2b24' + di.ejectCount + ' \u23f3' + _fmtSecs(di.ejectMaxSecs);
-                        atStr += ' | \u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
+                    if (mult > 1.005) {
+                        /* Anti is active — show effective (amplified) decay rate */
+                        var effectivePct = (parseFloat(basePct) * mult).toFixed(2);
+                        atStr += '<span style="color:#ff4c4c">\u2697 Anti \u2212' + effectivePct + '%/' + di.decayIntervalSecs + 's (' + mult.toFixed(2) + '\u00d7)</span>';
                     } else {
+                        /* Normal decay — just baseline */
                         atStr += '\u221e \u2212' + basePct + '%/' + di.decayIntervalSecs + 's';
                     }
 
                     if (di.inDangerZone) {
                         atStr += ' | <span style="color:#ff4c4c">\u26a0 Zone ' + di.dangerPhaseSecs + 's</span>';
-                    } else if (di.dangerCount > 0) {
-                        atStr += ' | \u26a0 \u23f3' + _fmtSecs(di.dangerMaxSecs);
                     }
 
                     if (t) t += atStr + ' | ';
