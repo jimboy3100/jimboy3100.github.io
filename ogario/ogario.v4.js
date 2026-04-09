@@ -9496,7 +9496,7 @@ function thelegendmodproject() {
                     this.lastMessageSentTime = Date.now();
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
-                else if (this.isSocketOpen()) {
+                else if (this.isSocketOpen() || (this.privateMode && window.ogarioWS)) {
                     var fullMessage = currentNick + ': ' + message;
                     var view = this.createView(10 + 2 * fullMessage.length);
                     view.setUint8(0, 100);
