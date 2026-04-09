@@ -8503,6 +8503,17 @@ function thelegendmodproject() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
             if (this.privateMode && this.privateIP) {
                 this.socket = new WebSocket(this.privateIP);
+                /* For private servers the game socket doesn't talk to the relay.
+                 * Open (or reuse) a dedicated relay connection. */
+                var NativeWS = (ws && ws.prototype && ws.prototype.WebSocket) || window.WebSocket;
+                var relayQuery = '?02' + (!!window.scver ? '1' : '0');
+                if (!window.LMchatRelay || window.LMchatRelay.readyState > 1) {
+                    window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + relayQuery);
+                    window.LMchatRelay.binaryType = 'arraybuffer';
+                    window.LMchatRelay.onmessage = function(ev) {
+                        try { application.handleMessage(ev); } catch(e) {}
+                    };
+                }
             } else {
                 this.socket = new WebSocket(this.publicIP);
             }
@@ -9484,13 +9495,38 @@ function thelegendmodproject() {
                 else if (this.isSocketOpen()) {
                     var fullMessage = currentNick + ': ' + message;
                     var view = this.createView(10 + 2 * fullMessage.length);
-                    view.setUint8(0, 100),
-                        view.setUint8(1, type),
-                        view.setUint32(2, this.playerID, true),
-                        view.setUint32(6, 0, true);
+                    view.setUint8(0, 100);
+                    view.setUint8(1, type);
+                    view.setUint32(2, this.playerID, true);
+                    view.setUint32(6, 0, true);
                     for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
-                    this.sendBuffer(view),
-                        this.lastMessageSentTime = Date.now();
+                    
+                    if (this.privateMode) {
+                        /* Private servers: game socket doesn't relay chat.
+                         * Send directly to the chat relay (ogarioWS) if available,
+                         * or create a dedicated relay socket. */
+                        var relaySocket = window.ogarioWS && window.ogarioWS.sockets && window.ogarioWS.sockets[0];
+                        if (relaySocket && relaySocket.readyState === 1) {
+                            relaySocket.send(view.buffer);
+                        } else if (window.LMchatRelay && window.LMchatRelay.readyState === 1) {
+                            window.LMchatRelay.send(view.buffer);
+                        } else {
+                            /* Create persistent relay for private server chat */
+                            var NativeWS = (ws && ws.prototype && ws.prototype.WebSocket) || window.WebSocket;
+                            var query = '?0' + (this.privateMode ? '2' : '0') + (!!window.scver ? '1' : '0');
+                            window.LMchatRelay = new NativeWS('wss://chat.delt.io/ws' + query);
+                            window.LMchatRelay.binaryType = 'arraybuffer';
+                            window.LMchatRelay.onmessage = function(ev) {
+                                try { application.handleMessage(ev); } catch(e) {}
+                            };
+                            window.LMchatRelay.onopen = function() {
+                                window.LMchatRelay.send(view.buffer);
+                            };
+                        }
+                    } else {
+                        this.sendBuffer(view);
+                    }
+                    this.lastMessageSentTime = Date.now();
                 }
             }
         },
