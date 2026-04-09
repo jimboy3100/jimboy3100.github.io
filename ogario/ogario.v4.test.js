@@ -7387,9 +7387,9 @@ function thelegendmodproject() {
                 app.onPlay();
             });
             if ($(".btn-full-map-spec").length === 0) {
-                /* World Spectate — identical styling to .btn-spectate (btn-warning),
-                 * only small top margin added. No up/down nav arrows. */
-                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; margin-top: 5px;" title="World Spectate"><i class="fa fa-globe"></i> World Spectate</button>');
+                /* World Spectate — same inline style as .btn-spectate needs:
+                 * width:100% + margin overrides required by the parent container. */
+                $(".btn-spectate").after('<button class="btn btn-warning btn-full-map-spec btn-needs-server" style="display:none; width:100%; margin-left:0; margin-top:5px; margin-bottom:5px;" title="World Spectate"><i class="fa fa-globe"></i> World Spectate</button>');
             }
             $(document).on("click", ".btn-full-map-spec", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
