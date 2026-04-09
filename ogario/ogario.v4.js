@@ -6054,10 +6054,8 @@ function thelegendmodproject() {
                     //
 
                     this.sendChatMessage(101, value);
-                    if (ogario.play) {
-                        message.blur();
-                        messageBox.hide();
-                    }
+                    message.blur();
+                    messageBox.hide();
                 } else {
                     message.blur();
                     messageBox.hide();
