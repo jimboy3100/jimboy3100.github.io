@@ -1,4 +1,4 @@
-window.OgVer = 3.403;
+window.OgVer = 3.404;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -6091,6 +6091,7 @@ function thelegendmodproject() {
             } else {
                 $('#overlays').hide();
             }
+            $('#helloContainer').hide();
         },
         escapeHTML(string) {
             return String(string).replace(/[&<>"'\/]/g, function (event) {
