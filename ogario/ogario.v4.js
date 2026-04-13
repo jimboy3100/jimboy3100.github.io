@@ -1,4 +1,4 @@
-window.OgVer = 3.400;
+window.OgVer = 3.401;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12953,6 +12953,7 @@ function thelegendmodproject() {
                         this.play = true;
                         this.isSpectateEnabled = false
                         application.hideMenu();
+                        if (LM.isLegendWorld) $('#helloContainer').hide();
                         this.playerColor = null;
                         application.onPlayerSpawn();
                         window.userBots.isAlive = true;
@@ -14729,6 +14730,7 @@ function thelegendmodproject() {
             this.user.emptySlots -= 1;
         },
         updatePotions(slots) {
+            if (!slots || !this.user) return;
             var empty = ["potion1", "potion2", "potion3"];
             this.user.brewedSlots = 0;
             if (window.autobrewTimer) clearTimeout(window.autobrewTimer);
