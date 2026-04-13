@@ -1,4 +1,4 @@
-window.OgVer = 3.404;
+window.OgVer = 3.405;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7378,6 +7378,7 @@ function thelegendmodproject() {
             $(document).on("click", ".btn-play", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 if (isLegend && app.play) {
+                    app.hideMenu();
                     return;
                 }
                 app.onPlay();
@@ -7385,6 +7386,7 @@ function thelegendmodproject() {
             $(document).on("click", ".btn-play-guest", function () {
                 var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
                 if (isLegend && app.play) {
+                    app.hideMenu();
                     return;
                 }
                 app.onPlay();
