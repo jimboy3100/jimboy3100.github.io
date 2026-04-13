@@ -1,4 +1,4 @@
-window.OgVer = 3.402;
+window.OgVer = 3.403;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -6083,6 +6083,7 @@ function thelegendmodproject() {
         hideMenu(value) {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').hide();
+                $('#helloContainer').hide();
                 return;
             }
             if (value) {
@@ -12954,7 +12955,6 @@ function thelegendmodproject() {
                         this.play = true;
                         this.isSpectateEnabled = false
                         application.hideMenu();
-                        if (LM.isLegendWorld) $('#helloContainer').hide();
                         this.playerColor = null;
                         application.onPlayerSpawn();
                         window.userBots.isAlive = true;
