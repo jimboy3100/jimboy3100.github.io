@@ -6078,6 +6078,7 @@ function thelegendmodproject() {
             } else {
                 $('#overlays').show();
             }
+            $('#helloContainer').show();
         },
         hideMenu(value) {
             if (window.MC && window.MC.showNickDialog) {
