@@ -13417,7 +13417,7 @@ function thelegendmodproject() {
                     break;
 
                 case 102:
-                    console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
+                    //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     try {
                         this.onMobileData(msg);

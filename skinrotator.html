@@ -338,7 +338,7 @@ color:#FFFFFF;
 font-size:25px;
 }
 .tab{
-background:#00000;
+background:#000000;
 border:1px solid#FFFFFF;
 color:#FFFFFF;
 font-size:25px;
@@ -475,6 +475,8 @@ function AgarVersionDestinations() {
 }
 
 function AgarVersionDestinations2(custom) {
+    if (!xhttp.response || xhttp.response.length === 0) return;
+    try {
     var responseagarversionDestinations = JSON.parse(xhttp.response);
     for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
         if (responseagarversionDestinations[i] == version) {
@@ -507,6 +509,7 @@ function AgarVersionDestinations2(custom) {
 		startProject()   
 		window.started = true
 		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> - <a href='+window.urlVersion+' target="_blank">' + 'Destination' + '</a> -<br></div>'
+    } catch (e) { }
 }
 		
 function isObject(val) {

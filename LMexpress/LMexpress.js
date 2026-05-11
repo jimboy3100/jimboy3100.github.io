@@ -6393,22 +6393,25 @@ function AgarVersionDestinations() {
 
     //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
 
-    getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
-    var responseagarversionDestinations = JSON.parse(xhttp.response);
-    for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
-        if (responseagarversionDestinations[i] == window.agarversion) {
-            window.agarversionDestinationFound = true;
+    try {
+        getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
+        if (!xhttp.response || xhttp.response.length === 0) return;
+        var responseagarversionDestinations = JSON.parse(xhttp.response);
+        for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
+            if (responseagarversionDestinations[i] == window.agarversion) {
+                window.agarversionDestinationFound = true;
+            }
         }
-    }
 
-    if (window.agarversionDestinationFound == true) {
-        window.agarversionDestinations = responseagarversionDestinations;
-        window.agarversionDestinationFound = false;
-    } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
-        window.agarversionDestinations = responseagarversionDestinations;
-        window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
-        postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
-    }
+        if (window.agarversionDestinationFound == true) {
+            window.agarversionDestinations = responseagarversionDestinations;
+            window.agarversionDestinationFound = false;
+        } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
+            window.agarversionDestinations = responseagarversionDestinations;
+            window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
+            postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
+        }
+    } catch (e) { }
 }
 
 
