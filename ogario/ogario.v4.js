@@ -7616,6 +7616,22 @@ function thelegendmodproject() {
             resetonkeydown();
             this.autoResp();
 
+            // Expanding Land death screen CTA (show max once every 5 deaths)
+            if (!window._elDeathCount) window._elDeathCount = 0;
+            window._elDeathCount++;
+            if (window._elDeathCount % 5 === 1) {
+                setTimeout(function() {
+                    if ($("#stats").is(":visible") || $("#main-panel").is(":visible")) {
+                        // Remove old promo if exists
+                        $("#el-death-promo").remove();
+                        var promoHtml = '<div id="el-death-promo" style="text-align:center;padding:10px 16px;margin:8px auto;max-width:340px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:8px;">' +
+                            '<span style="font-size:13px;color:#fff;font-weight:600;">🌍 Try <a href="https://expanding.land/" target="_blank" style="color:#01d9cc;text-decoration:underline;">Expanding Land</a></span>' +
+                            '<span style="display:block;font-size:11px;color:#a0b4c4;margin-top:2px;">1024 players · Dynamic maps · Potions · No bots</span>' +
+                        '</div>';
+                        $("#stats").append(promoHtml);
+                    }
+                }, 600);
+            }
         },
         findOwnedVanillaSkin() {
             let player;
