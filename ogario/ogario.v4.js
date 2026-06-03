@@ -8583,7 +8583,7 @@ function thelegendmodproject() {
             };
             /* Must be after all native socket setup — ogarioWS relay handler for private */
             if (this.privateMode && window.ogarioWS) {
-                window.ogarioWS.onmessage = function(buf) { app.handleMessage(buf); };
+                window.ogarioWS.onmessage = function (buf) { app.handleMessage(buf); };
             }
 
         },
@@ -9544,7 +9544,7 @@ function thelegendmodproject() {
                     view.setUint32(2, this.playerID, true);
                     view.setUint32(6, 0, true);
                     for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
-                    
+
                     if (this.privateMode) {
                         /* Private servers: route chat through window.ogarioWS (standby-server relay).
                          * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
@@ -13254,7 +13254,7 @@ function thelegendmodproject() {
                         // Start Garix ping keepalive (server disconnects after 8s without opcode 200)
                         var self = this;
                         if (this.garixPingInterval) clearInterval(this.garixPingInterval);
-                        this.garixPingInterval = setInterval(function() {
+                        this.garixPingInterval = setInterval(function () {
                             if (self.isSocketOpen() && self.serverType === 'garix') {
                                 self.garixPingCounter++;
                                 var pv = self.createView(5);
@@ -15624,7 +15624,7 @@ Most cells eaten   : ${mostCellsEaten}
                     // flag 0x08 = has name
                     if (flags & 0x08) {
                         name = encode(); namePresent = true;
-                        try { name = window.decodeURIComponent(escape(name)); } catch(e) {}
+                        try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
                         if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
                             this.vanillaskins(name, skin, color);
                         }

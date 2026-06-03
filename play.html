@@ -31,6 +31,32 @@
     <link rel="stylesheet" href="https://jimboy3100.github.io/context-menu.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css">
     <!--script src="https://deltav4.gitlab.io/standby-server.js"></script-->
+    <script src="https://delt.io/v7/js/runtimechunk~P2PWebSocket.js"></script>
+    <script src="https://delt.io/v7/js/P2PWebSocket.js"></script>
+    <script>
+    /* P2P WebSocket proxy — intercepts hash:// server connections */
+    (function() {
+        var OrigWS = window.WebSocket;
+        window.WebSocket = new Proxy(OrigWS, {
+            construct: function(target, args, newTarget) {
+                var url = String(args[0]);
+                var protocols = args[1];
+                if (/[a-z0-9]{20}/.test(url) && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
+                    console.log('[P2P] Intercepting hash connection:', url);
+                    if (typeof legendmod !== 'undefined') legendmod.integrity = true;
+                    var socket = new P2PWebSocket('http://' + url.match(/([a-z0-9]{20})/)[0], protocols);
+                    socket.addEventListener('open', function() {
+                        if (typeof legendmod !== 'undefined') legendmod.integrity = false;
+                    });
+                    return socket;
+                }
+                return Reflect.construct(target, args, newTarget);
+            },
+            get: function(target, prop, receiver) { return Reflect.get(target, prop, receiver); },
+            set: function(target, prop, value, receiver) { return Reflect.set(target, prop, value, receiver); }
+        });
+    })();
+    </script>
     <script src="https://jimboy3100.github.io/LMexpress/standby-server.js"></script>
     <script>delete localStorage['s/s']</script>
 
