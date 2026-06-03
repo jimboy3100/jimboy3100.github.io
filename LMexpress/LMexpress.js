@@ -312,21 +312,6 @@ function startLM(modVersion) {
             toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>');
         }
 
-        // Expanding Land promo toast (once per session)
-        if (!sessionStorage.getItem('elPromoShown')) {
-            sessionStorage.setItem('elPromoShown', '1');
-            setTimeout(function() {
-                fetch('https://expanding.land/serverStatus').then(function(r){return r.json()}).then(function(d){
-                    var players = (d && d.alive) || 0;
-                    if (players > 0) {
-                        toastr.info('<div style="pointer-events:auto"><b>\uD83C\uDF0D Expanding Land is LIVE!</b><br>' + players + ' players online<br><a href="https://expanding.land/" target="_blank" style="color:#01d9cc;font-weight:700;text-decoration:underline">Play now \u2192 expanding.land</a></div>', '', {timeOut: 12000}).css('width', '280px');
-                    } else {
-                        toastr.info('<div style="pointer-events:auto"><b>\uD83C\uDF0D Try Expanding Land</b><br>Massive maps, up to 1024 players!<br><a href="https://expanding.land/" target="_blank" style="color:#01d9cc;font-weight:700;text-decoration:underline">Play \u2192 expanding.land</a></div>', '', {timeOut: 10000}).css('width', '280px');
-                    }
-                }).catch(function(){});
-            }, 5000);
-        }
-
         //$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
         //universalchat();
         adminstuff();
@@ -5260,34 +5245,6 @@ function initializeLM(modVersion) {
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">Expansions: </span>' +
         '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
         '</div></div>');
-
-    // Expanding Land promo in Expansions section
-    $("#LEGENDAds2").html(
-        '<div id="el-expansion-promo" style="margin:8px 0;padding:10px 12px;background:rgba(0,47,82,0.6);border:1px solid rgba(1,217,204,0.3);border-radius:8px;">' +
-            '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
-                '<span style="font-size:1.1em;">\uD83C\uDF0D</span>' +
-                '<span style="color:#01d9cc;font-weight:700;font-size:13px;">Expanding Land</span>' +
-                '<span id="el-exp-status" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#8096a7;"></span>' +
-            '</div>' +
-            '<p style="color:#a0b4c4;font-size:11px;margin:6px 0 8px;line-height:1.4;">Private server \u2014 dynamic maps, potions, up to 1024 real players. No bots.</p>' +
-            '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-                '<a href="https://expanding.land/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:linear-gradient(135deg,#7c3aed,#9333ea);color:#fff;font-weight:600;font-size:12px;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1"><i class="fas fa-play" style="font-size:10px;"></i> Play Now</a>' +
-                '<a href="https://help.expanding.land/" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(1,217,204,0.15);color:#01d9cc;font-weight:600;font-size:12px;border-radius:6px;text-decoration:none;border:1px solid rgba(1,217,204,0.3);cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1"><i class="fas fa-book-open" style="font-size:10px;"></i> Game Info</a>' +
-            '</div>' +
-        '</div>'
-    );
-    // Fetch live player count for Expansions section
-    try {
-        fetch('https://expanding.land/serverStatus').then(function(r){return r.json()}).then(function(d){
-            var alive = (d && d.alive) || 0;
-            var spectators = (d && d.spectators) || 0;
-            if (alive > 0) {
-                $("#el-exp-status").html('<span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;"></span> <span style="color:#22c55e;font-weight:600;">' + alive + ' playing</span>' + (spectators ? ' \u00B7 ' + spectators + ' watching' : ''));
-            } else {
-                $("#el-exp-status").html('<span style="width:6px;height:6px;border-radius:50%;background:#8096a7;display:inline-block;"></span> Offline');
-            }
-        }).catch(function(){});
-    } catch(e) {}
     //fix userprofile
     $("#UserProfile").css("font-size", "12px");
     //$("#UserProfilePic").click(function() {
