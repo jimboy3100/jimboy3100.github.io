@@ -5395,6 +5395,10 @@ function initializeLM(modVersion) {
 
         '<input id="tempCopy" style="display: none;" value="">' +
         '</div>');
+    // hide dropdowns initially (use !important to override agar.io's .hud CSS)
+    $("#dropDown")[0].style.setProperty("display", "none", "important");
+    $("#dropDown2")[0].style.setProperty("display", "none", "important");
+    $("#dropDown3")[0].style.setProperty("display", "none", "important");
     // player shortcut
     if (window.legendModFromWebsite) {
         $("#leaderboard-menu").hide();
@@ -5417,18 +5421,18 @@ function initializeLM(modVersion) {
 
     });
     $("#copySIPBtn").mouseenter(function () {
-        $("#dropDown3").hide();
+        $("#dropDown3")[0].style.setProperty("display", "none", "important");
         $("#copySIPBtn").text("Token");
         if ($("#clantag").val() != "") {
-            $("#dropDown2").show(100);
+            $("#dropDown2")[0].style.setProperty("display", "block", "important");
         } else {
-            $("#dropDown").show(100);
+            $("#dropDown")[0].style.setProperty("display", "block", "important");
         }
     });
     $("#leaderboard-menu").mouseleave(function () {
-        $("#dropDown").hide();
-        $("#dropDown2").hide();
-        $("#dropDown3").hide();
+        $("#dropDown")[0].style.setProperty("display", "none", "important");
+        $("#dropDown2")[0].style.setProperty("display", "none", "important");
+        $("#dropDown3")[0].style.setProperty("display", "none", "important");
         $("#copySIPBtn").text("Copy");
     });
 
@@ -5545,8 +5549,8 @@ function initializeLM(modVersion) {
         $("#server-reconnect").click();
     });
     $("#reconnectBtn").mouseenter(function () {
-        $("#dropDown").hide();
-        $("#dropDown2").hide();
+        $("#dropDown")[0].style.setProperty("display", "none", "important");
+        $("#dropDown2")[0].style.setProperty("display", "none", "important");
         $("#copySIPBtn").text("Copy");
     });
 
