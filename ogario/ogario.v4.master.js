@@ -663,6 +663,7 @@ function legendmaster(self) {
         },
         reconnect(table) {
             if (window.legendModFromWebsite) return; // On website, only #gamemode should connect
+            if (typeof LM !== 'undefined' && LM.isLegendWorld) return; // EL server via agar.io — no master needed
             if (this.region) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
