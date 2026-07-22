@@ -1,0 +1,1506 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0A0B10" />
+    <meta
+      name="description"
+      content="Legend Clan (LC) — clã oficial de Agar.io. Comunidade ativa desde 2017, com projetos, galeria, atualizações e um Discord sempre online. Venha fazer parte."
+    />
+    <title>Legend Clan LC — Comunidade Oficial de Agar.io</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="icon" href="assets/img/logo.png" />
+  </head>
+  <body data-theme="dark">
+    <!-- ============== LOADER ============== -->
+    <div id="loader" aria-hidden="true">
+      <div class="loader-core"><span></span><span></span></div>
+    </div>
+
+    <!-- ============== NAVBAR ============== -->
+    <header class="navbar" id="navbar">
+      <div class="container">
+        <!-- <a href="#topo" class="brand">
+          <img src="assets/img/logo.png" alt="Emblema Legend Clan" />
+          <span class="tag">•℄C</span>
+        </a> -->
+
+        <nav class="nav-links" aria-label="Navegação principal">
+          <a href="#topo">Início</a>
+          <a href="#sobre">Sobre</a>
+          <a href="#membros">Membros</a>
+          <a href="#projetos">Projetos</a>
+          <a href="#galeria">Galeria</a>
+          <a href="#atualizacoes">Atualizações</a>
+          <a href="#contato">Contato</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a
+            href="https://discord.gg/2n9Hvcw9c3"
+            class="btn btn-primary btn-sm"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+              <path d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+              <path
+                d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5-.4-.6-.8-1.2-1.1-1.9M6.5 17.5c1.6.8 3.5 1.3 5.5 1.3s3.9-.5 5.5-1.3M6.5 17.5c.4-.6.8-1.3 1.1-1.9"
+              />
+            </svg>
+            Entrar no Discord
+          </a>
+          <button
+            class="theme-toggle"
+            data-theme-toggle
+            aria-label="Alternar tema claro/escuro"
+          >
+            <svg
+              class="moon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+            </svg>
+            <svg
+              class="sun"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+              />
+            </svg>
+          </button>
+          <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============== MENU MOBILE ============== -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-head">
+        <a href="#topo" class="brand"
+          ><img src="assets/img/logo.png" alt="" /><span>Legend Clan</span></a
+        >
+        <button id="menuClose" class="menu-toggle" aria-label="Fechar menu">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+      <nav>
+        <a href="#topo">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#membros">Membros</a>
+        <a href="#projetos">Projetos</a>
+        <a href="#galeria">Galeria</a>
+        <a href="#atualizacoes">Atualizações</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <a
+        href="https://discord.gg/2n9Hvcw9c3"
+        class="btn btn-primary btn-block"
+        target="_blank"
+        rel="noopener"
+        >Entrar no Discord</a
+      >
+    </div>
+
+    <main>
+      <!-- ============== HERO ============== -->
+      <section class="hero" id="topo">
+        <canvas class="hero-canvas" id="heroCanvas"></canvas>
+        <div class="hero-fade"></div>
+        <div class="container">
+          <div class="hero-inner">
+            <span class="hero-badge"
+              ><span class="dot"></span> Discord online agora</span
+            >
+            <!-- <img
+              src="assets/img/logo.png"
+              alt="Emblema Legend Clan"
+              class="hero-logo"
+            /> -->
+            <h1>
+              Somos o <span class="grad">Legend Clan</span><br />desde 2017
+            </h1>
+            <p class="lead">
+              Clã oficial de Agar.io. Comunidade, estratégia e absorção total um
+              espaço para jogar em equipe, subir de nível junto e fazer parte de
+              uma história que já dura anos.
+            </p>
+            <div class="hero-actions">
+              <a
+                href="https://discord.gg/2n9Hvcw9c3"
+                class="btn btn-primary"
+                target="_blank"
+                rel="noopener"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                  <path d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                  <path
+                    d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5-.4-.6-.8-1.2-1.1-1.9M6.5 17.5c1.6.8 3.5 1.3 5.5 1.3s3.9-.5 5.5-1.3M6.5 17.5c.4-.6.8-1.3 1.1-1.9"
+                  />
+                </svg>
+                Entrar no Discord
+              </a>
+              <a href="#membros" class="btn btn-outline">Conhecer os membros</a>
+              <a href="#projetos" class="btn btn-ghost">Ver projetos</a>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat"><b>2017</b><span>Fundação</span></div>
+              <div class="stat"><b>Agar.io</b><span>Jogo principal</span></div>
+              <div class="stat">
+                <b>Discord</b><span>Base da comunidade</span>
+              </div>
+              <div class="stat"><b>EN-US</b><span>Idioma oficial</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="scroll-cue">
+          <span>ROLE</span><span class="line"></span>
+        </div>
+      </section>
+
+      <!-- ============== SOBRE ============== -->
+      <section class="section" id="sobre">
+        <div class="container">
+          <div class="grid about-grid">
+            <div class="about-text reveal">
+              <span class="eyebrow">Quem somos</span>
+              <h2 class="section-title">
+                Uma comunidade construída partida após partida
+              </h2>
+              <p>
+                O Legend Clan nasceu dentro do Agar.io e cresceu para além do
+                jogo: hoje reunimos jogadores, moderadores e criadores de
+                conteúdo em um único servidor, com histórico público de
+                conquistas, regras e comunicados desde 2017.
+              </p>
+              <p>
+                Prezamos por jogo limpo, espírito de equipe e respeito entre
+                membros. Violações às regras internas podem resultar em
+                advertência ou expulsão mantemos o clã sério sem perder a
+                diversão.
+              </p>
+              <p>
+                Tudo o que você precisa histórico, artigos, contratos com
+                jogadores de elite e a lista de moderadores está documentado e
+                acessível a qualquer membro.
+              </p>
+              <a
+                href="https://discord.gg/2n9Hvcw9c3"
+                class="btn btn-outline mt-3"
+                target="_blank"
+                rel="noopener"
+                >Ler as regras no Discord</a
+              >
+            </div>
+
+            <div class="grid about-cards">
+              <div class="card about-card reveal reveal-delay-1">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6L12 3Z"
+                    />
+                  </svg>
+                </div>
+                <h3>Jogadores de elite</h3>
+                <p>
+                  Perfis e contratos dos membros que já provaram valor em
+                  partidas oficiais.
+                </p>
+              </div>
+              <div class="card about-card reveal reveal-delay-2">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      d="M12 21s-7-4.3-9.3-8.6C1 8.8 2.6 5.5 6 5c2-.3 3.6.7 6 3 2.4-2.3 4-3.3 6-3 3.4.5 5 3.8 3.3 7.4C19 16.7 12 21 12 21Z"
+                    />
+                  </svg>
+                </div>
+                <h3>Assistentes</h3>
+                <p>
+                  Time de apoio que orienta novos membros em suas primeiras
+                  semanas.
+                </p>
+              </div>
+              <div class="card about-card reveal reveal-delay-3">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M4 17l6-6-4-4M12 19h8" />
+                  </svg>
+                </div>
+                <h3>Modders &amp; devs</h3>
+                <p>
+                  Comunidade técnica que constrói ferramentas, mods e este
+                  próprio site.
+                </p>
+              </div>
+              <div class="card about-card reveal">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z" />
+                  </svg>
+                </div>
+                <h3>Ética e jogo limpo</h3>
+                <p>
+                  Regras claras, aplicadas com consistência para proteger a
+                  comunidade.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== MEMBROS ============== -->
+      <section class="section section-alt" id="membros">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="eyebrow">Comunidade</span>
+            <h2 class="section-title">Membros &amp; Discord</h2>
+            <p class="section-sub">
+              Acompanhe quem está online agora no nosso Discord e conheça a
+              estrutura de cargos do clã.
+            </p>
+          </div>
+
+          <div class="grid members-layout">
+            <aside class="card discord-panel reveal">
+              <div class="dp-head">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                    <path d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                    <path
+                      d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5-.4-.6-.8-1.2-1.1-1.9M6.5 17.5c1.6.8 3.5 1.3 5.5 1.3s3.9-.5 5.5-1.3M6.5 17.5c.4-.6.8-1.3 1.1-1.9"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3>Servidor oficial</h3>
+                </div>
+              </div>
+              <p class="small">
+                Veja em tempo real quem está online e entre para conversar com o
+                clã.
+              </p>
+              <div class="discord-frame-wrap">
+                <iframe
+                  src="https://discord.com/widget?id=655133130373726219&theme=dark"
+                  allowtransparency="true"
+                  frameborder="0"
+                  title="Widget do Discord — Legend Clan"
+                  loading="lazy"
+                ></iframe>
+              </div>
+              <a
+                href="https://discord.gg/2n9Hvcw9c3"
+                class="btn btn-primary btn-block"
+                target="_blank"
+                rel="noopener"
+                >Entrar no servidor</a
+              >
+            </aside>
+
+            <div>
+              <div class="members-toolbar reveal">
+                <div class="search-box">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m21 21-4.3-4.3" />
+                  </svg>
+                  <input
+                    type="text"
+                    id="memberSearch"
+                    placeholder="Buscar por nickname..."
+                    aria-label="Buscar membro"
+                  />
+                </div>
+                <div class="filter-chips">
+                  <button class="filter-chip active" data-role="all">
+                    Todos
+                  </button>
+                  <button class="filter-chip" data-role="fundador">
+                    Fundação
+                  </button>
+                  <button class="filter-chip" data-role="lider">
+                    Liderança
+                  </button>
+                  <button class="filter-chip" data-role="moderador">
+                    Moderação
+                  </button>
+                  <button class="filter-chip" data-role="membro">
+                    Membros
+                  </button>
+                  <button class="filter-chip" data-role="devjunior">
+                    Programador
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid members-grid" id="membersGrid">
+                <!-- Card membro -->
+                <article
+                  class="card member-card reveal"
+                  data-name="Nuclearain"
+                  data-role="fundador"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      N<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">Jimboy</div>
+                      <div class="member-role">Admin</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">Adminitrador & Programador.</p>
+                  <div class="member-meta">
+                    <span class="member-country">GR GRÉCIA</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+                <article
+                  class="card member-card reveal"
+                  data-name="Nuclearain"
+                  data-role="fundador"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      N<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">Junkys</div>
+                      <div class="member-role">Admin</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">Administrador & Programador</p>
+                  <div class="member-meta">
+                    <span class="member-country">BE BELGICA</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  class="card member-card reveal reveal-delay-1"
+                  data-name="Samantha"
+                  data-role="membro"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      S<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">Samantha</div>
+                      <div class="member-role">Membro</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">Membro.</p>
+                  <div class="member-meta">
+                    <span class="member-country">EU EUROPA</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  class="card member-card reveal reveal-delay-2"
+                  data-name="DragonX"
+                  data-role="lider"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      A<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">AnotherZ.</div>
+                      <div class="member-role">Admin</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">Administrador.</p>
+                  <div class="member-meta">
+                    <span class="member-country">DZA ARGÉLIA</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  class="card member-card reveal"
+                  data-name="Zone"
+                  data-role="moderador"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      Z<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">Andy</div>
+                      <div class="member-role">Admin</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">Administrador.</p>
+                  <div class="member-meta">
+                    <span class="member-country">EN AUSTRÁLIA</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  class="card member-card reveal reveal-delay-1"
+                  data-name="Prod"
+                  data-role="devjunior"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      P<span class="status-dot online"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">Júnior Code</div>
+                      <div class="member-role">Programmer</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">
+                    Programador FullStack do Clan Legends.
+                  </p>
+                  <div class="member-meta">
+                    <span class="member-country">🇧🇷 Brasil</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- <article
+                  class="card member-card reveal reveal-delay-2"
+                  data-name="WS"
+                  data-role="membro"
+                >
+                  <div class="member-top">
+                    <div class="member-avatar">
+                      W<span class="status-dot offline"></span>
+                    </div>
+                    <div>
+                      <div class="member-name">WS</div>
+                      <div class="member-role">Membro elite</div>
+                    </div>
+                  </div>
+                  <p class="member-desc">
+                    Um dos jogadores de maior destaque em partidas competitivas
+                    recentes.
+                  </p>
+                  <div class="member-meta">
+                    <span class="member-country">🇧🇷 Brasil</span>
+                    <div class="member-social">
+                      <a
+                        href="https://discord.gg/2n9Hvcw9c3"
+                        target="_blank"
+                        rel="noopener"
+                        aria-label="Discord"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.8"
+                        >
+                          <path
+                            d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z"
+                          />
+                          <path
+                            d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                          /></svg
+                      ></a>
+                    </div>
+                  </div>
+                </article> -->
+              </div>
+              <p class="no-results" id="membersEmpty" style="display: none">
+                Nenhum membro encontrado para essa busca.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== PROJETOS ============== -->
+      <section class="section" id="projetos">
+        <div class="container">
+          <div class="section-head center reveal">
+            <span class="eyebrow">Trabalho da comunidade</span>
+            <h2 class="section-title">Projetos</h2>
+            <p class="section-sub">
+              Sites, painéis e ferramentas mantidos pelo clã e por seus
+              desenvolvedores.
+            </p>
+          </div>
+
+          <div class="grid projects-grid">
+            <article class="card project-card reveal">
+              <div
+                class="project-media"
+                style="
+                  background: linear-gradient(135deg, #6c4ce0, #8b6bff);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="46"
+                  height="46"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                  style="position: relative; z-index: 1"
+                >
+                  <path d="M4 6h16M4 12h16M4 18h10" />
+                </svg>
+              </div>
+              <div class="project-body">
+                <h3>Legend Mod — Base de Artigos</h3>
+                <p>
+                  Hub com artigos oficiais: perfis de jogadores de elite,
+                  assistentes e a lista de modders/desenvolvedores do clã.
+                </p>
+                <div class="tech-tags">
+                  <span class="chip">HTML</span
+                  ><span class="chip">Documentação</span>
+                </div>
+                <div class="project-actions">
+                  <a
+                    class="btn btn-outline btn-sm"
+                    href="https://www.legendmod.ml/Lc/articles/elite-players.html"
+                    target="_blank"
+                    rel="noopener"
+                    >Ver artigos</a
+                  >
+                </div>
+              </div>
+            </article>
+
+            <article class="card project-card reveal reveal-delay-1">
+              <div
+                class="project-media"
+                style="
+                  background: linear-gradient(135deg, #34e0c4, #8b6bff);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="46"
+                  height="46"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                >
+                  <path d="M12 3 3 8v8l9 5 9-5V8l-9-5Z" />
+                  <path d="M3 8l9 5 9-5M12 13v8" />
+                </svg>
+              </div>
+              <div class="project-body">
+                <h3>Portal de Projetos LC</h3>
+                <p>
+                  Vitrine com outros projetos e ferramentas construídos pela
+                  comunidade ao redor do clã.
+                </p>
+                <div class="tech-tags">
+                  <span class="chip">Web</span
+                  ><span class="chip">Comunidade</span>
+                </div>
+                <div class="project-actions">
+                  <a
+                    class="btn btn-outline btn-sm"
+                    href="http://jimboy3100.github.io/"
+                    target="_blank"
+                    rel="noopener"
+                    >Visualizar</a
+                  >
+                </div>
+              </div>
+            </article>
+
+            <article class="card project-card reveal reveal-delay-2">
+              <div
+                class="project-media"
+                style="
+                  background: linear-gradient(135deg, #ff8a5b, #8b6bff);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="46"
+                  height="46"
+                  fill="none"
+                  stroke="#fff"
+                  stroke-width="1.5"
+                >
+                  <path d="M12 2v20M2 12h20" />
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </div>
+              <div class="project-body">
+                <h3>Portfólio do Desenvolvedor</h3>
+                <p>
+                  Site pessoal de Júnior devTI, responsável pelo desenvolvimento
+                  e redesign deste site.
+                </p>
+                <div class="tech-tags">
+                  <span class="chip">React</span
+                  ><span class="chip">Next.js</span>
+                </div>
+                <div class="project-actions">
+                  <a
+                    class="btn btn-outline btn-sm"
+                    href="https://projetoperfil.vercel.app/"
+                    target="_blank"
+                    rel="noopener"
+                    >Visitar portfólio</a
+                  >
+                  <a
+                    class="btn btn-ghost btn-sm"
+                    href="https://github.com/juniordevti"
+                    target="_blank"
+                    rel="noopener"
+                    >GitHub</a
+                  >
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== GALERIA ============== -->
+      <section class="section section-alt" id="galeria">
+        <div class="container">
+          <div class="section-head center reveal">
+            <span class="eyebrow">Registros</span>
+            <h2 class="section-title">Galeria</h2>
+            <p class="section-sub">
+              Momentos, conquistas e capturas de gameplay da comunidade.
+            </p>
+          </div>
+
+          <div class="gallery-grid reveal" id="galleryGrid">
+            <div class="gallery-item">
+              <img
+                src="assets/img/nuc.jpg"
+                alt="Gameplay Legend Clan — Nuc"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/junk1.jpg"
+                alt="Gameplay Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/dragon.jpg"
+                alt="Gameplay Legend Clan — Dragon"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Conquista</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/samantha.jpg"
+                alt="Gameplay Legend Clan — Samantha"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/sam-nuc.jpg"
+                alt="Gameplay Legend Clan em equipe"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Equipe</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/nuc2.jpg"
+                alt="Gameplay Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/weare.jpg"
+                alt="Comunidade Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Comunidade</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/prod.jpg"
+                alt="Gameplay Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/ws.jpg"
+                alt="Gameplay Legend Clan — WS"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Conquista</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/zone.jpg"
+                alt="Gameplay Legend Clan — Zone"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/nuc5.jpg"
+                alt="Gameplay Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Gameplay</span></div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="assets/img/mido.jpg"
+                alt="Evento Legend Clan"
+                loading="lazy"
+              />
+              <div class="g-overlay"><span>Evento</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== ATUALIZAÇÕES ============== -->
+      <section class="section" id="atualizacoes">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="eyebrow">Histórico</span>
+            <h2 class="section-title">Atualizações &amp; comunicados</h2>
+            <p class="section-sub">
+              Registro público de anúncios, conquistas e mudanças de regras ao
+              longo da trajetória do clã.
+            </p>
+          </div>
+
+          <div class="grid updates-grid">
+            <article class="card update-card reveal">
+              <div class="update-top">
+                <span class="chip">Comunidade</span
+                ><span class="update-date">27/12/2025</span>
+              </div>
+              <h3>Promoção de novos membros</h3>
+              <p>
+                Novo ciclo de promoções internas reconhece jogadores que se
+                destacaram nos últimos meses.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-27-12-2025.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+
+            <article class="card update-card reveal reveal-delay-1">
+              <div class="update-top">
+                <span class="chip">Regras</span
+                ><span class="update-date">24/02/2018</span>
+              </div>
+              <h3>Lealdade do clã</h3>
+              <p>
+                Diretrizes reforçando o compromisso esperado de cada membro com
+                a comunidade.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-24-2-2018.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+
+            <article class="card update-card reveal reveal-delay-2">
+              <div class="update-top">
+                <span class="chip">Regras</span
+                ><span class="update-date">01/02/2018</span>
+              </div>
+              <h3>Regra Senpai</h3>
+              <p>
+                Atualização das diretrizes internas de conduta entre membros
+                mais e menos experientes.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-1-2-2018.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+
+            <article class="card update-card reveal">
+              <div class="update-top">
+                <span class="chip">Regras</span
+                ><span class="update-date">12/04/2017</span>
+              </div>
+              <h3>Regras sobre o clã</h3>
+              <p>
+                Documento fundacional com as regras gerais que orientam a
+                comunidade desde o início.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-4-12-2017.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+
+            <article class="card update-card reveal reveal-delay-1">
+              <div class="update-top">
+                <span class="chip">Estratégia</span
+                ><span class="update-date">26/10/2017</span>
+              </div>
+              <h3>Dicas estratégicas</h3>
+              <p>
+                Coletânea de estratégias avançadas para partidas competitivas em
+                Agar.io.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-26-10-2017.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+
+            <article class="card update-card reveal reveal-delay-2">
+              <div class="update-top">
+                <span class="chip">Comunidade</span
+                ><span class="update-date">05/10/2017</span>
+              </div>
+              <h3>Regras para membros da LC</h3>
+              <p>
+                Guia completo destinado a novos integrantes sobre convivência e
+                expectativas do clã.
+              </p>
+              <a
+                class="update-link"
+                href="https://www.legendmod.ml/Lc/articles/announcement-5-10-2017.html"
+                target="_blank"
+                rel="noopener"
+                >Ler comunicado
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" /></svg
+              ></a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== CTA ============== -->
+      <section class="section">
+        <div class="container">
+          <div class="cta-band reveal">
+            <h2>Pronto para entrar na disputa?</h2>
+            <p>
+              Junte-se ao Discord do Legend Clan, conheça a comunidade e comece
+              sua trajetória com a gente ainda hoje.
+            </p>
+            <div class="cta-actions">
+              <a
+                href="https://discord.gg/2n9Hvcw9c3"
+                class="btn btn-primary"
+                target="_blank"
+                rel="noopener"
+                >Entrar no Discord</a
+              >
+              <a href="#contato" class="btn btn-outline">Falar com a gente</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== CONTATO ============== -->
+      <section class="section" id="contato">
+        <div class="container">
+          <div class="grid contact-grid">
+            <div class="contact-info reveal">
+              <span class="eyebrow">Fale conosco</span>
+              <h2 class="section-title">Contato</h2>
+              <p class="section-sub">
+                Prefere falar direto? Use o Discord para resposta rápida, ou
+                envie uma mensagem pelo formulário.
+              </p>
+
+              <div class="contact-row">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M4 4h16v16H4V4Z" />
+                    <path d="m4 6 8 7 8-7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4>E-mail</h4>
+                  <a href="mailto:legendclanOficial@Gmail.com"
+                    >legendclanOficial@Gmail.com</a
+                  >
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                    <path d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                    <path
+                      d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4>Discord</h4>
+                  <a
+                    href="https://discord.gg/2n9Hvcw9c3"
+                    target="_blank"
+                    rel="noopener"
+                    >discord.gg/2n9Hvcw9c3</a
+                  >
+                </div>
+              </div>
+              <div class="contact-row">
+                <div class="icon-badge">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4>Resposta da equipe</h4>
+                  <p>Moderadores costumam responder dentro de 24h.</p>
+                </div>
+              </div>
+            </div>
+
+            <form
+              id="contactForm"
+              class="card form-card reveal reveal-delay-1"
+              action="https://formspree.io/f/mjgggkpv"
+              method="POST"
+              enctype="multipart/form-data"
+            >
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input
+                  type="text"
+                  id="nome"
+                  name="nome"
+                  required
+                  placeholder="Seu nickname ou nome"
+                />
+              </div>
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="voce@email.com"
+                />
+              </div>
+              <div class="field">
+                <label for="mensagem">Mensagem</label>
+                <textarea
+                  id="mensagem"
+                  name="mensagem"
+                  required
+                  placeholder="Digite sua mensagem..."
+                ></textarea>
+              </div>
+              <!-- <div class="file-field">
+                <label for="arquivo" class="file-label"
+                  >📁 Anexar arquivo</label
+                >
+                <input
+                  type="file"
+                  id="arquivo"
+                  name="arquivo"
+                  class="visually-hidden"
+                />
+                <span class="file-name" id="fileName"
+                  >Nenhum arquivo escolhido</span
+                >
+              </div> -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  Enviar mensagem
+                </button>
+                <button type="reset" class="btn btn-ghost">Limpar</button>
+              </div>
+              <p class="form-note">
+                Ao enviar, você concorda em ser contatado pela equipe do Legend
+                Clan.
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============== FOOTER ============== -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="grid footer-grid">
+          <div class="footer-brand">
+            <a href="#topo" class="brand"
+              ><img src="assets/img/logo.png" alt="" /><span
+                >Legend Clan ℄C</span
+              ></a
+            >
+            <p>
+              Clã oficial de Agar.io. Comunidade ativa desde 2017, construída
+              por e para os membros.
+            </p>
+            <div class="footer-social">
+              <a
+                href="https://www.facebook.com/Lcclan/"
+                target="_blank"
+                rel="noopener"
+                aria-label="Facebook"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path
+                    d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h3l1-3h-4v-2c0-.5.5-1 1-1Z"
+                  /></svg
+              ></a>
+              <a
+                href="https://www.instagram.com/legendclanmod/"
+                target="_blank"
+                rel="noopener"
+                aria-label="Instagram"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" /></svg
+              ></a>
+              <a
+                href="https://discord.gg/2n9Hvcw9c3"
+                target="_blank"
+                rel="noopener"
+                aria-label="Discord"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <path d="M8 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                  <path d="M13 12a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+                  <path
+                    d="M6.5 17.5C4 16.2 3 13.8 3 11c0-3 1.6-5.6 3.8-6.8.9-.5 2-.9 3.1-1l.6 1.2c.6-.1 1.2-.1 1.8 0l.6-1.2c1.1.1 2.2.5 3.1 1C18.4 5.4 20 8 20 11c0 2.8-1 5.2-3.5 6.5"
+                  /></svg
+              ></a>
+              <a
+                href="https://www.youtube.com/playlist?list=PL5ieCNyP97uduCS_zVmr9BWiwm48zxg0Y"
+                target="_blank"
+                rel="noopener"
+                aria-label="YouTube"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                >
+                  <rect x="3" y="6" width="18" height="12" rx="3" />
+                  <path d="m10 9.5 5 2.5-5 2.5v-5Z" /></svg
+              ></a>
+            </div>
+          </div>
+
+          <div class="footer-col">
+            <h4>Navegação</h4>
+            <ul>
+              <li><a href="#topo">Início</a></li>
+              <li><a href="#sobre">Sobre</a></li>
+              <li><a href="#membros">Membros</a></li>
+              <li><a href="#projetos">Projetos</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Comunidade</h4>
+            <ul>
+              <li><a href="#galeria">Galeria</a></li>
+              <li><a href="#atualizacoes">Atualizações</a></li>
+              <li><a href="#contato">Contato</a></li>
+              <li>
+                <a
+                  href="https://discord.gg/2n9Hvcw9c3"
+                  target="_blank"
+                  rel="noopener"
+                  >Discord</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Contato</h4>
+            <ul>
+              <li>
+                <a href="mailto:legendclanOficial@Gmail.com"
+                  >legendclanOficial@Gmail.com</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://projetoperfil.vercel.app/"
+                  target="_blank"
+                  rel="noopener"
+                  >Portfólio do dev</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            The Legend Clan LC Agar.io — © 2026, todos os direitos reservados.
+          </p>
+          <p>
+            Desenvolvido por
+            <a
+              href="https://www.youtube.com/@Junior_TI"
+              target="_blank"
+              rel="noopener"
+              >Júnior devTI 💎</a
+            >
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============== LIGHTBOX ============== -->
+    <div class="lightbox" id="lightbox">
+      <button
+        class="lightbox-close"
+        id="lightboxClose"
+        aria-label="Fechar imagem"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+      <img id="lightboxImg" src="" alt="" />
+    </div>
+
+    <!-- ============== BACK TO TOP ============== -->
+    <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+      >
+        <path d="M12 19V5M5 12l7-7 7 7" />
+      </svg>
+    </button>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
