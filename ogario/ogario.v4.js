@@ -6743,7 +6743,7 @@ function thelegendmodproject() {
                 textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                 textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
                 //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">jimboy3100.github.io</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
-                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div><div id="el-stats" style="text-align:center; padding:4px 0; font-size:11px; opacity:0.7; display:none;"><span class="hud-main-color">Players:</span> <span id="el-player-count" class="top5-mass-color">-</span> <span style="opacity:0.4">|</span> <span class="hud-main-color">Bots:</span> <span id="el-bot-count" class="top5-mass-color">-</span></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                 textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">' +
                 '<a href="#" id="set-debug" class="ogicon-location"></a>' +
                 '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
@@ -13243,6 +13243,21 @@ function thelegendmodproject() {
                             var pongEcho = data.getUint32(s, true);
                             // Can calculate RTT if needed
                         }
+                    }
+                    break;
+
+                case 203: // 0xCB — Expanding Land Player Stats (human + bot counts)
+                    {
+                        var elHumans = data.getUint16(s, true); s += 2;
+                        var elBots = data.getUint16(s, true); s += 2;
+                        ogario.elPlayerCount = elHumans;
+                        ogario.elBotCount = elBots;
+                        var elStatsDiv = document.getElementById('el-stats');
+                        var elPlayerEl = document.getElementById('el-player-count');
+                        var elBotEl = document.getElementById('el-bot-count');
+                        if (elStatsDiv) elStatsDiv.style.display = '';
+                        if (elPlayerEl) elPlayerEl.textContent = elHumans;
+                        if (elBotEl) elBotEl.textContent = elBots;
                     }
                     break;
 
