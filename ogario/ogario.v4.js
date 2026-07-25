@@ -13378,7 +13378,7 @@ function thelegendmodproject() {
                         }
                     }
                     break;
-                case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
+                case 251: // 0xFB — Admin Command Response (Expanding Land) / PartyFriend Update (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 1 > data.byteLength) break;
                         var _pfHas = data.getUint8(s++);
@@ -13392,6 +13392,23 @@ function thelegendmodproject() {
                             this.imsoloPartyFriend = { x: _pfX, y: _pfY, nick: _pfNick, skin: _pfSkin };
                         } else {
                             this.imsoloPartyFriend = null;
+                        }
+                    } else {
+                        if (s < data.byteLength) {
+                            var adminStatus = data.getUint8(s++);
+                            var adminMsg = "";
+                            while (s < data.byteLength) {
+                                var ch = data.getUint8(s++);
+                                if (ch === 0) break;
+                                adminMsg += String.fromCharCode(ch);
+                            }
+                            if (adminMsg) {
+                                console.log('%c[ADMIN RESPONSE]%c ' + adminMsg, 'color:#0f0;font-weight:bold;', 'color:inherit;');
+                                if (window.toastr) {
+                                    if (adminStatus === 0) toastr.success(adminMsg, "Admin Command");
+                                    else toastr.error(adminMsg, "Admin Command");
+                                }
+                            }
                         }
                     }
                     break;
