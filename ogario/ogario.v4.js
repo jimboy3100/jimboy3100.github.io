@@ -13325,11 +13325,29 @@ function thelegendmodproject() {
                             'enabled:', bbEnabled, 'center:', bbCenterX, bbCenterY, 'radius:', bbRadius);
                     }
                     break;
-                case 250: // 0xFA — PlayerID (Imsolo/Agar2)
+                case 250: // 0xFA — Admin Toast Warning Notice (Expanding Land) / PlayerID (Imsolo/Agar2)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         if (s + 2 > data.byteLength) break;
                         this.imsoloPlayerID = data.getUint16(s, true);
                         console.log('%c[MultiProto]%c Assigned PlayerID:', 'color:#3f3', 'color:inherit', this.imsoloPlayerID);
+                    } else {
+                        if (s < data.byteLength) {
+                            var toastType = data.getUint8(s++);
+                            var toastMsg = "";
+                            while (s < data.byteLength) {
+                                var ch = data.getUint8(s++);
+                                if (ch === 0) break;
+                                toastMsg += String.fromCharCode(ch);
+                            }
+                            if (toastMsg) {
+                                console.log('%c[ADMIN NOTICE]%c ' + toastMsg, 'color:#fa0;font-weight:bold;', 'color:inherit;');
+                                if (window.toastr) {
+                                    if (toastType === 1) toastr.warning(toastMsg, "Admin Notice");
+                                    else if (toastType === 2) toastr.error(toastMsg, "Admin Notice");
+                                    else toastr.info(toastMsg, "Admin Notice");
+                                }
+                            }
+                        }
                     }
                     break;
                 case 251: // 0xFB — PartyFriend Update (Imsolo/Agar2)
