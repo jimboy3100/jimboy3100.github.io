@@ -4104,7 +4104,7 @@ var defaultmapsettings = {
     showQuickMenu: true,
     showQuickBots: false,
     showSkinsPanel: true,
-    animation: 120,
+    animation: 80,
     macroFeeding: 80,
     reverseTrick: false,
     //hideSizes: 0,
@@ -9521,7 +9521,7 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
-                var currentNick = ogarcopythelb.nick || 'Unnamed';
+                var currentNick = ($('#nick').val() && $('#nick').val().trim().length > 0) ? $('#nick').val().trim() : (ogarcopythelb.nick || 'Unnamed');
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
@@ -10506,9 +10506,35 @@ function thelegendmodproject() {
             } else if (delay > 1) {
                 delay = 1
             }
-            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
-            this.x += (this.targetX - this.x) * delay;
-            this.y += (this.targetY - this.y) * delay;
+
+            /* ── Client-side prediction for own cells ──
+             * Own cells predict movement toward cursor using the same physics
+             * as the server: speed = 88 * pow(radius, -0.44). This gives
+             * instant visual response without waiting for server round-trip.
+             * The server's authoritative position arrives via targetX/Y and
+             * normal interpolation blends toward it (automatic reconciliation). */
+            if (this.isPlayerCell && LM.play && this.size > 0) {
+                var dx = LM.cursorX - this.x;
+                var dy = LM.cursorY - this.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 1) {
+                    // Same formula as server: 88 * pow(radius, -0.4396754)
+                    // Scaled by frame delta (server tick = 40ms, render ≈ 16.7ms)
+                    var serverSpeed = 88.0 * Math.pow(this.size, -0.4396754);
+                    var frameDt = Math.min(time, 40) / 40.0; // fraction of a server tick
+                    var moveSpeed = Math.min(dist, serverSpeed * frameDt);
+                    this.x += (dx / dist) * moveSpeed;
+                    this.y += (dy / dist) * moveSpeed;
+                }
+                // Still blend toward server's authoritative position
+                this.x += (this.targetX - this.x) * delay * 0.5;
+                this.y += (this.targetY - this.y) * delay * 0.5;
+            } else {
+                // Non-player cells: standard interpolation
+                this.x += (this.targetX - this.x) * delay;
+                this.y += (this.targetY - this.y) * delay;
+            }
+
             if (!defaultmapsettings.suckAnimation) {
                 this.size += (this.targetSize - this.size) * delay;
             }
@@ -12537,6 +12563,11 @@ function thelegendmodproject() {
                     this.distX = cursorX - this.viewXTrue
                     this.distY = cursorY - this.viewYTrue
                 }
+                // Skip unchanged mouse position (saves bandwidth)
+                var cx = cursorX | 0, cy = cursorY | 0;
+                if (cx === this._lastSentMX && cy === this._lastSentMY) return;
+                this._lastSentMX = cx;
+                this._lastSentMY = cy;
                 // Garix: mouse packet includes tabID at bytes 1-2
                 // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
                 if (this.serverType === 'garix') {
@@ -16470,8 +16501,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
-                this.camX = (this.camX + LM.viewX) / 2;
-                this.camY = (this.camY + LM.viewY) / 2;
+                this.camX = (this.camX + 2 * LM.viewX) / 3;
+                this.camY = (this.camY + 2 * LM.viewY) / 3;
             } else {
                 this.camX = (29 * this.camX + LM.viewX) / 30;
                 this.camY = (29 * this.camY + LM.viewY) / 30;

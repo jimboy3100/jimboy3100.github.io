@@ -9478,7 +9478,7 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
-                var currentNick = ogarcopythelb.nick || 'Unnamed';
+                var currentNick = ($('#nick').val() && $('#nick').val().trim().length > 0) ? $('#nick').val().trim() : (ogarcopythelb.nick || 'Unnamed');
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
