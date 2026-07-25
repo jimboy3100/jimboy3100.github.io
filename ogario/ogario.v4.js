@@ -9405,6 +9405,8 @@ function thelegendmodproject() {
             }
         },
         updatevnr() {
+            /* Disable map rotation on Expanding Land server */
+            if (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))) return;
             var mm = 0;
             var max = 4;
             for (var i = 0; i < this.teamPlayers.length; i++) {
