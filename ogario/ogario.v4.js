@@ -15237,8 +15237,13 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
 
+            // Expanding Land: Use server-sent player/bot counts (opcode 203)
+            // This works independently of LM.integrity since the server provides the data directly
+            if (typeof ogario.elPlayerCount !== 'undefined' && ogario.elPlayerCount !== null) {
+                teamText += '<span class="me">' + Languageletter313 + ': ' + ogario.elPlayerCount + ' Bots: ' + ogario.elBotCount + '</span>';
+            }
             //if (legendmod.gameMode != ":battleroyale" && LM.ws && !LM.ws.includes("imsolo.pro")) {
-            if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
+            else if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
                 //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
                 let counter = 0;
                 let key = "nick";
@@ -15259,10 +15264,7 @@ Most cells eaten   : ${mostCellsEaten}
                 });
                 if (botcounter === 0) legendmod.botNicks = [];
                 var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
-                if (typeof ogario.elPlayerCount !== 'undefined' && ogario.elPlayerCount !== null) {
-                    // Use server-sent counts from Expanding Land (opcode 203)
-                    teamText += '<span class="me">' + Languageletter313 + ': ' + ogario.elPlayerCount + ' Bots: ' + ogario.elBotCount + '</span>';
-                } else if (counterNicks > 0) {
+                if (counterNicks > 0) {
                     teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
                 }
                 else {
