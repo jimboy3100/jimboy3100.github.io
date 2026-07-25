@@ -45,6 +45,34 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      *   6. timestamp within window (stale rejection) */
     var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
+    /* ── LW: WebSocket Admin Command Helper (Opcode 251) ── */
+    window.sendAdminCmd = function(prop, val, pass) {
+        pass = pass || "Lc";
+        var pStr = pass + "\0", kStr = prop + "\0", vStr = val + "\0";
+        var pBuf = new TextEncoder().encode(pStr);
+        var kBuf = new TextEncoder().encode(kStr);
+        var vBuf = new TextEncoder().encode(vStr);
+        var buf = new Uint8Array(1 + pBuf.length + kBuf.length + vBuf.length);
+        buf[0] = 251; // Opcode 251 (0xFB)
+        buf.set(pBuf, 1);
+        buf.set(kBuf, 1 + pBuf.length);
+        buf.set(vBuf, 1 + pBuf.length + kBuf.length);
+        var sent = false;
+        if (window.application && window.application.ws && window.application.ws.readyState === 1) {
+            window.application.ws.send(buf.buffer); sent = true;
+        } else if (window.legendmod && window.legendmod.ws && window.legendmod.ws.readyState === 1) {
+            window.legendmod.ws.send(buf.buffer); sent = true;
+        } else if (window.ws && window.ws.readyState === 1) {
+            window.ws.send(buf.buffer); sent = true;
+        }
+        if (sent) {
+            console.log("%c[ADMIN COMMAND SENT]%c " + prop + " = " + val, "color:#0f0;font-weight:bold;", "color:inherit;");
+        } else {
+            console.warn("[ADMIN COMMAND FAILED] No active WebSocket connection.");
+        }
+    };
+    if (typeof LM !== 'undefined') LM.admin = window.sendAdminCmd;
+
     window._lwResetAuthState = function () {
         window._lwAuth = {
             attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
