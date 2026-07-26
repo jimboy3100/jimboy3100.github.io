@@ -5637,30 +5637,31 @@ function thelegendmodproject() {
             }
         },
         multiboxswap() {
-            this.hideMenu()
-            if (!spects.length) {
-                //if (!legendmod.multiBoxPlayerExists){					
-                addBox()
-            } else if (!window.multiboxPlayerEnabledSaved) {
+            this.hideMenu();
+            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
+                window.fullSpectator = false;
+                LM.flushSpecsData();
+                addBox();
+                window.multiboxPlayerEnabled = 1;
+                window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
-                    play()
+                    play();
                 }
-                window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
-                window.multiboxPlayerEnabled = null
-            } else {
-                window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
-                window.multiboxPlayerEnabledSaved = null
-            }
-            if (spects.length && !legendmod.multiBoxPlayerExists) {
-                window.fullSpectator = false
-                LM.flushSpecsData()
-                addBox()
-                //toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox cannot start because Spectators have been enabled");
-            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) { //handle error
-                LM.flushSpecsData()
-                addBox()
+                return;
             }
 
+            var numBoxes = spects.length;
+            if (!window.multiboxPlayerEnabled) {
+                window.multiboxPlayerEnabled = 1;
+                if (!legendmod.play) {
+                    play();
+                }
+            } else if (window.multiboxPlayerEnabled < numBoxes) {
+                window.multiboxPlayerEnabled++;
+            } else {
+                window.multiboxPlayerEnabled = null;
+            }
+            window.multiboxPlayerEnabledSaved = null;
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -16811,19 +16812,10 @@ Most cells eaten   : ${mostCellsEaten}
 
                 application.onPlayerDeath();
                 if (!LM.multiBoxPlayerExists) {
-                    application.showMenu(300)
+                    application.showMenu(300);
                 } else {
                     if (!window.multiboxPlayerEnabled) {
-                        application.multiboxswap()
-                    } else {
-                        if (!window.multiboxPlayerEnabledSaved) {
-                            window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
-                            window.multiboxPlayerEnabled = null
-                        } else {
-                            window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
-                            window.multiboxPlayerEnabledSaved = null
-                        }
-                        application.multiboxswap()
+                        application.multiboxswap();
                     }
                 }
                 window.userBots.isAlive = false
