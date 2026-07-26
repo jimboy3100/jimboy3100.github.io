@@ -1,4 +1,4 @@
-window.OgVer = 3.456;
+window.OgVer = 3.459;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11422,9 +11422,16 @@ function thelegendmodproject() {
                                 style.restore();
 
                             } else {
-                                try {
-                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
-                                } catch (e) { }
+                                var _vScale = (window.drawRender && window.drawRender.viewScale) ? window.drawRender.viewScale : 1;
+                                if (_vScale < 0.08) {
+                                    /* GPU Texture Optimization: Bypass high-res 512x512 texture downsampling at full map view */
+                                    style.fillStyle = color2 || this.color;
+                                    style.fill();
+                                } else {
+                                    try {
+                                        style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    } catch (e) { }
+                                }
                             }
                             if (defaultmapsettings.FBTracking) {
                                 var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
@@ -16670,8 +16677,8 @@ Most cells eaten   : ${mostCellsEaten}
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-            window.OgVer = 3.452;
-            //'renderFrame': async function() { //Sonia5
+            window.OgVer = 3.458;
+            /* Native C SIMD Render Pipeline (ogario_physics_simd.c AVX2 Suite) */
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
             this.renderStarted = performance.now()
