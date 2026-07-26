@@ -17625,8 +17625,8 @@ Most cells eaten   : ${mostCellsEaten}
                     float distSq = dot(v_unitPos, v_unitPos);
                     if (distSq > 1.0) discard;
                     float dist = sqrt(distSq);
-                    // Ring band: 0.92 to 1.0 of radius
-                    float ringAlpha = smoothstep(0.90, 0.93, dist) * smoothstep(1.0, 0.97, dist);
+                    // Ring band: 0.95 to 1.0 of radius (thinner to match Canvas2D)
+                    float ringAlpha = smoothstep(0.94, 0.96, dist) * smoothstep(1.0, 0.97, dist);
                     if (ringAlpha < 0.01) discard;
                     // Dashed pattern: 20px dash, 30px gap → 40% on (dash=20, total=50)
                     float angle = atan(v_unitPos.y, v_unitPos.x) + 3.14159265;
@@ -17922,7 +17922,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             return true;
         },
-        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
+        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier, canvasLineWidth) {
             if (!this.gl || !this.glSolidRingProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glSolidRingData;
@@ -17942,9 +17942,8 @@ Most cells eaten   : ${mostCellsEaten}
             var rB = (cInt & 255) / 255;
             var rA = alphaVal || 0.75;
 
-            /* Canvas2D uses ctx.lineWidth = (14 + 2/scale) for opponent rings,
-             * or 4-6 for split range. We compute thickness as fraction of each ring radius. */
-            var _lineWidth = (14 + 2 / viewScale);
+            /* Use the caller's Canvas2D lineWidth for matching visual thickness */
+            var _lineWidth = canvasLineWidth || 4;
 
             for (var i = 0; i < players.length && count < max; i++) {
                 var p = players[i];
@@ -19811,7 +19810,7 @@ Most cells eaten   : ${mostCellsEaten}
                 /* WebGL2 fast path for the player's own split range circle */
                 var _splitAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
                 if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                    && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _splitAlpha)) {
+                    && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _splitAlpha, 1.0, 6)) {
                     // rendered via GPU
                 } else {
                     ctx.lineWidth = 6;
@@ -19840,7 +19839,7 @@ Most cells eaten   : ${mostCellsEaten}
                     /* WebGL2 fast path for player's double-split range circle (2x size) */
                     var _dsAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
                     if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                        && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _dsAlpha, 2.0)) {
+                        && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _dsAlpha, 2.0, 6)) {
                         // rendered via GPU
                     } else {
                         ctx.lineWidth = 6;
@@ -19950,7 +19949,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
             if (!players || !players.length) return;
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha, 1.0, width)) {
                 return;
             }
             ctx.lineWidth = width;
@@ -20000,7 +19999,7 @@ Most cells eaten   : ${mostCellsEaten}
             /* WebGL2 fast path for solid quad-split range circles (2x size) */
             if (defaultmapsettings.qdsplitRange) {
                 if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                    && this.drawWebGLRingsBatch(players, scale, color, alpha, 2.0)) {
+                    && this.drawWebGLRingsBatch(players, scale, color, alpha, 2.0, width)) {
                     // rendered via GPU — skip Canvas2D
                 } else {
                     ctx.lineWidth = width;
