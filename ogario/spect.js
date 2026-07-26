@@ -997,11 +997,12 @@ class Spect {
                 //this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
             }
         }*/
-    isInView(x, y) {
+    isInView(x, y, size = 0) {
         let mtp = 4.95,
             w = 1024 / 2 * mtp,
             h = 600 / 2 * mtp;
-        return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
+        const margin = (size || 0) + 350;
+        return (x + margin) < (this.viewX - w) || (y + margin) < (this.viewY - h) || (x - margin) > (this.viewX + w) || (y - margin) > (this.viewY + h);
 
     }
 
@@ -1242,7 +1243,7 @@ class Spect {
 
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
-                invisible = this.staticX != null ? this.isInView(x, y) : false;
+                invisible = this.staticX != null ? this.isInView(x, y, size) : false;
             }
 
             //test
@@ -1340,7 +1341,7 @@ class Spect {
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
                 if (!isFood) {
-                    if (!invisible) invisible = this.isInViewCustom(x, y, size)
+                    if (!window.fullSpectator && !invisible) invisible = this.isInViewCustom(x, y, size)
                 } else if (isFood) {
                     if (window.ingameSpectator && legendmod.isSpectateEnabled) {
                         invisible = true
@@ -1351,8 +1352,8 @@ class Spect {
             }
             //if (this.player && isVirus && !isFood && !invisible){
             if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = this.isInViewCustom(x, y, size)
-                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
+                if (isFood) remove = !window.fullSpectator && this.isInViewCustom(x, y, size)
+                if (isVirus) invisible = (!window.fullSpectator && this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
 
 
                 if (!this.active) {

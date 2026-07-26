@@ -11002,6 +11002,7 @@ function thelegendmodproject() {
             }
         };
         this.isInView = function () {
+            if (window.fullSpectator) return this.id > 0;
             /* Use precomputed viewport bounds (LM.camMinX/Y/MaxX/Y) instead of 4 divisions per call */
             return this.id > 0 &&
                 this.x + this.size + 40 > LM.camMinX &&
@@ -11010,6 +11011,7 @@ function thelegendmodproject() {
                 this.y - this.size - 40 < LM.camMaxY;
         };
         this.isInV = function () {
+            if (window.fullSpectator) return true;
             if (this.x + this.size < LM.camMinX || this.y + this.size < LM.camMinY || this.x - this.size > LM.camMaxX || this.y - this.size > LM.camMaxY) {
                 return false;
             }
@@ -16866,10 +16868,10 @@ Most cells eaten   : ${mostCellsEaten}
                 var _cB = defaultSettings.enemyBColor, _cS = defaultSettings.enemySColor;
                 var _cSSTE = defaultSettings.enemySSTEColor, _cSSTED = defaultSettings.enemySSTEDColor;
                 /* Viewport culling: skip cells outside visible area + ring offset margin */
-                var _cullMinX = LM.camMinX - 800;
-                var _cullMinY = LM.camMinY - 800;
-                var _cullMaxX = LM.camMaxX + 800;
-                var _cullMaxY = LM.camMaxY + 800;
+                var _cullMinX = window.fullSpectator ? ((LM.mapMinX != null ? LM.mapMinX : -7071) - 800) : (LM.camMinX - 800);
+                var _cullMinY = window.fullSpectator ? ((LM.mapMinY != null ? LM.mapMinY : -7071) - 800) : (LM.camMinY - 800);
+                var _cullMaxX = window.fullSpectator ? ((LM.mapMaxX != null ? LM.mapMaxX : 7071) + 800) : (LM.camMaxX + 800);
+                var _cullMaxY = window.fullSpectator ? ((LM.mapMaxY != null ? LM.mapMaxY : 7071) + 800) : (LM.camMaxY + 800);
                 var _cells = this.cells, _len = _cells.length;
 
                 for (var t = 0; t < _len; t++) {
@@ -17885,11 +17887,19 @@ Most cells eaten   : ${mostCellsEaten}
             var count = 0;
             var max = this.glMaxInstances;
 
-            var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 500;
-            var halfH = (this.canvasHeight / viewScale / 2) + 500;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
+            var minX, maxX, minY, maxY;
+            if (window.fullSpectator) {
+                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
+                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
+                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
+                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
+            } else {
+                var viewScale = this.scale || 1;
+                var halfW = (this.canvasWidth / viewScale / 2) + 500;
+                var halfH = (this.canvasHeight / viewScale / 2) + 500;
+                minX = this.camX - halfW; maxX = this.camX + halfW;
+                minY = this.camY - halfH; maxY = this.camY + halfH;
+            }
 
             var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
             var rR = ((cInt >> 16) & 255) / 255;
@@ -18221,11 +18231,19 @@ Most cells eaten   : ${mostCellsEaten}
             var count = 0;
             var max = this.glMaxInstances;
 
-            var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 200;
-            var halfH = (this.canvasHeight / viewScale / 2) + 200;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
+            var minX, maxX, minY, maxY;
+            if (window.fullSpectator) {
+                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
+                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
+                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
+                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
+            } else {
+                var viewScale = this.scale || 1;
+                var halfW = (this.canvasWidth / viewScale / 2) + 200;
+                var halfH = (this.canvasHeight / viewScale / 2) + 200;
+                minX = this.camX - halfW; maxX = this.camX + halfW;
+                minY = this.camY - halfH; maxY = this.camY + halfH;
+            }
 
             if (window.legendWasmInstance && cellsArray.length > 50) {
                 var wasmMem = window.legendWasmInstance.exports.memory.buffer;
@@ -19764,11 +19782,19 @@ Most cells eaten   : ${mostCellsEaten}
             }
             ctx.save();
 
-            var viewScale = scale || this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 200;
-            var halfH = (this.canvasHeight / viewScale / 2) + 200;
-            var minX = this.viewX - halfW, maxX = this.viewX + halfW;
-            var minY = this.viewY - halfH, maxY = this.viewY + halfH;
+            var minX, maxX, minY, maxY;
+            if (window.fullSpectator) {
+                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
+                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
+                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
+                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
+            } else {
+                var viewScale = scale || this.scale || 1;
+                var halfW = (this.canvasWidth / viewScale / 2) + 200;
+                var halfH = (this.canvasHeight / viewScale / 2) + 200;
+                minX = this.viewX - halfW; maxX = this.viewX + halfW;
+                minY = this.viewY - halfH; maxY = this.viewY + halfH;
+            }
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
 
@@ -19780,7 +19806,6 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
-                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
                     if (f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
@@ -19792,7 +19817,6 @@ Most cells eaten   : ${mostCellsEaten}
                 var batches = {};
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
-                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
                     if (f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
