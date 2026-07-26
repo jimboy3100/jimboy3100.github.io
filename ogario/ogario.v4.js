@@ -19132,7 +19132,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
             //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
         },
-        drawViewport: function (ctx, text, minX, minY, maxX, maxY, stroke, width) {
+        drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
 
             ctx.strokeStyle = stroke;
             ctx.lineWidth = width;
@@ -19140,14 +19140,14 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.fillStyle = "white";
             ctx.font = "100px sans-serif";
             ctx.textAlign = "end";
-            ctx.textBaseline = "hanging";
-            ctx.fillText(text, maxX, minY);
+            ctx.textBaseline = "hanging"
+            ctx.fillText(text, maxX, maxY);
 
             ctx.beginPath();
-            ctx.moveTo(minX, minY);
-            ctx.lineTo(maxX, minY);
+            ctx.moveTo(minX, maxY);
             ctx.lineTo(maxX, maxY);
-            ctx.lineTo(minX, maxY);
+            ctx.lineTo(maxX, minY);
+            ctx.lineTo(minX, minY);
             ctx.closePath();
             ctx.stroke();
 
