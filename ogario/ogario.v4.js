@@ -12274,8 +12274,23 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            if (this.serverType === 'garix' && this.garixFingerprint) {
-                this.socket = new WebSocket(t, [this.garixFingerprint]);
+            if (this.serverType === 'garix') {
+                // Generate fingerprint lazily on first Garix connection
+                var self = this;
+                (async function() {
+                    await LM._generateGarixFingerprint();
+                    if (self.garixFingerprint) {
+                        self.socket = new WebSocket(t, [self.garixFingerprint]);
+                    } else {
+                        self.socket = new WebSocket(t);
+                    }
+                    self.socket.binaryType = 'arraybuffer';
+                    self.socket.onopen = function () { app.onOpen(); };
+                    self.socket.onmessage = function (t) { app.onMessage(t); };
+                    self.socket.onerror = function (t) { app.onError(t); };
+                    self.socket.onclose = function (t) { app.onClose(t); };
+                })();
+                return;
             } else {
                 this.socket = new WebSocket(t);
             }
@@ -16893,8 +16908,9 @@ Most cells eaten   : ${mostCellsEaten}
         }
     };
     window.legendmod = LM; // look at this
-    // ── Garix fingerprint: generate once at startup, cache for connections ──
-    (async function () {
+    // ── Garix fingerprint: generated lazily on first Garix connection ──
+    LM._generateGarixFingerprint = async function () {
+        if (LM.garixFingerprint) return; // already generated
         try {
             var canvas = document.createElement("canvas");
             var ctx = canvas.getContext("2d");
@@ -16924,7 +16940,7 @@ Most cells eaten   : ${mostCellsEaten}
         } catch (e) {
             console.warn('[Garix] Fingerprint generation failed:', e);
         }
-    })();
+    };
     try {
         if (window.top !== window.self) {
             window.top.legendmod = LM;
