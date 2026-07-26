@@ -7921,7 +7921,12 @@ function thelegendmodproject() {
                 return s && (s.width || s.videoWidth);
             }
             if (skinCache[skinMap + '_cached3']) {
-                return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
+                const today = new Date();
+                if (today.getSeconds() < 30) { //vanilla animated skins
+                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
+                } else if (today.getSeconds() >= 30) {
+                    return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
+                }
             }
             return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
         },
@@ -10210,7 +10215,10 @@ function thelegendmodproject() {
                 }
             },
             this.setScale = function (ogarioscalesetter) {
-                this.scale = ogarioscalesetter;
+                if (this.scale !== ogarioscalesetter) {
+                    this.scale = ogarioscalesetter;
+                    this.redraw = true;
+                }
             },
             this.createCanvas = function () {
                 this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
@@ -12099,23 +12107,19 @@ function thelegendmodproject() {
             this.sendBuffer(message);
         },
         sendAction(action) {
-            if (!this.isSocketOpen()) return;
+
+            if (!this.isSocketOpen()) {
+                return;
+            }
+            // Garix: split (17) and eject (21) require tabID
             if (this.serverType === 'garix' && (action === 17 || action === 21)) {
-                if (!this._staticActionView3) {
-                    this._staticActionBuffer3 = new ArrayBuffer(3);
-                    this._staticActionView3 = new DataView(this._staticActionBuffer3);
-                }
-                var gv = this._staticActionView3;
+                var gv = this.createView(3);
                 gv.setUint8(0, action);
                 gv.setUint16(1, this.garixTabID1 || 0, true);
                 this.sendBuffer(gv);
                 return;
             }
-            if (!this._staticActionView1) {
-                this._staticActionBuffer1 = new ArrayBuffer(1);
-                this._staticActionView1 = new DataView(this._staticActionBuffer1);
-            }
-            var view = this._staticActionView1;
+            const view = this.createView(1);
             view.setUint8(0, action);
             this.sendMessage(view);
         },
@@ -12547,15 +12551,11 @@ function thelegendmodproject() {
                     // bytes 11-14 unused padding (server only checks length)
                     this.sendBuffer(gv);
                 } else {
-                    if (!this._staticPosView13) {
-                        this._staticPosBuffer13 = new ArrayBuffer(13);
-                        this._staticPosView13 = new DataView(this._staticPosBuffer13);
-                        this._staticPosView13.setUint8(0, 16);
-                    }
-                    var view = this._staticPosView13;
+                    var view = this.createView(13);
+                    view.setUint8(0, 16);
                     view.setInt32(1, cursorX, true);
                     view.setInt32(5, cursorY, true);
-                    view.setUint32(9, this.protocolKey || 0, true);
+                    view.setUint32(9, this.protocolKey, true);
                     this.sendMessage(view);
                 }
             }
