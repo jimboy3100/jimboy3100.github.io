@@ -1,4 +1,4 @@
-window.OgVer = 3.427;
+window.OgVer = 3.433;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10501,6 +10501,10 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
+            if (this.targetX === this.x && this.targetY === this.y && this.targetSize === this.size && !this.removed) {
+                this.time = LM.time;
+                return;
+            }
             var time = LM.time - this.time;
             var delay = time / defaultmapsettings.animation;
             if (delay < 0) {
@@ -12060,39 +12064,32 @@ function thelegendmodproject() {
             }
         },
         replayfunctions() {
-            if (window.replayTimeOuts.length && !this.ws.includes("replay")) {
-                for (var i = 0; i < window.replayTimeOuts; i++) {
-                    clearTimeout(window.replayTimeOuts[i])
+            if (window.replayTimeOuts && window.replayTimeOuts.length && !this.ws.includes("replay")) {
+                for (var i = 0; i < window.replayTimeOuts.length; i++) {
+                    clearTimeout(window.replayTimeOuts[i]);
                 }
-                window.replayTimeOuts = []
-            } else if (!this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
+                window.replayTimeOuts = [];
+            } else if (this.ws && !this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
                 $('#pause-hud').text(textLanguage.pause);
-                $('#pause-hud').hide()
+                $('#pause-hud').hide();
             }
-            //if (!window.RecordedProtocol[$("#server-token").val()]){
-            //console.log('a'+$("#server-token").val())		
-            //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
-            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
-                if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
+            var tokenEl = $("#server-token").val() || "";
+            if (!tokenEl.includes("replay") && !tokenEl.includes("imsolo.pro:2109/")) {
+                if (window.RecordedArenasSpecifications[tokenEl]) {
                     for (var i = 1; i < 10; i++) {
-                        if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']) {
-                            window.temporaryRecordedProtocol = $("#server-token").val() + '(' + i + ')'
+                        if (!window.RecordedArenasSpecifications[tokenEl + '(' + i + ')']) {
+                            window.temporaryRecordedProtocol = tokenEl + '(' + i + ')';
                             break;
-                        } else {
-
                         }
                     }
                 } else {
-                    window.temporaryRecordedProtocol = $("#server-token").val()
+                    window.temporaryRecordedProtocol = tokenEl;
                 }
-                window.catholicCalculator = 0
-                window.RecordedProtocol[window.temporaryRecordedProtocol] = []
-                window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
-                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
+                window.catholicCalculator = 0;
+                window.RecordedProtocol[window.temporaryRecordedProtocol] = [];
+                window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol);
+                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()];
             }
-
-
-            //}				
         },
         closeConnection() {
             // Clear Imsolo/Agar2 heartbeat interval on disconnect
@@ -12305,7 +12302,9 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
-                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+                var stEl = document.getElementById('server-token');
+                var isELToken = stEl && stEl.value && stEl.value.includes('expanding.land');
+                if (self.isLegendWorld || self.serverType === 'expandingland' || isELToken) {
                     self.flushCellsData();
                 }
                 self.sendMessage(view);
@@ -12464,7 +12463,9 @@ function thelegendmodproject() {
                 return;
             }
             // Default (agar.io / Expanding Land / other): just nick
-            if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
+            var stEl2 = document.getElementById('server-token');
+            var isELToken2 = stEl2 && stEl2.value && stEl2.value.includes('expanding.land');
+            if (this.isLegendWorld || this.serverType === 'expandingland' || isELToken2) {
                 this.flushCellsData();
             }
             var view = this.createView(1 + nick.length);
@@ -12905,12 +12906,15 @@ function thelegendmodproject() {
         },
         handleMessage(data) {
             //this.pingTimer();		
-            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
-                window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
-
-                //window.RecordedProtocolArenas[legendmod.ws][]
-                //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
-                window.catholicCalculator++
+            var tokenVal = $("#server-token").val() || "";
+            if (!tokenVal.includes("replay") && !tokenVal.includes("imsolo.pro:2109/")) {
+                if (window.RecordedProtocol && window.temporaryRecordedProtocol) {
+                    if (!window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+                        window.RecordedProtocol[window.temporaryRecordedProtocol] = [];
+                    }
+                    window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data;
+                    window.catholicCalculator++;
+                }
             }
             /*			
             for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
@@ -13013,9 +13017,12 @@ function thelegendmodproject() {
                     window.testobjectsOpcode50 = data;
                     this.pieChart = [];
                     var a = data.getUint32(s, true);
-                    s += 4; //5,12,19
-                    //for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
-                    for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 7;
+                    s += 4;
+                    if (s + 7 * a > data.byteLength) break;
+                    for (var n = 0; n < a; n++) {
+                        this.pieChart.push(data.getFloat32(s, true));
+                        s += 7;
+                    }
                     drawRender.drawPieChart();
                     break;
                 case 53:
@@ -13583,7 +13590,12 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
+                        if (window.testobjects2 && window.testobjects2.includes('https')) {
+                            var parts = window.testobjects2.split('https');
+                            if (parts[1] && parts[1].includes('H')) {
+                                window.googlePic = "https" + parts[1].split('H')[0] + "H";
+                            }
+                        }
 
                         /*if (defaultmapsettings.massBooster && master.context) {				
                             massx31hour();
@@ -14126,28 +14138,29 @@ function thelegendmodproject() {
                 case 178:
                     window.testobjectsOpcode178 = data;
                     this.battleRoyale.players = data.getUint16(s, true);
-                    //$('#btl-players-count').text(this.battleRoyale.players),
                     s += 2;
-                    var y = data.getUint16(s, true);
-                    s += 2,
-                        y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
-                        3 & y && (this.battleRoyale.state = data.getUint8(s++),
-                            this.battleRoyale.x = data.getInt32(s, true),
-                            s += 4,
-                            this.battleRoyale.y = data.getInt32(s, true),
-                            s += 4,
-                            this.battleRoyale.radius = data.getUint32(s, true),
-                            s += 4,
-                            this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
-                            s += 4,
-                            this.battleRoyale.shrinkTime &&
-                            (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
-                                this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
-                        2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
-                            s += 4,
-                            this.battleRoyale.targetY = data.getInt32(s, true),
-                            s += 4,
-                            this.battleRoyale.targetRadius = data.getUint32(s, true));
+                    var brFlags = data.getUint16(s, true);
+                    s += 2;
+                    if (!brFlags) {
+                        this.battleRoyale.state = 0;
+                        this.battleRoyale.joined = false;
+                    }
+                    if (brFlags & 3) {
+                        this.battleRoyale.state = data.getUint8(s++);
+                        this.battleRoyale.x = data.getInt32(s, true); s += 4;
+                        this.battleRoyale.y = data.getInt32(s, true); s += 4;
+                        this.battleRoyale.radius = data.getUint32(s, true); s += 4;
+                        this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true); s += 4;
+                        if (this.battleRoyale.shrinkTime) {
+                            this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000);
+                            if (this.battleRoyale.timeLeft < 0) this.battleRoyale.timeLeft = 0;
+                        }
+                    }
+                    if (brFlags & 2) {
+                        this.battleRoyale.targetX = data.getInt32(s, true); s += 4;
+                        this.battleRoyale.targetY = data.getInt32(s, true); s += 4;
+                        this.battleRoyale.targetRadius = data.getUint32(s, true); s += 4;
+                    }
                     this.handleLeaderboard();
                     break;
                 case 179:
@@ -14165,13 +14178,12 @@ function thelegendmodproject() {
                     var profiles = data.getUint16(s, true);
                     s += 2;
                     for (n = 0; n < profiles; n++) {
-                        var ogarcopythelb = window.decodeURIComponent(escape(encode()));
+                        var rankName = window.decodeURIComponent(escape(encode()));
                         v = data.getUint32(s, true);
                         s += 4;
                         this.battleRoyale.rank.push({
-                            //'place': defaultmapsettings,
                             'place': v,
-                            'name': ogarcopythelb
+                            'name': rankName
                         });
                     }
                     var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
@@ -14245,8 +14257,9 @@ function thelegendmodproject() {
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
                     if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
-                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
+                        if (!window.userBots) window.userBots = {};
+                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2;
+                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2;
                     }
 
                     break;
@@ -14636,12 +14649,17 @@ function thelegendmodproject() {
             }
         },
         updateProducts(prod) {
+            if (!prod) return;
             for (var i = 0; i < prod.length; i++) {
-                this.updateWalletInfo([prod[i].userWalletItem])
+                if (prod[i] && prod[i].userWalletItem) {
+                    this.updateWalletInfo([prod[i].userWalletItem]);
+                }
             }
         },
         updateWalletInfo(items) {
+            if (!items || !this.user) return;
             for (var i = 0; i < items.length; i++) {
+                if (!items[i]) continue;
                 var type = items[i].type;
                 switch (type) {
                     case 1:
@@ -14779,11 +14797,15 @@ function thelegendmodproject() {
                 '<b class="message-nick">Viruses eaten:</b> ' + u.virusesEaten)
         },
         updateEvents(event) {
-            if (event.length === 0) window.questActivationReq()
+            if (!event || event.length === 0) {
+                if (typeof window.questActivationReq === "function") window.questActivationReq();
+                return;
+            }
             for (var i = 0; i < event.length; i++) {
-                var e = event[i],
-                    type = e.eventId,
-                    timer = e.nextAvailableInSeconds * 1000;
+                var e = event[i];
+                if (!e) continue;
+                var type = e.eventId,
+                    timer = (e.nextAvailableInSeconds || 0) * 1000;
                 switch (type) {
                     case "dailyQuest":
                         if (window.dailyQuestTimer) clearTimeout(window.dailyQuestTimer);
@@ -14886,23 +14908,23 @@ function thelegendmodproject() {
             })
         },
         autobrew() {
-            if (defaultmapsettings.autobrewing && (window.master.context === "facebook" || window.master.context === "google")) {
-                for (var potion of Object.values(LM.user.potionsStatus)) {
-                    if (potion.status === 1) {
-                        window.brewPotion(potion.slot);
+            if (defaultmapsettings.autobrewing && window.master && (window.master.context === "facebook" || window.master.context === "google") && this.user && this.user.potionsStatus) {
+                for (var potion of Object.values(this.user.potionsStatus)) {
+                    if (potion && potion.status === 1) {
+                        if (typeof window.brewPotion === "function") window.brewPotion(potion.slot);
                         break;
                     }
-                };
+                }
             }
         },
         getPotionForOpen() {
-            if ((window.master.context === "facebook" || window.master.context === "google")) {
-                for (var potion of Object.values(LM.user.potionsStatus)) {
-                    if (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now())) {
-                        window.openPotion(potion.slot);
+            if (window.master && (window.master.context === "facebook" || window.master.context === "google") && this.user && this.user.potionsStatus) {
+                for (var potion of Object.values(this.user.potionsStatus)) {
+                    if (potion && (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now()))) {
+                        if (typeof window.openPotion === "function") window.openPotion(potion.slot);
                         break;
                     }
-                };
+                }
             }
         },
         updateUserSettings(s) {
@@ -15154,17 +15176,15 @@ Most cells eaten   : ${mostCellsEaten}
          * Styled to visually match agar.io's native blue notification panel.
          * Uses only server-confirmed data (provider, displayName). */
         agarExp(q) {
-            var s = {};
-            var i = 0,
-                exp = 0;
-            for (i = 1; i <= q; i++) {
+            var exp = 0;
+            for (var i = 1; i <= q; i++) {
                 exp += i * 100;
             }
             exp -= 500;
             if (q <= 4) {
                 exp = q === 1 ? 50 : q === 2 ? 125 : q === 3 ? 250 : 500;
             }
-            return exp
+            return exp;
         },
         handleSubmessage(message) {
             var e = 0;
@@ -15502,7 +15522,9 @@ Most cells eaten   : ${mostCellsEaten}
 
         },
         addSpect() {
-            if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
+            var nickVal = $("#nick").val() || "";
+            var clanVal = $("#clantag").val() || "";
+            if ((nickVal.includes('?') && clanVal === window.clanTagLc) || window.proLicenceUID) {
                 if (true) { // LW: always show spectator buttons
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
@@ -15584,9 +15606,18 @@ Most cells eaten   : ${mostCellsEaten}
         },
         calculatebgpi(x, y) {
             var ofs = 150;
-            //var ofs = 1;
-            var calc = (x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
-            //var calc = (x < this.mapOffsetX + ofs && x > this.mapOffsetX - ofs) || (y < this.mapOffsetY + ofs && y > this.mapOffsetY - ofs) ? 4 : x >= this.mapOffsetX && y < this.mapOffsetY ? 0 : x < this.mapOffsetX && y < this.mapOffsetY ? 1 : x < this.mapOffsetX && y >= this.mapOffsetY ? 2 : 3;
+            var calc = 4;
+            if ((x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs)) {
+                calc = 4;
+            } else if (x >= this.mapMidX && y < this.mapMidY) {
+                calc = 0;
+            } else if (x < this.mapMidX && y < this.mapMidY) {
+                calc = 1;
+            } else if (x < this.mapMidX && y >= this.mapMidY) {
+                calc = 2;
+            } else {
+                calc = 3;
+            }
             if ((window.legendmod.lbgpi === 4 || calc === 4 || window.legendmod.lbgpi === calc) && window.legendmod.delstate < 0) {
                 window.legendmod.lbgpi = calc;
                 return calc;
@@ -16120,14 +16151,9 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            var cells = this.cells;
-            for (var i = 1; i < cells.length; i++) {
-                var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
-                while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
-                    cells[j + 1] = cells[j]; j--;
-                }
-                cells[j + 1] = key;
-            }
+            this.cells.sort(function (a, b) {
+                return a.size === b.size ? a.id - b.id : a.size - b.size;
+            });
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -16217,8 +16243,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var t = 0;
                 for (; t < this.cells.length; t++) {
                     var cell = this.cells[t];
-                    //if (cell.isVirus || cell.spectator > 0) {
-                    if (cell.isVirus || cell.invisible) {
+                    if (cell.isFood || cell.isVirus || cell.invisible) {
                         continue;
                     }
                     //console.log(i); i for food is 13
