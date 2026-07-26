@@ -15796,22 +15796,29 @@ Most cells eaten   : ${mostCellsEaten}
             if ($("#server-token").val().includes("replay^")) {
                 temp = $("#server-token").val().replace('replay^', '').split('(')[0].split('.lm')[0];
                 if (temp.length === 7) {
-                    temp2 = true
+                    temp2 = true;
                 }
             }
 
-            if (LM.isLegendWorld) {
+            if (left !== undefined && right !== undefined && right > left && top !== undefined && bottom !== undefined && bottom > top) {
+                this.mapMinX = left;
+                this.mapMinY = top;
+                this.mapMaxX = right;
+                this.mapMaxY = bottom;
+                this.mapSize = Math.abs(right - left);
+                this.mapMidX = (right + left) / 2;
+                this.mapMidY = (bottom + top) / 2;
+                this.mapOffsetX = (right - left) / 2;
+                this.mapOffsetY = (bottom - top) / 2;
+            } else if (LM.isLegendWorld) {
                 /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~Math.abs(right - left);
                 this.mapOffset = 0;
-                /* If map size changed (LW resize), reset the fixed flag */
                 if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
 
-                /* Derive tier from actual border size — guarantees tier
-                 * always matches the real map, regardless of map events */
                 var tierSizes = [
                     7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000,
                     226274, 320000, 452548
@@ -15822,38 +15829,24 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 LM.mapTier = derivedTier;
             } else if (this.integrity || temp2) {
-                /* agar.io: hardcoded 14142 (original behavior) */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
+                this.mapMinX = -7071;
+                this.mapMinY = -7071;
+                this.mapMaxX = 7071;
+                this.mapMaxY = 7071;
+                this.mapMidX = 0;
+                this.mapMidY = 0;
             } else {
-                /* other private servers (original behavior) */
                 this.mapSize = Math.abs(left - right);
                 this.mapOffset = 0;
+                this.mapMinX = left;
+                this.mapMinY = top;
+                this.mapMaxX = right;
+                this.mapMaxY = bottom;
+                this.mapMidX = (right + left) / 2;
+                this.mapMidY = (bottom + top) / 2;
             }
-
-            if (!this.mapOffsetFixed) {
-                //console.log(right - left, bottom - top)
-                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-                    //if (this.integrity || this.ws.includes("replay")) {
-                    if (this.integrity || temp2) {
-                        this.mapOffsetX = this.mapOffset - right;
-                        this.mapOffsetY = this.mapOffset - bottom;
-
-                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-                    }
-                    else {
-                        this.mapOffsetX = this.mapSize / 2
-                        this.mapOffsetY = this.mapSize / 2
-                        this.mapMinX = left
-                        this.mapMinY = top
-                        this.mapMaxX = right
-                        this.mapMaxY = bottom
-                    }
-                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 
                     /* LEGENDWORLD FIX: 
                      * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
@@ -15861,8 +15854,6 @@ Most cells eaten   : ${mostCellsEaten}
                      * This caused violent 25Hz juddering when the map border shrunk!
                      */
                     if (!this.mapOffsetFixed) {
-                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
-                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
                         if (this.mapSize === 0 || !LM.isLegendWorld) {
                             this.viewX = (right + left) / 2;
                             this.viewY = (bottom + top) / 2;
@@ -15870,12 +15861,8 @@ Most cells eaten   : ${mostCellsEaten}
                     }
 
                     this.mapOffsetFixed = true;
-                }
-            }
             //for SPECT
             this.addSpect();
-            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
-
         },
         addSpect() {
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
