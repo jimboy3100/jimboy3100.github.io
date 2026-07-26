@@ -16637,7 +16637,7 @@ Most cells eaten   : ${mostCellsEaten}
                     /* Make Canvas2D transparent so WebGL shows through gaps */
                     if (this.canvas) this.canvas.style.background = 'transparent';
                 }
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, antialias: true, depth: false });
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false });
                 if (!gl) return;
                 this.gl = gl;
 
@@ -17214,7 +17214,7 @@ Most cells eaten   : ${mostCellsEaten}
                     this._glBgB = (_bgI & 255) / 255;
                     this._glBgStr = _bg;
                 }
-                this.gl.clearColor(this._glBgR, this._glBgG, this._glBgB, 1.0);
+                this.gl.clearColor(0, 0, 0, 0.0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT);
             }
             //await this.sleep(4); //Sonia5			
