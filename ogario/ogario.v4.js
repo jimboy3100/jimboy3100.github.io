@@ -9107,12 +9107,90 @@ function thelegendmodproject() {
             this.sendServerRegion();
             this.sendServerGameMode();
         },
+        sendDeltaRoom() {
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
+            if (!ws || ws.readyState !== 1) return;
+            var serverToken = this.serverToken || $("#server-token").val() || '';
+            var clanTag = ogarcopythelb.clanTag || '';
+            var region = this.region || $('#region').val() || '';
+            var gamemode = this.gameMode || $('#gamemode').val() || '';
+            var partyToken = this.partyToken || '';
+
+            function writeUTF16Len(str, view, offset) {
+                view.setUint8(offset++, str.length & 0xFF);
+                for (var i = 0; i < str.length; i++) {
+                    view.setUint16(offset, str.charCodeAt(i), true);
+                    offset += 2;
+                }
+                return offset;
+            }
+
+            var size = 1 + (1 + serverToken.length * 2) + (1 + clanTag.length * 2) + (1 + region.length * 2) + (1 + gamemode.length * 2) + (1 + partyToken.length * 2);
+            var buffer = new ArrayBuffer(size);
+            var view = new DataView(buffer);
+            view.setUint8(0, 9); // Opcode 9: Delta room registration
+            var off = 1;
+            off = writeUTF16Len(serverToken, view, off);
+            off = writeUTF16Len(clanTag, view, off);
+            off = writeUTF16Len(region, view, off);
+            off = writeUTF16Len(gamemode, view, off);
+            off = writeUTF16Len(partyToken, view, off);
+            ws.send(buffer);
+        },
+        sendDeltaPlayerUpdate() {
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
+            if (!ws || ws.readyState !== 1 || !this.playerID) return;
+            var nick = ogarcopythelb.nick || '';
+            var skin = ogarcopythelb.skinURL || '';
+            var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
+            var px = this.getPlayerX() || 0;
+            var py = this.getPlayerY() || 0;
+            var mass = (typeof ogario.playerMass !== 'undefined') ? ogario.playerMass : (this.playerMass || 0);
+
+            function writeUTF16Len(str, view, offset) {
+                view.setUint8(offset++, str.length & 0xFF);
+                for (var i = 0; i < str.length; i++) {
+                    view.setUint16(offset, str.charCodeAt(i), true);
+                    offset += 2;
+                }
+                return offset;
+            }
+
+            var flagsTopLevel = 1 | 2 | 4;
+            var flagsDownLevel = 2 | 4 | 8;
+
+            var size = 1 + 2 + 1 + 1 + (1 + nick.length * 2) + (1 + skin.length * 2) + 3 + (2 + 2 + 4) + 1 + 2;
+            var buffer = new ArrayBuffer(size);
+            var view = new DataView(buffer);
+            view.setUint8(0, 16); // Opcode 16: Delta ppv7
+            var off = 1;
+            view.setUint16(off, this.playerID & 0xFFFF, true); off += 2;
+            view.setUint8(off++, flagsTopLevel);
+            view.setUint8(off++, flagsDownLevel);
+
+            off = writeUTF16Len(nick, view, off);
+            off = writeUTF16Len(skin, view, off);
+
+            view.setUint8(off++, (color >> 16) & 0xFF);
+            view.setUint8(off++, (color >> 8) & 0xFF);
+            view.setUint8(off++, color & 0xFF);
+
+            view.setInt16(off, px & 0xFFFF, true); off += 2;
+            view.setInt16(off, py & 0xFFFF, true); off += 2;
+            view.setUint32(off, mass, true); off += 4;
+
+            view.setUint8(off++, ogario.play ? 1 : 0);
+            view.setUint16(off, 0, true); off += 2;
+
+            ws.send(buffer);
+        },
         sendPartyData() {
             this.sendPlayerClanTag();
 
             this.sendPartyToken();
             this.sendServerToken();
             this.sendPlayerNick();
+            this.sendDeltaRoom();
             //
             if (!$("#server-token").val().includes("replay") && window.RecordedArenasSpecifications[window.temporaryRecordedProtocol]) {
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol][3] = application.lastSentNick
@@ -9120,7 +9198,7 @@ function thelegendmodproject() {
             //
         },
         sendPlayerUpdate() {
-            if (this.isSocketOpen() && ogario.play && this.playerID && ogario.playerColor) {
+            if ((this.isSocketOpen() || window.ogarioWS) && ogario.play && this.playerID && ogario.playerColor) {
                 function encode(str) {
                     for (let length = 0; length < str.length; length++) {
                         view.setUint16(offset, str.charCodeAt(length), true);
@@ -9146,6 +9224,7 @@ function thelegendmodproject() {
                 } else {
                     this.sendBuffer(view);
                 }
+                this.sendDeltaPlayerUpdate();
             }
         },
         sendPlayerPosition() {
