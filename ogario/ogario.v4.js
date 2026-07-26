@@ -7817,6 +7817,10 @@ function thelegendmodproject() {
                         }
                     } catch (error) { }
                     this.customSkinsCache[e + "_cached"] = i;
+                    // Upload pre-drawn skin to WebGL2 GPU texture array
+                    if (window.drawRender && window.drawRender.uploadSkinTexture) {
+                        window.drawRender.uploadSkinTexture(e, i);
+                    }
                     this.cacheSkin(this.customSkinsCache, animated);
                 }
             }
@@ -11196,6 +11200,44 @@ function thelegendmodproject() {
                 this.redrawed++;
                 if (cellMoved) {
                     this.moveCell();
+                }
+                // WebGL2 rendered this cell's body+skin → draw text overlay only
+                if (this._webglRendered && !cellMoved) {
+                    this._webglRendered = false;
+                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass) { style.restore(); return; }
+                    var y = this.size;
+                    var recursive = false;
+                    if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
+                        this.setDrawing();
+                        this.setDrawingScale();
+                        if (defaultSettings.textAlpha != 1) {
+                            style.globalAlpha *= defaultSettings.textAlpha;
+                        }
+                        var node = (defaultmapsettings.customSkins && LM.showCustomSkins) ? application.getCustomSkin(this.targetNick, this.color) : null;
+                        if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                            if (this.setNick(this.targetNick)) {
+                                this.drawNick(style);
+                            }
+                        }
+                        if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                            if (this.setMass(this.size)) {
+                                this.drawMass(style);
+                                if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                    this.drawMerge(style);
+                                }
+                                if (defaultmapsettings.showChat) {
+                                    this.drawChat(style);
+                                }
+                            }
+                        }
+                    }
+                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                        window.teammatenicks && this.targetNick != "" &&
+                        (window.teammatenicks.includes(this.targetNick))) {
+                        drawRender.drawTeammatesInd(style, this.x, this.y, y);
+                    }
+                    style.restore();
+                    return;
                 }
                 if (this.removed) {
                     style.globalAlpha *= 1 - this.alpha;
@@ -16718,6 +16760,112 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
                 this.u_viewScale = gl.getUniformLocation(program, 'u_viewScale');
 
+                // ===== WebGL2 Cell Shader with Skin Textures =====
+                var cellVsSource = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_cellPos;
+                in float a_radius;
+                in vec4 a_color;
+                in float a_skinLayer;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec4 v_color;
+                out vec2 v_unitPos;
+                flat out float v_skinLayer;
+                void main() {
+                    v_color = a_color;
+                    v_unitPos = a_unitPos;
+                    v_skinLayer = a_skinLayer;
+                    vec2 worldPos = a_cellPos + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+
+                var cellFsSource = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                in vec2 v_unitPos;
+                flat in float v_skinLayer;
+                uniform sampler2DArray u_skinArray;
+                out vec4 fragColor;
+                void main() {
+                    float distSq = dot(v_unitPos, v_unitPos);
+                    if (distSq > 1.0) discard;
+                    if (v_skinLayer >= 0.0) {
+                        vec2 skinUV = v_unitPos * 0.5 + 0.5;
+                        fragColor = texture(u_skinArray, vec3(skinUV, v_skinLayer));
+                    } else {
+                        float edgeAlpha = smoothstep(1.0, 0.95, distSq);
+                        fragColor = vec4(v_color.rgb, edgeAlpha);
+                    }
+                    fragColor.a *= v_color.a;
+                }`;
+
+                var cellProgram = gl.createProgram();
+                gl.attachShader(cellProgram, compileShader(gl, gl.VERTEX_SHADER, cellVsSource));
+                gl.attachShader(cellProgram, compileShader(gl, gl.FRAGMENT_SHADER, cellFsSource));
+                gl.linkProgram(cellProgram);
+                this.glCellProgram = cellProgram;
+
+                this.u_cell_viewCenter = gl.getUniformLocation(cellProgram, 'u_viewCenter');
+                this.u_cell_viewScale = gl.getUniformLocation(cellProgram, 'u_viewScale');
+                this.u_skinArray = gl.getUniformLocation(cellProgram, 'u_skinArray');
+
+                // Cell VAO (separate from food VAO — 8-float instance stride)
+                this.glCellVAO = gl.createVertexArray();
+                gl.bindVertexArray(this.glCellVAO);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                var a_cell_unitPos = gl.getAttribLocation(cellProgram, 'a_unitPos');
+                gl.enableVertexAttribArray(a_cell_unitPos);
+                gl.vertexAttribPointer(a_cell_unitPos, 2, gl.FLOAT, false, 0, 0);
+
+                // Instance VBO: [x, y, radius, r, g, b, alpha, skinLayer] = 8 floats
+                this.glCellInstanceVBO = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
+                this.glCellMaxInstances = 2000;
+                gl.bufferData(gl.ARRAY_BUFFER, this.glCellMaxInstances * 8 * 4, gl.DYNAMIC_DRAW);
+                var cellStride = 8 * 4;
+
+                var a_cell_cellPos = gl.getAttribLocation(cellProgram, 'a_cellPos');
+                gl.enableVertexAttribArray(a_cell_cellPos);
+                gl.vertexAttribPointer(a_cell_cellPos, 2, gl.FLOAT, false, cellStride, 0);
+                gl.vertexAttribDivisor(a_cell_cellPos, 1);
+
+                var a_cell_radius = gl.getAttribLocation(cellProgram, 'a_radius');
+                gl.enableVertexAttribArray(a_cell_radius);
+                gl.vertexAttribPointer(a_cell_radius, 1, gl.FLOAT, false, cellStride, 2 * 4);
+                gl.vertexAttribDivisor(a_cell_radius, 1);
+
+                var a_cell_color = gl.getAttribLocation(cellProgram, 'a_color');
+                gl.enableVertexAttribArray(a_cell_color);
+                gl.vertexAttribPointer(a_cell_color, 4, gl.FLOAT, false, cellStride, 3 * 4);
+                gl.vertexAttribDivisor(a_cell_color, 1);
+
+                var a_cell_skinLayer = gl.getAttribLocation(cellProgram, 'a_skinLayer');
+                gl.enableVertexAttribArray(a_cell_skinLayer);
+                gl.vertexAttribPointer(a_cell_skinLayer, 1, gl.FLOAT, false, cellStride, 7 * 4);
+                gl.vertexAttribDivisor(a_cell_skinLayer, 1);
+
+                gl.bindVertexArray(null);
+
+                this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 8);
+
+                // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~32 MB VRAM)
+                this.glSkinArray = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                this.glSkinTexSize = 512;
+                this.glSkinMaxLayers = 128;
+                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+
+                this.glSkinMap = {};
+                this.glSkinNextLayer = 0;
+
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             } catch (e) {
@@ -16888,6 +17036,128 @@ Most cells eaten   : ${mostCellsEaten}
 
             return true;
         },
+        uploadSkinTexture(url, canvas) {
+            if (!this.gl || !this.glSkinArray) return -1;
+            if (this.glSkinMap[url] !== undefined) return this.glSkinMap[url];
+            if (this.glSkinNextLayer >= this.glSkinMaxLayers) return -1;
+
+            var layer = this.glSkinNextLayer++;
+            var gl = this.gl;
+            var size = this.glSkinTexSize;
+
+            // Resize canvas to texture array layer size if needed
+            var srcCanvas = canvas;
+            if (canvas.width !== size || canvas.height !== size) {
+                var tmp = document.createElement('canvas');
+                tmp.width = size; tmp.height = size;
+                var tmpCtx = tmp.getContext('2d');
+                tmpCtx.drawImage(canvas, 0, 0, size, size);
+                srcCanvas = tmp;
+            }
+
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+
+            this.glSkinMap[url] = layer;
+            return layer;
+        },
+        drawWebGLCellBatch(cellsArray) {
+            if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
+            var gl = this.gl;
+            var data = this.glCellInstanceData;
+            var count = 0;
+            var max = this.glCellMaxInstances;
+            var viewScale = this.scale || 1;
+
+            // Viewport culling bounds
+            var halfW = (this.canvasWidth / viewScale / 2) + 200;
+            var halfH = (this.canvasHeight / viewScale / 2) + 200;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
+            var _isParty = ':party' === application.gameMode;
+
+            for (var i = 0; i < cellsArray.length && count < max; i++) {
+                var cell = cellsArray[i];
+                if (!cell || cell.invisible) continue;
+                if (LM.hideSmallBots && cell.size <= 36) continue;
+                if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
+
+                var x = cell.x, y = cell.y, r = cell.size;
+                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                // Color resolution
+                var colorHex = cell.color;
+                if (LM.play || LM.playerCellsMulti.length) {
+                    if ((cell.isPlayerCell || cell.playerCellsMulti) && defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ':teams') {
+                        colorHex = ogarcopythelb.color;
+                    } else if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !cell.isFood && !defaultmapsettings.cellContours && LM.gameMode != ':teams' && cell.oppColor) {
+                        colorHex = cell.oppColor;
+                    }
+                }
+
+                var cInt = cell._colorInt;
+                if (cInt === undefined || cell._colorStr !== colorHex) {
+                    cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    cell._colorInt = cInt;
+                    cell._colorStr = colorHex;
+                }
+
+                // Alpha: removed cells fade out, transparent cells setting
+                var alpha = 1.0;
+                if (cell.removed) alpha *= (1 - (cell.alpha || 0));
+                if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) alpha *= defaultSettings.cellsAlpha;
+
+                // Skin layer lookup
+                var skinLayer = -1.0;
+                if (_showSkins && cell.targetNick) {
+                    var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
+                    var skinUrl = application.customSkinsMap[mode];
+                    if (!skinUrl && _isParty) skinUrl = application.customSkinsMap[cell.targetNick + '#000000'];
+                    if (skinUrl && this.glSkinMap[skinUrl] !== undefined) {
+                        skinLayer = this.glSkinMap[skinUrl];
+                        // Transparent skin alpha
+                        if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                            if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
+                        }
+                    }
+                }
+
+                var idx = count * 8;
+                data[idx] = x;
+                data[idx + 1] = y;
+                data[idx + 2] = r;
+                data[idx + 3] = ((cInt >> 16) & 255) / 255;
+                data[idx + 4] = ((cInt >> 8) & 255) / 255;
+                data[idx + 5] = (cInt & 255) / 255;
+                data[idx + 6] = alpha;
+                data[idx + 7] = skinLayer;
+                count++;
+                cell._webglRendered = true;
+            }
+
+            if (count === 0) return true;
+
+            // Bind skin texture array to unit 0
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+
+            gl.useProgram(this.glCellProgram);
+            gl.uniform2f(this.u_cell_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_cell_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.uniform1i(this.u_skinArray, 0);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 8));
+
+            gl.bindVertexArray(this.glCellVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
         setView() {
             this.setScale(LM.playerSize);
             var speed = 30;
@@ -17016,8 +17286,11 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            /* drawWebGLBatch(LM.cells) removed — cell circles are drawn by
-               cell.draw(ctx) on Canvas2D; the WebGL batch was invisible and wasted GPU */
+            /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
+             * in a single draw call. Falls back to Canvas2D for jelly/contours. */
+            if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours && !defaultSettings.customBackground) {
+                this.drawWebGLCellBatch(LM.cells);
+            }
             for (i = 0; i < LM.cells.length; i++) {
 
                 if (defaultmapsettings.jellyPhisycs) {
