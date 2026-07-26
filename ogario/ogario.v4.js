@@ -16695,7 +16695,7 @@ Most cells eaten   : ${mostCellsEaten}
 
         },
         compareCells() {
-            if ((this.play || LM.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+            if ((this.play || LM.playerCellsMulti.length) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
                     (this.biggerSTECellsCache || (this.biggerSTECellsCache = [])).length = 0;
                     (this.biggerCellsCache || (this.biggerCellsCache = [])).length = 0;
@@ -17903,7 +17903,7 @@ Most cells eaten   : ${mostCellsEaten}
             drawRender.counterTime++
             if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
                 if (drawRender.counterTime < 500 && drawRender.counterTime > 8) {
-                    this.averageRenderTime = (drawRender.renderTime / 10).toFixed(2)
+                    this.averageRenderTime = (drawRender.renderTime / drawRender.counterTime).toFixed(2)
 
                 }
                 drawRender.counterTime = 0
@@ -18213,7 +18213,6 @@ Most cells eaten   : ${mostCellsEaten}
                 this.ctx.arc(wave.x, wave.y, Math.max(0.1, r - r / 8), 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
-                this.ctx.beginPath();
                 this.ctx.strokeStyle = defaultSettings.splitRangeColor || "#00e6ff";
                 this.ctx.lineWidth = 5;
                 this.ctx.beginPath();
