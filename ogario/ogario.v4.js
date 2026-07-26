@@ -8801,24 +8801,145 @@ function thelegendmodproject() {
             //}
         },
         readMessage(message) {
-            switch (message.getUint8(0)) {
+            var opcode = message.getUint8(0);
+            switch (opcode) {
                 case 0:
                     this.playerID = message.getUint32(1, true);
-                    //this.playerID = message.getUint16(1, true);
                     break;
                 case 1:
                     this.sendPlayerUpdate();
                     break;
+                case 12:
+                    this.readPlayerRemove(message);
+                    break;
+                case 16:
+                    this.readPpv7(message);
+                    break;
                 case 20:
                     this.updateTeamPlayer(message);
                     break;
+                case 25:
+                    this.readDeltaChatMessage(message);
+                    break;
                 case 30:
                     this.updateTeamPlayerPosition(message);
+                    break;
+                case 45:
+                    this.readWavePing(message);
                     break;
                 case 96:
                     break;
                 case 100:
                     this.readChatMessage(message);
+                    break;
+            }
+        },
+        readPlayerRemove(view) {
+            var offset = 1;
+            while (offset + 1 < view.byteLength) {
+                var pid = view.getUint16(offset, true);
+                offset += 2;
+                if (pid === 0) break;
+                var idx = this.checkPlayerID(pid);
+                if (idx !== null) {
+                    this.teamPlayers.splice(idx, 1);
+                }
+            }
+        },
+        readPpv7(view) {
+            var offset = 1;
+            function readUTF16() {
+                if (offset >= view.byteLength) return '';
+                var len = view.getUint8(offset);
+                offset += 1;
+                var str = '';
+                for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
+                    str += String.fromCharCode(view.getUint16(offset, true));
+                    offset += 2;
+                }
+                return str;
+            }
+            while (offset + 1 < view.byteLength) {
+                var playerID = view.getUint16(offset, true);
+                offset += 2;
+                if (playerID === 0) break;
+
+                var flagsTopLevel = view.getUint8(offset);
+                offset += 1;
+                if (!flagsTopLevel) continue;
+
+                var flagsDownLevel = (flagsTopLevel & 1) ? view.getUint8(offset++) : 0;
+                var clientId = (flagsDownLevel & 1) ? (view.getUint16(offset, true), offset += 2) : undefined;
+                var nick = (flagsDownLevel & 2) ? readUTF16() : undefined;
+                var customSkin = (flagsDownLevel & 4) ? readUTF16() : undefined;
+                var customColor = (flagsDownLevel & 8) ? (offset += 3) : undefined;
+                var pSkin = (flagsDownLevel & 16) ? readUTF16() : undefined;
+                var pColor = (flagsDownLevel & 32) ? (offset += 3) : undefined;
+                var accountId = (flagsDownLevel & 64) ? (view.getUint32(offset, true), offset += 4) : undefined;
+
+                var posX, posY, mass;
+                if (flagsTopLevel & 2) {
+                    posX = view.getInt16(offset, true); offset += 2;
+                    posY = view.getInt16(offset, true); offset += 2;
+                    mass = view.getUint32(offset, true); offset += 4;
+                }
+                var isAlive = (flagsTopLevel & 4) ? Boolean(view.getUint8(offset++)) : undefined;
+                var quadrant = (flagsTopLevel & 8) ? view.getInt8(offset++) : undefined;
+
+                var existingIdx = this.checkPlayerID(playerID);
+                var activeNick = nick || (existingIdx !== null ? this.teamPlayers[existingIdx].nick : '');
+                var activeSkin = customSkin || pSkin || (existingIdx !== null ? this.teamPlayers[existingIdx].skinURL : '');
+
+                if (activeNick && activeSkin) {
+                    this.cacheCustomSkin(activeNick, '#000000', activeSkin);
+                }
+                if (existingIdx !== null) {
+                    if (nick !== undefined) this.teamPlayers[existingIdx].nick = nick;
+                    if (activeSkin) this.teamPlayers[existingIdx].skinURL = activeSkin;
+                    if (posX !== undefined && posY !== undefined) {
+                        this.teamPlayers[existingIdx].x = posX;
+                        this.teamPlayers[existingIdx].y = posY;
+                    }
+                } else if (activeNick) {
+                    var skinName = ":party" === this.gameMode ? activeNick + "#000000" : activeNick;
+                    var map = new minimapCell(playerID, activeNick, skinName, activeSkin || '');
+                    if (posX !== undefined && posY !== undefined) {
+                        map.x = posX;
+                        map.y = posY;
+                    }
+                    this.teamPlayers.push(map);
+                }
+            }
+        },
+        readDeltaChatMessage(view) {
+            if (view.byteLength < 14) return;
+            var type = view.getUint8(1);
+            var userID = view.getUint32(2, true);
+            var playerID = view.getUint32(6, true);
+            var targetID = view.getUint32(10, true);
+            var offset = 14;
+            var text = "";
+            while (offset + 1 < view.byteLength) {
+                var code = view.getUint16(offset, true);
+                if (code === 0) break;
+                text += String.fromCharCode(code);
+                offset += 2;
+            }
+            var parts = text.split(': ');
+            var nick = parts.length > 1 ? parts[0] : '';
+            var msg = parts.length > 1 ? parts.slice(1).join(': ') : text;
+            if (window.LM && LM.addChatMessage) {
+                LM.addChatMessage(nick, msg);
+            }
+        },
+        readWavePing(view) {
+            if (view.byteLength < 18) return;
+            var playerID = view.getUint32(5, true);
+            var type = view.getUint8(9);
+            var wx = view.getInt32(10, true);
+            var wy = view.getInt32(14, true);
+            if (window.LM && LM.addWave) {
+                LM.addWave(wx, wy, '#ffffff');
             }
         },
         //Sonia4
