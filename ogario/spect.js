@@ -898,24 +898,36 @@ class Spect {
         }
     }
 
-    getX(x) { // Converts raw server space x ([0, mapSize]) to world space ([-halfW, +halfW])
-        var mapOfsX = (this.mapOffsetX !== undefined && this.mapOffsetX !== null) ? this.mapOffsetX : 7071;
+    getX(x) {
+        if (legendmod && legendmod.integrity) {
+            return x * (this.fixX || 1) + (this.fix3x || 0);
+        }
+        var mapOfsX = (this.mapOffsetX !== undefined && this.mapOffsetX !== null) ? this.mapOffsetX : 0;
         return (x - mapOfsX) * (this.fixX || 1) + (this.fix3x || 0);
     }
 
-    getY(y) { // Converts raw server space y ([0, mapSize]) to world space ([-halfW, +halfW])
-        var mapOfsY = (this.mapOffsetY !== undefined && this.mapOffsetY !== null) ? this.mapOffsetY : 7071;
+    getY(y) {
+        if (legendmod && legendmod.integrity) {
+            return y * (this.fixY || 1) + (this.fix3y || 0);
+        }
+        var mapOfsY = (this.mapOffsetY !== undefined && this.mapOffsetY !== null) ? this.mapOffsetY : 0;
         return (y - mapOfsY) * (this.fixY || 1) + (this.fix3y || 0);
     }
 
-    convertX(x) { // Converts world space x ([-halfW, +halfW]) to raw server space ([0, mapSize])
-        var mapOfsX = (legendmod.mapOffsetX !== undefined && legendmod.mapOffsetX !== null) ? legendmod.mapOffsetX : (this.mapOffsetX || 7071);
-        return ~~((x + mapOfsX) * this.fixX - (this.fix3x || 0));
+    convertX(x) {
+        if (legendmod && legendmod.integrity) {
+            return ~~((x) * (this.fixX || 1) - (this.fix3x || 0));
+        }
+        var mapOfsX = (legendmod.mapOffsetX !== undefined && legendmod.mapOffsetX !== null) ? legendmod.mapOffsetX : (this.mapOffsetX || 0);
+        return ~~((x + mapOfsX) * (this.fixX || 1) - (this.fix3x || 0));
     }
 
-    convertY(y) { // Converts world space y ([-halfW, +halfW]) to raw server space ([0, mapSize])
-        var mapOfsY = (legendmod.mapOffsetY !== undefined && legendmod.mapOffsetY !== null) ? legendmod.mapOffsetY : (this.mapOffsetY || 7071);
-        return ~~((y + mapOfsY) * this.fixY - (this.fix3y || 0));
+    convertY(y) {
+        if (legendmod && legendmod.integrity) {
+            return ~~((y) * (this.fixY || 1) - (this.fix3y || 0));
+        }
+        var mapOfsY = (legendmod.mapOffsetY !== undefined && legendmod.mapOffsetY !== null) ? legendmod.mapOffsetY : (this.mapOffsetY || 0);
+        return ~~((y + mapOfsY) * (this.fixY || 1) - (this.fix3y || 0));
     }
 
     constantrecalculation2() {
@@ -1050,16 +1062,24 @@ class Spect {
         }
         var halfW = this.mapSize / 2;
         this.mapOffset = halfW;
-        this.mapOffsetX = (left + right) / 2;
-        this.mapOffsetY = (top + bottom) / 2;
+        if (legendmod && legendmod.integrity) {
+            this.mapOffsetX = this.mapOffset - right;
+            this.mapOffsetY = this.mapOffset - bottom;
+            this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+            this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+            this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+            this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+        } else {
+            this.mapOffsetX = (left + right) / 2;
+            this.mapOffsetY = (top + bottom) / 2;
+            this.mapMinX = -halfW;
+            this.mapMinY = -halfW;
+            this.mapMaxX = halfW;
+            this.mapMaxY = halfW;
+        }
 
-        this.mapMinX = -halfW;
-        this.mapMinY = -halfW;
-        this.mapMaxX = halfW;
-        this.mapMaxY = halfW;
-
-        this.mapMidX = 0;
-        this.mapMidY = 0;
+        this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+        this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 
         if (!this.mapOffsetFixed) {
             this.viewX = (right + left) / 2 - this.mapOffsetX;
