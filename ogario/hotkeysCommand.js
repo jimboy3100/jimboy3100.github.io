@@ -123,6 +123,15 @@
                 },
                 keyUp: null,
                 type: 'normal'
+            },
+            'hk-multiboxback': {
+                label: textLanguage['hk-multiboxback'],
+                defaultKey: '',
+                keyDown() {
+                    application && application.multiboxback();
+                },
+                keyUp: null,
+                type: 'normal'
             },	
             'hk-multiboxFollowMouse': {
                 label: textLanguage['hk-multiboxFollowMouse'],

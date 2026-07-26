@@ -376,14 +376,14 @@ class Spect {
     sendCursor() {
         this.positionController = setInterval(() => {
 
+            var isActiveSpect = (typeof spects !== "undefined" && spects) ? window.multiboxPlayerEnabled === (spects.indexOf(this) + 1) : false;
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+            } else if (isActiveSpect || this.isFreeSpectate || window.multiboxFollowMouse) {
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-
-                this.distX = this.convertX(legendmod.cursorX) - this.playerX
-                this.distY = this.convertY(legendmod.cursorY) - this.playerY
-            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+                this.distX = this.convertX(legendmod.cursorX) - this.playerX;
+                this.distY = this.convertY(legendmod.cursorY) - this.playerY;
+            } else {
                 if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
                 }

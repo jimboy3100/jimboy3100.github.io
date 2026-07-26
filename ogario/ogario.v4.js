@@ -2377,6 +2377,7 @@ var displayText = {
         multiKeepMoving: 'Inactive keep moving',
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
+        multiboxAmount: 'Liczba kont Multibox (2-4)',
         skipStats: 'Pomin statystyki po smierci',
         showQuest: 'Pokaz zadanie (quest)',
         autoZoom: 'Auto zoom',
@@ -2523,7 +2524,8 @@ var displayText = {
         'hk-split16': 'Podzial na 16',
         'hk-crazyDoubleSplit': 'Crazy double split',
         'hk-pause': 'Pauza kulki',
-        'hk-multiboxswap': 'Multibox Swap',
+        'hk-multiboxswap': 'Multibox Toggle Next',
+        'hk-multiboxback': 'Multibox Toggle Back',
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Pokaz/ukryj top 5 teamu',
         'hk-dance': 'Dance',
@@ -2864,6 +2866,7 @@ var displayText = {
         multiKeepMoving: 'Inactive keep moving',
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
+        multiboxAmount: 'Multibox slots (2-4)',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
@@ -3010,7 +3013,8 @@ var displayText = {
         'hk-split16': 'Split 16',
         'hk-crazyDoubleSplit': 'Crazy double split',
         'hk-pause': 'Cell pause',
-        'hk-multiboxswap': 'Multibox Swap',
+        'hk-multiboxswap': 'Multibox Toggle Next',
+        'hk-multiboxback': 'Multibox Toggle Back',
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Show/hide teamboard',
         'hk-dance': 'Dance',
@@ -4130,6 +4134,7 @@ var defaultmapsettings = {
     multiKeepMoving: true,
     middleMultiView: false,
     middleMultiViewWhenClose: true,
+    multiboxAmount: 2,
     mbSwitchAfterDeath: true,
     mbRings: true,
     mbFreeze: false,
@@ -5643,26 +5648,46 @@ function thelegendmodproject() {
         },
         multiboxswap() {
             this.hideMenu();
-            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
-                window.fullSpectator = false;
-                LM.flushSpecsData();
+            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
+            var neededSpects = targetBoxes - 1;
+
+            if (typeof spects === "undefined" || !spects) spects = [];
+            while (spects.length < neededSpects) {
                 addBox();
-                window.multiboxPlayerEnabled = 1;
-                window.multiboxPlayerEnabledSaved = null;
-                if (!legendmod.play) {
-                    play();
-                }
-                return;
+            }
+            if (!legendmod.multiBoxPlayerExists) {
+                legendmod.multiBoxPlayerExists = true;
             }
 
-            var numBoxes = spects.length;
             if (!window.multiboxPlayerEnabled) {
                 window.multiboxPlayerEnabled = 1;
                 if (!legendmod.play) {
                     play();
                 }
-            } else if (window.multiboxPlayerEnabled < numBoxes) {
+            } else if (window.multiboxPlayerEnabled < neededSpects) {
                 window.multiboxPlayerEnabled++;
+            } else {
+                window.multiboxPlayerEnabled = null;
+            }
+            window.multiboxPlayerEnabledSaved = null;
+        },
+        multiboxback() {
+            this.hideMenu();
+            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
+            var neededSpects = targetBoxes - 1;
+
+            if (typeof spects === "undefined" || !spects) spects = [];
+            while (spects.length < neededSpects) {
+                addBox();
+            }
+            if (!legendmod.multiBoxPlayerExists) {
+                legendmod.multiBoxPlayerExists = true;
+            }
+
+            if (!window.multiboxPlayerEnabled) {
+                window.multiboxPlayerEnabled = neededSpects;
+            } else if (window.multiboxPlayerEnabled > 1) {
+                window.multiboxPlayerEnabled--;
             } else {
                 window.multiboxPlayerEnabled = null;
             }
@@ -6919,6 +6944,7 @@ function thelegendmodproject() {
 
             this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
+            this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
             $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>");
