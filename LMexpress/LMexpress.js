@@ -176,7 +176,6 @@ TimerLM = {};
 var playerState = 0;
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
-var MSGCOMMANDS;
 var MSGNICK;
 var playerMsg = "";
 var commandMsg = "";
@@ -1185,7 +1184,7 @@ function BeforeChangingSkins() {
             });
             console.log("Recapatcha needed");
             ogarioplayfalse();
-            for (i=1;i<26;i++){
+            for (var i=1;i<26;i++){
                 setTimeout(function() {
                     if ($("#captchaWindow").is(":visible") == false) {
                         $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
@@ -1343,7 +1342,7 @@ function LegendSettingsfirst() {
         jackColor: 'rgb(250, 250, 250)'
     });
 
-    LegendJSON = JSON.parse(document.getElementById("export-settings").value);
+    try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); }
     LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
     $("#export-settings-btn").click(function () {
         LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
@@ -1365,12 +1364,12 @@ function LegendSettingsfirst() {
 function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
     setTimeout(function () {
         if (switcheryLegendSwitch.isChecked()) {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
+            try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
             parseLegendJSONAPI(LegendJSON);
             var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
             document.getElementById("export-settings").value = LegendJSONnice;
         } else {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
+            try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
             parseLegendJSONAPI(LegendJSON);
             delete LegendJSON.legendSettings;
             var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
@@ -1622,7 +1621,7 @@ function parseLegendJSONAPI(LegendJSON) {
 
 function LegendSettingsImport(switcheryLegendSwitch2) {
     if (switcheryLegendSwitch2.isChecked()) {
-        LegendJSON = JSON.parse(document.getElementById("import-settings").value);
+        try { LegendJSON = JSON.parse(document.getElementById("import-settings").value); } catch (e) { console.warn("Invalid import JSON:", e); return; }
         //        parseLegendJSONAPI(LegendJSON);
         saveLegendJSONAPI();
         setTimeout(function () {
@@ -1817,7 +1816,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         }
         MSGCOMMANDS = MSGCOMMANDS.split("[discord]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/discord]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
+        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("http://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTP://") == false) {
             MSGCOMMANDS = "https://" + MSGCOMMANDS;
         }
         if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg") || MSGCOMMANDS.includes("discord.com")) {
@@ -1995,7 +1994,7 @@ function MsgServCommandsreturner() {
     MSGCOMMANDS3 = MSGCOMMANDS;
     MSGCOMMANDS2 = MSGCOMMANDS2.split("[srv]").pop();
     MSGCOMMANDS2 = MSGCOMMANDS2.split('[/srv]')[0];
-    if (MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("HTTP://") == false && MSGCOMMANDS2.includes("HTTPS://") == false) {
+    if (MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("http://") == false && MSGCOMMANDS2.includes("HTTP://") == false && MSGCOMMANDS2.includes("HTTPS://") == false) {
         MSGCOMMANDS2 = "https://" + MSGCOMMANDS2;
     }
     if (MSGCOMMANDS2.includes("agar.io/#")) { //if sent server is Party mode
@@ -2284,6 +2283,7 @@ function universalchat() {
         stat.token = $('#server-token').val();
         stat.ws = 'wss://live-arena-' + stat.token + '.agar.io:80';
         my.connect();
+        if (stat.update_timerid) clearInterval(stat.update_timerid);
         stat.update_timerid = setInterval(my.update, cfg.update_interval);
     };
     my.capture_end = function () {
@@ -2562,7 +2562,7 @@ function universalchat() {
         //my.log("cmd="+ cmd.name);
         switch (cmd.name) {
             case "add":
-                if (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M')) {
+                if (cmd.playerName && (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M'))) {
                 }
                 else {
                     if (!cmd.playerName) {
@@ -2595,7 +2595,7 @@ function universalchat() {
                 my.resetMinimap();
                 break;
             case "chat":
-                if (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M')) {
+                if (cmd.playerName && (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M'))) {
                 }
                 else {
                     //console.log(cmd);
@@ -2608,7 +2608,7 @@ function universalchat() {
                 }
                 break;
             case "command":
-                if (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M')) {
+                if (cmd.playerName && (window.teammatelegendmodnicks && window.teammatelegendmodnicks.includes(cmd.playerName) || cmd.playerName.includes('L.M'))) {
                 }
                 else {
                     //console.log(cmd);
@@ -4974,7 +4974,7 @@ function getSNEZServers(ifcalled) {
                         temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
                         temporaryserver2 = temporaryserver.split('live-arena-').pop();
                         temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                        temporaryserver3 = temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
+                        temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
                         if (data[player].hidecountry == true && data[player].extra) {
                             data[player].extra.ip_info.country = "UN";
                         }
@@ -5005,7 +5005,7 @@ function getSNEZServers(ifcalled) {
                             temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
                             temporaryserver2 = temporaryserver.split('live-arena-').pop();
                             temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                            temporaryserver3 = temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
+                            temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
                             if (data[player].hidecountry == true) {
                                 data[player].extra.ip_info.country = "UN";
                             }
@@ -5060,7 +5060,7 @@ function showonceusers3returner(showonceusers3) {
 
 function init(modVersion) {
     if (!document.getElementById("message-box")) {
-        setTimeout(init(modVersion), 200);
+        setTimeout(function() { init(modVersion); }, 200);
         console.log("ogario.js not loaded");
         return;
     }
@@ -5789,18 +5789,11 @@ function initializeLM(modVersion) {
         if ($('#clantag').val() != "" && $('#clantag').val() != undefined) {
             Pwdtosend = $('#clantag').val();
         }
-        var i = 0,
-            Pwdtosendlength = Pwdtosend.length;
-        for (i; i < Pwdtosend; i++) {
-            Pwdtosend = Pwdtosend.replace(" ", "_");
-        }
+        Pwdtosend = Pwdtosend.replace(/ /g, "_");
         if ($('#nick').val() != undefined) { nicknametosend = $('#nick').val(); }
-        var i = 0, nicknametosendlength = nicknametosend.length;
-        for (i; i < nicknametosendlength; i++) {
-            nicknametosend = removeEmojis(nicknametosend.replace(" ", "_"));
-        }
+        nicknametosend = removeEmojis(nicknametosend.replace(/ /g, "_"));
         if ($('#server').val() != undefined) {
-            if (servertosend.indexOf("#") == false) {
+            if (servertosend.indexOf("#") !== -1) {
                 servertosend = $('#server').val().replace('#', 'Party-');
             }
         }
@@ -6555,7 +6548,7 @@ function BannedUIDS() {
 
 function populateBanListConfig() {
     var select = document.getElementById("ss-select-BannedUIDS");
-    for (i = 0; i < Object.keys(window.bannedUserUIDs).length; i++) {
+    for (var i = 0; i < Object.keys(window.bannedUserUIDs).length; i++) {
         select.options[select.options.length] = new Option(window.bannedUserUIDs[i])
     }
 }
