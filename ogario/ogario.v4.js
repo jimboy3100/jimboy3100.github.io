@@ -16930,6 +16930,30 @@ Most cells eaten   : ${mostCellsEaten}
             var sw = ((maxX - minX) / mapW) * legendmod.gridPic.width;
             var sh = ((maxY - minY) / mapH) * legendmod.gridPic.height;
 
+            this.ctx.drawImage(legendmod.gridPic, sx, sy, sw, sh, minX, minY, maxX - minX, maxY - minY);
+        },
+        /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
+        drawGrid(ctx) {
+            if (!this._staticGridPattern) {
+                var pCanvas = document.createElement("canvas");
+                pCanvas.width = 50;
+                pCanvas.height = 50;
+                var pCtx = pCanvas.getContext("2d");
+                pCtx.strokeStyle = defaultSettings.gridColor || "rgba(255,255,255,0.05)";
+                pCtx.beginPath();
+                pCtx.moveTo(0, 0);
+                pCtx.lineTo(50, 0);
+                pCtx.moveTo(0, 0);
+                pCtx.lineTo(0, 50);
+                pCtx.stroke();
+                this._staticGridPattern = ctx.createPattern(pCanvas, "repeat");
+            }
+            if (this._staticGridPattern) {
+                ctx.save();
+                ctx.fillStyle = this._staticGridPattern;
+                ctx.fillRect(LM.mapMinX || -7071, LM.mapMinY || -7071, LM.mapSize || 14142, LM.mapSize || 14142);
+                ctx.restore();
+            }
         },
         drawCustomBackgrounds() {
             if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
