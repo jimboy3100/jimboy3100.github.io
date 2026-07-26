@@ -1,4 +1,4 @@
-window.OgVer = 3.468;
+window.OgVer = 3.469;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -17914,9 +17914,6 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.foodIsHidden = true;
                 return;
             }
-            /* WebGL2 GPU batch: 1 draw call for all food dots */
-            if (this.gl && this.drawWebGLFoodBatch(LM.food)) return;
-            /* Canvas2D fallback */
             this.drawCachedFood(this.ctx, LM.food, this.scale);
             //return;
             //}
