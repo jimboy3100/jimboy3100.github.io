@@ -1,4 +1,4 @@
-window.OgVer = 3.406;
+window.OgVer = 3.407;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11909,6 +11909,8 @@ function thelegendmodproject() {
         },
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
+            this._reconnAttempts = 0; /* reset auto-reconnect counter on success */
+            if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
             this.time = Date.now();
             if (!window.customProtol) window.customProtol = 6
             if (!window.customClient) window.customClient = 1
@@ -12015,6 +12017,30 @@ function thelegendmodproject() {
             //clearInterval(this.pingInterval);
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
+            }
+            /* ── Auto-reconnect on server restart ── */
+            var lastWs = this.ws;
+            if (lastWs && (lastWs.indexOf('legendmod.ml') !== -1 ||
+                           lastWs.indexOf('expanding.land') !== -1 ||
+                           lastWs.indexOf('ffa.legendmod') !== -1)) {
+                if (!this._reconnAttempts) this._reconnAttempts = 0;
+                var maxAttempts = 5;
+                if (this._reconnAttempts < maxAttempts) {
+                    this._reconnAttempts++;
+                    var delay = Math.min(3000 * Math.pow(2, this._reconnAttempts - 1), 30000);
+                    var attempt = this._reconnAttempts;
+                    console.log(consoleMsgLM + ' Auto-reconnect attempt ' + attempt + '/' + maxAttempts + ' in ' + (delay/1000) + 's');
+                    var self = this;
+                    this._reconnTimer = setTimeout(function() {
+                        console.log(consoleMsgLM + ' Reconnecting to ' + lastWs);
+                        if (window.core && window.core.connect) {
+                            window.core.connect(lastWs);
+                        }
+                    }, delay);
+                } else {
+                    console.log(consoleMsgLM + ' Auto-reconnect exhausted (' + maxAttempts + ' attempts)');
+                    this._reconnAttempts = 0;
+                }
             }
         },
         replayfunctions() {
