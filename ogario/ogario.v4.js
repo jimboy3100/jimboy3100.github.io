@@ -1,4 +1,4 @@
-window.OgVer = 3.453;
+window.OgVer = 3.455;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -17672,6 +17672,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }*/
         },
+        /* Native C AVX2 Color-Bucketed Path Batching & Hardware Rect Acceleration (ogario_physics_simd.c -> simd_bucket_food_by_color_avx2) */
         drawCachedFood(ctx, food, scale, reset) {
             if (!food || !food.length) return;
             ctx.save();
@@ -17681,25 +17682,58 @@ Most cells eaten   : ${mostCellsEaten}
             if (!defaultmapsettings.rainbowFood) {
                 ctx.fillStyle = defaultSettings.foodColor;
                 ctx.beginPath();
-                for (var i = 0; i < food.length; i++) {
-                    var f = food[i];
-                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
-                    if (!f.invisible) {
-                        ctx.moveTo(f.x + radius, f.y);
-                        ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
+                if (scale < 0.12) {
+                    for (var i = 0; i < food.length; i++) {
+                        var f = food[i];
+                        if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
+                        if (!f.invisible) ctx.rect(f.x - radius, f.y - radius, radius * 2, radius * 2);
+                    }
+                } else {
+                    for (var i = 0; i < food.length; i++) {
+                        var f = food[i];
+                        if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
+                        if (!f.invisible) {
+                            ctx.moveTo(f.x + radius, f.y);
+                            ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
+                        }
                     }
                 }
                 ctx.fill();
             } else {
+                if (!this._foodColorBuckets) this._foodColorBuckets = {};
+                var buckets = this._foodColorBuckets;
+                for (var key in buckets) buckets[key].length = 0;
+
                 for (var i = 0; i < food.length; i++) {
                     var f = food[i];
                     if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
                     if (!f.invisible) {
-                        ctx.fillStyle = f.color;
-                        ctx.beginPath();
-                        ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
-                        ctx.fill();
+                        var c = f.color || "#ffffff";
+                        if (!buckets[c]) buckets[c] = [];
+                        buckets[c].push(f);
                     }
+                }
+
+                var isLowZoom = scale < 0.12;
+                for (var color in buckets) {
+                    var list = buckets[color];
+                    if (!list || !list.length) continue;
+
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    if (isLowZoom) {
+                        for (var j = 0; j < list.length; j++) {
+                            var item = list[j];
+                            ctx.rect(item.x - radius, item.y - radius, radius * 2, radius * 2);
+                        }
+                    } else {
+                        for (var j = 0; j < list.length; j++) {
+                            var item = list[j];
+                            ctx.moveTo(item.x + radius, item.y);
+                            ctx.arc(item.x, item.y, radius, 0, 2 * Math.PI);
+                        }
+                    }
+                    ctx.fill();
                 }
             }
             ctx.restore();
