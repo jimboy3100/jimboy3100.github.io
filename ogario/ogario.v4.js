@@ -21069,7 +21069,6 @@ function Socket3MessageChat(chattypemsg, chatreader) {
         "toH": $("#server-token").val() + "3",
         "msg": temp
     }));
-    //wss://connect.websocket.in does not send commands to sender again
     Socket3DisplaychatMsg(chattypemsg, customLMID, ogarcopythelb.nick, chatreader)
     //Socket3DisplaychatMsg(chattypemsg, application.playerID, ogarcopythelb.nick, chatreader)
 }
@@ -21353,21 +21352,7 @@ function LMadvertisement2020() {
 
 
 
-/*
-var snezSocketdata;
-var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
 
-snezSocket.onmessage = function(message) { 
-snezSocketdata = JSON.parse(message.data); 
-console.log(message.data);
-}
-
-
-snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: application.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color}));
-
-
-
-*/
 function playReplayLM(temp) {
     if (temp && window.RecordedProtocol[temp]) {
         /*if (window.replayTimeOuts.length){
