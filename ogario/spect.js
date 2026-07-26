@@ -32,25 +32,43 @@ function addFullSpectator() {
         }
     }
     spects = []; // Reset spectator list for clean grid alignment
-    
-    const mapMinX = legendmod.mapMinX || -7071;
-    const mapMinY = legendmod.mapMinY || -7071;
-    const mapSize = legendmod.mapSize || 14142;
 
-    // Viewport size per spectator at FOV 4.95 zoom: ~5068 wide x 2970 high
-    // A 4-column by 5-row grid guarantees 100% full-map coverage with ~30% overlap and 0 blind spots
-    const cols = 4;
-    const rows = 5;
-    const stepX = mapSize / cols;
-    const stepY = mapSize / rows;
+    let mtp = 4.95,
+        w = ~~(1024 * mtp),
+        h = ~~(600 * mtp);
+    let stop = 0,
+        x = 0,
+        y = 0;
 
-    if (legendmod.integrity) {
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
+    const times = parseInt(legendmod.mapSize / 471.4);
+
+    if (legendmod.integrity && times < 80) {
+        for (; stop < times; stop++) {
+
+            if (stop === 0) {
                 let spect = new Spect();
-                spect.staticX = Math.round(mapMinX + (c + 0.5) * stepX);
-                spect.staticY = Math.round(mapMinY + (r + 0.5) * stepY);
-                spects.push(spect);
+                x = legendmod.mapMinX + 2400;
+                y = legendmod.mapMinY + 1000;
+                spect.staticX = x;
+                spect.staticY = y;
+                spects.push(spect)
+                stop++
+            } else {
+                if (x > legendmod.mapMaxX - 2400) {
+                    x = legendmod.mapMinX + 2400;
+                    y = y + h;
+                } else {
+                    x = x + w;
+                }
+                if (y > legendmod.mapMaxY - 1000) {
+                    stop = 10000;
+                    break
+                }
+                let spect = new Spect();
+                spect.staticX = x;
+                spect.staticY = y;
+                spects.push(spect)
+                stop++
             }
         }
         window.fullSpectator = true;
