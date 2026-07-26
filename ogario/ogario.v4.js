@@ -1,4 +1,4 @@
-window.OgVer = 3.473;
+window.OgVer = 3.474;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16899,8 +16899,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
-                this.camX = (this.camX + 2 * LM.viewX) / 3;
-                this.camY = (this.camY + 2 * LM.viewY) / 3;
+                this.camX = (this.camX + LM.viewX) / 2;
+                this.camY = (this.camY + LM.viewY) / 2;
             } else {
                 this.camX = (29 * this.camX + LM.viewX) / 30;
                 this.camY = (29 * this.camY + LM.viewY) / 30;
