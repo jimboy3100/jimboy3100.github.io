@@ -4832,12 +4832,12 @@ function SNEZServers() {
         }
 
         nick.addEventListener("change", socket.updateDetails);
-        server.addEventListener("change", socket.updateDetails);
-        tag.addEventListener("change", socket.updateDetails); //no4: I stoped this
+        if (server) server.addEventListener("change", socket.updateDetails);
+        if (tag) tag.addEventListener("change", socket.updateDetails); //no4: I stoped this
 
         var reconnectTimer = null;
 
-        reconnectButton.addEventListener("click", function (e) {
+        if (reconnectButton) reconnectButton.addEventListener("click", function (e) {
             clearTimeout(reconnectTimer);
             reconnectTimer = setTimeout(socket.updateDetails, 5000);
         });
