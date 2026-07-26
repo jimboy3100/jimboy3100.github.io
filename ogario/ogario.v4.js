@@ -11665,6 +11665,14 @@ function thelegendmodproject() {
                 var s = false;
                 var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
+                /* WebGL2 hybrid: if body was already drawn on the GPU, skip to text/effects */
+                if (this._webglRendered) {
+                    this._webglRendered = false;
+                    /* Still need text, special skins, teammates indicator */
+                    if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
+                    /* Skip body+skin, jump to text/effects section */
+                } else {
+
 
                 //26/7/2020
                 if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
@@ -11964,6 +11972,7 @@ function thelegendmodproject() {
                     }
                     this.drawSpecialSkin(style, y)
                 }
+                } /* end of else-block for non-WebGL body rendering */
                 if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
                     window.teammatenicks && this.targetNick != "" &&
                     (window.teammatenicks.includes(this.targetNick))) {
@@ -18681,12 +18690,16 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* WebGL2 cell body+skin batch — DISABLED: cells stay on Canvas2D.
-                 * Kept for future opt-in toggle. */
-                // if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
-                //     && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
-                //     this.drawWebGLCellBatch(LM.cells);
-                // }
+                /* WebGL2 cell body+skin batch — draws all eligible cell bodies on GPU in 1 draw call.
+                 * Cells rendered by WebGL get _webglRendered=true so cell.draw() skips body/skin.
+                 * Fallback: viruses, jelly, contours, video skins, removed cells stay on Canvas2D. */
+                if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
+                    && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
+                    var gl = this.gl;
+                    gl.enable(gl.BLEND);
+                    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                    this.drawWebGLCellBatch(LM.cells);
+                }
 
                 /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
                 var _cW = 0;
