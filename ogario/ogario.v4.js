@@ -1,4 +1,4 @@
-window.OgVer = 3.476;
+window.OgVer = 3.477;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10379,15 +10379,18 @@ function thelegendmodproject() {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
         this.movePoints = function () {
-            //console.log(this.id)
-            var pointsVel = this.pointsVel.slice();
+            /* Avoid .slice() array copy — track prev velocity inline (#4) */
+            var pv = this.pointsVel;
             var len = this.points.length;
+            if (len === 0) return;
+            var savedPrev = pv[len - 1]; // wrap-around: "previous" of element 0
             for (var i = 0; i < len; ++i) {
-                var prevVel = pointsVel[(i - 1 + len) % len];
-                var nextVel = pointsVel[(i + 1) % len];
-                var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                newVel = Math.max(Math.min(newVel, 10), -10);
-                this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
+                var curVal = pv[i];
+                var nextVel = pv[i + 1 < len ? i + 1 : 0];
+                var newVel = (curVal + Math.random() - 0.5) * 0.7;
+                if (newVel > 10) newVel = 10; else if (newVel < -10) newVel = -10;
+                pv[i] = (savedPrev + nextVel + 8 * newVel) / 10;
+                savedPrev = curVal; // save unmodified value for next iteration's "prev"
             }
             this.maxPointRad = 0
             for (var i = 0; i < len; ++i) {
@@ -16143,15 +16146,24 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(function (row, conf) {
-                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
-            });
+            /* Insertion sort: O(N) on nearly-sorted data (cells barely move between frames).
+             * Avoids Array.sort callback overhead (~2000 function-pointer calls). */
+            var a = this.cells;
+            for (var i = 1, len = a.length; i < len; i++) {
+                var tmp = a[i], tSize = tmp.size, tId = tmp.id;
+                var j = i - 1;
+                while (j >= 0 && (a[j].size > tSize || (a[j].size === tSize && a[j].id > tId))) {
+                    a[j + 1] = a[j]; j--;
+                }
+                a[j + 1] = tmp;
+            }
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
             var targetSize = 0;
             var x = 0;
             var y = 0;
+            var minSize = Infinity, maxSize = 0;
             playersLength = this.playerCells.length;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
@@ -16159,6 +16171,9 @@ Most cells eaten   : ${mostCellsEaten}
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x / playersLength;
                 y += n.y / playersLength;
+                /* Track min/max inline to avoid redundant sort in recalculatePlayerMass */
+                if (n.size < minSize) minSize = n.size;
+                if (n.size > maxSize) maxSize = n.size;
             }
 
             if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
@@ -16172,19 +16187,20 @@ Most cells eaten   : ${mostCellsEaten}
 
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
+            this._playerMinSize = minSize;
+            this._playerMaxSize = maxSize;
             this.recalculatePlayerMass();
         },
         recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
-                var cells = this.playerCells;
-                var CellLength = cells.length;
-                cells.sort(function (cells, CellLength) {
-                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-                });
-                this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
-                this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
-                this.playerSplitCells = CellLength;
+                /* Use min/max tracked in calculatePlayerMassAndPosition — eliminates
+                 * redundant Array.sort of playerCells (1–16 cells) every frame. */
+                var minS = this._playerMinSize || 0;
+                var maxS = this._playerMaxSize || 0;
+                this.playerMinMass = ~~(minS * minS / 100);
+                this.playerMaxMass = ~~(maxS * maxS / 100);
+                this.playerSplitCells = this.playerCells.length;
             }
             var mass
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
@@ -16232,29 +16248,32 @@ Most cells eaten   : ${mostCellsEaten}
                     (this.STEDCellsCache || (this.STEDCellsCache = [])).length = 0; //Sonia
                     (this.SSCellsCache || (this.SSCellsCache = [])).length = 0;
                 }
+                /* Hoist invariant lookups outside the cell loop */
+                var _oppColorsOnly = defaultmapsettings.oppColors && !defaultmapsettings.oppRings;
+                var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
+                var _integrity = LM.integrity;
+                var _sizeThreshold = _integrity ? 13 : 14;
+                var _mass;
+                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                    _mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
+                } else {
+                    _mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                }
+                var _invMass = _mass > 0 ? 1.0 / _mass : 0;
                 var t = 0;
                 for (; t < this.cells.length; t++) {
                     var cell = this.cells[t];
-                    //if (cell.isVirus || cell.spectator > 0) {
                     if (cell.isVirus || cell.invisible) {
                         continue;
                     }
-                    //console.log(i); i for food is 13
                     var size = ~~(cell.size * cell.size / 100);
 
-                    if ((LM.integrity && size > 13) || (!LM.integrity && size > 14)) {
-                        var mass
-                        if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                            mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
-                        } else {
-                            mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-                        }
-                        var fixMass = size / mass;
-                        var smallMass = mass < 1000 ? 0.35 : 0.38;
-                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+                    if (size > _sizeThreshold) {
+                        var fixMass = size * _invMass;
+                        if (_oppColorsOnly) {
                             cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
                         }
-                        if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
+                        if (!cell.isPlayerCell && _splitOrRings) {
                             this.cacheCells(cell.x, cell.y, cell.targetX, cell.targetY, cell.size, fixMass);
                         }
                     }
@@ -17228,6 +17247,35 @@ Most cells eaten   : ${mostCellsEaten}
             LM.getCursorPosition();
             LM.sortCells();
             LM.compareCells();
+
+            /* Precompute viewport bounds once per frame (#7) */
+            var _invScale = 1.0 / (this.scale || 1);
+            LM.camMinX = this.camX - this.canvasWidth * 0.5 * _invScale;
+            LM.camMinY = this.camY - this.canvasHeight * 0.5 * _invScale;
+            LM.camMaxX = this.camX + this.canvasWidth * 0.5 * _invScale;
+            LM.camMaxY = this.camY + this.canvasHeight * 0.5 * _invScale;
+
+            /* Build chat/command lookup map once per frame (#3) */
+            var _chatMap = this._chatLookup || (this._chatLookup = new Map());
+            _chatMap.clear();
+            var _now = LM.time;
+            var _ch = application.chatHistory;
+            for (var _ci = _ch.length - 1; _ci >= 0; _ci--) {
+                var _ce = _ch[_ci];
+                if (_now - _ce.time < 15000 && _ce.nick && !_chatMap.has(_ce.nick)) {
+                    _chatMap.set(_ce.nick, _ce);
+                }
+            }
+            var _cmd = application.commandHistory;
+            for (var _ci2 = _cmd.length - 1; _ci2 >= 0; _ci2--) {
+                var _ce2 = _cmd[_ci2];
+                if (_now - _ce2.time < 15000 && _ce2.nick) {
+                    var _existing = _chatMap.get(_ce2.nick);
+                    if (!_existing || _ce2.time > _existing.time) {
+                        _chatMap.set(_ce2.nick, _ce2);
+                    }
+                }
+            }
             this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
             this.ctx.save();
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
@@ -18762,18 +18810,18 @@ Most cells eaten   : ${mostCellsEaten}
             canvas = null;
         },
         preDrawCellsColors(color) {
-            this.cellsColored[color] = null;
+            /* Store canvas directly — drawImage() accepts <canvas> as source.
+             * Eliminates PNG encode (toDataURL) + async Image decode per color. */
             var size = 128;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            canvas.width = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
+            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = color;
             ctx.fill();
-            this.cellsColored[color] = new Image();
-            this.cellsColored[color].src = canvas.toDataURL();
-            canvas = null;
+            this.cellsColored[color] = canvas;
         },
         preDrawIndicator() {
             this.indicator = null;
