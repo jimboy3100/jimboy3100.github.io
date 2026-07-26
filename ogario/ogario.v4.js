@@ -8154,20 +8154,27 @@ function thelegendmodproject() {
                 ))
             );
         },
-        getCustomSkin(nick, color) {
-            if (!nick) return null;
-            var cleanNick = nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim();
+        getCustomSkin(nick, color, skinKey) {
+            if (!nick && !skinKey) return null;
+            var cleanNick = nick ? nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim() : '';
             var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
 
             var skinUrl = 
-                this.customSkinsMap[nick] ||
-                this.customSkinsMap[nick + hexColor] ||
-                this.customSkinsMap[nick + "#000000"] ||
-                (cleanNick ? (
-                    this.customSkinsMap[cleanNick] ||
-                    this.customSkinsMap[cleanNick + "#000000"] ||
-                    this.customSkinsMap[cleanNick + hexColor]
+                (skinKey ? this.customSkinsMap[skinKey] : null) ||
+                (nick ? (
+                    this.customSkinsMap[nick] ||
+                    this.customSkinsMap[nick + hexColor] ||
+                    this.customSkinsMap[nick + "#000000"] ||
+                    (cleanNick ? (
+                        this.customSkinsMap[cleanNick] ||
+                        this.customSkinsMap[cleanNick + "#000000"] ||
+                        this.customSkinsMap[cleanNick + hexColor]
+                    ) : null)
                 ) : null);
+
+            if (!skinUrl && skinKey && (skinKey.startsWith('http://') || skinKey.startsWith('https://'))) {
+                skinUrl = skinKey;
+            }
 
             if (!skinUrl) return null;
             if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
@@ -11820,7 +11827,7 @@ function thelegendmodproject() {
                 //
                 var node = null
                 if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                    node = application.getCustomSkin(this.targetNick, this.color);
+                    node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                 }
                 var node2, node2IsVideo = false;
                 if (defaultmapsettings.videoSkins) {
@@ -16190,13 +16197,18 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
             } 
-            /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, etc.) */
-            else if (g && typeof g === 'string' && (g.includes("custom") || g.includes("skin_custom"))) {
-                var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
-                if (!g1.startsWith('skin_custom')) {
-                    g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+            /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
+            else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
+                var digits = g.replace(/[^0-9]/g, '');
+                if (digits) {
+                    skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                } else {
+                    var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
+                    if (!g1.startsWith('skin_custom')) {
+                        g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                    }
+                    skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
                 }
-                skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
             } 
             /* 5. Level skins (_level_1, _level_2, etc.) */
             else if (g && typeof g === 'string' && g.includes("_level_")) {
@@ -16207,7 +16219,7 @@ Most cells eaten   : ${mostCellsEaten}
                 isAnimated = true;
                 skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
             } 
-            /* 6. Vanilla named skins (%earth, %doge, fly, etc.) */
+            /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
             else if (g && typeof g === 'string' && g !== '%empty') {
                 if (window.VanillaSkinUrlMap) {
                     skinUrl = window.VanillaSkinUrlMap[g] ||
@@ -16216,6 +16228,11 @@ Most cells eaten   : ${mostCellsEaten}
                               window.VanillaSkinUrlMap[g.replace('%', '')] ||
                               window.VanillaSkinUrlMap[g.replace('%', '').toLowerCase()];
                 }
+            }
+            /* 7. Fallback lookup by player nick (y) if g did not produce skinUrl */
+            if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
+                var cleanY = y.toLowerCase().trim();
+                skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
             }
 
             if (skinUrl) {
@@ -16399,9 +16416,7 @@ Most cells eaten   : ${mostCellsEaten}
                         try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
                     }
                     if (skin || namePresent) {
-                        if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
-                            this.vanillaskins(name, skin, color);
-                        }
+                        this.vanillaskins(name, skin, color);
                     }
                     // tabID (always present for added nodes, flag 0x40)
                     if (offset + 2 <= data.byteLength) {
@@ -17815,10 +17830,12 @@ Most cells eaten   : ${mostCellsEaten}
 
                 // Skin layer lookup
                 var skinLayer = -1.0;
-                if (_showSkins && cell.targetNick) {
-                    var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
-                    var skinUrl = application.customSkinsMap[mode];
-                    if (!skinUrl && _isParty) skinUrl = application.customSkinsMap[cell.targetNick + '#000000'];
+                if (_showSkins && (cell.targetNick || cell.skin)) {
+                    var skinUrl = (cell.skin ? application.customSkinsMap[cell.skin] : null);
+                    if (!skinUrl && cell.targetNick) {
+                        var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
+                        skinUrl = application.customSkinsMap[mode] || application.customSkinsMap[cell.targetNick] || application.customSkinsMap[cell.targetNick + '#000000'];
+                    }
                     if (skinUrl && this.glSkinMap[skinUrl] !== undefined) {
                         skinLayer = this.glSkinMap[skinUrl];
                         // Transparent skin alpha
