@@ -6726,6 +6726,7 @@ function thelegendmodproject() {
             }
         },
         selectProfile(value) {
+            if (parseInt(value) === this.selectedProfile) return;
             this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
             this.selectedProfile = parseInt(value);
