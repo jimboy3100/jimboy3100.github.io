@@ -12491,12 +12491,12 @@ function thelegendmodproject() {
             }
         },
         replayfunctions() {
-            if (window.replayTimeOuts.length && !this.ws.includes("replay")) {
-                for (var i = 0; i < window.replayTimeOuts; i++) {
+            if (window.replayTimeOuts.length && this.ws && !this.ws.includes("replay")) {
+                for (var i = 0; i < window.replayTimeOuts.length; i++) {
                     clearTimeout(window.replayTimeOuts[i])
                 }
                 window.replayTimeOuts = []
-            } else if (!this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
+            } else if (this.ws && !this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
                 $('#pause-hud').text(textLanguage.pause);
                 $('#pause-hud').hide()
             }
@@ -15843,6 +15843,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.mapMidY = 0;
             this.viewX = 0;
             this.viewY = 0;
+            this.Waves = [];
 
             //for SPECT
             //this.ghostCellsStep = 0;
@@ -16083,7 +16084,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.integrity) {
                 this.totalPlayerMass += this.playerMass
             }
-            if (this.ws.includes("imsolo.pro:2102")) {
+            if (this.ws && this.ws.includes("imsolo.pro:2102")) {
                 this.totalPlayerMassBigFFA += this.playerMass
                 var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
                 if (this.totalPlayerMassBigFFA > temp && !window.proLicenceUID) {
@@ -16685,7 +16686,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.PTE = Math.floor(i * 0.66); //Sonia2					
             */
             this.STE = Math.floor(mass * defaultmapsettings.dominatedRate / 2); //Sonia2 //Maximal mass that we can eat by Split
-            this.MTE = Math.floor(mass * defaultmapsettings.dominatiedRate); //Sonia2 //Maximal mass that we can eat by moving
+            this.MTE = Math.floor(mass * defaultmapsettings.dominatedRate); //Sonia2 //Maximal mass that we can eat by moving
             this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2 //minimal mass of enemy to Move To Eat
             this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate * 2); //Sonia2 //minimal mass of enemy who can Split To Eat 
             this.TTE = Math.ceil(mass / 6); //Sonia2 //minimal mass of your teammate to tricksplit, 
