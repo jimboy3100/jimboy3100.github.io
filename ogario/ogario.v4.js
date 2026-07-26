@@ -20929,69 +20929,60 @@ function timernow() {
 
 function Socket3enabler(srv) {
     if (srv && srv.match("-([A-Za-z0-9]{6,7})\.")) {
-        //var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
-        var room = $("#server-token").val(); //jimboy3100 5/5/2020
-        //Socket3 = new WebSocket("wss://connect.websocket.in/Jimboy3100_socket?room_id=" + this.room);
-        Socket3 = new WebSocket("wss://cloud.achex.ca/JIMBOY3100" + room);
-        Socket3.onmessage = function (message) {
-            Socket3handler(message.data);
-        }
-        Socket3.onopen = function (e) {
-            window.socket3NumberTries = 0;
-            Socket3.send(JSON.stringify({
-                "auth": "JIM" + customLMID,
-                "password": "legendmod"
-            }));
-            //Socket3.send(JSON.stringify({ "auth": "JIM" + application.playerID, "password": "legendmod"}));
-            //Socket3.send(JSON.stringify({ "joinHub": "legendmod"}));	
-            Socket3.send(JSON.stringify({
-                "joinHub": $("#server-token").val() + "3"
-            }));
-            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 open:', room);
-
-            //if(localStorage.getItem("isActualUsingSpecialEffectsSkin")){
-            //SpecialEffectPlayers[application.lastSentNick] = localStorage.getItem("isActualUsingSpecialEffectsSkin");
-            //window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
-            //}
-            if (!window.socket3Opened && window.noOgarioSocket) {
-                $("#message").keydown(function (event) {
-                    if (event.keyCode === 13) { //window.legendmod6.getPressedKey(13)
-                        enterChatMessage2();
-                    }
-                });
+        var room = $("#server-token").val();
+        try {
+            Socket3 = new WebSocket("wss://cloud.achex.ca/JIMBOY3100" + room);
+            Socket3.onmessage = function (message) {
+                Socket3handler(message.data);
             }
-            window.socket3Opened = true;
-        }
-        Socket3.onerror = function (e) {
-            window.socket3NumberTries++;
-            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 error');
-        }
-        Socket3.onclose = function (e) {
-            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 close');
-            //setTimeout(function() {
-            window.socket3NumberTries++;
-            if (window.socket3NumberTries < 2) {
-                //Socket3enabler(window.legendmod.ws)
-            }
-        }
-        Socket3.closeAndOpen = function (e) {
-            Socket3.onclose = function (e) {
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Previous Socket 3 closed async');
-            }
-
-            if (window.Socket3) {
-                window.Socket3['onmessage'] = null;
+            Socket3.onopen = function (e) {
+                window.socket3NumberTries = 0;
                 try {
-                    window.Socket3['close']();
-                } catch (ogarcloseconlabel) { }
-                window.Socket3 = null;
+                    Socket3.send(JSON.stringify({
+                        "auth": "JIM" + customLMID,
+                        "password": "legendmod"
+                    }));
+                    Socket3.send(JSON.stringify({
+                        "joinHub": $("#server-token").val() + "3"
+                    }));
+                } catch (err) {}
+                if (!window.socket3Opened && window.noOgarioSocket) {
+                    $("#message").keydown(function (event) {
+                        if (event.keyCode === 13) {
+                            enterChatMessage2();
+                        }
+                    });
+                }
+                window.socket3Opened = true;
             }
+            Socket3.onerror = function (e) {
+                window.socket3NumberTries++;
+            }
+            Socket3.onclose = function (e) {
+                window.socket3NumberTries++;
+                if (window.socket3NumberTries < 2) {
+                    //Socket3enabler(window.legendmod.ws)
+                }
+            }
+            Socket3.closeAndOpen = function (e) {
+                Socket3.onclose = function (e) {}
 
-            if (window.socket3NumberTries < 2) {
-                Socket3enabler(window.legendmod.ws);
+                if (window.Socket3) {
+                    window.Socket3['onmessage'] = null;
+                    try {
+                        window.Socket3['close']();
+                    } catch (ogarcloseconlabel) { }
+                    window.Socket3 = null;
+                }
+
+                if (window.socket3NumberTries < 2) {
+                    Socket3enabler(window.legendmod.ws);
+                }
             }
+            return Socket3;
+        } catch (err) {
+            window.socket3NumberTries++;
         }
-        return Socket3;
     }
 }
 

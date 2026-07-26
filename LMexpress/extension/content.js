@@ -45,7 +45,7 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     if (location.host === "agar.io" && location.pathname === "/") {
         const url = window.location.href;
         localStorage.setItem("url", url);
-        history.replaceState({}, '', '/legendmod' + location.search + location.hash);
+        history.replaceState({}, '', location.pathname + location.search + location.hash);
         runMod();
     } else if (location.host === "agar.io" && location.pathname.startsWith("/legendmod")) {
         runMod();
