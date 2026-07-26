@@ -7927,42 +7927,45 @@ function thelegendmodproject() {
         },
         getCachedSkin(skinCache, skinMap) {
             function isValid(s) {
-                return s && (s.width || s.videoWidth);
+                return s && (s.width || s.videoWidth || s.complete);
             }
+            if (!skinMap) return null;
             if (skinCache[skinMap + '_cached3']) {
                 /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
                 if (drawRender._skinHalf) {
-                    return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
+                    if (isValid(skinCache[skinMap + '_cached3'])) return skinCache[skinMap + '_cached3'];
                 } else {
-                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
+                    if (isValid(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
                 }
             }
-            return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
+            if (isValid(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
+            if (isValid(skinCache[skinMap])) return skinCache[skinMap];
+            return null;
         },
         cacheCustomSkin(nick, color, skinUrl) {
             if (skinUrl) {
                 const s = ':party' === this.gameMode ? nick + color : nick;
-                //console.log("nick= " + nick);
-                //console.log("color= " + color);
-                if (s && (this.customSkinsMap[s] = skinUrl), this.customSkinsCache.hasOwnProperty(skinUrl)) return;
+                if (s) this.customSkinsMap[s] = skinUrl;
+                if (nick) this.customSkinsMap[nick] = skinUrl;
+                if (nick && color) this.customSkinsMap[nick + color] = skinUrl;
+                if (this.customSkinsCache.hasOwnProperty(skinUrl)) return;
                 this.loadSkin(this.customSkinsCache, skinUrl);
             }
         },
         checkSkinsMap(nick, color) {
+            if (!nick) return false;
             const mode = ':party' === this.gameMode ? nick + color : nick;
-            //console.log(.customSkinsMap.hasOwnProperty(mode));
-            return !!this.customSkinsMap.hasOwnProperty(mode);
+            return !!(this.customSkinsMap.hasOwnProperty(mode) || this.customSkinsMap.hasOwnProperty(nick) || (color && this.customSkinsMap.hasOwnProperty(nick + color)) || this.customSkinsMap.hasOwnProperty(nick + "#000000"));
         },
         getCustomSkin(nick, color) {
-            //console.log("nick= " + nick);
-            //console.log("color= " + color);				               
+            if (!nick) return null;
             if (':party' === this.gameMode && this.customSkinsMap[nick + "#000000"] && this.customSkinsMap[nick + "#000000"].includes("configs-web.agario.miniclippt.com/live/")) {
-                //console.log('changed for',nick)
                 color = "#000000";
             }
-            if (!this.checkSkinsMap(nick, color)) return null;
-            var mode = ':party' === this.gameMode ? nick + color : nick;
-            return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[mode]);
+            const mode = ':party' === this.gameMode ? nick + color : nick;
+            const skinUrl = this.customSkinsMap[mode] || this.customSkinsMap[nick] || (color && this.customSkinsMap[nick + color]) || this.customSkinsMap[nick + "#000000"];
+            if (!skinUrl) return null;
+            return this.getCachedSkin(this.customSkinsCache, skinUrl);
         },
         calculateMapSector(t, xgh2, closeExpr = false) {
             if (!ogario.mapOffsetFixed) {
