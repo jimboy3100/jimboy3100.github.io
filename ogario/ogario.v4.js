@@ -6756,6 +6756,19 @@ function thelegendmodproject() {
         },
         updateProfileBadges() {
             if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
+
+            // Inject .mb-badge CSS once (skins/skins.css is not loaded by the game)
+            if (!this._mbBadgeCSSInjected) {
+                this._mbBadgeCSSInjected = true;
+                $("<style type='text/css'>").html(
+                    '.mb-badge{position:absolute!important;width:22px!important;height:22px!important;line-height:19px!important;border-radius:50%!important;font-family:Ubuntu,Roboto,sans-serif!important;font-weight:800!important;font-size:12px!important;text-align:center!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;border:1.5px solid #fff!important;z-index:99!important;pointer-events:none!important;box-sizing:border-box!important;}' +
+                    '.mb-badge-1{background:linear-gradient(135deg,#00E5FF,#0072FF)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(0,229,255,.9)!important;}' +
+                    '.mb-badge-2{background:linear-gradient(135deg,#FF007F,#FF5500)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(255,0,127,.9)!important;}' +
+                    '.mb-badge-3{background:linear-gradient(135deg,#A855F7,#6366F1)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(168,85,247,.9)!important;}' +
+                    '.mb-badge-4{background:linear-gradient(135deg,#10B981,#059669)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(16,185,129,.9)!important;}'
+                ).appendTo('head');
+            }
+
             $('.mb-badge').remove();
             $('#mb-assign-label').remove();
             var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
@@ -6782,15 +6795,19 @@ function thelegendmodproject() {
             for (var pKey in profileSlots) {
                 var pIdxInt = parseInt(pKey);
                 var slots = profileSlots[pKey];
-                var $el = $('#profile-' + pIdxInt);
-                if ($el.length) {
-                    $el.css({ 'position': 'relative', 'overflow': 'visible' });
+                var $anchor = $('#profile-' + pIdxInt);
+                if ($anchor.length) {
+                    // Append to .skin-box parent so border-radius on <a> doesn't clip
+                    var $box = $anchor.closest('.skin-box');
+                    if (!$box.length) $box = $anchor;
+                    $box.css({ 'position': 'relative', 'overflow': 'visible' });
+                    $anchor.css({ 'overflow': 'visible' });
                     var total = slots.length;
                     for (var k = 0; k < total; k++) {
                         var slotNum = slots[k];
                         var badgeNum = slotNum + 1;
                         var offset = (k - (total - 1) / 2) * 24;
-                        $el.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="top: 50% !important; left: calc(50% + ' + offset + 'px) !important; transform: translate(-50%, -50%) !important;">' + badgeNum + '</span>');
+                        $box.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="top: 50% !important; left: calc(50% + ' + offset + 'px) !important; transform: translate(-50%, -50%) !important;">' + badgeNum + '</span>');
                     }
                 }
             }
@@ -6802,6 +6819,7 @@ function thelegendmodproject() {
             var labelColor = badgeColors[activeSlot] || '#00E5FF';
             $('#skins').before('<div id="mb-assign-label" style="text-align:center;padding:4px 0;font-size:13px;font-weight:700;font-family:Ubuntu,Roboto,sans-serif;color:' + labelColor + ';text-shadow:0 0 8px ' + labelColor + ';">▶ Next click assigns to Unit ' + activeUnit + '</div>');
         },
+
         prevProfile() {
             if (!this.selectedProfiles) this.selectedProfiles = [];
             this.selectedProfiles[3] = this.selectedProfiles[2];
