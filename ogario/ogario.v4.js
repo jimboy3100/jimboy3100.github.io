@@ -17357,48 +17357,56 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_gridColor = gl.getUniformLocation(gridProgram, 'u_gridColor');
 
                 // --- WebGL2 Procedural Border Shader ---
+                // Uses view-relative coordinates to avoid float precision loss on huge maps.
+                // The vertex shader outputs position relative to viewCenter so the fragment
+                // shader never works with large absolute world coordinates.
                 var borderVsSource = `#version 300 es
                 in vec2 a_unitPos;
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
-                out vec2 v_worldPos;
+                out vec2 v_relPos;  // position relative to viewCenter (small values)
                 void main() {
                     gl_Position = vec4(a_unitPos, 0.0, 1.0);
-                    v_worldPos = u_viewCenter + (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
+                    // Convert clip-space [-1,+1] → view-relative world offset
+                    v_relPos = (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
                 }`;
 
                 var borderFsSource = `#version 300 es
                 precision highp float;
-                in vec2 v_worldPos;
-                uniform vec4 u_borderRect;   // minX, minY, maxX, maxY
+                in vec2 v_relPos;
+                // Border rect stored as view-relative offsets (borderEdge - viewCenter)
+                uniform vec4 u_borderRect;   // relMinX, relMinY, relMaxX, relMaxY
                 uniform float u_lineWidth;
                 uniform vec4 u_borderColor;
                 uniform float u_glowSize;    // 0 = no glow
                 out vec4 fragColor;
                 void main() {
-                    float x = v_worldPos.x;
-                    float y = v_worldPos.y;
+                    float x = v_relPos.x;
+                    float y = v_relPos.y;
                     float hw = u_lineWidth * 0.5;
-                    float minX = u_borderRect.x;
-                    float minY = u_borderRect.y;
-                    float maxX = u_borderRect.z;
-                    float maxY = u_borderRect.w;
+                    float relMinX = u_borderRect.x;
+                    float relMinY = u_borderRect.y;
+                    float relMaxX = u_borderRect.z;
+                    float relMaxY = u_borderRect.w;
 
-                    // Signed distances to each edge (negative = inside the line)
-                    float dLeft  = abs(x - minX) - hw;
-                    float dRight = abs(x - maxX) - hw;
-                    float dTop   = abs(y - minY) - hw;
-                    float dBot   = abs(y - maxY) - hw;
+                    // Signed distances to each border edge (negative = inside the line)
+                    float dLeft  = abs(x - relMinX) - hw;
+                    float dRight = abs(x - relMaxX) - hw;
+                    float dTop   = abs(y - relMinY) - hw;
+                    float dBot   = abs(y - relMaxY) - hw;
 
-                    // Clamp to border extent for each edge
-                    float inRangeX = step(minX - hw, x) * step(x, maxX + hw);
-                    float inRangeY = step(minY - hw, y) * step(y, maxY + hw);
+                    // Range checks — is this pixel within the horizontal/vertical span of the border?
+                    // Use smoothstep with a 1-pixel feather to avoid hard aliasing at corners
+                    float inRangeX = smoothstep(relMinX - hw - 1.0, relMinX - hw + 1.0, x)
+                                   * smoothstep(relMaxX + hw + 1.0, relMaxX + hw - 1.0, x);
+                    float inRangeY = smoothstep(relMinY - hw - 1.0, relMinY - hw + 1.0, y)
+                                   * smoothstep(relMaxY + hw + 1.0, relMaxY + hw - 1.0, y);
 
-                    // Core line: distance <= 0 means inside the line stroke
-                    float lineLeft  = step(dLeft, 0.0) * inRangeY;
-                    float lineRight = step(dRight, 0.0) * inRangeY;
-                    float lineTop   = step(dTop, 0.0) * inRangeX;
-                    float lineBot   = step(dBot, 0.0) * inRangeX;
+                    // Core line: smoothstep for anti-aliased edges (no flickering)
+                    float lineLeft  = smoothstep(1.0, -1.0, dLeft)  * inRangeY;
+                    float lineRight = smoothstep(1.0, -1.0, dRight) * inRangeY;
+                    float lineTop   = smoothstep(1.0, -1.0, dTop)   * inRangeX;
+                    float lineBot   = smoothstep(1.0, -1.0, dBot)   * inRangeX;
                     float coreLine  = max(max(lineLeft, lineRight), max(lineTop, lineBot));
 
                     if (u_glowSize > 0.0) {
@@ -17412,7 +17420,7 @@ Most cells eaten   : ${mostCellsEaten}
                         if (alpha <= 0.001) discard;
                         fragColor = vec4(u_borderColor.rgb, u_borderColor.a * alpha);
                     } else {
-                        if (coreLine <= 0.0) discard;
+                        if (coreLine <= 0.001) discard;
                         fragColor = vec4(u_borderColor.rgb, u_borderColor.a * coreLine);
                     }
                 }`;
@@ -17859,7 +17867,9 @@ Most cells eaten   : ${mostCellsEaten}
             gl.useProgram(this.glBorderProgram);
             gl.uniform2f(this.u_border_viewCenter, this.camX, this.camY);
             gl.uniform2f(this.u_border_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-            gl.uniform4f(this.u_borderRect, minX, minY, maxX, maxY);
+            // Pass border rect as view-relative offsets (small values near zero)
+            // to avoid float precision loss on huge maps
+            gl.uniform4f(this.u_borderRect, minX - this.camX, minY - this.camY, maxX - this.camX, maxY - this.camY);
             gl.uniform1f(this.u_borderLineWidth, lw);
             gl.uniform4f(this.u_borderColor, rR, rG, rB, 1.0);
             gl.uniform1f(this.u_borderGlowSize, glowSize);
