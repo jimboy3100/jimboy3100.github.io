@@ -7871,6 +7871,11 @@ function thelegendmodproject() {
         /* ─── §4.9 Skin Loading ─── */
         loadSkin(img, url, animated) {
             var app = this;
+            if (!url || typeof url !== 'string') return;
+            if (!app._failedSkinURLs) app._failedSkinURLs = new Set();
+            if (app._failedSkinURLs.has(url)) return;
+            if (img && img[url] && img[url]._failed) return;
+
             if (img && Object.keys(img).length > 200) {
                 var keys = Object.keys(img);
                 for (var k = 0; k < 50; k++) {
@@ -7882,7 +7887,6 @@ function thelegendmodproject() {
             if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")) {
                 if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
                     img[url] = new Video();
-                    //console.log("stage 2 videos");
                 } else {
                     img[url] = new Image();
                 }
@@ -7914,31 +7918,16 @@ function thelegendmodproject() {
                             app.cacheQueue4.push(url);
                             if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
                         }
+                    } else {
+                        this._failed = true;
+                        if (app._failedSkinURLs) app._failedSkinURLs.add(url);
                     }
                 };
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
-                    img[url]._failed = true;
-                    console.warn("[LM] Failed to load skin image (retrying without CORS & referrer): " + url);
-                    var retryImg = new Image();
-                    retryImg.referrerPolicy = 'no-referrer';
-                    retryImg.onload = function () {
-                        if (this.width > 0 && this.height > 0) {
-                            img[url] = retryImg;
-                            if (app && app.customSkinsCache) {
-                                app.customSkinsCache[url] = retryImg;
-                                app.customSkinsCache[url + "_cached"] = retryImg;
-                            }
-                        } else {
-                            retryImg._failed = true;
-                            img[url]._failed = true;
-                        }
-                    };
-                    retryImg.onerror = function () {
-                        retryImg._failed = true;
-                        img[url]._failed = true;
-                    };
-                    retryImg.src = url;
+                    if (img[url]) img[url]._failed = true;
+                    if (app._failedSkinURLs) app._failedSkinURLs.add(url);
+                    console.warn("[LM] Skin URL failed to load (will not retry): " + url);
                 };
                 img[url].src = url;
             }
