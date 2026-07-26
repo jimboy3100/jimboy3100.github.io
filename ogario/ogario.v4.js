@@ -1,4 +1,4 @@
-window.OgVer = 3.414;
+window.OgVer = 3.420;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10247,32 +10247,39 @@ function thelegendmodproject() {
             },
             //
             this.measureWidthCustom = function (customTxt) {
-                return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
-                    this.measuredWidth = this.txtCtx.measureText(customTxt).width,
-                    this.remeasure = false),
-                    ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
-            },
+                if (!customTxt) return 0;
+                if (this.lastCustomTxt !== customTxt || this.remeasure) {
+                    this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily;
+                    this.customMeasuredWidth = this.txtCtx.measureText(customTxt).width;
+                    this.lastCustomTxt = customTxt;
+                    this.remeasure = false;
+                }
+                return ~~(this.fontSize / 10 * this.customMeasuredWidth) + 2 * this.strokeWidth;
+            };
             //
             this.drawTxt = function (customTxt) {
                 var _dpr = window.LM_DPR || 1;
-                return this.createCanvas(),
-                    this.redraw && (this.redraw = false,
-
-
-                        this.txtCanvas.width = this.measureWidthCustom(customTxt) * _dpr,
-                        this.txtCanvas.width = this.measureWidth() * _dpr,
-                        this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr,
-                        this.txtCtx.scale(_dpr, _dpr),
-                        this.txtCtx.font = this.font,
-                        this.txtCtx.globalAlpha = 1,
-                        this.txtCtx.lineWidth = this.strokeWidth,
-                        this.txtCtx.strokeStyle = this.strokeColor,
-                        this.txtCtx.fillStyle = this.color,
-                        customTxt && this.stroke && this.txtCtx.strokeText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
-                        !customTxt && this.stroke && this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
-                        customTxt && this.txtCtx.fillText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
-                        !customTxt && this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
-                    this.txtCanvas;
+                this.createCanvas();
+                if (this.redraw) {
+                    this.redraw = false;
+                    var _targetWidth = (customTxt ? this.measureWidthCustom(customTxt) : this.measureWidth()) * _dpr;
+                    this.txtCanvas.width = _targetWidth;
+                    this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr;
+                    this.txtCtx.scale(_dpr, _dpr);
+                    this.txtCtx.font = this.font;
+                    this.txtCtx.globalAlpha = 1;
+                    this.txtCtx.lineWidth = this.strokeWidth;
+                    this.txtCtx.strokeStyle = this.strokeColor;
+                    this.txtCtx.fillStyle = this.color;
+                    if (customTxt) {
+                        if (this.stroke) this.txtCtx.strokeText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5));
+                        this.txtCtx.fillText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5));
+                    } else {
+                        if (this.stroke) this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5));
+                        this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5));
+                    }
+                }
+                return this.txtCanvas;
             };
     }
     //window.application = application;
@@ -10670,16 +10677,57 @@ function thelegendmodproject() {
         };
         this.drawChat = function (context) {
             if (this.chatCanvas && !(this.size <= 40)) {
-                /* ── Perf: O(1) map lookup early exit before canvas setup ── */
-                var _entry = this.nick && this.nick !== "" && drawRender._chatMap && drawRender._chatMap.get(this.nick);
-                if (!_entry) return;
+                if (!this.nick || this.nick === "") return;
+                if (!application.chatHistory.length && !application.commandHistory.length) return;
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
-
-                var customTxt = _entry.message;
-                var temp = _entry.age;
+                var customTxt;
+                var temp;
+                var _now = Date.now();
+                var _myNick = window.$ ? $('#nick').val() : '';
+                var _lastNick = application.lastSentNick;
+                for (var i = 0; i < application.chatHistory.length; i++) {
+                    var ch = application.chatHistory[i];
+                    if (ch.nick === this.nick && (_now - ch.time < 15000)) {
+                        if (!ch.message.includes('emoticon') && !ch.message.includes('<img src') && !ch.message.includes('DosAttack') &&
+                            !ch.message.includes('DosFight') && !ch.message.includes('DosRun') &&
+                            !ch.message.includes('https://agar.io/sip=151.80.91.73:1511')) {
+                            if (ch.nick === _myNick || ch.nick === _lastNick) {
+                                if (ch.message.split('&')[1] && ch.message.split('&')[1].split(';')[0]) {
+                                    ch.message.replace(ch.message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
+                                }
+                                if (defaultmapsettings.showChatMyOwn) {
+                                    temp = _now - ch.time;
+                                    customTxt = ch.message;
+                                }
+                            } else {
+                                temp = _now - ch.time;
+                                customTxt = ch.message;
+                            }
+                        }
+                    }
+                }
+                for (var i = 0; i < application.commandHistory.length; i++) {
+                    var cmd = application.commandHistory[i];
+                    if (cmd.nick === this.nick && (_now - cmd.time < 15000)) {
+                        if (cmd.nick === _myNick || cmd.nick === _lastNick) {
+                            if (defaultmapsettings.showChatMyOwn) {
+                                if (temp > (_now - cmd.time) || !temp) {
+                                    temp = _now - cmd.time;
+                                    customTxt = cmd.message;
+                                }
+                            }
+                        } else {
+                            if (temp > (_now - cmd.time) || !temp) {
+                                temp = _now - cmd.time;
+                                customTxt = cmd.message;
+                            }
+                        }
+                    }
+                }
+                if (!customTxt) return;
                 if (this.redrawChat) {
                     chatCanvas.setTxt(customTxt);
                 }
@@ -10690,10 +10738,10 @@ function thelegendmodproject() {
                 var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
                 if (temp < 2000) {
-                    context.globalAlpha = temp / 2000
+                    context.globalAlpha = temp / 2000;
                 } else if (temp > 13000) {
-                    temp = 15000 - temp
-                    context.globalAlpha = temp / 2000
+                    temp = 15000 - temp;
+                    context.globalAlpha = temp / 2000;
                 }
 
                 if (width > 1 && height > 1) {
@@ -11183,8 +11231,6 @@ function thelegendmodproject() {
                 var _cullingScale = drawRender.scale || 1;
                 var _halfW = drawRender.canvasWidth / _cullingScale / 2;
                 var _halfH = drawRender.canvasHeight / _cullingScale / 2;
-                /* Use LM.viewX/Y (server-reported center) as fallback when
-                   drawRender.camX/Y hasn't converged yet (e.g. first frames) */
                 var _cx = drawRender.camX, _cy = drawRender.camY;
                 var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
                 if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
@@ -11196,17 +11242,27 @@ function thelegendmodproject() {
                     this.y - this.size > _cy + _halfH) {
                     return;
                 }
-                /* ── Perf: manual state tracking instead of save/restore ── */
-                var _savedAlpha = style.globalAlpha;
 
+                style.save();
                 this.redrawed++;
+                if (cellMoved) {
+                    this.moveCell();
+                }
                 if (this.removed) {
                     style.globalAlpha *= 1 - this.alpha;
                 }
                 var value = style.globalAlpha;
                 var s = false;
                 var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
-                //
+
+                if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
+                    style.filter = 'grayscale(100%)';
+                } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
+                    style.filter = 'sepia(100%)';
+                } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
+                    style.filter = 'hue-rotate(90deg)';
+                }
+
                 var node = null;
                 var node2 = null, node2IsVideo = false;
                 if (!this.isFood && !this.isVirus) {
@@ -11275,48 +11331,33 @@ function thelegendmodproject() {
                 }
                 else {
                     if (!node) {
-                        //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                        if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) {
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
                             if (!this.isVirus && !defaultmapsettings.cellContours && !node2IsVideo) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
                             if (!this.isVirus && defaultmapsettings.cellContours) {
-                                style.lineWidth = 20; ///
-                                style.strokeStyle = color2; ///
-                                style.stroke(); ///
+                                style.lineWidth = 20;
+                                style.strokeStyle = color2;
+                                style.stroke();
                             }
                         }
                         else {
-                            this.drawCircle(style, this.x, this.y, y, color2)
+                            this.drawCircle(style, this.x, this.y, y, color2);
                         }
                     }
                 }
                 if (!node) style.closePath();
-                //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
                     if (defaultmapsettings.jellyPhisycs) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
-                    style.globalAlpha = _savedAlpha;
-                    style.shadowBlur = 0;
-                    style.shadowColor = 'transparent';
-                    style.globalCompositeOperation = 'source-over';
-                    style.filter = 'none';
-                    return
+                    style.restore();
+                    return;
                 }
-                //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
-                //    return style.fillStyle = this.color, style.fill(), void style.restore();
-                //}						
                 if (this.isVirus) {
-                    //console.log("is not jelly");
-                    /*if (dyinglight1load === "yes") {
-                        try {
-                            style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
-                        } catch (e) {}
-                    }*/
                     if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
                         style.globalAlpha *= defaultSettings.virusAlpha;
                         s = true;
@@ -11326,24 +11367,24 @@ function thelegendmodproject() {
                         style.strokeStyle = application.setVirusStrokeColor(y);
                     }
                     else {
-                        style.fillStyle = this.virusColor
-                        style.strokeStyle = this.virusStroke
+                        style.fillStyle = this.virusColor;
+                        style.strokeStyle = this.virusStroke;
                     }
-                    style.fill()
+                    style.fill();
                     if (s) {
                         style.globalAlpha = value;
                         s = false;
                     }
-                    style.lineWidth = defaultSettings.virusStrokeSize
+                    style.lineWidth = defaultSettings.virusStrokeSize;
                     if (defaultmapsettings.virusGlow) {
                         style.shadowBlur = defaultSettings.virusGlowSize;
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize));
                     }
                     else {
-                        style.stroke()
+                        style.stroke();
                     }
                     if (defaultmapsettings.showMass) {
                         this.setDrawing();
@@ -11351,11 +11392,7 @@ function thelegendmodproject() {
                         this.setMass(this.size);
                         this.drawMass(style);
                     }
-                    style.globalAlpha = _savedAlpha;
-                    style.shadowBlur = 0;
-                    style.shadowColor = 'transparent';
-                    style.globalCompositeOperation = 'source-over';
-                    style.filter = 'none';
+                    style.restore();
                     return;
                 }
 
@@ -11522,12 +11559,7 @@ function thelegendmodproject() {
                     }
 
                 }
-                /* ── Perf: manual state reset instead of restore ── */
-                style.globalAlpha = _savedAlpha;
-                style.shadowBlur = 0;
-                style.shadowColor = 'transparent';
-                style.globalCompositeOperation = 'source-over';
-                style.filter = 'none';
+                style.restore();
             }
     }
     window.legendmod1 = ogarbasicassembly;
@@ -16542,49 +16574,6 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.start2D();
             this.renderStarted = performance.now()
             LM.time = Date.now();
-            /* ── Perf: build per-frame chat lookup map for O(1) per cell ── */
-            var _chatMap = this._chatMap || (this._chatMap = new Map());
-            _chatMap.clear();
-            var _now = LM.time;
-            var _myNick = window.$ ? $('#nick').val() : '';
-            var _lastNick = application.lastSentNick;
-            var _showOwn = defaultmapsettings.showChatMyOwn;
-            var _hist, _hEntry;
-            for (var _ci = 0; _ci < application.chatHistory.length; _ci++) {
-                _hEntry = application.chatHistory[_ci];
-                if ((_now - _hEntry.time) < 15000 && _hEntry.nick && _hEntry.nick !== "" &&
-                    !_hEntry.message.includes('emoticon') && !_hEntry.message.includes('<img src') &&
-                    !_hEntry.message.includes('DosAttack') && !_hEntry.message.includes('DosFight') &&
-                    !_hEntry.message.includes('DosRun') && !_hEntry.message.includes('https://agar.io/sip=151.80.91.73:1511')) {
-                    var _isOwn = (_hEntry.nick === _myNick || _hEntry.nick === _lastNick);
-                    if (_isOwn && !_showOwn) continue;
-                    /* Sanitize own messages: strip HTML entity fragments & special chars */
-                    var _msg = _hEntry.message;
-                    if (_isOwn) {
-                        var _ampParts = _msg.split('&');
-                        if (_ampParts[1] && _ampParts[1].split(';')[0]) {
-                            _msg = _msg.replace(_ampParts[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
-                        }
-                    }
-                    var _age = _now - _hEntry.time;
-                    var _prev = _chatMap.get(_hEntry.nick);
-                    if (!_prev || _age < _prev.age) {
-                        _chatMap.set(_hEntry.nick, { message: _msg, age: _age });
-                    }
-                }
-            }
-            for (var _ci = 0; _ci < application.commandHistory.length; _ci++) {
-                _hEntry = application.commandHistory[_ci];
-                if ((_now - _hEntry.time) < 15000 && _hEntry.nick && _hEntry.nick !== "") {
-                    var _isOwn = (_hEntry.nick === _myNick || _hEntry.nick === _lastNick);
-                    if (_isOwn && !_showOwn) continue;
-                    var _age = _now - _hEntry.time;
-                    var _prev = _chatMap.get(_hEntry.nick);
-                    if (!_prev || _age < _prev.age) {
-                        _chatMap.set(_hEntry.nick, { message: _hEntry.message, age: _age });
-                    }
-                }
-            }
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
             }
@@ -16989,7 +16978,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //distance to target
                 var dx = x - t.x, dy = y - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
-                if (dis < 1) continue; // avoid NaN from acos(0/0)
+                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
                 //angle 
                 var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
                 //if target on left side
@@ -17037,8 +17026,9 @@ Most cells eaten   : ${mostCellsEaten}
                     break
                 }
             } else {
-                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95
+                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95;
             }
+            if (size <= 0) size = 100;
             var s = Math.pow(Math.min(64 / size, 1), 0.4000);
             var w = 1024 / s / 2 * mtp; //WSVGA
             var h = 600 / s / 2 * mtp;
@@ -17640,8 +17630,9 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 ctx.fill();
             } else {
-                /* ── Rainbow food: batch by color ── */
-                var colorBuckets = {};
+                /* ── Rainbow food: batch by color (reusing persistent bucket memory) ── */
+                var colorBuckets = this._colorBuckets || (this._colorBuckets = {});
+                for (var key in colorBuckets) { colorBuckets[key].length = 0; }
                 for (var i = 0; i < food.length; i++) {
                     if (food[i].invisible) continue;
                     if (!food[i].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) { food[i].invisible = true; continue; }
@@ -17655,6 +17646,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 for (var color in colorBuckets) {
                     var bucket = colorBuckets[color];
+                    if (!bucket.length) continue;
                     ctx.fillStyle = color;
                     ctx.beginPath();
                     for (var j = 0; j < bucket.length; j++) {
@@ -17800,9 +17792,10 @@ Most cells eaten   : ${mostCellsEaten}
             if (!players.length) return;
             var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
-                let t = LM.playerCells[length];
-                if (LM.playerCells[length].angle === undefined) {
-                    LM.playerCells[length].angle = 0
+                let t = players[length];
+                if (!t) continue;
+                if (t.angle === undefined) {
+                    t.angle = 0;
                 }
                 let r = t.size / 3;
                 //distance to target
@@ -17907,7 +17900,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //distance to target
                 var dx = t.targetX - t.x, dy = t.targetY - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
-                if (dis < 1) continue; // avoid NaN from acos(0/0)
+                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
                 //angle 
                 var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
                 //if target on left side
@@ -17986,10 +17979,10 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultSettings.indicators === "normal") {
                     ctx.drawImage(this.indicator, x - 45, y - size - 90);
                 }
-                else if (defaultSettings.indicators === "heart") {
+                else if (defaultSettings.indicators === "heart" && this.heartIndicator) {
                     ctx.drawImage(this.heartIndicator, x - 25, y - size - 90);
                 }
-                else if (defaultSettings.indicators === "smile") {
+                else if (defaultSettings.indicators === "smile" && this.smileIndicator) {
                     ctx.drawImage(this.smileIndicator, x - 55, y - size - 150);
                 }
             }
