@@ -6672,7 +6672,6 @@ function thelegendmodproject() {
         setProfile() {
             var t = (profiles.length + this.selectedProfile - 1) % profiles.length,
                 e = (this.selectedProfile + 1) % profiles.length;
-            //console.log(profiles.length);
 
             this.setSkinPreview(profiles[t].skinURL, 'prev-profile');
             if (profiles[this.selectedProfile]) {
@@ -6692,6 +6691,30 @@ function thelegendmodproject() {
 
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
+            this.updateProfileBadges();
+        },
+        /* ─── mbSlots: multibox slot → profile index mapping ─── */
+        ensureMbSlots() {
+            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
+                this.mbSlots = [];
+            }
+            // Ensure slot 0 always has selectedProfile
+            if (this.mbSlots.length === 0 || this.mbSlots[0] !== this.selectedProfile) {
+                // Rebuild from selectedProfile/selectedOldProfile
+                this.mbSlots = [this.selectedProfile];
+                if (this.selectedOldProfile != null && this.selectedOldProfile !== this.selectedProfile) {
+                    this.mbSlots.push(this.selectedOldProfile);
+                }
+            }
+            // Trim or pad to maxMb
+            while (this.mbSlots.length > maxMb) this.mbSlots.pop();
+        },
+        syncFromMbSlots() {
+            if (this.mbSlots && this.mbSlots.length > 0) {
+                this.selectedProfile = this.mbSlots[0];
+                this.selectedOldProfile = (this.mbSlots.length > 1) ? this.mbSlots[1] : this.mbSlots[0];
+            }
         },
         eraseProfileboxShadow() {
             for (i = 0; i < profiles.length; i++) {
@@ -6703,33 +6726,79 @@ function thelegendmodproject() {
                 $("#profile-" + i).css('box-shadow', '');
             }
             $("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
-            $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
+            if (this.selectedOldProfile !== this.selectedProfile) {
+                $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
+            }
+        },
+        updateProfileBadges() {
+            if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
+            this.ensureMbSlots();
+
+            // Inject badge CSS once
+            if (!this._mbBadgeCSSInjected) {
+                this._mbBadgeCSSInjected = true;
+                $("<style type='text/css'>").html(
+                    '.mb-badge{position:absolute!important;width:22px!important;height:22px!important;line-height:19px!important;border-radius:50%!important;font-family:Ubuntu,Roboto,sans-serif!important;font-weight:800!important;font-size:12px!important;text-align:center!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;border:1.5px solid #fff!important;z-index:99!important;pointer-events:none!important;box-sizing:border-box!important;}' +
+                    '.mb-badge-1{background:linear-gradient(135deg,#00E5FF,#0072FF)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(0,229,255,.9)!important;}' +
+                    '.mb-badge-2{background:linear-gradient(135deg,#FF007F,#FF5500)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(255,0,127,.9)!important;}' +
+                    '.mb-badge-3{background:linear-gradient(135deg,#A855F7,#6366F1)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(168,85,247,.9)!important;}' +
+                    '.mb-badge-4{background:linear-gradient(135deg,#10B981,#059669)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(16,185,129,.9)!important;}'
+                ).appendTo('head');
+            }
+
+            // Remove all existing badges
+            $('.mb-badge').remove();
+
+            // Render one badge per slot
+            for (var slot = 0; slot < this.mbSlots.length; slot++) {
+                var pIdx = this.mbSlots[slot];
+                if (pIdx >= 0 && pIdx < profiles.length) {
+                    var $anchor = $('#profile-' + pIdx);
+                    if ($anchor.length) {
+                        var $box = $anchor.closest('.skin-box');
+                        if (!$box.length) $box = $anchor;
+                        $box.css({ 'position': 'relative', 'overflow': 'visible' });
+                        $anchor.css({ 'overflow': 'visible' });
+                        var badgeNum = slot + 1;
+                        $box.append('<span class="mb-badge mb-badge-' + badgeNum + '" title="Multibox ' + badgeNum + '" style="top: -2px !important; right: -2px !important; position: absolute !important;">' + badgeNum + '</span>');
+                    }
+                }
+            }
         },
         prevProfile() {
-            this.selectedOldProfile = this.selectedProfile;
-            this.setPlayerSettings();
-            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
-            if (defaultmapsettings.multiBoxShadow) {
-                this.setProfileboxShadow();
-            } else {
-                this.eraseProfileboxShadow();
-            }
+            var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
+            this.selectProfile(newIdx);
         },
         nextProfile() {
-            this.selectedOldProfile = this.selectedProfile;
-            this.setPlayerSettings();
-            this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
-            if (defaultmapsettings.multiBoxShadow) {
-                this.setProfileboxShadow();
-            } else {
-                this.eraseProfileboxShadow();
-            }
+            var newIdx = (this.selectedProfile + 1) % profiles.length;
+            this.selectProfile(newIdx);
         },
         selectProfile(value) {
-            if (parseInt(value) === this.selectedProfile) return;
-            this.selectedOldProfile = this.selectedProfile;
+            var idx = parseInt(value);
+            this.ensureMbSlots();
+
+            // Case 1: already slot 1 → do nothing
+            if (idx === this.mbSlots[0]) return;
+
+            // Check if idx is already in a slot
+            var existingSlot = this.mbSlots.indexOf(idx);
+            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+
+            if (existingSlot > 0) {
+                // Case 2: already in slot K (K > 0) → swap with slot 0
+                var oldSlot0 = this.mbSlots[0];
+                this.mbSlots[0] = idx;
+                this.mbSlots[existingSlot] = oldSlot0;
+            } else {
+                // Case 3: not in any slot → insert at 0, cascade others down
+                this.mbSlots.unshift(idx);
+                // Trim to maxMb (kicks out last one)
+                while (this.mbSlots.length > maxMb) this.mbSlots.pop();
+            }
+
+            // Sync selectedProfile/selectedOldProfile from mbSlots
+            this.syncFromMbSlots();
             this.setPlayerSettings();
-            this.selectedProfile = parseInt(value);
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
