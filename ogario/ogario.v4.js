@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.479)
+ * ogario.v4.js — LegendMod Client (OgVer 3.480)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.479;
+window.OgVer = 3.480;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -5688,6 +5688,13 @@ function thelegendmodproject() {
                         spects[sIdx].handleSendNick();
                     }
                 }
+            } else {
+                /* Returning to main player (n1) — re-register skin so it doesn't
+                 * get lost from being overwritten by multibox handleSendNick */
+                if (ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+                    core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
+                    if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
+                }
             }
             window.multiboxPlayerEnabledSaved = null;
         },
@@ -5722,6 +5729,12 @@ function thelegendmodproject() {
                     } else if (!spects[sIdx].playerCellIDs || !spects[sIdx].playerCellIDs.length) {
                         spects[sIdx].handleSendNick();
                     }
+                }
+            } else {
+                /* Returning to main player (n1) — re-register skin */
+                if (ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+                    core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
+                    if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
                 }
             }
             window.multiboxPlayerEnabledSaved = null;
@@ -6811,22 +6824,26 @@ function thelegendmodproject() {
                     }
                 }
             }
-
-            // Show "Assigning: Unit N" label above skins grid
-            var activeSlot = (typeof this.activeMbSkinSlot === 'number') ? (this.activeMbSkinSlot % maxMb) : 0;
-            var activeUnit = activeSlot + 1;
-            var badgeColors = ['#00E5FF', '#FF007F', '#A855F7', '#10B981'];
-            var labelColor = badgeColors[activeSlot] || '#00E5FF';
-            $('#skins').before('<div id="mb-assign-label" style="text-align:center;padding:4px 0;font-size:13px;font-weight:700;font-family:Ubuntu,Roboto,sans-serif;color:' + labelColor + ';text-shadow:0 0 8px ' + labelColor + ';">▶ Next click assigns to Unit ' + activeUnit + '</div>');
         },
 
         prevProfile() {
-            if (!this.selectedProfiles) this.selectedProfiles = [];
-            this.selectedProfiles[3] = this.selectedProfiles[2];
-            this.selectedProfiles[2] = this.selectedOldProfile;
-            this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length;
+            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            // Build current slot array: [n1, n2, n3, n4]
+            var slots = [this.selectedProfile];
+            slots.push((this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length));
+            if (maxMb > 2) slots.push((this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length));
+            if (maxMb > 3) slots.push((this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length));
+            // Rotate right: previous profile from skin list becomes n1, old n1→n2, etc.
+            var prevIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
+            slots.unshift(prevIdx);
+            slots.pop();
+            // Apply
+            this.selectedProfile = slots[0];
+            this.selectedOldProfile = slots.length > 1 ? slots[1] : slots[0];
+            if (!this.selectedProfiles) this.selectedProfiles = {};
+            if (slots.length > 2) this.selectedProfiles[2] = slots[2];
+            if (slots.length > 3) this.selectedProfiles[3] = slots[3];
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
@@ -6835,12 +6852,23 @@ function thelegendmodproject() {
             }
         },
         nextProfile() {
-            if (!this.selectedProfiles) this.selectedProfiles = [];
-            this.selectedProfiles[3] = this.selectedProfiles[2];
-            this.selectedProfiles[2] = this.selectedOldProfile;
-            this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            this.selectedProfile = (this.selectedProfile + 1) % profiles.length;
+            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+            // Build current slot array: [n1, n2, n3, n4]
+            var slots = [this.selectedProfile];
+            slots.push((this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length));
+            if (maxMb > 2) slots.push((this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length));
+            if (maxMb > 3) slots.push((this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length));
+            // Rotate left: old n2 becomes n1, old n3→n2, etc., old n1 goes to last slot
+            var nextIdx = (this.selectedProfile + 1) % profiles.length;
+            slots.shift();
+            slots.push(nextIdx);
+            // Apply
+            this.selectedProfile = slots[0];
+            this.selectedOldProfile = slots.length > 1 ? slots[1] : slots[0];
+            if (!this.selectedProfiles) this.selectedProfiles = {};
+            if (slots.length > 2) this.selectedProfiles[2] = slots[2];
+            if (slots.length > 3) this.selectedProfiles[3] = slots[3];
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
@@ -6849,24 +6877,8 @@ function thelegendmodproject() {
             }
         },
         selectProfile(value) {
-            var val = parseInt(value);
-            if (typeof this.activeMbSkinSlot !== 'number') this.activeMbSkinSlot = 0;
-            if (!this.selectedProfiles) this.selectedProfiles = [];
-
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-            var targetSlot = this.activeMbSkinSlot % maxMb;
-
-            if (targetSlot === 0) {
-                this.selectedProfile = val;
-            } else if (targetSlot === 1) {
-                this.selectedOldProfile = val;
-            } else {
-                this.selectedProfiles[targetSlot] = val;
-            }
-
-            this.activeMbSkinSlot = (targetSlot + 1) % maxMb;
-
             this.setPlayerSettings();
+            this.selectedProfile = parseInt(value);
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
@@ -7622,7 +7634,7 @@ function thelegendmodproject() {
             var i = t.parent();
             if ('menu-panel' === e) {
                 if (t.hasClass('hotkeys-link')) return;
-                i.hasClass('profile-tab') && (this.activeMbSkinSlot = 0, this.setBlockPopups());
+                i.hasClass('profile-tab') && this.setBlockPopups();
             }
             t.addClass('active'),
                 i.addClass('active'),
@@ -10024,6 +10036,9 @@ function thelegendmodproject() {
         updatevnr() {
             /* Disable map rotation on Expanding Land server */
             if (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))) return;
+            /* Disable map rotation on FFA and Experimental modes — the map
+             * rotates in those modes which breaks multibox coordinate mapping */
+            if (window.legendmod.gameMode === ":ffa" || window.legendmod.gameMode === ":experimental") return;
             var mm = 0;
             var max = 4;
             for (var i = 0; i < this.teamPlayers.length; i++) {
@@ -16632,7 +16647,13 @@ Most cells eaten   : ${mostCellsEaten}
             // Death check
             if (this.removePlayerCell && !this.playerCells.length) {
                 if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                    window.multiboxPlayerEnabled = 1;
+                    // Bug 8 fix: find first living multibox unit instead of hardcoding 1
+                    if (application && typeof application.switchToNextLivingUnit === 'function') {
+                        window.multiboxPlayerEnabled = null; // start from main slot
+                        application.switchToNextLivingUnit(true);
+                    } else {
+                        window.multiboxPlayerEnabled = 1;
+                    }
                     this.removePlayerCell = false;
                 } else {
                     this.play = false;

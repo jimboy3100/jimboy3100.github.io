@@ -231,6 +231,15 @@ class Spect {
     }
 
     closeConnection() {
+        // Clear all running intervals to prevent leaks
+        if (this.positionController) {
+            clearInterval(this.positionController);
+            this.positionController = null;
+        }
+        if (this._staticPosInterval) {
+            clearInterval(this._staticPosInterval);
+            this._staticPosInterval = null;
+        }
         if (this.socket) {
             this.socket.onopen = null;
             this.socket.onmessage = null;
@@ -398,6 +407,8 @@ class Spect {
     }
 
     sendCursor() {
+        // Bug 6 fix: clear any existing interval before creating a new one
+        if (this.positionController) clearInterval(this.positionController);
         this.positionController = setInterval(() => {
 
             var isActiveSpect = (typeof spects !== "undefined" && spects) ? window.multiboxPlayerEnabled === (spects.indexOf(this) + 1) : false;
@@ -424,7 +435,7 @@ class Spect {
 
     sendFreeSpectate() {
         this.isFreeSpectate = !this.isFreeSpectate
-        if (this.staticX === 0) {
+        if (this.staticX == null) {
             if (this.isFreeSpectate) {
                 this.sendCursor()
             } else {
@@ -902,7 +913,9 @@ class Spect {
                     this.sendSpectate();
                 }
                 if (this.staticX != null && this.staticY != null) {
-                    setInterval(() => {
+                    // Bug 7 fix: store interval ID so it can be cleared on cleanup
+                    if (this._staticPosInterval) clearInterval(this._staticPosInterval);
+                    this._staticPosInterval = setInterval(() => {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 50);
                     if (!this.player) {
@@ -1011,6 +1024,15 @@ class Spect {
     }
 
     GhostFix() {
+        /* Disable axis-flip detection on FFA and Experimental — the map
+         * rotates in those modes causing fixX/fixY = -1 which breaks
+         * multibox coordinate mapping at the place of birth */
+        if (legendmod.gameMode === ":ffa" || legendmod.gameMode === ":experimental") {
+            this.fixX = 1;
+            this.fixY = 1;
+            this.ghostFixed = true;
+            return;
+        }
         //if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
         if (!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length !== 0 && Math.abs(application.getghostX()) > 100 && Math.abs(application.getghostY()) > 100) {
             this.fixX = /*Math.round*/(application.getghostX() / (this.ghostCells[0].x + this.mapOffsetX)) < 0 ? -1 : 1;
@@ -1163,9 +1185,9 @@ class Spect {
                 //found.x = found.x + this.fix3x
                 //found.y = found.y + this.fix3y
                 legendmod.indexedCells[found.id].x += this.fix3x
-                legendmod.indexedCells[found.id].y += this.fix3x
+                legendmod.indexedCells[found.id].y += this.fix3y
                 legendmod.indexedCells[found.id].targetX += this.fix3x
-                legendmod.indexedCells[found.id].targetY += this.fix3x
+                legendmod.indexedCells[found.id].targetY += this.fix3y
             }
         })
     }
@@ -1224,7 +1246,9 @@ class Spect {
                 this.sendSpectate();
             }
             if (this.staticX != null && this.staticY != null) {
-                setInterval(() => {
+                // Bug 7 fix: store interval ID so it can be cleared on cleanup
+                if (this._staticPosInterval) clearInterval(this._staticPosInterval);
+                this._staticPosInterval = setInterval(() => {
                     this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                 }, 50);
                 if (!this.player) {
@@ -1236,15 +1260,16 @@ class Spect {
 
     terminate() {
         this.active = null;
-        window.multiboxPlayerEnabled = null
+        // Bug 9 fix: only clear focus if THIS spect is the currently active one
+        if (window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
+            window.multiboxPlayerEnabled = null;
+        }
         if (!legendmod.play) {
             application.showMenu()
         }
-        const temp = this.number - 1;
-        if (spects[temp]) {
-            spects[temp].closeConnection()
-            spects = spects.slice(temp + 1);
-        }
+        // Bug 5 fix: close socket and deactivate without splicing the array,
+        // so that this.number stays valid for cell ID namespacing (newID)
+        this.closeConnection();
     }
 
     handleSubmessage(message) {
@@ -1529,12 +1554,10 @@ class Spect {
             }
             //if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
             if (!cell.isPlayerCell && (cell.targetNick === profiles[application.selectedOldProfile].nick || cell.targetNick === profiles[application.selectedProfile].nick) && cell.targetNick !== "" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size === ~~cell.size) {
-                this.openFourth = true
+                // Bug 3 fix: check BEFORE setting the flag so recalibration fires once
                 if (!this.openFourth) {
+                    this.openFourth = true
                     this.constantrecalculation3(cell.x, cell.y, true)
-                } else {
-                    //this.constantrecalculation3(cell.x, cell.y, false)
-                    //console.log(this.fix3x,this.fix3y)
                 }
             }
             cell.targetX = x;
