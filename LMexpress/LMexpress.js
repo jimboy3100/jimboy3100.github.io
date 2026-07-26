@@ -233,7 +233,6 @@ var switcheryLegendSwitch, switcheryLegendSwitch2;
 
 var showonceusers3 = 0;
 var client2;
-var xhttp = new XMLHttpRequest();
 
 
 
@@ -251,6 +250,7 @@ loadersettings();
 //
 function postSNEZ(server, username, password, data) {
     try {
+        var xhttp = new XMLHttpRequest();
         xhttp.open("POST", server, false);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
@@ -259,12 +259,14 @@ function postSNEZ(server, username, password, data) {
 }
 
 function getSNEZ(server, username, password) {
+    var xhttp = new XMLHttpRequest();
     try {
         xhttp.open("GET", server, false);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send();
     } catch (e) { }
+    return xhttp;
 }
 
 
@@ -518,7 +520,6 @@ function enableshortcuts() {
 }
 
 function adres(info, thismode, thisregion) {
-    var info, thismode, thisregion;
     if (thismode == null || thisregion == null) {
         joinSERVERfindinfo();
     }
@@ -1911,7 +1912,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK) {
         $(".toast.toast-success").remove();
         LegendClanSymbol = $("#nick").val();
         console.log("Step1");
-        if (~LegendClanSymbol.indexOf("?") != -1) {
+        if (LegendClanSymbol.indexOf("?") !== -1) {
             console.log("Step2");
             if (commandMsg == "EU-London") {
                 setTimeout(function () {
@@ -3761,6 +3762,7 @@ function startTimer() {
         TimerLM.timerStarted = TimerLM.timerStarted - TimerLM.difference
     }
     // update timer periodically
+    if (TimerLM.timerInterval) clearInterval(TimerLM.timerInterval);
     TimerLM.timerInterval = setInterval(function () {
         displayTimer()
     }, 10);
@@ -4676,7 +4678,7 @@ function SNEZOgarDownload() {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
     }
     else {
-        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
+        var xhttp = getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
         var responseSNEZ = xhttp.response;
         $('#import-settings').val(unescape(responseSNEZ));
         //$('#import-settings').val(responseSNEZ);
@@ -6399,7 +6401,7 @@ function AgarVersionDestinations() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
 
     try {
-        getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
+        var xhttp = getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
         if (!xhttp.response || xhttp.response.length === 0) return;
         var responseagarversionDestinations = JSON.parse(xhttp.response);
         for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
@@ -6449,11 +6451,11 @@ function UIDcontroller() {
 function AgarBannedUIDs() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
     try {
-        getSNEZ("https://lmsettings.snez.org/", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass");
+        var xhttp = getSNEZ("https://lmsettings.snez.org/", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass");
         var responseLMAgarBannedUIDs = JSON.parse(xhttp.response);
         for (var i = 0; i < Object.keys(responseLMAgarBannedUIDs).length; i++) {
             if (window.bannedUserUIDs) {
-                responseLMAgarBannedUIDs[i].split('@')[0];
+                var bannedUID_entry = responseLMAgarBannedUIDs[i].split('@')[0];
                 if (!bannedUserUIDs.includes(responseLMAgarBannedUIDs[i])) {
                     //console.log('does not include', responseLMAgarBannedUIDs[i])
                     window.bannedUserUIDs.push(responseLMAgarBannedUIDs[i])
