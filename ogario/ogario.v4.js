@@ -18406,6 +18406,8 @@ Most cells eaten   : ${mostCellsEaten}
         drawCommander(ctx) {
             if (LM.drawCommander) {
                 var pickerAxes = ctx;
+                var spawnX = isNaN(ogario.spawnX) ? 0 : ogario.spawnX;
+                var spawnY = isNaN(ogario.spawnY) ? 0 : ogario.spawnY;
                 if (!this._cmdrImg || this._cmdrImg._src !== defaultSettings.commanderImage) {
                     this._cmdrImg = new Image();
                     this._cmdrImg._src = defaultSettings.commanderImage;
@@ -18423,21 +18425,21 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.translate(spawnX, spawnY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(this._cmdrImg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg.complete) pickerAxes.drawImage(this._cmdrImg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.translate(spawnX, spawnY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(this._cmdrImg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg1.complete) pickerAxes.drawImage(this._cmdrImg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.translate(spawnX, spawnY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(this._cmdrImg2, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg2.complete) pickerAxes.drawImage(this._cmdrImg2, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
@@ -18446,6 +18448,8 @@ Most cells eaten   : ${mostCellsEaten}
         drawCommander2(ctx) {
             if (LM.drawCommander2) {
                 var pickerAxes = ctx;
+                var targetX = (typeof window.targetingLeadX === "number" && !isNaN(window.targetingLeadX)) ? window.targetingLeadX : 0;
+                var targetY = (typeof window.targetingLeadY === "number" && !isNaN(window.targetingLeadY)) ? window.targetingLeadY : 0;
                 if (!this._cmdrImg3 || this._cmdrImg3._src !== defaultSettings.commanderImage3) {
                     this._cmdrImg3 = new Image();
                     this._cmdrImg3._src = defaultSettings.commanderImage3;
@@ -18463,24 +18467,24 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.translate(targetX, targetY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(this._cmdrImg3, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg3.complete) pickerAxes.drawImage(this._cmdrImg3, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.translate(targetX, targetY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(this._cmdrImg4, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg4.complete) pickerAxes.drawImage(this._cmdrImg4, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
-                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.translate(targetX, targetY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(this._cmdrImg5, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                if (this._cmdrImg5.complete) pickerAxes.drawImage(this._cmdrImg5, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
-                this.updateCommander();
+                if (!LM.drawCommander) this.updateCommander();
             }
         },
         updateCommander() {
