@@ -17578,6 +17578,212 @@ Most cells eaten   : ${mostCellsEaten}
                 this.glSkinMap = {};
                 this.glSkinNextLayer = 0;
 
+                // ===== WebGL2 Dashed Ring Shader (for sdsplitRange) =====
+                var dashedRingVs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_cellPos;
+                in float a_radius;
+                in vec4 a_color;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec4 v_color;
+                out vec2 v_unitPos;
+                void main() {
+                    v_color = a_color;
+                    v_unitPos = a_unitPos;
+                    vec2 worldPos = a_cellPos + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+                var dashedRingFs = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                in vec2 v_unitPos;
+                out vec4 fragColor;
+                void main() {
+                    float distSq = dot(v_unitPos, v_unitPos);
+                    if (distSq > 1.0) discard;
+                    float dist = sqrt(distSq);
+                    // Ring band: 0.92 to 1.0 of radius
+                    float ringAlpha = smoothstep(0.90, 0.93, dist) * smoothstep(1.0, 0.97, dist);
+                    if (ringAlpha < 0.01) discard;
+                    // Dashed pattern: 20px dash, 30px gap → 40% on (dash=20, total=50)
+                    float angle = atan(v_unitPos.y, v_unitPos.x) + 3.14159265;
+                    float dashVal = fract(angle * 5.0 / 6.28318530718);
+                    if (dashVal > 0.4) discard;
+                    fragColor = vec4(v_color.rgb, v_color.a * ringAlpha);
+                }`;
+                var dashedRingProg = createAndLinkProgram(gl, dashedRingVs, dashedRingFs);
+                if (dashedRingProg) {
+                    this.glDashedRingProgram = dashedRingProg;
+                    this.u_dashedRing_viewCenter = gl.getUniformLocation(dashedRingProg, 'u_viewCenter');
+                    this.u_dashedRing_viewScale = gl.getUniformLocation(dashedRingProg, 'u_viewScale');
+
+                    this.glDashedRingVAO = gl.createVertexArray();
+                    gl.bindVertexArray(this.glDashedRingVAO);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                    var a_dr_unit = gl.getAttribLocation(dashedRingProg, 'a_unitPos');
+                    gl.enableVertexAttribArray(a_dr_unit);
+                    gl.vertexAttribPointer(a_dr_unit, 2, gl.FLOAT, false, 0, 0);
+
+                    this.glDashedRingInstanceVBO = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glDashedRingInstanceVBO);
+                    gl.bufferData(gl.ARRAY_BUFFER, 5000 * 7 * 4, gl.DYNAMIC_DRAW);
+                    var drStride = 7 * 4;
+                    var a_dr_pos = gl.getAttribLocation(dashedRingProg, 'a_cellPos');
+                    gl.enableVertexAttribArray(a_dr_pos);
+                    gl.vertexAttribPointer(a_dr_pos, 2, gl.FLOAT, false, drStride, 0);
+                    gl.vertexAttribDivisor(a_dr_pos, 1);
+                    var a_dr_r = gl.getAttribLocation(dashedRingProg, 'a_radius');
+                    gl.enableVertexAttribArray(a_dr_r);
+                    gl.vertexAttribPointer(a_dr_r, 1, gl.FLOAT, false, drStride, 2 * 4);
+                    gl.vertexAttribDivisor(a_dr_r, 1);
+                    var a_dr_col = gl.getAttribLocation(dashedRingProg, 'a_color');
+                    gl.enableVertexAttribArray(a_dr_col);
+                    gl.vertexAttribPointer(a_dr_col, 4, gl.FLOAT, false, drStride, 3 * 4);
+                    gl.vertexAttribDivisor(a_dr_col, 1);
+                    gl.bindVertexArray(null);
+                    this.glDashedRingData = new Float32Array(5000 * 7);
+                }
+
+                // ===== WebGL2 Gradient Bubble Shader (for drawBubbleCircles / drawBCursorTracking) =====
+                var bubbleVs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_bubbleCenter;
+                in float a_radius;
+                in vec2 a_gradDir;
+                in vec4 a_color;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec4 v_color;
+                out vec2 v_unitPos;
+                out vec2 v_gradDir;
+                void main() {
+                    v_color = a_color;
+                    v_unitPos = a_unitPos;
+                    v_gradDir = a_gradDir;
+                    vec2 worldPos = a_bubbleCenter + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+                var bubbleFs = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                in vec2 v_unitPos;
+                in vec2 v_gradDir;
+                out vec4 fragColor;
+                void main() {
+                    float distSq = dot(v_unitPos, v_unitPos);
+                    if (distSq > 1.0) discard;
+                    float edgeAlpha = smoothstep(1.0, 0.85, distSq);
+                    // Linear gradient: dot product with gradient direction
+                    float gradT = dot(v_unitPos, v_gradDir) * 0.5 + 0.5;
+                    float gradAlpha = 1.0 - gradT;
+                    fragColor = vec4(v_color.rgb, v_color.a * edgeAlpha * gradAlpha);
+                }`;
+                var bubbleProg = createAndLinkProgram(gl, bubbleVs, bubbleFs);
+                if (bubbleProg) {
+                    this.glBubbleProgram = bubbleProg;
+                    this.u_bubble_viewCenter = gl.getUniformLocation(bubbleProg, 'u_viewCenter');
+                    this.u_bubble_viewScale = gl.getUniformLocation(bubbleProg, 'u_viewScale');
+
+                    this.glBubbleVAO = gl.createVertexArray();
+                    gl.bindVertexArray(this.glBubbleVAO);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                    var a_bb_unit = gl.getAttribLocation(bubbleProg, 'a_unitPos');
+                    gl.enableVertexAttribArray(a_bb_unit);
+                    gl.vertexAttribPointer(a_bb_unit, 2, gl.FLOAT, false, 0, 0);
+
+                    // Instance data: [cx, cy, radius, gradDirX, gradDirY, r, g, b, a] = 9 floats
+                    this.glBubbleInstanceVBO = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glBubbleInstanceVBO);
+                    gl.bufferData(gl.ARRAY_BUFFER, 2000 * 9 * 4, gl.DYNAMIC_DRAW);
+                    var bbStride = 9 * 4;
+                    var a_bb_pos = gl.getAttribLocation(bubbleProg, 'a_bubbleCenter');
+                    gl.enableVertexAttribArray(a_bb_pos);
+                    gl.vertexAttribPointer(a_bb_pos, 2, gl.FLOAT, false, bbStride, 0);
+                    gl.vertexAttribDivisor(a_bb_pos, 1);
+                    var a_bb_r = gl.getAttribLocation(bubbleProg, 'a_radius');
+                    gl.enableVertexAttribArray(a_bb_r);
+                    gl.vertexAttribPointer(a_bb_r, 1, gl.FLOAT, false, bbStride, 2 * 4);
+                    gl.vertexAttribDivisor(a_bb_r, 1);
+                    var a_bb_gd = gl.getAttribLocation(bubbleProg, 'a_gradDir');
+                    gl.enableVertexAttribArray(a_bb_gd);
+                    gl.vertexAttribPointer(a_bb_gd, 2, gl.FLOAT, false, bbStride, 3 * 4);
+                    gl.vertexAttribDivisor(a_bb_gd, 1);
+                    var a_bb_col = gl.getAttribLocation(bubbleProg, 'a_color');
+                    gl.enableVertexAttribArray(a_bb_col);
+                    gl.vertexAttribPointer(a_bb_col, 4, gl.FLOAT, false, bbStride, 5 * 4);
+                    gl.vertexAttribDivisor(a_bb_col, 1);
+                    gl.bindVertexArray(null);
+                    this.glBubbleData = new Float32Array(2000 * 9);
+                }
+
+                // ===== WebGL2 Line Shader (for drawCursorTracking) =====
+                var lineVs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_startPos;
+                in vec2 a_endPos;
+                in vec4 a_color;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                uniform float u_lineWidth;
+                out vec4 v_color;
+                void main() {
+                    v_color = a_color;
+                    vec2 dir = a_endPos - a_startPos;
+                    float len = length(dir);
+                    vec2 fwd = len > 0.001 ? dir / len : vec2(1.0, 0.0);
+                    vec2 right = vec2(-fwd.y, fwd.x);
+                    // a_unitPos.x: 0..1 along line, a_unitPos.y: -1..1 perpendicular
+                    float t = a_unitPos.x * 0.5 + 0.5;
+                    vec2 worldPos = mix(a_startPos, a_endPos, t) + right * a_unitPos.y * u_lineWidth;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+                var lineFs = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                out vec4 fragColor;
+                void main() {
+                    fragColor = v_color;
+                }`;
+                var lineProg = createAndLinkProgram(gl, lineVs, lineFs);
+                if (lineProg) {
+                    this.glLineProgram = lineProg;
+                    this.u_line_viewCenter = gl.getUniformLocation(lineProg, 'u_viewCenter');
+                    this.u_line_viewScale = gl.getUniformLocation(lineProg, 'u_viewScale');
+                    this.u_line_lineWidth = gl.getUniformLocation(lineProg, 'u_lineWidth');
+
+                    // Line quad: 4 vertices forming a quad [-1,-1], [1,-1], [-1,1], [1,1]
+                    this.glLineVAO = gl.createVertexArray();
+                    gl.bindVertexArray(this.glLineVAO);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                    var a_ln_unit = gl.getAttribLocation(lineProg, 'a_unitPos');
+                    gl.enableVertexAttribArray(a_ln_unit);
+                    gl.vertexAttribPointer(a_ln_unit, 2, gl.FLOAT, false, 0, 0);
+
+                    // Instance data: [x1, y1, x2, y2, r, g, b, a] = 8 floats
+                    this.glLineInstanceVBO = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glLineInstanceVBO);
+                    gl.bufferData(gl.ARRAY_BUFFER, 200 * 8 * 4, gl.DYNAMIC_DRAW);
+                    var lnStride = 8 * 4;
+                    var a_ln_start = gl.getAttribLocation(lineProg, 'a_startPos');
+                    gl.enableVertexAttribArray(a_ln_start);
+                    gl.vertexAttribPointer(a_ln_start, 2, gl.FLOAT, false, lnStride, 0);
+                    gl.vertexAttribDivisor(a_ln_start, 1);
+                    var a_ln_end = gl.getAttribLocation(lineProg, 'a_endPos');
+                    gl.enableVertexAttribArray(a_ln_end);
+                    gl.vertexAttribPointer(a_ln_end, 2, gl.FLOAT, false, lnStride, 2 * 4);
+                    gl.vertexAttribDivisor(a_ln_end, 1);
+                    var a_ln_col = gl.getAttribLocation(lineProg, 'a_color');
+                    gl.enableVertexAttribArray(a_ln_col);
+                    gl.vertexAttribPointer(a_ln_col, 4, gl.FLOAT, false, lnStride, 4 * 4);
+                    gl.vertexAttribDivisor(a_ln_col, 1);
+                    gl.bindVertexArray(null);
+                    this.glLineData = new Float32Array(200 * 8);
+                }
+
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             } catch (e) {
@@ -17687,6 +17893,230 @@ Most cells eaten   : ${mostCellsEaten}
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
 
             gl.bindVertexArray(this.glVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        /* WebGL2 dashed ring batch — used by draw2Circles sdsplitRange */
+        drawWebGLDashedRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
+            if (!this.gl || !this.glDashedRingProgram || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glDashedRingData;
+            var count = 0;
+            var max = 5000;
+            var _sizeMul = sizeMultiplier || 1.0;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var p = players[i];
+                if (!p) continue;
+                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
+                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                var idx = count * 7;
+                data[idx] = x;
+                data[idx + 1] = y;
+                data[idx + 2] = r;
+                data[idx + 3] = rR;
+                data[idx + 4] = rG;
+                data[idx + 5] = rB;
+                data[idx + 6] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            gl.useProgram(this.glDashedRingProgram);
+            gl.uniform2f(this.u_dashedRing_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_dashedRing_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glDashedRingInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+
+            gl.bindVertexArray(this.glDashedRingVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        /* WebGL2 gradient bubble batch — used by drawBubbleCircles / drawBCursorTracking */
+        drawWebGLBubbleBatch(players, colorHex, alphaVal) {
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glBubbleData;
+            var count = 0;
+            var max = 2000;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var t = players[i];
+                if (!t) continue;
+                var bubbleR = t.size / 3;
+                var offset = t.size - bubbleR; // 2/3 of size
+                // Rotation angle: direction from cell to target
+                var rad = Math.atan2(t.targetX - t.x, t.y - t.targetY);
+                var sinR = Math.sin(rad), cosR = Math.cos(rad);
+                // Bubble center in world space (rotated offset)
+                var bx = t.x + sinR * offset;
+                var by = t.y - cosR * offset;
+                if (bx + bubbleR < minX || bx - bubbleR > maxX || by + bubbleR < minY || by - bubbleR > maxY) continue;
+                // Gradient direction in unit-pos space: from solid (toward cell) to transparent (away)
+                // In rotated space, gradient goes along -Y to +Y, so gradDir = (sinR, -cosR) normalized
+                var idx = count * 9;
+                data[idx] = bx;
+                data[idx + 1] = by;
+                data[idx + 2] = bubbleR;
+                data[idx + 3] = sinR;    // gradDir.x
+                data[idx + 4] = -cosR;   // gradDir.y
+                data[idx + 5] = rR;
+                data[idx + 6] = rG;
+                data[idx + 7] = rB;
+                data[idx + 8] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            gl.useProgram(this.glBubbleProgram);
+            gl.uniform2f(this.u_bubble_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_bubble_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glBubbleInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 9));
+
+            gl.bindVertexArray(this.glBubbleVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        /* WebGL2 gradient bubble batch for cursor tracking — direction is toward cursor, not stored targetX/Y */
+        drawWebGLBubbleBatchCursor(players, cursorX, cursorY, colorHex, alphaVal) {
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glBubbleData;
+            var count = 0;
+            var max = 2000;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var t = players[i];
+                if (!t) continue;
+                var bubbleR = t.size / 3;
+                var offset = t.size - bubbleR;
+                // drawBCursorTracking uses atan2(dy, dx) + PI/2
+                var dx = cursorX - t.x;
+                var dy = cursorY - t.y;
+                var rad = Math.atan2(dy, dx) + 1.5707963267948966;
+                var sinR = Math.sin(rad), cosR = Math.cos(rad);
+                // Bubble center: translate(t.x,t.y) then rotate(rad) then offset (0, -(size-r))
+                // In world space: bx = t.x + sin(rad)*offset, by = t.y - cos(rad)*offset
+                var bx = t.x + sinR * offset;
+                var by = t.y - cosR * offset;
+                if (bx + bubbleR < minX || bx - bubbleR > maxX || by + bubbleR < minY || by - bubbleR > maxY) continue;
+                var idx = count * 9;
+                data[idx] = bx;
+                data[idx + 1] = by;
+                data[idx + 2] = bubbleR;
+                data[idx + 3] = sinR;
+                data[idx + 4] = -cosR;
+                data[idx + 5] = rR;
+                data[idx + 6] = rG;
+                data[idx + 7] = rB;
+                data[idx + 8] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            gl.useProgram(this.glBubbleProgram);
+            gl.uniform2f(this.u_bubble_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_bubble_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glBubbleInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 9));
+
+            gl.bindVertexArray(this.glBubbleVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        /* WebGL2 line batch — used by drawCursorTracking */
+        drawWebGLLineBatch(players, cursorX, cursorY, colorHex, alphaVal, lineWidth) {
+            if (!this.gl || !this.glLineProgram || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glLineData;
+            var count = 0;
+            var max = 200;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var p = players[i];
+                if (!p) continue;
+                var idx = count * 8;
+                data[idx] = p.x;
+                data[idx + 1] = p.y;
+                data[idx + 2] = cursorX;
+                data[idx + 3] = cursorY;
+                data[idx + 4] = rR;
+                data[idx + 5] = rG;
+                data[idx + 6] = rB;
+                data[idx + 7] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            var viewScale = this.scale || 1;
+            gl.useProgram(this.glLineProgram);
+            gl.uniform2f(this.u_line_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_line_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.uniform1f(this.u_line_lineWidth, (lineWidth || 4) / viewScale);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glLineInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 8));
+
+            gl.bindVertexArray(this.glLineVAO);
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
             gl.bindVertexArray(null);
 
@@ -19394,7 +19824,11 @@ Most cells eaten   : ${mostCellsEaten}
             if (!players || !players.length) return;
             var alpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             var color = defaultSettings.cursorTrackingColor;
-
+            /* WebGL2 fast path for cursor-tracking bubbles */
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                && this.drawWebGLBubbleBatchCursor(players, cursorX, cursorY, color, alpha)) {
+                return;
+            }
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 if (!t) continue;
@@ -19420,8 +19854,14 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawCursorTracking(ctx, players, cursorX, cursorY) {
+            /* WebGL2 fast path for cursor tracking lines */
+            var _ctAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                && this.drawWebGLLineBatch(players, cursorX, cursorY, defaultSettings.cursorTrackingColor, _ctAlpha, 4)) {
+                return;
+            }
             ctx.lineWidth = 4,
-                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+                ctx.globalAlpha = _ctAlpha;
             ctx.strokeStyle = defaultSettings.cursorTrackingColor;
             ctx.beginPath();
             for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
@@ -19445,6 +19885,11 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
+            /* WebGL2 fast path for gradient bubble indicators */
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                && this.drawWebGLBubbleBatch(players, stroke, alpha)) {
+                return;
+            }
             var _pi2 = 6.283185307179586;
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
@@ -19489,20 +19934,25 @@ Most cells eaten   : ${mostCellsEaten}
                     ctx.stroke();
                 }
             }
-            /* Dashed sdsplitRange stays Canvas2D — WebGL2 can't render dashes without a special shader */
+            /* WebGL2 fast path for dashed sdsplitRange circles (1.5x size) */
             if (defaultmapsettings.sdsplitRange) {
-                ctx.setLineDash([20, 30]);
-                ctx.lineWidth = 2 * width;
-                ctx.globalAlpha = alpha;
-                ctx.strokeStyle = color;
-                ctx.beginPath();
-                for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
-                    ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                    && this.drawWebGLDashedRingsBatch(players, 2 * scale, color, alpha, 1.5)) {
+                    // rendered via GPU
+                } else {
+                    ctx.setLineDash([20, 30]);
+                    ctx.lineWidth = 2 * width;
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = color;
+                    ctx.beginPath();
+                    for (var n = 0; n < players.length; n++) {
+                        ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
+                        ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                    }
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.lineWidth = width;
                 }
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.lineWidth = width;
             }
             ctx.globalAlpha = 1;
         },
