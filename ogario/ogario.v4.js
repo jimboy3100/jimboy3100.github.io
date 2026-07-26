@@ -17733,7 +17733,22 @@ Most cells eaten   : ${mostCellsEaten}
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
             this.renderStarted = performance.now()
-            LM.time = Date.now();
+            var _now = Date.now();
+            /* Background-tab recovery: if >1s since last render, the tab was hidden.
+             * Snap all cells to their target positions instantly to avoid stale ghosts. */
+            if (LM.time && (_now - LM.time) > 1000) {
+                for (i = 0; i < LM.cells.length; i++) {
+                    var _c = LM.cells[i];
+                    _c.x = _c.targetX;
+                    _c.y = _c.targetY;
+                    _c.size = _c.targetSize;
+                    _c.time = _now;
+                }
+                /* Also snap camera to current view to avoid drifting from old position */
+                this.camX = LM.viewX;
+                this.camY = LM.viewY;
+            }
+            LM.time = _now;
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
             }
@@ -19500,6 +19515,38 @@ Most cells eaten   : ${mostCellsEaten}
             this.preDrawHeartIndicator();
             this.preDrawSmileIndicator();
             window.requestAnimationFrame(drawRender.render);
+            /* Background-tab recovery: when user returns to tab, snap state immediately.
+             * requestAnimationFrame stops in hidden tabs, so cells/camera go stale.
+             * This ensures the first frame after return starts from correct positions. */
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && LM) {
+                    var now = Date.now();
+                    /* Snap all cells to target positions */
+                    for (var i = 0; i < LM.cells.length; i++) {
+                        var c = LM.cells[i];
+                        c.x = c.targetX;
+                        c.y = c.targetY;
+                        c.size = c.targetSize;
+                        c.time = now;
+                    }
+                    /* Snap all food to target positions */
+                    for (var j = 0; j < LM.food.length; j++) {
+                        var f = LM.food[j];
+                        f.x = f.targetX;
+                        f.y = f.targetY;
+                        f.size = f.targetSize;
+                        f.time = now;
+                    }
+                    /* Clear removed cells — they've had time to fade */
+                    LM.removedCells = [];
+                    /* Snap camera to current view position */
+                    if (typeof drawRender !== 'undefined') {
+                        drawRender.camX = LM.viewX;
+                        drawRender.camY = LM.viewY;
+                    }
+                    LM.time = now;
+                }
+            });
         }
 
     }
