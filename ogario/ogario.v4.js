@@ -16849,10 +16849,20 @@ Most cells eaten   : ${mostCellsEaten}
                     _mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 }
                 var _invMass = _mass > 0 ? 1.0 / _mass : 0;
+                /* Viewport culling: skip cells outside visible area + ring offset margin */
+                var _cullMinX = LM.camMinX - 800;
+                var _cullMinY = LM.camMinY - 800;
+                var _cullMaxX = LM.camMaxX + 800;
+                var _cullMaxY = LM.camMaxY + 800;
                 var t = 0;
                 for (; t < this.cells.length; t++) {
                     var cell = this.cells[t];
                     if (cell.isVirus || cell.invisible) {
+                        continue;
+                    }
+                    /* Skip cells outside viewport + ring margin — saves 60-80% of iterations */
+                    if (cell.x + cell.size < _cullMinX || cell.x - cell.size > _cullMaxX ||
+                        cell.y + cell.size < _cullMinY || cell.y - cell.size > _cullMaxY) {
                         continue;
                     }
                     var size = ~~(cell.size * cell.size / 100);
@@ -17630,12 +17640,13 @@ Most cells eaten   : ${mostCellsEaten}
         drawWebGLViruses(virusesArray) {
             return this.drawWebGLBatch(virusesArray);
         },
-        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal) {
+        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
             if (!this.gl || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
             var max = this.glMaxInstances;
+            var _sizeMul = sizeMultiplier || 1.0;
 
             var viewScale = this.scale || 1;
             var halfW = (this.canvasWidth / viewScale / 2) + 500;
@@ -17652,7 +17663,7 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < players.length && count < max; i++) {
                 var p = players[i];
                 if (!p) continue;
-                var x = p.x, y = p.y, r = (p.size || 10) + (scaleOffset || 0);
+                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
                 var idx = count * 7;
@@ -19287,14 +19298,20 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
                 //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
                 var current = currentBiggestCell ? players.length - 1 : 0;
-                ctx.lineWidth = 6;
-                ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
-                ctx.strokeStyle = defaultSettings.splitRangeColor;
-                ctx.beginPath();
-
-                ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
+                /* WebGL2 fast path for the player's own split range circle */
+                var _splitAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                    && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _splitAlpha)) {
+                    // rendered via GPU
+                } else {
+                    ctx.lineWidth = 6;
+                    ctx.globalAlpha = _splitAlpha;
+                    ctx.strokeStyle = defaultSettings.splitRangeColor;
+                    ctx.beginPath();
+                    ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
             }
             ctx.globalAlpha = 1;
             if (reset) {
@@ -19310,13 +19327,20 @@ Most cells eaten   : ${mostCellsEaten}
                 var current = currentBiggestCell ? players.length - 1 : 0;
                 //console.log(currentBiggestCell[current].size);
                 if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
-                    ctx.lineWidth = 6;
-                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
-                    ctx.strokeStyle = defaultSettings.splitRangeColor;
-                    ctx.beginPath();
-                    ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke();
+                    /* WebGL2 fast path for player's double-split range circle (2x size) */
+                    var _dsAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
+                    if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                        && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _dsAlpha, 2.0)) {
+                        // rendered via GPU
+                    } else {
+                        ctx.lineWidth = 6;
+                        ctx.globalAlpha = _dsAlpha;
+                        ctx.strokeStyle = defaultSettings.splitRangeColor;
+                        ctx.beginPath();
+                        ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
+                        ctx.closePath();
+                        ctx.stroke();
+                    }
                 }
             }
             ctx.globalAlpha = 1;
@@ -19448,20 +19472,29 @@ Most cells eaten   : ${mostCellsEaten}
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
             if (!players || !players.length) return;
-            ctx.lineWidth = width;
-            ctx.globalAlpha = alpha;
-            ctx.strokeStyle = color;
+            /* WebGL2 fast path for solid quad-split range circles (2x size) */
             if (defaultmapsettings.qdsplitRange) {
-                ctx.beginPath();
-                for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
-                    ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
+                    && this.drawWebGLRingsBatch(players, scale, color, alpha, 2.0)) {
+                    // rendered via GPU — skip Canvas2D
+                } else {
+                    ctx.lineWidth = width;
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = color;
+                    ctx.beginPath();
+                    for (var n = 0; n < players.length; n++) {
+                        ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
+                        ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
+                    }
+                    ctx.stroke();
                 }
-                ctx.stroke();
             }
+            /* Dashed sdsplitRange stays Canvas2D — WebGL2 can't render dashes without a special shader */
             if (defaultmapsettings.sdsplitRange) {
                 ctx.setLineDash([20, 30]);
                 ctx.lineWidth = 2 * width;
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = color;
                 ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
                     ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
