@@ -7829,8 +7829,12 @@ function thelegendmodproject() {
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached"] = new Image;
-                    this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                    try {
+                        this.customSkinsCache[e + "_cached"] = new Image;
+                        this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                    } catch (eErr) {
+                        this.customSkinsCache[e + "_cached"] = this.customSkinsCache[e];
+                    }
                     // Upload pre-drawn skin to WebGL2 GPU texture array
                     if (window.drawRender && window.drawRender.uploadSkinTexture) {
                         window.drawRender.uploadSkinTexture(e, i);
@@ -7854,8 +7858,12 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached2"] = new Image;
-                    this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
+                    try {
+                        this.customSkinsCache[e + "_cached2"] = new Image;
+                        this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
+                    } catch (eErr) {
+                        this.customSkinsCache[e + "_cached2"] = this.customSkinsCache[e];
+                    }
                     this.cacheSkin2(this.customSkinsCache);
                 }
             }
@@ -7880,8 +7888,12 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached3"] = new Image;
-                    this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                    try {
+                        this.customSkinsCache[e + "_cached3"] = new Image;
+                        this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                    } catch (eErr) {
+                        this.customSkinsCache[e + "_cached3"] = this.customSkinsCache[e];
+                    }
                     this.cacheSkin3(this.customSkinsCache);
                 }
             }
@@ -7906,8 +7918,12 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached4"] = new Image;
-                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
+                    try {
+                        this.customSkinsCache[e + "_cached4"] = new Image;
+                        this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
+                    } catch (eErr) {
+                        this.customSkinsCache[e + "_cached4"] = this.customSkinsCache[e];
+                    }
                     this.cacheSkin4(this.customSkinsCache);
                 }
             }
@@ -7932,8 +7948,12 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
-                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
+                    try {
+                        this.customSkinsCache[e + "_cached" + skinCache] = new Image;
+                        this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
+                    } catch (eErr) {
+                        this.customSkinsCache[e + "_cached" + skinCache] = this.customSkinsCache[e];
+                    }
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
@@ -17196,6 +17216,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 var cellFsSource = `#version 300 es
                 precision highp float;
+                precision highp sampler2DArray;
                 in vec4 v_color;
                 in vec2 v_unitPos;
                 flat in float v_skinLayer;
