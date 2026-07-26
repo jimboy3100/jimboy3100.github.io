@@ -21031,6 +21031,11 @@ Most cells eaten   : ${mostCellsEaten}
     }
     document.onkeydown = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
+        if (pressedKey === 'TAB' || event.keyCode === 9) {
+            if (!event.target || (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA')) {
+                event.preventDefault();
+            }
+        }
         if (('INPUT' !== event.target.tagName || event.target.className === hotkeysSetup.inputClassName || pressedKey === hotkeys['spec-messageKey']) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
