@@ -7874,7 +7874,7 @@ function thelegendmodproject() {
             if (!url || typeof url !== 'string') return;
             if (!app._failedSkinURLs) app._failedSkinURLs = new Set();
             if (app._failedSkinURLs.has(url)) return;
-            if (img && img[url] && img[url]._failed) return;
+            if (img && img[url]) return;
 
             if (img && Object.keys(img).length > 200) {
                 var keys = Object.keys(img);
