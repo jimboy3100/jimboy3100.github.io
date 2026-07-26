@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.481)
+ * ogario.v4.js — LegendMod Client (OgVer 3.482)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.481;
+window.OgVer = 3.482;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -6828,22 +6828,7 @@ function thelegendmodproject() {
 
         prevProfile() {
             this.setPlayerSettings();
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-            // Build current slot array: [n1, n2, n3, n4]
-            var slots = [this.selectedProfile];
-            slots.push((this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length));
-            if (maxMb > 2) slots.push((this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length));
-            if (maxMb > 3) slots.push((this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length));
-            // Rotate right: previous profile from skin list becomes n1, old n1→n2, etc.
-            var prevIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
-            slots.unshift(prevIdx);
-            slots.pop();
-            // Apply
-            this.selectedProfile = slots[0];
-            this.selectedOldProfile = slots.length > 1 ? slots[1] : slots[0];
-            if (!this.selectedProfiles) this.selectedProfiles = {};
-            if (slots.length > 2) this.selectedProfiles[2] = slots[2];
-            if (slots.length > 3) this.selectedProfiles[3] = slots[3];
+            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length;
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
@@ -6853,22 +6838,7 @@ function thelegendmodproject() {
         },
         nextProfile() {
             this.setPlayerSettings();
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-            // Build current slot array: [n1, n2, n3, n4]
-            var slots = [this.selectedProfile];
-            slots.push((this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length));
-            if (maxMb > 2) slots.push((this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length));
-            if (maxMb > 3) slots.push((this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length));
-            // Rotate left: old n2 becomes n1, old n3→n2, etc., old n1 goes to last slot
-            var nextIdx = (this.selectedProfile + 1) % profiles.length;
-            slots.shift();
-            slots.push(nextIdx);
-            // Apply
-            this.selectedProfile = slots[0];
-            this.selectedOldProfile = slots.length > 1 ? slots[1] : slots[0];
-            if (!this.selectedProfiles) this.selectedProfiles = {};
-            if (slots.length > 2) this.selectedProfiles[2] = slots[2];
-            if (slots.length > 3) this.selectedProfiles[3] = slots[3];
+            this.selectedProfile = (this.selectedProfile + 1) % profiles.length;
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
@@ -7991,10 +7961,11 @@ function thelegendmodproject() {
                 app.onPlayerSpawn();
             }, 100);
             if (defaultmapsettings.spawnSpecialEffects) {
-                /* Skip spawn animation on FFA/Experimental — the map rotates
-                 * in those modes so the animation renders at wrong position */
-                var _gm = window.legendmod && window.legendmod.gameMode;
-                if (_gm !== ":ffa" && _gm !== ":experimental") {
+                /* Skip spawn animation on FFA/Experimental/Teams — the agar.io
+                 * map rotates coordinates in those modes causing the animation
+                 * to render at wrong position. Only show on party/EL modes. */
+                var _gm = (typeof application !== "undefined" && application && application.gameMode) || '';
+                if (_gm === ":party" || (window.legendmod && (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))))) {
                     setTimeout(function () {
                         ///////// trigger special effects
                         //console.log('Special effects stage 1');
