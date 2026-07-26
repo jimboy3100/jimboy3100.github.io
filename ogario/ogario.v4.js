@@ -17841,8 +17841,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawGhostCells();
             for (var i = LM.removedCells.length - 1; i >= 0; i--) {
                 var rCell = LM.removedCells[i];
-                rCell.moveCell();
-                rCell.draw(this.ctx);
+                rCell.draw(this.ctx, true);
             }
             /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
              * in a single draw call. Falls back to Canvas2D for jelly/contours.
@@ -18074,10 +18073,10 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (!legendmod.gridPic.complete || !legendmod.gridPic.width) return;
 
-            var mapMinX = (typeof legendmod.mapMinX !== "undefined" && legendmod.mapMinX !== 0) ? legendmod.mapMinX : -7071;
-            var mapMinY = (typeof legendmod.mapMinY !== "undefined" && legendmod.mapMinY !== 0) ? legendmod.mapMinY : -7071;
-            var mapMaxX = (typeof legendmod.mapMaxX !== "undefined" && legendmod.mapMaxX !== 0) ? legendmod.mapMaxX : 7071;
-            var mapMaxY = (typeof legendmod.mapMaxY !== "undefined" && legendmod.mapMaxY !== 0) ? legendmod.mapMaxY : 7071;
+            var mapMinX = (legendmod.mapMinX != null) ? legendmod.mapMinX : -7071;
+            var mapMinY = (legendmod.mapMinY != null) ? legendmod.mapMinY : -7071;
+            var mapMaxX = (legendmod.mapMaxX != null) ? legendmod.mapMaxX : 7071;
+            var mapMaxY = (legendmod.mapMaxY != null) ? legendmod.mapMaxY : 7071;
 
             var mapW = (mapMaxX - mapMinX) || 14142;
             var mapH = (mapMaxY - mapMinY) || 14142;
