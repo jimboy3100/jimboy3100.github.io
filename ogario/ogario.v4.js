@@ -17481,22 +17481,27 @@ Most cells eaten   : ${mostCellsEaten}
             var gl = this.gl;
             var size = this.glSkinTexSize;
 
-            // Resize canvas to texture array layer size if needed
-            var srcCanvas = canvas;
-            if (canvas.width !== size || canvas.height !== size) {
-                var tmp = document.createElement('canvas');
-                tmp.width = size; tmp.height = size;
-                var tmpCtx = tmp.getContext('2d');
-                tmpCtx.drawImage(canvas, 0, 0, size, size);
-                srcCanvas = tmp;
+            try {
+                // Resize canvas to texture array layer size if needed
+                var srcCanvas = canvas;
+                if (canvas.width !== size || canvas.height !== size) {
+                    var tmp = document.createElement('canvas');
+                    tmp.width = size; tmp.height = size;
+                    var tmpCtx = tmp.getContext('2d');
+                    tmpCtx.drawImage(canvas, 0, 0, size, size);
+                    srcCanvas = tmp;
+                }
+
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+
+                this.glSkinMap[url] = layer;
+                return layer;
+            } catch (eErr) {
+                this.glSkinMap[url] = 0;
+                return 0;
             }
-
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-
-            this.glSkinMap[url] = layer;
-            return layer;
         },
         drawWebGLCellBatch(cellsArray) {
             if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
