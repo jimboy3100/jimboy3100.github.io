@@ -10375,55 +10375,70 @@ function thelegendmodproject() {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
         this.movePoints = function () {
+            //console.log(this.id)
+            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
-            if (!len) return;
-
-            if (!window._pointsVelScratch || window._pointsVelScratch.length < len) {
-                window._pointsVelScratch = new Float32Array(Math.max(len, 256));
-            }
-            var pointsVel = window._pointsVelScratch;
-            for (var k = 0; k < len; ++k) {
-                pointsVel[k] = this.pointsVel[k];
-            }
-
             for (var i = 0; i < len; ++i) {
                 var prevVel = pointsVel[(i - 1 + len) % len];
                 var nextVel = pointsVel[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                if (newVel > 10) newVel = 10; else if (newVel < -10) newVel = -10;
+                newVel = Math.max(Math.min(newVel, 10), -10);
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-
-            this.maxPointRad = 0;
-            var invLen = (2 * Math.PI) / len;
-
+            this.maxPointRad = 0
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var affected = false;
-
-                if (curP.x < LM.mapMinX || curP.x > LM.mapMaxX || curP.y < LM.mapMinY || curP.y > LM.mapMaxY) {
-                    affected = true;
+                var nextRl = this.points[(i + 1) % len].rl;
+                var self = this;
+                var affected
+                if (LM.quadtree) {
+                    affected = LM.quadtree.some({
+                        x: curP.x - 5,
+                        y: curP.y - 5,
+                        w: 10,
+                        h: 10
+                    }, function (item) {
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
                 }
+                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
 
+                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+
+
+                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
+                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
+
+                /*if (!affected &&
+                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+                {
+                    affected = true;
+                }*/
                 if (affected) {
-                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
+                    //console.log('affected!!!!!')
+                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                if (curRl < 0) curRl = 0;
+                curRl = Math.max(curRl, 0);
 
-                curRl = (9 * curRl + this.size) / 10;
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10;
+                curRl = (9 * curRl + this.size) / 10; //??????
 
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
+
+                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                var angle = 2 * Math.PI * i / len;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl;
-                if (this.isVirus && (i & 1) === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl
+                if (this.isVirus && i % 2 === 0) {
                     rl += 5;
                 }
 
-                var angle = i * invLen;
                 curP.x = this.x + Math.cos(angle) * rl;
                 curP.y = this.y + Math.sin(angle) * rl;
             }
@@ -16092,31 +16107,9 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            var cells = this.cells;
-            if (window.legendWasmInstance && cells.length > 50) {
-                var wasmMem = window.legendWasmInstance.exports.memory.buffer;
-                var sizesPtr = 0;
-                var idsPtr = cells.length * 4;
-                var sizes = new Float32Array(wasmMem, sizesPtr, cells.length);
-                var ids = new Int32Array(wasmMem, idsPtr, cells.length);
-                for (var i = 0; i < cells.length; i++) {
-                    sizes[i] = cells[i].size;
-                    ids[i] = i;
-                }
-                window.legendWasmInstance.exports.wasm_quickselect_cells(sizesPtr, idsPtr, cells.length, Math.max(1, cells.length - 50));
-                
-                this.cells.sort(function(a, b) {
-                    return a.size === b.size ? a.id - b.id : a.size - b.size;
-                });
-            } else {
-                for (var i = 1; i < cells.length; i++) {
-                    var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
-                    while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
-                        cells[j + 1] = cells[j]; j--;
-                    }
-                    cells[j + 1] = key;
-                }
-            }
+            this.cells.sort(function (row, conf) {
+                return row.size === conf.size ? row.id - conf.id : row.size - conf.size;
+            });
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -17910,71 +17903,98 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.foodIsHidden = true;
                 return;
             }
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLBatch(LM.food)) {
+            //if (!defaultmapsettings.rainbowFood) {
+            this.drawCachedFood(this.ctx, LM.food, this.scale);
+            //return;
+            //}
+            /*for (let length = 0; length < LM.food.length; length++) {
+                LM.food[length].moveCell();
+                if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
+                if (!LM.food[length].invisible) {
+                    LM.food[length].draw(this.ctx);
+                }
+            }*/
+        },
+        drawCachedFood(ctx, food, scale, reset) {
+            if (!food.length) {
                 return;
             }
-            this.drawCachedFood(this.ctx, LM.food, this.scale);
-        },
-        /* Restore Original Ultra-Fast Hardware Round Line-Cap Primitives (moveTo/lineTo/stroke) */
-        drawCachedFood(ctx, food, scale, reset) {
-            if (!food || !food.length) return;
             ctx.save();
+            /*if (defaultmapsettings.optimizedFood) {
 
-            var radius = (food[0].size || 10) + defaultSettings.foodSize;
-            ctx.lineWidth = radius * 2;
+                for (var length = 0; length < food.length; length++) {
+                    //
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    //
+                    if (!food[length].invisible) {
+                        var x = food[length].x - 10 - defaultSettings.foodSize;
+                        var y = food[length].y - 10 - defaultSettings.foodSize;						
+                        if (!defaultmapsettings.rainbowFood){                   
+                            ctx.drawImage(this.pellet, x, y);
+                        }
+                        else{
+                            if (!this.pelletColored[food[length].color]){ 
+                                this.preDrawPelletColors(food[length].color);
+                            }
+                            else{
+                                //ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
+                                ctx.drawImage(this.pelletColored[food[length].color], x, y);
+                                //ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
+                            }
+                        }
+                    	
+                    }
+                }
+            }*/
+            //else{
             ctx.lineCap = 'round';
-
-            var _cullingScale = scale || 1;
-            var _halfW = (this.canvasWidth || 1920) / _cullingScale / 2;
-            var _halfH = (this.canvasHeight || 1080) / _cullingScale / 2;
-            var _vMinX = (this.camX || 0) - _halfW, _vMaxX = (this.camX || 0) + _halfW;
-            var _vMinY = (this.camY || 0) - _halfH, _vMaxY = (this.camY || 0) + _halfH;
-
-            if (!defaultmapsettings.rainbowFood) {
-                ctx.strokeStyle = defaultSettings.foodColor;
-                ctx.beginPath();
-                for (var i = 0; i < food.length; i++) {
-                    var f = food[i];
-                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
-                    if (!f.invisible) {
-                        if (f.x < _vMinX || f.x > _vMaxX || f.y < _vMinY || f.y > _vMaxY) continue;
-                        ctx.moveTo(f.x, f.y);
-                        ctx.lineTo(f.x, f.y);
-                    }
-                }
-                ctx.stroke();
-            } else {
-                if (!this._foodColorBuckets) this._foodColorBuckets = {};
-                var buckets = this._foodColorBuckets;
-                for (var key in buckets) buckets[key].length = 0;
-
-                for (var i = 0; i < food.length; i++) {
-                    var f = food[i];
-                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
-                    if (!f.invisible) {
-                        if (f.x < _vMinX || f.x > _vMaxX || f.y < _vMinY || f.y > _vMaxY) continue;
-                        var c = f.color || "#ffffff";
-                        if (!buckets[c]) buckets[c] = [];
-                        buckets[c].push(f);
-                    }
-                }
-
-                for (var color in buckets) {
-                    var list = buckets[color];
-                    if (!list || !list.length) continue;
-
-                    ctx.strokeStyle = color;
-                    ctx.beginPath();
-                    for (var j = 0; j < list.length; j++) {
-                        var item = list[j];
-                        ctx.moveTo(item.x, item.y);
-                        ctx.lineTo(item.x, item.y);
-                    }
-                    ctx.stroke();
-                }
+            if (LM.integrity && food[0].size) {
+                ctx.lineWidth = (food[0].size + defaultSettings.foodSize) * 2
             }
-            ctx.restore();
-            if (reset) food = [];
+            if (!defaultmapsettings.rainbowFood) {
+                ctx.beginPath();
+
+                ctx.strokeStyle = defaultSettings.foodColor;
+            }
+            for (var length = 0; length < food.length; length++) {
+                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                //ctx.beginPath();
+                if (!food[length].invisible) {
+                    var temp;
+                    if (defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = food[length].color
+                        temp = food[length].color
+                    }
+                    else if (!defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = defaultSettings.foodColor;
+                        temp = defaultSettings.foodColor;
+                    }
+
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    /*ctx.moveTo(x, y);
+                    if (scale < 0.08) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                    	
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        //continue;
+                    }
+                    else{*/
+
+                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                    //}
+                }
+
+                //ctx.fill();					
+            }
+            if (!defaultmapsettings.rainbowFood) ctx.stroke();
+            //}
+            ctx.restore()
+            if (reset) {
+                food = [];
+            }
         },
         drawCircle(ctx, x, y, radius, color) {
             //if (!LM.integrity) ctx.lineWidth = radius * 2;
