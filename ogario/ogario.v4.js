@@ -8298,8 +8298,10 @@ function thelegendmodproject() {
             var cleanNick = nick ? nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim() : '';
             var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
 
+            var vanillaLookup = (skinKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
+
             var skinUrl =
-                (skinKey ? this.customSkinsMap[skinKey] : null) ||
+                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[nick + hexColor] ||

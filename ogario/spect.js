@@ -1,11 +1,24 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
-function loadMultiCellSkin() {
-
-    if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]) {
-        setTimeout(function () {
-            core.registerSkin(profiles[application.selectedOldProfile].nick, null, profiles[application.selectedOldProfile].skinURL, null);
-        }, 500);
+function loadMultiCellSkin(spect) {
+    if (!spect || !spect.nick) return;
+    var pSkin = (typeof application !== "undefined" && application && application.customSkinsMap) ? application.customSkinsMap[spect.nick] : null;
+    if (!pSkin && typeof profiles !== "undefined" && profiles) {
+        for (var i = 0; i < profiles.length; i++) {
+            if (profiles[i] && profiles[i].nick === spect.nick && profiles[i].skinURL) {
+                pSkin = profiles[i].skinURL;
+                break;
+            }
+        }
+    }
+    if (!pSkin && typeof $("#skin") !== "undefined" && $("#skin").length) {
+        pSkin = $("#skin").val();
+    }
+    if (pSkin && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+        core.registerSkin(spect.nick, null, pSkin, null);
+        if (application && application.customSkinsMap) {
+            application.customSkinsMap[spect.nick] = pSkin;
+        }
     }
 }
 
@@ -761,20 +774,27 @@ class Spect {
                 break;
 
             case 85:
-                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
-                console.log('[SPECT] case 85');
-                this.terminate()
-
+                console.log('[SPECT] Opcode 85 received (captcha legacy ignored)');
                 break;
+
             case 87:
-                //(function anonymous(t) {
-                window.agarCaptcha.requestCaptchaV3("play", function (a) {
-                    const b = this.createView(2 + a.length);
-                    b.setUint8(0, 88);
-                    for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
-                    b.setUint8(a.length + 1, 0);
-                    this.sendMessage(b)
-                });
+                if (typeof window.agarCaptcha !== "undefined" && window.agarCaptcha && typeof window.agarCaptcha.requestCaptchaV3 === "function") {
+                    try {
+                        const self = this;
+                        window.agarCaptcha.requestCaptchaV3("play", function (a) {
+                            if (a) {
+                                const b = self.createView(2 + a.length);
+                                b.setUint8(0, 88);
+                                for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
+                                b.setUint8(a.length + 1, 0);
+                                self.sendMessage(b);
+                            }
+                        });
+                    } catch (e) {
+                        console.log('[SPECT] case 87 error:', e);
+                    }
+                }
+                break;
             case 102:
                 //this.sendCursor()
                 //console.log("[SPECT] SendNick with")
@@ -920,13 +940,44 @@ class Spect {
     }
 
     handleSendNick() {
-        if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow) {
-            this.sendNick(profiles[application.selectedOldProfile].nick)
-            this.nick = profiles[application.selectedOldProfile].nick
-        } else {
-            this.sendNick($("#nick").val())
-            this.nick = $("#nick").val()
+        var spectIdx = (typeof spects !== "undefined" && spects) ? spects.indexOf(this) : 0;
+        var pIdx = -1;
+        if (typeof application !== "undefined" && application) {
+            if (application.selectedProfiles && application.selectedProfiles[spectIdx + 1] != null) {
+                pIdx = application.selectedProfiles[spectIdx + 1];
+            } else if (spectIdx === 0 && application.selectedOldProfile != null) {
+                pIdx = application.selectedOldProfile;
+            } else if (typeof profiles !== "undefined" && profiles && profiles.length) {
+                pIdx = ((application.selectedProfile || 0) + spectIdx + 1) % profiles.length;
+            }
         }
+
+        var targetNick = "";
+        var targetSkin = "";
+        if (pIdx >= 0 && typeof profiles !== "undefined" && profiles && profiles[pIdx]) {
+            targetNick = profiles[pIdx].nick || "";
+            targetSkin = profiles[pIdx].skinURL || "";
+            if (profiles[pIdx].color) {
+                this.playerColor = profiles[pIdx].color;
+            }
+        }
+
+        if (!targetNick && typeof $("#nick") !== "undefined" && $("#nick").length) {
+            targetNick = $("#nick").val() || "";
+        }
+        if (!targetSkin && typeof $("#skin") !== "undefined" && $("#skin").length) {
+            targetSkin = $("#skin").val() || "";
+        }
+
+        if (targetNick && targetSkin && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+            core.registerSkin(targetNick, null, targetSkin, null);
+            if (typeof application !== "undefined" && application && application.customSkinsMap) {
+                application.customSkinsMap[targetNick] = targetSkin;
+            }
+        }
+
+        this.sendNick(targetNick);
+        this.nick = targetNick;
     }
 
     GhostFix() {
@@ -1409,15 +1460,19 @@ class Spect {
                     }
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        this.playerColor = profiles[application.selectedOldProfile].color;
-                        cell.color = profiles[application.selectedOldProfile].color;
+                        if (this.playerColor) {
+                            cell.color = this.playerColor;
+                        } else if (typeof profiles !== "undefined" && profiles && profiles[application.selectedOldProfile]) {
+                            this.playerColor = profiles[application.selectedOldProfile].color;
+                            cell.color = profiles[application.selectedOldProfile].color;
+                        }
 
                         legendmod.playerCellsMulti.push(cell);
                         if (legendmod.playerCellsMulti.length === 1) {
                             console.log('[SPECT] Player cell is active')
                             this.active = true
                             this.sendCursor()
-                            loadMultiCellSkin()
+                            loadMultiCellSkin(this)
                         }
                     }
                 } else if (isFood) {
