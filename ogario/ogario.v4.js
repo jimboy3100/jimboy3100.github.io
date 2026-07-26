@@ -5059,29 +5059,53 @@ function thelegendmodproject() {
         },
         macrobotFeed(on) {
             if (on) {
-                if (this.feedInterval) return;
+                if (this.macrobotFeedActive) return;
+                this.macrobotFeedActive = true;
                 var app = this;
+                var lastFeedTime = 0;
                 this.Botseject();
-                this.feedInterval = setInterval(function () {
-                    app.Botseject();
-                }, defaultmapsettings.macroFeeding);
-            } else if (this.feedInterval) {
-                clearInterval(this.feedInterval);
-                this.feedInterval = null
-            };
+                function loop(now) {
+                    if (!app.macrobotFeedActive) return;
+                    var delay = defaultmapsettings.macroFeeding || 10;
+                    if (now - lastFeedTime >= delay) {
+                        lastFeedTime = now;
+                        app.Botseject();
+                    }
+                    requestAnimationFrame(loop);
+                }
+                requestAnimationFrame(loop);
+            } else {
+                this.macrobotFeedActive = false;
+                if (this.feedInterval) {
+                    clearInterval(this.feedInterval);
+                    this.feedInterval = null;
+                }
+            }
         },
         macroFeed(on) {
             if (on) {
-                if (this.feedInterval) return;
+                if (this.macroFeedActive) return;
+                this.macroFeedActive = true;
                 var app = this;
+                var lastFeedTime = 0;
                 this.feed();
-                this.feedInterval = setInterval(function () {
-                    app.feed();
-                }, defaultmapsettings.macroFeeding);
-            } else if (this.feedInterval) {
-                clearInterval(this.feedInterval);
-                this.feedInterval = null
-            };
+                function loop(now) {
+                    if (!app.macroFeedActive) return;
+                    var delay = defaultmapsettings.macroFeeding || 10;
+                    if (now - lastFeedTime >= delay) {
+                        lastFeedTime = now;
+                        app.feed();
+                    }
+                    requestAnimationFrame(loop);
+                }
+                requestAnimationFrame(loop);
+            } else {
+                this.macroFeedActive = false;
+                if (this.feedInterval) {
+                    clearInterval(this.feedInterval);
+                    this.feedInterval = null;
+                }
+            }
         },
         dance(on) {
             if (on) {
@@ -10598,7 +10622,44 @@ function thelegendmodproject() {
     }
     //window.application = application;
 
+    var ogarCellPool = [];
+    function getPooledCell(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
+        if (ogarCellPool.length > 0) {
+            var cell = ogarCellPool.pop();
+            cell.reset(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots);
+            return cell;
+        }
+        return new ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots);
+    }
+
     function ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
+        this.reset = function(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
+            this.id = id;
+            this.x = e;
+            this.y = s;
+            this.startX = e;
+            this.startY = s;
+            this.targetX = e;
+            this.targetY = s;
+            this.color = color;
+            this.oppColor = null;
+            this.size = size;
+            this.targetSize = size;
+            this.startSize = size;
+            this.alpha = 1;
+            this.nick = '';
+            this.targetNick = '';
+            this.mass = 0;
+            this.lastMass = 0;
+            this.removed = false;
+            this.redrawed = false;
+            this.splitTime = 0;
+            this.isFood = isFood;
+            this.isVirus = isVirus;
+            this.isPlayerCell = isPlayer;
+            this.updateTime = Date.now();
+            return this;
+        };
         //lylko
         this.points = []
         this.pointsVel = []
@@ -10818,25 +10879,38 @@ function thelegendmodproject() {
                 LM.removedCells.push(this);
             }
             delete LM.indexedCells[this.id];
+            if (ogarCellPool.length < 2000) {
+                ogarCellPool.push(this);
+            }
         };
         this.moveCell = function () {
-            var time = LM.time - this.time;
+            var now = LM.time || Date.now();
             var anim = defaultmapsettings.animation || 80;
-            var delay = time / anim;
+            var elapsed = now - (this.updateTime || now);
+            var delay = elapsed / anim;
             if (delay < 0) delay = 0;
             else if (delay > 1) delay = 1;
 
-            this.x += (this.targetX - this.x) * delay;
-            this.y += (this.targetY - this.y) * delay;
-            if (!defaultmapsettings.suckAnimation) {
-                this.size += (this.targetSize - this.size) * delay;
+            if (this.startX !== undefined && this.startY !== undefined) {
+                this.x = this.startX + (this.targetX - this.startX) * delay;
+                this.y = this.startY + (this.targetY - this.startY) * delay;
             } else {
-                this.size += (this.targetSize - this.size) * (time / 800);
+                this.x += (this.targetX - this.x) * delay;
+                this.y += (this.targetY - this.y) * delay;
+            }
+
+            if (!defaultmapsettings.suckAnimation) {
+                if (this.startSize !== undefined) {
+                    this.size = this.startSize + (this.targetSize - this.startSize) * delay;
+                } else {
+                    this.size += (this.targetSize - this.size) * delay;
+                }
+            } else {
+                this.size += (this.targetSize - this.size) * (elapsed / 800);
                 if (this.size < 0) this.size = 0;
             }
             this.alpha = delay;
             if (!this.removed) {
-                this.time = LM.time;
                 return;
             }
             if (delay === 1) {
@@ -16106,7 +16180,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (this.indexedCells.hasOwnProperty(id)) {
                         cellObj = this.indexedCells[id];
                     } else {
-                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                        cellObj = getPooledCell(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                         cellObj.time = this.time;
                         cellObj.spectator = false;
                         if (!isFood) {
@@ -16127,9 +16201,13 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     if (cellObj.isPlayerCell) name = this.playerNick;
                     if (name || namePresent) cellObj.targetNick = name;
+                    cellObj.startX = cellObj.x;
+                    cellObj.startY = cellObj.y;
+                    cellObj.startSize = cellObj.size;
                     cellObj.targetX = x;
                     cellObj.targetY = y;
                     cellObj.targetSize = size;
+                    cellObj.updateTime = this.time || Date.now();
                     cellObj.isFood = isFood ? 1 : 0;
                     cellObj.isVirus = isVirus;
                     if (color) cellObj.color = color;
@@ -16138,9 +16216,13 @@ Most cells eaten   : ${mostCellsEaten}
                     // ── UPDATED NODE ──
                     var cell = this.indexedCells[id];
                     if (cell) {
+                        cell.startX = cell.x;
+                        cell.startY = cell.y;
+                        cell.startSize = cell.size;
                         cell.targetX = x;
                         cell.targetY = y;
                         cell.targetSize = size;
+                        cell.updateTime = this.time || Date.now();
                         if (color) cell.color = color;
                     }
                 }
@@ -16329,7 +16411,7 @@ Most cells eaten   : ${mostCellsEaten}
                     //cellUpdateCells.color = color;
                     //}					
                 } else {
-                    cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellUpdateCells = getPooledCell(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
                     cellUpdateCells.spectator = false;
                     if (!isFood) {
@@ -16377,9 +16459,13 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
                 //
+                cellUpdateCells.startX = cellUpdateCells.x;
+                cellUpdateCells.startY = cellUpdateCells.y;
+                cellUpdateCells.startSize = cellUpdateCells.size;
                 cellUpdateCells.targetX = x;
                 cellUpdateCells.targetY = y;
                 cellUpdateCells.targetSize = size;
+                cellUpdateCells.updateTime = this.time || Date.now();
                 cellUpdateCells.isFood = isFood;
                 cellUpdateCells.isVirus = isVirus;
                 if (skin) {
@@ -17019,13 +17105,32 @@ Most cells eaten   : ${mostCellsEaten}
                     var shader = gl.createShader(type);
                     gl.shaderSource(shader, source);
                     gl.compileShader(shader);
+                    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                        console.warn('[WebGL Shader Compile Error]', gl.getShaderInfoLog(shader));
+                        gl.deleteShader(shader);
+                        return null;
+                    }
                     return shader;
                 }
 
-                var program = gl.createProgram();
-                gl.attachShader(program, compileShader(gl, gl.VERTEX_SHADER, vsSource));
-                gl.attachShader(program, compileShader(gl, gl.FRAGMENT_SHADER, fsSource));
-                gl.linkProgram(program);
+                function createAndLinkProgram(gl, vsSource, fsSource) {
+                    var vs = compileShader(gl, gl.VERTEX_SHADER, vsSource);
+                    var fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
+                    if (!vs || !fs) return null;
+                    var prog = gl.createProgram();
+                    gl.attachShader(prog, vs);
+                    gl.attachShader(prog, fs);
+                    gl.linkProgram(prog);
+                    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+                        console.warn('[WebGL Program Link Error]', gl.getProgramInfoLog(prog));
+                        gl.deleteProgram(prog);
+                        return null;
+                    }
+                    return prog;
+                }
+
+                var program = createAndLinkProgram(gl, vsSource, fsSource);
+                if (!program) throw new Error('Main WebGL program creation failed');
                 this.glProgram = program;
 
                 var unitQuad = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
@@ -17080,18 +17185,15 @@ Most cells eaten   : ${mostCellsEaten}
                 uniform vec4 u_gridColor;
                 out vec4 fragColor;
                 void main() {
-                    vec2 coord = v_worldPos / u_gridSpacing;
-                    vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
-                    float line = min(grid.x, grid.y);
-                    float c = 1.0 - min(line, 1.0);
-                    if (c <= 0.0) discard;
-                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * c);
+                    vec2 coord = fract(v_worldPos / u_gridSpacing);
+                    vec2 grid = abs(coord - 0.5);
+                    float line = step(0.48, max(grid.x, grid.y));
+                    if (line <= 0.0) discard;
+                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line);
                 }`;
 
-                var gridProgram = gl.createProgram();
-                gl.attachShader(gridProgram, compileShader(gl, gl.VERTEX_SHADER, gridVsSource));
-                gl.attachShader(gridProgram, compileShader(gl, gl.FRAGMENT_SHADER, gridFsSource));
-                gl.linkProgram(gridProgram);
+                var gridProgram = createAndLinkProgram(gl, gridVsSource, gridFsSource);
+                if (!gridProgram) throw new Error('Grid WebGL program creation failed');
                 this.glGridProgram = gridProgram;
 
                 this.u_grid_viewCenter = gl.getUniformLocation(gridProgram, 'u_viewCenter');
@@ -17146,10 +17248,8 @@ Most cells eaten   : ${mostCellsEaten}
                     fragColor.a *= v_color.a;
                 }`;
 
-                var cellProgram = gl.createProgram();
-                gl.attachShader(cellProgram, compileShader(gl, gl.VERTEX_SHADER, cellVsSource));
-                gl.attachShader(cellProgram, compileShader(gl, gl.FRAGMENT_SHADER, cellFsSource));
-                gl.linkProgram(cellProgram);
+                var cellProgram = createAndLinkProgram(gl, cellVsSource, cellFsSource);
+                if (!cellProgram) throw new Error('Cell WebGL program creation failed');
                 this.glCellProgram = cellProgram;
 
                 this.u_cell_viewCenter = gl.getUniformLocation(cellProgram, 'u_viewCenter');
@@ -17214,8 +17314,12 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             } catch (e) {
-                console.warn('[WebGL2 Instanced Renderer] Initialization failed:', e);
+                console.warn('[WebGL2 Instanced Renderer] Initialization failed, falling back to 2D Canvas:', e);
                 this.gl = null;
+                if (this.glCanvas && this.glCanvas.parentNode) {
+                    this.glCanvas.parentNode.removeChild(this.glCanvas);
+                    this.glCanvas = null;
+                }
             }
         },
         drawWebGLGridShader() {
@@ -17791,8 +17895,43 @@ Most cells eaten   : ${mostCellsEaten}
                         this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
                     }
 
+                    this.drawMergeProgressRings(this.ctx, LM.playerCells);
+                    this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
                 }
             }
+        },
+        drawMergeProgressRings(ctx, playerCells) {
+            if (!playerCells || playerCells.length <= 1) return;
+            var now = Date.now();
+            ctx.save();
+            ctx.lineWidth = 4;
+            for (var i = 0; i < playerCells.length; i++) {
+                var cell = playerCells[i];
+                if (!cell || !cell.isInView()) continue;
+                if (!cell.splitTime) {
+                    cell.splitTime = now;
+                }
+                var mass = cell.mass || ~~(cell.size * cell.size / 100);
+                var duration = 30 + (mass * 0.02);
+                var elapsed = (now - cell.splitTime) / 1000;
+                var remaining = Math.max(0, duration - elapsed);
+                var progress = Math.min(1, elapsed / duration);
+
+                if (remaining > 0 && progress < 1) {
+                    var radius = cell.size + 6;
+                    var startAngle = -Math.PI / 2;
+                    var endAngle = startAngle + (progress * 2 * Math.PI);
+                    ctx.beginPath();
+                    ctx.arc(cell.x, cell.y, radius, startAngle, endAngle, false);
+                    ctx.strokeStyle = remaining < 5 ? "#00ff66" : (remaining < 15 ? "#ffcc00" : "#ff3333");
+                    ctx.stroke();
+
+                    if (window.playerCellsId && window.playerCellsId[cell.id]) {
+                        window.playerCellsId[cell.id].mergeTime = remaining;
+                    }
+                }
+            }
+            ctx.restore();
         },
         drawMiscRings() {
             if (LM.play || LM.playerCellsMulti.length) {
@@ -19982,8 +20121,13 @@ Most cells eaten   : ${mostCellsEaten}
                     customskinanimated: d
                 };
                 if (c) {
-                    this.cacheCustomSkin(a, '#000000', c);
-                    this.loadSkin(this.customSkinsCache, c, d);
+                    var targetObj = (typeof application !== "undefined" && application && application.cacheCustomSkin) ? application : ((typeof drawRender !== "undefined" && drawRender && drawRender.cacheCustomSkin) ? drawRender : null);
+                    if (targetObj) {
+                        targetObj.cacheCustomSkin(a, '#000000', c);
+                        if (targetObj.loadSkin && targetObj.customSkinsCache) {
+                            targetObj.loadSkin(targetObj.customSkinsCache, c, d);
+                        }
+                    }
                 }
             }
         },
