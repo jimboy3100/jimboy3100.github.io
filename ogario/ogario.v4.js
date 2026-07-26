@@ -1,4 +1,4 @@
-window.OgVer = 3.461;
+window.OgVer = 3.466;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10202,7 +10202,7 @@ function thelegendmodproject() {
                 }
             },
             this.setFontSize = function (ogariofontsizesetter) {
-                if (this.fontSize !== ogariofontsizesetter) {
+                if (Math.abs(this.fontSize - ogariofontsizesetter) > 3) {
                     this.fontSize = ogariofontsizesetter;
                     this.margin = ~~(0.2 * ogariofontsizesetter);
                     this.setFont();
@@ -10467,22 +10467,20 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
+            if (this.x === this.targetX && this.y === this.targetY && this.size === this.targetSize && !this.removed) return;
             var time = LM.time - this.time;
-            var delay = time / defaultmapsettings.animation;
-            if (delay < 0) {
-                delay = 0
-            } else if (delay > 1) {
-                delay = 1
-            }
-            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
+            var anim = defaultmapsettings.animation || 80;
+            var delay = time / anim;
+            if (delay < 0) delay = 0;
+            else if (delay > 1) delay = 1;
+
             this.x += (this.targetX - this.x) * delay;
             this.y += (this.targetY - this.y) * delay;
             if (!defaultmapsettings.suckAnimation) {
                 this.size += (this.targetSize - this.size) * delay;
-            }
-            else {
+            } else {
                 this.size += (this.targetSize - this.size) * (time / 800);
-                if (this.size < 0) this.size = 0 //fix
+                if (this.size < 0) this.size = 0;
             }
             this.alpha = delay;
             if (!this.removed) {
@@ -12101,19 +12099,23 @@ function thelegendmodproject() {
             this.sendBuffer(message);
         },
         sendAction(action) {
-
-            if (!this.isSocketOpen()) {
-                return;
-            }
-            // Garix: split (17) and eject (21) require tabID
+            if (!this.isSocketOpen()) return;
             if (this.serverType === 'garix' && (action === 17 || action === 21)) {
-                var gv = this.createView(3);
+                if (!this._staticActionView3) {
+                    this._staticActionBuffer3 = new ArrayBuffer(3);
+                    this._staticActionView3 = new DataView(this._staticActionBuffer3);
+                }
+                var gv = this._staticActionView3;
                 gv.setUint8(0, action);
                 gv.setUint16(1, this.garixTabID1 || 0, true);
                 this.sendBuffer(gv);
                 return;
             }
-            const view = this.createView(1);
+            if (!this._staticActionView1) {
+                this._staticActionBuffer1 = new ArrayBuffer(1);
+                this._staticActionView1 = new DataView(this._staticActionBuffer1);
+            }
+            var view = this._staticActionView1;
             view.setUint8(0, action);
             this.sendMessage(view);
         },
@@ -12545,11 +12547,15 @@ function thelegendmodproject() {
                     // bytes 11-14 unused padding (server only checks length)
                     this.sendBuffer(gv);
                 } else {
-                    var view = this.createView(13);
-                    view.setUint8(0, 16);
+                    if (!this._staticPosView13) {
+                        this._staticPosBuffer13 = new ArrayBuffer(13);
+                        this._staticPosView13 = new DataView(this._staticPosBuffer13);
+                        this._staticPosView13.setUint8(0, 16);
+                    }
+                    var view = this._staticPosView13;
                     view.setInt32(1, cursorX, true);
                     view.setInt32(5, cursorY, true);
-                    view.setUint32(9, this.protocolKey, true);
+                    view.setUint32(9, this.protocolKey || 0, true);
                     this.sendMessage(view);
                 }
             }
@@ -16701,14 +16707,8 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.scale(this.scale, this.scale);
             //this.ctx.translate(-this.camX, -this.camY);
 
-            if (defaultmapsettings.showGrid && defaultmapsettings.showOptimisedGrid) {
-                this.drawCustomNewGrid()
-                /*if (!this.drawedGrid){
-                    this.drawGridCached();				
-                }	
-                else if (this.drawedGrid){
-                    this.drawCustomNewGrid();
-                }	*/
+            if (defaultmapsettings.showGrid) {
+                this.drawCustomNewGrid();
             }
             if (defaultmapsettings.showBgSectors) {
                 this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
@@ -16908,40 +16908,28 @@ Most cells eaten   : ${mostCellsEaten}
             if (!legendmod.gridPic) {
                 legendmod.gridPic = new Image;
                 legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid3.png";
-                //legendmod.gridPic.src = "https://www.legendmod.ml/banners/grid5.png";
             }
-            //this.ctx.drawImage(application.customSkinsCache["test_cached"],
-            /*this.ctx.drawImage(legendmod.gridPic,			
-                legendmod.mapMinX,
-                legendmod.mapMinY,
-                legendmod.mapMaxX - legendmod.mapMinX,
-                legendmod.mapMaxY - legendmod.mapMinY
-            );*/
-            //legendmod.viewX -> drawRender.camX
-            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
-            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
-            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
-            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)
-            this.ctx.drawImage(legendmod.gridPic,
-                (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                minX,
-                minY,
-                maxX - minX,
-                maxY - minY
-            );
-            /*this.ctx.drawImage(legendmod.gridPic,			
-                (legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
-                (legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                (legendmod.viewMaxX - legendmod.viewMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                (legendmod.viewMaxY - legendmod.viewMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
-                legendmod.viewMinX,
-                legendmod.viewMinY,	
-                legendmod.viewMaxX - legendmod.viewMinX,
-                legendmod.viewMaxY - legendmod.viewMinY						
-            );*/
+            if (!legendmod.gridPic.complete || !legendmod.gridPic.width) return;
+
+            var vScale = legendmod.viewScale || this.scale || 1;
+            var minX = this.camX - this.canvasWidth / (2 * vScale);
+            var maxX = this.camX + this.canvasWidth / (2 * vScale);
+            var minY = this.camY - this.canvasHeight / (2 * vScale);
+            var maxY = this.camY + this.canvasHeight / (2 * vScale);
+
+            var mapMinX = (typeof legendmod.mapMinX !== "undefined") ? legendmod.mapMinX : -7071;
+            var mapMinY = (typeof legendmod.mapMinY !== "undefined") ? legendmod.mapMinY : -7071;
+            var mapMaxX = (typeof legendmod.mapMaxX !== "undefined") ? legendmod.mapMaxX : 7071;
+            var mapMaxY = (typeof legendmod.mapMaxY !== "undefined") ? legendmod.mapMaxY : 7071;
+
+            var mapW = (mapMaxX - mapMinX) || 14142;
+            var mapH = (mapMaxY - mapMinY) || 14142;
+
+            var sx = ((minX - mapMinX) / mapW) * legendmod.gridPic.width;
+            var sy = ((minY - mapMinY) / mapH) * legendmod.gridPic.height;
+            var sw = ((maxX - minX) / mapW) * legendmod.gridPic.width;
+            var sh = ((maxY - minY) / mapH) * legendmod.gridPic.height;
+
         },
         drawCustomBackgrounds() {
             if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
