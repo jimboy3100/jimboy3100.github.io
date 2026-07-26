@@ -18664,11 +18664,27 @@ Most cells eaten   : ${mostCellsEaten}
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
 
-            if (defaultmapsettings.middleMultiView && LM.playerCells.length) {
-                var spect = (typeof spects !== "undefined" && spects) ? spects[window.multiboxPlayerEnabled ? (window.multiboxPlayerEnabled - 1) : 0] : null;
-                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = (LM.viewXTrue + spect.playerX + (spect.fix3x || 0)) / 2;
-                    targetCamY = (LM.viewYTrue + spect.playerY + (spect.fix3y || 0)) / 2;
+            if (defaultmapsettings.middleMultiView) {
+                var sumX = 0, sumY = 0, count = 0;
+                if (LM.playerCells && LM.playerCells.length) {
+                    sumX += (LM.viewXTrue != null ? LM.viewXTrue : LM.viewX);
+                    sumY += (LM.viewYTrue != null ? LM.viewYTrue : LM.viewY);
+                    count++;
+                }
+                if (typeof spects !== "undefined" && spects) {
+                    var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
+                    for (var sI = 0; sI < neededSpects; sI++) {
+                        var sp = spects[sI];
+                        if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
+                            sumX += sp.playerX + (sp.fix3x || 0);
+                            sumY += sp.playerY + (sp.fix3y || 0);
+                            count++;
+                        }
+                    }
+                }
+                if (count > 0) {
+                    targetCamX = sumX / count;
+                    targetCamY = sumY / count;
                 }
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
                 var spect = spects[window.multiboxPlayerEnabled - 1];
@@ -19257,10 +19273,26 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawViewPorts(ctx) {
-            //console.log('a')
-            this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
-            if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY) {
-                this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
+            this.drawViewport(this.ctx, '1', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+            if (legendmod.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
+                var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
+                var viewScale = this.scale || 1;
+                var halfW = (this.canvasWidth / viewScale / 2);
+                var halfH = (this.canvasHeight / viewScale / 2);
+
+                for (var sI = 0; sI < neededSpects; sI++) {
+                    var sp = spects[sI];
+                    if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
+                        var spX = sp.playerX + (sp.fix3x || 0);
+                        var spY = sp.playerY + (sp.fix3y || 0);
+                        var spMinX = spX - halfW;
+                        var spMinY = spY - halfH;
+                        var spMaxX = spX + halfW;
+                        var spMaxY = spY + halfH;
+                        var labelName = String(sI + 2);
+                        this.drawViewport(this.ctx, labelName, spMinX, spMinY, spMaxX, spMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+                    }
+                }
             }
             if (window.fullSpectator) {
                 for (let i = 0; i < spects.length; i++) {
