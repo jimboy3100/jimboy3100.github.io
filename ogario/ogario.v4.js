@@ -8254,172 +8254,174 @@ function thelegendmodproject() {
                 const n = o / LM.mapSize;
                 const r = ogario.mapOffsetX + LM.mapOffset;
                 const l = ogario.mapOffsetY + LM.mapOffset;
-                if (this.drawSelectedCell(this.miniMapCtx),
-                    //
-                    this.w = ogario.playerX,
-                    this.u = ogario.playerY,
-                    /*
-                        this.w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(i.playerX) : i.playerX,
-                        this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(i.playerY) : i.playerY,  
-*/
-                    //						
-                    //this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
-                    this.currentSector = this.calculateMapSector(this.w, this.u, true),
-
-                    this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily,
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                    this.miniMapCtx.globalAlpha = 1,
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
-                    this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e),
-                    //this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
-                    //this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
-                    //this.miniMapCtx.fillText(this.currentSector, 10, e),
-                    this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
-                    this.miniMapCtx.save(),
-                    this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
-                    /* ── Expanding Land: Draw zone on minimap (all phases) ── */
-                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function () {
-                        var me = LM.mapEvent;
-                        var targetHalf = me.targetSize / 2;
-                        var tMinX = (-targetHalf + r) * n;
-                        var tMinY = (-targetHalf + l) * n;
-                        var tW = me.targetSize * n;
-                        var tH = me.targetSize * n;
-                        var mmCtx = app.miniMapCtx;
-                        mmCtx.save();
-                        if (me.phase === 1) {
-                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
-                        } else if (me.phase === 2) {
-                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
-                        } else {
-                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                this.drawSelectedCell(this.miniMapCtx);
+                this.w = ogario.playerX;
+                this.u = ogario.playerY;
+                this.currentSector = this.calculateMapSector(this.w, this.u, true);
+                this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily;
+                this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
+                this.miniMapCtx.globalAlpha = 1;
+                this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor;
+                this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e);
+                if (!this.miniMapSectors) {
+                    this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a);
+                }
+                    this.miniMapCtx.save();
+                    try {
+                        this.miniMapCtx.translate(9.5, a);
+                        if (":battleroyale" === this.gameMode && drawRender) {
+                            drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l);
                         }
-                        mmCtx.lineWidth = 1;
-                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
-                        mmCtx.restore();
-                    })(),
-                    defaultmapsettings.showMiniMapGhostCells) {
-                    var h = ogario.ghostCells;
-                    this.miniMapCtx.beginPath();
-                    var c = 0;
-                    for (; c < h.length; c++) {
-                        if (!h[c].inView) {
-                            var u = ~~((h[c].x + r) * n);
-                            var d = ~~((h[c].y + l) * n);
-                            if (u >= 0 && u <= o && d >= 0 && d <= o) {
-                                this.miniMapCtx.moveTo(u, d);
-                                this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                        /* ── Expanding Land: Draw zone on minimap (all phases) ── */
+                        if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
+                            (function () {
+                                var me = LM.mapEvent;
+                                var targetHalf = me.targetSize / 2;
+                                var tMinX = (-targetHalf + r) * n;
+                                var tMinY = (-targetHalf + l) * n;
+                                var tW = me.targetSize * n;
+                                var tH = me.targetSize * n;
+                                var mmCtx = app.miniMapCtx;
+                                mmCtx.save();
+                                if (me.phase === 1) {
+                                    mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                                } else if (me.phase === 2) {
+                                    mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                                } else {
+                                    mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                                }
+                                mmCtx.lineWidth = 1;
+                                mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                                mmCtx.restore();
+                            })();
+                        }
+                        if (defaultmapsettings.showMiniMapGhostCells) {
+                            var h = ogario.ghostCells;
+                            this.miniMapCtx.beginPath();
+                            var c = 0;
+                            for (; c < h.length; c++) {
+                                if (!h[c].inView) {
+                                    var u = ~~((h[c].x + r) * n);
+                                    var d = ~~((h[c].y + l) * n);
+                                    if (u >= 0 && u <= o && d >= 0 && d <= o) {
+                                        this.miniMapCtx.moveTo(u, d);
+                                        this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                                    }
+                                }
+                            }
+                            this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
+                            this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
+                            this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
+                            this.miniMapCtx.shadowBlur = 10;
+                            this.miniMapCtx.shadowOffsetX = 0;
+                            this.miniMapCtx.shadowOffsetY = 0;
+                            this.miniMapCtx.fill();
+                            this.miniMapCtx.globalAlpha = 1;
+                            this.miniMapCtx.shadowBlur = 0;
+                        }
+                        if (defaultmapsettings.showMiniMapGuides) {
+                            u = Math.round((ogario.playerX + r) * n);
+                            d = Math.round((ogario.playerY + l) * n);
+                            this.miniMapCtx.lineWidth = 1;
+                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapGuidesColor;
+                            this.miniMapCtx.beginPath();
+                            this.miniMapCtx.moveTo(u, 0);
+                            this.miniMapCtx.lineTo(u, o - 1);
+                            this.miniMapCtx.moveTo(0, d);
+                            this.miniMapCtx.lineTo(o - 1, d);
+                            this.miniMapCtx.stroke();
+                        }
+                        if (defaultmapsettings.showExtraMiniMapGuides) {
+                            u = Math.round((ogario.playerX + r) * n);
+                            d = Math.round((ogario.playerY + l) * n);
+
+                            //draw the yellow on minimap
+                            this.miniMapCtx.beginPath();
+                            this.miniMapCtx.lineWidth = "1";
+                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
+                            var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
+                            var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+                            var minidaxx = application.miniMapSectors.width * miniax;
+                            var minidayy = application.miniMapSectors.width * miniay;
+
+                            var fixminidaxx = u - (minidaxx / 2);
+                            var fixminidayy = d - (minidayy / 2);
+
+                            this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
+                            this.miniMapCtx.stroke();
+
+                        }
+                        //
+                        if (LM.arrowFB && LM.arrowFB[0]) {
+                            if (application.top5) {
+                                for (var temp = 0; temp < application.top5.length; temp++) {
+                                    if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
+                                        LM.arrowFB[0].isIncluded = true;
+                                    }
+                                }
+                            }
+
+                            if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                                this.miniMapCtx.save();
+                                try {
+                                    this.miniMapCtx.beginPath();
+                                    this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                                    this.miniMapCtx.closePath();
+                                    this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
+                                    this.miniMapCtx.strokeStyle = 'white';
+                                    this.miniMapCtx.stroke();
+                                    this.miniMapCtx.fillStyle = 'blue';
+                                    this.miniMapCtx.fill();
+                                    this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
+                                    this.miniMapCtx.textAlign = 'center';
+                                    this.miniMapCtx.textBaseline = "bottom";
+                                    if (defaultSettings.miniMapNickStrokeSize > 0) {
+                                        this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
+                                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
+                                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                    }
+                                    this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
+                                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                } catch (eArrowFB) { } finally {
+                                    this.miniMapCtx.restore();
+                                }
                             }
                         }
-                    }
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
-                    this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
-                    this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
-                    this.miniMapCtx.shadowBlur = 10;
-                    this.miniMapCtx.shadowOffsetX = 0;
-                    this.miniMapCtx.shadowOffsetY = 0;
-                    this.miniMapCtx.fill();
-                    this.miniMapCtx.globalAlpha = 1;
-                    this.miniMapCtx.shadowBlur = 0;
-                }
-                if (defaultmapsettings.showMiniMapGuides) {
-                    u = Math.round((ogario.playerX + r) * n);
-                    d = Math.round((ogario.playerY + l) * n);
-                    this.miniMapCtx.lineWidth = 1;
-                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapGuidesColor;
-                    this.miniMapCtx.beginPath();
-                    this.miniMapCtx.moveTo(u, 0);
-                    this.miniMapCtx.lineTo(u, o - 1);
-                    this.miniMapCtx.moveTo(0, d);
-                    this.miniMapCtx.lineTo(o - 1, d);
-                    this.miniMapCtx.stroke();
-                }
-                if (defaultmapsettings.showExtraMiniMapGuides) {
-                    u = Math.round((ogario.playerX + r) * n);
-                    d = Math.round((ogario.playerY + l) * n);
-
-                    //draw the yellow on minimap
-                    this.miniMapCtx.beginPath();
-                    this.miniMapCtx.lineWidth = "1";
-                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
-                    var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
-                    var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
-                    var minidaxx = application.miniMapSectors.width * miniax;
-                    var minidayy = application.miniMapSectors.width * miniay;
-
-                    var fixminidaxx = u - (minidaxx / 2);
-                    var fixminidayy = d - (minidayy / 2);
-
-                    this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
-                    this.miniMapCtx.stroke();
-
-                }
-                //
-                if (LM.arrowFB && LM.arrowFB[0]) {
-                    if (application.top5) {
-                        for (var temp = 0; temp < application.top5.length; temp++) {
-                            if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
-                                LM.arrowFB[0].isIncluded = true;
+                        //				
+                        if (this.miniMapCtx.beginPath(),
+                            this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
+                                defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
+                            this.miniMapCtx.closePath(),
+                            defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
+                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
+                                this.miniMapCtx.stroke()),
+                            this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
+                            this.miniMapCtx.fill(),
+                            this.teamPlayers.length) {
+                            c = 0;
+                            for (; c < this.teamPlayers.length; c++) {
+                                this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                             }
                         }
-                    }
-
-                    if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
-                        this.miniMapCtx.save()
-                        this.miniMapCtx.beginPath();
-                        this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
-                        this.miniMapCtx.closePath();
-                        this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
-                        this.miniMapCtx.strokeStyle = 'white';
-                        this.miniMapCtx.stroke();
-                        this.miniMapCtx.fillStyle = 'blue';
-                        this.miniMapCtx.fill();
-                        //if (LM.arrowFB[0].nick.length > 0) {
-                        this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
-                        this.miniMapCtx.textAlign = 'center';
-                        this.miniMapCtx.textBaseline = "bottom";
-                        if (defaultSettings.miniMapNickStrokeSize > 0) {
-                            this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
-                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                            this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        if (this.deathLocations.length > 0) {
+                            u = Math.round((this.deathLocations[this.lastDeath].x + LM.mapOffset) * n);
+                            d = Math.round((this.deathLocations[this.lastDeath].y + LM.mapOffset) * n);
+                            var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
+                            this.miniMapCtx.lineWidth = 1;
+                            this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
+                            this.miniMapCtx.beginPath();
+                            this.miniMapCtx.moveTo(u - f, d);
+                            this.miniMapCtx.lineTo(u + f, d);
+                            this.miniMapCtx.moveTo(u, d - f);
+                            this.miniMapCtx.lineTo(u, d + f);
+                            this.miniMapCtx.stroke();
                         }
-                        this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                        this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    } catch (eMiniMap) {
+                        console.error('[OGARIO MINIMAP DRAW EXCEPTION]', eMiniMap);
+                    } finally {
                         this.miniMapCtx.restore();
-                        //}
                     }
                 }
-                //				
-                if (this.miniMapCtx.beginPath(),
-                    this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
-                        defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
-                    this.miniMapCtx.closePath(),
-                    defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
-                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
-                        this.miniMapCtx.stroke()),
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                    this.miniMapCtx.fill(),
-                    this.teamPlayers.length) {
-                    c = 0;
-                    for (; c < this.teamPlayers.length; c++) {
-                        this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
-                    }
-                }
-                if (this.deathLocations.length > 0) {
-                    u = Math.round((this.deathLocations[this.lastDeath].x + LM.mapOffset) * n);
-                    d = Math.round((this.deathLocations[this.lastDeath].y + LM.mapOffset) * n);
-                    var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
-                    this.miniMapCtx.lineWidth = 1;
-                    this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
-                    this.miniMapCtx.beginPath();
-                    this.miniMapCtx.moveTo(u - f, d);
-                    this.miniMapCtx.lineTo(u + f, d);
-                    this.miniMapCtx.moveTo(u, d - f);
-                    this.miniMapCtx.lineTo(u, d + f);
-                    this.miniMapCtx.stroke();
-                }
-                this.miniMapCtx.restore();
-            }
         },
         drawMiniMapSectors(x, y, size, height, scale) {
             this.miniMapSectors = document.getElementById('minimap-sectors');
@@ -18196,10 +18198,16 @@ Most cells eaten   : ${mostCellsEaten}
             if (LM.gameMode === ':teams') {
                 // Agar2: redraw pie if canvas wasn't ready when op50 first arrived
                 if (LM.serverType === 'agar2' && LM.pieChart && LM.pieChart.length && this.canvasWidth > 0) {
-                    this.drawPieChart();
+                    try {
+                        this.drawPieChart();
+                    } catch (ePieChart) { }
                 }
-                if (this.pieChart && this.pieChart.width) {
-                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                if (this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                    try {
+                        this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                    } catch (ePieDraw) {
+                        this.pieChart._failed = true;
+                    }
                 }
             }
 
@@ -19046,8 +19054,10 @@ Most cells eaten   : ${mostCellsEaten}
             var viewScale = this.scale || 1;
             var halfW = (this.canvasWidth / viewScale / 2) + 1800;
             var halfH = (this.canvasHeight / viewScale / 2) + 1800;
-            var minX = this.viewX - halfW, maxX = this.viewX + halfW;
-            var minY = this.viewY - halfH, maxY = this.viewY + halfH;
+            var viewX = (this.camX != null) ? this.camX : (LM.viewX || 0);
+            var viewY = (this.camY != null) ? this.camY : (LM.viewY || 0);
+            var minX = viewX - halfW, maxX = viewX + halfW;
+            var minY = viewY - halfH, maxY = viewY + halfH;
             t.beginPath();
             for (var s = 0; s < e.length; s++) {
                 var v = e[s];
