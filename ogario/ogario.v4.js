@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.485)
+ * ogario.v4.js — LegendMod Client (OgVer 3.486)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.485;
+window.OgVer = 3.486;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7895,21 +7895,18 @@ function thelegendmodproject() {
             setTimeout(() => {
                 app.onPlayerSpawn();
             }, 100);
+            /* Spawn special effects disabled — causes visual glitches
             if (defaultmapsettings.spawnSpecialEffects) {
-                /* Skip spawn animation on FFA/Experimental/Teams — the agar.io
-                 * map rotates coordinates in those modes causing the animation
-                 * to render at wrong position. Only show on party/EL modes. */
                 var _gm = (typeof application !== "undefined" && application && application.gameMode) || '';
                 if (_gm === ":party" || (window.legendmod && (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))))) {
                     setTimeout(function () {
-                        ///////// trigger special effects
-                        //console.log('Special effects stage 1');
                         ogario.spawnX = ogario.playerX;
                         ogario.spawnY = ogario.playerY;
                         LM.drawCommander = true;
                     }, 110);
                 }
             }
+            */
             LegendModSpawn();
         },
         onPlayerDeath() {
