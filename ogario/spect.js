@@ -1203,14 +1203,13 @@ class Spect {
         for (length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-            if (legendmod.playerCellsMulti.includes(victimID)) {
+            if (victimID && legendmod.playerCellsMulti.includes(victimID)) {
                 this.removePlayerCell = true;
-                legendmod.playerCellsMulti.splice(legendmod.playerCellsMulti.indexOf(victimID), 1)
-                if (this.playerCellIDs.includes(victimID)) {
-                    console.log('cell ids', this.playerCellIDs)
-                    console.log('erase cell id', victimID)
-                    this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1)
-                    console.log('cells after erase', this.playerCellIDs)
+                var _pcmIdx = legendmod.playerCellsMulti.indexOf(victimID);
+                if (_pcmIdx !== -1) legendmod.playerCellsMulti.splice(_pcmIdx, 1);
+                var _pciIdx = this.playerCellIDs.indexOf(victimID.id);
+                if (_pciIdx !== -1) {
+                    this.playerCellIDs.splice(_pciIdx, 1);
                 }
             }
 
@@ -1371,7 +1370,15 @@ class Spect {
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
-
+                cell.startX = cell.x;
+                cell.startY = cell.y;
+                cell.startSize = cell.size;
+                cell.targetX = x;
+                cell.targetY = y;
+                cell.targetSize = size;
+                cell.updateTime = this.time || Date.now();
+                if (color) cell.color = color;
+                if (skin) cell.skin = skin;
             } else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
@@ -1480,8 +1487,10 @@ class Spect {
     }
 
     newID(id) {
-        //return id
-        return id + this.number * 1000000000
+        if (!this.ws || this.ws === legendmod.ws) {
+            return id;
+        }
+        return id + this.number * 1000000000;
     }
 
     calculatePlayerMassAndPosition() {
