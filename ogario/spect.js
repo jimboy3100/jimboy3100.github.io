@@ -24,50 +24,32 @@ function addSpectator() {
 }
 
 function addFullSpectator() {
-    let mtp = 4.95,
-        w = ~~(1024 * mtp),
-        h = ~~(600 * mtp);
-    let stop = 0,
-        x = 0,
-        y = 0;
+    spects = []; // Reset spectator list for clean grid alignment
+    
+    const mapMinX = legendmod.mapMinX || -7071;
+    const mapMinY = legendmod.mapMinY || -7071;
+    const mapSize = legendmod.mapSize || 14142;
 
-    const times = parseInt(legendmod.mapSize / 471.4);
-    //for (;stop<30;stop++){
+    // Viewport size per spectator at FOV 4.95 zoom: ~5068 wide x 2970 high
+    // A 4-column by 5-row grid guarantees 100% full-map coverage with ~30% overlap and 0 blind spots
+    const cols = 4;
+    const rows = 5;
+    const stepX = mapSize / cols;
+    const stepY = mapSize / rows;
 
-    if (legendmod.integrity && times < 80) {
-        for (; stop < times; stop++) {
-
-            if (stop === 0) {
+    if (legendmod.integrity) {
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
                 let spect = new Spect();
-                x = legendmod.mapMinX + 2400;
-                y = legendmod.mapMinY + 1000;
-                spect.staticX = x;
-                spect.staticY = y;
-                spects.push(spect)
-                stop++
-            } else {
-                if (x > legendmod.mapMaxX - 2400) {
-                    x = legendmod.mapMinX + 2400;
-                    y = y + h;
-                } else {
-                    x = x + w;
-                }
-                if (y > legendmod.mapMaxY - 1000) {
-                    //stop = 100;
-                    stop = 10000;
-                    break
-                }
-                let spect = new Spect();
-                spect.staticX = x;
-                spect.staticY = y;
-                spects.push(spect)
-                stop++
+                spect.staticX = Math.round(mapMinX + (c + 0.5) * stepX);
+                spect.staticY = Math.round(mapMinY + (r + 0.5) * stepY);
+                spects.push(spect);
             }
         }
+        window.fullSpectator = true;
     } else {
-        toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers")
-        //toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
-        window.fullSpectator = false
+        toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers");
+        window.fullSpectator = false;
     }
 }
 
@@ -988,12 +970,17 @@ class Spect {
                 //this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
             }
         }*/
-    isInView(x, y) {
-        let mtp = 4.95,
-            w = 1024 / 2 * mtp,
-            h = 600 / 2 * mtp;
-        return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
+    isInView(x, y, size) {
+        let s = size || 0;
+        let mtp = 4.95;
+        let w = (1024 / 2) * mtp + s;
+        let h = (600 / 2) * mtp + s;
+        return (x >= this.viewX - w && x <= this.viewX + w &&
+                y >= this.viewY - h && y <= this.viewY + h);
+    }
 
+    isOutsideView(x, y, size) {
+        return !this.isInView(x, y, size);
     }
 
     isInViewCustom(x, y, size) {
@@ -1306,23 +1293,22 @@ class Spect {
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
                 if (!isFood) {
-                    if (!invisible) invisible = this.isInViewCustom(x, y, size)
+                    if (this.isOutsideView(x, y, size)) invisible = true;
                 } else if (isFood) {
                     if (window.ingameSpectator && legendmod.isSpectateEnabled) {
-                        invisible = true
+                        invisible = true;
                     } else if (!window.fullSpectator) {
-                        if (!invisible) invisible = this.isInViewCustom(x, y, size)
+                        if (this.isOutsideView(x, y, size)) invisible = true;
                     }
                 }
             }
-            //if (this.player && isVirus && !isFood && !invisible){
-            if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = this.isInViewCustom(x, y, size)
-                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
 
+            if (this.player && (isVirus || isFood)) {
+                if (isFood) remove = !this.isInViewCustom(x, y, size);
+                if (isVirus) invisible = (!this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
 
                 if (!this.active) {
-                    invisible = true
+                    invisible = true;
                 }
             }
 

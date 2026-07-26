@@ -18418,10 +18418,11 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (window.fullSpectator && Array.isArray(spects)) {
                 for (let i = 0; i < spects.length; i++) {
-                    if (!spects[i]) continue;
-                    let sX = typeof spects[i].getX === "function" ? spects[i].getX(spects[i].viewX) : (spects[i].viewX || 0);
-                    let sY = typeof spects[i].getY === "function" ? spects[i].getY(spects[i].viewY) : (spects[i].viewY || 0);
-                    this.newViewport(this.ctx, spects[i].number || (i + 1), sX, sY, spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], []);
+                    let s = spects[i];
+                    if (!s) continue;
+                    let sX = (s.staticX !== null && s.staticX !== undefined) ? s.staticX : (typeof s.getX === "function" ? s.getX(s.viewX) : (s.viewX || 0));
+                    let sY = (s.staticY !== null && s.staticY !== undefined) ? s.staticY : (typeof s.getY === "function" ? s.getY(s.viewY) : (s.viewY || 0));
+                    this.newViewport(this.ctx, s.number || (i + 1), sX, sY, s.isSpectateEnabled, s.isFreeSpectate, [], []);
                 }
             }
         },
