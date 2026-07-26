@@ -5023,6 +5023,7 @@ function thelegendmodproject() {
         chatMutedUsers: {},
         chatMutedUserIDs: [],
         customSkinsCache: {},
+        failedSkinsCache: {},
         customSkinsMap: {},
         cacheQueue: [],
         cacheQueue2: [],
@@ -7870,6 +7871,10 @@ function thelegendmodproject() {
         /* ─── §4.9 Skin Loading ─── */
         loadSkin(img, url, animated) {
             var app = this;
+            if (!url || typeof url !== "string") return;
+            if (!app.failedSkinsCache) app.failedSkinsCache = {};
+            if (app.failedSkinsCache[url]) return; // Do not check previously failed/CORS-blocked skins again
+
             if (img && Object.keys(img).length > 200) {
                 var keys = Object.keys(img);
                 for (var k = 0; k < 50; k++) {
@@ -7881,7 +7886,6 @@ function thelegendmodproject() {
             if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")) {
                 if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
                     img[url] = new Video();
-                    //console.log("stage 2 videos");
                 } else {
                     img[url] = new Image();
                 }
@@ -7917,6 +7921,7 @@ function thelegendmodproject() {
                 };
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
+                    if (app.failedSkinsCache[url]) return;
                     console.warn("[LM] Failed to load skin image (retrying without CORS & referrer): " + url);
                     var retryImg = new Image();
                     retryImg.referrerPolicy = 'no-referrer';
@@ -7926,6 +7931,10 @@ function thelegendmodproject() {
                             app.customSkinsCache[url] = retryImg;
                             app.customSkinsCache[url + "_cached"] = retryImg;
                         }
+                    };
+                    retryImg.onerror = function () {
+                        // Mark as failed permanently so loadSkin won't retry this broken/CORS skin again
+                        app.failedSkinsCache[url] = true;
                     };
                     retryImg.src = url;
                 };
