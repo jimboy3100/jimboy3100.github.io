@@ -10961,6 +10961,7 @@ function thelegendmodproject() {
                 cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells !== -1) {
                     LM.playerCellIDs.splice(cells, 1);
+                    if (LM._playerCellIDSet) LM._playerCellIDSet.delete(this.id);
                 }
             }
             if (this.redrawed) {
@@ -13502,6 +13503,7 @@ function thelegendmodproject() {
                 case 32:
                     window.testobjectsOpcode32 = data;
                     this.playerCellIDs.push(data.getUint32(s, true));
+                    if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
                     if (!this.play) {
                         this.play = true;
                         this.isSpectateEnabled = false
@@ -13749,6 +13751,7 @@ function thelegendmodproject() {
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                         this.play = false;
                         this.playerCellIDs = [];
+                        if (this._playerCellIDSet) this._playerCellIDSet.clear();
                         window.userBots.isAlive = false;
                         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
                         application.showMenu();
@@ -15906,6 +15909,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.playerCells = [];
             this.playerCellsMulti = []; //for multi fix
             this.playerCellIDs = [];
+            if (this._playerCellIDSet) this._playerCellIDSet.clear();
             this.ghostCells = [];
             this.food = [];
             this.foodMulti = []; //for multi fix
@@ -16050,6 +16054,10 @@ Most cells eaten   : ${mostCellsEaten}
                 if (LM.gameMode === ":party" && cellColor) {
                     playerKey = playerKey + cellColor;
                 }
+
+                /* Fast-path: if skin already cached for this key, skip the expensive
+                 * 7-branch resolution (regex, includes, toLowerCase per packet). */
+                if (application.customSkinsMap[playerKey]) return;
 
                 var skinUrl = null;
                 var isAnimated = false;
@@ -16318,7 +16326,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.viruses.push(cellObj);
                             }
                             this.cells.push(cellObj);
-                            if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellObj) === -1) {
+                            if ((this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
                                 cellObj.isPlayerCell = true;
                                 this.playerColor = color;
                                 cellObj.color = color;
@@ -16408,6 +16416,25 @@ Most cells eaten   : ${mostCellsEaten}
             };
             this.time = Date.now();
             this.removePlayerCell = false;
+
+            /* Pre-build O(1) lookup structures once per packet instead of
+             * O(N) forEach/indexOf inside the per-cell loop. */
+            if (!this._playerCellIDSet) {
+                this._playerCellIDSet = new Set(this.playerCellIDs);
+            }
+            if (!this._teamColorMap) {
+                this._teamColorMap = new Map();
+            }
+            var _tcm = this._teamColorMap;
+            _tcm.clear();
+            var _myNick = (typeof profiles !== 'undefined' && profiles[application.selectedProfile]) ? profiles[application.selectedProfile].nick : '';
+            for (var _ti = 0; _ti < application.teamPlayers.length; _ti++) {
+                var _tp = application.teamPlayers[_ti];
+                if (_tp.nick && _tp.nick !== _myNick && _tp.color) {
+                    _tcm.set(_tp.nick, _tp.color);
+                }
+            }
+
             var eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
 
@@ -16543,11 +16570,9 @@ Most cells eaten   : ${mostCellsEaten}
                     if (LM.cellcolors[name]) {
                         color = LM.cellcolors[name]
                     } else {
-                        application.teamPlayers.forEach((found) => {
-                            if (found.nick === name && found.nick != profiles[application.selectedProfile].nick) {
-                                color = found.color
-                            }
-                        })
+                        /* O(1) Map lookup instead of O(N) forEach */
+                        var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
+                        if (_tmColor) color = _tmColor;
                     }
                     if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color
                 }
@@ -16572,7 +16597,7 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                         //this.cells.push(cellUpdateCells);
                         this.cells.push(cellUpdateCells);
-                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellUpdateCells) === -1) {
+                        if ((this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellUpdateCells) === -1) {
                             cellUpdateCells.isPlayerCell = true;
                             if (this.gameMode === ":teams") {
                                 this.playerColor = color;
@@ -22085,6 +22110,7 @@ function playReplayLM(temp) {
         legendmod.cellcolors = []
         legendmod.playerCells = []
         legendmod.playerCellIDs = []
+        if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
         legendmod.playerCellsMulti = []
 
         legendmod.playingReplayRecord = 0
@@ -22211,6 +22237,7 @@ function playReplayLM(temp){
         legendmod.cellcolors=[]
         legendmod.playerCells=[]
         legendmod.playerCellIDs=[]
+        if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
         legendmod.playerCellsMulti=[]	
         legendmod.playingRecord=0
     	
