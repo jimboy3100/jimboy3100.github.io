@@ -7961,17 +7961,19 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
+                        var imgObj = this.customSkinsCache[e];
                         if (!animated) {
-                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                            sCtx.drawImage(imgObj, 0, 0, depth, depth);
                         } else {
-                            //console.log('was animated')
-                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                            var w = imgObj.width || depth;
+                            var h = imgObj.height || depth;
+                            sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth / 2, depth);
+                            sCtx.drawImage(imgObj, w / 2, 0, w / 2, h, depth / 2, 0, depth / 2, depth);
                         }
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached"] = new Image;
                         this.customSkinsCache[e + "_cached"].src = i.toDataURL();
-                        // Upload pre-drawn skin to WebGL2 GPU texture array only if untainted
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e, i);
                         }
@@ -8025,7 +8027,10 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                        var img3 = this.customSkinsCache[e];
+                        var w3 = img3.width || depth;
+                        var h3 = img3.height || depth;
+                        sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, depth / 2, 0, depth / 2, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached3"] = new Image;
