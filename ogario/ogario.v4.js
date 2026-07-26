@@ -1,4 +1,4 @@
-window.OgVer = 3.408;
+window.OgVer = 3.411;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -10673,92 +10673,89 @@ function thelegendmodproject() {
         };
         this.drawChat = function (context) {
             if (this.chatCanvas && !(this.size <= 40)) {
+                /* ── Perf: O(1) map lookup early exit before canvas setup ── */
+                var _entry = this.nick && this.nick !== "" && drawRender._chatMap && drawRender._chatMap.get(this.nick);
+                if (!_entry) return;
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
-                /* ── Perf: O(1) map lookup instead of O(N) loop ── */
-                var _entry = this.nick && this.nick !== "" && drawRender._chatMap && drawRender._chatMap.get(this.nick);
-                if (_entry) {
-                    var customTxt = _entry.message;
-                    var temp = _entry.age;
-                    if (this.redrawChat) {
-                        chatCanvas.setTxt(customTxt);
-                    }
-                    var data = chatCanvas.drawTxt(customTxt);
-                    var _dpr2 = window.LM_DPR || 1;
-                    var width = ~~(data.width / (this.scale * _dpr2));
-                    var height = ~~(data.height / (this.scale * _dpr2));
-                    var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
-                    if (temp < 2000) {
-                        context.globalAlpha = temp / 2000
-                    } else if (temp > 13000) {
-                        temp = 15000 - temp
-                        context.globalAlpha = temp / 2000
-                    }
+                var customTxt = _entry.message;
+                var temp = _entry.age;
+                if (this.redrawChat) {
+                    chatCanvas.setTxt(customTxt);
+                }
+                var data = chatCanvas.drawTxt(customTxt);
+                var _dpr2 = window.LM_DPR || 1;
+                var width = ~~(data.width / (this.scale * _dpr2));
+                var height = ~~(data.height / (this.scale * _dpr2));
+                var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
+                if (temp < 2000) {
+                    context.globalAlpha = temp / 2000
+                } else if (temp > 13000) {
+                    temp = 15000 - temp
+                    context.globalAlpha = temp / 2000
+                }
+
+                if (width > 1 && height > 1) {
+                    try {
+                        context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                    } catch (e) { }
+                }
+            }
+        };
+        this.drawMerge = function (context) {
+            if (this.mergeCanvas && !(this.size <= 40)) {
+                if (!window.ExternalScripts || defaultmapsettings.optimizedMass || !window.playerCellsId || !this.isPlayerCell || this.isVirus) {
+                    return;
+                }
+                var mergeCanvas = this.mergeCanvas;
+                mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
+                mergeCanvas.setFontSize(this.massSize);
+                mergeCanvas.setScale(this.scale);
+
+                CellTimerTrigger();
+                if (window.playerCellsId[this.id] === undefined) {
+                    window.playerCellsId[this.id] = {};
+                    window.playerCellsId[this.id].historyMass = [];
+                    window.playerCellsId[this.id].historyX = [];
+                    window.playerCellsId[this.id].historyY = [];
+                } else {
+                    window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
+                    if (window.playerCellsId[this.id].historyMass.length > 500) {
+                        window.playerCellsId[this.id].historyMass.pop();
+                    }
+                    window.playerCellsId[this.id].historyX.unshift(this.x);
+                    if (window.playerCellsId[this.id].historyX.length > 500) {
+                        window.playerCellsId[this.id].historyX.pop();
+                    }
+                    window.playerCellsId[this.id].historyY.unshift(this.y);
+                    if (window.playerCellsId[this.id].historyY.length > 500) {
+                        //this.historyY.pop();
+                        window.playerCellsId[this.id].historyY.pop();
+                    }
+                }
+                if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
+                    var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
+
+                    if (this.redrawMerge) {
+                        mergeCanvas.setTxt(customTxt);
+                        //this.lastMass = this.mass;
+                    }
+                    var data = mergeCanvas.drawTxt(customTxt);
+                    var _dpr3 = window.LM_DPR || 1;
+                    var width = ~~(data.width / (this.scale * _dpr3));
+                    //console.log(data.width, this.scale, width, this.x - width / 2);
+                    var height = ~~(data.height / (this.scale * _dpr3));
+                    var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
                     if (width > 1 && height > 1) {
                         try {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                         } catch (e) { }
                     }
                 }
-            }
-        };
-        this.drawMerge = function (context) {
-            if (this.mergeCanvas && !(this.size <= 40)) {
-                var mergeCanvas = this.mergeCanvas;
-                mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
-                mergeCanvas.setFontSize(this.massSize);
-                mergeCanvas.setScale(this.scale);
-
-                if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
-                    CellTimerTrigger();
-                    if (window.playerCellsId[this.id] === undefined) {
-                        window.playerCellsId[this.id] = {};
-                        window.playerCellsId[this.id].historyMass = [];
-                        window.playerCellsId[this.id].historyX = [];
-                        window.playerCellsId[this.id].historyY = [];
-                    } else {
-                        window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
-                        if (window.playerCellsId[this.id].historyMass.length > 500) {
-                            window.playerCellsId[this.id].historyMass.pop();
-                        }
-                        window.playerCellsId[this.id].historyX.unshift(this.x);
-                        if (window.playerCellsId[this.id].historyX.length > 500) {
-                            window.playerCellsId[this.id].historyX.pop();
-                        }
-                        window.playerCellsId[this.id].historyY.unshift(this.y);
-                        if (window.playerCellsId[this.id].historyY.length > 500) {
-                            //this.historyY.pop();
-                            window.playerCellsId[this.id].historyY.pop();
-                        }
-                    }
-                    //if (this.mergeTime && this.mergeTime > 0) {
-                    if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
-                        var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
-
-                        if (this.redrawMerge) {
-                            mergeCanvas.setTxt(customTxt);
-                            //this.lastMass = this.mass;
-                        }
-                        var data = mergeCanvas.drawTxt(customTxt);
-                        var _dpr3 = window.LM_DPR || 1;
-                        var width = ~~(data.width / (this.scale * _dpr3));
-                        //console.log(data.width, this.scale, width, this.x - width / 2);
-                        var height = ~~(data.height / (this.scale * _dpr3));
-                        var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
-                        if (width > 1 && height > 1) {
-                            try {
-                                context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                            } catch (e) { }
-                        }
-                    }
-
-                }
-                ///
-                //window.counterCell++;
             }
         };
         this.drawMass = function (context) {
@@ -16928,52 +16925,54 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawWaves() {
-            let waves = LM.Waves
-
+            let waves = LM.Waves;
+            if (!waves || !waves.length) return;
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            var _cullingScale = this.scale || 1;
+            var _halfW = this.canvasWidth / _cullingScale / 2;
+            var _halfH = this.canvasHeight / _cullingScale / 2;
+            var _cx = this.camX, _cy = this.camY;
+            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+            if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
+                _cx = _vx; _cy = _vy;
+            }
+            var _minX = _cx - _halfW, _maxX = _cx + _halfW;
+            var _minY = _cy - _halfH, _maxY = _cy + _halfH;
+            var _now = Date.now();
+
             for (let length = waves.length - 1; length >= 0; length--) {
-                //for (let length = waves.length - 1; length > 0; length--) {
-                let r = (Date.now() - waves[length].time) / 2
+                let w = waves[length];
+                let r = (_now - w.time) / 2;
+                if (r > w.wavelength) {
+                    waves.splice(length, 1);
+                    continue;
+                }
+                if (r <= 0) continue;
+                if (w.x + r < _minX || w.x - r > _maxX || w.y + r < _minY || w.y - r > _maxY) {
+                    continue;
+                }
 
-
-                let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
-                //if (waves[length].moreAnimation && r > 1560){
-                if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760) / 2) {
-                    //if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
+                let rInner = Math.max(0, r - r / 4);
+                let gradient = this.ctx.createRadialGradient(w.x, w.y, rInner, w.x, w.y, r);
+                if (w.moreAnimation && r > 1160 && r > (w.wavelength + 760) / 2) {
                     gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
                     gradient.addColorStop(1, defaultSettings.splitRangeColor);
-                }
-                else {
-                    gradient.addColorStop(0, waves[length].color + "00");
-                    gradient.addColorStop(1, waves[length].color);
+                } else {
+                    gradient.addColorStop(0, w.color + "00");
+                    gradient.addColorStop(1, w.color);
                 }
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = r / 4;
                 this.ctx.beginPath();
-                this.ctx.arc(waves[length].x, waves[length].y, r - r / 8, 0, this.pi2, false);
-                this.ctx.closePath();
+                this.ctx.arc(w.x, w.y, Math.max(0, r - r / 8), 0, this.pi2, false);
                 this.ctx.stroke();
-                this.ctx.beginPath();
                 this.ctx.strokeStyle = defaultSettings.splitRangeColor;
                 this.ctx.lineWidth = 5;
                 this.ctx.beginPath();
-                this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
-                this.ctx.closePath();
+                this.ctx.arc(w.x, w.y, r, 0, this.pi2, false);
                 this.ctx.stroke();
-                //if (r > 500) {					
-                if (r > waves[length].wavelength) {
-                    LM.Waves.splice(length, 1);
-                }
             }
             this.ctx.globalAlpha = 1;
-            /*
-            var wave = {
-              x: LM.cursorX,//window.user.mouseX,
-              y: LM.cursorY,//window.user.mouseY,
-              color: ogario.playerColor
-            }
-            wave.time = Date.now();
-            LM.Waves.push(wave)		  		*/
         },
         drawFBTracking(ctx, players, x, y) { //Yahnych
             if (!players.length) return;
@@ -17070,9 +17069,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.strokeStyle = color;
             ctx.beginPath();
             ctx.arc(x, y, size - 10, 0, this.pi2, false);
-            ctx.closePath();
             ctx.stroke();
-
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
@@ -17162,79 +17159,102 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.font = type ? defaultSettings.sectorsFontWeight + " " + defaultSettings.sectorsFontSize + "px " + defaultSettings.sectorsFontFamily : defaultSettings.miniMapFontWeight + " " + ~~(0.4 * posY) + "px " + defaultSettings.miniMapFontFamily;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
+                var _secCull = type;
+                var _vMinX = 0, _vMaxX = 0, _vMinY = 0, _vMaxY = 0;
+                if (_secCull) {
+                    var _cScale = this.scale || 1;
+                    var _hW = this.canvasWidth / _cScale / 2;
+                    var _hH = this.canvasHeight / _cScale / 2;
+                    var _cx = this.camX, _cy = this.camY;
+                    var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+                    if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
+                    _vMinX = _cx - _hW; _vMaxX = _cx + _hW;
+                    _vMinY = _cy - _hH; _vMaxY = _cy + _hH;
+                }
                 length = 0;
                 for (; length < y; length++) {
                     var ogarcopythelb = 0;
                     for (; ogarcopythelb < x; ogarcopythelb++) {
-                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
                         rePosX = ~~(minX + posX / 2 + ogarcopythelb * posX);
                         rePosY = ~~(minY + posY / 2 + length * posY);
+                        if (_secCull && (rePosX + posX < _vMinX || rePosX - posX > _vMaxX || rePosY + posY < _vMinY || rePosY - posY > _vMaxY)) {
+                            continue;
+                        }
+                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
                         ctx.fillText(application, rePosX, rePosY);
                     }
                 }
             }
         },
         drawCommander(ctx) {
-            //console.log('Special effects stage 2');
             if (LM.drawCommander) {
-                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                cimg = new Image;
-                cimg.src = defaultSettings.commanderImage;
-                cimg1 = new Image;
-                cimg1.src = defaultSettings.commanderImage1;
-                cimg12 = new Image;
-                cimg12.src = defaultSettings.commanderImage2;
+                if (!this._cimg || this._cimgSrc !== defaultSettings.commanderImage) {
+                    this._cimg = new Image();
+                    this._cimg.src = this._cimgSrc = defaultSettings.commanderImage;
+                }
+                if (!this._cimg1 || this._cimg1Src !== defaultSettings.commanderImage1) {
+                    this._cimg1 = new Image();
+                    this._cimg1.src = this._cimg1Src = defaultSettings.commanderImage1;
+                }
+                if (!this._cimg12 || this._cimg12Src !== defaultSettings.commanderImage2) {
+                    this._cimg12 = new Image();
+                    this._cimg12.src = this._cimg12Src = defaultSettings.commanderImage2;
+                }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
             }
         },
         drawCommander2(ctx) {
-            //console.log('Special effects stage 2');
             if (LM.drawCommander2) {
-                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                cimg = new Image;
-                cimg.src = defaultSettings.commanderImage3;
-                cimg1 = new Image;
-                cimg1.src = defaultSettings.commanderImage4;
-                cimg12 = new Image;
-                cimg12.src = defaultSettings.commanderImage5;
+                if (!this._cimg3 || this._cimg3Src !== defaultSettings.commanderImage3) {
+                    this._cimg3 = new Image();
+                    this._cimg3.src = this._cimg3Src = defaultSettings.commanderImage3;
+                }
+                if (!this._cimg4 || this._cimg4Src !== defaultSettings.commanderImage4) {
+                    this._cimg4 = new Image();
+                    this._cimg4.src = this._cimg4Src = defaultSettings.commanderImage4;
+                }
+                if (!this._cimg5 || this._cimg5Src !== defaultSettings.commanderImage5) {
+                    this._cimg5 = new Image();
+                    this._cimg5.src = this._cimg5Src = defaultSettings.commanderImage5;
+                }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg3, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg4, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cimg5, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
@@ -17370,12 +17390,13 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Subtle inner glow line on the expansion edge
+                // Inner glow line on expansion edge (dual stroke instead of CPU shadowBlur)
                 ctx.save();
-                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
-                ctx.lineWidth = 8;
-                ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
-                ctx.shadowBlur = 12;
+                ctx.strokeStyle = 'rgba(34, 170, 255, 0.2)';
+                ctx.lineWidth = 14;
+                ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
+                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.2 + 0.1 * pulse) + ')';
+                ctx.lineWidth = 6;
                 ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
                 ctx.restore();
 
@@ -17419,13 +17440,14 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Glow on danger border for phase 3+
+                // Glow on danger border for phase 3+ (dual stroke instead of CPU shadowBlur)
                 if (me.phase >= 3) {
                     ctx.save();
-                    ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
-                    ctx.lineWidth = 10;
-                    ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
-                    ctx.shadowBlur = 16;
+                    ctx.strokeStyle = 'rgba(255, 40, 40, ' + (0.15 + 0.1 * fastPulse) + ')';
+                    ctx.lineWidth = 16;
+                    ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
+                    ctx.strokeStyle = 'rgba(255, 100, 100, ' + (0.2 + 0.1 * fastPulse) + ')';
+                    ctx.lineWidth = 6;
                     ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
                     ctx.restore();
                 }
@@ -17480,13 +17502,24 @@ Most cells eaten   : ${mostCellsEaten}
             },	*/
         drawVirusesRange(t, e, i) {
             if (e.length) {
+                var _cullingScale = this.scale || 1;
+                var _halfW = this.canvasWidth / _cullingScale / 2;
+                var _halfH = this.canvasHeight / _cullingScale / 2;
+                var _cx = this.camX, _cy = this.camY;
+                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
+                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
+                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
+
                 t.beginPath();
                 for (var s = 0; s < e.length; s++) {
                     if (e[s].invisible != true) {
                         var o = e[s].x;
                         var a = e[s].y;
-                        t.moveTo(o, a);
-                        t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
+                        var range = e[s].size + 820;
+                        if (o + range < _vMinX || o - range > _vMaxX || a + range < _vMinY || a - range > _vMaxY) continue;
+                        t.moveTo(o + range, a);
+                        t.arc(o, a, range, 0, this.pi2, false);
                     }
                 }
                 t.fillStyle = defaultSettings.virusColor;
@@ -17815,8 +17848,8 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.setTransform(_worldTx);
         },
         drawCursorTracking(ctx, players, cursorX, cursorY) {
-            ctx.lineWidth = 4,
-                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            ctx.lineWidth = 4;
+            ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             ctx.strokeStyle = defaultSettings.cursorTrackingColor;
             ctx.beginPath();
             for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
@@ -17825,24 +17858,46 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
             if (!players.length) return;
+            var _cScale = this.scale || 1;
+            var _hW = this.canvasWidth / _cScale / 2;
+            var _hH = this.canvasHeight / _cScale / 2;
+            var _cx = this.camX, _cy = this.camY;
+            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+            if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
+            var _vMinX = _cx - _hW, _vMaxX = _cx + _hW;
+            var _vMinY = _cy - _hH, _vMaxY = _cy + _hH;
+
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
             ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
-                ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                var p = players[length];
+                var sz = p.size + scale;
+                if (p.x + sz < _vMinX || p.x - sz > _vMaxX || p.y + sz < _vMinY || p.y - sz > _vMaxY) continue;
+                ctx.moveTo(p.x + sz, p.y);
+                ctx.arc(p.x, p.y, sz, 0, this.pi2, false);
             }
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
             if (!players.length) return;
+            var _cScale = this.scale || 1;
+            var _hW = this.canvasWidth / _cScale / 2;
+            var _hH = this.canvasHeight / _cScale / 2;
+            var _cx = this.camX, _cy = this.camY;
+            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+            if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
+            var _vMinX = _cx - _hW, _vMaxX = _cx + _hW;
+            var _vMinY = _cy - _hH, _vMaxY = _cy + _hH;
+
             /* ── Perf: cache world transform, use setTransform instead of save/restore ── */
             var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
+                if (t.x + t.size < _vMinX || t.x - t.size > _vMaxX || t.y + t.size < _vMinY || t.y - t.size > _vMaxY) continue;
                 //distance to target
                 var dx = t.targetX - t.x, dy = t.targetY - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
@@ -17881,7 +17936,6 @@ Most cells eaten   : ${mostCellsEaten}
             }
             // Restore world transform
             ctx.setTransform(_worldTx);
-
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
@@ -18000,19 +18054,17 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
-            var len = str.length,
-                s;
+            var len = str.length;
+            if (!len) return;
             this.ctx.save();
             this.ctx.translate(centerX, centerY);
-            this.ctx.rotate(-1 * angle / 2);
-            this.ctx.rotate(-1 * (angle / len) / 2);
+            var step = angle / len;
+            this.ctx.rotate(-0.5 * (angle + step));
             for (var n = 0; n < len; n++) {
-                this.ctx.rotate(angle / len);
-                this.ctx.save();
-                this.ctx.translate(0, -1 * radius);
-                s = str[n];
-                this.ctx.fillText(s, 0, 0);
-                this.ctx.restore();
+                this.ctx.rotate(step);
+                this.ctx.translate(0, -radius);
+                this.ctx.fillText(str[n], 0, 0);
+                this.ctx.translate(0, radius);
             }
             this.ctx.restore();
         },
@@ -18022,6 +18074,16 @@ Most cells eaten   : ${mostCellsEaten}
                 if (!ghostsCells.length) return;
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
+
+                var _cullingScale = this.scale || 1;
+                var _halfW = this.canvasWidth / _cullingScale / 2;
+                var _halfH = this.canvasHeight / _cullingScale / 2;
+                var _cx = this.camX, _cy = this.camY;
+                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
+                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
+                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
+
                 this.ctx.beginPath();
                 /* ── Perf: hoist constant state outside loop ── */
                 if (_showInfo) {
@@ -18035,6 +18097,10 @@ Most cells eaten   : ${mostCellsEaten}
                     if (!ghostsCells[length].inView) {
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
+                        var sz = ghostsCells[length].size;
+                        if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
+                            continue;
+                        }
                         this.ctx.moveTo(x, y);
                         this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
                         //
