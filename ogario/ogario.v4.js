@@ -17823,6 +17823,12 @@ Most cells eaten   : ${mostCellsEaten}
                 if (!cell || cell.invisible) continue;
                 if (LM.hideSmallBots && cell.size <= 36) continue;
                 if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
+                if (cell.removed) continue; // removed cells need Canvas2D alpha fade
+                // Video skins require Canvas2D drawImage of video element
+                if (defaultmapsettings.videoSkins && cell.targetNick) {
+                    var _vsUrl = application.customSkinsMap[cell.targetNick];
+                    if (_vsUrl && (typeof _vsUrl === 'string') && (_vsUrl.includes('.mp4') || _vsUrl.includes('.webm') || _vsUrl.includes('.ogv'))) continue;
+                }
 
                 var x = cell.x, y = cell.y, r = cell.size;
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
@@ -18134,6 +18140,15 @@ Most cells eaten   : ${mostCellsEaten}
                             rCell.draw(this.ctx, true);
                         } catch (eRCell) { }
                     }
+                }
+
+                /* WebGL2 instanced cell body+skin batch — eliminates clip() stencil bottleneck.
+                 * Renders circle bodies via GPU SDF (discard outside radius) + skin textures via
+                 * sampler2DArray. Cells rendered here get _webglRendered=true, so cell.draw()
+                 * only draws Canvas2D text overlays (nick/mass). Skips viruses, jelly, contours. */
+                if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
+                    && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
+                    this.drawWebGLCellBatch(LM.cells);
                 }
 
                 for (i = 0; i < LM.cells.length; i++) {
