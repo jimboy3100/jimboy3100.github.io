@@ -11460,10 +11460,14 @@ function thelegendmodproject() {
         this.drawImageSpecialSkin = function (imageSpecial, b, c, d, e, style) {
             var tempImgSp = window[imageSpecial];
             if (!tempImgSp) {
-                loadIconSpecialSkins(imageSpecial)
+                loadIconSpecialSkins(imageSpecial);
             }
-            else {
-                if (tempImgSp.complete) style.drawImage(tempImgSp, b, c, d, e);
+            else if (tempImgSp && !tempImgSp._failed && ((tempImgSp.naturalWidth > 0 && tempImgSp.naturalHeight > 0) || (tempImgSp.width > 0 && tempImgSp.height > 0))) {
+                try {
+                    style.drawImage(tempImgSp, b, c, d, e);
+                } catch (eSpecialDraw) {
+                    tempImgSp._failed = true;
+                }
             }
         };
         this.drawSpecialSkin = function (style, y) {
@@ -11776,7 +11780,7 @@ function thelegendmodproject() {
                 // WebGL2 rendered this cell's body+skin → draw text overlay only
                 if (this._webglRendered && !cellMoved) {
                     this._webglRendered = false;
-                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass) { style.restore(); return; }
+                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass) { return; }
                     var y = this.size;
                     var recursive = false;
                     if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
@@ -11808,7 +11812,6 @@ function thelegendmodproject() {
                         (window.teammatenicks.includes(this.targetNick))) {
                         drawRender.drawTeammatesInd(style, this.x, this.y, y);
                     }
-                    style.restore();
                     return;
                 }
                 if (this.removed) {
@@ -11922,8 +11925,7 @@ function thelegendmodproject() {
                         style.fillStyle = this.color;
                         style.fill();
                     }
-                    style.restore();
-                    return
+                    return;
                 }
                 //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
                 //    return style.fillStyle = this.color, style.fill(), void style.restore();
@@ -11969,7 +11971,6 @@ function thelegendmodproject() {
                         this.setMass(this.size);
                         this.drawMass(style);
                     }
-                    style.restore();
                     return;
                 }
 
@@ -18387,10 +18388,15 @@ Most cells eaten   : ${mostCellsEaten}
             var mapMaxX = (legendmod.mapMaxX != null) ? legendmod.mapMaxX : 7071;
             var mapMaxY = (legendmod.mapMaxY != null) ? legendmod.mapMaxY : 7071;
 
-            var mapW = (mapMaxX - mapMinX) || 14142;
-            var mapH = (mapMaxY - mapMinY) || 14142;
-
-            this.ctx.drawImage(legendmod.gridPic, mapMinX, mapMinY, mapW, mapH);
+            if (legendmod.gridPic && !legendmod.gridPic._failed && ((legendmod.gridPic.naturalWidth > 0 && legendmod.gridPic.naturalHeight > 0) || (legendmod.gridPic.width > 0 && legendmod.gridPic.height > 0))) {
+                var mapW = (mapMaxX - mapMinX) || 14142;
+                var mapH = (mapMaxY - mapMinY) || 14142;
+                try {
+                    this.ctx.drawImage(legendmod.gridPic, mapMinX, mapMinY, mapW, mapH);
+                } catch (eGridPic) {
+                    legendmod.gridPic._failed = true;
+                }
+            }
         },
         /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
         drawGrid(ctx) {
@@ -18433,43 +18439,35 @@ Most cells eaten   : ${mostCellsEaten}
                     legendmod.customMidPic = new Image;
                     legendmod.customMidPic.src = defaultSettings.customBackground;
                 }
-                if (dyinglight1load === "yes" && typeof cimg5 !== "undefined" && cimg5) {
+                if (dyinglight1load === "yes" && typeof cimg5 !== "undefined" && cimg5 && !cimg5._failed && (cimg5.width > 0 || cimg5.naturalWidth > 0)) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
                     this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
-                    this.ctx.drawImage(
-                        cimg5,
-                        legendmod.mapMinX - LM.mapSize - 1,
-                        legendmod.mapMinY - LM.mapSize - 1,
-                        (legendmod.mapMaxX - legendmod.mapMinX) * 3,
-                        (legendmod.mapMaxY - legendmod.mapMinY) * 3
-                    );
+                    try {
+                        this.ctx.drawImage(
+                            cimg5,
+                            legendmod.mapMinX - LM.mapSize - 1,
+                            legendmod.mapMinY - LM.mapSize - 1,
+                            (legendmod.mapMaxX - legendmod.mapMinX) * 3,
+                            (legendmod.mapMaxY - legendmod.mapMinY) * 3
+                        );
+                    } catch (eCimg5) {}
                     this.ctx.globalAlpha = this.prevctxglobalAlpha;
                 }
-                if (defaultSettings.customBackground) {
+                if (defaultSettings.customBackground && legendmod.customMidPic && !legendmod.customMidPic._failed && ((legendmod.customMidPic.naturalWidth > 0 && legendmod.customMidPic.naturalHeight > 0) || (legendmod.customMidPic.width > 0 && legendmod.customMidPic.height > 0))) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                    this.ctx.drawImage(
-                        legendmod.customMidPic,
-
-                        legendmod.mapMinX,
-                        legendmod.mapMinY,
-                        legendmod.mapMaxX - legendmod.mapMinX,
-                        legendmod.mapMaxY - legendmod.mapMinY
-                    );
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha
-                } else {
-                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                    var ofx = ((legendmod.mapMaxX - legendmod.mapMinX) / 5) * 2.2
-                    var ofy = ((legendmod.mapMinY - legendmod.mapMaxY) / 5) * 2.2
-                    this.ctx.drawImage(
-                        legendmod.customMidPic, //2.1:5.9
-                        legendmod.mapMinX + ofx,
-                        legendmod.mapMaxY + ofy,
-                        (legendmod.mapMaxX - legendmod.mapMinX) / 8.5,
-                        (legendmod.mapMinY - legendmod.mapMaxY) / 8.5
-                    );
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
+                    try {
+                        this.ctx.drawImage(
+                            legendmod.customMidPic,
+                            legendmod.mapMinX,
+                            legendmod.mapMinY,
+                            legendmod.mapMaxX - legendmod.mapMinX,
+                            legendmod.mapMaxY - legendmod.mapMinY
+                        );
+                    } catch (eBgPic) {
+                        legendmod.customMidPic._failed = true;
+                    }
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha;
                 }
             }
         },
