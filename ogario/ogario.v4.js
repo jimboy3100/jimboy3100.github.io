@@ -16870,6 +16870,9 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
+            if (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) {
+                this.drawWebGLBatch(LM.cells);
+            }
             for (i = 0; i < LM.cells.length; i++) {
 
                 if (defaultmapsettings.jellyPhisycs) {
@@ -18194,6 +18197,9 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
+                    return;
+                }
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
 
