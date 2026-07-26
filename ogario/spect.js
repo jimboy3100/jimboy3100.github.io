@@ -1565,11 +1565,13 @@ class Spect {
         defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
             const cells = legendmod.playerCellsMulti;
             const CellLength = cells.length;
-            cells.sort(function (cells, CellLength) {
-                return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-            });
-            this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
-            this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
+            if (CellLength > 0) {
+                cells.sort(function (cells, CellLength) {
+                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
+                });
+                this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
+                this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
+            }
             this.playerSplitCells = CellLength;
         }
         const mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
