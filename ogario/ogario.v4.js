@@ -16837,6 +16837,14 @@ Most cells eaten   : ${mostCellsEaten}
             this._playerMinSize = minSize;
             this._playerMaxSize = maxSize;
             this.recalculatePlayerMass();
+
+            if (this.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
+                for (var s = 0; s < spects.length; s++) {
+                    if (spects[s] && spects[s].playerCellIDs && spects[s].playerCellIDs.length) {
+                        spects[s].calculatePlayerMassAndPosition();
+                    }
+                }
+            }
         },
         recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
