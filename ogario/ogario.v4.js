@@ -16555,10 +16555,18 @@ Most cells eaten   : ${mostCellsEaten}
                     !_hEntry.message.includes('DosRun') && !_hEntry.message.includes('https://agar.io/sip=151.80.91.73:1511')) {
                     var _isOwn = (_hEntry.nick === _myNick || _hEntry.nick === _lastNick);
                     if (_isOwn && !_showOwn) continue;
+                    /* Sanitize own messages: strip HTML entity fragments & special chars */
+                    var _msg = _hEntry.message;
+                    if (_isOwn) {
+                        var _ampParts = _msg.split('&');
+                        if (_ampParts[1] && _ampParts[1].split(';')[0]) {
+                            _msg = _msg.replace(_ampParts[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
+                        }
+                    }
                     var _age = _now - _hEntry.time;
                     var _prev = _chatMap.get(_hEntry.nick);
                     if (!_prev || _age < _prev.age) {
-                        _chatMap.set(_hEntry.nick, { message: _hEntry.message, age: _age });
+                        _chatMap.set(_hEntry.nick, { message: _msg, age: _age });
                     }
                 }
             }
@@ -16648,8 +16656,13 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawFood();
             this.drawGhostCells();
             for (var i = 0; i < LM.removedCells.length; i++) {
-                LM.removedCells[i].moveCell();
-                LM.removedCells[i].draw(this.ctx);
+                var _rc = LM.removedCells[i];
+                if (!_rc) continue;
+                _rc.moveCell();
+                /* moveCell() may splice _rc from removedCells when delay===1,
+                   shifting the array — adjust index to avoid skipping */
+                if (LM.removedCells[i] !== _rc) { i--; }
+                _rc.draw(this.ctx);
             }
             for (i = 0; i < LM.cells.length; i++) {
 
