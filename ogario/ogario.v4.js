@@ -12042,38 +12042,47 @@ function thelegendmodproject() {
                             if (defaultmapsettings.jellyPhisycs) {
                                 var lineWidth = Math.max(~~(y / 50), 10);
                                 style.save();
-                                style.clip();
-                                this.maxPointRad && (y = this.maxPointRad);
                                 try {
-                                    style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
-                                } catch (e) { }
-                                style.globalCompositeOperation = 'luminosity';
-
-                                style.lineWidth = lineWidth
-                                style.strokeStyle = color2;
-                                style.stroke();
-                                style.globalCompositeOperation = '';
-                                style.restore();
-
+                                    style.clip();
+                                    this.maxPointRad && (y = this.maxPointRad);
+                                    if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
+                                        style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                                    }
+                                } catch (eJellySkin) {
+                                    console.error('[OGARIO JELSKIN DRAW EXCEPTION]', eJellySkin);
+                                } finally {
+                                    style.globalCompositeOperation = 'luminosity';
+                                    style.lineWidth = lineWidth;
+                                    style.strokeStyle = color2;
+                                    style.stroke();
+                                    style.globalCompositeOperation = '';
+                                    style.restore();
+                                }
                             } else {
+                                style.save();
                                 try {
-                                    style.save();
                                     style.beginPath();
                                     style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
                                     style.clip();
-                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
+                                        style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    }
+                                } catch (eSkinDraw) {
+                                    console.error('[OGARIO SKIN DRAW EXCEPTION]', eSkinDraw);
+                                } finally {
                                     style.restore();
-                                } catch (e) { }
+                                }
                             }
                             if (defaultmapsettings.FBTracking) {
                                 var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
                                 if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
                                     var temp = nodeFb + "_cached4";
                                     var nodeFB = application.customSkinsCache[temp];
-                                    //console.log("found fb name: " + this.targetNick + " src: " + temp);
-                                    try {
-                                        style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-                                    } catch (e) { }
+                                    if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
+                                        try {
+                                            style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
+                                        } catch (e) { }
+                                    }
                                 }
                             }
                             //this.drawSpecialSkin(style, y)
@@ -12083,17 +12092,23 @@ function thelegendmodproject() {
                         if (defaultmapsettings.videoSkins) {
                             if (node2 && node2IsVideo) {
                                 checkVideos(node2, this.targetNick);
+                                style.save();
                                 try {
-                                    style.save();
                                     style.clip();
-                                    if (defaultmapsettings.videoDestorted) {
-                                        var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
-                                    } else {
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
+                                    var vidElement = window.videoSkinPlayer[node2];
+                                    if (vidElement && (vidElement.videoWidth > 0 || vidElement.width > 0)) {
+                                        if (defaultmapsettings.videoDestorted) {
+                                            var temp = vidElement.videoWidth / vidElement.videoHeight;
+                                            style.drawImage(vidElement, this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
+                                        } else {
+                                            style.drawImage(vidElement, this.x - y, this.y - y, 2 * y, 2 * y);
+                                        }
                                     }
+                                } catch (eVidDraw) {
+                                    console.error('[OGARIO VIDEO DRAW EXCEPTION]', eVidDraw);
+                                } finally {
                                     style.restore();
-                                } catch (e) { }
+                                }
                             }
                         }
                         if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
