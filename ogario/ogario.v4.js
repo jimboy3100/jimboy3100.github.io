@@ -15948,10 +15948,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 /* Derive tier from actual border size — guarantees tier
                  * always matches the real map, regardless of map events */
-                var tierSizes = [
-                    7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000,
-                    226274, 320000, 452548
-                ];
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
                     if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
@@ -15990,21 +15987,7 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-
-                    /* LEGENDWORLD FIX: 
-                     * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
-                     * during active dynamic map rescaling (Expanding Land).
-                     * This caused violent 25Hz juddering when the map border shrunk!
-                     */
-                    if (!this.mapOffsetFixed) {
-                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
-                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
-                        if (this.mapSize === 0 || !LM.isLegendWorld) {
-                            this.viewX = (right + left) / 2;
-                            this.viewY = (bottom + top) / 2;
-                        }
-                    }
-
+                    this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
                     this.mapOffsetFixed = true;
                 }
             }
@@ -19024,13 +19007,9 @@ Most cells eaten   : ${mostCellsEaten}
             if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY) {
                 this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
             }
-            if (window.fullSpectator && Array.isArray(spects)) {
+            if (window.fullSpectator) {
                 for (let i = 0; i < spects.length; i++) {
-                    let s = spects[i];
-                    if (!s) continue;
-                    let sX = (s.staticX !== null && s.staticX !== undefined) ? s.staticX : (typeof s.getX === "function" ? s.getX(s.viewX) : (s.viewX || 0));
-                    let sY = (s.staticY !== null && s.staticY !== undefined) ? s.staticY : (typeof s.getY === "function" ? s.getY(s.viewY) : (s.viewY || 0));
-                    this.newViewport(this.ctx, s.number || (i + 1), sX, sY, s.isSpectateEnabled, s.isFreeSpectate, [], []);
+                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
                 }
             }
         },

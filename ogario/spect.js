@@ -24,15 +24,6 @@ function addSpectator() {
 }
 
 function addFullSpectator() {
-    if (Array.isArray(spects)) {
-        for (let i = 0; i < spects.length; i++) {
-            if (spects[i]) {
-                spects[i].closeConnection();
-            }
-        }
-    }
-    spects = []; // Reset spectator list for clean grid alignment
-
     let mtp = 4.95,
         w = ~~(1024 * mtp),
         h = ~~(600 * mtp);
@@ -41,6 +32,7 @@ function addFullSpectator() {
         y = 0;
 
     const times = parseInt(legendmod.mapSize / 471.4);
+    //for (;stop<30;stop++){
 
     if (legendmod.integrity && times < 80) {
         for (; stop < times; stop++) {
@@ -61,6 +53,7 @@ function addFullSpectator() {
                     x = x + w;
                 }
                 if (y > legendmod.mapMaxY - 1000) {
+                    //stop = 100;
                     stop = 10000;
                     break
                 }
@@ -71,10 +64,10 @@ function addFullSpectator() {
                 stop++
             }
         }
-        window.fullSpectator = true;
     } else {
-        toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers");
-        window.fullSpectator = false;
+        toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers")
+        //toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
+        window.fullSpectator = false
     }
 }
 
@@ -93,9 +86,11 @@ class Spect {
         this.clientKey = null
         this.clientVersion = null
         this.connectionOpened = false
-        this.mapOffset = 7071
+        this.mapOffset = 7071 //7071.067811865476
         this.mapOffsetX = 0
         this.mapOffsetY = 0
+        this.fixX = 1
+        this.fixY = 1
         this.staticX = null
         this.staticY = null
         this.ghostsFixed = false
@@ -109,6 +104,8 @@ class Spect {
         legendmod.playerCellsMulti = []
         legendmod.multiBoxPlayerExists = null
         this.playerScore = 0
+        this.fix3x = 0
+        this.fix3y = 0
         this.playerSize = 0
         this.connect()
     }
@@ -117,6 +114,7 @@ class Spect {
         this.ws = null
         this.nick = null
         this.accessTokenSent = false
+        //this.socket = null
         this.protocolKey = null
         this.clientKey = null
         this.clientVersion = null
@@ -134,6 +132,8 @@ class Spect {
         legendmod.playerCellsMulti = []
         legendmod.multiBoxPlayerExists = null
         this.playerScore = 0
+        this.fix3x = 0
+        this.fix3y = 0
         this.playerSize = 0
     }
 
@@ -210,10 +210,6 @@ class Spect {
     }
 
     closeConnection() {
-        if (this.positionController) {
-            clearInterval(this.positionController);
-            this.positionController = null;
-        }
         if (this.socket) {
             this.socket.onopen = null;
             this.socket.onmessage = null;
@@ -370,26 +366,23 @@ class Spect {
     }
 
     sendCursor() {
-        if (this.positionController) {
-            clearInterval(this.positionController);
-            this.positionController = null;
-        }
         this.positionController = setInterval(() => {
-            if (!this.connectionOpened) return;
+
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (window.multiboxPlayerEnabled || window.multiboxFollowMouse || this.isFreeSpectate) {
-                var targetX = legendmod.cursorX;
-                var targetY = legendmod.cursorY;
-                var rawTargetX = this.convertX(targetX);
-                var rawTargetY = this.convertY(targetY);
-                this.sendPosition(rawTargetX, rawTargetY);
-                this.distX = rawTargetX - (this.playerX || 0);
-                this.distY = rawTargetY - (this.playerY || 0);
-            } else if (defaultmapsettings.multiKeepMoving) {
-                this.sendPosition((this.playerX || 0) + (this.distX || 0), (this.playerY || 0) + (this.distY || 0));
+            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+
+                this.distX = this.convertX(legendmod.cursorX) - this.playerX
+                this.distY = this.convertY(legendmod.cursorY) - this.playerY
+            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
+                if (defaultmapsettings.multiKeepMoving) {
+                    this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
+                }
             }
         }, 50);
+        //this.sendSpectate()
+        //this.sendFreeSpectate()
     }
 
     sendSpectate() {
@@ -647,16 +640,10 @@ class Spect {
                     if (isMe) {
                         isMe = 'isPlayer'
                     }
-                    let rawNick = encode();
-                    let nick = rawNick;
-                    try {
-                        nick = window.decodeURIComponent(window.escape(rawNick));
-                    } catch (eDecNick) {
-                        console.error('[SPECT LB DECODE ERROR] Failed decoding nick:', eDecNick, rawNick);
-                    }
+                    let nick = window.decodeURIComponent(window.escape(encode()));
                     temp = null;
 
-                    if (nick && nick.includes('}')) {
+                    if (nick.includes('}')) {
                         temp = nick.split('}')[0].split('{')[1]
                         nick = nick.split('}')[1]
                     }
@@ -682,26 +669,20 @@ class Spect {
                     let isFriend = false;
                     let isFBFriend = false;
                     position++;
-                    if (flags & 2) {
-                        let rawLbNick = encode();
-                        nick = rawLbNick;
-                        try {
-                            nick = window.decodeURIComponent(window.escape(rawLbNick));
-                        } catch (eLbDec) {
-                            console.error('[SPECT LB DECODE ERROR] Failed decoding nick:', eLbDec, rawLbNick);
-                        }
+                    if (flags && 2) {
+                        nick = window.decodeURIComponent(window.escape(encode()));
                     }
-                    if (flags & 4) {
+                    if (flags && 4) {
                         id = view.getUint32(offset, true);
                         offset += 4;
                     }
-                    if (flags & 8) {
+                    if (flags && 8) {
                         nick = this.playerNick;
                         id = 'isPlayer';
                         this.playerPosition = position;
 
                     }
-                    if (flags & 16) {
+                    if (flags && 16) {
                         isFriend = true;
                         this.friends++;
                     }
@@ -913,64 +894,112 @@ class Spect {
     }
 
     GhostFix() {
-        if (!this.ghostFixed && this.mapOffsetFixed && this.ghostCells && this.ghostCells.length !== 0 && application.getghostX && application.getghostY && Math.abs(application.getghostX()) > 100 && Math.abs(application.getghostY()) > 100) {
-            this.fixX = (application.getghostX() / (this.ghostCells[0].x + this.mapOffsetX)) < 0 ? -1 : 1;
-            this.fixY = (application.getghostY() / (this.ghostCells[0].y + this.mapOffsetY)) < 0 ? -1 : 1;
-            this.ghostFixed = true;
+        //if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
+        if (!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length !== 0 && Math.abs(application.getghostX()) > 100 && Math.abs(application.getghostY()) > 100) {
+            this.fixX = /*Math.round*/(application.getghostX() / (this.ghostCells[0].x + this.mapOffsetX)) < 0 ? -1 : 1;
+            this.fixY = /*Math.round*/(application.getghostY() / (this.ghostCells[0].y + this.mapOffsetY)) < 0 ? -1 : 1;
+            this.ghostFixed = true
         }
     }
 
     getX(x) {
-        if (legendmod && legendmod.integrity) {
-            return x;
+        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+            return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+
+            /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+            else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
+            else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
+            //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time
+            //return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
         }
-        var mapOfsX = (this.mapOffsetX !== undefined && this.mapOffsetX !== null) ? this.mapOffsetX : 0;
-        return x - mapOfsX;
     }
 
     getY(y) {
-        if (legendmod && legendmod.integrity) {
-            return y;
+        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+            return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+
+            /*if (!window.multifixOffset)
+            else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
+            else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
+            //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
         }
-        var mapOfsY = (this.mapOffsetY !== undefined && this.mapOffsetY !== null) ? this.mapOffsetY : 0;
-        return y - mapOfsY;
     }
 
-    convertX(x) {
-        if (legendmod && legendmod.integrity) {
-            return ~~x;
-        }
-        var mapOfsX = (legendmod.mapOffsetX !== undefined && legendmod.mapOffsetX !== null) ? legendmod.mapOffsetX : (this.mapOffsetX || 0);
-        return ~~(x + mapOfsX);
+    convertX(x) { //is used only for SendPosition
+        return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
+        //return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX)
     }
 
     convertY(y) {
-        if (legendmod && legendmod.integrity) {
-            return ~~y;
-        }
-        var mapOfsY = (legendmod.mapOffsetY !== undefined && legendmod.mapOffsetY !== null) ? legendmod.mapOffsetY : (this.mapOffsetY || 0);
-        return ~~(y + mapOfsY);
+        //return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY)
+        return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
     }
 
-    isInView(x, y, size) {
-        let s = size || 0;
-        let mtp = 4.95;
-        let w = (1024 / 2) * mtp + s;
-        let h = (600 / 2) * mtp + s;
-        // Returns true if OUTSIDE the spectator's viewport (backup-compatible semantics)
-        if (x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h) {
-            return true;
-        }
-        return false;
+    constantrecalculation2() {
+        //snez
+        const mapX = legendmod.mapMaxX - legendmod.mapMinX;
+        const mapY = legendmod.mapMaxY - legendmod.mapMinY;
+        this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
+        this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
     }
 
-    isOutsideView(x, y, size) {
-        return this.isInView(x, y, size);
+    constantrecalculation3(x, y, z) {
+        //this.fix3x = legendmod.playerCells[0].x - cell.x
+        //this.fix3y = legendmod.playerCells[0].y - cell.y
+        this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
+        this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
+        if (z) {
+            //this.moveExistedCells();
+            //if (this.player){
+            console.log('[SPECT] Found user cell, Offset fixed', x, y, legendmod.playerCells[0].x, legendmod.playerCells[0].y)
+            toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," + Math.round(this.fix3y) + ") px");
+        }
+        //}
+    }
+
+    /*
+        constantrecalculation3(x,y){
+            this.fix3x = (legendmod.playerCells[0].x - x)
+            this.fix3y = (legendmod.playerCells[0].y - y)
+            //this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
+            //this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+            //toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
+            //toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
+
+            this.moveExistedCells()
+            if (this.player){
+                console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
+                var result;
+                var temp = Math.abs(Math.round(this.fix3x)) + Math.abs(Math.round(this.fix3y))
+                if (temp<15) result="<font color='Green'><b>Good</b></font>"
+                else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
+                else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
+                else if	(temp >= 40 && temp < 60) result="<font color='Red'><b>Bad</b></font>"
+                else if	(temp >= 60) result="<font color='Red'><b>Very bad</b></font>"
+                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
+            }
+        }
+        constantrecalculation(){
+                //3rd fix - excess processing
+            if (this.ghostCells && this.ghostCells[0] && this.player){
+                this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
+                this.fix3y = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y
+                //this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
+                //this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
+            }
+        }*/
+    isInView(x, y) {
+        let mtp = 4.95,
+            w = 1024 / 2 * mtp,
+            h = 600 / 2 * mtp;
+        return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
+
     }
 
     isInViewCustom(x, y, size) {
-        const randomNum = 0;
+        const randomNum = 0; // randomNum=40
         const distance = size + randomNum;
+        //var distance = size + randomNum + this.playerSize
         return !(x + distance < legendmod.camMinX ||
             y + distance < legendmod.camMinY ||
             x - distance > legendmod.camMaxX ||
@@ -980,17 +1009,18 @@ class Spect {
     isInViewCustom2(x, y, size) {
         const x2s = legendmod.canvasWidth / 2 / legendmod.scale;
         const y2s = legendmod.canvasHeight / 2 / legendmod.scale;
-        const randomNum = 0;
+        const randomNum = 0; // randomNum=40
         const distance = size + randomNum;
-        return !(x + distance < legendmod.viewXTrue - x2s ||
-            y + distance < legendmod.viewYTrue - y2s ||
-            x - distance > legendmod.viewXTrue + x2s ||
-            y - distance > legendmod.viewYTrue + y2s)
+        return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
+            y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
+            x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
+            y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }
 
     isInViewCustom3(x, y, size) {
-        const randomNum = 0;
+        const randomNum = 0; // randomNum=-20
         const distance = size + randomNum;
+        //var distance = size + randomNum + this.playerSize
         return !(x + distance < legendmod.camMinMultiX ||
             y + distance < legendmod.camMinMultiY ||
             x - distance > legendmod.camMaxMultiX ||
@@ -998,7 +1028,7 @@ class Spect {
     }
 
     isInViewCustom4(x, y, size) {
-        const randomNum = 20;
+        const randomNum = 20; // randomNum=40
         const distance = size + randomNum;
         return !(x + distance < legendmod.camMinMultiX ||
             y + distance < legendmod.camMinMultiY ||
@@ -1006,56 +1036,85 @@ class Spect {
             y - distance > legendmod.camMaxMultiY)
     }
 
+    //isMultiInView(x , y, size){
+    //x + size <
+    //}
+    moveExistedCells() {
+        legendmod.cells.forEach((found) => {
+            if ((found.isVirus || found.isFood) && found.spectator == this.number) {
+                //found.x = found.x + this.fix3x
+                //found.y = found.y + this.fix3y
+                legendmod.indexedCells[found.id].x += this.fix3x
+                legendmod.indexedCells[found.id].y += this.fix3x
+                legendmod.indexedCells[found.id].targetX += this.fix3x
+                legendmod.indexedCells[found.id].targetY += this.fix3x
+            }
+        })
+    }
+
     setMapOffset(left, top, right, bottom) {
-        var rawWidth = right - left;
-        var rawHeight = bottom - top;
-        if (rawWidth > 0 && rawHeight > 0) {
-            this.mapSize = Math.max(rawWidth, rawHeight);
-        } else {
-            this.mapSize = 14142;
-        }
-        var halfW = this.mapSize / 2;
-        this.mapOffset = halfW;
-        if (legendmod && legendmod.integrity) {
-            this.mapOffsetX = this.mapOffset - right;
-            this.mapOffsetY = this.mapOffset - bottom;
-            this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-            this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-            this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-            this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-        } else {
-            this.mapOffsetX = (left + right) / 2;
-            this.mapOffsetY = (top + bottom) / 2;
-            this.mapMinX = -halfW;
-            this.mapMinY = -halfW;
-            this.mapMaxX = halfW;
-            this.mapMaxY = halfW;
-        }
 
-        this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-        this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-
-        if (!this.mapOffsetFixed) {
-            this.viewX = (right + left) / 2 - this.mapOffsetX;
-            this.viewY = (bottom + top) / 2 - this.mapOffsetY;
+        if (!legendmod.integrity) {
+            this.mapSize = Math.abs((left - right));
+            this.mapOffset = 0
+        } else if (legendmod.integrity) {
+            this.mapSize = 14142; //14142.13562
+            this.mapOffset = this.mapSize / 2
         }
-        this.mapOffsetFixed = true;
+        if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
+            //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
+            if (legendmod.integrity) {
+                /*
+                this.stretchX = this.mapSize - right + left
+                this.stretchY = this.mapSize - bottom + top
+                console.log("stretch", this.stretchX, this.stretchY)
+                right += this.stretchX/2
+                left -=  this.stretchX/2
+                bottom += this.stretchY/2
+                top -=  this.stretchY/2
+                */
+                this.mapOffsetX = this.mapOffset - right;
+                this.mapOffsetY = this.mapOffset - bottom;
+                this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+            } else {
+                this.mapOffsetX = this.mapSize / 2
+                this.mapOffsetY = this.mapSize / 2
+                this.mapMinX = left
+                this.mapMinY = top
+                this.mapMaxX = right
+                this.mapMaxY = bottom
+            }
+
+            /*
+            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+            */
+            if (!this.mapOffsetFixed) {
+                this.viewX = (right + left) / 2;
+                this.viewY = (bottom + top) / 2;
+            }
+            this.mapOffsetFixed = true;
+            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+
+
+        }
         if (!legendmod.integrity) {
             if (this.player) {
                 this.handleSendNick()
             }
+            //else if (!this.player && !window.fullSpectator){
             else if (!this.player) {
+                //console.log(this.number)
                 this.sendSpectate();
             }
             if (this.staticX != null && this.staticY != null) {
-                if (!this.positionController) {
-                    this.positionController = setInterval(() => {
-                        if (this.staticX != null && this.staticY != null) {
-                            this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
-                        }
-                    }, 50);
-                }
+                setInterval(() => {
+                    this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
+                }, 50);
                 if (!this.player) {
                     this.sendFreeSpectate()
                 }
@@ -1208,36 +1267,30 @@ class Spect {
 
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
-            if (flags & 128) {
+            if (flags && 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
             let color = null
             let skin = null;
             let name = '';
             let accountID = null;
-            if (flags & 2) {
+            if (flags && 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
-            if (flags & 4) {
+            if (flags && 4) {
                 skin = encode();
             }
-            if (flags & 8) {
-                var rawName = encode();
-                try {
-                    name = window.decodeURIComponent(escape(rawName));
-                } catch (eDecName) {
-                    name = rawName || '';
-                    console.error('[SPECT CELL NAME DECODE ERROR] Failed decoding name for cell ID ' + id + ' (rawName: "' + rawName + '"):', eDecName);
-                }
+            if (flags && 8) {
+                name = window.decodeURIComponent(escape(encode()));
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
                 }
             }
-            if (flags & 10) {
+            if (flags && 10) {
             }
             const isVirus = flags & 1;
             let isFood = extendedFlags & 1;
@@ -1278,22 +1331,23 @@ class Spect {
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
                 if (!isFood) {
-                    if (!invisible) invisible = this.isInViewCustom(x, y, size);
+                    if (!invisible) invisible = this.isInViewCustom(x, y, size)
                 } else if (isFood) {
                     if (window.ingameSpectator && legendmod.isSpectateEnabled) {
-                        invisible = true;
+                        invisible = true
                     } else if (!window.fullSpectator) {
-                        if (!invisible) invisible = this.isInViewCustom(x, y, size);
+                        if (!invisible) invisible = this.isInViewCustom(x, y, size)
                     }
                 }
             }
-
+            //if (this.player && isVirus && !isFood && !invisible){
             if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = this.isInViewCustom(x, y, size);
-                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
+                if (isFood) remove = this.isInViewCustom(x, y, size)
+                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
+
 
                 if (!this.active) {
-                    invisible = true;
+                    invisible = true
                 }
             }
 
@@ -1303,9 +1357,11 @@ class Spect {
             if (defaultmapsettings.oneColoredSpectator && !isFood) {
                 color = defaultSettings.foodColor
             }
-            cell = legendmod.indexedCells[id];
-            if (cell) {
+            cell = null;
+            if (legendmod.indexedCells.hasOwnProperty(id)) {
+                cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
+
             } else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
@@ -1335,9 +1391,10 @@ class Spect {
                     legendmod.foodMulti.push(cell); //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove && legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
+                    if (!isFood && !remove) legendmod.cells.push(cell);
                 } else {
-                    if (!remove && legendmod.cells.indexOf(cell) === -1) {
+                    //if (!remove && (!invisible && isVirus)){
+                    if (!remove) {
                         legendmod.cells.push(cell);
                     }
                 }
