@@ -5920,19 +5920,18 @@ function thelegendmodproject() {
                     for (; o < s; o++) {
                         e = e + this.top5[o].mass;
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
-                            /*
-                                t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
-                                '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
-                                + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
-                            var teamboardskin = this.customSkinsCache[this.top5[o].skinURL + "_cached2"];
-                            if (!teamboardskin) {
-                                teamboardskin = new Image();
-                                teamboardskin.crossOrigin = 'anonymous';
-                                teamboardskin.src = "https://www.legendmod.ml/banners/icon32croped.ico.gif";
+                            var p = this.top5[o];
+                            var skinUrl = p.skinURL || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
+                            if (skinUrl) {
+                                if (!p.skinURL) p.skinURL = skinUrl;
+                                if (!this.customSkinsCache[skinUrl]) {
+                                    application.loadSkin(this.customSkinsCache, skinUrl);
+                                }
                             }
-                            t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + this.top5[o].id + '" style="background-color: ' + this.top5[o].color +
-                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' +
-                                (teamboardskin.outerHTML || '<img src="' + teamboardskin.src + '" alt=""/>') + '</span></a><div style="margin-top: -30px; margin-left: 32px;">');
+                            var teamboardskin = skinUrl ? (this.customSkinsCache[skinUrl + "_cached2"] || this.customSkinsCache[skinUrl + "_cached"] || this.customSkinsCache[skinUrl]) : null;
+                            var teamboardImgSrc = (teamboardskin && (teamboardskin.complete || teamboardskin.width)) ? teamboardskin.src : (skinUrl || "https://www.legendmod.ml/banners/icon32croped.ico.gif");
+                            t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + p.id + '" style="background-color: ' + p.color +
+                                '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt=""><img src="' + teamboardImgSrc + '" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt=""/></span></a><div style="margin-top: -30px; margin-left: 32px;">');
                             // t = t + ('<div><img src=' + teamboardskin.src + 'class="player-skin" style="border: solid 3px' + this.top5[o].color + '">' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
 
                             /* if (defaultmapsettings["showTargeting"]) {
@@ -8147,8 +8146,10 @@ function thelegendmodproject() {
                         if (!h[c].inView) {
                             var u = ~~((h[c].x + r) * n);
                             var d = ~~((h[c].y + l) * n);
-                            this.miniMapCtx.moveTo(u, d);
-                            this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                            if (u >= 0 && u <= o && d >= 0 && d <= o) {
+                                this.miniMapCtx.moveTo(u, d);
+                                this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                            }
                         }
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
@@ -8965,8 +8966,16 @@ function thelegendmodproject() {
                 var activeSkin = customSkin || pSkin || (existingIdx !== null ? this.teamPlayers[existingIdx].skinURL : '');
                 var activeColor = customColor || pColor || '#000000';
 
-                if (activeNick && activeSkin) {
-                    this.cacheCustomSkin(activeNick, activeColor, activeSkin);
+                if (activeSkin) {
+                    if (activeNick) {
+                        this.cacheCustomSkin(activeNick, activeColor, activeSkin);
+                    }
+                    if (existingIdx !== null) {
+                        this.teamPlayers[existingIdx].skinURL = activeSkin;
+                        if (!activeNick && this.teamPlayers[existingIdx].nick) {
+                            this.cacheCustomSkin(this.teamPlayers[existingIdx].nick, activeColor, activeSkin);
+                        }
+                    }
                 }
                 if (existingIdx !== null) {
                     if (nick !== undefined) this.teamPlayers[existingIdx].nick = nick;
@@ -10888,6 +10897,7 @@ function thelegendmodproject() {
             if (this.startX !== undefined && this.startY !== undefined) {
                 this.x = this.startX + (this.targetX - this.startX) * delay;
                 this.y = this.startY + (this.targetY - this.startY) * delay;
+                this.size = this.startSize + (this.targetSize - this.startSize) * delay;
             } else {
                 this.x += (this.targetX - this.x) * delay;
                 this.y += (this.targetY - this.y) * delay;
@@ -15820,33 +15830,18 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            if (left !== undefined && right !== undefined && right > left && top !== undefined && bottom !== undefined && bottom > top) {
-                this.mapSize = Math.abs(right - left);
-                if (left === 0 && top === 0 && this.mapSize > 1000) {
-                    var half = this.mapSize / 2;
-                    this.mapMinX = -half;
-                    this.mapMinY = -half;
-                    this.mapMaxX = half;
-                    this.mapMaxY = half;
-                } else {
-                    this.mapMinX = left;
-                    this.mapMinY = top;
-                    this.mapMaxX = right;
-                    this.mapMaxY = bottom;
-                }
-                this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-                this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                this.mapOffsetX = (this.mapMaxX - this.mapMinX) / 2;
-                this.mapOffsetY = (this.mapMaxY - this.mapMinY) / 2;
-            } else if (LM.isLegendWorld) {
+            if (LM.isLegendWorld) {
                 /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~Math.abs(right - left);
                 this.mapOffset = 0;
+                /* If map size changed (LW resize), reset the fixed flag */
                 if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
 
+                /* Derive tier from actual border size — guarantees tier
+                 * always matches the real map, regardless of map events */
                 var tierSizes = [
                     7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000,
                     226274, 320000, 452548
@@ -15857,24 +15852,38 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 LM.mapTier = derivedTier;
             } else if (this.integrity || temp2) {
+                /* agar.io: hardcoded 14142 (original behavior) */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
-                this.mapMinX = -7071;
-                this.mapMinY = -7071;
-                this.mapMaxX = 7071;
-                this.mapMaxY = 7071;
-                this.mapMidX = 0;
-                this.mapMidY = 0;
             } else {
+                /* other private servers (original behavior) */
                 this.mapSize = Math.abs(left - right);
                 this.mapOffset = 0;
-                this.mapMinX = left;
-                this.mapMinY = top;
-                this.mapMaxX = right;
-                this.mapMaxY = bottom;
-                this.mapMidX = (right + left) / 2;
-                this.mapMidY = (bottom + top) / 2;
             }
+
+            if (!this.mapOffsetFixed) {
+                //console.log(right - left, bottom - top)
+                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
+                    //if (this.integrity || this.ws.includes("replay")) {
+                    if (this.integrity || temp2) {
+                        this.mapOffsetX = this.mapOffset - right;
+                        this.mapOffsetY = this.mapOffset - bottom;
+
+                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    }
+                    else {
+                        this.mapOffsetX = this.mapSize / 2;
+                        this.mapOffsetY = this.mapSize / 2;
+                        this.mapMinX = left;
+                        this.mapMinY = top;
+                        this.mapMaxX = right;
+                        this.mapMaxY = bottom;
+                    }
+                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 
                     /* LEGENDWORLD FIX: 
                      * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
@@ -15882,6 +15891,8 @@ Most cells eaten   : ${mostCellsEaten}
                      * This caused violent 25Hz juddering when the map border shrunk!
                      */
                     if (!this.mapOffsetFixed) {
+                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
                         if (this.mapSize === 0 || !LM.isLegendWorld) {
                             this.viewX = (right + left) / 2;
                             this.viewY = (bottom + top) / 2;
@@ -15889,6 +15900,8 @@ Most cells eaten   : ${mostCellsEaten}
                     }
 
                     this.mapOffsetFixed = true;
+                }
+            }
             //for SPECT
             this.addSpect();
         },
@@ -17763,11 +17776,11 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawCustomBackgrounds()
             if (defaultmapsettings.showMapBorders) {
                 var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
-                var bMinX = (typeof LM.mapMinX !== "undefined") ? LM.mapMinX : -7071;
-                var bMinY = (typeof LM.mapMinY !== "undefined") ? LM.mapMinY : -7071;
-                var bMaxX = (typeof LM.mapMaxX !== "undefined") ? LM.mapMaxX : 7071;
-                var bMaxY = (typeof LM.mapMaxY !== "undefined") ? LM.mapMaxY : 7071;
-                this.drawMapBorders(this.ctx, true, bMinX - tempborderwidthradius, bMinY - tempborderwidthradius, bMaxX + tempborderwidthradius, bMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                var bMinX = (typeof LM.mapMinX !== "undefined" && LM.mapMinX !== 0) ? LM.mapMinX : -7071;
+                var bMinY = (typeof LM.mapMinY !== "undefined" && LM.mapMinY !== 0) ? LM.mapMinY : -7071;
+                var bMaxX = (typeof LM.mapMaxX !== "undefined" && LM.mapMaxX !== 0) ? LM.mapMaxX : 7071;
+                var bMaxY = (typeof LM.mapMaxY !== "undefined" && LM.mapMaxY !== 0) ? LM.mapMaxY : 7071;
+                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, bMinX - tempborderwidthradius, bMinY - tempborderwidthradius, bMaxX + tempborderwidthradius, bMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
             /* ── Expanding Land: Draw warning/danger zone overlay ── */
             if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
@@ -18238,7 +18251,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.fillStyle = "white";
             ctx.font = "100px sans-serif";
             ctx.textAlign = "end";
-            ctx.textBaseline = "hanging"
+            ctx.textBaseline = "hanging";
             ctx.fillText(text, maxX, minY);
 
             ctx.beginPath();
@@ -18357,66 +18370,80 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawCommander(ctx) {
-            //console.log('Special effects stage 2');
             if (LM.drawCommander) {
-                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                cimg = new Image;
-                cimg.src = defaultSettings.commanderImage;
-                cimg1 = new Image;
-                cimg1.src = defaultSettings.commanderImage1;
-                cimg12 = new Image;
-                cimg12.src = defaultSettings.commanderImage2;
+                if (!this._cmdrImg || this._cmdrImg._src !== defaultSettings.commanderImage) {
+                    this._cmdrImg = new Image();
+                    this._cmdrImg._src = defaultSettings.commanderImage;
+                    this._cmdrImg.src = defaultSettings.commanderImage;
+                }
+                if (!this._cmdrImg1 || this._cmdrImg1._src !== defaultSettings.commanderImage1) {
+                    this._cmdrImg1 = new Image();
+                    this._cmdrImg1._src = defaultSettings.commanderImage1;
+                    this._cmdrImg1.src = defaultSettings.commanderImage1;
+                }
+                if (!this._cmdrImg2 || this._cmdrImg2._src !== defaultSettings.commanderImage2) {
+                    this._cmdrImg2 = new Image();
+                    this._cmdrImg2._src = defaultSettings.commanderImage2;
+                    this._cmdrImg2.src = defaultSettings.commanderImage2;
+                }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg2, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
             }
         },
         drawCommander2(ctx) {
-            //console.log('Special effects stage 2');
             if (LM.drawCommander2) {
-                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                cimg = new Image;
-                cimg.src = defaultSettings.commanderImage3;
-                cimg1 = new Image;
-                cimg1.src = defaultSettings.commanderImage4;
-                cimg12 = new Image;
-                cimg12.src = defaultSettings.commanderImage5;
+                if (!this._cmdrImg3 || this._cmdrImg3._src !== defaultSettings.commanderImage3) {
+                    this._cmdrImg3 = new Image();
+                    this._cmdrImg3._src = defaultSettings.commanderImage3;
+                    this._cmdrImg3.src = defaultSettings.commanderImage3;
+                }
+                if (!this._cmdrImg4 || this._cmdrImg4._src !== defaultSettings.commanderImage4) {
+                    this._cmdrImg4 = new Image();
+                    this._cmdrImg4._src = defaultSettings.commanderImage4;
+                    this._cmdrImg4.src = defaultSettings.commanderImage4;
+                }
+                if (!this._cmdrImg5 || this._cmdrImg5._src !== defaultSettings.commanderImage5) {
+                    this._cmdrImg5 = new Image();
+                    this._cmdrImg5._src = defaultSettings.commanderImage5;
+                    this._cmdrImg5.src = defaultSettings.commanderImage5;
+                }
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg3, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg4, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(this._cmdrImg5, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
@@ -18452,28 +18479,49 @@ Most cells eaten   : ${mostCellsEaten}
                     e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
                 */
-        drawMapBorders(ctx, macros, minX, minY, maxX, maxY, strokeColor, borderWidth) {
-            if (!macros) return;
-            ctx.save();
-            var bColor = strokeColor || defaultSettings.bordersColor || "#FF0000";
-            var bWidth = borderWidth || defaultSettings.bordersWidth || 20;
+        drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
+            if (macros) {
+                if (Math.abs(x0 - text) < 1000 || Math.abs(y0 - x1) < 1000) return;
+                ctx.strokeStyle = radius || defaultSettings.bordersColor || "#FF0000";
+                ctx.lineWidth = canvas || defaultSettings.bordersWidth || 20;
+                ctx.beginPath();
+                ctx.moveTo(text + ctx.lineWidth, x1);
+                ctx.lineTo(x0 - ctx.lineWidth, x1);
 
-            ctx.strokeStyle = bColor;
-            ctx.lineWidth = bWidth;
+                ctx.moveTo(x0, x1);
+                ctx.lineTo(x0 + ctx.lineWidth, x1 - ctx.lineWidth);
 
-            if (defaultmapsettings.borderGlow) {
-                ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
-                ctx.shadowColor = defaultSettings.borderGlowColor || bColor;
+                ctx.moveTo(x0, x1 + ctx.lineWidth);
+                ctx.lineTo(x0, y0 - ctx.lineWidth);
+
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x0 + ctx.lineWidth, y0 + ctx.lineWidth);
+
+                ctx.moveTo(x0 - ctx.lineWidth, y0);
+                ctx.lineTo(text + ctx.lineWidth, y0);
+
+                ctx.moveTo(text, y0);
+                ctx.lineTo(text - ctx.lineWidth, y0 + ctx.lineWidth);
+
+                ctx.moveTo(text, y0 - ctx.lineWidth);
+                ctx.lineTo(text, x1 + ctx.lineWidth);
+
+                ctx.moveTo(text, x1);
+                ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
+
+                if (defaultmapsettings.borderGlow) {
+                    ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
+                    ctx.shadowColor = defaultSettings.borderGlowColor || ctx.strokeStyle;
+                } else {
+                    "skrrt";
+                }
+                ctx.stroke();
             }
-
-            var w = maxX - minX;
-            var h = maxY - minY;
-
-            ctx.beginPath();
-            ctx.rect(minX, minY, w, h);
-            ctx.stroke();
-
-            ctx.restore();
+            if (defaultmapsettings.borderGlow) {
+                ctx.shadowBlur = 0;
+            } else {
+                "skrrt";
+            }
         },
         /* ── Expanding Land: Warning/Danger zone overlay ── */
         drawLegendWorldZone(ctx) {
@@ -18629,8 +18677,8 @@ Most cells eaten   : ${mostCellsEaten}
         drawVirusesRange(t, e, i) {
             if (!e || !e.length) return;
             var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 1000;
-            var halfH = (this.canvasHeight / viewScale / 2) + 1000;
+            var halfW = (this.canvasWidth / viewScale / 2) + 1800;
+            var halfH = (this.canvasHeight / viewScale / 2) + 1800;
             var minX = this.viewX - halfW, maxX = this.viewX + halfW;
             var minY = this.viewY - halfH, maxY = this.viewY + halfH;
             t.beginPath();
@@ -18765,15 +18813,18 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.save();
 
             var viewScale = scale || this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 50;
-            var halfH = (this.canvasHeight / viewScale / 2) + 50;
+            var halfW = (this.canvasWidth / viewScale / 2) + 200;
+            var halfH = (this.canvasHeight / viewScale / 2) + 200;
             var minX = this.viewX - halfW, maxX = this.viewX + halfW;
             var minY = this.viewY - halfH, maxY = this.viewY + halfH;
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
 
             if (!defaultmapsettings.rainbowFood) {
-                ctx.fillStyle = defaultFoodColor;
+                var foodRad = ((food[0] && food[0].size) ? food[0].size : 10) + defaultSettings.foodSize;
+                ctx.lineCap = 'round';
+                ctx.lineWidth = foodRad * 2;
+                ctx.strokeStyle = defaultFoodColor;
                 ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
@@ -18781,11 +18832,10 @@ Most cells eaten   : ${mostCellsEaten}
                     if (f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
-                    var r = (f.size || 10) + defaultSettings.foodSize;
-                    ctx.moveTo(f.x + r, f.y);
-                    ctx.arc(f.x, f.y, r, 0, twoPi, false);
+                    ctx.moveTo(f.x, f.y);
+                    ctx.lineTo(f.x, f.y);
                 }
-                ctx.fill();
+                ctx.stroke();
             } else {
                 var batches = {};
                 for (var length = 0; length < food.length; length++) {
@@ -18814,7 +18864,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             ctx.restore();
             if (reset) {
-                food = [];
+                food.length = 0;
             }
         },
         drawCircle(ctx, x, y, radius, color) {
@@ -20217,6 +20267,7 @@ function minimapCell(envId, cb, i, s) {
             //if (isPositionOK){
             var w = (this.lastX + margin) * mult;
             var h = (this.lastY + margin) * mult;
+            if (w < -10 || w > 170 || h < -10 || h > 170) return;
             if (this.nick.length > 0) {
                 options.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
                 options.textAlign = "center";
@@ -20669,24 +20720,30 @@ function Socket3updateTeamPlayerSpfc(Socket3data) {
 }
 
 function Socket3updateTeamPlayer(Socket3data) {
-    var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));
+    if (!Socket3data) return;
+    var rawId = Socket3data.id || Socket3data.nick;
+    if (!rawId) return;
+    var h;
+    try {
+        h = window.decodeURIComponent(escape(application.checkPlayerNick(rawId)));
+    } catch (e) {
+        h = rawId;
+    }
     if (!application.teamPlayers[h]) {
         h = application.teamPlayers.length;
-        application.teamPlayers[h] = {}
+        application.teamPlayers[h] = {};
     }
-    application.teamPlayers[h].id = Socket3data.id;
+    application.teamPlayers[h].id = Socket3data.id || h;
     application.teamPlayers[h].nick = Socket3data.nick;
     application.teamPlayers[h].skinID = Socket3data.nick;
-    application.teamPlayers[h].skinURL = Socket3data.skin;
-    application.teamPlayers[h].color = Socket3data.color;
+    application.teamPlayers[h].skinURL = Socket3data.skin || '';
+    application.teamPlayers[h].color = Socket3data.color || '#000000';
 
     application.teamPlayers[h].lbgpi = -2;
-    //application.teamPlayers[h].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(Socket3data.x + legendmod.mapOffsetX) : Socket3data.x + legendmod.mapOffsetX //Sonia3
-    //application.teamPlayers[h].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateX(Socket3data.y + legendmod.mapOffsetY) : Socket3data.y + legendmod.mapOffsetY //Sonia3	
     application.teamPlayers[h].x = Socket3data.x;
     application.teamPlayers[h].y = Socket3data.y;
     application.teamPlayers[h].alive = true;
-    application.teamPlayers[h].mass = Socket3data.mass;
+    application.teamPlayers[h].mass = Socket3data.mass || 1;
     application.teamPlayers[h].temp = true;
     application.teamPlayers[h].drawPosition = function () { };
     var tempTime = new Date().getTime();
