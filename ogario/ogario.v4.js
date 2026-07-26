@@ -11454,7 +11454,7 @@ function thelegendmodproject() {
             }
         };
         this.drawImageSpecialSkin = function (imageSpecial, b, c, d, e, style) {
-            var tempImgSp = eval('window.' + imageSpecial)
+            var tempImgSp = window[imageSpecial];
             if (!tempImgSp) {
                 loadIconSpecialSkins(imageSpecial)
             }
@@ -16659,10 +16659,8 @@ Most cells eaten   : ${mostCellsEaten}
                 if (LM.playerCellsMulti.length && LM.multiBoxPlayerExists && LM.integrity) {
                     invisible = this.isInViewCustom3(x, y, size)
                 }
-                cellUpdateCells = null;
-
-                if (this.indexedCells.hasOwnProperty(id)) {
-                    cellUpdateCells = this.indexedCells[id];
+                cellUpdateCells = this.indexedCells[id];
+                if (cellUpdateCells) {
                     //if (color && !LM.playerCellsMulti.length) {
                     //cellUpdateCells.color = color;
                     //}					
