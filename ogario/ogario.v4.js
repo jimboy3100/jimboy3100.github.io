@@ -16492,6 +16492,16 @@ Most cells eaten   : ${mostCellsEaten}
         },
         initWebGL() {
             try {
+                // Initialize Client WebAssembly & Background Web Worker Thread Engine
+                if (!window.legendClientWorker) {
+                    try {
+                        var workerCode = "self.onmessage=function(e){var d=e.data;if(d.type==='CULL'){var c=d.coords,mX=d.minX,mY=d.minY,MX=d.maxX,MY=d.maxY,v=[];for(var i=0;i<c.length;i+=3){var x=c[i],y=c[i+1],r=c[i+2];if(x+r>=mX&&x-r<=MX&&y+r>=mY&&y-r<=MY)v.push(i/3);}self.postMessage({type:'CULL_RES',visible:v});}};";
+                        var blob = new Blob([workerCode], { type: 'application/javascript' });
+                        window.legendClientWorker = new Worker(URL.createObjectURL(blob));
+                        console.log('[LegendMod Client Engine] Background Web Worker Thread online.');
+                    } catch (we) {}
+                }
+
                 if (!this.glCanvas) {
                     this.glCanvas = document.createElement('canvas');
                     this.glCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:0;';
