@@ -1,4 +1,4 @@
-window.OgVer = 3.477;
+window.OgVer = 3.478;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -6097,11 +6097,19 @@ function thelegendmodproject() {
             return String(string).replace(/[&<>"'\/]/g, function (event) {
                 return escapeChar[event];
             });
-        },
         checkSkinURL(url) {
-            //return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
-            return url.replace('http:', 'https:');
-            //return /^https?:\/\/(i|s))\.(?:imgur|hizliresim|put)\.(com|re)\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
+            if (!url || typeof url !== 'string') return '';
+            url = url.trim();
+            if (!url) return '';
+            if (url.startsWith('http://')) return url.replace('http://', 'https://');
+            if (url.startsWith('https://') || url.startsWith('data:')) return url;
+            if (url.startsWith('//')) return 'https:' + url;
+            if (url.includes('imgur.com') || url.includes('hizliresim.com')) return 'https://' + url;
+            if (/^[a-zA-Z0-9]{5,12}(\.(png|jpg|jpeg|gif))?$/i.test(url)) {
+                var hash = url.split('.')[0];
+                return 'https://i.imgur.com/' + hash + '.png';
+            }
+            return 'https://' + url;
         },
         loadSettings() {
             let settings = null;
@@ -7759,23 +7767,16 @@ function thelegendmodproject() {
                 },
                     img[url].onerror = function () {
                         console.warn("[LM] Failed to load skin image: " + url);
-                        /* OLD FALLBACK (commented out — now using ? cache-buster on CDN URLs instead)
-                        if (url && url.includes(window.EnvConfig.config_url)) {
-                            url = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
-                            //console.log("new destination is: " + url);
-                            application.customSkinsMap[window.lastusednameforskin] = url;
-                            application.loadSkin(img, url);
-                            return url;
-
-                        } else if (url && url.includes("https://www.legendmod.ml/vanillaskins/")) {
-                            url = "https://www.legendmod.ml/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
-                            //console.log("new destination is: " + url);
-                            application.customSkinsMap[window.lastusednameforskin] = url;
-                            application.loadSkin(img, url);
-                            return url;
-
+                        if (this.crossOrigin) {
+                            var retryImg = new Image();
+                            retryImg.onload = function () {
+                                img[url] = retryImg;
+                                if (app && app.customSkinsCache) {
+                                    app.customSkinsCache[url] = retryImg;
+                                }
+                            };
+                            retryImg.src = url;
                         }
-                        */
                     };
                 img[url].src = url;
             }
@@ -7943,27 +7944,55 @@ function thelegendmodproject() {
             return null;
         },
         cacheCustomSkin(nick, color, skinUrl) {
-            if (skinUrl) {
-                const s = ':party' === this.gameMode ? nick + color : nick;
-                if (s) this.customSkinsMap[s] = skinUrl;
-                if (nick) this.customSkinsMap[nick] = skinUrl;
-                if (nick && color) this.customSkinsMap[nick + color] = skinUrl;
-                if (this.customSkinsCache.hasOwnProperty(skinUrl)) return;
+            if (!skinUrl) return;
+            skinUrl = this.checkSkinURL(skinUrl);
+            if (!skinUrl) return;
+            var cleanNick = nick ? nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim() : '';
+            const s = ':party' === this.gameMode ? nick + color : nick;
+            if (s) this.customSkinsMap[s] = skinUrl;
+            if (nick) {
+                this.customSkinsMap[nick] = skinUrl;
+                this.customSkinsMap[nick + "#000000"] = skinUrl;
+            }
+            if (cleanNick && cleanNick !== nick) {
+                this.customSkinsMap[cleanNick] = skinUrl;
+                this.customSkinsMap[cleanNick + "#000000"] = skinUrl;
+            }
+            if (nick && color) this.customSkinsMap[nick + color] = skinUrl;
+            if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
                 this.loadSkin(this.customSkinsCache, skinUrl);
             }
         },
         checkSkinsMap(nick, color) {
             if (!nick) return false;
-            const mode = ':party' === this.gameMode ? nick + color : nick;
-            return !!(this.customSkinsMap.hasOwnProperty(mode) || this.customSkinsMap.hasOwnProperty(nick) || (color && this.customSkinsMap.hasOwnProperty(nick + color)) || this.customSkinsMap.hasOwnProperty(nick + "#000000"));
+            var cleanNick = nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim();
+            var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
+            return !!(
+                this.customSkinsMap.hasOwnProperty(nick) ||
+                this.customSkinsMap.hasOwnProperty(nick + hexColor) ||
+                this.customSkinsMap.hasOwnProperty(nick + "#000000") ||
+                (cleanNick && (
+                    this.customSkinsMap.hasOwnProperty(cleanNick) ||
+                    this.customSkinsMap.hasOwnProperty(cleanNick + "#000000") ||
+                    this.customSkinsMap.hasOwnProperty(cleanNick + hexColor)
+                ))
+            );
         },
         getCustomSkin(nick, color) {
             if (!nick) return null;
-            if (':party' === this.gameMode && this.customSkinsMap[nick + "#000000"] && this.customSkinsMap[nick + "#000000"].includes("configs-web.agario.miniclippt.com/live/")) {
-                color = "#000000";
-            }
-            const mode = ':party' === this.gameMode ? nick + color : nick;
-            const skinUrl = this.customSkinsMap[mode] || this.customSkinsMap[nick] || (color && this.customSkinsMap[nick + color]) || this.customSkinsMap[nick + "#000000"];
+            var cleanNick = nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim();
+            var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
+
+            var skinUrl = 
+                this.customSkinsMap[nick] ||
+                this.customSkinsMap[nick + hexColor] ||
+                this.customSkinsMap[nick + "#000000"] ||
+                (cleanNick ? (
+                    this.customSkinsMap[cleanNick] ||
+                    this.customSkinsMap[cleanNick + "#000000"] ||
+                    this.customSkinsMap[cleanNick + hexColor]
+                ) : null);
+
             if (!skinUrl) return null;
             return this.getCachedSkin(this.customSkinsCache, skinUrl);
         },
@@ -8824,6 +8853,12 @@ function thelegendmodproject() {
                 case 30:
                     this.updateTeamPlayerPosition(message);
                     break;
+                case 41:
+                    this.readQuadrantRequest(message);
+                    break;
+                case 42:
+                    this.readQuadrantResponse(message);
+                    break;
                 case 45:
                     this.readWavePing(message);
                     break;
@@ -8859,6 +8894,13 @@ function thelegendmodproject() {
                 }
                 return str;
             }
+            function readColor() {
+                if (offset + 3 > view.byteLength) return '#000000';
+                var r = view.getUint8(offset++).toString(16).padStart(2, '0');
+                var g = view.getUint8(offset++).toString(16).padStart(2, '0');
+                var b = view.getUint8(offset++).toString(16).padStart(2, '0');
+                return '#' + r + g + b;
+            }
             while (offset + 1 < view.byteLength) {
                 var playerID = view.getUint16(offset, true);
                 offset += 2;
@@ -8872,9 +8914,9 @@ function thelegendmodproject() {
                 var clientId = (flagsDownLevel & 1) ? (view.getUint16(offset, true), offset += 2) : undefined;
                 var nick = (flagsDownLevel & 2) ? readUTF16() : undefined;
                 var customSkin = (flagsDownLevel & 4) ? readUTF16() : undefined;
-                var customColor = (flagsDownLevel & 8) ? (offset += 3) : undefined;
+                var customColor = (flagsDownLevel & 8) ? readColor() : undefined;
                 var pSkin = (flagsDownLevel & 16) ? readUTF16() : undefined;
-                var pColor = (flagsDownLevel & 32) ? (offset += 3) : undefined;
+                var pColor = (flagsDownLevel & 32) ? readColor() : undefined;
                 var accountId = (flagsDownLevel & 64) ? (view.getUint32(offset, true), offset += 4) : undefined;
 
                 var posX, posY, mass;
@@ -8889,9 +8931,10 @@ function thelegendmodproject() {
                 var existingIdx = this.checkPlayerID(playerID);
                 var activeNick = nick || (existingIdx !== null ? this.teamPlayers[existingIdx].nick : '');
                 var activeSkin = customSkin || pSkin || (existingIdx !== null ? this.teamPlayers[existingIdx].skinURL : '');
+                var activeColor = customColor || pColor || '#000000';
 
                 if (activeNick && activeSkin) {
-                    this.cacheCustomSkin(activeNick, '#000000', activeSkin);
+                    this.cacheCustomSkin(activeNick, activeColor, activeSkin);
                 }
                 if (existingIdx !== null) {
                     if (nick !== undefined) this.teamPlayers[existingIdx].nick = nick;
@@ -8901,7 +8944,7 @@ function thelegendmodproject() {
                         this.teamPlayers[existingIdx].y = posY;
                     }
                 } else if (activeNick) {
-                    var skinName = ":party" === this.gameMode ? activeNick + "#000000" : activeNick;
+                    var skinName = ":party" === this.gameMode ? activeNick + activeColor : activeNick;
                     var map = new minimapCell(playerID, activeNick, skinName, activeSkin || '');
                     if (posX !== undefined && posY !== undefined) {
                         map.x = posX;
@@ -8912,34 +8955,96 @@ function thelegendmodproject() {
             }
         },
         readDeltaChatMessage(view) {
-            if (view.byteLength < 14) return;
-            var type = view.getUint8(1);
-            var userID = view.getUint32(2, true);
-            var playerID = view.getUint32(6, true);
-            var targetID = view.getUint32(10, true);
-            var offset = 14;
-            var text = "";
-            while (offset + 1 < view.byteLength) {
-                var code = view.getUint16(offset, true);
-                if (code === 0) break;
-                text += String.fromCharCode(code);
-                offset += 2;
+            if (view.byteLength < 8) return;
+            var offset = 1;
+            var type = view.getUint8(offset++);
+            var userID = view.getUint16(offset, true); offset += 2;
+            var playerID = view.getUint16(offset, true); offset += 2;
+            var targetID = view.getUint16(offset, true); offset += 2;
+
+            function readUTF16Len() {
+                if (offset >= view.byteLength) return '';
+                var len = view.getUint8(offset++);
+                var str = '';
+                for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
+                    str += String.fromCharCode(view.getUint16(offset, true));
+                    offset += 2;
+                }
+                return str;
             }
-            var parts = text.split(': ');
-            var nick = parts.length > 1 ? parts[0] : '';
-            var msg = parts.length > 1 ? parts.slice(1).join(': ') : text;
+
+            var nick = readUTF16Len();
+            var text = readUTF16Len();
             if (window.LM && LM.addChatMessage) {
-                LM.addChatMessage(nick, msg);
+                LM.addChatMessage(nick || 'DeltaPlayer', text);
+            }
+        },
+        requestQuadrant(targetPlayerID) {
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
+            if (ws && ws.readyState === 1 && this.playerID) {
+                var buffer = new ArrayBuffer(3);
+                var view = new DataView(buffer);
+                view.setUint8(0, 41);
+                view.setUint16(1, targetPlayerID & 0xFFFF, true);
+                ws.send(buffer);
+            }
+        },
+        readQuadrantRequest(view) {
+            if (view.byteLength < 3) return;
+            var requesterID = view.getUint16(1, true);
+            var myQuadrantStr = this.currentSector || '';
+            var quadChar = myQuadrantStr.charCodeAt(0) || 65;
+            var quadNum = parseInt(myQuadrantStr.slice(1)) || 1;
+            var quadrantCode = ((quadChar - 65) * 5 + (quadNum - 1)) & 0xFF;
+
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
+            if (ws && ws.readyState === 1 && this.playerID) {
+                var buffer = new ArrayBuffer(6);
+                var respView = new DataView(buffer);
+                respView.setUint8(0, 42);
+                respView.setUint16(1, this.playerID & 0xFFFF, true);
+                respView.setUint16(3, requesterID, true);
+                respView.setUint8(5, quadrantCode);
+                ws.send(buffer);
+            }
+        },
+        readQuadrantResponse(view) {
+            if (view.byteLength < 6) return;
+            var senderID = view.getUint16(1, true);
+            var receiverID = view.getUint16(3, true);
+            var quadrantCode = view.getUint8(5);
+            var qRow = String.fromCharCode(65 + Math.floor(quadrantCode / 5));
+            var qCol = (quadrantCode % 5) + 1;
+            var sectorStr = qRow + qCol;
+            var idx = this.checkPlayerID(senderID);
+            if (idx !== null && this.teamPlayers[idx]) {
+                this.teamPlayers[idx].quadrant = sectorStr;
             }
         },
         readWavePing(view) {
-            if (view.byteLength < 18) return;
-            var playerID = view.getUint32(5, true);
-            var type = view.getUint8(9);
-            var wx = view.getInt32(10, true);
-            var wy = view.getInt32(14, true);
+            if (view.byteLength < 14) return;
+            var offset = 1;
+            var userID = view.getUint16(offset, true); offset += 2;
+            var playerID = view.getUint16(offset, true); offset += 2;
+            var type = view.getUint8(offset++);
+            var wx = view.getInt32(offset, true); offset += 4;
+            var wy = view.getInt32(offset, true); offset += 4;
             if (window.LM && LM.addWave) {
                 LM.addWave(wx, wy, '#ffffff');
+            }
+        },
+        sendWavePing(wx, wy, type) {
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
+            if (ws && ws.readyState === 1 && this.playerID) {
+                var buffer = new ArrayBuffer(14);
+                var view = new DataView(buffer);
+                view.setUint8(0, 45);
+                view.setUint16(1, this.playerID & 0xFFFF, true);
+                view.setUint16(3, this.playerID & 0xFFFF, true);
+                view.setUint8(5, type || 0);
+                view.setInt32(6, Math.round(wx), true);
+                view.setInt32(10, Math.round(wy), true);
+                ws.send(buffer);
             }
         },
         //Sonia4
@@ -9551,9 +9656,8 @@ function thelegendmodproject() {
                 this.teamPlayers.push(map);
             }
 
-            //this.cacheCustomSkin(nick, defaultColor, skinUrl);
-            if (!animatedskins[nick] || !defaultmapsettings.vanillaSkins) { //fix for animated skins to work
-                this.cacheCustomSkin(nick, defaultColor, skinUrl);
+            if (skinUrl && nick) {
+                this.cacheCustomSkin(nick, defaultColor || '#000000', skinUrl);
             }
         },
         updateTeamPlayerPosition(message) {
@@ -20481,12 +20585,8 @@ function Socket3updateTeamPlayer(Socket3data) {
     var tempTime = new Date().getTime();
     application.teamPlayers[h].lastUpdatedTime = tempTime;
 
-    /* Cache skin from chat socket so customSkinsMap[nick] is populated
-     * and the skin image is loaded into customSkinsCache (#skin-fix) */
     if (Socket3data.skin && Socket3data.nick) {
-        if (!animatedskins[Socket3data.nick] || !defaultmapsettings.vanillaSkins) {
-            application.cacheCustomSkin(Socket3data.nick, Socket3data.color || '#000000', Socket3data.skin);
-        }
+        application.cacheCustomSkin(Socket3data.nick, Socket3data.color || '#000000', Socket3data.skin);
     }
 }
 
