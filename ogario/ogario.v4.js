@@ -16827,12 +16827,8 @@ Most cells eaten   : ${mostCellsEaten}
                 if (n.size > maxSize) maxSize = n.size;
             }
 
-            if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
-                //
-            } else if (!window.multiboxPlayerEnabled) {
-                this.viewX = x;
-                this.viewY = y;
-            }
+            this.viewX = x;
+            this.viewY = y;
             this.viewXTrue = x;
             this.viewYTrue = y;
 
@@ -18531,6 +18527,11 @@ Most cells eaten   : ${mostCellsEaten}
         },
         setView() {
             this.setScale(LM.playerSize);
+
+            if (LM.playerCells.length) {
+                LM.calculatePlayerMassAndPosition();
+            }
+
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
 
@@ -18548,13 +18549,19 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            if (!defaultmapsettings.cameraSmoothLerp || !this.camX || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
-                this.camX = targetCamX;
-                this.camY = targetCamY;
+            if (LM.playerCells.length || (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1] && spects[window.multiboxPlayerEnabled - 1].playerX)) {
+                if (!this.camX || !this.camY || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
+                    this.camX = targetCamX;
+                    this.camY = targetCamY;
+                } else {
+                    this.camX = (this.camX + 2 * targetCamX) / 3;
+                    this.camY = (this.camY + 2 * targetCamY) / 3;
+                }
             } else {
-                this.camX += (targetCamX - this.camX) * 0.15;
-                this.camY += (targetCamY - this.camY) * 0.15;
+                this.camX = (29 * this.camX + targetCamX) / 30;
+                this.camY = (29 * this.camY + targetCamY) / 30;
             }
+
             LM.playerX = this.camX;
             LM.playerY = this.camY;
         },

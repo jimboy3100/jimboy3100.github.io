@@ -1516,50 +1516,62 @@ class Spect {
     }
 
     calculatePlayerMassAndPosition() {
-
         let size = 0;
         let targetSize = 0;
         let x = 0;
         let y = 0;
-        const playersLength = legendmod.playerCellsMulti.length;
-        for (let length = 0; length < playersLength; length++) {
+        let count = 0;
+
+        for (let length = 0; length < legendmod.playerCellsMulti.length; length++) {
             const n = legendmod.playerCellsMulti[length];
-            size += n.size;
-            targetSize += n.targetSize * n.targetSize;
-            x += n.x / playersLength;
-            y += n.y / playersLength;
+            if (this.playerCellIDs && this.playerCellIDs.indexOf(n.id) !== -1) {
+                size += n.size;
+                targetSize += n.targetSize * n.targetSize;
+                x += n.x;
+                y += n.y;
+                count++;
+            }
         }
-        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
+
+        if (count > 0) {
+            x /= count;
+            y /= count;
+            this.playerX = x;
+            this.playerY = y;
+            this.playerSize = size;
+            this.playerMass = ~~(targetSize / 100);
+        } else if (this.viewX != null && this.viewY != null) {
+            this.playerX = this.viewX;
+            this.playerY = this.viewY;
+        }
+
+        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick);
         if (defaultmapsettings.middleMultiView && legendmod.play) {
-            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
+            legendmod.viewX = (legendmod.viewXTrue + this.playerX + this.fix3x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + this.playerY + this.fix3y) / 2;
         } else if (window.middleMultiViewFlag) {
-            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
-        } else if (window.multiboxPlayerEnabled) {
-            //legendmod.viewX = x;
-            //legendmod.viewY = y;
-            legendmod.viewX = x + this.fix3x;
-            legendmod.viewY = y + this.fix3y;
+            legendmod.viewX = (legendmod.viewXTrue + this.playerX + this.fix3x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + this.playerY + this.fix3y) / 2;
+        } else if (window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
+            legendmod.viewX = this.playerX + this.fix3x;
+            legendmod.viewY = this.playerY + this.fix3y;
         }
-        this.playerX = x;
-        this.playerY = y;
 
         if (!this.openThird) {
-            this.openThird = true
-            window.targetingLeadX = this.playerX
-            window.targetingLeadY = this.playerY
+            this.openThird = true;
+            window.targetingLeadX = this.playerX;
+            window.targetingLeadY = this.playerY;
             legendmod.drawCommander2 = true;
         }
-        this.playerSize = size;
-        this.playerMass = ~~(targetSize / 100);
+
         this.recalculatePlayerMass();
 
-        this.constantrecalculation2()
+        this.constantrecalculation2();
         if (this.timerDifference > 10) {
+            var self = this;
             setTimeout(function () {
-                this.timerDifference = this.timerDifference - 10
-                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) spects[window.multiboxPlayerEnabled - 1].calculatePlayerMassAndPosition()
+                self.timerDifference = self.timerDifference - 10;
+                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) spects[window.multiboxPlayerEnabled - 1].calculatePlayerMassAndPosition();
             }, 10);
         }
     }
