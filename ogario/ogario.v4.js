@@ -6751,6 +6751,33 @@ function thelegendmodproject() {
             }
             $("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
             $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
+            this.updateProfileBadges();
+        },
+        updateProfileBadges() {
+            if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
+            $('.skin-box .mb-badge').remove();
+            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
+
+            for (var slot = 0; slot < maxMb; slot++) {
+                var pIdx = -1;
+                if (slot === 0) {
+                    pIdx = this.selectedProfile;
+                } else if (slot === 1) {
+                    pIdx = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length);
+                } else {
+                    pIdx = (this.selectedProfiles && this.selectedProfiles[slot] != null) ? this.selectedProfiles[slot] : ((this.selectedProfile + slot) % profiles.length);
+                }
+
+                if (pIdx >= 0 && pIdx < profiles.length) {
+                    var $el = $('#profile-' + pIdx);
+                    if ($el.length) {
+                        var $parent = $el.closest('.skin-box');
+                        if ($parent.length) {
+                            $parent.append('<span class="mb-badge" data-slot="' + slot + '" style="position: absolute; top: -4px; right: -4px; background: #00E5FF; color: #000; font-weight: bold; font-size: 11px; border-radius: 50%; width: 18px; height: 18px; line-height: 18px; text-align: center; z-index: 10; pointer-events: none; box-shadow: 0 0 5px rgba(0,229,255,0.8);">' + (slot + 1) + '</span>');
+                        }
+                    }
+                }
+            }
         },
         prevProfile() {
             this.selectedOldProfile = this.selectedProfile;
@@ -7108,6 +7135,7 @@ function thelegendmodproject() {
                     $("#profile-" + e).addClass("selected");
                 }
             }
+            this.updateProfileBadges();
         },
         setUI() {
             /*$("#instant").click(function() {			

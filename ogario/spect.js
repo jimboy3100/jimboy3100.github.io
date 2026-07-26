@@ -262,14 +262,29 @@ class Spect {
         this.playerX = null;
         this.playerY = null;
         this.active = null;
-        for (let cell of Object.values(legendmod.indexedCells)) {
-            if (cell.spectator === this.number) {
-                cell.removeCell();
+
+        if (typeof legendmod !== "undefined" && legendmod) {
+            if (legendmod.playerCellsMulti) {
+                for (var i = legendmod.playerCellsMulti.length - 1; i >= 0; i--) {
+                    var cell = legendmod.playerCellsMulti[i];
+                    if (!cell || cell.spectator === this.number) {
+                        legendmod.playerCellsMulti.splice(i, 1);
+                    }
+                }
             }
-        }
-        for (let cell of Object.values(legendmod.cells)) {
-            if (cell.spectator === this.number) {
-                cell.removeCell();
+            if (legendmod.indexedCells) {
+                for (let cell of Object.values(legendmod.indexedCells)) {
+                    if (cell && cell.spectator === this.number) {
+                        cell.removeCell();
+                    }
+                }
+            }
+            if (legendmod.cells) {
+                for (let cell of Object.values(legendmod.cells)) {
+                    if (cell && cell.spectator === this.number) {
+                        cell.removeCell();
+                    }
+                }
             }
         }
     }
@@ -932,6 +947,10 @@ class Spect {
                 break;
                 //console.log('[SPECT] case 64');
 
+                break;
+            case 56:
+            case 130:
+            case 214:
                 break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
