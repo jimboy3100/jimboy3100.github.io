@@ -1,4 +1,4 @@
-window.OgVer = 3.413;
+window.OgVer = 3.414;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -8089,13 +8089,8 @@ function thelegendmodproject() {
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
                     this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
-                    this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
-                    this.miniMapCtx.shadowBlur = 10;
-                    this.miniMapCtx.shadowOffsetX = 0;
-                    this.miniMapCtx.shadowOffsetY = 0;
                     this.miniMapCtx.fill();
                     this.miniMapCtx.globalAlpha = 1;
-                    this.miniMapCtx.shadowBlur = 0;
                 }
                 if (defaultmapsettings.showMiniMapGuides) {
                     u = Math.round((ogario.playerX + r) * n);
@@ -8173,6 +8168,8 @@ function thelegendmodproject() {
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
                     this.miniMapCtx.fill(),
                     this.teamPlayers.length) {
+                    this.miniMapCtx.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
+                    this.miniMapCtx.textAlign = "center";
                     c = 0;
                     for (; c < this.teamPlayers.length; c++) {
                         this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
