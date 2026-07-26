@@ -1545,7 +1545,7 @@ class Spect {
             this.openThird = true
             window.targetingLeadX = this.playerX
             window.targetingLeadY = this.playerY
-            legendmod.drawCommander2 = true;
+            //legendmod.drawCommander2 = true; // disabled — spawn effects unwanted
         }
         this.playerSize = size;
         this.playerMass = ~~(targetSize / 100);

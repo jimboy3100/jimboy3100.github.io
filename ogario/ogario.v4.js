@@ -18917,8 +18917,8 @@ Most cells eaten   : ${mostCellsEaten}
                 if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
                     this.drawLegendWorldZone(this.ctx);
                 }
-                this.drawCommander(this.ctx);
-                this.drawCommander2(this.ctx);
+                //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
+                //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
                 if (defaultmapsettings.virusesRange) {
                     this.drawVirusesRange(this.ctx, LM.viruses);
                 }
