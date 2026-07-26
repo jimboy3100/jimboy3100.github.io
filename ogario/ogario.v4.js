@@ -17853,7 +17853,8 @@ Most cells eaten   : ${mostCellsEaten}
             var rG = ((cInt >> 8) & 255) / 255;
             var rB = (cInt & 255) / 255;
 
-            var lw = lineWidth || 20;
+            var baseLw = lineWidth || 20;
+            var lw = Math.max(baseLw, 3 / Math.max(viewScale, 0.001));
             var glowSize = defaultmapsettings.borderGlow ? (defaultSettings.borderGlowSize || 15) : 0;
 
             gl.useProgram(this.glBorderProgram);
@@ -19220,7 +19221,7 @@ Most cells eaten   : ${mostCellsEaten}
         drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
 
             ctx.strokeStyle = stroke;
-            ctx.lineWidth = width;
+            ctx.lineWidth = Math.max(width || 15, 2.5 / Math.max(this.scale || 1, 0.001));
 
             ctx.fillStyle = "white";
             ctx.font = "100px sans-serif";
@@ -19461,7 +19462,8 @@ Most cells eaten   : ${mostCellsEaten}
             if (macros) {
                 if (Math.abs(x0 - text) < 1000 || Math.abs(y0 - x1) < 1000) return;
                 ctx.strokeStyle = radius || defaultSettings.bordersColor || "#FF0000";
-                ctx.lineWidth = canvas || defaultSettings.bordersWidth || 20;
+                var baseLw = canvas || defaultSettings.bordersWidth || 20;
+                ctx.lineWidth = Math.max(baseLw, 3 / Math.max(this.scale || 1, 0.001));
                 ctx.beginPath();
                 ctx.moveTo(text + ctx.lineWidth, x1);
                 ctx.lineTo(x0 - ctx.lineWidth, x1);
