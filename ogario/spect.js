@@ -1,24 +1,11 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
-function loadMultiCellSkin(spect) {
-    if (!spect || !spect.nick) return;
-    var pSkin = (typeof application !== "undefined" && application && application.customSkinsMap) ? application.customSkinsMap[spect.nick] : null;
-    if (!pSkin && typeof profiles !== "undefined" && profiles) {
-        for (var i = 0; i < profiles.length; i++) {
-            if (profiles[i] && profiles[i].nick === spect.nick && profiles[i].skinURL) {
-                pSkin = profiles[i].skinURL;
-                break;
-            }
-        }
-    }
-    if (!pSkin && typeof $("#skin") !== "undefined" && $("#skin").length) {
-        pSkin = $("#skin").val();
-    }
-    if (pSkin && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-        core.registerSkin(spect.nick, null, pSkin, null);
-        if (application && application.customSkinsMap) {
-            application.customSkinsMap[spect.nick] = pSkin;
-        }
+function loadMultiCellSkin() {
+
+    if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]) {
+        setTimeout(function () {
+            core.registerSkin(profiles[application.selectedOldProfile].nick, null, profiles[application.selectedOldProfile].skinURL, null);
+        }, 500);
     }
 }
 
@@ -27,8 +14,8 @@ let spects;
 function addBox() {
     let spect = new Spect();
     spect.player = true;
-    legendmod.multiBoxPlayerExists = spect.player;
-    spects.push(spect);
+    legendmod.multiBoxPlayerExists = spect.player
+    spects.unshift(spect);
 }
 
 function addSpectator() {
@@ -116,6 +103,7 @@ class Spect {
         this.playerCellIDs = []
         // Only init the shared array once — don't wipe other units' cells
         if (!legendmod.playerCellsMulti) legendmod.playerCellsMulti = []
+        legendmod.multiBoxPlayerExists = null
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
@@ -142,12 +130,12 @@ class Spect {
         this.targetX = null
         this.targetY = null
         this.playerCellIDs = []
+        legendmod.playerCellsMulti = []
+        legendmod.multiBoxPlayerExists = null
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
         this.playerSize = 0
-        this.playerX = null
-        this.playerY = null
     }
 
     connect() {
@@ -197,15 +185,7 @@ class Spect {
         if (this.protocolKey) {
             message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
         }
-        try {
-            this.handleMessage(message);
-        } catch (e) {
-            if (e instanceof RangeError || e instanceof URIError) {
-                // Buffer overrun or malformed UTF-8 nick — skip silently
-            } else {
-                throw e;
-            }
-        }
+        this.handleMessage(message);
     }
 
     onerror() {
@@ -231,15 +211,6 @@ class Spect {
     }
 
     closeConnection() {
-        // Clear all running intervals to prevent leaks
-        if (this.positionController) {
-            clearInterval(this.positionController);
-            this.positionController = null;
-        }
-        if (this._staticPosInterval) {
-            clearInterval(this._staticPosInterval);
-            this._staticPosInterval = null;
-        }
         if (this.socket) {
             this.socket.onopen = null;
             this.socket.onmessage = null;
@@ -262,40 +233,29 @@ class Spect {
     }
 
     flushCellsData() {
-        this.isSpectateEnabled = false;
+        this.isSpectateEnabled = false
         this.isFreeSpectate = false;
         this.ghostCells = [];
+        //this.indexedCells = {};
+        //this.deletefromObject("indexedCells")
+        //this.cells = [];
+        //this.deleteFromArray("cells")
+        legendmod.playerCellsMulti = [];
         this.playerCellIDs = [];
-        this.playerScore = 0;
-        this.playerSize = 0;
-        this.playerX = null;
-        this.playerY = null;
-        this.active = null;
-
-        if (typeof legendmod !== "undefined" && legendmod) {
-            if (legendmod.playerCellsMulti) {
-                for (var i = legendmod.playerCellsMulti.length - 1; i >= 0; i--) {
-                    var cell = legendmod.playerCellsMulti[i];
-                    if (!cell || cell.spectator === this.number) {
-                        legendmod.playerCellsMulti.splice(i, 1);
-                    }
-                }
-            }
-            if (legendmod.indexedCells) {
-                for (let cell of Object.values(legendmod.indexedCells)) {
-                    if (cell && cell.spectator === this.number) {
-                        cell.removeCell();
-                    }
-                }
-            }
-            if (legendmod.cells) {
-                for (let cell of Object.values(legendmod.cells)) {
-                    if (cell && cell.spectator === this.number) {
-                        cell.removeCell();
-                    }
-                }
+        //this.food = [];
+        //this.viruses = [];
+        //this.deleteFromArray("viruses")
+        for (let cell of Object.values(legendmod.indexedCells)) {
+            if (cell.spectator === this.number) {
+                cell.removeCell();
             }
         }
+        for (let cell of Object.values(legendmod.cells)) {
+            if (cell.spectator === this.number) {
+                cell.removeCell();
+            }
+        }
+
     }
 
     isSocketOpen() {
@@ -407,18 +367,16 @@ class Spect {
     }
 
     sendCursor() {
-        // Bug 6 fix: clear any existing interval before creating a new one
-        if (this.positionController) clearInterval(this.positionController);
         this.positionController = setInterval(() => {
 
-            var isActiveSpect = (typeof spects !== "undefined" && spects) ? window.multiboxPlayerEnabled === (spects.indexOf(this) + 1) : false;
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (isActiveSpect || this.isFreeSpectate || window.multiboxFollowMouse) {
+            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-                this.distX = this.convertX(legendmod.cursorX) - this.playerX;
-                this.distY = this.convertY(legendmod.cursorY) - this.playerY;
-            } else {
+
+                this.distX = this.convertX(legendmod.cursorX) - this.playerX
+                this.distY = this.convertY(legendmod.cursorY) - this.playerY
+            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
                 if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
                 }
@@ -435,7 +393,7 @@ class Spect {
 
     sendFreeSpectate() {
         this.isFreeSpectate = !this.isFreeSpectate
-        if (this.staticX == null) {
+        if (this.staticX === 0) {
             if (this.isFreeSpectate) {
                 this.sendCursor()
             } else {
@@ -461,28 +419,6 @@ class Spect {
     sendSplit() {
         this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
         this.sendAction(17);
-    }
-
-    sendDoubleSplit() {
-        this.sendSplit();
-        setTimeout(() => { this.sendSplit(); }, 40);
-    }
-
-    sendTripleSplit() {
-        this.sendSplit();
-        setTimeout(() => { this.sendSplit(); }, 40);
-        setTimeout(() => { this.sendSplit(); }, 80);
-    }
-
-    sendQuadSplit() {
-        this.sendSplit();
-        setTimeout(() => { this.sendSplit(); }, 40);
-        setTimeout(() => { this.sendSplit(); }, 80);
-        setTimeout(() => { this.sendSplit(); }, 120);
-    }
-
-    sendPlayerFreeze() {
-        this.sendAction(22);
     }
 
     sendNick(nick) {
@@ -513,23 +449,15 @@ class Spect {
         if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {
             return;
         }
-        if ((typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbFreeze) || window.multiboxFrozen) {
-            if (this.frozenX == null) {
-                this.frozenX = this.targetX || x;
-                this.frozenY = this.targetY || y;
-            }
-            x = this.frozenX;
-            y = this.frozenY;
-        } else {
-            this.frozenX = null;
-            this.frozenY = null;
-        }
         const view = this.createView(13);
         view.setUint8(0, 16);
         if (this.player === true && !this.active === true) {
+
             view.setInt32(1, this.targetX, true);
             view.setInt32(5, this.targetY, true);
+            console.log(this.targetX, this.targetY)
         } else {
+
             view.setInt32(1, x, true);
             view.setInt32(5, y, true);
             this.targetX = x;
@@ -659,8 +587,8 @@ class Spect {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
-                    legendmod.viewX = this.viewX;
+                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                    legendmod.viewX = this.viewX
                 }
                 //var x=this.viewX = view.getFloat32(offset, true);
                 //this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
@@ -670,8 +598,8 @@ class Spect {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
-                    legendmod.viewY = this.viewY;
+                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                    legendmod.viewY = this.viewY
                 }
                 //var y=this.viewX = view.getFloat32(offset, true);
                 //this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
@@ -713,8 +641,7 @@ class Spect {
                     if (isMe) {
                         isMe = 'isPlayer'
                     }
-                    let nick;
-                    try { nick = window.decodeURIComponent(window.escape(encode())); } catch (_e) { nick = encode() || ''; }
+                    let nick = window.decodeURIComponent(window.escape(encode()));
                     temp = null;
 
                     if (nick.includes('}')) {
@@ -743,20 +670,20 @@ class Spect {
                     let isFriend = false;
                     let isFBFriend = false;
                     position++;
-                    if (flags & 2) {
-                        try { nick = window.decodeURIComponent(window.escape(encode())); } catch (_e) { nick = encode() || ''; }
+                    if (flags && 2) {
+                        nick = window.decodeURIComponent(window.escape(encode()));
                     }
-                    if (flags & 4) {
+                    if (flags && 4) {
                         id = view.getUint32(offset, true);
                         offset += 4;
                     }
-                    if (flags & 8) {
+                    if (flags && 8) {
                         nick = this.playerNick;
                         id = 'isPlayer';
                         this.playerPosition = position;
 
                     }
-                    if (flags & 16) {
+                    if (flags && 16) {
                         isFriend = true;
                         this.friends++;
                     }
@@ -800,27 +727,20 @@ class Spect {
                 break;
 
             case 85:
-                console.log('[SPECT] Opcode 85 received (captcha legacy ignored)');
-                break;
+                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
+                console.log('[SPECT] case 85');
+                this.terminate()
 
-            case 87:
-                if (typeof window.agarCaptcha !== "undefined" && window.agarCaptcha && typeof window.agarCaptcha.requestCaptchaV3 === "function") {
-                    try {
-                        const self = this;
-                        window.agarCaptcha.requestCaptchaV3("play", function (a) {
-                            if (a) {
-                                const b = self.createView(2 + a.length);
-                                b.setUint8(0, 88);
-                                for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
-                                b.setUint8(a.length + 1, 0);
-                                self.sendMessage(b);
-                            }
-                        });
-                    } catch (e) {
-                        console.log('[SPECT] case 87 error:', e);
-                    }
-                }
                 break;
+            case 87:
+                //(function anonymous(t) {
+                window.agarCaptcha.requestCaptchaV3("play", function (a) {
+                    const b = this.createView(2 + a.length);
+                    b.setUint8(0, 88);
+                    for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
+                    b.setUint8(a.length + 1, 0);
+                    this.sendMessage(b)
+                });
             case 102:
                 //this.sendCursor()
                 //console.log("[SPECT] SendNick with")
@@ -881,7 +801,6 @@ class Spect {
                 break;
             case 226:
                 const ping = view.getUint16(1, true);
-                this.ping = ping;
                 view = this.createView(3);
                 view.setUint8(0, 227);
                 view.setUint16(1, ping);
@@ -913,9 +832,7 @@ class Spect {
                     this.sendSpectate();
                 }
                 if (this.staticX != null && this.staticY != null) {
-                    // Bug 7 fix: store interval ID so it can be cleared on cleanup
-                    if (this._staticPosInterval) clearInterval(this._staticPosInterval);
-                    this._staticPosInterval = setInterval(() => {
+                    setInterval(() => {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 50);
                     if (!this.player) {
@@ -934,13 +851,9 @@ class Spect {
                 this.updateCells(new window.buffer.Buffer(view.buffer), offset);
                 //jimboy3100
                 //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
-                if (this.player && this.active && !this.playerCellIDs.length) {
+                if (this.player && this.active && legendmod.playerCellsMulti.length == 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
-                    // Skip terminate when mbAutoRespawn is on — the 500ms respawn
-                    // timer needs the socket alive to re-spawn the unit.
-                    if (!(typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn)) {
-                        this.terminate();
-                    }
+                    this.terminate()
                 }
                 this.beforecalculation()
                 break;
@@ -965,17 +878,6 @@ class Spect {
                 //console.log('[SPECT] case 64');
 
                 break;
-            case 56:
-            case 130:
-            case 182:
-            case 214:
-            case 240:
-            case 241:
-            case 242:
-            case 243:
-            case 254:
-            case 255:
-                break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
                 break;
@@ -983,44 +885,13 @@ class Spect {
     }
 
     handleSendNick() {
-        var spectIdx = (typeof spects !== "undefined" && spects) ? spects.indexOf(this) : 0;
-        var pIdx = -1;
-        if (typeof application !== "undefined" && application) {
-            if (application.selectedProfiles && application.selectedProfiles[spectIdx + 1] != null) {
-                pIdx = application.selectedProfiles[spectIdx + 1];
-            } else if (spectIdx === 0 && application.selectedOldProfile != null) {
-                pIdx = application.selectedOldProfile;
-            } else if (typeof profiles !== "undefined" && profiles && profiles.length) {
-                pIdx = ((application.selectedProfile || 0) + spectIdx + 1) % profiles.length;
-            }
+        if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow) {
+            this.sendNick(profiles[application.selectedOldProfile].nick)
+            this.nick = profiles[application.selectedOldProfile].nick
+        } else {
+            this.sendNick($("#nick").val())
+            this.nick = $("#nick").val()
         }
-
-        var targetNick = "";
-        var targetSkin = "";
-        if (pIdx >= 0 && typeof profiles !== "undefined" && profiles && profiles[pIdx]) {
-            targetNick = profiles[pIdx].nick || "";
-            targetSkin = profiles[pIdx].skinURL || "";
-            if (profiles[pIdx].color) {
-                this.playerColor = profiles[pIdx].color;
-            }
-        }
-
-        if (!targetNick && typeof $("#nick") !== "undefined" && $("#nick").length) {
-            targetNick = $("#nick").val() || "";
-        }
-        if (!targetSkin && typeof $("#skin") !== "undefined" && $("#skin").length) {
-            targetSkin = $("#skin").val() || "";
-        }
-
-        if (targetNick && targetSkin && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-            core.registerSkin(targetNick, null, targetSkin, null);
-            if (typeof application !== "undefined" && application && application.customSkinsMap) {
-                application.customSkinsMap[targetNick] = targetSkin;
-            }
-        }
-
-        this.sendNick(targetNick);
-        this.nick = targetNick;
     }
 
     GhostFix() {
@@ -1118,12 +989,11 @@ class Spect {
                 //this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
             }
         }*/
-    isInView(x, y, size = 0) {
+    isInView(x, y) {
         let mtp = 4.95,
             w = 1024 / 2 * mtp,
             h = 600 / 2 * mtp;
-        const margin = (size || 0) + 350;
-        return (x + margin) < (this.viewX - w) || (y + margin) < (this.viewY - h) || (x - margin) > (this.viewX + w) || (y - margin) > (this.viewY + h);
+        return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
 
     }
 
@@ -1176,31 +1046,35 @@ class Spect {
                 //found.x = found.x + this.fix3x
                 //found.y = found.y + this.fix3y
                 legendmod.indexedCells[found.id].x += this.fix3x
-                legendmod.indexedCells[found.id].y += this.fix3y
+                legendmod.indexedCells[found.id].y += this.fix3x
                 legendmod.indexedCells[found.id].targetX += this.fix3x
-                legendmod.indexedCells[found.id].targetY += this.fix3y
+                legendmod.indexedCells[found.id].targetY += this.fix3x
             }
         })
     }
 
     setMapOffset(left, top, right, bottom) {
-        var pWidth = Math.abs(right - left);
-        var pHeight = Math.abs(bottom - top);
 
         if (!legendmod.integrity) {
-            if (!this.mapSize || pWidth > this.mapSize) {
-                this.mapSize = pWidth || 14142;
-            }
-            this.mapOffset = this.mapSize / 2;
-        } else {
-            this.mapSize = 14142;
-            this.mapOffset = this.mapSize / 2;
+            this.mapSize = Math.abs((left - right));
+            this.mapOffset = 0
+        } else if (legendmod.integrity) {
+            this.mapSize = 14142; //14142.13562
+            this.mapOffset = this.mapSize / 2
         }
+        if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
+            //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
-        var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
-
-        if (!this.mapOffsetFixed || isFullPacket) {
             if (legendmod.integrity) {
+                /*
+                this.stretchX = this.mapSize - right + left
+                this.stretchY = this.mapSize - bottom + top
+                console.log("stretch", this.stretchX, this.stretchY)
+                right += this.stretchX/2
+                left -=  this.stretchX/2
+                bottom += this.stretchY/2
+                top -=  this.stretchY/2
+                */
                 this.mapOffsetX = this.mapOffset - right;
                 this.mapOffsetY = this.mapOffset - bottom;
                 this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
@@ -1208,24 +1082,26 @@ class Spect {
                 this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
                 this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
             } else {
-                var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
-                if (!this.mapOffsetFixed || pWidth >= currentWidth) {
-                    this.mapOffsetX = this.mapSize / 2;
-                    this.mapOffsetY = this.mapSize / 2;
-                    this.mapMinX = left;
-                    this.mapMinY = top;
-                    this.mapMaxX = right;
-                    this.mapMaxY = bottom;
-                }
+                this.mapOffsetX = this.mapSize / 2
+                this.mapOffsetY = this.mapSize / 2
+                this.mapMinX = left
+                this.mapMinY = top
+                this.mapMaxX = right
+                this.mapMaxY = bottom
             }
+
+            /*
+            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+            */
             if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
             }
-            if (isFullPacket) {
-                this.mapOffsetFixed = true;
-                console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-            }
+            this.mapOffsetFixed = true;
+            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+
+
         }
         if (!legendmod.integrity) {
             if (this.player) {
@@ -1237,9 +1113,7 @@ class Spect {
                 this.sendSpectate();
             }
             if (this.staticX != null && this.staticY != null) {
-                // Bug 7 fix: store interval ID so it can be cleared on cleanup
-                if (this._staticPosInterval) clearInterval(this._staticPosInterval);
-                this._staticPosInterval = setInterval(() => {
+                setInterval(() => {
                     this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                 }, 50);
                 if (!this.player) {
@@ -1251,16 +1125,15 @@ class Spect {
 
     terminate() {
         this.active = null;
-        // Bug 9 fix: only clear focus if THIS spect is the currently active one
-        if (window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
-            window.multiboxPlayerEnabled = null;
-        }
+        window.multiboxPlayerEnabled = null
         if (!legendmod.play) {
             application.showMenu()
         }
-        // Bug 5 fix: close socket and deactivate without splicing the array,
-        // so that this.number stays valid for cell ID namespacing (newID)
-        this.closeConnection();
+        const temp = this.number - 1;
+        if (spects[temp]) {
+            spects[temp].closeConnection()
+            spects = spects.slice(temp + 1);
+        }
     }
 
     handleSubmessage(message) {
@@ -1271,13 +1144,9 @@ class Spect {
                 this.updateCells(message, offset);
                 //jimboy3100
                 //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
-                if (this.player && this.active && !this.playerCellIDs.length) {
+                if (this.player && this.active && legendmod.playerCellsMulti.length === 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
-                    // Skip terminate when mbAutoRespawn is on — the 500ms respawn
-                    // timer needs the socket alive to re-spawn the unit.
-                    if (!(typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn)) {
-                        this.terminate();
-                    }
+                    this.terminate()
                 }
                 break;
             case 64:
@@ -1325,25 +1194,14 @@ class Spect {
         for (length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-            if (victimID && legendmod.playerCellsMulti.includes(victimID)) {
+            if (legendmod.playerCellsMulti.includes(victimID)) {
                 this.removePlayerCell = true;
-                var _pcmIdx = legendmod.playerCellsMulti.indexOf(victimID);
-                if (_pcmIdx !== -1) legendmod.playerCellsMulti.splice(_pcmIdx, 1);
-                var _pciIdx = this.playerCellIDs.indexOf(victimID.id);
-                if (_pciIdx !== -1) {
-                    this.playerCellIDs.splice(_pciIdx, 1);
-                }
-                if (!this.playerCellIDs.length) {
-                    if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbSwitchAfterDeath && legendmod.playerCells && legendmod.playerCells.length) {
-                        window.multiboxPlayerEnabled = null;
-                    }
-                    if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn && this.isSocketOpen()) {
-                        setTimeout(() => {
-                            if (this.isSocketOpen() && !this.playerCellIDs.length) {
-                                this.handleSendNick();
-                            }
-                        }, 500);
-                    }
+                legendmod.playerCellsMulti.splice(legendmod.playerCellsMulti.indexOf(victimID), 1)
+                if (this.playerCellIDs.includes(victimID)) {
+                    console.log('cell ids', this.playerCellIDs)
+                    console.log('erase cell id', victimID)
+                    this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1)
+                    console.log('cells after erase', this.playerCellIDs)
                 }
             }
 
@@ -1376,7 +1234,7 @@ class Spect {
 
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
-                invisible = this.staticX != null ? this.isInView(x, y, size) : false;
+                invisible = this.staticX != null ? this.isInView(x, y) : false;
             }
 
             //test
@@ -1410,30 +1268,30 @@ class Spect {
 
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
-            if (flags & 128) {
+            if (flags && 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
             let color = null
             let skin = null;
             let name = '';
             let accountID = null;
-            if (flags & 2) {
+            if (flags && 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
-            if (flags & 4) {
+            if (flags && 4) {
                 skin = encode();
             }
-            if (flags & 8) {
-                try { name = window.decodeURIComponent(escape(encode())); } catch (_e) { name = encode() || ''; }
+            if (flags && 8) {
+                name = window.decodeURIComponent(escape(encode()));
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
                 }
             }
-            if (flags & 10) {
+            if (flags && 10) {
             }
             const isVirus = flags & 1;
             let isFood = extendedFlags & 1;
@@ -1472,25 +1330,39 @@ class Spect {
             }
             //
 
+            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
+                if (!isFood) {
+                    if (!invisible) invisible = this.isInViewCustom(x, y, size)
+                } else if (isFood) {
+                    if (window.ingameSpectator && legendmod.isSpectateEnabled) {
+                        invisible = true
+                    } else if (!window.fullSpectator) {
+                        if (!invisible) invisible = this.isInViewCustom(x, y, size)
+                    }
+                }
+            }
+            //if (this.player && isVirus && !isFood && !invisible){
+            if (this.player && (isVirus || isFood)) {
+                if (isFood) remove = this.isInViewCustom(x, y, size)
+                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
+
+
+                if (!this.active) {
+                    invisible = true
+                }
+            }
+
             if (isFood && !defaultmapsettings.rainbowFood) {
-                color = defaultSettings.foodColor;
+                color = defaultSettings.foodColor
             }
             if (defaultmapsettings.oneColoredSpectator && !isFood) {
-                color = defaultSettings.foodColor;
+                color = defaultSettings.foodColor
             }
             cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
-                cell.startX = cell.x;
-                cell.startY = cell.y;
-                cell.startSize = cell.size;
-                cell.targetX = x;
-                cell.targetY = y;
-                cell.targetSize = size;
-                cell.updateTime = this.time || Date.now();
-                if (color) cell.color = color;
-                if (skin) cell.skin = skin;
+
             } else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
@@ -1498,39 +1370,33 @@ class Spect {
                 //if (!isFood) {
                 if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
-                        if (legendmod.viruses.indexOf(cell) === -1) {
-                            legendmod.viruses.push(cell);
-                        }
+                        legendmod.viruses.push(cell);
                     }
+                    //legendmod.cells.push(cell);
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        if (this.playerColor) {
-                            cell.color = this.playerColor;
-                        } else if (typeof profiles !== "undefined" && profiles && profiles[application.selectedOldProfile]) {
-                            this.playerColor = profiles[application.selectedOldProfile].color;
-                            cell.color = profiles[application.selectedOldProfile].color;
-                        }
+                        //this.playerColor = color;
+                        this.playerColor = profiles[application.selectedOldProfile].color;
+                        cell.color = profiles[application.selectedOldProfile].color;
 
                         legendmod.playerCellsMulti.push(cell);
                         if (legendmod.playerCellsMulti.length === 1) {
                             console.log('[SPECT] Player cell is active')
                             this.active = true
                             this.sendCursor()
-                            loadMultiCellSkin(this)
+                            loadMultiCellSkin()
+
                         }
                     }
                 } else if (isFood) {
-                    if (legendmod.foodMulti.indexOf(cell) === -1) {
-                        legendmod.foodMulti.push(cell);
-                    }
+                    legendmod.foodMulti.push(cell); //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove && legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
+                    if (!isFood && !remove) legendmod.cells.push(cell);
                 } else {
+                    //if (!remove && (!invisible && isVirus)){
                     if (!remove) {
-                        if (legendmod.cells.indexOf(cell) === -1) {
-                            legendmod.cells.push(cell);
-                        }
+                        legendmod.cells.push(cell);
                     }
                 }
                 legendmod.indexedCells[id] = cell;
@@ -1545,10 +1411,12 @@ class Spect {
             }
             //if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
             if (!cell.isPlayerCell && (cell.targetNick === profiles[application.selectedOldProfile].nick || cell.targetNick === profiles[application.selectedProfile].nick) && cell.targetNick !== "" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size === ~~cell.size) {
-                // Bug 3 fix: check BEFORE setting the flag so recalibration fires once
+                this.openFourth = true
                 if (!this.openFourth) {
-                    this.openFourth = true
                     this.constantrecalculation3(cell.x, cell.y, true)
+                } else {
+                    //this.constantrecalculation3(cell.x, cell.y, false)
+                    //console.log(this.fix3x,this.fix3y)
                 }
             }
             cell.targetX = x;
@@ -1591,115 +1459,84 @@ class Spect {
     }
 
     beforecalculation() {
-        if (this.playerCellIDs && this.playerCellIDs.length) {
+        if (legendmod.playerCellsMulti.length) {
             if (!this.openSecond) {
                 this.openSecond = true;
                 window.multiboxPlayerEnabled = this.number
             }
             this.calculatePlayerMassAndPosition();
-        } else if (window.multiboxPlayerEnabled === this.number) {
-            // Only clear focus if WE are the current unit — don't steal
-            // focus from other living units.
+        } else {
             window.multiboxPlayerEnabled = null
         }
     }
 
     newID(id) {
-        if (!this.ws || this.ws === legendmod.ws) {
-            return id;
-        }
-        return id + this.number * 1000000000;
+        //return id
+        return id + this.number * 1000000000
     }
 
     calculatePlayerMassAndPosition() {
+
         let size = 0;
         let targetSize = 0;
         let x = 0;
         let y = 0;
-        let count = 0;
-
-        if (this.playerCellIDs && this.playerCellIDs.length) {
-            for (let i = 0; i < this.playerCellIDs.length; i++) {
-                const cellId = this.playerCellIDs[i];
-                const n = legendmod.indexedCells[cellId];
-                if (n && n.size && !n.removed) {
-                    size += n.size;
-                    targetSize += (n.targetSize || n.size) * (n.targetSize || n.size);
-                    x += n.x;
-                    y += n.y;
-                    count++;
-                }
-            }
+        const playersLength = legendmod.playerCellsMulti.length;
+        for (let length = 0; length < playersLength; length++) {
+            const n = legendmod.playerCellsMulti[length];
+            size += n.size;
+            targetSize += n.targetSize * n.targetSize;
+            x += n.x / playersLength;
+            y += n.y / playersLength;
         }
-
-        if (count > 0) {
-            x /= count;
-            y /= count;
-            this.playerX = x;
-            this.playerY = y;
-            this.playerSize = size;
-            this.playerMass = ~~(targetSize / 100);
-        } else if (this.viewX != null && this.viewY != null) {
-            this.playerX = this.viewX;
-            this.playerY = this.viewY;
-        }
-
-        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick);
+        window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
         if (defaultmapsettings.middleMultiView && legendmod.play) {
-            legendmod.viewX = (legendmod.viewXTrue + this.playerX + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + this.playerY + this.fix3y) / 2;
+            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
         } else if (window.middleMultiViewFlag) {
-            legendmod.viewX = (legendmod.viewXTrue + this.playerX + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + this.playerY + this.fix3y) / 2;
-        } else if (window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
-            legendmod.viewX = this.playerX + this.fix3x;
-            legendmod.viewY = this.playerY + this.fix3y;
+            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
+        } else if (window.multiboxPlayerEnabled) {
+            //legendmod.viewX = x;
+            //legendmod.viewY = y;
+            legendmod.viewX = x + this.fix3x;
+            legendmod.viewY = y + this.fix3y;
         }
+        this.playerX = x;
+        this.playerY = y;
 
         if (!this.openThird) {
-            this.openThird = true;
-            window.targetingLeadX = this.playerX;
-            window.targetingLeadY = this.playerY;
+            this.openThird = true
+            window.targetingLeadX = this.playerX
+            window.targetingLeadY = this.playerY
             legendmod.drawCommander2 = true;
         }
-
+        this.playerSize = size;
+        this.playerMass = ~~(targetSize / 100);
         this.recalculatePlayerMass();
 
-        this.constantrecalculation2();
+        this.constantrecalculation2()
         if (this.timerDifference > 10) {
-            var self = this;
             setTimeout(function () {
-                self.timerDifference = self.timerDifference - 10;
-                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) spects[window.multiboxPlayerEnabled - 1].calculatePlayerMassAndPosition();
+                this.timerDifference = this.timerDifference - 10
+                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) spects[window.multiboxPlayerEnabled - 1].calculatePlayerMassAndPosition()
             }, 10);
         }
     }
 
     recalculatePlayerMass() {
-        this.playerScore = Math.max(this.playerScore || 0, this.playerMass || 0);
-        if (defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
-            let minS = Infinity, maxS = 0, count = 0;
-            if (legendmod.playerCellsMulti) {
-                for (let i = 0; i < legendmod.playerCellsMulti.length; i++) {
-                    const c = legendmod.playerCellsMulti[i];
-                    if (c && c.size && this.playerCellIDs && this.playerCellIDs.indexOf(c.id) !== -1) {
-                        if (c.size < minS) minS = c.size;
-                        if (c.size > maxS) maxS = c.size;
-                        count++;
-                    }
-                }
-            }
-            if (count > 0) {
-                this.playerMinMass = ~~(minS * minS / 100);
-                this.playerMaxMass = ~~(maxS * maxS / 100);
-                this.playerSplitCells = count;
-            } else {
-                this.playerMinMass = 0;
-                this.playerMaxMass = 0;
-                this.playerSplitCells = 0;
-            }
+        if (this.playerScore = Math.max(this.playerScore, this.playerMass),
+        defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+            const cells = legendmod.playerCellsMulti;
+            const CellLength = cells.length;
+            cells.sort(function (cells, CellLength) {
+                return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
+            });
+            this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
+            this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
+            this.playerSplitCells = CellLength;
         }
-        const mass = legendmod.selectBiggestCell ? (this.playerMaxMass || 0) : (this.playerMinMass || 0);
+        const mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
         this.STE = Math.floor(mass * defaultmapsettings.dominationRate / 4);
         this.MTE = Math.floor(mass * defaultmapsettings.dominationRate / 2);
         this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate);
