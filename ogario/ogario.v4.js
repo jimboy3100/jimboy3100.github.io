@@ -10490,7 +10490,6 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
-            if (this.x === this.targetX && this.y === this.targetY && this.size === this.targetSize && !this.removed) return;
             var time = LM.time - this.time;
             var anim = defaultmapsettings.animation || 80;
             var delay = time / anim;
@@ -16899,8 +16898,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
-                this.camX = (this.camX + LM.viewX) / 2;
-                this.camY = (this.camY + LM.viewY) / 2;
+                this.camX = (this.camX + 2 * LM.viewX) / 3;
+                this.camY = (this.camY + 2 * LM.viewY) / 3;
             } else {
                 this.camX = (29 * this.camX + LM.viewX) / 30;
                 this.camY = (29 * this.camY + LM.viewY) / 30;
