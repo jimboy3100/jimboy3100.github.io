@@ -7930,11 +7930,11 @@ function thelegendmodproject() {
                 return s && (s.width || s.videoWidth);
             }
             if (skinCache[skinMap + '_cached3']) {
-                const today = new Date();
-                if (today.getSeconds() < 30) { //vanilla animated skins
-                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
-                } else if (today.getSeconds() >= 30) {
+                /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
+                if (drawRender._skinHalf) {
                     return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
+                } else {
+                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
                 }
             }
             return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
@@ -10529,7 +10529,12 @@ function thelegendmodproject() {
             }
         };
         this.isInView = function () {
-            return !(this.id <= 0) && !(this.x + this.size + 40 < LM.viewX - LM.canvasWidth / 2 / LM.scale || this.y + this.size + 40 < LM.viewY - LM.canvasHeight / 2 / LM.scale || this.x - this.size - 40 > LM.viewX + LM.canvasWidth / 2 / LM.scale || this.y - this.size - 40 > LM.viewY + LM.canvasHeight / 2 / LM.scale);
+            /* Use precomputed viewport bounds (LM.camMinX/Y/MaxX/Y) instead of 4 divisions per call */
+            return this.id > 0 &&
+                this.x + this.size + 40 > LM.camMinX &&
+                this.y + this.size + 40 > LM.camMinY &&
+                this.x - this.size - 40 < LM.camMaxX &&
+                this.y - this.size - 40 < LM.camMaxY;
         };
         this.isInV = function () {
             if (this.x + this.size < LM.camMinX || this.y + this.size < LM.camMinY || this.x - this.size > LM.camMaxX || this.y - this.size > LM.camMaxY) {
@@ -10637,12 +10642,23 @@ function thelegendmodproject() {
             }
         };
         this.setDrawing = function () {
-            this.optimizedNames = defaultmapsettings.optimizedNames;
-            this.optimizedMass = defaultmapsettings.optimizedMass;
-            this.shortMass = defaultmapsettings.shortMass;
-            this.virMassShots = defaultmapsettings.virMassShots;
-            this.strokeNick = defaultmapsettings.namesStroke;
-            this.strokeMass = defaultmapsettings.massStroke;
+            /* Read from per-frame cached settings (hoisted in renderFrame) */
+            var _ds = drawRender._drawSettings;
+            if (_ds) {
+                this.optimizedNames = _ds.optimizedNames;
+                this.optimizedMass = _ds.optimizedMass;
+                this.shortMass = _ds.shortMass;
+                this.virMassShots = _ds.virMassShots;
+                this.strokeNick = _ds.namesStroke;
+                this.strokeMass = _ds.massStroke;
+            } else {
+                this.optimizedNames = defaultmapsettings.optimizedNames;
+                this.optimizedMass = defaultmapsettings.optimizedMass;
+                this.shortMass = defaultmapsettings.shortMass;
+                this.virMassShots = defaultmapsettings.virMassShots;
+                this.strokeNick = defaultmapsettings.namesStroke;
+                this.strokeMass = defaultmapsettings.massStroke;
+            }
         };
         this.setDrawingScale = function () {
             this.setScale(ogario.viewScale, defaultSettings.namesScale, defaultSettings.massScale, defaultSettings.virMassScale, defaultSettings.strokeScale);
@@ -10672,76 +10688,37 @@ function thelegendmodproject() {
             } catch (e) { }
         };
         this.drawChat = function (context) {
-            if (this.chatCanvas && !(this.size <= 40)) {
+            if (this.chatCanvas && !(this.size <= 40) && this.nick !== "") {
+                /* O(1) lookup via prebuilt _chatMap instead of O(N) chat/command loops */
+                var _chatMap = drawRender._chatLookup;
+                if (!_chatMap) return;
+                var _ce = _chatMap.get(this.nick);
+                if (!_ce) return;
+                var customTxt = _ce.message;
+                var temp = LM.time - _ce.time;
+                if (!customTxt || temp < 0 || temp >= 15000) return;
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
-                var customTxt;
-                var temp;
-                for (var i = 0; i < application.chatHistory.length; i++) {
-                    if (application.chatHistory[i].nick === this.nick && (Date.now() - application.chatHistory[i].time < 15000)) {
-                        if (!application.chatHistory[i].message.includes('emoticon') && !application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
-                            !application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') &&
-                            !application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick != "") {
-                            if (application.chatHistory[i].nick === $('#nick').val() || application.chatHistory[i].nick === application.lastSentNick) {
-                                if (application.chatHistory[i].message.split('&')[1] && application.chatHistory[i].message.split('&')[1].split(';')[0]) {
-                                    application.chatHistory[i].message.replace(application.chatHistory[i].message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
-                                }
-                                //application.chatHistory[i].message = application.chatHistory[i].message.replace("&#x2F;", "");
-                                if (defaultmapsettings.showChatMyOwn) {
-                                    temp = Date.now() - application.chatHistory[i].time
-                                    customTxt = application.chatHistory[i].message
-                                }
-                            } else {
-                                temp = Date.now() - application.chatHistory[i].time
-                                customTxt = application.chatHistory[i].message
-                            }
-                        }
-                    }
+                if (this.redrawChat) {
+                    chatCanvas.setTxt(customTxt);
                 }
-                for (var i = 0; i < application.commandHistory.length; i++) {
-                    if (application.commandHistory[i].nick === this.nick && (Date.now() - application.commandHistory[i].time < 15000)) {
-                        if (this.nick != "") {
-                            if (application.commandHistory[i].nick === $('#nick').val() || application.commandHistory[i].nick === application.lastSentNick) {
-
-                                if (defaultmapsettings.showChatMyOwn) {
-                                    if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
-                                        temp = Date.now() - application.commandHistory[i].time
-                                        customTxt = application.commandHistory[i].message
-                                    }
-                                }
-                            } else {
-                                if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
-                                    temp = Date.now() - application.commandHistory[i].time
-                                    customTxt = application.commandHistory[i].message
-                                }
-                            }
-                        }
-                    }
+                var data = chatCanvas.drawTxt(customTxt);
+                var _dpr2 = window.LM_DPR || 1;
+                var width = ~~(data.width / (this.scale * _dpr2));
+                var height = ~~(data.height / (this.scale * _dpr2));
+                var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
+                if (temp < 2000) {
+                    context.globalAlpha = temp / 2000;
+                } else if (temp > 13000) {
+                    temp = 15000 - temp;
+                    context.globalAlpha = temp / 2000;
                 }
-                if (customTxt) {
-                    if (this.redrawChat) {
-                        chatCanvas.setTxt(customTxt);
-                    }
-                    var data = chatCanvas.drawTxt(customTxt);
-                    var _dpr2 = window.LM_DPR || 1;
-                    var width = ~~(data.width / (this.scale * _dpr2));
-                    var height = ~~(data.height / (this.scale * _dpr2));
-                    var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
-
-                    if (temp < 2000) {
-                        context.globalAlpha = temp / 2000
-                    } else if (temp > 13000) {
-                        temp = 15000 - temp
-                        context.globalAlpha = temp / 2000
-                    }
-
-                    if (width > 1 && height > 1) {
-                        try {
-                            context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                        } catch (e) { }
-                    }
+                if (width > 1 && height > 1) {
+                    try {
+                        context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                    } catch (e) { }
                 }
             }
         };
@@ -11189,7 +11166,7 @@ function thelegendmodproject() {
             //ctx.lineTo(x, y);
             //ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, 0, 6.283185307179586);
             ctx.fill();
             //ctx.closePath();
             //ctx.stroke();
@@ -17260,27 +17237,53 @@ Most cells eaten   : ${mostCellsEaten}
             LM.camMaxX = this.camX + this.canvasWidth * 0.5 * _invScale;
             LM.camMaxY = this.camY + this.canvasHeight * 0.5 * _invScale;
 
-            /* Build chat/command lookup map once per frame (#3) */
+            /* Build chat/command lookup map once per frame — with message filters */
             var _chatMap = this._chatLookup || (this._chatLookup = new Map());
             _chatMap.clear();
             var _now = LM.time;
+            var _myNick = null;
+            try { _myNick = $('#nick').val(); } catch(_e) {}
+            var _lastSentNick = application.lastSentNick;
+            var _showOwn = defaultmapsettings.showChatMyOwn;
             var _ch = application.chatHistory;
             for (var _ci = _ch.length - 1; _ci >= 0; _ci--) {
                 var _ce = _ch[_ci];
                 if (_now - _ce.time < 15000 && _ce.nick && !_chatMap.has(_ce.nick)) {
-                    _chatMap.set(_ce.nick, _ce);
+                    var _msg = _ce.message;
+                    if (_msg && !_msg.includes('emoticon') && !_msg.includes('<img src') &&
+                        !_msg.includes('DosAttack') && !_msg.includes('DosFight') &&
+                        !_msg.includes('DosRun') && !_msg.includes('https://agar.io/sip=151.80.91.73:1511')) {
+                        var _isSelf = (_ce.nick === _myNick || _ce.nick === _lastSentNick);
+                        if (!_isSelf || _showOwn) {
+                            _chatMap.set(_ce.nick, _ce);
+                        }
+                    }
                 }
             }
             var _cmd = application.commandHistory;
             for (var _ci2 = _cmd.length - 1; _ci2 >= 0; _ci2--) {
                 var _ce2 = _cmd[_ci2];
                 if (_now - _ce2.time < 15000 && _ce2.nick) {
-                    var _existing = _chatMap.get(_ce2.nick);
-                    if (!_existing || _ce2.time > _existing.time) {
-                        _chatMap.set(_ce2.nick, _ce2);
+                    var _isSelf2 = (_ce2.nick === _myNick || _ce2.nick === _lastSentNick);
+                    if (!_isSelf2 || _showOwn) {
+                        var _existing = _chatMap.get(_ce2.nick);
+                        if (!_existing || _ce2.time > _existing.time) {
+                            _chatMap.set(_ce2.nick, _ce2);
+                        }
                     }
                 }
             }
+
+            /* Precompute per-frame constants for cell draw (#2, #3) */
+            this._skinHalf = (_now % 60000) >= 30000; /* animated skin frame toggle */
+            this._drawSettings = {
+                optimizedNames: defaultmapsettings.optimizedNames,
+                optimizedMass: defaultmapsettings.optimizedMass,
+                shortMass: defaultmapsettings.shortMass,
+                virMassShots: defaultmapsettings.virMassShots,
+                namesStroke: defaultmapsettings.namesStroke,
+                massStroke: defaultmapsettings.massStroke
+            };
             this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
             this.ctx.save();
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
@@ -18352,7 +18355,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.beginPath();
             //ctx.moveTo(x, y); -----!!!
             //ctx.lineTo(x, y);
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.arc(x, y, radius, 0, 6.283185307179586);
             //ctx.strokeStyle = color;
             ctx.fill();
             //ctx.stroke();
@@ -18528,49 +18531,29 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
+            var _pi2 = 6.283185307179586;
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
-                //distance to target
-                var dis = Math.sqrt((t.targetX - t.x) * (t.targetX - t.x) + (t.targetY - t.y) * (t.targetY - t.y));
-                //angle 
-                var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
-                //if target on left side
+                /* Use atan2 directly → radians, no sqrt/acos/degrees/back-to-radians */
+                var rad = Math.atan2(t.targetX - t.x, t.y - t.targetY);
 
-                if ((t.x - t.targetX > 0 && t.y - t.targetY < 0) || (t.x - t.targetX > 0 && t.y - t.targetY > 0)) {
-                    angl = 180 + (180 - angl);
-                }
-                //console.log(t.x, t.targetX)
-
-                // Store the current context state (i.e. rotation, translation etc..)
-                ctx.save()
-
-                //Convert degrees to radian 
-                var rad = angl * Math.PI / 180;
-
-                //Set the origin to the center of the image
+                ctx.save();
                 ctx.translate(t.x, t.y);
-
-                //Rotate the canvas around the origin
                 ctx.rotate(rad);
 
-                //draw the image    
-                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
-                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
+                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
                 grad.addColorStop(0, stroke);
                 grad.addColorStop(1, stroke + "00");
-
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = alpha;
                 ctx.beginPath();
-                ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
+                ctx.arc(0, 0 - (t.size - r), r, 0, _pi2, false);
                 ctx.fill();
                 ctx.globalAlpha = 1;
-                // Restore canvas state as saved from above
                 ctx.restore();
             }
-
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
