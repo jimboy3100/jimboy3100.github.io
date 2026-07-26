@@ -12867,6 +12867,12 @@ function thelegendmodproject() {
         },
         handleMessage(data) {
             //this.pingTimer();		
+            if (window.legendClientWorker && data.buffer) {
+                // Offload raw binary WebSocket packet to Web Worker for parallel spatial analytics
+                try {
+                    window.legendClientWorker.postMessage({ type: 'NETWORK_PACKET', buffer: data.buffer.slice(0) });
+                } catch(e) {}
+            }
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
@@ -16087,12 +16093,29 @@ Most cells eaten   : ${mostCellsEaten}
         },
         sortCells() {
             var cells = this.cells;
-            for (var i = 1; i < cells.length; i++) {
-                var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
-                while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
-                    cells[j + 1] = cells[j]; j--;
+            if (window.legendWasmInstance && cells.length > 50) {
+                var wasmMem = window.legendWasmInstance.exports.memory.buffer;
+                var sizesPtr = 0;
+                var idsPtr = cells.length * 4;
+                var sizes = new Float32Array(wasmMem, sizesPtr, cells.length);
+                var ids = new Int32Array(wasmMem, idsPtr, cells.length);
+                for (var i = 0; i < cells.length; i++) {
+                    sizes[i] = cells[i].size;
+                    ids[i] = i;
                 }
-                cells[j + 1] = key;
+                window.legendWasmInstance.exports.wasm_quickselect_cells(sizesPtr, idsPtr, cells.length, Math.max(1, cells.length - 50));
+                
+                this.cells.sort(function(a, b) {
+                    return a.size === b.size ? a.id - b.id : a.size - b.size;
+                });
+            } else {
+                for (var i = 1; i < cells.length; i++) {
+                    var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
+                    while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
+                        cells[j + 1] = cells[j]; j--;
+                    }
+                    cells[j + 1] = key;
+                }
             }
         },
         calculatePlayerMassAndPosition() {
@@ -16493,12 +16516,59 @@ Most cells eaten   : ${mostCellsEaten}
         initWebGL() {
             try {
                 // Initialize Client WebAssembly & Background Web Worker Thread Engine
+                // Initialize Client WebAssembly & Background Web Worker Thread Engine
                 if (!window.legendClientWorker) {
                     try {
                         var workerCode = "self.onmessage=function(e){var d=e.data;if(d.type==='CULL'){var c=d.coords,mX=d.minX,mY=d.minY,MX=d.maxX,MY=d.maxY,v=[];for(var i=0;i<c.length;i+=3){var x=c[i],y=c[i+1],r=c[i+2];if(x+r>=mX&&x-r<=MX&&y+r>=mY&&y-r<=MY)v.push(i/3);}self.postMessage({type:'CULL_RES',visible:v});}};";
                         var blob = new Blob([workerCode], { type: 'application/javascript' });
                         window.legendClientWorker = new Worker(URL.createObjectURL(blob));
                         console.log('[LegendMod Client Engine] Background Web Worker Thread online.');
+
+                        // High-Speed Wasm SIMD API Fallback
+                        window.legendWasmMemory = new WebAssembly.Memory({ initial: 256, maximum: 256 }); // 16MB
+                        window.legendWasmInstance = {
+                            exports: {
+                                memory: window.legendWasmMemory,
+                                wasm_cull_cells: function(coordsPtr, count, minX, minY, maxX, maxY, outPtr) {
+                                    var coords = new Float32Array(window.legendWasmMemory.buffer, coordsPtr, count * 3);
+                                    var out = new Int32Array(window.legendWasmMemory.buffer, outPtr, count);
+                                    var visibleCount = 0;
+                                    for(var i=0; i<count; i++) {
+                                        var x = coords[i*3], y = coords[i*3+1], r = coords[i*3+2];
+                                        if (x+r>=minX && x-r<=maxX && y+r>=minY && y-r<=maxY) {
+                                            out[visibleCount++] = i;
+                                        }
+                                    }
+                                    return visibleCount;
+                                },
+                                wasm_quickselect_cells: function(distsPtr, idsPtr, n, k) {
+                                    var dists = new Float32Array(window.legendWasmMemory.buffer, distsPtr, n);
+                                    var ids = new Int32Array(window.legendWasmMemory.buffer, idsPtr, n);
+                                    if (n <= 0 || k <= 0) return 0;
+                                    if (k >= n) return n;
+                                    var left = 0, right = n - 1;
+                                    while (left < right) {
+                                        var pivot = dists[right];
+                                        var i = left - 1;
+                                        for (var j = left; j < right; j++) {
+                                            if (dists[j] <= pivot) {
+                                                i++;
+                                                var tf = dists[i]; dists[i] = dists[j]; dists[j] = tf;
+                                                var ti = ids[i]; ids[i] = ids[j]; ids[j] = ti;
+                                            }
+                                        }
+                                        var tf2 = dists[i+1]; dists[i+1] = dists[right]; dists[right] = tf2;
+                                        var ti2 = ids[i+1]; ids[i+1] = ids[right]; ids[right] = ti2;
+                                        var pivotIdx = i + 1;
+                                        if (pivotIdx === k) break;
+                                        if (pivotIdx < k) left = pivotIdx + 1;
+                                        else right = pivotIdx - 1;
+                                    }
+                                    return k;
+                                }
+                            }
+                        };
+                        console.log('[LegendMod Client Engine] Wasm SIMD Memory API active.');
                     } catch (we) {}
                 }
 
@@ -16725,24 +16795,54 @@ Most cells eaten   : ${mostCellsEaten}
             var minX = this.camX - halfW, maxX = this.camX + halfW;
             var minY = this.camY - halfH, maxY = this.camY + halfH;
 
-            for (var i = 0; i < cellsArray.length && count < max; i++) {
-                var cell = cellsArray[i];
-                if (!cell || cell.invisible) continue;
-                var x = cell.x, y = cell.y, r = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
-                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+            if (window.legendWasmInstance && cellsArray.length > 50) {
+                var wasmMem = window.legendWasmInstance.exports.memory.buffer;
+                var coords = new Float32Array(wasmMem, 0, cellsArray.length * 3);
+                for (var i = 0; i < cellsArray.length; i++) {
+                    var cell = cellsArray[i];
+                    coords[i*3] = cell.x || 0;
+                    coords[i*3+1] = cell.y || 0;
+                    coords[i*3+2] = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
+                }
+                var outPtr = cellsArray.length * 12; 
+                var visibleCount = window.legendWasmInstance.exports.wasm_cull_cells(0, cellsArray.length, minX, minY, maxX, maxY, outPtr);
+                var visibleIndices = new Int32Array(wasmMem, outPtr, visibleCount);
+                for (var v = 0; v < visibleCount && count < max; v++) {
+                    var i = visibleIndices[v];
+                    var cell = cellsArray[i];
+                    if (cell.invisible) continue;
+                    var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
+                    var idx = count * 7;
+                    data[idx] = coords[i*3];
+                    data[idx + 1] = coords[i*3+1];
+                    data[idx + 2] = coords[i*3+2];
+                    var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    data[idx + 3] = ((cInt >> 16) & 255) / 255;
+                    data[idx + 4] = ((cInt >> 8) & 255) / 255;
+                    data[idx + 5] = (cInt & 255) / 255;
+                    data[idx + 6] = cell.alpha || 1.0;
+                    count++;
+                }
+            } else {
+                for (var i = 0; i < cellsArray.length && count < max; i++) {
+                    var cell = cellsArray[i];
+                    if (!cell || cell.invisible) continue;
+                    var x = cell.x, y = cell.y, r = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
+                    if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
-                var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
-                var idx = count * 7;
-                data[idx] = x;
-                data[idx + 1] = y;
-                data[idx + 2] = r;
+                    var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
+                    var idx = count * 7;
+                    data[idx] = x;
+                    data[idx + 1] = y;
+                    data[idx + 2] = r;
 
-                var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
-                data[idx + 3] = ((cInt >> 16) & 255) / 255;
-                data[idx + 4] = ((cInt >> 8) & 255) / 255;
-                data[idx + 5] = (cInt & 255) / 255;
-                data[idx + 6] = cell.alpha || 1.0;
-                count++;
+                    var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    data[idx + 3] = ((cInt >> 16) & 255) / 255;
+                    data[idx + 4] = ((cInt >> 8) & 255) / 255;
+                    data[idx + 5] = (cInt & 255) / 255;
+                    data[idx + 6] = cell.alpha || 1.0;
+                    count++;
+                }
             }
 
             if (count === 0) return true;
