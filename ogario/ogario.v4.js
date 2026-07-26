@@ -18536,24 +18536,24 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (defaultmapsettings.middleMultiView && LM.playerCells.length && LM.playerCellsMulti && LM.playerCellsMulti.length) {
                 var spect = (typeof spects !== "undefined" && spects) ? spects[window.multiboxPlayerEnabled ? (window.multiboxPlayerEnabled - 1) : 0] : null;
-                if (spect && spect.playerX != null) {
+                if (spect && spect.playerX != null && spect.playerX !== 0) {
                     targetCamX = (LM.viewXTrue + spect.playerX) / 2;
                     targetCamY = (LM.viewYTrue + spect.playerY) / 2;
                 }
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
                 var spect = spects[window.multiboxPlayerEnabled - 1];
-                if (spect && spect.playerX != null) {
+                if (spect && spect.playerX != null && spect.playerX !== 0) {
                     targetCamX = spect.playerX;
                     targetCamY = spect.playerY;
                 }
             }
 
-            if (defaultmapsettings.cameraSmoothLerp) {
-                this.camX += (targetCamX - this.camX) * 0.15;
-                this.camY += (targetCamY - this.camY) * 0.15;
-            } else {
+            if (!defaultmapsettings.cameraSmoothLerp || !this.camX || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                 this.camX = targetCamX;
                 this.camY = targetCamY;
+            } else {
+                this.camX += (targetCamX - this.camX) * 0.15;
+                this.camY += (targetCamY - this.camY) * 0.15;
             }
             LM.playerX = this.camX;
             LM.playerY = this.camY;
