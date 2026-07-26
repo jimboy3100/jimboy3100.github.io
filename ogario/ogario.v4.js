@@ -20277,6 +20277,14 @@ function Socket3updateTeamPlayer(Socket3data) {
     application.teamPlayers[h].drawPosition = function () { };
     var tempTime = new Date().getTime();
     application.teamPlayers[h].lastUpdatedTime = tempTime;
+
+    /* Cache skin from chat socket so customSkinsMap[nick] is populated
+     * and the skin image is loaded into customSkinsCache (#skin-fix) */
+    if (Socket3data.skin && Socket3data.nick) {
+        if (!animatedskins[Socket3data.nick] || !defaultmapsettings.vanillaSkins) {
+            application.cacheCustomSkin(Socket3data.nick, Socket3data.color || '#000000', Socket3data.skin);
+        }
+    }
 }
 
 function Socket3updateTeamPlayerPosition(Socket3data) {
