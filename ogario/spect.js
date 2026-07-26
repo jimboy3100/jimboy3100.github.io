@@ -624,8 +624,8 @@ class Spect {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                    legendmod.viewX = this.viewX
+                } else if (this.player && window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
+                    legendmod.viewX = this.viewX;
                 }
                 //var x=this.viewX = view.getFloat32(offset, true);
                 //this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
@@ -635,8 +635,8 @@ class Spect {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                    legendmod.viewY = this.viewY
+                } else if (this.player && window.multiboxPlayerEnabled && window.multiboxPlayerEnabled === (spects.indexOf(this) + 1)) {
+                    legendmod.viewY = this.viewY;
                 }
                 //var y=this.viewX = view.getFloat32(offset, true);
                 //this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
