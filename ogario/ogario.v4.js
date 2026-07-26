@@ -11080,7 +11080,7 @@ function thelegendmodproject() {
                 this.time = LM.time;
                 return;
             }
-            if (delay === 1) {
+            if (delay >= 1) {
                 var removedCells = LM.removedCells.indexOf(this);
                 if (removedCells !== -1) {
                     LM.removedCells.splice(removedCells, 1);
@@ -13789,8 +13789,8 @@ function thelegendmodproject() {
                         s += 5;
                         var g = ~~Math.sqrt(100 * m);
                         this.ghostCells.push({
-                            'x': (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d) - this.mapOffsetX,
-                            'y': (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f) - this.mapOffsetY,
+                            'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
+                            'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
                             'size': g,
                             'mass': m,
                             'inView': this.isInView(d, f, g)
@@ -16494,10 +16494,13 @@ Most cells eaten   : ${mostCellsEaten}
                 var eaterID = this.indexedCells[eaterRawID],
                     victimID = this.indexedCells[victimRawID];
 
-                if (offset += 8, eaterID && victimID) {
-                    victimID.targetX = eaterID.x;
-                    victimID.targetY = eaterID.y;
-                    victimID.targetSize = victimID.size;
+                offset += 8;
+                if (victimID) {
+                    if (eaterID) {
+                        victimID.targetX = eaterID.x;
+                        victimID.targetY = eaterID.y;
+                        victimID.targetSize = victimID.size;
+                    }
                     victimID.time = this.time;
                     victimID.removeCell();
                 }
@@ -18048,6 +18051,11 @@ Most cells eaten   : ${mostCellsEaten}
             }
             */
             for (i = 0; i < LM.cells.length; i++) {
+                if (LM.cells[i].removed) {
+                    LM.cells.splice(i, 1);
+                    i--;
+                    continue;
+                }
 
                 if (defaultmapsettings.jellyPhisycs) {
                     if (LM.cells[i].isInView()) {
