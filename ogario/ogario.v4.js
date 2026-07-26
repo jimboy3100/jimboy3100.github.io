@@ -1,4 +1,4 @@
-window.OgVer = 3.469;
+window.OgVer = 3.470;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16598,6 +16598,8 @@ Most cells eaten   : ${mostCellsEaten}
                     if (this.canvas && this.canvas.parentNode) {
                         this.canvas.parentNode.insertBefore(this.glCanvas, this.canvas);
                     }
+                    /* Make Canvas2D transparent so WebGL shows through gaps */
+                    if (this.canvas) this.canvas.style.background = 'transparent';
                 }
                 var gl = this.glCanvas.getContext('webgl2', { alpha: true, antialias: true, depth: false });
                 if (!gl) return;
@@ -16937,9 +16939,17 @@ Most cells eaten   : ${mostCellsEaten}
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-            /* Clear WebGL overlay once per frame (not per-batch) */
+            /* Clear WebGL with game background color each frame */
             if (this.gl) {
-                this.gl.clearColor(0, 0, 0, 0);
+                var _bg = defaultSettings.bgColor || '#000000';
+                if (this._glBgStr !== _bg) {
+                    var _bgI = parseInt(_bg.replace('#', ''), 16) || 0;
+                    this._glBgR = ((_bgI >> 16) & 255) / 255;
+                    this._glBgG = ((_bgI >> 8) & 255) / 255;
+                    this._glBgB = (_bgI & 255) / 255;
+                    this._glBgStr = _bg;
+                }
+                this.gl.clearColor(this._glBgR, this._glBgG, this._glBgB, 1.0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT);
             }
             //await this.sleep(4); //Sonia5			
@@ -17011,9 +17021,8 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < LM.removedCells.length; i++) {
                 LM.removedCells[i].draw(this.ctx, true);
             }
-            if (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) {
-                this.drawWebGLBatch(LM.cells);
-            }
+            /* drawWebGLBatch(LM.cells) removed — cell circles are drawn by
+               cell.draw(ctx) on Canvas2D; the WebGL batch was invisible and wasted GPU */
             for (i = 0; i < LM.cells.length; i++) {
 
                 if (defaultmapsettings.jellyPhisycs) {
@@ -17914,6 +17923,9 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.foodIsHidden = true;
                 return;
             }
+            /* WebGL2 GPU batch: 1 draw call for all food dots.
+             * Falls back to Canvas2D when custom background covers WebGL layer. */
+            if (this.gl && !defaultSettings.customBackground && this.drawWebGLFoodBatch(LM.food)) return;
             this.drawCachedFood(this.ctx, LM.food, this.scale);
             //return;
             //}
@@ -18171,9 +18183,12 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
             if (!players || !players.length) return;
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
-                return;
-            }
+            /* WebGL ring batch disabled — shader draws filled circles but
+               opponent rings need stroked outlines (Canvas2D ctx.stroke).
+               TODO: implement a ring-outline fragment shader. */
+            // if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
+            //     return;
+            // }
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
@@ -18364,9 +18379,11 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
-                    return;
-                }
+                /* WebGL ghost cell batch disabled — it skipped Canvas2D names/skins.
+                   Ghost cells need the full Canvas2D path for text and skin overlays. */
+                // if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
+                //     return;
+                // }
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
 
