@@ -6692,13 +6692,11 @@ function thelegendmodproject() {
 
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
-            this.updateProfileBadges();
         },
         eraseProfileboxShadow() {
             for (i = 0; i < profiles.length; i++) {
                 $("#profile-" + i).css('box-shadow', '');
             }
-            this.updateProfileBadges();
         },
         setProfileboxShadow() {
             for (i = 0; i < profiles.length; i++) {
@@ -6706,65 +6704,6 @@ function thelegendmodproject() {
             }
             $("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
             $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
-            this.updateProfileBadges();
-        },
-        updateProfileBadges() {
-            if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
-
-            // Inject .mb-badge CSS once (skins/skins.css is not loaded by the game)
-            if (!this._mbBadgeCSSInjected) {
-                this._mbBadgeCSSInjected = true;
-                $("<style type='text/css'>").html(
-                    '.mb-badge{position:absolute!important;width:22px!important;height:22px!important;line-height:19px!important;border-radius:50%!important;font-family:Ubuntu,Roboto,sans-serif!important;font-weight:800!important;font-size:12px!important;text-align:center!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;border:1.5px solid #fff!important;z-index:99!important;pointer-events:none!important;box-sizing:border-box!important;}' +
-                    '.mb-badge-1{background:linear-gradient(135deg,#00E5FF,#0072FF)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(0,229,255,.9)!important;}' +
-                    '.mb-badge-2{background:linear-gradient(135deg,#FF007F,#FF5500)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(255,0,127,.9)!important;}' +
-                    '.mb-badge-3{background:linear-gradient(135deg,#A855F7,#6366F1)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(168,85,247,.9)!important;}' +
-                    '.mb-badge-4{background:linear-gradient(135deg,#10B981,#059669)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(16,185,129,.9)!important;}'
-                ).appendTo('head');
-            }
-
-            $('.mb-badge').remove();
-            $('#mb-assign-label').remove();
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-
-            var profileSlots = {};
-            for (var slot = 0; slot < maxMb; slot++) {
-                var pIdx = -1;
-                if (slot === 0) {
-                    pIdx = this.selectedProfile;
-                } else if (slot === 1) {
-                    pIdx = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length);
-                } else if (slot === 2) {
-                    pIdx = (this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length);
-                } else if (slot === 3) {
-                    pIdx = (this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length);
-                }
-
-                if (pIdx >= 0 && pIdx < profiles.length) {
-                    if (!profileSlots[pIdx]) profileSlots[pIdx] = [];
-                    profileSlots[pIdx].push(slot);
-                }
-            }
-
-            for (var pKey in profileSlots) {
-                var pIdxInt = parseInt(pKey);
-                var slots = profileSlots[pKey];
-                var $anchor = $('#profile-' + pIdxInt);
-                if ($anchor.length) {
-                    // Append to .skin-box parent so border-radius on <a> doesn't clip
-                    var $box = $anchor.closest('.skin-box');
-                    if (!$box.length) $box = $anchor;
-                    $box.css({ 'position': 'relative', 'overflow': 'visible' });
-                    $anchor.css({ 'overflow': 'visible' });
-                    var total = slots.length;
-                    for (var k = 0; k < total; k++) {
-                        var slotNum = slots[k];
-                        var badgeNum = slotNum + 1;
-                        var offset = (k - (total - 1) / 2) * 24;
-                        $box.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="top: 50% !important; left: calc(50% + ' + offset + 'px) !important; transform: translate(-50%, -50%) !important;">' + badgeNum + '</span>');
-                    }
-                }
-            }
         },
         prevProfile() {
             this.selectedOldProfile = this.selectedProfile;
@@ -7122,7 +7061,7 @@ function thelegendmodproject() {
                     $("#profile-" + e).addClass("selected");
                 }
             }
-            this.updateProfileBadges();
+
         },
         setUI() {
             /*$("#instant").click(function() {			

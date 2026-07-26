@@ -185,7 +185,11 @@ class Spect {
         if (this.protocolKey) {
             message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
         }
-        this.handleMessage(message);
+        try {
+            this.handleMessage(message);
+        } catch (e) {
+            if (!(e instanceof RangeError)) console.error('[SPECT] onmessage error:', e);
+        }
     }
 
     onerror() {
@@ -641,7 +645,12 @@ class Spect {
                     if (isMe) {
                         isMe = 'isPlayer'
                     }
-                    let nick = window.decodeURIComponent(window.escape(encode()));
+                    let nick;
+                    try {
+                        nick = window.decodeURIComponent(window.escape(encode()));
+                    } catch (e) {
+                        nick = encode();
+                    }
                     temp = null;
 
                     if (nick.includes('}')) {
@@ -877,6 +886,14 @@ class Spect {
                 break;
                 //console.log('[SPECT] case 64');
 
+                break;
+            case 56:
+            case 130:
+            case 182:
+            case 214:
+            case 240:
+            case 243:
+            case 254:
                 break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
@@ -1268,30 +1285,34 @@ class Spect {
 
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
-            if (flags && 128) {
+            if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
             let color = null
             let skin = null;
             let name = '';
             let accountID = null;
-            if (flags && 2) {
+            if (flags & 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
-            if (flags && 4) {
+            if (flags & 4) {
                 skin = encode();
             }
-            if (flags && 8) {
-                name = window.decodeURIComponent(escape(encode()));
+            if (flags & 8) {
+                try {
+                    name = window.decodeURIComponent(escape(encode()));
+                } catch (e) {
+                    name = encode();
+                }
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
                 }
             }
-            if (flags && 10) {
+            if (flags & 10) {
             }
             const isVirus = flags & 1;
             let isFood = extendedFlags & 1;
