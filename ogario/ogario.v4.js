@@ -15822,8 +15822,20 @@ Most cells eaten   : ${mostCellsEaten}
             legendmod.drawCommander2 = true;
         },
         flushCellsData() {
+            this.time = Date.now(); // prevent stale timestamp on first frame after switch
             this.mapOffsetFixed = false;
             LM.mapOffsetFixed = false;
+            /* Reset camera so the render view doesn't stay at the old server's position.
+             * Without this, the camera drifts slowly (1/30 per frame) to the new view
+             * which causes "ghost" old content when the tab is backgrounded. */
+            if (typeof drawRender !== 'undefined') {
+                drawRender.camX = 0;
+                drawRender.camY = 0;
+                drawRender.camXMulti = 0;
+                drawRender.camYMulti = 0;
+                /* Invalidate cached grid pattern — canvas context may change on reconnect */
+                drawRender._staticGridPattern = null;
+            }
             this.indexedCells = {};
             this.cells = [];
             this.playerCells = [];
