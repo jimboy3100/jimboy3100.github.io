@@ -5099,23 +5099,7 @@ function initializeLM(modVersion) {
     });
     //$('#animation-value').parent().before("1. Type on browser: <b>chrome://settings/system</b> , ensure <i>Use hardware acceleration when available</i> checkbox, is <b>ENABLED</b>. 2. Prefer <b>Opera GX</b><br><br>");
 
-    $('#animation-value').parent().before(
-        '<label style="float:left; padding-left:0; padding-right:0">' + textLanguage.unlockedFPS + '<select id="FrameWorkOption" class="form-control" onchange="changeFrameWork();" required="" data-original-title="" title="" style="display:inline; width: 70%; float:right;" >' +
-        '<option value="4" data-itr="">Limited Rate + 4ms delay (Recommended)</option>' +
-        '<option value="false" data-itr="">Limited Rate + No delay</option>' +
-        '<option value="2" data-itr="">Limited Rate + 2ms delay</option>' +
-        '<option value="8" data-itr="">Limited Rate + 8ms delay</option>' +
-        '<option value="16" data-itr="">Limited Rate + 16ms delay</option>' +
-        '<option value="32" data-itr="">Limited Rate + 32ms delay</option>' +
-        '<option value="64" data-itr="">Limited Rate + 64ms delay</option>' +
-        '<option value="notgood" data-itr="">Unlimited Rate (not recommended)</option>' +
-        '<option value="ultra" data-itr="">Ultra (not recommended - test)</option>' +
-        //'<option value="sophisticated" data-itr="">Sophisticated (not suggested - test)</option>' +
-        '</select></label>');
-    $("#FrameWorkOption").parent().tooltip({
-        title: "Type on chrome: chrome://settings/system , ensure Use hardware acceleration when available checkbox, is ENABLED",
-        placement: "bottom"
-    });
+
 
     $("#videoSkins").parent().parent().tooltip({
         title: "For more info on how to use video skins visit: https://www.legendmod.ml/developers/ videoskins.html",
@@ -6619,49 +6603,12 @@ function doMainTranslation(targetNode, bb) {
     //}
 }
 function changeFrameWork() {
-    if ($('#FrameWorkOption').val() == "true" || $('#FrameWorkOption').val() == "false") {
-        defaultmapsettings.unlockedFPS = true
-    }
-    else if ($('#FrameWorkOption').val() == 2) {
-        defaultmapsettings.unlockedFPS = 2
-    }
-    else if ($('#FrameWorkOption').val() == 4) {
-        defaultmapsettings.unlockedFPS = 4
-    }
-    else if ($('#FrameWorkOption').val() == 8) {
-        defaultmapsettings.unlockedFPS = 8
-    }
-    else if ($('#FrameWorkOption').val() == 16) {
-        defaultmapsettings.unlockedFPS = 16
-    }
-    else if ($('#FrameWorkOption').val() == 32) {
-        defaultmapsettings.unlockedFPS = 32
-    }
-    else if ($('#FrameWorkOption').val() == 64) {
-        defaultmapsettings.unlockedFPS = 64
-    }
-    else if ($('#FrameWorkOption').val() == "ultra") {
-        defaultmapsettings.unlockedFPS = "ultra"
-    }
-    else if ($('#FrameWorkOption').val() == "sophisticated") {
-        defaultmapsettings.unlockedFPS = "sophisticated"
-    }
-    else if ($('#FrameWorkOption').val() == "notgood") {
-        defaultmapsettings.unlockedFPS = false
-    }
+    defaultmapsettings.unlockedFPS = false;
     application.saveSettings(defaultmapsettings, "ogarioSettings");
 }
 
 function changeFrameWorkStart() {
-    if (defaultmapsettings.unlockedFPS == true) {
-        setTimeout(function () { $('#FrameWorkOption').val("true"); }, 10);
-    }
-    if (defaultmapsettings.unlockedFPS) {
-        $('#FrameWorkOption').val(defaultmapsettings.unlockedFPS);
-    }
-    else if (defaultmapsettings.unlockedFPS == false) {
-        defaultmapsettings.unlockedFPS = 4
-    }
+    defaultmapsettings.unlockedFPS = false;
 }
 function LMnoBotsPromo() {
     if (window.LM_IS_MOBILE) return; // skip promo on mobile

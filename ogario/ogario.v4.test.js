@@ -3987,7 +3987,7 @@ var defaultmapsettings = {
     spawnSpecialEffects: false,
     animatedRainbowColor: false,
     autoZoom: false,
-    unlockedFPS: 4, //unlockedFPS: false,
+    unlockedFPS: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -18030,74 +18030,9 @@ Most cells eaten   : ${mostCellsEaten}
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-
-            if (defaultmapsettings.unlockedFPS === true) {
-
-                if (!window.abc) window.abc = 3
-
-                if (!window.abb) window.abb = 2000
-                setTimeout(function () {
-                    if (drawRender.lastRenderingDelay * drawRender.fps > window.abb) {
-                        setTimeout(function () { window.requestAnimationFrame(drawRender.render); }, 4);
-                        drawRender.lastRenderingDelay = 0;
-                        //console.log("cut2")					
-                    }
-                    else {
-                        drawRender.countFps()
-                        drawRender.renderFrame();
-                        for (var i = 0; i < 3; i++) {
-                            if (drawRender.lastRenderingDelay <= window.abc + window.abc * i) {
-                                //if (drawRender.lastRenderingDelay<=10 && drawRender.averageRenderTime && parseFloat(drawRender.averageRenderTime) < 65 - i * 10){
-                                drawRender.countFps()
-                                drawRender.renderFrame();
-                            }
-                        }
-                        drawRender.render()
-                    }
-                }, 0);
-
-            }
-            else {
-                drawRender.countFps()
-                drawRender.renderFrame();
-                if (defaultmapsettings.unlockedFPS === "ultra2") { //old unlimited
-                    //drawRender.render()
-                    setTimeout(function () {
-                        drawRender.render()
-                    }, 0);
-                }
-                else if (!defaultmapsettings.unlockedFPS) {
-                    window.requestAnimationFrame(drawRender.render);
-                }
-                else if (defaultmapsettings.unlockedFPS === 2 || defaultmapsettings.unlockedFPS === 4 || defaultmapsettings.unlockedFPS === 8 || defaultmapsettings.unlockedFPS === 16 || defaultmapsettings.unlockedFPS === 32 || defaultmapsettings.unlockedFPS === 64) {
-                    setTimeout(function () {
-                        window.requestAnimationFrame(drawRender.render);
-                    }, defaultmapsettings.unlockedFPS);
-                }
-                else if (defaultmapsettings.unlockedFPS === "ultra") {
-                    setTimeout(function () {
-                        for (var i = 0; i < 9; i++) {
-
-                            drawRender.countFps()
-                            drawRender.renderFrame();
-                        }
-                        drawRender.render()
-                    }, 0);
-                }
-                else if (defaultmapsettings.unlockedFPS === "sophisticated") {
-                    if (!drawRender.averageRenderTime) {
-                        window.renderDelay = 0;
-                    } else if (drawRender.averageRenderTime < 30 && window.renderDelay > 0) {
-                        window.renderDelay--
-                    } else if (drawRender.averageRenderTime > 60 && window.renderDelay < 64) {
-                        window.renderDelay++
-                    }
-                    setTimeout(function () {
-                        //window.requestAnimationFrame(drawRender.render);
-                        drawRender.render();
-                    }, window.renderDelay);
-                }
-            }
+            drawRender.countFps();
+            drawRender.renderFrame();
+            window.requestAnimationFrame(drawRender.render);
         },
         init() {
             this.setCanvas();
