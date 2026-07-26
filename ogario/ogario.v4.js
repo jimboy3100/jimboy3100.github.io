@@ -1,4 +1,4 @@
-window.OgVer = 3.467;
+window.OgVer = 3.466;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11448,18 +11448,18 @@ function thelegendmodproject() {
                     else {
                         if (defaultmapsettings.videoSkins) {
                             if (node2 && node2IsVideo) {
-                                checkVideos(node2, this.targetNick);
-                                try {
-                                    style.save();
-                                    style.clip();
-                                    if (defaultmapsettings.videoDestorted) {
-                                        var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
-                                    } else {
-                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
-                                    }
-                                    style.restore();
-                                } catch (e) { }
+                                    checkVideos(node2, this.targetNick);
+                                    try {
+                                        style.save();
+                                        style.clip();
+                                        if (defaultmapsettings.videoDestorted) {
+                                            var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
+                                            style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
+                                        } else {
+                                            style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
+                                        }
+                                        style.restore();
+                                    } catch (e) { }
                             }
                         }
                         if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
@@ -11991,17 +11991,17 @@ function thelegendmodproject() {
             /* ── Auto-reconnect on server restart ── */
             var lastWs = this.ws;
             if (lastWs && (lastWs.indexOf('legendmod.ml') !== -1 ||
-                lastWs.indexOf('expanding.land') !== -1 ||
-                lastWs.indexOf('ffa.legendmod') !== -1)) {
+                           lastWs.indexOf('expanding.land') !== -1 ||
+                           lastWs.indexOf('ffa.legendmod') !== -1)) {
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
                 var maxAttempts = 5;
                 if (this._reconnAttempts < maxAttempts) {
                     this._reconnAttempts++;
                     var delay = Math.min(3000 * Math.pow(2, this._reconnAttempts - 1), 30000);
                     var attempt = this._reconnAttempts;
-                    console.log(consoleMsgLM + ' Auto-reconnect attempt ' + attempt + '/' + maxAttempts + ' in ' + (delay / 1000) + 's');
+                    console.log(consoleMsgLM + ' Auto-reconnect attempt ' + attempt + '/' + maxAttempts + ' in ' + (delay/1000) + 's');
                     var self = this;
-                    this._reconnTimer = setTimeout(function () {
+                    this._reconnTimer = setTimeout(function() {
                         console.log(consoleMsgLM + ' Reconnecting to ' + lastWs);
                         if (window.core && window.core.connect) {
                             window.core.connect(lastWs);
@@ -12812,7 +12812,7 @@ function thelegendmodproject() {
             const buffer = window.buffer.Buffer;
             const messageBuffer = new buffer(message.buffer);
             const uncompressedSize = messageBuffer.readUInt32LE(1);
-
+            
             if (window.legendWasmInstance && uncompressedSize < 5000000) {
                 var wasmMem = new Uint8Array(window.legendWasmInstance.exports.memory.buffer);
                 var compressedData = new Uint8Array(message.buffer, 5);
@@ -12880,7 +12880,7 @@ function thelegendmodproject() {
                 // Offload raw binary WebSocket packet to Web Worker for parallel spatial analytics
                 try {
                     window.legendClientWorker.postMessage({ type: 'NETWORK_PACKET', buffer: data.buffer.slice(0) });
-                } catch (e) { }
+                } catch(e) {}
             }
             if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
@@ -12906,7 +12906,7 @@ function thelegendmodproject() {
                 var rawStr = textDecoder.decode(slice);
                 try {
                     return window.decodeURIComponent(window.escape(rawStr));
-                } catch (e) {
+                } catch(e) {
                     return rawStr;
                 }
             };
@@ -13489,7 +13489,7 @@ function thelegendmodproject() {
                         var reconnWs = this.ws;
                         console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
                         this._reconnAttempts = 0;
-                        setTimeout(function () {
+                        setTimeout(function() {
                             if (window.core && window.core.connect) {
                                 window.core.connect(reconnWs);
                             }
@@ -16113,8 +16113,8 @@ Most cells eaten   : ${mostCellsEaten}
                     ids[i] = i;
                 }
                 window.legendWasmInstance.exports.wasm_quickselect_cells(sizesPtr, idsPtr, cells.length, Math.max(1, cells.length - 50));
-
-                this.cells.sort(function (a, b) {
+                
+                this.cells.sort(function(a, b) {
                     return a.size === b.size ? a.id - b.id : a.size - b.size;
                 });
             } else {
@@ -16538,19 +16538,19 @@ Most cells eaten   : ${mostCellsEaten}
                         window.legendWasmInstance = {
                             exports: {
                                 memory: window.legendWasmMemory,
-                                wasm_cull_cells: function (coordsPtr, count, minX, minY, maxX, maxY, outPtr) {
+                                wasm_cull_cells: function(coordsPtr, count, minX, minY, maxX, maxY, outPtr) {
                                     var coords = new Float32Array(window.legendWasmMemory.buffer, coordsPtr, count * 3);
                                     var out = new Int32Array(window.legendWasmMemory.buffer, outPtr, count);
                                     var visibleCount = 0;
-                                    for (var i = 0; i < count; i++) {
-                                        var x = coords[i * 3], y = coords[i * 3 + 1], r = coords[i * 3 + 2];
-                                        if (x + r >= minX && x - r <= maxX && y + r >= minY && y - r <= maxY) {
+                                    for(var i=0; i<count; i++) {
+                                        var x = coords[i*3], y = coords[i*3+1], r = coords[i*3+2];
+                                        if (x+r>=minX && x-r<=maxX && y+r>=minY && y-r<=maxY) {
                                             out[visibleCount++] = i;
                                         }
                                     }
                                     return visibleCount;
                                 },
-                                wasm_quickselect_cells: function (distsPtr, idsPtr, n, k) {
+                                wasm_quickselect_cells: function(distsPtr, idsPtr, n, k) {
                                     var dists = new Float32Array(window.legendWasmMemory.buffer, distsPtr, n);
                                     var ids = new Int32Array(window.legendWasmMemory.buffer, idsPtr, n);
                                     if (n <= 0 || k <= 0) return 0;
@@ -16566,8 +16566,8 @@ Most cells eaten   : ${mostCellsEaten}
                                                 var ti = ids[i]; ids[i] = ids[j]; ids[j] = ti;
                                             }
                                         }
-                                        var tf2 = dists[i + 1]; dists[i + 1] = dists[right]; dists[right] = tf2;
-                                        var ti2 = ids[i + 1]; ids[i + 1] = ids[right]; ids[right] = ti2;
+                                        var tf2 = dists[i+1]; dists[i+1] = dists[right]; dists[right] = tf2;
+                                        var ti2 = ids[i+1]; ids[i+1] = ids[right]; ids[right] = ti2;
                                         var pivotIdx = i + 1;
                                         if (pivotIdx === k) break;
                                         if (pivotIdx < k) left = pivotIdx + 1;
@@ -16575,7 +16575,7 @@ Most cells eaten   : ${mostCellsEaten}
                                     }
                                     return k;
                                 },
-                                wasm_lz4_decompress: function (inPtr, inLen, outPtr, outMaxLen) {
+                                wasm_lz4_decompress: function(inPtr, inLen, outPtr, outMaxLen) {
                                     var mem = new Uint8Array(window.legendWasmMemory.buffer);
                                     var src = inPtr;
                                     var dst = outPtr;
@@ -16601,31 +16601,11 @@ Most cells eaten   : ${mostCellsEaten}
                                         for (var j = 0; j < matchLen; j++) mem[dst++] = mem[matchPos++];
                                     }
                                     return dst - outPtr;
-                                },
-                                wasm_interpolate_cells: function (coordsPtr, targetsPtr, count, delay) {
-                                    var mem = new Float32Array(window.legendWasmMemory.buffer);
-                                    var cIdx = coordsPtr >> 2;
-                                    var tIdx = targetsPtr >> 2;
-                                    for (var i = 0; i < count; i++) {
-                                        var x = mem[cIdx];
-                                        var y = mem[cIdx + 1];
-                                        var size = mem[cIdx + 2];
-                                        var tx = mem[tIdx];
-                                        var ty = mem[tIdx + 1];
-                                        var tsize = mem[tIdx + 2];
-
-                                        mem[cIdx] = x + (tx - x) * delay;
-                                        mem[cIdx + 1] = y + (ty - y) * delay;
-                                        mem[cIdx + 2] = size + (tsize - size) * delay;
-
-                                        cIdx += 3;
-                                        tIdx += 3;
-                                    }
                                 }
                             }
                         };
                         console.log('[LegendMod Client Engine] Wasm SIMD Memory API active.');
-                    } catch (we) { }
+                    } catch (we) {}
                 }
 
                 if (!this.glCanvas) {
@@ -16856,11 +16836,11 @@ Most cells eaten   : ${mostCellsEaten}
                 var coords = new Float32Array(wasmMem, 0, cellsArray.length * 3);
                 for (var i = 0; i < cellsArray.length; i++) {
                     var cell = cellsArray[i];
-                    coords[i * 3] = cell.x || 0;
-                    coords[i * 3 + 1] = cell.y || 0;
-                    coords[i * 3 + 2] = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
+                    coords[i*3] = cell.x || 0;
+                    coords[i*3+1] = cell.y || 0;
+                    coords[i*3+2] = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
                 }
-                var outPtr = cellsArray.length * 12;
+                var outPtr = cellsArray.length * 12; 
                 var visibleCount = window.legendWasmInstance.exports.wasm_cull_cells(0, cellsArray.length, minX, minY, maxX, maxY, outPtr);
                 var visibleIndices = new Int32Array(wasmMem, outPtr, visibleCount);
                 for (var v = 0; v < visibleCount && count < max; v++) {
@@ -16869,9 +16849,9 @@ Most cells eaten   : ${mostCellsEaten}
                     if (cell.invisible) continue;
                     var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
                     var idx = count * 7;
-                    data[idx] = coords[i * 3];
-                    data[idx + 1] = coords[i * 3 + 1];
-                    data[idx + 2] = coords[i * 3 + 2];
+                    data[idx] = coords[i*3];
+                    data[idx + 1] = coords[i*3+1];
+                    data[idx + 2] = coords[i*3+2];
                     var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
                     data[idx + 3] = ((cInt >> 16) & 255) / 255;
                     data[idx + 4] = ((cInt >> 8) & 255) / 255;
@@ -16965,7 +16945,7 @@ Most cells eaten   : ${mostCellsEaten}
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-            window.OgVer = 3.467;
+            window.OgVer = 3.458;
             /* Native C SIMD Render Pipeline (ogario_physics_simd.c AVX2 Suite) */
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
