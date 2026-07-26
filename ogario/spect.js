@@ -1,10 +1,13 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
-function loadMultiCellSkin() {
-
-    if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]) {
+function loadMultiCellSkin(spect) {
+    // Determine profile from mbSlots based on spect unit number
+    var profileIdx = (application.mbSlots && spect && spect.number < application.mbSlots.length)
+        ? application.mbSlots[spect.number] : application.selectedOldProfile;
+    var prof = profiles[profileIdx];
+    if (prof && prof.nick && !application.customSkinsMap[prof.nick]) {
         setTimeout(function () {
-            core.registerSkin(profiles[application.selectedOldProfile].nick, null, profiles[application.selectedOldProfile].skinURL, null);
+            core.registerSkin(prof.nick, null, prof.skinURL, null);
         }, 500);
     }
 }
@@ -902,9 +905,16 @@ class Spect {
     }
 
     handleSendNick() {
-        if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow) {
-            this.sendNick(profiles[application.selectedOldProfile].nick)
-            this.nick = profiles[application.selectedOldProfile].nick
+        // Each spect unit picks its profile from mbSlots: spect #1 → mbSlots[1], spect #2 → mbSlots[2], etc.
+        var profileIdx = null;
+        if (application.mbSlots && this.number < application.mbSlots.length) {
+            profileIdx = application.mbSlots[this.number];
+        } else {
+            profileIdx = application.selectedOldProfile;
+        }
+        if (profiles[profileIdx] && profiles[profileIdx].nick && defaultmapsettings.multiBoxShadow) {
+            this.sendNick(profiles[profileIdx].nick)
+            this.nick = profiles[profileIdx].nick
         } else {
             this.sendNick($("#nick").val())
             this.nick = $("#nick").val()
@@ -1396,16 +1406,21 @@ class Spect {
                     //legendmod.cells.push(cell);
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        //this.playerColor = color;
-                        this.playerColor = profiles[application.selectedOldProfile].color;
-                        cell.color = profiles[application.selectedOldProfile].color;
+                        // Use mbSlots-based profile for this unit's color
+                        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
+                            ? application.mbSlots[this.number] : application.selectedOldProfile;
+                        var _mbProf = profiles[_mbPIdx];
+                        if (_mbProf) {
+                            this.playerColor = _mbProf.color;
+                            cell.color = _mbProf.color;
+                        }
 
                         legendmod.playerCellsMulti.push(cell);
                         if (legendmod.playerCellsMulti.length === 1) {
                             console.log('[SPECT] Player cell is active')
                             this.active = true
                             this.sendCursor()
-                            loadMultiCellSkin()
+                            loadMultiCellSkin(this)
 
                         }
                     }
