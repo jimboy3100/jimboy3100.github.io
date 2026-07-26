@@ -16137,18 +16137,18 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
+            var pWidth = Math.abs(right - left);
+            var pHeight = Math.abs(bottom - top);
+
             if (LM.isLegendWorld) {
                 /* Expanding Land: dynamic sizing from border values */
-                var newMapSize = ~~Math.abs(right - left);
+                var newMapSize = ~~pWidth;
                 this.mapOffset = 0;
-                /* If map size changed (LW resize), reset the fixed flag */
                 if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
 
-                /* Derive tier from actual border size — guarantees tier
-                 * always matches the real map, regardless of map events */
                 var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
@@ -16156,29 +16156,31 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 LM.mapTier = derivedTier;
             } else if (this.integrity || temp2) {
-                /* agar.io: hardcoded 14142 (original behavior) */
+                /* agar.io standard server: hardcoded 14142 */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
             } else {
-                /* other private servers (original behavior) */
-                this.mapSize = Math.abs(left - right);
-                this.mapOffset = 0;
+                /* private or custom servers: expand map size if larger packet arrives */
+                if (!this.mapSize || pWidth > this.mapSize) {
+                    this.mapSize = pWidth;
+                }
+                this.mapOffset = this.mapSize / 2;
             }
 
-            if (!this.mapOffsetFixed) {
-                //console.log(right - left, bottom - top)
-                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-                    //if (this.integrity || this.ws.includes("replay")) {
-                    if (this.integrity || temp2) {
-                        this.mapOffsetX = this.mapOffset - right;
-                        this.mapOffsetY = this.mapOffset - bottom;
+            var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
 
-                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-                    }
-                    else {
+            if (!this.mapOffsetFixed || isFullPacket) {
+                if (this.integrity || temp2) {
+                    this.mapOffsetX = this.mapOffset - right;
+                    this.mapOffsetY = this.mapOffset - bottom;
+
+                    this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                    this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                    this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                    this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                } else {
+                    var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
+                    if (!this.mapOffsetFixed || pWidth >= currentWidth) {
                         this.mapOffsetX = this.mapSize / 2;
                         this.mapOffsetY = this.mapSize / 2;
                         this.mapMinX = left;
@@ -16186,13 +16188,17 @@ Most cells eaten   : ${mostCellsEaten}
                         this.mapMaxX = right;
                         this.mapMaxY = bottom;
                     }
-                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-                    this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
+                }
+                this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+                this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+                if (!this.mapOffsetFixed) {
+                    this.viewX = (right + left) / 2;
+                    this.viewY = (bottom + top) / 2;
+                }
+                if (isFullPacket) {
                     this.mapOffsetFixed = true;
                 }
             }
-            //for SPECT
             this.addSpect();
         },
         addSpect() {

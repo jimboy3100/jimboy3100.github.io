@@ -950,7 +950,14 @@ class Spect {
                 break;
             case 56:
             case 130:
+            case 182:
             case 214:
+            case 240:
+            case 241:
+            case 242:
+            case 243:
+            case 254:
+            case 255:
                 break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
@@ -1160,27 +1167,23 @@ class Spect {
     }
 
     setMapOffset(left, top, right, bottom) {
+        var pWidth = Math.abs(right - left);
+        var pHeight = Math.abs(bottom - top);
 
         if (!legendmod.integrity) {
-            this.mapSize = Math.abs((left - right));
-            this.mapOffset = 0
-        } else if (legendmod.integrity) {
-            this.mapSize = 14142; //14142.13562
-            this.mapOffset = this.mapSize / 2
+            if (!this.mapSize || pWidth > this.mapSize) {
+                this.mapSize = pWidth || 14142;
+            }
+            this.mapOffset = this.mapSize / 2;
+        } else {
+            this.mapSize = 14142;
+            this.mapOffset = this.mapSize / 2;
         }
-        if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
-            //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
+        var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
+
+        if (!this.mapOffsetFixed || isFullPacket) {
             if (legendmod.integrity) {
-                /*
-                this.stretchX = this.mapSize - right + left
-                this.stretchY = this.mapSize - bottom + top
-                console.log("stretch", this.stretchX, this.stretchY)
-                right += this.stretchX/2
-                left -=  this.stretchX/2
-                bottom += this.stretchY/2
-                top -=  this.stretchY/2
-                */
                 this.mapOffsetX = this.mapOffset - right;
                 this.mapOffsetY = this.mapOffset - bottom;
                 this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
@@ -1188,26 +1191,24 @@ class Spect {
                 this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
                 this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
             } else {
-                this.mapOffsetX = this.mapSize / 2
-                this.mapOffsetY = this.mapSize / 2
-                this.mapMinX = left
-                this.mapMinY = top
-                this.mapMaxX = right
-                this.mapMaxY = bottom
+                var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
+                if (!this.mapOffsetFixed || pWidth >= currentWidth) {
+                    this.mapOffsetX = this.mapSize / 2;
+                    this.mapOffsetY = this.mapSize / 2;
+                    this.mapMinX = left;
+                    this.mapMinY = top;
+                    this.mapMaxX = right;
+                    this.mapMaxY = bottom;
+                }
             }
-
-            /*
-            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-            */
             if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
             }
-            this.mapOffsetFixed = true;
-            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-
-
+            if (isFullPacket) {
+                this.mapOffsetFixed = true;
+                console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+            }
         }
         if (!legendmod.integrity) {
             if (this.player) {
