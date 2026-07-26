@@ -6780,6 +6780,9 @@ function thelegendmodproject() {
             // Case 1: already slot 1 → do nothing
             if (idx === this.mbSlots[0]) return;
 
+            // Save current profile's form data BEFORE switching
+            this.setPlayerSettings();
+
             // Check if idx is already in a slot
             var existingSlot = this.mbSlots.indexOf(idx);
             var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
@@ -6798,7 +6801,6 @@ function thelegendmodproject() {
 
             // Sync selectedProfile/selectedOldProfile from mbSlots
             this.syncFromMbSlots();
-            this.setPlayerSettings();
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
