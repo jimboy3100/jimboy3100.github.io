@@ -1,3 +1,107 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * ogario.v4.js — LegendMod Client (OgVer 3.479)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * TABLE OF CONTENTS
+ * ─────────────────
+ * Note: Line numbers are approximate — search by function name for exact location.
+ *
+ * §1  GLOBALS & BOOTSTRAP ................................. ~Line 100
+ *     - Observer, tab ID, Google OAuth, Discord OAuth
+ *     - AWS region map, server config helpers
+ *
+ * §2  SERVER CONFIG & PROTOCOL MAPS ....................... ~Line 830
+ *     - changeregion(), deleteGamemode()
+ *     - Imsolo/Agar2 API maps, protocol detection
+ *
+ * §3  DEFAULT SETTINGS .................................... ~Line 3670
+ *     - defaultSettings {} — UI/visual preferences
+ *     - defaultmapsettings {} — gameplay toggles
+ *     - profiles [] — player profile storage
+ *
+ * §4  APPLICATION OBJECT .................................. ~Line 4880
+ *     Application UI controller — menu, skins, chat, minimap,
+ *     party system, settings, and social integration.
+ *
+ *     §4.1  Properties .................... ~4880   (name, version, sockets, caches)
+ *     §4.2  Player Actions ................ ~5010   (feed, split, dance, macros)
+ *     §4.3  UI Toggle Methods ............. ~5228   (skins, cells, food, grid, etc.)
+ *     §4.4  Display Methods ............... ~5590   (leaderboard, stats, time, chat)
+ *     §4.5  Menu & Settings ............... ~6095   (show/hide, load/save/export/import)
+ *     §4.6  Profile Management ............ ~6300   (load, switch, skin preview)
+ *     §4.7  UI Builder .................... ~6530   (addOption, addSliderBox, setMenu, setUI)
+ *     §4.8  Game Flow ..................... ~7515   (play, spectate, join, spawn, death)
+ *     §4.9  Skin Loading .................. ~7740   (loadSkin, cacheSkin 1-4, animated)
+ *     §4.10 Minimap & HUD ................ ~8040   (drawMiniMap, sectors, cellInfo)
+ *     §4.11 Party System .................. ~8347   (create, join, leave, close)
+ *     §4.12 WebSocket Management .......... ~8426   (getWS, recreateWS, connect, close)
+ *     §4.13 Protocol I/O .................. ~8816   (writeUint32, createView, sendBuffer)
+ *     §4.14 Message Handling .............. ~8865   (handleMessage, readMessage, readPpv7)
+ *     §4.15 Delta/SLG Protocol ............ ~9012   (chat, quadrants, waves, SLG pack/unpack)
+ *     §4.16 Player State Sync ............. ~9156   (sendPlayer*, sendServer*, sendDelta*)
+ *     §4.17 Team Player Tracking .......... ~9657   (check, update, dematrix, vnr)
+ *     §4.18 Chat System ................... ~9849   (read, send, parse, display, mute)
+ *     §4.19 Sound System .................. ~10080  (preload, play, setChatSoundsBtn)
+ *     §4.20 Targeting & Spectator ......... ~10130  (setDebug, setTargeting, changeTarget)
+ *     §4.21 Skin Upload ................... ~10308  (uploadCustomSkin, setupSkinUploadInterface)
+ *     §4.22 Init .......................... ~10463  (init)
+ *
+ * §5  CELL RENDERING (irenderfromagario) .................. ~Line 10517
+ *     Canvas text renderer — nick labels, mass labels, stroke effects.
+ *
+ * §6  CELL OBJECT (ogarbasicassembly) ..................... ~Line 10653
+ *     Cell constructor — properties, moveCell, removeCell, draw,
+ *     isInView, setNick, setScale, jelly physics, contours.
+ *
+ * §7  LEGENDMOD (LM) OBJECT ............................... ~Line 11968
+ *     Game state manager — WebSocket, protocol, cell arrays,
+ *     map bounds, viewport, and the core game loop.
+ *
+ *     §7.1  Properties .................... ~11968  (socket, map, cells, viewport)
+ *     §7.2  WebSocket Connection .......... ~12149  (connect, onOpen, onMessage, onClose)
+ *     §7.3  Send Methods .................. ~12554  (sendBuffer, sendNick, sendPosition, etc.)
+ *     §7.4  Protocol Handling ............. ~13249  (shiftMessage, decompress, handleMessage)
+ *     §7.5  Server Features ............... ~15021  (products, events, potions, stats)
+ *     §7.6  Leaderboard ................... ~15632  (handleLeaderboard, targetingLead)
+ *     §7.7  State Reset ................... ~15824  (flushCellsData, flushSpecsData)
+ *     §7.8  Map & Viewport ................ ~15874  (setMapOffset, isInView, translate)
+ *     §7.9  Cell Update Parsers ........... ~16149  (garixUpdateCells, updateCells)
+ *     §7.10 Cell Management ............... ~16610  (sort, compare, cache, oppColor)
+ *     §7.11 Input & Init .................. ~16873  (getCursorPosition, setZoom, setKeys, init)
+ *
+ * §8  DRAW RENDER OBJECT .................................. ~Line 16979
+ *     Canvas/WebGL rendering engine — grid, borders, cells,
+ *     food, effects, minimap overlays, and the main render loop.
+ *
+ *     §8.1  Properties .................... ~16979  (canvas, ctx, scale, fps, caches)
+ *     §8.2  Canvas Setup .................. ~17006  (setCanvas, resizeCanvas)
+ *     §8.3  WebGL Engine .................. ~17034  (initWebGL, shaders, batching, textures)
+ *     §8.4  Camera ........................ ~17674  (setView, setScale, getZoom)
+ *     §8.5  Main Render Loop .............. ~17719  (renderFrame — the frame entry point)
+ *     §8.6  Helper Drawings ............... ~17945  (splitRange, merge rings, opp rings)
+ *     §8.7  Grid & Backgrounds ............ ~18096  (drawGrid, drawCustomNewGrid, drawCustomBackgrounds)
+ *     §8.8  Map Elements .................. ~18415  (sectors, borders, EL zones, battle area)
+ *     §8.9  Commander Effects ............. ~18454  (drawCommander 1&2, update, reset)
+ *     §8.10 Food & Cells .................. ~18868  (drawFood, drawCachedFood, drawCircle)
+ *     §8.11 Range & Indicator Drawings .... ~18998  (splitRange, oppRings, cursorTracking)
+ *     §8.12 Pie Chart & Areas ............. ~19213  (drawPieChart, battle/danger/safe areas)
+ *     §8.13 Ghost Cells ................... ~19293  (drawGhostCells)
+ *     §8.14 Pre-draw Caches ............... ~19370  (pellet, pelletColors, cellsColors, indicators)
+ *     §8.15 FPS & Render Loop ............. ~19485  (countFps, render, init)
+ *
+ * §9  HOTKEYS SETUP ....................................... ~Line 19553
+ *     Keyboard shortcut configuration and binding.
+ *
+ * §10 SETTINGS UI ......................................... ~Line 19774
+ *     ogarhusettings(), ogarhusettingsImportExportMobile()
+ *
+ * §11 CORE (window.core) .................................. ~Line 20081
+ *     Public API — connect, disconnect, sendNick, setRegion, etc.
+ *
+ * §12 REVERSE TRICK ....................................... ~Line 21072
+ *     reverseTrick {} — automated reverse-split detection.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════════ */
 window.OgVer = 3.479;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
@@ -3670,6 +3774,10 @@ var escapeChar = {
     '\'': '&#39;',
     '/': '&#x2F;'
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * §3  DEFAULT SETTINGS
+ * ═══════════════════════════════════════════════════════════════════════════════ */
 var defaultSettings = {
     checkonetimeLc2: false,
     chatPos: 'bottomleft',
@@ -3984,6 +4092,7 @@ var SkinExplain = [{
     pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
 }
 ];
+/* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
     isAlphaChanged: false,
@@ -4150,6 +4259,7 @@ var defaultmapsettings = {
     //
     FacebookIDs: ''
 };
+/* ─── §3.3 profiles — Player Profile Storage ─── */
 var profiles = [];
 var ogarcopythelb = {
     nick: 'I<3Legendmod',
@@ -4876,6 +4986,11 @@ function thelegendmodproject() {
     //window.legendmod4 = languagetexts;
     window.legendmod5 = defaultmapsettings;
 
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §4  APPLICATION OBJECT
+     *     UI controller — menu, skins, chat, minimap, party, settings, social.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     var application = window.application = {
         name: 'LM express',
         version: 'v1',
@@ -5008,6 +5123,8 @@ function thelegendmodproject() {
             r: []
         },
         replayMode: false,
+
+        /* ─── §4.2 Player Actions ─── */
         getPlayerX() {
 
             return ogario.playerX + ogario.mapOffsetX;
@@ -5225,6 +5342,7 @@ function thelegendmodproject() {
                 app.split();
             }, 120);
         },
+        /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
             if (ogario.vanillaSkins && ogario.customSkins) {
                 ogario.vanillaSkins = false;
@@ -5592,6 +5710,7 @@ function thelegendmodproject() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
+        /* ─── §4.4 Display Methods ─── */
         displayPartyBots() {
             setTimeout(function () {
                 //if (defaultmapsettings.showPartyBots) {                   
@@ -6092,6 +6211,7 @@ function thelegendmodproject() {
                 message.val('');
             }
         },
+        /* ─── §4.5 Menu & Settings ─── */
         showMenu(value) {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
@@ -6295,6 +6415,7 @@ function thelegendmodproject() {
             ogarhusettings();
             //ogarhusettingsImportExportMobile();
         },
+        /* ─── §4.6 Profile Management ─── */
         loadProfiles() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
                 profiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
@@ -6531,6 +6652,7 @@ function thelegendmodproject() {
                 this.eraseProfileboxShadow()
             }
         },
+        /* ─── §4.7 UI Builder ─── */
         addOption(id, name, text, checked) {
             $(id).append('<label><input type=\"checkbox\" id=\"' + name + '\" class=\"js-switch\"> ' + text + '</label>');
             $('#' + name).prop('checked', checked);
@@ -7512,6 +7634,7 @@ function thelegendmodproject() {
                 }
             });
         },
+        /* ─── §4.8 Game Flow ─── */
         play() {
             if (window.noOgarioSocket) {
                 console.log('New Socket 3 data sent');
@@ -7737,6 +7860,7 @@ function thelegendmodproject() {
             this.saveSettings(profiles, 'ogarioPlayerProfiles');
             this.findOwnedVanillaSkin();
         },
+        /* ─── §4.9 Skin Loading ─── */
         loadSkin(img, url, animated) {
             var app = this;
             if (img && Object.keys(img).length > 200) {
@@ -8037,6 +8161,7 @@ function thelegendmodproject() {
             }
             return this.getCachedSkin(this.customSkinsCache, skinUrl);
         },
+        /* ─── §4.10 Minimap & HUD ─── */
         calculateMapSector(t, xgh2, closeExpr = false) {
             if (!ogario.mapOffsetFixed) {
                 return "";
@@ -8344,6 +8469,7 @@ function thelegendmodproject() {
         setAutoHideCellInfo(t) {
             return t <= 40 || ogario.viewScale < 0.5 && t < 550 && t < 25 / ogario.viewScale;
         },
+        /* ─── §4.11 Party System ─── */
         setParty() {
             let value = $('#party-token').val();
             var gmVal = $('#gamemode').val();
@@ -8423,6 +8549,7 @@ function thelegendmodproject() {
         flushChatData() {
             this.chatUsers = {};
         },
+        /* ─── §4.12 WebSocket Management ─── */
         getWS(ws) {
             if (ws) {
                 this.ws = ws;
@@ -8813,6 +8940,7 @@ function thelegendmodproject() {
             }
             return state;
         },
+        /* ─── §4.13 Protocol I/O ─── */
         writeUint32(data, value) {
             for (; !![];) {
                 if ((value & -128) === 0) {
@@ -8862,6 +8990,7 @@ function thelegendmodproject() {
                 }
             }
         },
+        /* ─── §4.14 Message Handling ─── */
         handleMessage(message) {
             this.readMessage(new DataView(message.data));
         },
@@ -9009,6 +9138,7 @@ function thelegendmodproject() {
                 }
             }
         },
+        /* ─── §4.15 Delta/SLG Protocol ─── */
         readDeltaChatMessage(view) {
             if (view.byteLength < 8) return;
             var offset = 1;
@@ -9153,6 +9283,7 @@ function thelegendmodproject() {
             message = message.slice(2);
             return message;
         },
+        /* ─── §4.16 Player State Sync ─── */
         sendPlayerState(state) {
             if (this.isSocketOpen()) {
                 var view = this.createView(1);
@@ -9654,6 +9785,7 @@ function thelegendmodproject() {
 
             }
         },
+        /* ─── §4.17 Team Player Tracking ─── */
         checkPlayerID(id) {
             if (id) {
                 for (let length = 0; length < this.teamPlayers.length; length++) {
@@ -9846,6 +9978,7 @@ function thelegendmodproject() {
                 i += 2, this.parties.push(o);
             }
         },
+        /* ─── §4.18 Chat System ─── */
         readChatMessage(t) {
             if (!defaultmapsettings.disableChat) {
                 var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
@@ -10078,6 +10211,7 @@ function thelegendmodproject() {
         displayChatMutedUsers() {
             this.displayUserList(this.chatMutedUsers, textLanguage.mutedUsers, 'btn-green btn-unmute-user', textLanguage.unmute, 'error');
         },
+        /* ─── §4.19 Sound System ─── */
         preloadChatSounds() {
             this.setMessageSound();
             this.setCommandSound();
@@ -10127,6 +10261,7 @@ function thelegendmodproject() {
                 (audio.play() || nopromise).catch(function () { });
             }
         },
+        /* ─── §4.20 Targeting & Spectator ─── */
         setFBIDs() {
             this.FacebookIDs = defaultmapsettings.FacebookIDs;
             return this.FacebookIDs;
@@ -10305,6 +10440,7 @@ function thelegendmodproject() {
             footerField.push(...xmlBytes);
             return footerField; // This is a standard Array
         },
+        /* ─── §4.21 Skin Upload ─── */
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
             console.log("[LM] Upload Started. Name: " + skinName + " Image Size: " + imageUint8Array.length + " bytes");
 
@@ -10460,6 +10596,7 @@ function thelegendmodproject() {
 
             $('#close-custom-skin').on('click', () => panel.fadeOut(200));
         },
+        /* ─── §4.22 Init ─── */
         init() {
             this.loadSettings();
             this.loadProfiles();
@@ -10514,6 +10651,11 @@ function thelegendmodproject() {
         }
     };
 
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §5  CELL RENDERING — irenderfromagario
+     *     Canvas text renderer for nick labels, mass labels, and stroke effects.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     function irenderfromagario() {
         this.txt = '',
             this.txtCanvas = null,
@@ -10650,6 +10792,12 @@ function thelegendmodproject() {
         return new ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots);
     }
 
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §6  CELL OBJECT — ogarbasicassembly
+     *     Constructor for every cell in the game. Handles position interpolation
+     *     (moveCell), removal (removeCell), rendering (draw), and jelly physics.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     function ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
         this.reset = function(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
             this.id = id;
@@ -11965,6 +12113,12 @@ function thelegendmodproject() {
         //console.log('ProtocolVersion changed to,' + localStorage.getItem("ogarioProtocolVersion"))
         master.protocolVersion = localStorage.getItem("ogarioProtocolVersion");
     }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §7  LEGENDMOD (LM) OBJECT
+     *     Core game state manager — WebSocket connection, protocol parsing,
+     *     cell arrays, map bounds, viewport, leaderboard, and the game loop.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     var LM = {
         integrity: true,
         quadtree: null,
@@ -15912,40 +16066,24 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             if (!this.mapOffsetFixed) {
-                //console.log(right - left, bottom - top)
-                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-                    //if (this.integrity || this.ws.includes("replay")) {
-                    if (this.integrity || temp2) {
-                        this.mapOffsetX = this.mapOffset - right;
-                        this.mapOffsetY = this.mapOffset - bottom;
+                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
+                    var halfW = Math.abs(right - left) / 2 || 7071;
+                    var halfH = Math.abs(bottom - top) / 2 || 7071;
 
-                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-                    }
-                    else {
-                        this.mapOffsetX = this.mapSize / 2;
-                        this.mapOffsetY = this.mapSize / 2;
-                        this.mapMinX = left;
-                        this.mapMinY = top;
-                        this.mapMaxX = right;
-                        this.mapMaxY = bottom;
-                    }
-                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+                    this.mapOffsetX = (left + right) / 2;
+                    this.mapOffsetY = (top + bottom) / 2;
 
-                    /* LEGENDWORLD FIX: 
-                     * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
-                     * during active dynamic map rescaling (Expanding Land).
-                     * This caused violent 25Hz juddering when the map border shrunk!
-                     */
+                    this.mapMinX = -halfW;
+                    this.mapMinY = -halfH;
+                    this.mapMaxX = halfW;
+                    this.mapMaxY = halfH;
+                    this.mapMidX = 0;
+                    this.mapMidY = 0;
+
                     if (!this.mapOffsetFixed) {
-                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
-                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
                         if (this.mapSize === 0 || !LM.isLegendWorld) {
-                            this.viewX = (right + left) / 2;
-                            this.viewY = (bottom + top) / 2;
+                            this.viewX = 0;
+                            this.viewY = 0;
                         }
                     }
 
@@ -16976,6 +17114,12 @@ Most cells eaten   : ${mostCellsEaten}
     window.sendAction = function (action) {
         LM.sendAction(action);
     };
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §8  DRAW RENDER OBJECT
+     *     Canvas/WebGL rendering engine — grid, borders, cells, food, effects,
+     *     minimap overlays, ghost cells, and the main requestAnimationFrame loop.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     window.drawRender = {
         canvas: null,
         ctx: null,
@@ -19318,7 +19462,7 @@ Most cells eaten   : ${mostCellsEaten}
                     this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
                     this.ctx.lineWidth = 4;
                 }
-                for (; length < ghostsCells.length; length++) {
+                for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
                     var x = ghost.x;
@@ -19550,6 +19694,11 @@ Most cells eaten   : ${mostCellsEaten}
         }
 
     }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §9  HOTKEYS SETUP
+     *     Keyboard shortcut configuration and key binding.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     var hotkeysSetup = {
         lastPressedKey: '',
         lastKeyId: '',
@@ -19771,6 +19920,11 @@ Most cells eaten   : ${mostCellsEaten}
         ogario.innerW = innerWidth;
         ogario.innerH = innerHeigth;
     }*/
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §10  SETTINGS UI
+     *      Settings panel builders for desktop and mobile.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     function ogarhusettings() {
         var innerWidth = window.innerWidth;
         var innerHeigth = window.innerHeight;
@@ -20078,6 +20232,12 @@ Most cells eaten   : ${mostCellsEaten}
             return this.readUint32() >>> 3;
         };
     }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * §11  CORE (window.core)
+     *      Public API — connect, disconnect, sendNick, setRegion, etc.
+     *      Called by agar.io's main page script.
+     * ═══════════════════════════════════════════════════════════════════════════ */
     window.core = {
         //'connect': function(url) {
         connect(url) {
@@ -21069,6 +21229,11 @@ function appendLMhiFbPs() {
         MSGNICK = $(".message-nick").last().text().replace(": ", "");
     });
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+ * §12  REVERSE TRICK
+ *      Automated reverse-split detection and targeting.
+ * ═══════════════════════════════════════════════════════════════════════════════ */
 var reverseTrick = {
     biggerEnemy: null,
     biggerEnemyAcc: null,
