@@ -12811,14 +12811,23 @@ function thelegendmodproject() {
         decompressMessage(message) {
             const buffer = window.buffer.Buffer;
             const messageBuffer = new buffer(message.buffer);
-            const readMessage = new buffer(messageBuffer.readUInt32LE(1));
-            LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
-            return readMessage;
-            /*
-                var buffer = new LMbuffer(message['buffer']);
-                var readMessage = new LMbuffer(buffer.readUInt32LE(1));
-                return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
-                */
+            const uncompressedSize = messageBuffer.readUInt32LE(1);
+            
+            if (window.legendWasmInstance && uncompressedSize < 5000000) {
+                var wasmMem = new Uint8Array(window.legendWasmInstance.exports.memory.buffer);
+                var compressedData = new Uint8Array(message.buffer, 5);
+                var compressedSize = compressedData.length;
+                var inPtr = 0;
+                var outPtr = compressedSize + 4; // align output
+                wasmMem.set(compressedData, inPtr);
+                window.legendWasmInstance.exports.wasm_lz4_decompress(inPtr, compressedSize, outPtr, uncompressedSize);
+                var readMessage = new buffer(wasmMem.slice(outPtr, outPtr + uncompressedSize));
+                return readMessage;
+            } else {
+                const readMessage = new buffer(uncompressedSize);
+                LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
+                return readMessage;
+            }
         },
         /* ── Expanding Land: Handle map resize events (opcode 200) ── */
         handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
@@ -16565,6 +16574,33 @@ Most cells eaten   : ${mostCellsEaten}
                                         else right = pivotIdx - 1;
                                     }
                                     return k;
+                                },
+                                wasm_lz4_decompress: function(inPtr, inLen, outPtr, outMaxLen) {
+                                    var mem = new Uint8Array(window.legendWasmMemory.buffer);
+                                    var src = inPtr;
+                                    var dst = outPtr;
+                                    var srcEnd = inPtr + inLen;
+                                    var dstEnd = outPtr + outMaxLen;
+                                    while (src < srcEnd) {
+                                        var token = mem[src++];
+                                        var litLen = token >> 4;
+                                        if (litLen === 15) {
+                                            var l = 0;
+                                            do { l = mem[src++]; litLen += l; } while (l === 255);
+                                        }
+                                        for (var i = 0; i < litLen; i++) mem[dst++] = mem[src++];
+                                        if (src >= srcEnd) break;
+                                        var offset = mem[src++] | (mem[src++] << 8);
+                                        var matchLen = token & 15;
+                                        if (matchLen === 15) {
+                                            var m = 0;
+                                            do { m = mem[src++]; matchLen += m; } while (m === 255);
+                                        }
+                                        matchLen += 4;
+                                        var matchPos = dst - offset;
+                                        for (var j = 0; j < matchLen; j++) mem[dst++] = mem[matchPos++];
+                                    }
+                                    return dst - outPtr;
                                 }
                             }
                         };
