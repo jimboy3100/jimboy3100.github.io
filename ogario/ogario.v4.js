@@ -7749,9 +7749,10 @@ function thelegendmodproject() {
                     img[url] = new Image();
                 }
 
-                img[url].crossOrigin = 'anonymous';
-                img[url].referrerPolicy = 'no-referrer';
-                img[url].referrer = 'no-referrer';
+                var isMiniclip = url && (url.includes("miniclippt.com") || url.includes("miniclip.com") || url.includes("agario"));
+                if (!isMiniclip) {
+                    img[url].crossOrigin = 'anonymous';
+                }
                 img[url].onload = function () {
                     if (this.complete &&
                         this.width &&
@@ -7759,60 +7760,36 @@ function thelegendmodproject() {
                         this.width <= 2000 && this.width > 0 &&
                         this.height <= 2000 && this.height > 0) {
 
-
                         if (animated === "animatedSkins") {
                             app.cacheQueueSkinAnimated.push(url);
-                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated)
-                            app.cacheQueue2.push(url)
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
+                            app.cacheQueue2.push(url);
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
                         } else if (animated !== "fbSkin") {
                             app.cacheQueue.push(url);
-                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
-                            app.cacheQueue2.push(url)
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
-                            if (animated === true) app.cacheQueue3.push(url)
-                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
+                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
+                            app.cacheQueue2.push(url);
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
+                            if (animated === true) app.cacheQueue3.push(url);
+                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
                         } else if (animated === "fbSkin") {
-                            app.cacheQueue4.push(url)
-                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)
+                            app.cacheQueue4.push(url);
+                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
                         }
-
-                        //26/6/2020
-                        //if (this && this.includes && (this.includes(".mp4") || this.includes(".webm") || this.includes(".ogv"))) {
-                        //this.style.borderRadius = "50%";
-
-                        //}
-                        //
-                        /*
-                    ((app.cacheQueue.push(url),
-                            1 == app.cacheQueue.length &&
-                            app.cacheSkin(app.customSkinsCache, animated)),
-                        (app.cacheQueue2.push(url),
-                            1 == app.cacheQueue2.length &&
-                            app.cacheSkin2(app.customSkinsCache)),
-                        (animated == true  && app.cacheQueue3.push(url),
-                            1 == app.cacheQueue3.length &&
-                            app.cacheSkin3(app.customSkinsCache))
-                        (animated == "fbSkin" && app.cacheQueue4.push(url),
-                            1 == app.cacheQueue4.length &&
-                            app.cacheSkin4(app.customSkinsCache))								
-                    );*/
                     }
-
-                },
-                    img[url].onerror = function () {
-                        console.warn("[LM] Failed to load skin image: " + url);
-                        if (this.crossOrigin) {
-                            var retryImg = new Image();
-                            retryImg.onload = function () {
-                                img[url] = retryImg;
-                                if (app && app.customSkinsCache) {
-                                    app.customSkinsCache[url] = retryImg;
-                                }
-                            };
-                            retryImg.src = url;
+                };
+                img[url].onerror = function () {
+                    console.warn("[LM] Failed to load skin image (retrying without CORS): " + url);
+                    var retryImg = new Image();
+                    retryImg.onload = function () {
+                        img[url] = retryImg;
+                        if (app && app.customSkinsCache) {
+                            app.customSkinsCache[url] = retryImg;
+                            app.customSkinsCache[url + "_cached"] = retryImg;
                         }
                     };
+                    retryImg.src = url;
+                };
                 img[url].src = url;
             }
         },
