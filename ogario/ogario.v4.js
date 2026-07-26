@@ -5890,7 +5890,7 @@ function thelegendmodproject() {
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
                                 '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
                                 + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://www.legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
-                            var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
+                            var teamboardskin = this.customSkinsCache[this.top5[o].skinURL + "_cached2"];
                             if (!teamboardskin) {
                                 teamboardskin = new Image();
                                 teamboardskin.crossOrigin = 'anonymous';
@@ -7816,7 +7816,8 @@ function thelegendmodproject() {
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached"] = i;
+                    this.customSkinsCache[e + "_cached"] = new Image;
+                    this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                     // Upload pre-drawn skin to WebGL2 GPU texture array
                     if (window.drawRender && window.drawRender.uploadSkinTexture) {
                         window.drawRender.uploadSkinTexture(e, i);
@@ -7840,7 +7841,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached2"] = i;
+                    this.customSkinsCache[e + "_cached2"] = new Image;
+                    this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
                     this.cacheSkin2(this.customSkinsCache);
                 }
             }
@@ -7865,7 +7867,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached3"] = i;
+                    this.customSkinsCache[e + "_cached3"] = new Image;
+                    this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
                     this.cacheSkin3(this.customSkinsCache);
                 }
             }
@@ -7890,7 +7893,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached4"] = i;
+                    this.customSkinsCache[e + "_cached4"] = new Image;
+                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
                     this.cacheSkin4(this.customSkinsCache);
                 }
             }
@@ -7915,7 +7919,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached" + skinCache] = i;
+                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
+                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
