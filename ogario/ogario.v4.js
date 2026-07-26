@@ -1,4 +1,4 @@
-window.OgVer = 3.460;
+window.OgVer = 3.461;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -17678,49 +17678,43 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }*/
         },
-        /* Native C AVX2 Color-Bucketed Path Batching & Hardware Rect Acceleration (ogario_physics_simd.c -> simd_bucket_food_by_color_avx2) */
+        /* Restore Original Ultra-Fast Hardware Round Line-Cap Primitives (moveTo/lineTo/stroke) */
         drawCachedFood(ctx, food, scale, reset) {
             if (!food || !food.length) return;
             ctx.save();
 
             var radius = (food[0].size || 10) + defaultSettings.foodSize;
+            ctx.lineWidth = radius * 2;
+            ctx.lineCap = 'round';
+
+            var _cullingScale = scale || 1;
+            var _halfW = (this.canvasWidth || 1920) / _cullingScale / 2;
+            var _halfH = (this.canvasHeight || 1080) / _cullingScale / 2;
+            var _vMinX = (this.camX || 0) - _halfW, _vMaxX = (this.camX || 0) + _halfW;
+            var _vMinY = (this.camY || 0) - _halfH, _vMaxY = (this.camY || 0) + _halfH;
 
             if (!defaultmapsettings.rainbowFood) {
-                ctx.fillStyle = defaultSettings.foodColor;
+                ctx.strokeStyle = defaultSettings.foodColor;
                 ctx.beginPath();
-                if (scale < 0.12) {
-                    for (var i = 0; i < food.length; i++) {
-                        var f = food[i];
-                        if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
-                        if (!f.invisible) ctx.rect(f.x - radius, f.y - radius, radius * 2, radius * 2);
-                    }
-                } else {
-                    for (var i = 0; i < food.length; i++) {
-                        var f = food[i];
-                        if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
-                        if (!f.invisible) {
-                            ctx.moveTo(f.x + radius, f.y);
-                            ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
-                        }
+                for (var i = 0; i < food.length; i++) {
+                    var f = food[i];
+                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
+                    if (!f.invisible) {
+                        if (f.x < _vMinX || f.x > _vMaxX || f.y < _vMinY || f.y > _vMaxY) continue;
+                        ctx.moveTo(f.x, f.y);
+                        ctx.lineTo(f.x, f.y);
                     }
                 }
-                ctx.fill();
+                ctx.stroke();
             } else {
                 if (!this._foodColorBuckets) this._foodColorBuckets = {};
                 var buckets = this._foodColorBuckets;
                 for (var key in buckets) buckets[key].length = 0;
 
-                var _cullingScale = scale || 1;
-                var _halfW = (this.canvasWidth || 1920) / _cullingScale / 2;
-                var _halfH = (this.canvasHeight || 1080) / _cullingScale / 2;
-                var _vMinX = (this.camX || 0) - _halfW, _vMaxX = (this.camX || 0) + _halfW;
-                var _vMinY = (this.camY || 0) - _halfH, _vMaxY = (this.camY || 0) + _halfH;
-
                 for (var i = 0; i < food.length; i++) {
                     var f = food[i];
                     if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
                     if (!f.invisible) {
-                        /* Camera Frustum Bounds Culling for Zero-Lag Smooth Zooming */
                         if (f.x < _vMinX || f.x > _vMaxX || f.y < _vMinY || f.y > _vMaxY) continue;
                         var c = f.color || "#ffffff";
                         if (!buckets[c]) buckets[c] = [];
@@ -17728,26 +17722,18 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                var isLowZoom = scale < 0.12;
                 for (var color in buckets) {
                     var list = buckets[color];
                     if (!list || !list.length) continue;
 
-                    ctx.fillStyle = color;
+                    ctx.strokeStyle = color;
                     ctx.beginPath();
-                    if (isLowZoom) {
-                        for (var j = 0; j < list.length; j++) {
-                            var item = list[j];
-                            ctx.rect(item.x - radius, item.y - radius, radius * 2, radius * 2);
-                        }
-                    } else {
-                        for (var j = 0; j < list.length; j++) {
-                            var item = list[j];
-                            ctx.moveTo(item.x + radius, item.y);
-                            ctx.arc(item.x, item.y, radius, 0, 2 * Math.PI);
-                        }
+                    for (var j = 0; j < list.length; j++) {
+                        var item = list[j];
+                        ctx.moveTo(item.x, item.y);
+                        ctx.lineTo(item.x, item.y);
                     }
-                    ctx.fill();
+                    ctx.stroke();
                 }
             }
             ctx.restore();
