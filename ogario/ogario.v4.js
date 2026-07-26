@@ -18043,26 +18043,15 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (!legendmod.gridPic.complete || !legendmod.gridPic.width) return;
 
-            var vScale = legendmod.viewScale || this.scale || 1;
-            var minX = this.camX - this.canvasWidth / (2 * vScale);
-            var maxX = this.camX + this.canvasWidth / (2 * vScale);
-            var minY = this.camY - this.canvasHeight / (2 * vScale);
-            var maxY = this.camY + this.canvasHeight / (2 * vScale);
-
-            var mapMinX = (typeof legendmod.mapMinX !== "undefined") ? legendmod.mapMinX : -7071;
-            var mapMinY = (typeof legendmod.mapMinY !== "undefined") ? legendmod.mapMinY : -7071;
-            var mapMaxX = (typeof legendmod.mapMaxX !== "undefined") ? legendmod.mapMaxX : 7071;
-            var mapMaxY = (typeof legendmod.mapMaxY !== "undefined") ? legendmod.mapMaxY : 7071;
+            var mapMinX = (typeof legendmod.mapMinX !== "undefined" && legendmod.mapMinX !== 0) ? legendmod.mapMinX : -7071;
+            var mapMinY = (typeof legendmod.mapMinY !== "undefined" && legendmod.mapMinY !== 0) ? legendmod.mapMinY : -7071;
+            var mapMaxX = (typeof legendmod.mapMaxX !== "undefined" && legendmod.mapMaxX !== 0) ? legendmod.mapMaxX : 7071;
+            var mapMaxY = (typeof legendmod.mapMaxY !== "undefined" && legendmod.mapMaxY !== 0) ? legendmod.mapMaxY : 7071;
 
             var mapW = (mapMaxX - mapMinX) || 14142;
             var mapH = (mapMaxY - mapMinY) || 14142;
 
-            var sx = ((minX - mapMinX) / mapW) * legendmod.gridPic.width;
-            var sy = ((minY - mapMinY) / mapH) * legendmod.gridPic.height;
-            var sw = ((maxX - minX) / mapW) * legendmod.gridPic.width;
-            var sh = ((maxY - minY) / mapH) * legendmod.gridPic.height;
-
-            this.ctx.drawImage(legendmod.gridPic, sx, sy, sw, sh, minX, minY, maxX - minX, maxY - minY);
+            this.ctx.drawImage(legendmod.gridPic, mapMinX, mapMinY, mapW, mapH);
         },
         /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
         drawGrid(ctx) {
