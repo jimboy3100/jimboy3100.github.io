@@ -895,37 +895,24 @@ class Spect {
         }
     }
 
-    getX(x) {
-        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
-            return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
-
-            /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
-            else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-            else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
-            //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time
-            //return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
-        }
+    getX(x) { // Converts raw server space x ([0, mapSize]) to world space ([-halfW, +halfW])
+        var mapOfsX = (this.mapOffsetX !== undefined && this.mapOffsetX !== null) ? this.mapOffsetX : 7071;
+        return (x - mapOfsX) * (this.fixX || 1) + (this.fix3x || 0);
     }
 
-    getY(y) {
-        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
-            return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
-
-            /*if (!window.multifixOffset)
-            else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
-            else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
-            //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
-        }
+    getY(y) { // Converts raw server space y ([0, mapSize]) to world space ([-halfW, +halfW])
+        var mapOfsY = (this.mapOffsetY !== undefined && this.mapOffsetY !== null) ? this.mapOffsetY : 7071;
+        return (y - mapOfsY) * (this.fixY || 1) + (this.fix3y || 0);
     }
 
-    convertX(x) { //is used only for SendPosition
-        return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
-        //return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX)
+    convertX(x) { // Converts world space x ([-halfW, +halfW]) to raw server space ([0, mapSize])
+        var mapOfsX = (legendmod.mapOffsetX !== undefined && legendmod.mapOffsetX !== null) ? legendmod.mapOffsetX : (this.mapOffsetX || 7071);
+        return ~~((x + mapOfsX) * this.fixX - (this.fix3x || 0));
     }
 
-    convertY(y) {
-        //return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY)
-        return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
+    convertY(y) { // Converts world space y ([-halfW, +halfW]) to raw server space ([0, mapSize])
+        var mapOfsY = (legendmod.mapOffsetY !== undefined && legendmod.mapOffsetY !== null) ? legendmod.mapOffsetY : (this.mapOffsetY || 7071);
+        return ~~((y + mapOfsY) * this.fixY - (this.fix3y || 0));
     }
 
     constantrecalculation2() {
