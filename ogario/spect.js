@@ -839,6 +839,7 @@ class Spect {
                 break;
             case 226:
                 const ping = view.getUint16(1, true);
+                this.ping = ping;
                 view = this.createView(3);
                 view.setUint8(0, 227);
                 view.setUint16(1, ping);

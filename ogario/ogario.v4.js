@@ -5927,7 +5927,14 @@ function thelegendmodproject() {
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-                    if (legendmod.integrity && drawRender.ping) t += ' | PING: ' + drawRender.ping;
+                    var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects[window.multiboxPlayerEnabled - 1]) ? spects[window.multiboxPlayerEnabled - 1] : null;
+                    var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
+                    if (currentPing) t += ' | PING: ' + currentPing;
+                    if (window.multiboxPlayerEnabled) {
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                    } else if (legendmod.multiBoxPlayerExists) {
+                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
+                    }
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
                     if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
