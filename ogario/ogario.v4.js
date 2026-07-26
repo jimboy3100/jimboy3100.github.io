@@ -12866,6 +12866,7 @@ function thelegendmodproject() {
             }
         },
         sendNick(nick) {
+            window.multiboxPlayerEnabled = null;
             /* LW: Don't send spawn if already alive — flushCellsData clears
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
@@ -18594,18 +18595,6 @@ Most cells eaten   : ${mostCellsEaten}
         },
         setView() {
             this.setScale(LM.playerSize);
-
-            // Auto-switch active focus if current focused slot is dead
-            var activeSlotIsDead = false;
-            if (window.multiboxPlayerEnabled === null) {
-                if (!LM.playerCells || !LM.playerCells.length) activeSlotIsDead = true;
-            } else if (typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
-                var activeSpect = spects[window.multiboxPlayerEnabled - 1];
-                if (!activeSpect.playerCellIDs || !activeSpect.playerCellIDs.length) activeSlotIsDead = true;
-            }
-            if (activeSlotIsDead && typeof LM.switchToNextLivingUnit === "function") {
-                LM.switchToNextLivingUnit();
-            }
 
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
