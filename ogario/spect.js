@@ -114,8 +114,8 @@ class Spect {
         this.targetX = null
         this.targetY = null
         this.playerCellIDs = []
-        legendmod.playerCellsMulti = []
-        legendmod.multiBoxPlayerExists = null
+        // Only init the shared array once — don't wipe other units' cells
+        if (!legendmod.playerCellsMulti) legendmod.playerCellsMulti = []
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
@@ -921,9 +921,13 @@ class Spect {
                 this.updateCells(new window.buffer.Buffer(view.buffer), offset);
                 //jimboy3100
                 //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
-                if (this.player && this.active && legendmod.playerCellsMulti.length == 0) {
+                if (this.player && this.active && !this.playerCellIDs.length) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
-                    this.terminate()
+                    // Skip terminate when mbAutoRespawn is on — the 500ms respawn
+                    // timer needs the socket alive to re-spawn the unit.
+                    if (!(typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn)) {
+                        this.terminate();
+                    }
                 }
                 this.beforecalculation()
                 break;
@@ -1573,13 +1577,15 @@ class Spect {
     }
 
     beforecalculation() {
-        if (legendmod.playerCellsMulti.length) {
+        if (this.playerCellIDs && this.playerCellIDs.length) {
             if (!this.openSecond) {
                 this.openSecond = true;
                 window.multiboxPlayerEnabled = this.number
             }
             this.calculatePlayerMassAndPosition();
-        } else {
+        } else if (window.multiboxPlayerEnabled === this.number) {
+            // Only clear focus if WE are the current unit — don't steal
+            // focus from other living units.
             window.multiboxPlayerEnabled = null
         }
     }
