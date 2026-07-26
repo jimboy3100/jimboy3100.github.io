@@ -16578,7 +16578,44 @@ Most cells eaten   : ${mostCellsEaten}
 
                 gl.bindVertexArray(null);
 
-                this.glMaxInstances = 20000;
+                // --- WebGL2 Procedural Grid Shader ---
+                var gridVsSource = `#version 300 es
+                in vec2 a_unitPos;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec2 v_worldPos;
+                void main() {
+                    gl_Position = vec4(a_unitPos, 0.0, 1.0);
+                    v_worldPos = u_viewCenter + (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
+                }`;
+
+                var gridFsSource = `#version 300 es
+                precision highp float;
+                in vec2 v_worldPos;
+                uniform float u_gridSpacing;
+                uniform vec4 u_gridColor;
+                out vec4 fragColor;
+                void main() {
+                    vec2 coord = v_worldPos / u_gridSpacing;
+                    vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+                    float line = min(grid.x, grid.y);
+                    float c = 1.0 - min(line, 1.0);
+                    if (c <= 0.0) discard;
+                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * c);
+                }`;
+
+                var gridProgram = gl.createProgram();
+                gl.attachShader(gridProgram, compileShader(gl, gl.VERTEX_SHADER, gridVsSource));
+                gl.attachShader(gridProgram, compileShader(gl, gl.FRAGMENT_SHADER, gridFsSource));
+                gl.linkProgram(gridProgram);
+                this.glGridProgram = gridProgram;
+
+                this.u_grid_viewCenter = gl.getUniformLocation(gridProgram, 'u_viewCenter');
+                this.u_grid_viewScale = gl.getUniformLocation(gridProgram, 'u_viewScale');
+                this.u_gridSpacing = gl.getUniformLocation(gridProgram, 'u_gridSpacing');
+                this.u_gridColor = gl.getUniformLocation(gridProgram, 'u_gridColor');
+
+                this.glMaxInstances = 50000;
                 this.glInstanceData = new Float32Array(this.glMaxInstances * 7);
 
                 this.u_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
@@ -16590,6 +16627,29 @@ Most cells eaten   : ${mostCellsEaten}
                 console.warn('[WebGL2 Instanced Renderer] Initialization failed:', e);
                 this.gl = null;
             }
+        },
+        drawWebGLGridShader() {
+            if (!this.gl || !this.glGridProgram) return false;
+            var gl = this.gl;
+            var viewScale = this.scale || 1;
+
+            gl.useProgram(this.glGridProgram);
+            gl.uniform2f(this.u_grid_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_grid_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.uniform1f(this.u_gridSpacing, 50.0);
+            gl.uniform4f(this.u_gridColor, 1.0, 1.0, 1.0, 0.08);
+
+            gl.bindVertexArray(this.glVAO);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        drawWebGLFoodBatch(cellsArray) {
+            return this.drawWebGLBatch(cellsArray);
+        },
+        drawWebGLViruses(virusesArray) {
+            return this.drawWebGLBatch(virusesArray);
         },
         drawWebGLBatch(cellsArray) {
             if (!this.gl || !cellsArray || !cellsArray.length) return false;
@@ -16607,10 +16667,10 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < cellsArray.length && count < max; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
-                var x = cell.x, y = cell.y, r = cell.size;
+                var x = cell.x, y = cell.y, r = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
-                var colorHex = cell.color || '#ff0000';
+                var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
                 var idx = count * 7;
                 data[idx] = x;
                 data[idx + 1] = y;
@@ -16946,6 +17006,9 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
         drawGrid(ctx) {
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLGridShader()) {
+                return;
+            }
             if (!this._staticGridPattern) {
                 var pCanvas = document.createElement("canvas");
                 pCanvas.width = 50;
@@ -17656,17 +17719,10 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.foodIsHidden = true;
                 return;
             }
-            //if (!defaultmapsettings.rainbowFood) {
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLBatch(LM.food)) {
+                return;
+            }
             this.drawCachedFood(this.ctx, LM.food, this.scale);
-            //return;
-            //}
-            /*for (let length = 0; length < LM.food.length; length++) {
-                LM.food[length].moveCell();
-                if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
-                if (!LM.food[length].invisible) {
-                    LM.food[length].draw(this.ctx);
-                }
-            }*/
         },
         /* Restore Original Ultra-Fast Hardware Round Line-Cap Primitives (moveTo/lineTo/stroke) */
         drawCachedFood(ctx, food, scale, reset) {
