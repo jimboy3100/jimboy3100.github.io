@@ -18157,47 +18157,52 @@ Most cells eaten   : ${mostCellsEaten}
             if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY) {
                 this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
             }
-            if (window.fullSpectator) {
+            if (window.fullSpectator && Array.isArray(spects)) {
                 for (let i = 0; i < spects.length; i++) {
-                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
+                    if (!spects[i]) continue;
+                    let sX = typeof spects[i].getX === "function" ? spects[i].getX(spects[i].viewX) : (spects[i].viewX || 0);
+                    let sY = typeof spects[i].getY === "function" ? spects[i].getY(spects[i].viewY) : (spects[i].viewY || 0);
+                    this.newViewport(this.ctx, spects[i].number || (i + 1), sX, sY, spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], []);
                 }
             }
         },
         drawWaves() {
-            let waves = LM.Waves
+            let waves = LM.Waves;
+            if (!waves || !waves.length) return;
 
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             for (let length = waves.length - 1; length >= 0; length--) {
-                //for (let length = waves.length - 1; length > 0; length--) {
-                let r = (Date.now() - waves[length].time) / 2
+                var wave = waves[length];
+                if (!wave || !wave.time) {
+                    LM.Waves.splice(length, 1);
+                    continue;
+                }
+                let r = Math.max(1, (Date.now() - wave.time) / 2);
+                let innerR = Math.max(0.1, r - r / 4);
 
-
-                let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
-                //if (waves[length].moreAnimation && r > 1560){
-                if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760) / 2) {
-                    //if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
+                let gradient = this.ctx.createRadialGradient(wave.x, wave.y, innerR, wave.x, wave.y, r);
+                if (wave.moreAnimation && r > 1160 && r > (wave.wavelength + 760) / 2) {
                     gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
                     gradient.addColorStop(1, defaultSettings.splitRangeColor);
                 }
                 else {
-                    gradient.addColorStop(0, waves[length].color + "00");
-                    gradient.addColorStop(1, waves[length].color);
+                    gradient.addColorStop(0, (wave.color || "#00e6ff") + "00");
+                    gradient.addColorStop(1, wave.color || "#00e6ff");
                 }
                 this.ctx.strokeStyle = gradient;
-                this.ctx.lineWidth = r / 4;
+                this.ctx.lineWidth = Math.max(1, r / 4);
                 this.ctx.beginPath();
-                this.ctx.arc(waves[length].x, waves[length].y, r - r / 8, 0, this.pi2, false);
+                this.ctx.arc(wave.x, wave.y, Math.max(0.1, r - r / 8), 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
                 this.ctx.beginPath();
-                this.ctx.strokeStyle = defaultSettings.splitRangeColor;
+                this.ctx.strokeStyle = defaultSettings.splitRangeColor || "#00e6ff";
                 this.ctx.lineWidth = 5;
                 this.ctx.beginPath();
-                this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
+                this.ctx.arc(wave.x, wave.y, r, 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
-                //if (r > 500) {					
-                if (r > waves[length].wavelength) {
+                if (r > (wave.wavelength || 1000)) {
                     LM.Waves.splice(length, 1);
                 }
             }
