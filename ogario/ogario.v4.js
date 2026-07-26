@@ -19138,23 +19138,30 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = [], spectObj = null) {
-            var size = 0
-            var mtp = 1.985
+            var size = 0;
+            var mtp = 1.985;
+            var s = 1;
 
-            if (cells.length > 0) {
+            if (window.fullSpectator) {
+                mtp = 4.95;
+                s = 1;
+            } else if (cells.length > 0) {
                 for (var im = 0; cells.length > im; im++)
-                    size += cells[im].size
+                    size += cells[im].size;
+                s = Math.pow(Math.min(64 / (size || 1), 1), 0.4000);
             } else if (isFreeSpectate === false && isSpectateEnabled === true) {
                 for (var i = 0; leaderboard.length > i; i++) {
                     for (var im = 0; cells.length > im; im++)
                         if (cells[im].nick === leaderboard[i].nick)
-                            size += cells[im].size
-                    break
+                            size += cells[im].size;
+                    break;
                 }
+                s = Math.pow(Math.min(64 / (size || 1), 1), 0.4000);
             } else {
-                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95
+                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95;
+                s = 1;
             }
-            var s = Math.pow(Math.min(64 / size, 1), 0.4000);
+
             var w = 1024 / s / 2 * mtp; //WSVGA
             var h = 600 / s / 2 * mtp;
 
@@ -19191,16 +19198,19 @@ Most cells eaten   : ${mostCellsEaten}
             var tBottomY = rawBottomY + (clampedBottomY - rawBottomY) * blend;
 
             if (spectObj) {
-                if (spectObj._drawMinX == null) {
-                    spectObj._drawMinX = rawMinX;
-                    spectObj._drawTopY = rawTopY;
-                    spectObj._drawMaxX = rawMaxX;
-                    spectObj._drawBottomY = rawBottomY;
+                // If tab was hidden or position jumped (e.g. tab switch or desync > 800px), snap immediately!
+                if (spectObj._drawMinX == null || (typeof document !== "undefined" && document.hidden) ||
+                    Math.abs(tMinX - spectObj._drawMinX) > 800 || Math.abs(tTopY - spectObj._drawTopY) > 800) {
+                    spectObj._drawMinX = tMinX;
+                    spectObj._drawTopY = tTopY;
+                    spectObj._drawMaxX = tMaxX;
+                    spectObj._drawBottomY = tBottomY;
+                } else {
+                    spectObj._drawMinX += (tMinX - spectObj._drawMinX) * 0.15;
+                    spectObj._drawTopY += (tTopY - spectObj._drawTopY) * 0.15;
+                    spectObj._drawMaxX += (tMaxX - spectObj._drawMaxX) * 0.15;
+                    spectObj._drawBottomY += (tBottomY - spectObj._drawBottomY) * 0.15;
                 }
-                spectObj._drawMinX += (tMinX - spectObj._drawMinX) * 0.12;
-                spectObj._drawTopY += (tTopY - spectObj._drawTopY) * 0.12;
-                spectObj._drawMaxX += (tMaxX - spectObj._drawMaxX) * 0.12;
-                spectObj._drawBottomY += (tBottomY - spectObj._drawBottomY) * 0.12;
 
                 this.drawViewport(ctx, `Viewport# ${name}`, spectObj._drawMinX, spectObj._drawTopY, spectObj._drawMaxX, spectObj._drawBottomY, defaultSettings.bordersColor, 15);
             } else {
