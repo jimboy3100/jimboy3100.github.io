@@ -957,12 +957,15 @@ class Spect {
         let mtp = 4.95;
         let w = (1024 / 2) * mtp + s;
         let h = (600 / 2) * mtp + s;
-        return (x >= this.viewX - w && x <= this.viewX + w &&
-                y >= this.viewY - h && y <= this.viewY + h);
+        // Returns true if OUTSIDE the spectator's viewport (backup-compatible semantics)
+        if (x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h) {
+            return true;
+        }
+        return false;
     }
 
     isOutsideView(x, y, size) {
-        return !this.isInView(x, y, size);
+        return this.isInView(x, y, size);
     }
 
     isInViewCustom(x, y, size) {
@@ -1275,19 +1278,19 @@ class Spect {
 
             if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
                 if (!isFood) {
-                    if (this.isOutsideView(x, y, size)) invisible = true;
+                    if (!invisible) invisible = this.isInViewCustom(x, y, size);
                 } else if (isFood) {
                     if (window.ingameSpectator && legendmod.isSpectateEnabled) {
                         invisible = true;
                     } else if (!window.fullSpectator) {
-                        if (this.isOutsideView(x, y, size)) invisible = true;
+                        if (!invisible) invisible = this.isInViewCustom(x, y, size);
                     }
                 }
             }
 
             if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = !this.isInViewCustom(x, y, size);
-                if (isVirus) invisible = (!this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
+                if (isFood) remove = this.isInViewCustom(x, y, size);
+                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
 
                 if (!this.active) {
                     invisible = true;
