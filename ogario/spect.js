@@ -1251,9 +1251,13 @@ class Spect {
                 this.updateCells(message, offset);
                 //jimboy3100
                 //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
-                if (this.player && this.active && legendmod.playerCellsMulti.length === 0) {
+                if (this.player && this.active && !this.playerCellIDs.length) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
-                    this.terminate()
+                    // Skip terminate when mbAutoRespawn is on — the 500ms respawn
+                    // timer needs the socket alive to re-spawn the unit.
+                    if (!(typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn)) {
+                        this.terminate();
+                    }
                 }
                 break;
             case 64:
@@ -1309,14 +1313,14 @@ class Spect {
                 if (_pciIdx !== -1) {
                     this.playerCellIDs.splice(_pciIdx, 1);
                 }
-                if (!legendmod.playerCellsMulti.length) {
+                if (!this.playerCellIDs.length) {
                     if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbSwitchAfterDeath && legendmod.playerCells && legendmod.playerCells.length) {
                         window.multiboxPlayerEnabled = null;
                     }
                     if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn && this.isSocketOpen()) {
                         setTimeout(() => {
                             if (this.isSocketOpen() && !this.playerCellIDs.length) {
-                                this.sendPlay();
+                                this.handleSendNick();
                             }
                         }, 500);
                     }
