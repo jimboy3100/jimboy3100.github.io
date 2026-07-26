@@ -15821,15 +15821,23 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             if (left !== undefined && right !== undefined && right > left && top !== undefined && bottom !== undefined && bottom > top) {
-                this.mapMinX = left;
-                this.mapMinY = top;
-                this.mapMaxX = right;
-                this.mapMaxY = bottom;
                 this.mapSize = Math.abs(right - left);
-                this.mapMidX = (right + left) / 2;
-                this.mapMidY = (bottom + top) / 2;
-                this.mapOffsetX = (right - left) / 2;
-                this.mapOffsetY = (bottom - top) / 2;
+                if (left === 0 && top === 0 && this.mapSize > 1000) {
+                    var half = this.mapSize / 2;
+                    this.mapMinX = -half;
+                    this.mapMinY = -half;
+                    this.mapMaxX = half;
+                    this.mapMaxY = half;
+                } else {
+                    this.mapMinX = left;
+                    this.mapMinY = top;
+                    this.mapMaxX = right;
+                    this.mapMaxY = bottom;
+                }
+                this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+                this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+                this.mapOffsetX = (this.mapMaxX - this.mapMinX) / 2;
+                this.mapOffsetY = (this.mapMaxY - this.mapMinY) / 2;
             } else if (LM.isLegendWorld) {
                 /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~Math.abs(right - left);
@@ -18222,7 +18230,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
             //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
         },
-        drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
+        drawViewport: function (ctx, text, minX, minY, maxX, maxY, stroke, width) {
 
             ctx.strokeStyle = stroke;
             ctx.lineWidth = width;
@@ -18231,13 +18239,13 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.font = "100px sans-serif";
             ctx.textAlign = "end";
             ctx.textBaseline = "hanging"
-            ctx.fillText(text, maxX, maxY);
+            ctx.fillText(text, maxX, minY);
 
             ctx.beginPath();
-            ctx.moveTo(minX, maxY);
-            ctx.lineTo(maxX, maxY);
+            ctx.moveTo(minX, minY);
             ctx.lineTo(maxX, minY);
-            ctx.lineTo(minX, minY);
+            ctx.lineTo(maxX, maxY);
+            ctx.lineTo(minX, maxY);
             ctx.closePath();
             ctx.stroke();
 
