@@ -7832,12 +7832,12 @@ function thelegendmodproject() {
                     try {
                         this.customSkinsCache[e + "_cached"] = new Image;
                         this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                        // Upload pre-drawn skin to WebGL2 GPU texture array only if untainted
+                        if (window.drawRender && window.drawRender.uploadSkinTexture) {
+                            window.drawRender.uploadSkinTexture(e, i);
+                        }
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached"] = this.customSkinsCache[e];
-                    }
-                    // Upload pre-drawn skin to WebGL2 GPU texture array
-                    if (window.drawRender && window.drawRender.uploadSkinTexture) {
-                        window.drawRender.uploadSkinTexture(e, i);
                     }
                     this.cacheSkin(this.customSkinsCache, animated);
                 }
