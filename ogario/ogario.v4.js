@@ -1,4 +1,4 @@
-window.OgVer = 3.420;
+window.OgVer = 3.427;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -8031,51 +8031,45 @@ function thelegendmodproject() {
                 const n = o / LM.mapSize;
                 const r = ogario.mapOffsetX + LM.mapOffset;
                 const l = ogario.mapOffsetY + LM.mapOffset;
-                if (this.drawSelectedCell(this.miniMapCtx),
-                    //
-                    this.w = ogario.playerX,
-                    this.u = ogario.playerY,
-                    /*
-                        this.w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(i.playerX) : i.playerX,
-                        this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(i.playerY) : i.playerY,  
-*/
-                    //						
-                    //this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
-                    this.currentSector = this.calculateMapSector(this.w, this.u, true),
+                this.drawSelectedCell(this.miniMapCtx);
+                this.w = ogario.playerX;
+                this.u = ogario.playerY;
+                this.currentSector = this.calculateMapSector(this.w, this.u, true);
 
-                    this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily,
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                    this.miniMapCtx.globalAlpha = 1,
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
-                    this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e),
-                    //this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
-                    //this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
-                    //this.miniMapCtx.fillText(this.currentSector, 10, e),
-                    this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
-                    this.miniMapCtx.save(),
-                    this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
-                    /* ── Expanding Land: Draw zone on minimap (all phases) ── */
-                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function () {
-                        var me = LM.mapEvent;
-                        var targetHalf = me.targetSize / 2;
-                        var tMinX = (-targetHalf + r) * n;
-                        var tMinY = (-targetHalf + l) * n;
-                        var tW = me.targetSize * n;
-                        var tH = me.targetSize * n;
-                        var mmCtx = app.miniMapCtx;
-                        mmCtx.save();
-                        if (me.phase === 1) {
-                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
-                        } else if (me.phase === 2) {
-                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
-                        } else {
-                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
-                        }
-                        mmCtx.lineWidth = 1;
-                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
-                        mmCtx.restore();
-                    })(),
-                    defaultmapsettings.showMiniMapGhostCells) {
+                this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily;
+                this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
+                this.miniMapCtx.globalAlpha = 1;
+                this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor;
+                this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e);
+                if (!this.miniMapSectors) {
+                    this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a);
+                }
+                this.miniMapCtx.save();
+                this.miniMapCtx.translate(9.5, a);
+                if (":battleroyale" === this.gameMode && drawRender) {
+                    drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l);
+                }
+                if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
+                    var me = LM.mapEvent;
+                    var targetHalf = me.targetSize / 2;
+                    var tMinX = (-targetHalf + r) * n;
+                    var tMinY = (-targetHalf + l) * n;
+                    var tW = me.targetSize * n;
+                    var tH = me.targetSize * n;
+                    var mmCtx = app.miniMapCtx;
+                    mmCtx.save();
+                    if (me.phase === 1) {
+                        mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                    } else if (me.phase === 2) {
+                        mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                    } else {
+                        mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                    }
+                    mmCtx.lineWidth = 1;
+                    mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                    mmCtx.restore();
+                }
+                if (defaultmapsettings.showMiniMapGhostCells) {
                     var h = ogario.ghostCells;
                     this.miniMapCtx.beginPath();
                     var c = 0;
@@ -8125,15 +8119,15 @@ function thelegendmodproject() {
 
                 }
                 //
-                if (application.top5) {
+                if (application.top5 && LM.arrowFB && LM.arrowFB[0]) {
                     for (var temp = 0; temp < application.top5.length; temp++) {
                         if (application.top5[temp].nick === LM.arrowFB[0].nick) {
-                            LM.arrowFB[0].isIncluded = true
+                            LM.arrowFB[0].isIncluded = true;
                         }
                     }
                 }
 
-                if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                if (LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
                     this.miniMapCtx.save()
                     this.miniMapCtx.beginPath();
                     this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
@@ -8158,21 +8152,24 @@ function thelegendmodproject() {
                     //}
                 }
                 //				
-                if (this.miniMapCtx.beginPath(),
-                    this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
-                        defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
-                    this.miniMapCtx.closePath(),
-                    defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
-                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
-                        this.miniMapCtx.stroke()),
-                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                    this.miniMapCtx.fill(),
-                    this.teamPlayers.length) {
+                this.miniMapCtx.beginPath();
+                this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
+                    defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                this.miniMapCtx.closePath();
+                if (defaultSettings.miniMapMyCellStrokeSize > 0) {
+                    this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
+                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor;
+                    this.miniMapCtx.stroke();
+                }
+                this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
+                this.miniMapCtx.fill();
+                if (this.teamPlayers.length) {
                     this.miniMapCtx.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
                     this.miniMapCtx.textAlign = "center";
-                    c = 0;
-                    for (; c < this.teamPlayers.length; c++) {
-                        this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                    for (c = 0; c < this.teamPlayers.length; c++) {
+                        if (this.teamPlayers[c] && application.teamPlayers && application.teamPlayers[c]) {
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                        }
                     }
                 }
                 if (this.deathLocations.length > 0) {
@@ -10152,23 +10149,23 @@ function thelegendmodproject() {
     };
 
     function irenderfromagario() {
-        this.txt = '',
-            this.txtCanvas = null,
-            this.txtCtx = null,
-            this.color = '#FFFFFF',
-            this.stroke = false,
-            this.strokeWidth = 2,
-            this.strokeColor = '#000000',
-            this.font = '700 16px Ubuntu',
-            this.fontFamily = 'Ubuntu',
-            this.fontWeight = 700,
-            this.fontSize = 16,
-            this.margin = 3,
-            this.scale = 1,
-            this.quality = 1,
-            this.measuredWidth = 0,
-            this.redraw = false,
-            this.remeasure = false,
+        this.txt = '';
+        this.txtCanvas = null;
+        this.txtCtx = null;
+        this.color = '#FFFFFF';
+        this.stroke = false;
+        this.strokeWidth = 2;
+        this.strokeColor = '#000000';
+        this.font = '700 16px Ubuntu';
+        this.fontFamily = 'Ubuntu';
+        this.fontWeight = 700;
+        this.fontSize = 16;
+        this.margin = 3;
+        this.scale = 1;
+        this.quality = 1;
+        this.measuredWidth = 0;
+        this.redraw = false;
+        this.remeasure = false;
             this.setTxt = function (ogariosettxtsetter) {
                 if (this.txt !== ogariosettxtsetter) {
                     this.txt = ogariosettxtsetter;
@@ -10405,16 +10402,17 @@ function thelegendmodproject() {
                 var prevRl = this.points[(i - 1 + len) % len].rl;
                 var nextRl = this.points[(i + 1) % len].rl;
                 var self = this;
-                var affected
+                var affected;
                 if (LM.quadtree) {
+                    var self = this;
                     affected = LM.quadtree.some({
                         x: curP.x - 5,
                         y: curP.y - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        return item.parent != self && this.sqDist(item, curP) <= 25;
-                    }.bind(this));
+                        return item.parent !== self && self.sqDist(item, curP) <= 25;
+                    });
                 }
                 //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
 
@@ -10861,24 +10859,20 @@ function thelegendmodproject() {
             let tempcolor;
             if (LM.gameMode !== ":party") {
                 if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
-                    application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
-                    node2 = application.customSkinsMap[this.targetNick]
-                    if (ogarcopythelb.nick === this.targetNick) {
-                        ogarcopythelb.skinURL = node2
+                    application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4";
+                    var node2 = application.customSkinsMap[this.targetNick];
+                    if (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2;
                     }
-
-                    //checkVideos(node2, this.targetNick);
                 }
             }
             else {
                 if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
-                    application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
-                    node2 = application.customSkinsMap[this.targetNick + this.color]
-                    if (ogarcopythelb.nick === this.targetNick) {
-                        ogarcopythelb.skinURL = node2
+                    application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4";
+                    var node2 = application.customSkinsMap[this.targetNick + this.color];
+                    if (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2;
                     }
-
-                    //checkVideos(node2, this.targetNick);
                 }
             }
 
@@ -10922,12 +10916,13 @@ function thelegendmodproject() {
             }
         };
         this.drawImageSpecialSkin = function (imageSpecial, b, c, d, e, style) {
-            var tempImgSp = eval('window.' + imageSpecial)
+            var tempImgSp = window[imageSpecial];
             if (!tempImgSp) {
-                loadIconSpecialSkins(imageSpecial)
-            }
-            else {
-                if (tempImgSp.complete) style.drawImage(tempImgSp, b, c, d, e);
+                if (typeof loadIconSpecialSkins === "function") {
+                    loadIconSpecialSkins(imageSpecial);
+                }
+            } else {
+                if (tempImgSp.complete && tempImgSp.width > 0) style.drawImage(tempImgSp, b, c, d, e);
             }
         };
         this.drawSpecialSkin = function (style, y) {
@@ -11111,15 +11106,10 @@ function thelegendmodproject() {
                 } else if (this.SpecialEffect === "Gladiator" || this.SpecialEffect2 === "Gladiator") {
                     var d = new Date();
                     var n = d.getSeconds();
-                    /*
-                    var e;
-                    if (n<30){ e = n / 30}
-                    else { e = (n /30) - 1}						
-                    style.filter = 'contrast(1.4) sepia(' + e + ')';
-                    */
+                    style.save();
                     style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
-                    //style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
+                    style.restore();
                 } else if (this.SpecialEffect === "Hero" || this.SpecialEffect2 === "Hero") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);
@@ -11228,9 +11218,9 @@ function thelegendmodproject() {
                     return;
                 }
                 /* ── Perf: view frustum culling — skip cells off-screen ── */
-                var _cullingScale = drawRender.scale || 1;
-                var _halfW = drawRender.canvasWidth / _cullingScale / 2;
-                var _halfH = drawRender.canvasHeight / _cullingScale / 2;
+                var _cullingScale = drawRender.viewScale || drawRender.scale || 1;
+                var _halfW = (drawRender.canvasWidth / _cullingScale / 2) + 200;
+                var _halfH = (drawRender.canvasHeight / _cullingScale / 2) + 200;
                 var _cx = drawRender.camX, _cy = drawRender.camY;
                 var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
                 if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
@@ -11287,7 +11277,7 @@ function thelegendmodproject() {
                 var color2 = this.color;
                 if (LM.play || LM.playerCellsMulti.length) {
                     if (this.isPlayerCell || this.playerCellsMulti) {
-                        if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
+                        if (defaultmapsettings.myCustomColor && typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.color && LM.gameMode != ":teams") {
                             this.color = ogarcopythelb.color;
                         }
                     }
@@ -11514,18 +11504,18 @@ function thelegendmodproject() {
                                     } catch (e) { }
                             }
                         }
-                        if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
+                        if (typeof dyinglight1load !== "undefined" && dyinglight1load === "yes" && node == null && this.targetNick && LM.playerNick && !this.targetNick.includes(LM.playerNick) && !this.isFood && this.mass > 12) {
                             try {
                                 style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
                             } catch (e) { }
                         }
                     }
-                    this.drawSpecialSkin(style, y)
+                    this.drawSpecialSkin(style, y);
                 }
                 if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                    window.teammatenicks && this.targetNick != "" &&
+                    window.teammatenicks && this.targetNick &&
                     (window.teammatenicks.includes(this.targetNick))) {
-                    drawRender.drawTeammatesInd(style, this.x, this.y, y)
+                    drawRender.drawTeammatesInd(style, this.x, this.y, y);
                 }
 
                 if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
@@ -11788,10 +11778,10 @@ function thelegendmodproject() {
                 if (defaultmapsettings.rotateMap) {
                     application.SLGconnect(t);
                 }
-                pauseVideos()
+                if (typeof pauseVideos === "function") pauseVideos();
                 if (typeof Universalchatfix === 'function') {
-                    Universalchatfix()
-                    preEmbPassword()
+                    Universalchatfix();
+                    if (typeof preEmbPassword === 'function') preEmbPassword();
                 }
             }, 100);
             window.legendmod.vnr = 0; //Sonia3
@@ -11867,9 +11857,13 @@ function thelegendmodproject() {
                 $(".btn-full-map-spec").hide();
             }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
-            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
-            window.userBots.isAlive = false
-            window.userBots.macroFeedInterval = null
+            if (window.userBots) {
+                if (window.userBots.startedBots && window.connectionBots) {
+                    window.connectionBots.send(new Uint8Array([1]).buffer);
+                }
+                window.userBots.isAlive = false;
+                window.userBots.macroFeedInterval = null;
+            }
             if (this.serverType === 'garix' && this.garixFingerprint) {
                 this.socket = new WebSocket(t, [this.garixFingerprint]);
             } else {
@@ -16312,62 +16306,35 @@ Most cells eaten   : ${mostCellsEaten}
                 },
         */
         cacheCells(x, y, targetX, targetY, size, mass) {
-            return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominatedRate ? void this.SSCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominatedRate / 2 ? void this.smallerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominatedRate / 4 ? void this.STECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : void this.STEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            });
+            const item = { x: x, y: y, targetX: targetX, targetY: targetY, size: size };
+            if (mass >= defaultmapsettings.dominationRate * 4) {
+                this.biggerSTEDCellsCache.push(item);
+            } else if (mass >= defaultmapsettings.dominationRate * 2) {
+                this.biggerSTECellsCache.push(item);
+            } else if (mass >= defaultmapsettings.dominationRate) {
+                this.biggerCellsCache.push(item);
+            } else if (mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominatedRate) {
+                this.SSCellsCache.push(item);
+            } else if (mass > defaultmapsettings.dominatedRate / 2) {
+                this.smallerCellsCache.push(item);
+            } else if (mass > defaultmapsettings.dominatedRate / 4) {
+                this.STECellsCache.push(item);
+            } else {
+                this.STEDCellsCache.push(item);
+            }
         },
         setCellOppColor(isPlayer, mass) {
             if (isPlayer) {
-                return ogarcopythelb.color
+                return (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.color) ? ogarcopythelb.color : defaultSettings.myCellColor;
             } else {
-                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
-                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
-                else if (mass >= defaultmapsettings.dominatedRate) return '#FFDC00'
-                else if (mass >= defaultmapsettings.dominatedRate / 2) return defaultSettings.enemySColor
-                else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor
-                else return defaultSettings.enemySSTEDColor
+                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor;
+                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor;
+                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor;
+                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor;
+                else if (mass >= defaultmapsettings.dominatedRate) return '#FFDC00';
+                else if (mass >= defaultmapsettings.dominatedRate / 2) return defaultSettings.enemySColor;
+                else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor;
+                else return defaultSettings.enemySSTEDColor;
             }
         },
         getCursorPosition() {
@@ -16792,25 +16759,28 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawRings() {
-            if (defaultmapsettings.reverseTrick) {
-                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
-                    LM.indexedCells[reverseTrick.biggerEnemy].x,
-                    LM.indexedCells[reverseTrick.biggerEnemy].y,
-                    LM.indexedCells[reverseTrick.biggerEnemy].size,
-                    0.75, 'red');
-                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
-                    LM.indexedCells[reverseTrick.smallerEnemy].x,
-                    LM.indexedCells[reverseTrick.smallerEnemy].y,
-                    LM.indexedCells[reverseTrick.smallerEnemy].size,
-                    0.75, 'blue');
+            if (defaultmapsettings.reverseTrick && window.reverseTrick) {
+                if (reverseTrick.biggerEnemy && LM.indexedCells[reverseTrick.biggerEnemy]) {
+                    this.drawRing(this.ctx,
+                        LM.indexedCells[reverseTrick.biggerEnemy].x,
+                        LM.indexedCells[reverseTrick.biggerEnemy].y,
+                        LM.indexedCells[reverseTrick.biggerEnemy].size,
+                        0.75, 'red');
+                }
+                if (reverseTrick.smallerEnemy && LM.indexedCells[reverseTrick.smallerEnemy]) {
+                    this.drawRing(this.ctx,
+                        LM.indexedCells[reverseTrick.smallerEnemy].x,
+                        LM.indexedCells[reverseTrick.smallerEnemy].y,
+                        LM.indexedCells[reverseTrick.smallerEnemy].size,
+                        0.75, 'blue');
+                }
             }
             if (LM.indexedCells[LM.selected]) {
-                //console.log("LM.indexedCells[LM.selected]")
                 this.drawRing(this.ctx,
                     LM.indexedCells[LM.selected].x,
                     LM.indexedCells[LM.selected].y,
                     LM.indexedCells[LM.selected].size,
-                    0.75, '#ffffff')
+                    0.75, '#ffffff');
             }
         },
         drawCustomNewGrid(grid) {
@@ -16826,21 +16796,22 @@ Most cells eaten   : ${mostCellsEaten}
                 legendmod.mapMaxX - legendmod.mapMinX,
                 legendmod.mapMaxY - legendmod.mapMinY
             );*/
-            //legendmod.viewX -> drawRender.camX
-            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
-            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
-            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
-            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)
-            this.ctx.drawImage(legendmod.gridPic,
-                (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                minX,
-                minY,
-                maxX - minX,
-                maxY - minY
-            );
+            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale);
+            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale);
+            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale);
+            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale);
+            if (legendmod.gridPic.complete && legendmod.gridPic.width > 0) {
+                this.ctx.drawImage(legendmod.gridPic,
+                    (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                    (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                    (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                    (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                    minX,
+                    minY,
+                    maxX - minX,
+                    maxY - minY
+                );
+            }
             /*this.ctx.drawImage(legendmod.gridPic,			
                 (legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
                 (legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
@@ -16867,17 +16838,19 @@ Most cells eaten   : ${mostCellsEaten}
                     legendmod.customMidPic = new Image;
                     legendmod.customMidPic.src = defaultSettings.customBackground;
                 }
-                if (dyinglight1load === "yes") {
-                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                    this.ctx.drawImage(
-                        cimg5,
-                        legendmod.mapMinX - LM.mapSize - 1,
-                        legendmod.mapMinY - LM.mapSize - 1,
-                        (legendmod.mapMaxX - legendmod.mapMinX) * 3,
-                        (legendmod.mapMaxY - legendmod.mapMinY) * 3
-                    );
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha
+                if (typeof dyinglight1load !== "undefined" && dyinglight1load === "yes") {
+                    if (window.cimg5 && cimg5.complete && cimg5.width > 0) {
+                        this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                        this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
+                        this.ctx.drawImage(
+                            cimg5,
+                            legendmod.mapMinX - LM.mapSize - 1,
+                            legendmod.mapMinY - LM.mapSize - 1,
+                            (legendmod.mapMaxX - legendmod.mapMinX) * 3,
+                            (legendmod.mapMaxY - legendmod.mapMinY) * 3
+                        );
+                        this.ctx.globalAlpha = this.prevctxglobalAlpha;
+                    }
                 }
                 if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
@@ -17590,14 +17563,16 @@ Most cells eaten   : ${mostCellsEaten}
             if (!food.length) {
                 return;
             }
-            /* ── Move food (position interpolation) — was in per-cell draw() ── */
+            /* ── Move food (only moving cells) ── */
             for (var i = 0; i < food.length; i++) {
-                food[i].moveCell();
+                if (food[i].targetX !== food[i].x || food[i].targetY !== food[i].y || food[i].targetSize !== food[i].size) {
+                    food[i].moveCell();
+                }
             }
             /* ── Perf: frustum bounds for food culling ── */
-            var _cullingScale = this.scale || 1;
-            var _halfW = this.canvasWidth / _cullingScale / 2;
-            var _halfH = this.canvasHeight / _cullingScale / 2;
+            var _cullingScale = this.viewScale || this.scale || 1;
+            var _halfW = (this.canvasWidth / _cullingScale / 2) + 100;
+            var _halfH = (this.canvasHeight / _cullingScale / 2) + 100;
             var _camCX = this.camX, _camCY = this.camY;
             var _svx = LM.viewX || 0, _svy = LM.viewY || 0;
             if (Math.abs(_camCX - _svx) > _halfW || Math.abs(_camCY - _svy) > _halfH) {
@@ -17652,8 +17627,12 @@ Most cells eaten   : ${mostCellsEaten}
                     for (var j = 0; j < bucket.length; j++) {
                         var f = bucket[j];
                         var fs = f.size + defaultSettings.foodSize;
-                        ctx.moveTo(f.x + fs, f.y);
-                        ctx.arc(f.x, f.y, fs, 0, pi2, false);
+                        if (scale < 0.08) {
+                            ctx.rect(f.x - fs, f.y - fs, fs * 2, fs * 2);
+                        } else {
+                            ctx.moveTo(f.x + fs, f.y);
+                            ctx.arc(f.x, f.y, fs, 0, pi2, false);
+                        }
                     }
                     ctx.fill();
                 }
