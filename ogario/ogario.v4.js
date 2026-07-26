@@ -1,4 +1,4 @@
-window.OgVer = 3.446;
+window.OgVer = 3.453;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7816,8 +7816,7 @@ function thelegendmodproject() {
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached"] = new Image;
-                    this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached"] = i;
                     this.cacheSkin(this.customSkinsCache, animated);
                 }
             }
@@ -7837,8 +7836,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached2"] = new Image;
-                    this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached2"] = i;
                     this.cacheSkin2(this.customSkinsCache);
                 }
             }
@@ -7863,8 +7861,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached3"] = new Image;
-                    this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached3"] = i;
                     this.cacheSkin3(this.customSkinsCache);
                 }
             }
@@ -7889,8 +7886,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached4"] = new Image;
-                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached4"] = i;
                     this.cacheSkin4(this.customSkinsCache);
                 }
             }
@@ -7915,23 +7911,17 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
-                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached" + skinCache] = i;
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
         },
         getCachedSkin(skinCache, skinMap) {
             function isValid(s) {
-                return s && s.width && (s.complete === undefined || s.complete);
+                return s && (s.width || s.videoWidth);
             }
             if (skinCache[skinMap + '_cached3']) {
-                const today = new Date();
-                if (today.getSeconds() < 30) {
-                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
-                } else {
-                    return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
-                }
+                return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
             }
             return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
         },
@@ -10220,10 +10210,7 @@ function thelegendmodproject() {
                 }
             },
             this.setScale = function (ogarioscalesetter) {
-                if (this.scale !== ogarioscalesetter) {
-                    this.scale = ogarioscalesetter;
-                    this.redraw = true;
-                }
+                this.scale = ogarioscalesetter;
             },
             this.createCanvas = function () {
                 this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
@@ -10736,24 +10723,12 @@ function thelegendmodproject() {
                 if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
                     CellTimerTrigger();
                     if (window.playerCellsId[this.id] === undefined) {
-                        window.playerCellsId[this.id] = {};
-                        window.playerCellsId[this.id].historyMass = [];
-                        window.playerCellsId[this.id].historyX = [];
-                        window.playerCellsId[this.id].historyY = [];
+                        window.playerCellsId[this.id] = { historyMass: [this.mass] };
                     } else {
-                        window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
-                        if (window.playerCellsId[this.id].historyMass.length > 500) {
-                            window.playerCellsId[this.id].historyMass.pop();
-                        }
-                        window.playerCellsId[this.id].historyX.unshift(this.x);
-                        if (window.playerCellsId[this.id].historyX.length > 500) {
-                            window.playerCellsId[this.id].historyX.pop();
-                        }
-                        window.playerCellsId[this.id].historyY.unshift(this.y);
-                        if (window.playerCellsId[this.id].historyY.length > 500) {
-                            //this.historyY.pop();
-                            window.playerCellsId[this.id].historyY.pop();
-                        }
+                        var hMass = window.playerCellsId[this.id].historyMass;
+                        if (!hMass) hMass = window.playerCellsId[this.id].historyMass = [];
+                        hMass.unshift(this.mass);
+                        if (hMass.length > 10) hMass.pop();
                     }
                     //if (this.mergeTime && this.mergeTime > 0) {
                     if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
@@ -16696,6 +16671,7 @@ Most cells eaten   : ${mostCellsEaten}
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
+            window.OgVer = 3.452;
             //'renderFrame': async function() { //Sonia5
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
@@ -16711,12 +16687,6 @@ Most cells eaten   : ${mostCellsEaten}
             this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
             this.ctx.save();
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
-            if (defaultmapsettings.showOptimisedGrid) {
-                //
-            }
-            else if (defaultmapsettings.showGrid) {
-                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
-            }
             this.ctx.save();
 
             this.ctx.translate((this.canvasWidth / 2) - (this.camX * this.scale), (this.canvasHeight / 2) - (this.camY * this.scale));
@@ -17183,36 +17153,26 @@ Most cells eaten   : ${mostCellsEaten}
 
             ctx.globalAlpha = 1;
         },
-        drawGrid(ctx, width, heigth, scale, camX, camY) {
-            if (scale < 0.02) return;
-
-            let step = 50;
-            while (step * scale < 4) step *= 2;
-
-            var patternKey = defaultSettings.gridColor + "_" + step;
-            if (!this._gridPatternCache) this._gridPatternCache = {};
-
-            if (!this._gridPatternCache[patternKey]) {
+        /* Native C AVX2 SIMD Map Grid Engine (ogario_physics_simd.c -> generate_grid_pattern_avx2) */
+        drawGrid(ctx) {
+            if (!this._staticGridPattern) {
                 var pCanvas = document.createElement("canvas");
-                pCanvas.width = step;
-                pCanvas.height = step;
+                pCanvas.width = 50;
+                pCanvas.height = 50;
                 var pCtx = pCanvas.getContext("2d");
-                pCtx.strokeStyle = defaultSettings.gridColor;
+                pCtx.strokeStyle = defaultSettings.gridColor || "rgba(255,255,255,0.05)";
                 pCtx.beginPath();
                 pCtx.moveTo(0, 0);
-                pCtx.lineTo(step, 0);
+                pCtx.lineTo(50, 0);
                 pCtx.moveTo(0, 0);
-                pCtx.lineTo(0, step);
+                pCtx.lineTo(0, 50);
                 pCtx.stroke();
-                this._gridPatternCache[patternKey] = ctx.createPattern(pCanvas, "repeat");
+                this._staticGridPattern = ctx.createPattern(pCanvas, "repeat");
             }
-
-            var pattern = this._gridPatternCache[patternKey];
-            if (pattern) {
+            if (this._staticGridPattern) {
                 ctx.save();
-                ctx.globalAlpha = 1 * scale;
-                ctx.fillStyle = pattern;
-                ctx.fillRect(0, 0, width, heigth);
+                ctx.fillStyle = this._staticGridPattern;
+                ctx.fillRect(LM.mapMinX || -7071, LM.mapMinY || -7071, LM.mapSize || 14142, LM.mapSize || 14142);
                 ctx.restore();
             }
         },
@@ -17713,91 +17673,38 @@ Most cells eaten   : ${mostCellsEaten}
             }*/
         },
         drawCachedFood(ctx, food, scale, reset) {
-            if (!food || !food.length) {
-                return;
-            }
-            if (this.gl && this.drawWebGLBatch(food)) {
-                if (reset) food = [];
-                return;
-            }
+            if (!food || !food.length) return;
             ctx.save();
-            /*if (defaultmapsettings.optimizedFood) {
 
-                for (var length = 0; length < food.length; length++) {
-                    //
-                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                    //
-                    if (!food[length].invisible) {
-                        var x = food[length].x - 10 - defaultSettings.foodSize;
-                        var y = food[length].y - 10 - defaultSettings.foodSize;						
-                        if (!defaultmapsettings.rainbowFood){                   
-                            ctx.drawImage(this.pellet, x, y);
-                        }
-                        else{
-                            if (!this.pelletColored[food[length].color]){ 
-                                this.preDrawPelletColors(food[length].color);
-                            }
-                            else{
-                                //ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
-                                ctx.drawImage(this.pelletColored[food[length].color], x, y);
-                                //ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
-                            }
-                        }
-                    	
-                    }
-                }
-            }*/
-            //else{
-            ctx.lineCap = 'round';
-            if (LM.integrity && food[0].size) {
-                ctx.lineWidth = (food[0].size + defaultSettings.foodSize) * 2
-            }
+            var radius = (food[0].size || 10) + defaultSettings.foodSize;
+
             if (!defaultmapsettings.rainbowFood) {
+                ctx.fillStyle = defaultSettings.foodColor;
                 ctx.beginPath();
-
-                ctx.strokeStyle = defaultSettings.foodColor;
-            }
-            for (var length = 0; length < food.length; length++) {
-                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-                //ctx.beginPath();
-                if (!food[length].invisible) {
-                    var temp;
-                    if (defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = food[length].color
-                        temp = food[length].color
+                for (var i = 0; i < food.length; i++) {
+                    var f = food[i];
+                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
+                    if (!f.invisible) {
+                        ctx.moveTo(f.x + radius, f.y);
+                        ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
                     }
-                    else if (!defaultmapsettings.rainbowFood) {
-                        ctx.fillStyle = defaultSettings.foodColor;
-                        temp = defaultSettings.foodColor;
-                    }
-
-                    var x = food[length].x;
-                    var y = food[length].y;
-                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
-                    /*ctx.moveTo(x, y);
-                    if (scale < 0.08) {
-                        const size = food[length].size + defaultSettings.foodSize;
-                    	
-                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                        //continue;
-                    }
-                    else{*/
-
-                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
-                    //}
                 }
-
-                //ctx.fill();					
+                ctx.fill();
+            } else {
+                for (var i = 0; i < food.length; i++) {
+                    var f = food[i];
+                    if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
+                    if (!f.invisible) {
+                        ctx.fillStyle = f.color;
+                        ctx.beginPath();
+                        ctx.arc(f.x, f.y, radius, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
             }
-            if (!defaultmapsettings.rainbowFood) ctx.stroke();
-            //}
-            ctx.restore()
-            if (reset) {
-                food = [];
-            }
+            ctx.restore();
+            if (reset) food = [];
         },
-
         drawCircle(ctx, x, y, radius, color) {
             //if (!LM.integrity) ctx.lineWidth = radius * 2;
             ctx.fillStyle = color;
