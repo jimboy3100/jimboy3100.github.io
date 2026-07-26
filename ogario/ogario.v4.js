@@ -2323,7 +2323,7 @@ var displayText = {
         virColors: 'Kolory wirusow',
         splitRange: 'Zasieg podzialu',
         virusesRange: 'Zasieg wirusow',
-        showOptimisedGrid: 'Icon as grid (fps increase)',
+        showOptimisedGrid: 'Image as grid (fallback)',
         textStroke: 'Obwodki nazw i masy',
         namesStroke: 'Obwodki nazw',
         massStroke: 'Obwodki masy',
@@ -2812,7 +2812,7 @@ var displayText = {
         qdsplitRange: 'Quick double split range', //Sonia2
         sdsplitRange: 'Slow double split range', //Sonia2
         virusesRange: 'Viruses range',
-        showOptimisedGrid: 'Icon as grid (fps increase)',
+        showOptimisedGrid: 'Image as grid (fallback)',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
@@ -17240,7 +17240,11 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.translate(-this.camX, -this.camY);
 
             if (defaultmapsettings.showGrid) {
-                if (defaultmapsettings.showOptimisedGrid) {
+                /* WebGL2 procedural grid renders on GL layer (behind food).
+                 * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
+                if (this.gl && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLGridShader()) {
+                    // Grid rendered on WebGL layer — correctly behind food
+                } else if (defaultmapsettings.showOptimisedGrid) {
                     this.drawCustomNewGrid();
                 } else {
                     this.drawGrid(this.ctx);
