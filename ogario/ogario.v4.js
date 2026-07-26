@@ -10879,9 +10879,6 @@ function thelegendmodproject() {
                 LM.removedCells.push(this);
             }
             delete LM.indexedCells[this.id];
-            if (ogarCellPool.length < 2000) {
-                ogarCellPool.push(this);
-            }
         };
         this.moveCell = function () {
             var now = LM.time || Date.now();
@@ -16180,7 +16177,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (this.indexedCells.hasOwnProperty(id)) {
                         cellObj = this.indexedCells[id];
                     } else {
-                        cellObj = getPooledCell(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                        cellObj = new ogarbasicassembly(id, x, y, size, color, isFood ? 1 : 0, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                         cellObj.time = this.time;
                         cellObj.spectator = false;
                         if (!isFood) {
@@ -16411,7 +16408,7 @@ Most cells eaten   : ${mostCellsEaten}
                     //cellUpdateCells.color = color;
                     //}					
                 } else {
-                    cellUpdateCells = getPooledCell(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
                     cellUpdateCells.spectator = false;
                     if (!isFood) {
