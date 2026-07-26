@@ -134,6 +134,13 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     });
     observer.observe(document.documentElement, { childList: true, subtree: true });
 
+    /* Suppress third-party iframe CSP report / sandbox errors from polluting console */
+    window.addEventListener('error', function (e) {
+        if (e && e.filename && (e.filename.includes('accounts.google.com') || e.filename.includes('csreport') || e.filename.includes('gsi-api'))) {
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        }
+    }, true);
+
     /* ── LW: Stateless login state machine ──────────────────────────
      * One _lwAuth object tracks the current login attempt.
      * No sticky provider flags — every login click starts fresh.
@@ -7908,9 +7915,11 @@ function thelegendmodproject() {
                         }
                     }
                 };
+                img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
-                    console.warn("[LM] Failed to load skin image (retrying without CORS): " + url);
+                    console.warn("[LM] Failed to load skin image (retrying without CORS & referrer): " + url);
                     var retryImg = new Image();
+                    retryImg.referrerPolicy = 'no-referrer';
                     retryImg.onload = function () {
                         img[url] = retryImg;
                         if (app && app.customSkinsCache) {

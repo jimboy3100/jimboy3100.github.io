@@ -44,8 +44,7 @@ var version = 2;
 if (location.host === "agar.io" && location.pathname === "/") {
     var url = window.location.href;
     localStorage.setItem("url", url);
-    location.href = "https://agar.io/legendmod" + location.hash;
-    return;
+    history.replaceState({}, '', '/legendmod' + location.search + location.hash);
 }
 var modVersion = GM_info.script.version;
 // Inject Legend

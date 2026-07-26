@@ -41,11 +41,12 @@ chrome.storage.local.get({ enabled: true }, (result) => {
         return;
     }
 
-    // Check location and redirect
+    // Check location and load mod without triggering 404 network request
     if (location.host === "agar.io" && location.pathname === "/") {
         const url = window.location.href;
         localStorage.setItem("url", url);
-        location.href = "https://agar.io/legendmod" + location.hash;
+        history.replaceState({}, '', '/legendmod' + location.search + location.hash);
+        runMod();
     } else if (location.host === "agar.io" && location.pathname.startsWith("/legendmod")) {
         runMod();
     }
