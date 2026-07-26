@@ -18269,7 +18269,7 @@ Most cells eaten   : ${mostCellsEaten}
                     data[idx + 2] = coords[i * 3 + 2];
                     var cInt = cell._colorInt;
                     if (cInt === undefined || cell._colorStr !== colorHex) {
-                        cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                        cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
                         cell._colorInt = cInt;
                         cell._colorStr = colorHex;
                     }
@@ -18294,7 +18294,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                     var cInt = cell._colorInt;
                     if (cInt === undefined || cell._colorStr !== colorHex) {
-                        cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                        cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
                         cell._colorInt = cInt;
                         cell._colorStr = colorHex;
                     }
@@ -18386,7 +18386,7 @@ Most cells eaten   : ${mostCellsEaten}
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
                 // Color resolution
-                var colorHex = cell.color;
+                var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
                 if (LM.play || LM.playerCellsMulti.length) {
                     if ((cell.isPlayerCell || cell.playerCellsMulti) && defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ':teams') {
                         colorHex = ogarcopythelb.color;
@@ -18394,10 +18394,13 @@ Most cells eaten   : ${mostCellsEaten}
                         colorHex = cell.oppColor;
                     }
                 }
+                if (!colorHex || typeof colorHex !== 'string') {
+                    colorHex = '#ff0000';
+                }
 
                 var cInt = cell._colorInt;
                 if (cInt === undefined || cell._colorStr !== colorHex) {
-                    cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
                     cell._colorInt = cInt;
                     cell._colorStr = colorHex;
                 }
@@ -18507,7 +18510,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.gl) {
                 var _bg = defaultSettings.bgColor || '#000000';
                 if (this._glBgStr !== _bg) {
-                    var _bgI = parseInt(_bg.replace('#', ''), 16) || 0;
+                    var _bgI = parseInt((_bg || '#000000').replace('#', ''), 16) || 0;
                     this._glBgR = ((_bgI >> 16) & 255) / 255;
                     this._glBgG = ((_bgI >> 8) & 255) / 255;
                     this._glBgB = (_bgI & 255) / 255;
