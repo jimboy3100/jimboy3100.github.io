@@ -1,4 +1,4 @@
-window.OgVer = 3.435;
+window.OgVer = 3.442;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7816,9 +7816,7 @@ function thelegendmodproject() {
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached"] = new Image;
-                    this.customSkinsCache[e + "_cached"].src = i.toDataURL();
-                    i = null;
+                    this.customSkinsCache[e + "_cached"] = i;
                     this.cacheSkin(this.customSkinsCache, animated);
                 }
             }
@@ -7838,10 +7836,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached2"] = new Image;
-                    this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
-                    //this.customSkinsCache[e + "_cached"].src = i.toDataURL('image/jpeg', 0.1);
-                    i = null;
+                    this.customSkinsCache[e + "_cached2"] = i;
                     this.cacheSkin2(this.customSkinsCache);
                 }
             }
@@ -7866,9 +7861,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached3"] = new Image;
-                    this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
-                    i = null;
+                    this.customSkinsCache[e + "_cached3"] = i;
                     this.cacheSkin3(this.customSkinsCache);
                 }
             }
@@ -7893,9 +7886,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached4"] = new Image;
-                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
-                    i = null;
+                    this.customSkinsCache[e + "_cached4"] = i;
                     this.cacheSkin4(this.customSkinsCache);
                 }
             }
@@ -7920,9 +7911,7 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
-                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
-                    i = null;
+                    this.customSkinsCache[e + "_cached" + skinCache] = i;
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
@@ -11282,17 +11271,24 @@ function thelegendmodproject() {
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                    style.lineJoin = "miter"
-                    var pointCount = 120;
-                    var incremental = this.pi2 / pointCount;
+                    style.lineJoin = "miter";
+                    if (!window._virusSinTable) {
+                        window._virusSinTable = new Float32Array(120);
+                        window._virusCosTable = new Float32Array(120);
+                        for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
+                            var _vAng = _vIdx * (Math.PI * 2 / 120);
+                            window._virusSinTable[_vIdx] = Math.sin(_vAng);
+                            window._virusCosTable[_vIdx] = Math.cos(_vAng);
+                        }
+                    }
+                    var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
                     style.moveTo(this.x, this.y + this.size + 3);
-                    for (var i = 1; i < pointCount; i++) {
-                        var angle = i * incremental;
-                        var dist = this.size - 3 + (i % 2 === 0) * 6;
+                    for (var i = 1; i < 120; i++) {
+                        var dist = this.size - 3 + ((i & 1) ? 0 : 6);
                         style.lineTo(
-                            this.x + dist * Math.sin(angle),
-                            this.y + dist * Math.cos(angle)
-                        )
+                            this.x + dist * _vSin[i],
+                            this.y + dist * _vCos[i]
+                        );
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
                 }
@@ -16992,9 +16988,9 @@ Most cells eaten   : ${mostCellsEaten}
                     legendmod.customMidPic = new Image;
                     legendmod.customMidPic.src = defaultSettings.customBackground;
                 }
-                if (dyinglight1load === "yes") {
+                if (dyinglight1load === "yes" && typeof cimg5 !== "undefined" && cimg5) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
                     this.ctx.drawImage(
                         cimg5,
                         legendmod.mapMinX - LM.mapSize - 1,
@@ -17002,7 +16998,7 @@ Most cells eaten   : ${mostCellsEaten}
                         (legendmod.mapMaxX - legendmod.mapMinX) * 3,
                         (legendmod.mapMaxY - legendmod.mapMinY) * 3
                     );
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha;
                 }
                 if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
@@ -17597,58 +17593,103 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             },	*/
         drawVirusesRange(t, e, i) {
-            if (e.length) {
-                t.beginPath();
-                for (var s = 0; s < e.length; s++) {
-                    if (e[s].invisible != true) {
-                        var o = e[s].x;
-                        var a = e[s].y;
-                        t.moveTo(o, a);
-                        t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
-                    }
+            if (!e || !e.length) return;
+            t.beginPath();
+            for (var s = 0; s < e.length; s++) {
+                var v = e[s];
+                if (v && !v.invisible) {
+                    var o = v.x, a = v.y;
+                    t.moveTo(o + v.size + 820, a);
+                    t.arc(o, a, v.size + 820, 0, this.pi2, false);
                 }
-                t.fillStyle = defaultSettings.virusColor;
-                t.globalAlpha = 0.1;
-                t.fill();
-                t.globalAlpha = 1;
-                i && (e = []);
             }
+            t.fillStyle = defaultSettings.virusColor;
+            t.globalAlpha = 0.1;
+            t.fill();
+            t.globalAlpha = 1;
+            if (i) e = [];
         },
         calMinMaxMulti() {
-            if (legendmod.multiBoxPlayerExists && LM.foodMulti.length) {
-                LM.camMaxMultiX = LM.playerXMulti
-                LM.camMaxMultiY = LM.playerYMulti
-                LM.camMinMultiX = LM.playerXMulti
-                LM.camMinMultiY = LM.playerYMulti
-                for (var length = 0; length < LM.foodMulti.length; length++) {
-                    var x = LM.foodMulti[length].x - 10 - defaultSettings.foodSize;
-                    var y = LM.foodMulti[length].y - 10 - defaultSettings.foodSize;
-                    if (x > LM.camMaxMultiX) LM.camMaxMultiX = x
-                    if (y > LM.camMaxMultiY) LM.camMaxMultiY = y
-                    if (x < LM.camMinMultiX) LM.camMinMultiX = x
-                    if (y < LM.camMinMultiY) LM.camMinMultiY = y
+            if (legendmod.multiBoxPlayerExists && LM.foodMulti && LM.foodMulti.length) {
+                var food = LM.foodMulti;
+                var len = food.length;
+                var foodOffset = 10 + defaultSettings.foodSize;
+                var minX = LM.playerXMulti, maxX = LM.playerXMulti;
+                var minY = LM.playerYMulti, maxY = LM.playerYMulti;
+
+                var i = 0, len4 = len & ~3;
+                for (; i < len4; i += 4) {
+                    var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
+                    var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
+                    if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
+                    if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
+
+                    var x1 = f1.x - foodOffset, y1 = f1.y - foodOffset;
+                    if (x1 < minX) minX = x1; if (x1 > maxX) maxX = x1;
+                    if (y1 < minY) minY = y1; if (y1 > maxY) maxY = y1;
+
+                    var x2 = f2.x - foodOffset, y2 = f2.y - foodOffset;
+                    if (x2 < minX) minX = x2; if (x2 > maxX) maxX = x2;
+                    if (y2 < minY) minY = y2; if (y2 > maxY) maxY = y2;
+
+                    var x3 = f3.x - foodOffset, y3 = f3.y - foodOffset;
+                    if (x3 < minX) minX = x3; if (x3 > maxX) maxX = x3;
+                    if (y3 < minY) minY = y3; if (y3 > maxY) maxY = y3;
                 }
+                for (; i < len; i++) {
+                    var f = food[i];
+                    var x = f.x - foodOffset, y = f.y - foodOffset;
+                    if (x < minX) minX = x; if (x > maxX) maxX = x;
+                    if (y < minY) minY = y; if (y > maxY) maxY = y;
+                }
+                LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
+                LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
             }
         },
         calMinMax() {
-            var tempX, tempY
-            tempX = legendmod.viewXTrue
-            tempY = legendmod.viewYTrue
+            var food = LM.food;
+            if (!food || !food.length) return;
+            var tempX = legendmod.viewXTrue;
+            var tempY = legendmod.viewYTrue;
+            var minX = tempX, maxX = tempX;
+            var minY = tempY, maxY = tempY;
+            var foodOffset = 10 + defaultSettings.foodSize;
+            var len = food.length;
 
-            LM.camMaxX = tempX
-            LM.camMaxY = tempY
-            LM.camMinX = tempX
-            LM.camMinY = tempY
-            for (var length = 0; length < LM.food.length; length++) {
-                if (LM.food[length].spectator === false) {
-                    var x = LM.food[length].x - 10 - defaultSettings.foodSize;
-                    var y = LM.food[length].y - 10 - defaultSettings.foodSize;
-                    if (x > LM.camMaxX) LM.camMaxX = x
-                    if (y > LM.camMaxY) LM.camMaxY = y
-                    if (x < LM.camMinX) LM.camMinX = x
-                    if (y < LM.camMinY) LM.camMinY = y
+            var i = 0, len4 = len & ~3;
+            for (; i < len4; i += 4) {
+                var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
+                if (!f0.spectator) {
+                    var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
+                    if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
+                    if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
+                }
+                if (!f1.spectator) {
+                    var x1 = f1.x - foodOffset, y1 = f1.y - foodOffset;
+                    if (x1 < minX) minX = x1; if (x1 > maxX) maxX = x1;
+                    if (y1 < minY) minY = y1; if (y1 > maxY) maxY = y1;
+                }
+                if (!f2.spectator) {
+                    var x2 = f2.x - foodOffset, y2 = f2.y - foodOffset;
+                    if (x2 < minX) minX = x2; if (x2 > maxX) maxX = x2;
+                    if (y2 < minY) minY = y2; if (y2 > maxY) maxY = y2;
+                }
+                if (!f3.spectator) {
+                    var x3 = f3.x - foodOffset, y3 = f3.y - foodOffset;
+                    if (x3 < minX) minX = x3; if (x3 > maxX) maxX = x3;
+                    if (y3 < minY) minY = y3; if (y3 > maxY) maxY = y3;
                 }
             }
+            for (; i < len; i++) {
+                var f = food[i];
+                if (!f.spectator) {
+                    var x = f.x - foodOffset, y = f.y - foodOffset;
+                    if (x < minX) minX = x; if (x > maxX) maxX = x;
+                    if (y < minY) minY = y; if (y > maxY) maxY = y;
+                }
+            }
+            LM.camMinX = minX; LM.camMaxX = maxX;
+            LM.camMinY = minY; LM.camMaxY = maxY;
         },
         drawFood() {
 
@@ -17676,7 +17717,11 @@ Most cells eaten   : ${mostCellsEaten}
             }*/
         },
         drawCachedFood(ctx, food, scale, reset) {
-            if (!food.length) {
+            if (!food || !food.length) {
+                return;
+            }
+            if (this.gl && this.drawWebGLBatch(food)) {
+                if (reset) food = [];
                 return;
             }
             ctx.save();
@@ -17882,57 +17927,32 @@ Most cells eaten   : ${mostCellsEaten}
                 //ss = [];
             }
         },
-        drawBCursorTracking(ctx, players, cursorX, cursorY) { //Yahnych
+        drawBCursorTracking(ctx, players, cursorX, cursorY) {
+            if (!players || !players.length) return;
+            var alpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            var color = defaultSettings.cursorTrackingColor;
+
             for (let length = 0; length < players.length; length++) {
-                let t = LM.playerCells[length];
-                if (LM.playerCells[length].angle === undefined) {
-                    LM.playerCells[length].angle = 0
-                }
-                let r = t.size / 3;
-                //distance to target
-                var dis = Math.sqrt((cursorX - t.x) * (cursorX - t.x) + (cursorY - t.y) * (cursorY - t.y));
-                //angle in deg
-                var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
-                //if target on left side
+                let t = players[length];
+                if (!t) continue;
+                var dx = cursorX - t.x;
+                var dy = cursorY - t.y;
+                var rad = Math.atan2(dy, dx) + Math.PI / 2;
+                var r = t.size / 3;
 
-                if ((t.x - cursorX > 0 && t.y - cursorY < 0) || (t.x - cursorX > 0 && t.y - cursorY > 0)) {
-                    angl = 180 + (180 - angl);
-                }
-                var d = 4;
-                if (angl - t.angle > d && angl - t.angle < 180 - d || angl - t.angle < 180 * (-1) + d) {
-                    t.angle += d / 2;
-                    if (t.angle > 360) {
-                        t.angle = t.angle - 360
-                    }
-                } else if (angl - t.angle < d * (-1) && angl - t.angle > 180 * (-1) + d || angl - t.angle > 180 + d) {
-                    t.angle -= d / 2;
-                    if (t.angle < 0) {
-                        t.angle = 360 - t.angle
-                    }
-                }
-
-                ctx.save()
-
-                //Convert degrees to radian 
-                var rad = t.angle * Math.PI / 180;
-
+                ctx.save();
                 ctx.translate(t.x, t.y);
-
                 ctx.rotate(rad);
 
-                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
-                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
-                grad.addColorStop(0, defaultSettings.cursorTrackingColor);
-                grad.addColorStop(1, defaultSettings.cursorTrackingColor + "00");
-
+                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
+                grad.addColorStop(0, color);
+                grad.addColorStop(1, color + "00");
 
                 ctx.fillStyle = grad;
-                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+                ctx.globalAlpha = alpha;
                 ctx.beginPath();
-                ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
+                ctx.arc(0, -(t.size - r), r, 0, Math.PI * 2, false);
                 ctx.fill();
-                ctx.globalAlpha = 1;
-                // Restore canvas state as saved from above
                 ctx.restore();
             }
         },
@@ -17946,15 +17966,16 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
+            if (!players || !players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
+            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.beginPath();
+                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
             }
+            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
@@ -18004,41 +18025,40 @@ Most cells eaten   : ${mostCellsEaten}
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
+            if (!players || !players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
-            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
-            if (defaultmapsettings.qdsplitRange) { //Sonia2
+            if (defaultmapsettings.qdsplitRange) {
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //760+2*cell.size is the correct
                 }
-            } //Sonia2
-            if (defaultmapsettings.sdsplitRange) { //Sonia2
+                ctx.stroke();
+            }
+            if (defaultmapsettings.sdsplitRange) {
+                ctx.setLineDash([20, 30]);
+                ctx.lineWidth = 2 * width;
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.setLineDash([20, 30]);
-                    ctx.lineWidth = 2 * width;
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //Sonia2
                 }
-                ctx.setLineDash([]); //Sonia2
-                ctx.lineWidth = width; //Sonia2
-            } //Sonia2
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.lineWidth = width;
+            }
             ctx.globalAlpha = 1;
         },
         drawDashedCircle(ctx, x, y, radius, times, width, color) {
-            var pi2 = this.pi2 / times;
             ctx.lineWidth = width;
             ctx.strokeStyle = color;
-            for (var length = 0; length < times; length += 2) {
-                ctx.beginPath();
-                ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
-                ctx.stroke();
-            }
+            ctx.setLineDash([15, 15]);
+            ctx.beginPath();
+            ctx.arc(x, y, radius - width / 2, 0, this.pi2, false);
+            ctx.stroke();
+            ctx.setLineDash([]);
         },
         drawTeammatesInd(ctx, x, y, size) {
             if (this.indicator) {
@@ -18119,62 +18139,77 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
-            var len = str.length,
-                s;
+            var len = str.length;
+            if (!len) return;
             this.ctx.save();
             this.ctx.translate(centerX, centerY);
-            this.ctx.rotate(-1 * angle / 2);
-            this.ctx.rotate(-1 * (angle / len) / 2);
+            var step = angle / len;
+            this.ctx.rotate(-0.5 * (angle + step));
             for (var n = 0; n < len; n++) {
-                this.ctx.rotate(angle / len);
-                this.ctx.save();
-                this.ctx.translate(0, -1 * radius);
-                s = str[n];
-                this.ctx.fillText(s, 0, 0);
-                this.ctx.restore();
+                this.ctx.rotate(step);
+                this.ctx.translate(0, -radius);
+                this.ctx.fillText(str[n], 0, 0);
+                this.ctx.translate(0, radius);
             }
             this.ctx.restore();
         },
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
+                if (!ghostsCells.length) return;
+                var _showInfo = defaultmapsettings.showGhostCellsInfo;
+                var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
+
+                var _cullingScale = this.scale || 1;
+                var _halfW = this.canvasWidth / _cullingScale / 2;
+                var _halfH = this.canvasHeight / _cullingScale / 2;
+                var _cx = this.camX, _cy = this.camY;
+                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
+                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
+                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
+
                 this.ctx.beginPath();
+                if (_showInfo) {
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillStyle = defaultSettings.namesColor;
+                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                    this.ctx.lineWidth = 4;
+                }
                 var length = 0;
                 for (; length < ghostsCells.length; length++) {
                     if (!ghostsCells[length].inView) {
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
+                        var sz = ghostsCells[length].size;
+                        if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
+                            continue;
+                        }
                         this.ctx.moveTo(x, y);
                         this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
-                        //
-                        if (defaultmapsettings.showGhostCellsInfo) {
+
+                        if (_showInfo) {
                             this.nickScale = 1;
                             this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
                             this.nickSize = ~~(this.fontSize * this.nickScale);
                             this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                            this.ctx.textAlign = 'center';
-                            this.ctx.fillStyle = defaultSettings.namesColor;
-                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                            this.ctx.lineWidth = 4;
-                            angle = Math.PI * 0.8;
+                            var angle = Math.PI * 0.8;
 
-                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
-
-                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
+                            if (LM.leaderboard[length] != undefined) {
+                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
                             } else {
                                 this.ghostcellstext = "Ghost cell";
                             }
                             this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            if (_showSkins) {
                                 if (LM.leaderboard[length] != undefined) {
-                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                    var node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
                                     if (node) {
                                         this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
                                     }
                                 }
                             }
                         }
-                        //
                     }
                 }
                 this.ctx.fillStyle = defaultSettings.ghostCellsColor;
