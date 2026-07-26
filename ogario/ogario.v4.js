@@ -9709,36 +9709,57 @@ function thelegendmodproject() {
 
             //Here should be food part
         },
+        sendChatInvisibleData(dataObj) {
+            if (!window.legendmod || typeof window.legendmod.sendMessage !== 'function') return;
+            var encodedText = window.encodeLMInvisibleData(dataObj);
+            if (!encodedText) return;
+            try {
+                var view = application.createView(4 + 2 * encodedText.length);
+                view.setUint8(0, 99);
+                view.setUint8(1, 0);
+                var length = 0;
+                for (; length <= encodedText.length + 1; length++) {
+                    view.setUint16(2 + length, encodedText.charCodeAt(length), true);
+                }
+                view.setUint8(length, 0);
+                window.legendmod.sendMessage(view);
+            } catch (err) {}
+        },
         sendSocket3Info(type, message) {
+            var temp = {
+                com: "info",
+                com2: type,
+                id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
+                x: message,
+            };
             if (Socket3 && Socket3.readyState === 1) {
-                var temp = {
-                    com: "info",
-                    com2: type,
-                    id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
-                    x: message,
-                };
-                Socket3.send(JSON.stringify({
-                    "toH": $("#server-token").val() + "3",
-                    "msg": temp
-                }));
+                try {
+                    Socket3.send(JSON.stringify({
+                        "toH": $("#server-token").val() + "3",
+                        "msg": temp
+                    }));
+                } catch (e) {}
             }
+            this.sendChatInvisibleData(temp);
         },
         sendSocket3Position() {
-            if (ogario.play && window.noOgarioSocket && Socket3 && Socket3.readyState === 1) {
+            if (ogario.play) {
                 var temp = {
                     com: "pos",
-                    //id: customLMID,
-                    //id: application.playerID,
                     id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
                     x: application.getPlayerX(),
                     y: application.getPlayerY(),
                     mass: application.getMass()
                 };
-                Socket3.send(JSON.stringify({
-                    //"toH": "legendmod",
-                    "toH": $("#server-token").val() + "3",
-                    "msg": temp
-                }));
+                if (Socket3 && Socket3.readyState === 1) {
+                    try {
+                        Socket3.send(JSON.stringify({
+                            "toH": $("#server-token").val() + "3",
+                            "msg": temp
+                        }));
+                    } catch (e) {}
+                }
+                this.sendChatInvisibleData(temp);
             }
         },
         //Sonia4
@@ -20986,11 +21007,51 @@ function Socket3enabler(srv) {
     }
 }
 
+window.encodeLMInvisibleData = function (dataObj) {
+    try {
+        var str = JSON.stringify(dataObj);
+        var header = "\uFEFF\u200B";
+        var binStr = "";
+        for (var i = 0; i < str.length; i++) {
+            binStr += str.charCodeAt(i).toString(2).padStart(8, '0');
+        }
+        var encoded = header;
+        for (var j = 0; j < binStr.length; j++) {
+            encoded += (binStr[j] === '1') ? "\u200C" : "\u200B";
+        }
+        return encoded;
+    } catch (e) { return null; }
+};
+
+window.decodeLMInvisibleData = function (str) {
+    try {
+        if (!str || typeof str !== 'string' || !str.startsWith("\uFEFF\u200B")) return null;
+        var body = str.substring(2);
+        var binStr = "";
+        for (var i = 0; i < body.length; i++) {
+            if (body[i] === "\u200C") binStr += "1";
+            else if (body[i] === "\u200B") binStr += "0";
+        }
+        var decoded = "";
+        for (var k = 0; k < binStr.length; k += 8) {
+            var b = binStr.substring(k, k + 8);
+            if (b.length === 8) decoded += String.fromCharCode(parseInt(b, 2));
+        }
+        return JSON.parse(decoded);
+    } catch (e) { return null; }
+};
+
 function Socket3handler(message) {
-    var Socket3data2 = JSON.parse(message);
-    var Socket3data = Socket3data2.msg;
-    //console.log(Socket3data);
-    //
+    var Socket3data;
+    try {
+        if (typeof message === 'object') {
+            Socket3data = message;
+        } else {
+            var parsed = JSON.parse(message);
+            Socket3data = parsed.msg || parsed;
+        }
+    } catch (err) { return; }
+
     if (Socket3data == null) {
         return;
     } else if (Socket3data.com == "chat") {
@@ -20999,10 +21060,10 @@ function Socket3handler(message) {
         Socket3updateTeamPlayer(Socket3data);
     } else if (Socket3data.com == "pos") {
         Socket3updateTeamPlayerPosition(Socket3data);
-    } else if (Socket3data.com == "death") { //not used yet
+    } else if (Socket3data.com == "death") {
         Socket3updateTeamPlayerDeath(Socket3data);
     } else if (Socket3data.com == "info") {
-        if (Socket3data.com2 = "spfc") {
+        if (Socket3data.com2 == "spfc" || Socket3data.com2 === "spfc") {
             Socket3updateTeamPlayerSpfc(Socket3data);
         }
     }
