@@ -19285,12 +19285,9 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
             if (!players || !players.length) return;
-            /* WebGL ring batch disabled — shader draws filled circles but
-               opponent rings need stroked outlines (Canvas2D ctx.stroke).
-               TODO: implement a ring-outline fragment shader. */
-            // if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
-            //     return;
-            // }
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
+                return;
+            }
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
@@ -19461,11 +19458,9 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
-                /* WebGL ghost cell batch disabled — it skipped Canvas2D names/skins.
-                   Ghost cells need the full Canvas2D path for text and skin overlays. */
-                // if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
-                //     return;
-                // }
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
+                    return;
+                }
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
 
