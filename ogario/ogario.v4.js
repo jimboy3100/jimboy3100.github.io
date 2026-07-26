@@ -2378,6 +2378,11 @@ var displayText = {
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
         multiboxAmount: 'Liczba kont Multibox (2-4)',
+        mbSwitchAfterDeath: 'Przelacz po smierci',
+        mbRings: 'Wykrywanie pierscieni Multibox',
+        mbFreeze: 'Zamroz nieaktywne konto',
+        mbAutoRespawn: 'Automatyczne odradzanie w tle',
+        cameraSmoothLerp: 'Plynna kamera Multibox',
         skipStats: 'Pomin statystyki po smierci',
         showQuest: 'Pokaz zadanie (quest)',
         autoZoom: 'Auto zoom',
@@ -2867,6 +2872,11 @@ var displayText = {
         middleMultiView: 'View on middle of both (disables when close)',
         middleMultiViewWhenClose: 'View on middle of both (when close)',
         multiboxAmount: 'Multibox slots (2-4)',
+        mbSwitchAfterDeath: 'Auto-switch focus after death',
+        mbRings: 'Multibox unit stroke rings',
+        mbFreeze: 'Freeze inactive multibox unit',
+        mbAutoRespawn: 'Background auto-respawn',
+        cameraSmoothLerp: 'Smooth multibox camera lerp',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
@@ -6917,7 +6927,7 @@ function thelegendmodproject() {
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
-            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
+            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
