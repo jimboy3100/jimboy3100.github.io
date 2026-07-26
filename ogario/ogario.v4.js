@@ -10979,9 +10979,11 @@ function thelegendmodproject() {
                 return;
             }
             if (delay >= 1) {
-                var removedCells = LM.removedCells.indexOf(this);
-                if (removedCells !== -1) {
-                    LM.removedCells.splice(removedCells, 1);
+                var removedIdx = LM.removedCells.indexOf(this);
+                if (removedIdx !== -1) {
+                    var _rcLast = LM.removedCells.length - 1;
+                    if (removedIdx !== _rcLast) LM.removedCells[removedIdx] = LM.removedCells[_rcLast];
+                    LM.removedCells.length = _rcLast;
                 }
             }
         };
@@ -11637,12 +11639,6 @@ function thelegendmodproject() {
                 if ((LM.hideSmallBots && this.size <= 36) || this.invisible === true) {
                     return;
                 }
-                style.save();
-                try {
-
-                //if (this.isFood){ //food never happens here
-                //console.log('isFood')
-                //}
                 this.redrawed++;
                 if (cellMoved) {
                     this.moveCell();
@@ -11651,6 +11647,8 @@ function thelegendmodproject() {
                 if (this._webglRendered && !cellMoved) {
                     this._webglRendered = false;
                     if (defaultmapsettings.noNames && !defaultmapsettings.showMass) { return; }
+                    style.save();
+                    try {
                     var y = this.size;
                     var recursive = false;
                     if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
@@ -11682,8 +11680,13 @@ function thelegendmodproject() {
                         (window.teammatenicks.includes(this.targetNick))) {
                         drawRender.drawTeammatesInd(style, this.x, this.y, y);
                     }
+                    } finally {
+                        style.restore();
+                    }
                     return;
                 }
+                style.save();
+                try {
                 if (this.removed) {
                     style.globalAlpha *= 1 - this.alpha;
                 }
@@ -18592,14 +18595,13 @@ Most cells eaten   : ${mostCellsEaten}
                     this.drawWebGLCellBatch(LM.cells);
                 }
 
+                /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
+                var _cW = 0;
                 for (i = 0; i < LM.cells.length; i++) {
                     var cell = LM.cells[i];
-                    if (!cell) continue;
-                    if (cell.removed) {
-                        LM.cells.splice(i, 1);
-                        i--;
-                        continue;
-                    }
+                    if (!cell || cell.removed) continue;
+                    if (_cW !== i) LM.cells[_cW] = cell;
+                    _cW++;
 
                     if (defaultmapsettings.jellyPhisycs) {
                         try {
@@ -18616,6 +18618,7 @@ Most cells eaten   : ${mostCellsEaten}
                         LM.selected = cell.id;
                     }
                 }
+                if (_cW < LM.cells.length) LM.cells.length = _cW;
 
                 this.drawMiscRings();
                 if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells);
