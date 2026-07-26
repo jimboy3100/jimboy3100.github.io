@@ -1,4 +1,4 @@
-window.OgVer = 3.471;
+window.OgVer = 3.472;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16656,6 +16656,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 this.glInstanceVBO = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.glInstanceVBO);
+                gl.bufferData(gl.ARRAY_BUFFER, 50000 * 7 * 4, gl.DYNAMIC_DRAW);
                 var stride = 7 * 4;
 
                 var a_cellPos = gl.getAttribLocation(program, 'a_cellPos');
