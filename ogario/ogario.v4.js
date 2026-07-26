@@ -1,4 +1,4 @@
-window.OgVer = 3.459;
+window.OgVer = 3.460;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -17710,10 +17710,18 @@ Most cells eaten   : ${mostCellsEaten}
                 var buckets = this._foodColorBuckets;
                 for (var key in buckets) buckets[key].length = 0;
 
+                var _cullingScale = scale || 1;
+                var _halfW = (this.canvasWidth || 1920) / _cullingScale / 2;
+                var _halfH = (this.canvasHeight || 1080) / _cullingScale / 2;
+                var _vMinX = (this.camX || 0) - _halfW, _vMaxX = (this.camX || 0) + _halfW;
+                var _vMinY = (this.camY || 0) - _halfH, _vMaxY = (this.camY || 0) + _halfH;
+
                 for (var i = 0; i < food.length; i++) {
                     var f = food[i];
                     if (!f.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) f.invisible = true;
                     if (!f.invisible) {
+                        /* Camera Frustum Bounds Culling for Zero-Lag Smooth Zooming */
+                        if (f.x < _vMinX || f.x > _vMaxX || f.y < _vMinY || f.y > _vMaxY) continue;
                         var c = f.color || "#ffffff";
                         if (!buckets[c]) buckets[c] = [];
                         buckets[c].push(f);
