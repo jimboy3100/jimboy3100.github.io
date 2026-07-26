@@ -1024,15 +1024,6 @@ class Spect {
     }
 
     GhostFix() {
-        /* Disable axis-flip detection on FFA and Experimental — the map
-         * rotates in those modes causing fixX/fixY = -1 which breaks
-         * multibox coordinate mapping at the place of birth */
-        if (legendmod.gameMode === ":ffa" || legendmod.gameMode === ":experimental") {
-            this.fixX = 1;
-            this.fixY = 1;
-            this.ghostFixed = true;
-            return;
-        }
         //if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
         if (!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length !== 0 && Math.abs(application.getghostX()) > 100 && Math.abs(application.getghostY()) > 100) {
             this.fixX = /*Math.round*/(application.getghostX() / (this.ghostCells[0].x + this.mapOffsetX)) < 0 ? -1 : 1;

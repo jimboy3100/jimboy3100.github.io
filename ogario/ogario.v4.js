@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.480)
+ * ogario.v4.js — LegendMod Client (OgVer 3.481)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.480;
+window.OgVer = 3.481;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7991,13 +7991,18 @@ function thelegendmodproject() {
                 app.onPlayerSpawn();
             }, 100);
             if (defaultmapsettings.spawnSpecialEffects) {
-                setTimeout(function () {
-                    ///////// trigger special effects
-                    //console.log('Special effects stage 1');
-                    ogario.spawnX = ogario.playerX;
-                    ogario.spawnY = ogario.playerY;
-                    LM.drawCommander = true;
-                }, 110);
+                /* Skip spawn animation on FFA/Experimental — the map rotates
+                 * in those modes so the animation renders at wrong position */
+                var _gm = window.legendmod && window.legendmod.gameMode;
+                if (_gm !== ":ffa" && _gm !== ":experimental") {
+                    setTimeout(function () {
+                        ///////// trigger special effects
+                        //console.log('Special effects stage 1');
+                        ogario.spawnX = ogario.playerX;
+                        ogario.spawnY = ogario.playerY;
+                        LM.drawCommander = true;
+                    }, 110);
+                }
             }
             LegendModSpawn();
         },
