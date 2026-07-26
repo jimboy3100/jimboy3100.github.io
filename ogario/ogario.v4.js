@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.486)
+ * ogario.v4.js — LegendMod Client (OgVer 3.487)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.486;
+window.OgVer = 3.487;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -5657,57 +5657,63 @@ function thelegendmodproject() {
             }
         },
         multiboxswap() {
-            this.hideMenu()
-            if (!spects.length) {
-                //if (!legendmod.multiBoxPlayerExists){
-                addBox()
-            } else if (!window.multiboxPlayerEnabledSaved) {
+            this.hideMenu();
+            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
+                window.fullSpectator = false;
+                LM.flushSpecsData();
+                addBox();
+                window.multiboxPlayerEnabled = 1;
+                window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
-                    play()
+                    play();
                 }
-                window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
-                window.multiboxPlayerEnabled = null
+                return;
+            }
+
+            var numBoxes = spects.length;
+            if (!window.multiboxPlayerEnabled) {
+                window.multiboxPlayerEnabled = 1;
+                if (!legendmod.play) {
+                    play();
+                }
+            } else if (window.multiboxPlayerEnabled < numBoxes) {
+                window.multiboxPlayerEnabled++;
             } else {
-                window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
-                window.multiboxPlayerEnabledSaved = null
+                window.multiboxPlayerEnabled = null;
             }
-            if (spects.length && !legendmod.multiBoxPlayerExists) {
-                window.fullSpectator = false
-                LM.flushSpecsData()
-                addBox()
-            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) { //handle error
-                LM.flushSpecsData()
-                addBox()
-            }
-            /* Re-register n1 skin when returning to main player so it doesn't
-             * get lost from being overwritten by multibox handleSendNick */
+            window.multiboxPlayerEnabledSaved = null;
+            /* Re-register n1 skin when returning to main player */
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
         },
         multiboxback() {
-            this.hideMenu()
-            if (!spects.length) {
-                addBox()
-            } else if (!window.multiboxPlayerEnabledSaved) {
+            this.hideMenu();
+            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
+                window.fullSpectator = false;
+                LM.flushSpecsData();
+                addBox();
+                window.multiboxPlayerEnabled = 1;
+                window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
-                    play()
+                    play();
                 }
-                window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
-                window.multiboxPlayerEnabled = null
+                return;
+            }
+
+            var numBoxes = spects.length;
+            if (!window.multiboxPlayerEnabled) {
+                window.multiboxPlayerEnabled = numBoxes;
+                if (!legendmod.play) {
+                    play();
+                }
+            } else if (window.multiboxPlayerEnabled > 1) {
+                window.multiboxPlayerEnabled--;
             } else {
-                window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
-                window.multiboxPlayerEnabledSaved = null
+                window.multiboxPlayerEnabled = null;
             }
-            if (spects.length && !legendmod.multiBoxPlayerExists) {
-                window.fullSpectator = false
-                LM.flushSpecsData()
-                addBox()
-            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) {
-                LM.flushSpecsData()
-                addBox()
-            }
+            window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
