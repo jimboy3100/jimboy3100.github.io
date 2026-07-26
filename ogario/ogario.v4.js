@@ -11842,7 +11842,12 @@ function thelegendmodproject() {
                                     style.fill();
                                 } else {
                                     try {
+                                        style.save();
+                                        style.beginPath();
+                                        style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
+                                        style.clip();
                                         style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                        style.restore();
                                     } catch (e) { }
                                 }
                             }
