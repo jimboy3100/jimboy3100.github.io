@@ -1,4 +1,4 @@
-window.OgVer = 3.433;
+window.OgVer = 3.407;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -8031,45 +8031,51 @@ function thelegendmodproject() {
                 const n = o / LM.mapSize;
                 const r = ogario.mapOffsetX + LM.mapOffset;
                 const l = ogario.mapOffsetY + LM.mapOffset;
-                this.drawSelectedCell(this.miniMapCtx);
-                this.w = ogario.playerX;
-                this.u = ogario.playerY;
-                this.currentSector = this.calculateMapSector(this.w, this.u, true);
+                if (this.drawSelectedCell(this.miniMapCtx),
+                    //
+                    this.w = ogario.playerX,
+                    this.u = ogario.playerY,
+                    /*
+                        this.w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(i.playerX) : i.playerX,
+                        this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(i.playerY) : i.playerY,  
+*/
+                    //						
+                    //this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
+                    this.currentSector = this.calculateMapSector(this.w, this.u, true),
 
-                this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily;
-                this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
-                this.miniMapCtx.globalAlpha = 1;
-                this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor;
-                this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e);
-                if (!this.miniMapSectors) {
-                    this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a);
-                }
-                this.miniMapCtx.save();
-                this.miniMapCtx.translate(9.5, a);
-                if (":battleroyale" === this.gameMode && drawRender) {
-                    drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l);
-                }
-                if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
-                    var me = LM.mapEvent;
-                    var targetHalf = me.targetSize / 2;
-                    var tMinX = (-targetHalf + r) * n;
-                    var tMinY = (-targetHalf + l) * n;
-                    var tW = me.targetSize * n;
-                    var tH = me.targetSize * n;
-                    var mmCtx = app.miniMapCtx;
-                    mmCtx.save();
-                    if (me.phase === 1) {
-                        mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
-                    } else if (me.phase === 2) {
-                        mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
-                    } else {
-                        mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
-                    }
-                    mmCtx.lineWidth = 1;
-                    mmCtx.strokeRect(tMinX, tMinY, tW, tH);
-                    mmCtx.restore();
-                }
-                if (defaultmapsettings.showMiniMapGhostCells) {
+                    this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily,
+                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
+                    this.miniMapCtx.globalAlpha = 1,
+                    this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
+                    this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e),
+                    //this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
+                    //this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
+                    //this.miniMapCtx.fillText(this.currentSector, 10, e),
+                    this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
+                    this.miniMapCtx.save(),
+                    this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && drawRender && drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
+                    /* ── Expanding Land: Draw zone on minimap (all phases) ── */
+                    LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4) && (function () {
+                        var me = LM.mapEvent;
+                        var targetHalf = me.targetSize / 2;
+                        var tMinX = (-targetHalf + r) * n;
+                        var tMinY = (-targetHalf + l) * n;
+                        var tW = me.targetSize * n;
+                        var tH = me.targetSize * n;
+                        var mmCtx = app.miniMapCtx;
+                        mmCtx.save();
+                        if (me.phase === 1) {
+                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                        } else if (me.phase === 2) {
+                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                        } else {
+                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                        }
+                        mmCtx.lineWidth = 1;
+                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                        mmCtx.restore();
+                    })(),
+                    defaultmapsettings.showMiniMapGhostCells) {
                     var h = ogario.ghostCells;
                     this.miniMapCtx.beginPath();
                     var c = 0;
@@ -8083,8 +8089,13 @@ function thelegendmodproject() {
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
                     this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
+                    this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
+                    this.miniMapCtx.shadowBlur = 10;
+                    this.miniMapCtx.shadowOffsetX = 0;
+                    this.miniMapCtx.shadowOffsetY = 0;
                     this.miniMapCtx.fill();
                     this.miniMapCtx.globalAlpha = 1;
+                    this.miniMapCtx.shadowBlur = 0;
                 }
                 if (defaultmapsettings.showMiniMapGuides) {
                     u = Math.round((ogario.playerX + r) * n);
@@ -8119,15 +8130,15 @@ function thelegendmodproject() {
 
                 }
                 //
-                if (application.top5 && LM.arrowFB && LM.arrowFB[0]) {
+                if (application.top5) {
                     for (var temp = 0; temp < application.top5.length; temp++) {
                         if (application.top5[temp].nick === LM.arrowFB[0].nick) {
-                            LM.arrowFB[0].isIncluded = true;
+                            LM.arrowFB[0].isIncluded = true
                         }
                     }
                 }
 
-                if (LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
                     this.miniMapCtx.save()
                     this.miniMapCtx.beginPath();
                     this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
@@ -8152,24 +8163,19 @@ function thelegendmodproject() {
                     //}
                 }
                 //				
-                this.miniMapCtx.beginPath();
-                this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
-                    defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
-                this.miniMapCtx.closePath();
-                if (defaultSettings.miniMapMyCellStrokeSize > 0) {
-                    this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
-                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor;
-                    this.miniMapCtx.stroke();
-                }
-                this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
-                this.miniMapCtx.fill();
-                if (this.teamPlayers.length) {
-                    this.miniMapCtx.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
-                    this.miniMapCtx.textAlign = "center";
-                    for (c = 0; c < this.teamPlayers.length; c++) {
-                        if (this.teamPlayers[c] && application.teamPlayers && application.teamPlayers[c]) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
-                        }
+                if (this.miniMapCtx.beginPath(),
+                    this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
+                        defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
+                    this.miniMapCtx.closePath(),
+                    defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
+                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
+                        this.miniMapCtx.stroke()),
+                    this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
+                    this.miniMapCtx.fill(),
+                    this.teamPlayers.length) {
+                    c = 0;
+                    for (; c < this.teamPlayers.length; c++) {
+                        this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                     }
                 }
                 if (this.deathLocations.length > 0) {
@@ -10149,23 +10155,23 @@ function thelegendmodproject() {
     };
 
     function irenderfromagario() {
-        this.txt = '';
-        this.txtCanvas = null;
-        this.txtCtx = null;
-        this.color = '#FFFFFF';
-        this.stroke = false;
-        this.strokeWidth = 2;
-        this.strokeColor = '#000000';
-        this.font = '700 16px Ubuntu';
-        this.fontFamily = 'Ubuntu';
-        this.fontWeight = 700;
-        this.fontSize = 16;
-        this.margin = 3;
-        this.scale = 1;
-        this.quality = 1;
-        this.measuredWidth = 0;
-        this.redraw = false;
-        this.remeasure = false;
+        this.txt = '',
+            this.txtCanvas = null,
+            this.txtCtx = null,
+            this.color = '#FFFFFF',
+            this.stroke = false,
+            this.strokeWidth = 2,
+            this.strokeColor = '#000000',
+            this.font = '700 16px Ubuntu',
+            this.fontFamily = 'Ubuntu',
+            this.fontWeight = 700,
+            this.fontSize = 16,
+            this.margin = 3,
+            this.scale = 1,
+            this.quality = 1,
+            this.measuredWidth = 0,
+            this.redraw = false,
+            this.remeasure = false,
             this.setTxt = function (ogariosettxtsetter) {
                 if (this.txt !== ogariosettxtsetter) {
                     this.txt = ogariosettxtsetter;
@@ -10244,39 +10250,32 @@ function thelegendmodproject() {
             },
             //
             this.measureWidthCustom = function (customTxt) {
-                if (!customTxt) return 0;
-                if (this.lastCustomTxt !== customTxt || this.remeasure) {
-                    this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily;
-                    this.customMeasuredWidth = this.txtCtx.measureText(customTxt).width;
-                    this.lastCustomTxt = customTxt;
-                    this.remeasure = false;
-                }
-                return ~~(this.fontSize / 10 * this.customMeasuredWidth) + 2 * this.strokeWidth;
-            };
+                return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                    this.measuredWidth = this.txtCtx.measureText(customTxt).width,
+                    this.remeasure = false),
+                    ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
+            },
             //
             this.drawTxt = function (customTxt) {
                 var _dpr = window.LM_DPR || 1;
-                this.createCanvas();
-                if (this.redraw) {
-                    this.redraw = false;
-                    var _targetWidth = (customTxt ? this.measureWidthCustom(customTxt) : this.measureWidth()) * _dpr;
-                    this.txtCanvas.width = _targetWidth;
-                    this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr;
-                    this.txtCtx.scale(_dpr, _dpr);
-                    this.txtCtx.font = this.font;
-                    this.txtCtx.globalAlpha = 1;
-                    this.txtCtx.lineWidth = this.strokeWidth;
-                    this.txtCtx.strokeStyle = this.strokeColor;
-                    this.txtCtx.fillStyle = this.color;
-                    if (customTxt) {
-                        if (this.stroke) this.txtCtx.strokeText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5));
-                        this.txtCtx.fillText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5));
-                    } else {
-                        if (this.stroke) this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5));
-                        this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5));
-                    }
-                }
-                return this.txtCanvas;
+                return this.createCanvas(),
+                    this.redraw && (this.redraw = false,
+
+
+                        this.txtCanvas.width = this.measureWidthCustom(customTxt) * _dpr,
+                        this.txtCanvas.width = this.measureWidth() * _dpr,
+                        this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr,
+                        this.txtCtx.scale(_dpr, _dpr),
+                        this.txtCtx.font = this.font,
+                        this.txtCtx.globalAlpha = 1,
+                        this.txtCtx.lineWidth = this.strokeWidth,
+                        this.txtCtx.strokeStyle = this.strokeColor,
+                        this.txtCtx.fillStyle = this.color,
+                        customTxt && this.stroke && this.txtCtx.strokeText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
+                        !customTxt && this.stroke && this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
+                        customTxt && this.txtCtx.fillText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
+                        !customTxt && this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
+                    this.txtCanvas;
             };
     }
     //window.application = application;
@@ -10402,17 +10401,16 @@ function thelegendmodproject() {
                 var prevRl = this.points[(i - 1 + len) % len].rl;
                 var nextRl = this.points[(i + 1) % len].rl;
                 var self = this;
-                var affected;
+                var affected
                 if (LM.quadtree) {
-                    var self = this;
                     affected = LM.quadtree.some({
                         x: curP.x - 5,
                         y: curP.y - 5,
                         w: 10,
                         h: 10
                     }, function (item) {
-                        return item.parent !== self && self.sqDist(item, curP) <= 25;
-                    });
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
                 }
                 //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
 
@@ -10501,10 +10499,6 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
-            if (this.targetX === this.x && this.targetY === this.y && this.targetSize === this.size && !this.removed) {
-                this.time = LM.time;
-                return;
-            }
             var time = LM.time - this.time;
             var delay = time / defaultmapsettings.animation;
             if (delay < 0) {
@@ -10679,130 +10673,131 @@ function thelegendmodproject() {
         };
         this.drawChat = function (context) {
             if (this.chatCanvas && !(this.size <= 40)) {
-                if (!this.nick || this.nick === "") return;
-                if (!application.chatHistory.length && !application.commandHistory.length) return;
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
                 var customTxt;
                 var temp;
-                var _now = Date.now();
-                var _myNick = window.$ ? $('#nick').val() : '';
-                var _lastNick = application.lastSentNick;
                 for (var i = 0; i < application.chatHistory.length; i++) {
-                    var ch = application.chatHistory[i];
-                    if (ch.nick === this.nick && (_now - ch.time < 15000)) {
-                        if (!ch.message.includes('emoticon') && !ch.message.includes('<img src') && !ch.message.includes('DosAttack') &&
-                            !ch.message.includes('DosFight') && !ch.message.includes('DosRun') &&
-                            !ch.message.includes('https://agar.io/sip=151.80.91.73:1511')) {
-                            if (ch.nick === _myNick || ch.nick === _lastNick) {
-                                if (ch.message.split('&')[1] && ch.message.split('&')[1].split(';')[0]) {
-                                    ch.message.replace(ch.message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
+                    if (application.chatHistory[i].nick === this.nick && (Date.now() - application.chatHistory[i].time < 15000)) {
+                        if (!application.chatHistory[i].message.includes('emoticon') && !application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
+                            !application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') &&
+                            !application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick != "") {
+                            if (application.chatHistory[i].nick === $('#nick').val() || application.chatHistory[i].nick === application.lastSentNick) {
+                                if (application.chatHistory[i].message.split('&')[1] && application.chatHistory[i].message.split('&')[1].split(';')[0]) {
+                                    application.chatHistory[i].message.replace(application.chatHistory[i].message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
                                 }
+                                //application.chatHistory[i].message = application.chatHistory[i].message.replace("&#x2F;", "");
                                 if (defaultmapsettings.showChatMyOwn) {
-                                    temp = _now - ch.time;
-                                    customTxt = ch.message;
+                                    temp = Date.now() - application.chatHistory[i].time
+                                    customTxt = application.chatHistory[i].message
                                 }
                             } else {
-                                temp = _now - ch.time;
-                                customTxt = ch.message;
+                                temp = Date.now() - application.chatHistory[i].time
+                                customTxt = application.chatHistory[i].message
                             }
                         }
                     }
                 }
                 for (var i = 0; i < application.commandHistory.length; i++) {
-                    var cmd = application.commandHistory[i];
-                    if (cmd.nick === this.nick && (_now - cmd.time < 15000)) {
-                        if (cmd.nick === _myNick || cmd.nick === _lastNick) {
-                            if (defaultmapsettings.showChatMyOwn) {
-                                if (temp > (_now - cmd.time) || !temp) {
-                                    temp = _now - cmd.time;
-                                    customTxt = cmd.message;
+                    if (application.commandHistory[i].nick === this.nick && (Date.now() - application.commandHistory[i].time < 15000)) {
+                        if (this.nick != "") {
+                            if (application.commandHistory[i].nick === $('#nick').val() || application.commandHistory[i].nick === application.lastSentNick) {
+
+                                if (defaultmapsettings.showChatMyOwn) {
+                                    if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
+                                        temp = Date.now() - application.commandHistory[i].time
+                                        customTxt = application.commandHistory[i].message
+                                    }
                                 }
-                            }
-                        } else {
-                            if (temp > (_now - cmd.time) || !temp) {
-                                temp = _now - cmd.time;
-                                customTxt = cmd.message;
+                            } else {
+                                if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
+                                    temp = Date.now() - application.commandHistory[i].time
+                                    customTxt = application.commandHistory[i].message
+                                }
                             }
                         }
                     }
                 }
-                if (!customTxt) return;
-                if (this.redrawChat) {
-                    chatCanvas.setTxt(customTxt);
-                }
-                var data = chatCanvas.drawTxt(customTxt);
-                var _dpr2 = window.LM_DPR || 1;
-                var width = ~~(data.width / (this.scale * _dpr2));
-                var height = ~~(data.height / (this.scale * _dpr2));
-                var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
-
-                if (temp < 2000) {
-                    context.globalAlpha = temp / 2000;
-                } else if (temp > 13000) {
-                    temp = 15000 - temp;
-                    context.globalAlpha = temp / 2000;
-                }
-
-                if (width > 1 && height > 1) {
-                    try {
-                        context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                    } catch (e) { }
-                }
-            }
-        };
-        this.drawMerge = function (context) {
-            if (this.mergeCanvas && !(this.size <= 40)) {
-                if (!window.ExternalScripts || defaultmapsettings.optimizedMass || !window.playerCellsId || !this.isPlayerCell || this.isVirus) {
-                    return;
-                }
-                var mergeCanvas = this.mergeCanvas;
-                mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
-                mergeCanvas.setFontSize(this.massSize);
-                mergeCanvas.setScale(this.scale);
-
-                CellTimerTrigger();
-                if (window.playerCellsId[this.id] === undefined) {
-                    window.playerCellsId[this.id] = {};
-                    window.playerCellsId[this.id].historyMass = [];
-                    window.playerCellsId[this.id].historyX = [];
-                    window.playerCellsId[this.id].historyY = [];
-                } else {
-                    window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
-                    if (window.playerCellsId[this.id].historyMass.length > 500) {
-                        window.playerCellsId[this.id].historyMass.pop();
+                if (customTxt) {
+                    if (this.redrawChat) {
+                        chatCanvas.setTxt(customTxt);
                     }
-                    window.playerCellsId[this.id].historyX.unshift(this.x);
-                    if (window.playerCellsId[this.id].historyX.length > 500) {
-                        window.playerCellsId[this.id].historyX.pop();
-                    }
-                    window.playerCellsId[this.id].historyY.unshift(this.y);
-                    if (window.playerCellsId[this.id].historyY.length > 500) {
-                        //this.historyY.pop();
-                        window.playerCellsId[this.id].historyY.pop();
-                    }
-                }
-                if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
-                    var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
+                    var data = chatCanvas.drawTxt(customTxt);
+                    var _dpr2 = window.LM_DPR || 1;
+                    var width = ~~(data.width / (this.scale * _dpr2));
+                    var height = ~~(data.height / (this.scale * _dpr2));
+                    var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
 
-                    if (this.redrawMerge) {
-                        mergeCanvas.setTxt(customTxt);
-                        //this.lastMass = this.mass;
+                    if (temp < 2000) {
+                        context.globalAlpha = temp / 2000
+                    } else if (temp > 13000) {
+                        temp = 15000 - temp
+                        context.globalAlpha = temp / 2000
                     }
-                    var data = mergeCanvas.drawTxt(customTxt);
-                    var _dpr3 = window.LM_DPR || 1;
-                    var width = ~~(data.width / (this.scale * _dpr3));
-                    //console.log(data.width, this.scale, width, this.x - width / 2);
-                    var height = ~~(data.height / (this.scale * _dpr3));
-                    var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
+
                     if (width > 1 && height > 1) {
                         try {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                         } catch (e) { }
                     }
                 }
+            }
+        };
+        this.drawMerge = function (context) {
+            if (this.mergeCanvas && !(this.size <= 40)) {
+                var mergeCanvas = this.mergeCanvas;
+                mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
+                mergeCanvas.setFontSize(this.massSize);
+                mergeCanvas.setScale(this.scale);
+
+                if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
+                    CellTimerTrigger();
+                    if (window.playerCellsId[this.id] === undefined) {
+                        window.playerCellsId[this.id] = {};
+                        window.playerCellsId[this.id].historyMass = [];
+                        window.playerCellsId[this.id].historyX = [];
+                        window.playerCellsId[this.id].historyY = [];
+                    } else {
+                        window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
+                        if (window.playerCellsId[this.id].historyMass.length > 500) {
+                            window.playerCellsId[this.id].historyMass.pop();
+                        }
+                        window.playerCellsId[this.id].historyX.unshift(this.x);
+                        if (window.playerCellsId[this.id].historyX.length > 500) {
+                            window.playerCellsId[this.id].historyX.pop();
+                        }
+                        window.playerCellsId[this.id].historyY.unshift(this.y);
+                        if (window.playerCellsId[this.id].historyY.length > 500) {
+                            //this.historyY.pop();
+                            window.playerCellsId[this.id].historyY.pop();
+                        }
+                    }
+                    //if (this.mergeTime && this.mergeTime > 0) {
+                    if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
+                        var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
+
+                        if (this.redrawMerge) {
+                            mergeCanvas.setTxt(customTxt);
+                            //this.lastMass = this.mass;
+                        }
+                        var data = mergeCanvas.drawTxt(customTxt);
+                        var _dpr3 = window.LM_DPR || 1;
+                        var width = ~~(data.width / (this.scale * _dpr3));
+                        //console.log(data.width, this.scale, width, this.x - width / 2);
+                        var height = ~~(data.height / (this.scale * _dpr3));
+                        var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
+                        if (width > 1 && height > 1) {
+                            try {
+                                context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                            } catch (e) { }
+                        }
+                    }
+
+                }
+                ///
+                //window.counterCell++;
             }
         };
         this.drawMass = function (context) {
@@ -10831,14 +10826,6 @@ function thelegendmodproject() {
             }
         };
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
-            /* ── Perf: cache Path2D until position or size changes ── */
-            if (this._cachedVirusPath &&
-                this._cachedVPx === shadowXpos &&
-                this._cachedVPy === shadowYpos &&
-                this._cachedVPsz === zeroSizeMax &&
-                this._cachedVPsp === pixelSizeTargetMax) {
-                return this._cachedVirusPath;
-            }
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
             const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
@@ -10852,31 +10839,30 @@ function thelegendmodproject() {
                 ctxfx.lineTo(~~(shadowXpos + radiusX * Math.sin(i)), ~~(shadowYpos + radiusX * Math.cos(i)));
                 ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
             }
-            this._cachedVirusPath = ctxfx;
-            this._cachedVPx = shadowXpos;
-            this._cachedVPy = shadowYpos;
-            this._cachedVPsz = zeroSizeMax;
-            this._cachedVPsp = pixelSizeTargetMax;
             return ctxfx;
         };
         this.drawSpecialSkinDancer = function (style, y) {
             let tempcolor;
             if (LM.gameMode !== ":party") {
                 if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
-                    application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4";
-                    var node2 = application.customSkinsMap[this.targetNick];
-                    if (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.nick === this.targetNick) {
-                        ogarcopythelb.skinURL = node2;
+                    application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+                    node2 = application.customSkinsMap[this.targetNick]
+                    if (ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2
                     }
+
+                    //checkVideos(node2, this.targetNick);
                 }
             }
             else {
                 if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] !== "https://dkyriak.github.io/VideoFloRidaLow.mp4") {
-                    application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4";
-                    var node2 = application.customSkinsMap[this.targetNick + this.color];
-                    if (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.nick === this.targetNick) {
-                        ogarcopythelb.skinURL = node2;
+                    application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+                    node2 = application.customSkinsMap[this.targetNick + this.color]
+                    if (ogarcopythelb.nick === this.targetNick) {
+                        ogarcopythelb.skinURL = node2
                     }
+
+                    //checkVideos(node2, this.targetNick);
                 }
             }
 
@@ -10920,13 +10906,12 @@ function thelegendmodproject() {
             }
         };
         this.drawImageSpecialSkin = function (imageSpecial, b, c, d, e, style) {
-            var tempImgSp = window[imageSpecial];
+            var tempImgSp = eval('window.' + imageSpecial)
             if (!tempImgSp) {
-                if (typeof loadIconSpecialSkins === "function") {
-                    loadIconSpecialSkins(imageSpecial);
-                }
-            } else {
-                if (tempImgSp.complete && tempImgSp.width > 0) style.drawImage(tempImgSp, b, c, d, e);
+                loadIconSpecialSkins(imageSpecial)
+            }
+            else {
+                if (tempImgSp.complete) style.drawImage(tempImgSp, b, c, d, e);
             }
         };
         this.drawSpecialSkin = function (style, y) {
@@ -11110,10 +11095,15 @@ function thelegendmodproject() {
                 } else if (this.SpecialEffect === "Gladiator" || this.SpecialEffect2 === "Gladiator") {
                     var d = new Date();
                     var n = d.getSeconds();
-                    style.save();
+                    /*
+                    var e;
+                    if (n<30){ e = n / 30}
+                    else { e = (n /30) - 1}						
+                    style.filter = 'contrast(1.4) sepia(' + e + ')';
+                    */
                     style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsGladiator", this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5, style);
-                    style.restore();
+                    //style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero" || this.SpecialEffect2 === "Hero") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);
@@ -11221,23 +11211,12 @@ function thelegendmodproject() {
                 if ((LM.hideSmallBots && this.size <= 36) || this.invisible === true) {
                     return;
                 }
-                /* ── Perf: view frustum culling — skip cells off-screen ── */
-                var _cullingScale = drawRender.viewScale || drawRender.scale || 1;
-                var _halfW = (drawRender.canvasWidth / _cullingScale / 2) + 200;
-                var _halfH = (drawRender.canvasHeight / _cullingScale / 2) + 200;
-                var _cx = drawRender.camX, _cy = drawRender.camY;
-                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
-                    _cx = _vx; _cy = _vy;
-                }
-                if (this.x + this.size < _cx - _halfW ||
-                    this.x - this.size > _cx + _halfW ||
-                    this.y + this.size < _cy - _halfH ||
-                    this.y - this.size > _cy + _halfH) {
-                    return;
-                }
-
+                //					
                 style.save();
+
+                //if (this.isFood){ //food never happens here
+                //console.log('isFood')
+                //}
                 this.redrawed++;
                 if (cellMoved) {
                     this.moveCell();
@@ -11249,29 +11228,30 @@ function thelegendmodproject() {
                 var s = false;
                 var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
-                if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
+
+                //26/7/2020
+                if (LM.ws.includes("replay") && window.replayGreyScale) {
                     style.filter = 'grayscale(100%)';
-                } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
+                } else if (LM.ws.includes("replay") && window.replaySepia) {
                     style.filter = 'sepia(100%)';
-                } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
+                } else if (LM.ws.includes("replay") && window.replayHueRotate) {
                     style.filter = 'hue-rotate(90deg)';
                 }
-
-                var node = null;
-                var node2 = null, node2IsVideo = false;
-                if (!this.isFood && !this.isVirus) {
-                    if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                        node = application.getCustomSkin(this.targetNick, this.color);
+                //style.filter='grayscale(100%)';
+                //
+                var node = null
+                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                    node = application.getCustomSkin(this.targetNick, this.color);
+                }
+                var node2, node2IsVideo = false;
+                if (defaultmapsettings.videoSkins) {
+                    if (LM.gameMode != ":party") {
+                        node2 = application.customSkinsMap[this.targetNick];
                     }
-                    if (defaultmapsettings.videoSkins) {
-                        if (LM.gameMode != ":party") {
-                            node2 = application.customSkinsMap[this.targetNick];
-                        }
-                        else {
-                            node2 = application.customSkinsMap[this.targetNick + this.color];
-                        }
-                        if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
+                    else {
+                        node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
+                    if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -11281,12 +11261,12 @@ function thelegendmodproject() {
                 var color2 = this.color;
                 if (LM.play || LM.playerCellsMulti.length) {
                     if (this.isPlayerCell || this.playerCellsMulti) {
-                        if (defaultmapsettings.myCustomColor && typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.color && LM.gameMode != ":teams") {
+                        if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
                             this.color = ogarcopythelb.color;
                         }
                     }
-                    else if (!this.isFood && !this.isVirus) {
-                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
+                    else {
+                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
                             this.color = this.oppColor;
                         }
                     }
@@ -11302,56 +11282,60 @@ function thelegendmodproject() {
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                    style.lineJoin = "miter";
-                    if (!window._virusSinTable) {
-                        window._virusSinTable = new Float32Array(120);
-                        window._virusCosTable = new Float32Array(120);
-                        for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
-                            var _vAng = _vIdx * (Math.PI * 2 / 120);
-                            window._virusSinTable[_vIdx] = Math.sin(_vAng);
-                            window._virusCosTable[_vIdx] = Math.cos(_vAng);
-                        }
-                    }
-                    var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
+                    style.lineJoin = "miter"
+                    var pointCount = 120;
+                    var incremental = this.pi2 / pointCount;
                     style.moveTo(this.x, this.y + this.size + 3);
-                    for (var i = 1; i < 120; i++) {
-                        var dist = this.size - 3 + ((i & 1) ? 0 : 6);
+                    for (var i = 1; i < pointCount; i++) {
+                        var angle = i * incremental;
+                        var dist = this.size - 3 + (i % 2 === 0) * 6;
                         style.lineTo(
-                            this.x + dist * _vSin[i],
-                            this.y + dist * _vCos[i]
-                        );
+                            this.x + dist * Math.sin(angle),
+                            this.y + dist * Math.cos(angle)
+                        )
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
                 }
                 else {
                     if (!node) {
-                        if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) {
+                        //this.drawCircle(style, this.x, this.y, y, this.color)
+                        if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                             style.arc(this.x, this.y, y, 0, this.pi2, false);
                             if (!this.isVirus && !defaultmapsettings.cellContours && !node2IsVideo) {
                                 style.fillStyle = color2;
                                 style.fill();
                             }
                             if (!this.isVirus && defaultmapsettings.cellContours) {
-                                style.lineWidth = 20;
-                                style.strokeStyle = color2;
-                                style.stroke();
+                                style.lineWidth = 20; ///
+                                style.strokeStyle = color2; ///
+                                style.stroke(); ///
                             }
                         }
                         else {
-                            this.drawCircle(style, this.x, this.y, y, color2);
+                            this.drawCircle(style, this.x, this.y, y, color2)
                         }
                     }
                 }
                 if (!node) style.closePath();
+                //17/12/2020
                 if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
                     if (defaultmapsettings.jellyPhisycs) {
                         style.fillStyle = this.color;
                         style.fill();
                     }
                     style.restore();
-                    return;
+                    return
                 }
+                //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                //    return style.fillStyle = this.color, style.fill(), void style.restore();
+                //}						
                 if (this.isVirus) {
+                    //console.log("is not jelly");
+                    /*if (dyinglight1load === "yes") {
+                        try {
+                            style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+                        } catch (e) {}
+                    }*/
                     if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
                         style.globalAlpha *= defaultSettings.virusAlpha;
                         s = true;
@@ -11361,24 +11345,24 @@ function thelegendmodproject() {
                         style.strokeStyle = application.setVirusStrokeColor(y);
                     }
                     else {
-                        style.fillStyle = this.virusColor;
-                        style.strokeStyle = this.virusStroke;
+                        style.fillStyle = this.virusColor
+                        style.strokeStyle = this.virusStroke
                     }
-                    style.fill();
+                    style.fill()
                     if (s) {
                         style.globalAlpha = value;
                         s = false;
                     }
-                    style.lineWidth = defaultSettings.virusStrokeSize;
+                    style.lineWidth = defaultSettings.virusStrokeSize
                     if (defaultmapsettings.virusGlow) {
                         style.shadowBlur = defaultSettings.virusGlowSize;
                         style.shadowColor = defaultSettings.virusGlowColor;
                     }
                     if (defaultmapsettings.virusSpikes) {
-                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize));
+                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
                     }
                     else {
-                        style.stroke();
+                        style.stroke()
                     }
                     if (defaultmapsettings.showMass) {
                         this.setDrawing();
@@ -11508,18 +11492,18 @@ function thelegendmodproject() {
                                     } catch (e) { }
                             }
                         }
-                        if (typeof dyinglight1load !== "undefined" && dyinglight1load === "yes" && node == null && this.targetNick && LM.playerNick && !this.targetNick.includes(LM.playerNick) && !this.isFood && this.mass > 12) {
+                        if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
                             try {
                                 style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
                             } catch (e) { }
                         }
                     }
-                    this.drawSpecialSkin(style, y);
+                    this.drawSpecialSkin(style, y)
                 }
                 if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                    window.teammatenicks && this.targetNick &&
+                    window.teammatenicks && this.targetNick != "" &&
                     (window.teammatenicks.includes(this.targetNick))) {
-                    drawRender.drawTeammatesInd(style, this.x, this.y, y);
+                    drawRender.drawTeammatesInd(style, this.x, this.y, y)
                 }
 
                 if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
@@ -11782,10 +11766,10 @@ function thelegendmodproject() {
                 if (defaultmapsettings.rotateMap) {
                     application.SLGconnect(t);
                 }
-                if (typeof pauseVideos === "function") pauseVideos();
+                pauseVideos()
                 if (typeof Universalchatfix === 'function') {
-                    Universalchatfix();
-                    if (typeof preEmbPassword === 'function') preEmbPassword();
+                    Universalchatfix()
+                    preEmbPassword()
                 }
             }, 100);
             window.legendmod.vnr = 0; //Sonia3
@@ -11861,13 +11845,9 @@ function thelegendmodproject() {
                 $(".btn-full-map-spec").hide();
             }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
-            if (window.userBots) {
-                if (window.userBots.startedBots && window.connectionBots) {
-                    window.connectionBots.send(new Uint8Array([1]).buffer);
-                }
-                window.userBots.isAlive = false;
-                window.userBots.macroFeedInterval = null;
-            }
+            if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
+            window.userBots.isAlive = false
+            window.userBots.macroFeedInterval = null
             if (this.serverType === 'garix' && this.garixFingerprint) {
                 this.socket = new WebSocket(t, [this.garixFingerprint]);
             } else {
@@ -12064,32 +12044,39 @@ function thelegendmodproject() {
             }
         },
         replayfunctions() {
-            if (window.replayTimeOuts && window.replayTimeOuts.length && !this.ws.includes("replay")) {
-                for (var i = 0; i < window.replayTimeOuts.length; i++) {
-                    clearTimeout(window.replayTimeOuts[i]);
+            if (window.replayTimeOuts.length && !this.ws.includes("replay")) {
+                for (var i = 0; i < window.replayTimeOuts; i++) {
+                    clearTimeout(window.replayTimeOuts[i])
                 }
-                window.replayTimeOuts = [];
-            } else if (this.ws && !this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
+                window.replayTimeOuts = []
+            } else if (!this.ws.includes("replay") && $('#pause-hud').text() === "Loading...") {
                 $('#pause-hud').text(textLanguage.pause);
-                $('#pause-hud').hide();
+                $('#pause-hud').hide()
             }
-            var tokenEl = $("#server-token").val() || "";
-            if (!tokenEl.includes("replay") && !tokenEl.includes("imsolo.pro:2109/")) {
-                if (window.RecordedArenasSpecifications[tokenEl]) {
+            //if (!window.RecordedProtocol[$("#server-token").val()]){
+            //console.log('a'+$("#server-token").val())		
+            //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
+            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+                if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
                     for (var i = 1; i < 10; i++) {
-                        if (!window.RecordedArenasSpecifications[tokenEl + '(' + i + ')']) {
-                            window.temporaryRecordedProtocol = tokenEl + '(' + i + ')';
+                        if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']) {
+                            window.temporaryRecordedProtocol = $("#server-token").val() + '(' + i + ')'
                             break;
+                        } else {
+
                         }
                     }
                 } else {
-                    window.temporaryRecordedProtocol = tokenEl;
+                    window.temporaryRecordedProtocol = $("#server-token").val()
                 }
-                window.catholicCalculator = 0;
-                window.RecordedProtocol[window.temporaryRecordedProtocol] = [];
-                window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol);
-                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()];
+                window.catholicCalculator = 0
+                window.RecordedProtocol[window.temporaryRecordedProtocol] = []
+                window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
+                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
             }
+
+
+            //}				
         },
         closeConnection() {
             // Clear Imsolo/Agar2 heartbeat interval on disconnect
@@ -12302,9 +12289,7 @@ function thelegendmodproject() {
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
-                var stEl = document.getElementById('server-token');
-                var isELToken = stEl && stEl.value && stEl.value.includes('expanding.land');
-                if (self.isLegendWorld || self.serverType === 'expandingland' || isELToken) {
+                if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
                     self.flushCellsData();
                 }
                 self.sendMessage(view);
@@ -12463,9 +12448,7 @@ function thelegendmodproject() {
                 return;
             }
             // Default (agar.io / Expanding Land / other): just nick
-            var stEl2 = document.getElementById('server-token');
-            var isELToken2 = stEl2 && stEl2.value && stEl2.value.includes('expanding.land');
-            if (this.isLegendWorld || this.serverType === 'expandingland' || isELToken2) {
+            if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
                 this.flushCellsData();
             }
             var view = this.createView(1 + nick.length);
@@ -12906,15 +12889,12 @@ function thelegendmodproject() {
         },
         handleMessage(data) {
             //this.pingTimer();		
-            var tokenVal = $("#server-token").val() || "";
-            if (!tokenVal.includes("replay") && !tokenVal.includes("imsolo.pro:2109/")) {
-                if (window.RecordedProtocol && window.temporaryRecordedProtocol) {
-                    if (!window.RecordedProtocol[window.temporaryRecordedProtocol]) {
-                        window.RecordedProtocol[window.temporaryRecordedProtocol] = [];
-                    }
-                    window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data;
-                    window.catholicCalculator++;
-                }
+            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+                window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
+
+                //window.RecordedProtocolArenas[legendmod.ws][]
+                //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
+                window.catholicCalculator++
             }
             /*			
             for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
@@ -13017,12 +12997,9 @@ function thelegendmodproject() {
                     window.testobjectsOpcode50 = data;
                     this.pieChart = [];
                     var a = data.getUint32(s, true);
-                    s += 4;
-                    if (s + 7 * a > data.byteLength) break;
-                    for (var n = 0; n < a; n++) {
-                        this.pieChart.push(data.getFloat32(s, true));
-                        s += 7;
-                    }
+                    s += 4; //5,12,19
+                    //for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
+                    for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 7;
                     drawRender.drawPieChart();
                     break;
                 case 53:
@@ -13590,12 +13567,7 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        if (window.testobjects2 && window.testobjects2.includes('https')) {
-                            var parts = window.testobjects2.split('https');
-                            if (parts[1] && parts[1].includes('H')) {
-                                window.googlePic = "https" + parts[1].split('H')[0] + "H";
-                            }
-                        }
+                        window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
 
                         /*if (defaultmapsettings.massBooster && master.context) {				
                             massx31hour();
@@ -14138,29 +14110,28 @@ function thelegendmodproject() {
                 case 178:
                     window.testobjectsOpcode178 = data;
                     this.battleRoyale.players = data.getUint16(s, true);
+                    //$('#btl-players-count').text(this.battleRoyale.players),
                     s += 2;
-                    var brFlags = data.getUint16(s, true);
-                    s += 2;
-                    if (!brFlags) {
-                        this.battleRoyale.state = 0;
-                        this.battleRoyale.joined = false;
-                    }
-                    if (brFlags & 3) {
-                        this.battleRoyale.state = data.getUint8(s++);
-                        this.battleRoyale.x = data.getInt32(s, true); s += 4;
-                        this.battleRoyale.y = data.getInt32(s, true); s += 4;
-                        this.battleRoyale.radius = data.getUint32(s, true); s += 4;
-                        this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true); s += 4;
-                        if (this.battleRoyale.shrinkTime) {
-                            this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000);
-                            if (this.battleRoyale.timeLeft < 0) this.battleRoyale.timeLeft = 0;
-                        }
-                    }
-                    if (brFlags & 2) {
-                        this.battleRoyale.targetX = data.getInt32(s, true); s += 4;
-                        this.battleRoyale.targetY = data.getInt32(s, true); s += 4;
-                        this.battleRoyale.targetRadius = data.getUint32(s, true); s += 4;
-                    }
+                    var y = data.getUint16(s, true);
+                    s += 2,
+                        y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
+                        3 & y && (this.battleRoyale.state = data.getUint8(s++),
+                            this.battleRoyale.x = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.y = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.radius = data.getUint32(s, true),
+                            s += 4,
+                            this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
+                            s += 4,
+                            this.battleRoyale.shrinkTime &&
+                            (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
+                                this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
+                        2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.targetY = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.targetRadius = data.getUint32(s, true));
                     this.handleLeaderboard();
                     break;
                 case 179:
@@ -14178,12 +14149,13 @@ function thelegendmodproject() {
                     var profiles = data.getUint16(s, true);
                     s += 2;
                     for (n = 0; n < profiles; n++) {
-                        var rankName = window.decodeURIComponent(escape(encode()));
+                        var ogarcopythelb = window.decodeURIComponent(escape(encode()));
                         v = data.getUint32(s, true);
                         s += 4;
                         this.battleRoyale.rank.push({
+                            //'place': defaultmapsettings,
                             'place': v,
-                            'name': rankName
+                            'name': ogarcopythelb
                         });
                     }
                     var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
@@ -14257,9 +14229,8 @@ function thelegendmodproject() {
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
                     if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                        if (!window.userBots) window.userBots = {};
-                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2;
-                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2;
+                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
+                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
                     }
 
                     break;
@@ -14649,17 +14620,12 @@ function thelegendmodproject() {
             }
         },
         updateProducts(prod) {
-            if (!prod) return;
             for (var i = 0; i < prod.length; i++) {
-                if (prod[i] && prod[i].userWalletItem) {
-                    this.updateWalletInfo([prod[i].userWalletItem]);
-                }
+                this.updateWalletInfo([prod[i].userWalletItem])
             }
         },
         updateWalletInfo(items) {
-            if (!items || !this.user) return;
             for (var i = 0; i < items.length; i++) {
-                if (!items[i]) continue;
                 var type = items[i].type;
                 switch (type) {
                     case 1:
@@ -14797,15 +14763,11 @@ function thelegendmodproject() {
                 '<b class="message-nick">Viruses eaten:</b> ' + u.virusesEaten)
         },
         updateEvents(event) {
-            if (!event || event.length === 0) {
-                if (typeof window.questActivationReq === "function") window.questActivationReq();
-                return;
-            }
+            if (event.length === 0) window.questActivationReq()
             for (var i = 0; i < event.length; i++) {
-                var e = event[i];
-                if (!e) continue;
-                var type = e.eventId,
-                    timer = (e.nextAvailableInSeconds || 0) * 1000;
+                var e = event[i],
+                    type = e.eventId,
+                    timer = e.nextAvailableInSeconds * 1000;
                 switch (type) {
                     case "dailyQuest":
                         if (window.dailyQuestTimer) clearTimeout(window.dailyQuestTimer);
@@ -14908,23 +14870,23 @@ function thelegendmodproject() {
             })
         },
         autobrew() {
-            if (defaultmapsettings.autobrewing && window.master && (window.master.context === "facebook" || window.master.context === "google") && this.user && this.user.potionsStatus) {
-                for (var potion of Object.values(this.user.potionsStatus)) {
-                    if (potion && potion.status === 1) {
-                        if (typeof window.brewPotion === "function") window.brewPotion(potion.slot);
+            if (defaultmapsettings.autobrewing && (window.master.context === "facebook" || window.master.context === "google")) {
+                for (var potion of Object.values(LM.user.potionsStatus)) {
+                    if (potion.status === 1) {
+                        window.brewPotion(potion.slot);
                         break;
                     }
-                }
+                };
             }
         },
         getPotionForOpen() {
-            if (window.master && (window.master.context === "facebook" || window.master.context === "google") && this.user && this.user.potionsStatus) {
-                for (var potion of Object.values(this.user.potionsStatus)) {
-                    if (potion && (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now()))) {
-                        if (typeof window.openPotion === "function") window.openPotion(potion.slot);
+            if ((window.master.context === "facebook" || window.master.context === "google")) {
+                for (var potion of Object.values(LM.user.potionsStatus)) {
+                    if (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now())) {
+                        window.openPotion(potion.slot);
                         break;
                     }
-                }
+                };
             }
         },
         updateUserSettings(s) {
@@ -15176,15 +15138,17 @@ Most cells eaten   : ${mostCellsEaten}
          * Styled to visually match agar.io's native blue notification panel.
          * Uses only server-confirmed data (provider, displayName). */
         agarExp(q) {
-            var exp = 0;
-            for (var i = 1; i <= q; i++) {
+            var s = {};
+            var i = 0,
+                exp = 0;
+            for (i = 1; i <= q; i++) {
                 exp += i * 100;
             }
             exp -= 500;
             if (q <= 4) {
                 exp = q === 1 ? 50 : q === 2 ? 125 : q === 3 ? 250 : 500;
             }
-            return exp;
+            return exp
         },
         handleSubmessage(message) {
             var e = 0;
@@ -15522,9 +15486,7 @@ Most cells eaten   : ${mostCellsEaten}
 
         },
         addSpect() {
-            var nickVal = $("#nick").val() || "";
-            var clanVal = $("#clantag").val() || "";
-            if ((nickVal.includes('?') && clanVal === window.clanTagLc) || window.proLicenceUID) {
+            if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
                 if (true) { // LW: always show spectator buttons
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
@@ -15606,18 +15568,9 @@ Most cells eaten   : ${mostCellsEaten}
         },
         calculatebgpi(x, y) {
             var ofs = 150;
-            var calc = 4;
-            if ((x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs)) {
-                calc = 4;
-            } else if (x >= this.mapMidX && y < this.mapMidY) {
-                calc = 0;
-            } else if (x < this.mapMidX && y < this.mapMidY) {
-                calc = 1;
-            } else if (x < this.mapMidX && y >= this.mapMidY) {
-                calc = 2;
-            } else {
-                calc = 3;
-            }
+            //var ofs = 1;
+            var calc = (x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
+            //var calc = (x < this.mapOffsetX + ofs && x > this.mapOffsetX - ofs) || (y < this.mapOffsetY + ofs && y > this.mapOffsetY - ofs) ? 4 : x >= this.mapOffsetX && y < this.mapOffsetY ? 0 : x < this.mapOffsetX && y < this.mapOffsetY ? 1 : x < this.mapOffsetX && y >= this.mapOffsetY ? 2 : 3;
             if ((window.legendmod.lbgpi === 4 || calc === 4 || window.legendmod.lbgpi === calc) && window.legendmod.delstate < 0) {
                 window.legendmod.lbgpi = calc;
                 return calc;
@@ -16151,9 +16104,14 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            this.cells.sort(function (a, b) {
-                return a.size === b.size ? a.id - b.id : a.size - b.size;
-            });
+            var cells = this.cells;
+            for (var i = 1; i < cells.length; i++) {
+                var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
+                while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
+                    cells[j + 1] = cells[j]; j--;
+                }
+                cells[j + 1] = key;
+            }
         },
         calculatePlayerMassAndPosition() {
             var size = 0;
@@ -16243,7 +16201,8 @@ Most cells eaten   : ${mostCellsEaten}
                 var t = 0;
                 for (; t < this.cells.length; t++) {
                     var cell = this.cells[t];
-                    if (cell.isFood || cell.isVirus || cell.invisible) {
+                    //if (cell.isVirus || cell.spectator > 0) {
+                    if (cell.isVirus || cell.invisible) {
                         continue;
                     }
                     //console.log(i); i for food is 13
@@ -16331,35 +16290,62 @@ Most cells eaten   : ${mostCellsEaten}
                 },
         */
         cacheCells(x, y, targetX, targetY, size, mass) {
-            const item = { x: x, y: y, targetX: targetX, targetY: targetY, size: size };
-            if (mass >= defaultmapsettings.dominationRate * 4) {
-                this.biggerSTEDCellsCache.push(item);
-            } else if (mass >= defaultmapsettings.dominationRate * 2) {
-                this.biggerSTECellsCache.push(item);
-            } else if (mass >= defaultmapsettings.dominationRate) {
-                this.biggerCellsCache.push(item);
-            } else if (mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominatedRate) {
-                this.SSCellsCache.push(item);
-            } else if (mass > defaultmapsettings.dominatedRate / 2) {
-                this.smallerCellsCache.push(item);
-            } else if (mass > defaultmapsettings.dominatedRate / 4) {
-                this.STECellsCache.push(item);
-            } else {
-                this.STEDCellsCache.push(item);
-            }
+            return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominatedRate ? void this.SSCellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : mass > defaultmapsettings.dominatedRate / 2 ? void this.smallerCellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : mass > defaultmapsettings.dominatedRate / 4 ? void this.STECellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            }) : void this.STEDCellsCache.push({
+                x: x,
+                y: y,
+                targetX: targetX,
+                targetY: targetY,
+                size: size
+            });
         },
         setCellOppColor(isPlayer, mass) {
             if (isPlayer) {
-                return (typeof ogarcopythelb !== "undefined" && ogarcopythelb && ogarcopythelb.color) ? ogarcopythelb.color : defaultSettings.myCellColor;
+                return ogarcopythelb.color
             } else {
-                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor;
-                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor;
-                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor;
-                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor;
-                else if (mass >= defaultmapsettings.dominatedRate) return '#FFDC00';
-                else if (mass >= defaultmapsettings.dominatedRate / 2) return defaultSettings.enemySColor;
-                else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor;
-                else return defaultSettings.enemySSTEDColor;
+                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
+                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
+                else if (mass >= defaultmapsettings.dominatedRate) return '#FFDC00'
+                else if (mass >= defaultmapsettings.dominatedRate / 2) return defaultSettings.enemySColor
+                else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor
+                else return defaultSettings.enemySSTEDColor
             }
         },
         getCursorPosition() {
@@ -16576,12 +16562,6 @@ Most cells eaten   : ${mostCellsEaten}
             this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
             this.ctx.save();
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
-            /* ── Perf: replay filter set once per frame, not per cell ── */
-            if (LM.ws && LM.ws.includes("replay")) {
-                if (window.replayGreyScale) this.ctx.filter = 'grayscale(100%)';
-                else if (window.replaySepia) this.ctx.filter = 'sepia(100%)';
-                else if (window.replayHueRotate) this.ctx.filter = 'hue-rotate(90deg)';
-            }
             if (defaultmapsettings.showOptimisedGrid) {
                 //
             }
@@ -16640,13 +16620,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawFood();
             this.drawGhostCells();
             for (var i = 0; i < LM.removedCells.length; i++) {
-                var _rc = LM.removedCells[i];
-                if (!_rc) continue;
-                _rc.moveCell();
-                /* moveCell() may splice _rc from removedCells when delay===1,
-                   shifting the array — adjust index to avoid skipping */
-                if (LM.removedCells[i] !== _rc) { i--; }
-                _rc.draw(this.ctx);
+                LM.removedCells[i].draw(this.ctx, true);
             }
             for (i = 0; i < LM.cells.length; i++) {
 
@@ -16784,28 +16758,25 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawRings() {
-            if (defaultmapsettings.reverseTrick && window.reverseTrick) {
-                if (reverseTrick.biggerEnemy && LM.indexedCells[reverseTrick.biggerEnemy]) {
-                    this.drawRing(this.ctx,
-                        LM.indexedCells[reverseTrick.biggerEnemy].x,
-                        LM.indexedCells[reverseTrick.biggerEnemy].y,
-                        LM.indexedCells[reverseTrick.biggerEnemy].size,
-                        0.75, 'red');
-                }
-                if (reverseTrick.smallerEnemy && LM.indexedCells[reverseTrick.smallerEnemy]) {
-                    this.drawRing(this.ctx,
-                        LM.indexedCells[reverseTrick.smallerEnemy].x,
-                        LM.indexedCells[reverseTrick.smallerEnemy].y,
-                        LM.indexedCells[reverseTrick.smallerEnemy].size,
-                        0.75, 'blue');
-                }
+            if (defaultmapsettings.reverseTrick) {
+                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
+                    LM.indexedCells[reverseTrick.biggerEnemy].x,
+                    LM.indexedCells[reverseTrick.biggerEnemy].y,
+                    LM.indexedCells[reverseTrick.biggerEnemy].size,
+                    0.75, 'red');
+                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
+                    LM.indexedCells[reverseTrick.smallerEnemy].x,
+                    LM.indexedCells[reverseTrick.smallerEnemy].y,
+                    LM.indexedCells[reverseTrick.smallerEnemy].size,
+                    0.75, 'blue');
             }
             if (LM.indexedCells[LM.selected]) {
+                //console.log("LM.indexedCells[LM.selected]")
                 this.drawRing(this.ctx,
                     LM.indexedCells[LM.selected].x,
                     LM.indexedCells[LM.selected].y,
                     LM.indexedCells[LM.selected].size,
-                    0.75, '#ffffff');
+                    0.75, '#ffffff')
             }
         },
         drawCustomNewGrid(grid) {
@@ -16821,22 +16792,21 @@ Most cells eaten   : ${mostCellsEaten}
                 legendmod.mapMaxX - legendmod.mapMinX,
                 legendmod.mapMaxY - legendmod.mapMinY
             );*/
-            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale);
-            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale);
-            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale);
-            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale);
-            if (legendmod.gridPic.complete && legendmod.gridPic.width > 0) {
-                this.ctx.drawImage(legendmod.gridPic,
-                    (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                    (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                    (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
-                    (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
-                    minX,
-                    minY,
-                    maxX - minX,
-                    maxY - minY
-                );
-            }
+            //legendmod.viewX -> drawRender.camX
+            var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
+            var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
+            var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
+            var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)
+            this.ctx.drawImage(legendmod.gridPic,
+                (minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                (minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                (maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+                (maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+                minX,
+                minY,
+                maxX - minX,
+                maxY - minY
+            );
             /*this.ctx.drawImage(legendmod.gridPic,			
                 (legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
                 (legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
@@ -16863,19 +16833,17 @@ Most cells eaten   : ${mostCellsEaten}
                     legendmod.customMidPic = new Image;
                     legendmod.customMidPic.src = defaultSettings.customBackground;
                 }
-                if (typeof dyinglight1load !== "undefined" && dyinglight1load === "yes") {
-                    if (window.cimg5 && cimg5.complete && cimg5.width > 0) {
-                        this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                        this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
-                        this.ctx.drawImage(
-                            cimg5,
-                            legendmod.mapMinX - LM.mapSize - 1,
-                            legendmod.mapMinY - LM.mapSize - 1,
-                            (legendmod.mapMaxX - legendmod.mapMinX) * 3,
-                            (legendmod.mapMaxY - legendmod.mapMinY) * 3
-                        );
-                        this.ctx.globalAlpha = this.prevctxglobalAlpha;
-                    }
+                if (dyinglight1load === "yes") {
+                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    this.ctx.drawImage(
+                        cimg5,
+                        legendmod.mapMinX - LM.mapSize - 1,
+                        legendmod.mapMinY - LM.mapSize - 1,
+                        (legendmod.mapMaxX - legendmod.mapMinX) * 3,
+                        (legendmod.mapMaxY - legendmod.mapMinY) * 3
+                    );
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha
                 }
                 if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
@@ -16918,87 +16886,85 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawWaves() {
-            let waves = LM.Waves;
-            if (!waves || !waves.length) return;
+            let waves = LM.Waves
+
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-            var _cullingScale = this.scale || 1;
-            var _halfW = this.canvasWidth / _cullingScale / 2;
-            var _halfH = this.canvasHeight / _cullingScale / 2;
-            var _cx = this.camX, _cy = this.camY;
-            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-            if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
-                _cx = _vx; _cy = _vy;
-            }
-            var _minX = _cx - _halfW, _maxX = _cx + _halfW;
-            var _minY = _cy - _halfH, _maxY = _cy + _halfH;
-            var _now = Date.now();
-
             for (let length = waves.length - 1; length >= 0; length--) {
-                let w = waves[length];
-                let r = (_now - w.time) / 2;
-                if (r > w.wavelength) {
-                    waves.splice(length, 1);
-                    continue;
-                }
-                if (r <= 0) continue;
-                if (w.x + r < _minX || w.x - r > _maxX || w.y + r < _minY || w.y - r > _maxY) {
-                    continue;
-                }
+                //for (let length = waves.length - 1; length > 0; length--) {
+                let r = (Date.now() - waves[length].time) / 2
 
-                let rInner = Math.max(0, r - r / 4);
-                let gradient = this.ctx.createRadialGradient(w.x, w.y, rInner, w.x, w.y, r);
-                if (w.moreAnimation && r > 1160 && r > (w.wavelength + 760) / 2) {
+
+                let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
+                //if (waves[length].moreAnimation && r > 1560){
+                if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760) / 2) {
+                    //if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
                     gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
                     gradient.addColorStop(1, defaultSettings.splitRangeColor);
-                } else {
-                    gradient.addColorStop(0, w.color + "00");
-                    gradient.addColorStop(1, w.color);
+                }
+                else {
+                    gradient.addColorStop(0, waves[length].color + "00");
+                    gradient.addColorStop(1, waves[length].color);
                 }
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = r / 4;
                 this.ctx.beginPath();
-                this.ctx.arc(w.x, w.y, Math.max(0, r - r / 8), 0, this.pi2, false);
+                this.ctx.arc(waves[length].x, waves[length].y, r - r / 8, 0, this.pi2, false);
+                this.ctx.closePath();
                 this.ctx.stroke();
+                this.ctx.beginPath();
                 this.ctx.strokeStyle = defaultSettings.splitRangeColor;
                 this.ctx.lineWidth = 5;
                 this.ctx.beginPath();
-                this.ctx.arc(w.x, w.y, r, 0, this.pi2, false);
+                this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
+                this.ctx.closePath();
                 this.ctx.stroke();
+                //if (r > 500) {					
+                if (r > waves[length].wavelength) {
+                    LM.Waves.splice(length, 1);
+                }
             }
             this.ctx.globalAlpha = 1;
+            /*
+            var wave = {
+              x: LM.cursorX,//window.user.mouseX,
+              y: LM.cursorY,//window.user.mouseY,
+              color: ogario.playerColor
+            }
+            wave.time = Date.now();
+            LM.Waves.push(wave)		  		*/
         },
         drawFBTracking(ctx, players, x, y) { //Yahnych
-            if (!players.length) return;
-            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
                 //distance to target
-                var dx = x - t.x, dy = y - t.y;
-                var dis = Math.sqrt(dx * dx + dy * dy);
-                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
+                var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
                 //angle 
                 var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
                 //if target on left side
+
                 if ((t.x - x > 0 && t.y - y < 0) || (t.x - x > 0 && t.y - y > 0)) {
                     angl = 180 + (180 - angl);
                 }
+                // Store the current context state (i.e. rotation, translation etc..)
+                ctx.save()
 
+                //Convert degrees to radian 
                 var rad = angl * Math.PI / 180;
-                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                ctx.setTransform(
-                    _worldTx.a * cos + _worldTx.c * sin,
-                    _worldTx.b * cos + _worldTx.d * sin,
-                    _worldTx.c * cos - _worldTx.a * sin,
-                    _worldTx.d * cos - _worldTx.b * sin,
-                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
-                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
-                );
+                //Set the origin to the center of the image
+                ctx.translate(t.x, t.y);
+
+                //Rotate the canvas around the origin
+                ctx.rotate(rad);
+
+                //draw the image    
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
 
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, defaultSettings.splitRangeColor);
                 grad.addColorStop(1, defaultSettings.splitRangeColor + "00");
+
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
@@ -17006,8 +16972,9 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
             }
-            ctx.setTransform(_worldTx);
         },
         newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = []) {
             var size = 0
@@ -17024,9 +16991,8 @@ Most cells eaten   : ${mostCellsEaten}
                     break
                 }
             } else {
-                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95;
+                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95
             }
-            if (size <= 0) size = 100;
             var s = Math.pow(Math.min(64 / size, 1), 0.4000);
             var w = 1024 / s / 2 * mtp; //WSVGA
             var h = 600 / s / 2 * mtp;
@@ -17063,7 +17029,9 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.strokeStyle = color;
             ctx.beginPath();
             ctx.arc(x, y, size - 10, 0, this.pi2, false);
+            ctx.closePath();
             ctx.stroke();
+
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
@@ -17153,102 +17121,79 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.font = type ? defaultSettings.sectorsFontWeight + " " + defaultSettings.sectorsFontSize + "px " + defaultSettings.sectorsFontFamily : defaultSettings.miniMapFontWeight + " " + ~~(0.4 * posY) + "px " + defaultSettings.miniMapFontFamily;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                var _secCull = type;
-                var _vMinX = 0, _vMaxX = 0, _vMinY = 0, _vMaxY = 0;
-                if (_secCull) {
-                    var _cScale = this.scale || 1;
-                    var _hW = this.canvasWidth / _cScale / 2;
-                    var _hH = this.canvasHeight / _cScale / 2;
-                    var _cx = this.camX, _cy = this.camY;
-                    var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-                    if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
-                    _vMinX = _cx - _hW; _vMaxX = _cx + _hW;
-                    _vMinY = _cy - _hH; _vMaxY = _cy + _hH;
-                }
                 length = 0;
                 for (; length < y; length++) {
                     var ogarcopythelb = 0;
                     for (; ogarcopythelb < x; ogarcopythelb++) {
+                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
                         rePosX = ~~(minX + posX / 2 + ogarcopythelb * posX);
                         rePosY = ~~(minY + posY / 2 + length * posY);
-                        if (_secCull && (rePosX + posX < _vMinX || rePosX - posX > _vMaxX || rePosY + posY < _vMinY || rePosY - posY > _vMaxY)) {
-                            continue;
-                        }
-                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
                         ctx.fillText(application, rePosX, rePosY);
                     }
                 }
             }
         },
         drawCommander(ctx) {
+            //console.log('Special effects stage 2');
             if (LM.drawCommander) {
+                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                if (!this._cimg || this._cimgSrc !== defaultSettings.commanderImage) {
-                    this._cimg = new Image();
-                    this._cimg.src = this._cimgSrc = defaultSettings.commanderImage;
-                }
-                if (!this._cimg1 || this._cimg1Src !== defaultSettings.commanderImage1) {
-                    this._cimg1 = new Image();
-                    this._cimg1.src = this._cimg1Src = defaultSettings.commanderImage1;
-                }
-                if (!this._cimg12 || this._cimg12Src !== defaultSettings.commanderImage2) {
-                    this._cimg12 = new Image();
-                    this._cimg12.src = this._cimg12Src = defaultSettings.commanderImage2;
-                }
+                cimg = new Image;
+                cimg.src = defaultSettings.commanderImage;
+                cimg1 = new Image;
+                cimg1.src = defaultSettings.commanderImage1;
+                cimg12 = new Image;
+                cimg12.src = defaultSettings.commanderImage2;
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(this._cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(this._cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(ogario.spawnX, ogario.spawnY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(this._cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
             }
         },
         drawCommander2(ctx) {
+            //console.log('Special effects stage 2');
             if (LM.drawCommander2) {
+                //var pickerAxes = this.ctx;
                 var pickerAxes = ctx;
-                if (!this._cimg3 || this._cimg3Src !== defaultSettings.commanderImage3) {
-                    this._cimg3 = new Image();
-                    this._cimg3.src = this._cimg3Src = defaultSettings.commanderImage3;
-                }
-                if (!this._cimg4 || this._cimg4Src !== defaultSettings.commanderImage4) {
-                    this._cimg4 = new Image();
-                    this._cimg4.src = this._cimg4Src = defaultSettings.commanderImage4;
-                }
-                if (!this._cimg5 || this._cimg5Src !== defaultSettings.commanderImage5) {
-                    this._cimg5 = new Image();
-                    this._cimg5.src = this._cimg5Src = defaultSettings.commanderImage5;
-                }
+                cimg = new Image;
+                cimg.src = defaultSettings.commanderImage3;
+                cimg1 = new Image;
+                cimg1.src = defaultSettings.commanderImage4;
+                cimg12 = new Image;
+                cimg12.src = defaultSettings.commanderImage5;
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle);
-                pickerAxes.drawImage(this._cimg3, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle1);
-                pickerAxes.drawImage(this._cimg4, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.save();
                 pickerAxes.globalAlpha = LM.cAlpha;
                 pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
                 pickerAxes.rotate(LM.cAngle2);
-                pickerAxes.drawImage(this._cimg5, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
                 pickerAxes.restore();
                 pickerAxes.globalAlpha = 1;
                 this.updateCommander();
@@ -17384,13 +17329,12 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Inner glow line on expansion edge (dual stroke instead of CPU shadowBlur)
+                // Subtle inner glow line on the expansion edge
                 ctx.save();
-                ctx.strokeStyle = 'rgba(34, 170, 255, 0.2)';
-                ctx.lineWidth = 14;
-                ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
-                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.2 + 0.1 * pulse) + ')';
-                ctx.lineWidth = 6;
+                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
+                ctx.lineWidth = 8;
+                ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
+                ctx.shadowBlur = 12;
                 ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
                 ctx.restore();
 
@@ -17434,14 +17378,13 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.setLineDash([]);
                 ctx.restore();
 
-                // Glow on danger border for phase 3+ (dual stroke instead of CPU shadowBlur)
+                // Glow on danger border for phase 3+
                 if (me.phase >= 3) {
                     ctx.save();
-                    ctx.strokeStyle = 'rgba(255, 40, 40, ' + (0.15 + 0.1 * fastPulse) + ')';
-                    ctx.lineWidth = 16;
-                    ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
-                    ctx.strokeStyle = 'rgba(255, 100, 100, ' + (0.2 + 0.1 * fastPulse) + ')';
-                    ctx.lineWidth = 6;
+                    ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
+                    ctx.lineWidth = 10;
+                    ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
+                    ctx.shadowBlur = 16;
                     ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
                     ctx.restore();
                 }
@@ -17496,24 +17439,13 @@ Most cells eaten   : ${mostCellsEaten}
             },	*/
         drawVirusesRange(t, e, i) {
             if (e.length) {
-                var _cullingScale = this.scale || 1;
-                var _halfW = this.canvasWidth / _cullingScale / 2;
-                var _halfH = this.canvasHeight / _cullingScale / 2;
-                var _cx = this.camX, _cy = this.camY;
-                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
-                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
-                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
-
                 t.beginPath();
                 for (var s = 0; s < e.length; s++) {
                     if (e[s].invisible != true) {
                         var o = e[s].x;
                         var a = e[s].y;
-                        var range = e[s].size + 820;
-                        if (o + range < _vMinX || o - range > _vMaxX || a + range < _vMinY || a - range > _vMaxY) continue;
-                        t.moveTo(o + range, a);
-                        t.arc(o, a, range, 0, this.pi2, false);
+                        t.moveTo(o, a);
+                        t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
                     }
                 }
                 t.fillStyle = defaultSettings.virusColor;
@@ -17588,80 +17520,79 @@ Most cells eaten   : ${mostCellsEaten}
             if (!food.length) {
                 return;
             }
-            /* ── Move food (only moving cells) ── */
-            for (var i = 0; i < food.length; i++) {
-                if (food[i].targetX !== food[i].x || food[i].targetY !== food[i].y || food[i].targetSize !== food[i].size) {
-                    food[i].moveCell();
-                }
-            }
-            /* ── Perf: frustum bounds for food culling ── */
-            var _cullingScale = this.viewScale || this.scale || 1;
-            var _halfW = (this.canvasWidth / _cullingScale / 2) + 100;
-            var _halfH = (this.canvasHeight / _cullingScale / 2) + 100;
-            var _camCX = this.camX, _camCY = this.camY;
-            var _svx = LM.viewX || 0, _svy = LM.viewY || 0;
-            if (Math.abs(_camCX - _svx) > _halfW || Math.abs(_camCY - _svy) > _halfH) {
-                _camCX = _svx; _camCY = _svy;
-            }
-            var _vMinX = _camCX - _halfW;
-            var _vMaxX = _camCX + _halfW;
-            var _vMinY = _camCY - _halfH;
-            var _vMaxY = _camCY + _halfH;
-            var pi2 = 2 * Math.PI;
+            ctx.save();
+            /*if (defaultmapsettings.optimizedFood) {
 
-            if (!defaultmapsettings.rainbowFood) {
-                /* ── Single-color food: ONE path, ONE fill ── */
-                var foodSize = (food[0] && food[0].size ? food[0].size : 10) + defaultSettings.foodSize;
-                ctx.fillStyle = defaultSettings.foodColor;
-                ctx.globalAlpha = 1;
-                ctx.beginPath();
-                for (var i = 0; i < food.length; i++) {
-                    if (food[i].invisible) continue;
-                    if (!food[i].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) { food[i].invisible = true; continue; }
-                    var fx = food[i].x, fy = food[i].y;
-                    if (fx + foodSize < _vMinX || fx - foodSize > _vMaxX ||
-                        fy + foodSize < _vMinY || fy - foodSize > _vMaxY) continue;
-                    if (scale < 0.08) {
-                        ctx.rect(fx - foodSize, fy - foodSize, foodSize * 2, foodSize * 2);
-                    } else {
-                        ctx.moveTo(fx + foodSize, fy);
-                        ctx.arc(fx, fy, foodSize, 0, pi2, false);
-                    }
-                }
-                ctx.fill();
-            } else {
-                /* ── Rainbow food: batch by color (reusing persistent bucket memory) ── */
-                var colorBuckets = this._colorBuckets || (this._colorBuckets = {});
-                for (var key in colorBuckets) { colorBuckets[key].length = 0; }
-                for (var i = 0; i < food.length; i++) {
-                    if (food[i].invisible) continue;
-                    if (!food[i].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) { food[i].invisible = true; continue; }
-                    var fx = food[i].x, fy = food[i].y;
-                    var fs = food[i].size + defaultSettings.foodSize;
-                    if (fx + fs < _vMinX || fx - fs > _vMaxX ||
-                        fy + fs < _vMinY || fy - fs > _vMaxY) continue;
-                    var c = food[i].color;
-                    if (!colorBuckets[c]) colorBuckets[c] = [];
-                    colorBuckets[c].push(food[i]);
-                }
-                for (var color in colorBuckets) {
-                    var bucket = colorBuckets[color];
-                    if (!bucket.length) continue;
-                    ctx.fillStyle = color;
-                    ctx.beginPath();
-                    for (var j = 0; j < bucket.length; j++) {
-                        var f = bucket[j];
-                        var fs = f.size + defaultSettings.foodSize;
-                        if (scale < 0.08) {
-                            ctx.rect(f.x - fs, f.y - fs, fs * 2, fs * 2);
-                        } else {
-                            ctx.moveTo(f.x + fs, f.y);
-                            ctx.arc(f.x, f.y, fs, 0, pi2, false);
+                for (var length = 0; length < food.length; length++) {
+                    //
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    //
+                    if (!food[length].invisible) {
+                        var x = food[length].x - 10 - defaultSettings.foodSize;
+                        var y = food[length].y - 10 - defaultSettings.foodSize;						
+                        if (!defaultmapsettings.rainbowFood){                   
+                            ctx.drawImage(this.pellet, x, y);
                         }
+                        else{
+                            if (!this.pelletColored[food[length].color]){ 
+                                this.preDrawPelletColors(food[length].color);
+                            }
+                            else{
+                                //ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
+                                ctx.drawImage(this.pelletColored[food[length].color], x, y);
+                                //ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
+                            }
+                        }
+                    	
                     }
-                    ctx.fill();
                 }
+            }*/
+            //else{
+            ctx.lineCap = 'round';
+            if (LM.integrity && food[0].size) {
+                ctx.lineWidth = (food[0].size + defaultSettings.foodSize) * 2
             }
+            if (!defaultmapsettings.rainbowFood) {
+                ctx.beginPath();
+
+                ctx.strokeStyle = defaultSettings.foodColor;
+            }
+            for (var length = 0; length < food.length; length++) {
+                if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                //ctx.beginPath();
+                if (!food[length].invisible) {
+                    var temp;
+                    if (defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = food[length].color
+                        temp = food[length].color
+                    }
+                    else if (!defaultmapsettings.rainbowFood) {
+                        ctx.fillStyle = defaultSettings.foodColor;
+                        temp = defaultSettings.foodColor;
+                    }
+
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+                    /*ctx.moveTo(x, y);
+                    if (scale < 0.08) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                    	
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        //continue;
+                    }
+                    else{*/
+
+                    //ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                    //}
+                }
+
+                //ctx.fill();					
+            }
+            if (!defaultmapsettings.rainbowFood) ctx.stroke();
+            //}
+            ctx.restore()
             if (reset) {
                 food = [];
             }
@@ -17793,22 +17724,18 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawBCursorTracking(ctx, players, cursorX, cursorY) { //Yahnych
-            if (!players.length) return;
-            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
-                let t = players[length];
-                if (!t) continue;
-                if (t.angle === undefined) {
-                    t.angle = 0;
+                let t = LM.playerCells[length];
+                if (LM.playerCells[length].angle === undefined) {
+                    LM.playerCells[length].angle = 0
                 }
                 let r = t.size / 3;
                 //distance to target
-                var dx = cursorX - t.x, dy = cursorY - t.y;
-                var dis = Math.sqrt(dx * dx + dy * dy);
-                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
+                var dis = Math.sqrt((cursorX - t.x) * (cursorX - t.x) + (cursorY - t.y) * (cursorY - t.y));
                 //angle in deg
                 var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
                 //if target on left side
+
                 if ((t.x - cursorX > 0 && t.y - cursorY < 0) || (t.x - cursorX > 0 && t.y - cursorY > 0)) {
                     angl = 180 + (180 - angl);
                 }
@@ -17825,21 +17752,20 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
+                ctx.save()
+
+                //Convert degrees to radian 
                 var rad = t.angle * Math.PI / 180;
-                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                ctx.setTransform(
-                    _worldTx.a * cos + _worldTx.c * sin,
-                    _worldTx.b * cos + _worldTx.d * sin,
-                    _worldTx.c * cos - _worldTx.a * sin,
-                    _worldTx.d * cos - _worldTx.b * sin,
-                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
-                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
-                );
+                ctx.translate(t.x, t.y);
 
+                ctx.rotate(rad);
+
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, defaultSettings.cursorTrackingColor);
                 grad.addColorStop(1, defaultSettings.cursorTrackingColor + "00");
+
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
@@ -17847,12 +17773,13 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
             }
-            ctx.setTransform(_worldTx);
         },
         drawCursorTracking(ctx, players, cursorX, cursorY) {
-            ctx.lineWidth = 4;
-            ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            ctx.lineWidth = 4,
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
             ctx.strokeStyle = defaultSettings.cursorTrackingColor;
             ctx.beginPath();
             for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
@@ -17860,75 +17787,50 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
-            if (!players.length) return;
-            var _cScale = this.scale || 1;
-            var _hW = this.canvasWidth / _cScale / 2;
-            var _hH = this.canvasHeight / _cScale / 2;
-            var _cx = this.camX, _cy = this.camY;
-            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-            if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
-            var _vMinX = _cx - _hW, _vMaxX = _cx + _hW;
-            var _vMinY = _cy - _hH, _vMaxY = _cy + _hH;
-
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
-            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                var p = players[length];
-                var sz = p.size + scale;
-                if (p.x + sz < _vMinX || p.x - sz > _vMaxX || p.y + sz < _vMinY || p.y - sz > _vMaxY) continue;
-                ctx.moveTo(p.x + sz, p.y);
-                ctx.arc(p.x, p.y, sz, 0, this.pi2, false);
+                ctx.beginPath();
+                ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
             }
-            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
-            if (!players.length) return;
-            var _cScale = this.scale || 1;
-            var _hW = this.canvasWidth / _cScale / 2;
-            var _hH = this.canvasHeight / _cScale / 2;
-            var _cx = this.camX, _cy = this.camY;
-            var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-            if (Math.abs(_cx - _vx) > _hW || Math.abs(_cy - _vy) > _hH) { _cx = _vx; _cy = _vy; }
-            var _vMinX = _cx - _hW, _vMaxX = _cx + _hW;
-            var _vMinY = _cy - _hH, _vMaxY = _cy + _hH;
-
-            /* ── Perf: cache world transform, use setTransform instead of save/restore ── */
-            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
-                if (t.x + t.size < _vMinX || t.x - t.size > _vMaxX || t.y + t.size < _vMinY || t.y - t.size > _vMaxY) continue;
                 //distance to target
-                var dx = t.targetX - t.x, dy = t.targetY - t.y;
-                var dis = Math.sqrt(dx * dx + dy * dy);
-                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
+                var dis = Math.sqrt((t.targetX - t.x) * (t.targetX - t.x) + (t.targetY - t.y) * (t.targetY - t.y));
                 //angle 
                 var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
                 //if target on left side
+
                 if ((t.x - t.targetX > 0 && t.y - t.targetY < 0) || (t.x - t.targetX > 0 && t.y - t.targetY > 0)) {
                     angl = 180 + (180 - angl);
                 }
+                //console.log(t.x, t.targetX)
+
+                // Store the current context state (i.e. rotation, translation etc..)
+                ctx.save()
 
                 //Convert degrees to radian 
                 var rad = angl * Math.PI / 180;
-                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                // Manual transform: world * translate(t.x,t.y) * rotate(rad)
-                ctx.setTransform(
-                    _worldTx.a * cos + _worldTx.c * sin,
-                    _worldTx.b * cos + _worldTx.d * sin,
-                    _worldTx.c * cos - _worldTx.a * sin,
-                    _worldTx.d * cos - _worldTx.b * sin,
-                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
-                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
-                );
+                //Set the origin to the center of the image
+                ctx.translate(t.x, t.y);
 
+                //Rotate the canvas around the origin
+                ctx.rotate(rad);
+
+                //draw the image    
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, stroke);
                 grad.addColorStop(1, stroke + "00");
+
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = alpha;
@@ -17936,33 +17838,34 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
             }
-            // Restore world transform
-            ctx.setTransform(_worldTx);
+
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
-            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
+            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //760+2*cell.size is the correct
                 }
-                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
-                ctx.setLineDash([20, 30]);
-                ctx.lineWidth = 2 * width;
-                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
+                    ctx.setLineDash([20, 30]);
+                    ctx.lineWidth = 2 * width;
+                    ctx.beginPath();
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //Sonia2
                 }
-                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -17983,10 +17886,10 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultSettings.indicators === "normal") {
                     ctx.drawImage(this.indicator, x - 45, y - size - 90);
                 }
-                else if (defaultSettings.indicators === "heart" && this.heartIndicator) {
+                else if (defaultSettings.indicators === "heart") {
                     ctx.drawImage(this.heartIndicator, x - 25, y - size - 90);
                 }
-                else if (defaultSettings.indicators === "smile" && this.smileIndicator) {
+                else if (defaultSettings.indicators === "smile") {
                     ctx.drawImage(this.smileIndicator, x - 55, y - size - 150);
                 }
             }
@@ -17995,14 +17898,8 @@ Most cells eaten   : ${mostCellsEaten}
             this.pieChart || (this.pieChart = document.createElement('canvas'));
             var ctx = this.pieChart.getContext('2d'),
                 mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
-            var w = ~~(200 * mincanvasWidth);
-            var h = ~~(240 * mincanvasWidth);
-            if (this.pieChart.width !== w || this.pieChart.height !== h) {
-                this.pieChart.width = w;
-                this.pieChart.height = h;
-            } else {
-                ctx.clearRect(0, 0, w, h);
-            }
+            this.pieChart.width = 200 * mincanvasWidth;
+            this.pieChart.height = 240 * mincanvasWidth;
             ctx.scale(mincanvasWidth, mincanvasWidth);
             for (var colors = ['#333333', '#FF3333', '#33FF33', '#3333FF'], time = 0, length = 0; length < LM.pieChart.length; length++) {
                 var currentPie = time + LM.pieChart[length] * this.pi2;
@@ -18063,61 +17960,43 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
-            var len = str.length;
-            if (!len) return;
+            var len = str.length,
+                s;
             this.ctx.save();
             this.ctx.translate(centerX, centerY);
-            var step = angle / len;
-            this.ctx.rotate(-0.5 * (angle + step));
+            this.ctx.rotate(-1 * angle / 2);
+            this.ctx.rotate(-1 * (angle / len) / 2);
             for (var n = 0; n < len; n++) {
-                this.ctx.rotate(step);
-                this.ctx.translate(0, -radius);
-                this.ctx.fillText(str[n], 0, 0);
-                this.ctx.translate(0, radius);
+                this.ctx.rotate(angle / len);
+                this.ctx.save();
+                this.ctx.translate(0, -1 * radius);
+                s = str[n];
+                this.ctx.fillText(s, 0, 0);
+                this.ctx.restore();
             }
             this.ctx.restore();
         },
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
-                if (!ghostsCells.length) return;
-                var _showInfo = defaultmapsettings.showGhostCellsInfo;
-                var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
-
-                var _cullingScale = this.scale || 1;
-                var _halfW = this.canvasWidth / _cullingScale / 2;
-                var _halfH = this.canvasHeight / _cullingScale / 2;
-                var _cx = this.camX, _cy = this.camY;
-                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
-                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
-                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
-
                 this.ctx.beginPath();
-                /* ── Perf: hoist constant state outside loop ── */
-                if (_showInfo) {
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillStyle = defaultSettings.namesColor;
-                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                    this.ctx.lineWidth = 4;
-                }
                 var length = 0;
                 for (; length < ghostsCells.length; length++) {
                     if (!ghostsCells[length].inView) {
                         var x = ghostsCells[length].x;
                         var y = ghostsCells[length].y;
-                        var sz = ghostsCells[length].size;
-                        if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
-                            continue;
-                        }
                         this.ctx.moveTo(x, y);
                         this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
                         //
-                        if (_showInfo) {
+                        if (defaultmapsettings.showGhostCellsInfo) {
                             this.nickScale = 1;
                             this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
                             this.nickSize = ~~(this.fontSize * this.nickScale);
                             this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.fillStyle = defaultSettings.namesColor;
+                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                            this.ctx.lineWidth = 4;
                             angle = Math.PI * 0.8;
 
                             if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
@@ -18127,7 +18006,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.ghostcellstext = "Ghost cell";
                             }
                             this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (_showSkins) {
+                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                                 if (LM.leaderboard[length] != undefined) {
                                     node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
                                     if (node) {
