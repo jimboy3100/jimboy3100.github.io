@@ -5669,15 +5669,18 @@ function thelegendmodproject() {
                 legendmod.multiBoxPlayerExists = true;
             }
 
-            if (!window.multiboxPlayerEnabled) {
-                window.multiboxPlayerEnabled = 1;
-                if (!legendmod.play) {
-                    play();
+            var switched = this.switchToNextLivingUnit(true);
+            if (!switched) {
+                if (!window.multiboxPlayerEnabled) {
+                    window.multiboxPlayerEnabled = 1;
+                    if (!legendmod.play) {
+                        play();
+                    }
+                } else if (window.multiboxPlayerEnabled < neededSpects) {
+                    window.multiboxPlayerEnabled++;
+                } else {
+                    window.multiboxPlayerEnabled = null;
                 }
-            } else if (window.multiboxPlayerEnabled < neededSpects) {
-                window.multiboxPlayerEnabled++;
-            } else {
-                window.multiboxPlayerEnabled = null;
             }
             window.multiboxPlayerEnabledSaved = null;
         },
@@ -5694,14 +5697,57 @@ function thelegendmodproject() {
                 legendmod.multiBoxPlayerExists = true;
             }
 
-            if (!window.multiboxPlayerEnabled) {
-                window.multiboxPlayerEnabled = neededSpects;
-            } else if (window.multiboxPlayerEnabled > 1) {
-                window.multiboxPlayerEnabled--;
-            } else {
-                window.multiboxPlayerEnabled = null;
+            var switched = this.switchToPrevLivingUnit(true);
+            if (!switched) {
+                if (!window.multiboxPlayerEnabled) {
+                    window.multiboxPlayerEnabled = neededSpects;
+                } else if (window.multiboxPlayerEnabled > 1) {
+                    window.multiboxPlayerEnabled--;
+                } else {
+                    window.multiboxPlayerEnabled = null;
+                }
             }
             window.multiboxPlayerEnabledSaved = null;
+        },
+        switchToNextLivingUnit(onlyLiving) {
+            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
+            var currentSlot = window.multiboxPlayerEnabled === null ? 0 : window.multiboxPlayerEnabled;
+            for (var step = 1; step <= targetBoxes; step++) {
+                var checkSlot = (currentSlot + step) % (targetBoxes + 1);
+                if (checkSlot === 0) {
+                    if (LM.playerCells && LM.playerCells.length) {
+                        window.multiboxPlayerEnabled = null;
+                        return true;
+                    }
+                } else {
+                    var sIdx = checkSlot - 1;
+                    if (typeof spects !== "undefined" && spects[sIdx] && spects[sIdx].playerCellIDs && spects[sIdx].playerCellIDs.length) {
+                        window.multiboxPlayerEnabled = checkSlot;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+        switchToPrevLivingUnit(onlyLiving) {
+            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
+            var currentSlot = window.multiboxPlayerEnabled === null ? 0 : window.multiboxPlayerEnabled;
+            for (var step = 1; step <= targetBoxes; step++) {
+                var checkSlot = (currentSlot - step + (targetBoxes + 1)) % (targetBoxes + 1);
+                if (checkSlot === 0) {
+                    if (LM.playerCells && LM.playerCells.length) {
+                        window.multiboxPlayerEnabled = null;
+                        return true;
+                    }
+                } else {
+                    var sIdx = checkSlot - 1;
+                    if (typeof spects !== "undefined" && spects[sIdx] && spects[sIdx].playerCellIDs && spects[sIdx].playerCellIDs.length) {
+                        window.multiboxPlayerEnabled = checkSlot;
+                        return true;
+                    }
+                }
+            }
+            return false;
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -17139,6 +17185,12 @@ Most cells eaten   : ${mostCellsEaten}
     window.sendAction = function (action) {
         LM.sendAction(action);
     };
+    window.switchToPrevLivingUnit = function () {
+        LM.switchToPrevLivingUnit();
+    };
+    window.switchToNextLivingUnit = function () {
+        LM.switchToNextLivingUnit();
+    };
 
     /* ═══════════════════════════════════════════════════════════════════════════
      * §8  DRAW RENDER OBJECT
@@ -18543,7 +18595,19 @@ Most cells eaten   : ${mostCellsEaten}
         setView() {
             this.setScale(LM.playerSize);
 
-            if (LM.playerCells.length) {
+            // Auto-switch active focus if current focused slot is dead
+            var activeSlotIsDead = false;
+            if (window.multiboxPlayerEnabled === null) {
+                if (!LM.playerCells || !LM.playerCells.length) activeSlotIsDead = true;
+            } else if (typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
+                var activeSpect = spects[window.multiboxPlayerEnabled - 1];
+                if (!activeSpect.playerCellIDs || !activeSpect.playerCellIDs.length) activeSlotIsDead = true;
+            }
+            if (activeSlotIsDead && typeof LM.switchToNextLivingUnit === "function") {
+                LM.switchToNextLivingUnit();
+            }
+
+            if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
             }
 
@@ -18552,19 +18616,20 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (defaultmapsettings.middleMultiView && LM.playerCells.length && LM.playerCellsMulti && LM.playerCellsMulti.length) {
                 var spect = (typeof spects !== "undefined" && spects) ? spects[window.multiboxPlayerEnabled ? (window.multiboxPlayerEnabled - 1) : 0] : null;
-                if (spect && spect.playerX != null && spect.playerX !== 0) {
+                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
                     targetCamX = (LM.viewXTrue + spect.playerX) / 2;
                     targetCamY = (LM.viewYTrue + spect.playerY) / 2;
                 }
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
                 var spect = spects[window.multiboxPlayerEnabled - 1];
-                if (spect && spect.playerX != null && spect.playerX !== 0) {
+                if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
                     targetCamX = spect.playerX;
                     targetCamY = spect.playerY;
                 }
             }
 
-            if (LM.playerCells.length || (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1] && spects[window.multiboxPlayerEnabled - 1].playerX)) {
+            var activeHasCells = LM.playerCells.length || (window.multiboxPlayerEnabled && spects && spects[window.multiboxPlayerEnabled - 1] && spects[window.multiboxPlayerEnabled - 1].playerCellIDs && spects[window.multiboxPlayerEnabled - 1].playerCellIDs.length);
+            if (activeHasCells) {
                 if (!this.camX || !this.camY || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
@@ -18889,10 +18954,22 @@ Most cells eaten   : ${mostCellsEaten}
                         this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
                         this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
                     }
-                    if (LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                    if (typeof spects !== "undefined" && spects) {
+                        for (var s = 0; s < spects.length; s++) {
+                            var sp = spects[s];
+                            if (sp && sp.playerCellIDs && sp.playerCellIDs.length) {
+                                var unitCells = [];
+                                for (var c = 0; c < sp.playerCellIDs.length; c++) {
+                                    var cellObj = LM.indexedCells[sp.playerCellIDs[c]];
+                                    if (cellObj) unitCells.push(cellObj);
+                                }
+                                if (unitCells.length) {
+                                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, unitCells, LM.selectBiggestCell);
+                                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, unitCells, LM.selectBiggestCell);
+                                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, unitCells, LM.selectBiggestCell);
+                                }
+                            }
+                        }
                     }
                 }
                 if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
