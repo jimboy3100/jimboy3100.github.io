@@ -7872,6 +7872,18 @@ function thelegendmodproject() {
         loadSkin(img, url, animated) {
             var app = this;
             if (!url || typeof url !== 'string') return;
+
+            // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
+            if (url.includes('miniclippt.com')) {
+                url = url.replace(/miniclippt\.com/g, 'miniclip.com');
+            }
+            if (url.includes('custom skins')) {
+                url = url.replace(/custom skins/g, 'custom_skins');
+            }
+            if (url.includes('skin custom')) {
+                url = url.replace(/skin custom/g, 'skin_custom');
+            }
+
             if (!app._failedSkinURLs) app._failedSkinURLs = new Set();
             if (app._failedSkinURLs.has(url)) return;
             if (img && img[url]) return;
@@ -7891,10 +7903,7 @@ function thelegendmodproject() {
                     img[url] = new Image();
                 }
 
-                var isMiniclip = url && (url.includes("miniclippt.com") || url.includes("miniclip.com") || url.includes("agario"));
-                if (!isMiniclip) {
-                    img[url].crossOrigin = 'anonymous';
-                }
+                img[url].crossOrigin = 'anonymous';
                 img[url].onload = function () {
                     if (this.complete &&
                         this.width &&
@@ -16232,7 +16241,7 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var p = 0; p < window.FreeSkins.length; p++) {
                         if (LowerCase(y) === window.FreeSkins[p].id) {
-                            skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
+                            skinUrl = "https://configs-web.agario.miniclip.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
                             break;
                         }
                     }
@@ -16241,13 +16250,13 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
                     var digits = g.replace(/[^0-9]/g, '');
                     if (digits) {
-                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                        skinUrl = "https://configs.agario.miniclip.com/live/custom_skins/skin_custom_" + digits + ".png?";
                     } else {
                         var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
                         if (!g1.startsWith('skin_custom')) {
                             g1 = 'skin_custom_' + g1.replace(/^_+/, '');
                         }
-                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
+                        skinUrl = "https://configs.agario.miniclip.com/live/custom_skins/" + g1 + ".png?";
                     }
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */
@@ -16257,7 +16266,7 @@ Most cells eaten   : ${mostCellsEaten}
                     g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
                     g1 = makeUpperCaseAfterUnderline(g1);
                     isAnimated = true;
-                    skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
+                    skinUrl = "https://configs-web.agario.miniclip.com/live/" + (window.agarversion || "") + g1 + ".png?";
                 }
                 /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
                 else if (g && typeof g === 'string' && g !== '%empty') {
