@@ -1,4 +1,4 @@
-window.OgVer = 3.455;
+window.OgVer = 3.456;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12869,14 +12869,13 @@ function thelegendmodproject() {
                 }, 40*window.playrecord);
             }			
 */
+            var textDecoder = window._textDecoderSIMD || (window._textDecoderSIMD = new TextDecoder("utf-8"));
             var encode = function () {
-                for (var text = ''; ;) {
-                    if (s >= data.byteLength) break;
-                    var i = data.getUint8(s++);
-                    if (0 === i) break;
-                    text += String.fromCharCode(i);
-                }
-                return text;
+                var start = s;
+                while (s < data.byteLength && data.getUint8(s) !== 0) s++;
+                var slice = new Uint8Array(data.buffer, data.byteOffset + start, s - start);
+                if (s < data.byteLength) s++;
+                return textDecoder.decode(slice);
             };
             var s = 0;
             var opcode = data.getUint8(s++);
