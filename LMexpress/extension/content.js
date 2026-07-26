@@ -123,7 +123,9 @@ function Htmlscript(modwebsite) {
             document.open();
             document.write(doc);
             setTimeout(function () {
-                window.history.pushState(null, null, "/");
+                if (window.history && window.history.pushState) {
+                    window.history.pushState(null, null, window.location.pathname + window.location.search + window.location.hash);
+                }
             }, 2000);
             document.close();
         }
