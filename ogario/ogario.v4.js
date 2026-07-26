@@ -17856,8 +17856,8 @@ Most cells eaten   : ${mostCellsEaten}
             //
 
             this.ctx.restore();
+            this.ctx.restore(); // restore DPR scale
 
-            //this.ctx.finish2D();
             if (LM.gameMode === ':teams') {
                 // Agar2: redraw pie if canvas wasn't ready when op50 first arrived
                 if (LM.serverType === 'agar2' && LM.pieChart && LM.pieChart.length && this.canvasWidth > 0) {
@@ -17867,8 +17867,6 @@ Most cells eaten   : ${mostCellsEaten}
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
-
-            this.ctx.restore(); // restore DPR scale
 
             this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
             this.lastRenderingDelay = (performance.now() - this.renderStarted)
@@ -17926,13 +17924,13 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawSplitVectorGuide(ctx, playerCells) {
-            if (!playerCells || !playerCells.length) return;
+            if (!playerCells || !playerCells.length || isNaN(LM.cursorX) || isNaN(LM.cursorY)) return;
             ctx.save();
             ctx.setLineDash([8, 6]);
             ctx.lineWidth = 2;
             for (var i = 0; i < playerCells.length; i++) {
                 var cell = playerCells[i];
-                if (!cell || !cell.isInView()) continue;
+                if (!cell || !cell.isInView() || isNaN(cell.x) || isNaN(cell.y)) continue;
                 var angle = Math.atan2(LM.cursorY - cell.y, LM.cursorX - cell.x);
                 var splitDistance = Math.min(700, Math.hypot(LM.cursorX - cell.x, LM.cursorY - cell.y));
                 var targetX = cell.x + Math.cos(angle) * splitDistance;
