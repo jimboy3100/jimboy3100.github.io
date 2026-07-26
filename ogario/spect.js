@@ -1338,33 +1338,11 @@ class Spect {
             }
             //
 
-            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
-                if (!isFood) {
-                    if (!window.fullSpectator && !invisible) invisible = this.isInViewCustom(x, y, size)
-                } else if (isFood) {
-                    if (window.ingameSpectator && legendmod.isSpectateEnabled) {
-                        invisible = true
-                    } else if (!window.fullSpectator) {
-                        if (!invisible) invisible = this.isInViewCustom(x, y, size)
-                    }
-                }
-            }
-            //if (this.player && isVirus && !isFood && !invisible){
-            if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = !window.fullSpectator && this.isInViewCustom(x, y, size)
-                if (isVirus) invisible = (!window.fullSpectator && this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
-
-
-                if (!this.active) {
-                    invisible = true
-                }
-            }
-
             if (isFood && !defaultmapsettings.rainbowFood) {
-                color = defaultSettings.foodColor
+                color = defaultSettings.foodColor;
             }
             if (defaultmapsettings.oneColoredSpectator && !isFood) {
-                color = defaultSettings.foodColor
+                color = defaultSettings.foodColor;
             }
             cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
