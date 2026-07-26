@@ -12237,9 +12237,7 @@ function thelegendmodproject() {
                 this.garixPingInterval = null;
             }
             this.ws = t;
-            //this.integrity = this.ws.indexOf('agar.io') > -1; // 2020 JIMBOY3100 
-            this.integrity = this.ws.indexOf('agario.miniclippt') > -1; // 2024 JIMBOY3100 
-            // Multi-protocol server type detection (2026)
+            this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || this.ws.indexOf('live-arena') > -1); // 2026 JIMBOY3100
             this.serverType = _earlyType;
 
             /* Enable/disable social login buttons based on server type.
@@ -15800,10 +15798,9 @@ Most cells eaten   : ${mostCellsEaten}
             window.targetingLeadY = legendmod.ghostCells[o].y;
             legendmod.drawCommander2 = true;
         },
-        showBotNicks() {
-            console.log(legendmod.botNicks);
-        },
         flushCellsData() {
+            this.mapOffsetFixed = false;
+            LM.mapOffsetFixed = false;
             this.indexedCells = {};
             this.cells = [];
             this.playerCells = [];
