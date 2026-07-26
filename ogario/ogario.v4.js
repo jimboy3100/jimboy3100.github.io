@@ -16819,18 +16819,32 @@ Most cells eaten   : ${mostCellsEaten}
         },
         compareCells() {
             if ((this.play || LM.playerCellsMulti.length) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
-                if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
-                    (this.biggerSTECellsCache || (this.biggerSTECellsCache = [])).length = 0;
-                    (this.biggerCellsCache || (this.biggerCellsCache = [])).length = 0;
-                    (this.smallerCellsCache || (this.smallerCellsCache = [])).length = 0;
-                    (this.STECellsCache || (this.STECellsCache = [])).length = 0;
-                    (this.biggerSTEDCellsCache || (this.biggerSTEDCellsCache = [])).length = 0; //Sonia
-                    (this.STEDCellsCache || (this.STEDCellsCache = [])).length = 0; //Sonia
-                    (this.SSCellsCache || (this.SSCellsCache = [])).length = 0;
+                var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
+                /* Reset cache write cursors instead of .length=0 + push(new obj).
+                 * Reuses pooled objects to avoid GC pressure (~200 allocs/frame → 0). */
+                var _wBSTED = 0, _wBSTE = 0, _wB = 0, _wSS = 0, _wS = 0, _wSTE = 0, _wSTED = 0;
+                if (_splitOrRings) {
+                    if (!this._cachePool) {
+                        /* One-time init: pre-allocate 256-slot object pools per category */
+                        this._cachePool = true;
+                        var _initPool = function(arr) {
+                            if (!arr._pool) { arr._pool = []; for (var pi = 0; pi < 256; pi++) arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0}); }
+                        };
+                        (this.biggerSTECellsCache || (this.biggerSTECellsCache = []));
+                        (this.biggerCellsCache || (this.biggerCellsCache = []));
+                        (this.smallerCellsCache || (this.smallerCellsCache = []));
+                        (this.STECellsCache || (this.STECellsCache = []));
+                        (this.biggerSTEDCellsCache || (this.biggerSTEDCellsCache = []));
+                        (this.STEDCellsCache || (this.STEDCellsCache = []));
+                        (this.SSCellsCache || (this.SSCellsCache = []));
+                        _initPool(this.biggerSTECellsCache); _initPool(this.biggerCellsCache);
+                        _initPool(this.smallerCellsCache); _initPool(this.STECellsCache);
+                        _initPool(this.biggerSTEDCellsCache); _initPool(this.STEDCellsCache);
+                        _initPool(this.SSCellsCache);
+                    }
                 }
                 /* Hoist invariant lookups outside the cell loop */
-                var _oppColorsOnly = defaultmapsettings.oppColors && !defaultmapsettings.oppRings;
-                var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
+                var _oppColors = defaultmapsettings.oppColors;
                 var _integrity = LM.integrity;
                 var _sizeThreshold = _integrity ? 13 : 14;
                 var _mass;
@@ -16840,142 +16854,88 @@ Most cells eaten   : ${mostCellsEaten}
                     _mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 }
                 var _invMass = _mass > 0 ? 1.0 / _mass : 0;
+                /* Pre-compute all 6 dominationRate thresholds (avoid repeated multiply in hot loop) */
+                var _domRate = defaultmapsettings.dominationRate;
+                var _domRate2 = defaultmapsettings.dominatedRate;
+                var _thr4 = _domRate * 4, _thr2 = _domRate * 2, _thr1 = _domRate;
+                var _thrD = _domRate2, _thrDh = _domRate2 * 0.5, _thrDq = _domRate2 * 0.25;
+                /* Pre-compute oppColor thresholds for inline setCellOppColor */
+                var _thr8 = _domRate * 8;
+                var _playerOppColor = (typeof ogarcopythelb !== 'undefined' && ogarcopythelb) ? ogarcopythelb.color : null;
+                var _cBSTED = defaultSettings.enemyBSTEDColor, _cBSTE = defaultSettings.enemyBSTEColor;
+                var _cB = defaultSettings.enemyBColor, _cS = defaultSettings.enemySColor;
+                var _cSSTE = defaultSettings.enemySSTEColor, _cSSTED = defaultSettings.enemySSTEDColor;
                 /* Viewport culling: skip cells outside visible area + ring offset margin */
                 var _cullMinX = LM.camMinX - 800;
                 var _cullMinY = LM.camMinY - 800;
                 var _cullMaxX = LM.camMaxX + 800;
                 var _cullMaxY = LM.camMaxY + 800;
-                var t = 0;
-                for (; t < this.cells.length; t++) {
-                    var cell = this.cells[t];
-                    if (cell.isVirus || cell.invisible) {
-                        continue;
-                    }
-                    /* Skip cells outside viewport + ring margin — saves 60-80% of iterations */
-                    if (cell.x + cell.size < _cullMinX || cell.x - cell.size > _cullMaxX ||
-                        cell.y + cell.size < _cullMinY || cell.y - cell.size > _cullMaxY) {
-                        continue;
-                    }
-                    var size = ~~(cell.size * cell.size / 100);
+                var _cells = this.cells, _len = _cells.length;
+
+                for (var t = 0; t < _len; t++) {
+                    var cell = _cells[t];
+                    if (cell.isVirus || cell.invisible) continue;
+                    /* Skip cells outside viewport + ring margin */
+                    var _cx = cell.x, _cy = cell.y, _cs = cell.size;
+                    if (_cx + _cs < _cullMinX || _cx - _cs > _cullMaxX ||
+                        _cy + _cs < _cullMinY || _cy - _cs > _cullMaxY) continue;
+
+                    var size = ~~(_cs * _cs * 0.01); /* same as /100 but avoids division */
 
                     if (size > _sizeThreshold) {
                         var fixMass = size * _invMass;
-                        if (_oppColorsOnly) {
-                            cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
+                        /* Inline setCellOppColor — eliminates function call per cell */
+                        if (_oppColors) {
+                            if (cell.isPlayerCell) {
+                                cell.oppColor = _playerOppColor;
+                            } else {
+                                cell.oppColor = fixMass >= _thr8 ? _cBSTED :
+                                    fixMass >= _thr4 ? _cBSTED :
+                                    fixMass >= _thr2 ? _cBSTE :
+                                    fixMass >= _thr1 ? _cB :
+                                    fixMass >= _thrD ? '#FFDC00' :
+                                    fixMass >= _thrDh ? _cS :
+                                    fixMass >= _thrDq ? _cSSTE : _cSSTED;
+                            }
                         }
+                        /* Inline cacheCells — reuse pooled objects, zero allocation */
                         if (!cell.isPlayerCell && _splitOrRings) {
-                            this.cacheCells(cell.x, cell.y, cell.targetX, cell.targetY, cell.size, fixMass);
+                            var _arr, _wi;
+                            if (fixMass >= _thr4) { _arr = this.biggerSTEDCellsCache; _wi = _wBSTED++; }
+                            else if (fixMass >= _thr2) { _arr = this.biggerSTECellsCache; _wi = _wBSTE++; }
+                            else if (fixMass >= _thr1) { _arr = this.biggerCellsCache; _wi = _wB++; }
+                            else if (fixMass < _thr1 && fixMass > _thrD) { _arr = this.SSCellsCache; _wi = _wSS++; }
+                            else if (fixMass > _thrDh) { _arr = this.smallerCellsCache; _wi = _wS++; }
+                            else if (fixMass > _thrDq) { _arr = this.STECellsCache; _wi = _wSTE++; }
+                            else { _arr = this.STEDCellsCache; _wi = _wSTED++; }
+                            /* Grow pool on demand (rare: only if >256 cells in one category) */
+                            if (_wi >= _arr.length) {
+                                if (!_arr._pool) _arr._pool = [];
+                                while (_arr._pool.length <= _wi) _arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0});
+                                _arr.push(_arr._pool[_wi]);
+                            } else if (!_arr[_wi]) {
+                                if (!_arr._pool) _arr._pool = [];
+                                if (!_arr._pool[_wi]) _arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0});
+                                _arr[_wi] = _arr._pool[_wi];
+                            }
+                            var _obj = _arr[_wi];
+                            _obj.x = _cx; _obj.y = _cy;
+                            _obj.targetX = cell.targetX; _obj.targetY = cell.targetY;
+                            _obj.size = _cs;
                         }
                     }
-
+                }
+                /* Truncate arrays to actual count (no splice, just length assignment) */
+                if (_splitOrRings) {
+                    this.biggerSTEDCellsCache.length = _wBSTED;
+                    this.biggerSTECellsCache.length = _wBSTE;
+                    this.biggerCellsCache.length = _wB;
+                    this.SSCellsCache.length = _wSS;
+                    this.smallerCellsCache.length = _wS;
+                    this.STECellsCache.length = _wSTE;
+                    this.STEDCellsCache.length = _wSTED;
                 }
             }
-        },
-        /*		
-                cacheCells(x, y, targetX, targetY, size, mass) {
-                    return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominationRate / 2 ? void this.SSCellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : mass > defaultmapsettings.dominationRate / 4 ? void this.smallerCellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : mass > defaultmapsettings.dominationRate / 8 ? void this.STECellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    }) : void this.STEDCellsCache.push({
-                        x: x,
-                        y: y,
-                        targetX: targetX,
-                        targetY: targetY,
-                        size: size
-                    });
-                },
-                setCellOppColor(isPlayer, mass) {
-                    if (isPlayer) {
-                        return ogarcopythelb.color
-                    } else {
-                        if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
-                        else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
-                        else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
-                        else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
-                        else if (mass >= defaultmapsettings.dominationRate / 2) return '#FFDC00'
-                        else if (mass >= defaultmapsettings.dominationRate / 4) return defaultSettings.enemySColor
-                        else if (mass >= defaultmapsettings.dominationRate / 8) return defaultSettings.enemySSTEColor
-                        else return defaultSettings.enemySSTEDColor
-                    }
-                },
-        */
-        cacheCells(x, y, targetX, targetY, size, mass) {
-            return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominatedRate ? void this.SSCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominatedRate / 2 ? void this.smallerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominatedRate / 4 ? void this.STECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : void this.STEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            });
         },
         setCellOppColor(isPlayer, mass) {
             if (isPlayer) {
@@ -19059,7 +19019,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (window.fullSpectator) {
                 for (let i = 0; i < spects.length; i++) {
-                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
+                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [], spects[i]);
                 }
             }
         },
@@ -19159,7 +19119,7 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.restore();
             }
         },
-        newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = []) {
+        newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = [], spectObj = null) {
             var size = 0
             var mtp = 1.985
 
@@ -19179,8 +19139,55 @@ Most cells eaten   : ${mostCellsEaten}
             var s = Math.pow(Math.min(64 / size, 1), 0.4000);
             var w = 1024 / s / 2 * mtp; //WSVGA
             var h = 600 / s / 2 * mtp;
-            this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
-            //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
+
+            var rawMinX = viewX - w;
+            var rawTopY = viewY - h;
+            var rawMaxX = viewX + w;
+            var rawBottomY = viewY + h;
+
+            var mapMinX = (LM.mapMinX != null) ? LM.mapMinX : -7071;
+            var mapMinY = (LM.mapMinY != null) ? LM.mapMinY : -7071;
+            var mapMaxX = (LM.mapMaxX != null) ? LM.mapMaxX : 7071;
+            var mapMaxY = (LM.mapMaxY != null) ? LM.mapMaxY : 7071;
+
+            var clampedMinX = Math.max(rawMinX, mapMinX);
+            var clampedTopY = Math.max(rawTopY, mapMinY);
+            var clampedMaxX = Math.min(rawMaxX, mapMaxX);
+            var clampedBottomY = Math.min(rawBottomY, mapMaxY);
+
+            var blend = 0;
+            if (spectObj && spectObj.staticX != null && spectObj.staticY != null) {
+                var destX = spectObj.getX(spectObj.staticX);
+                var destY = spectObj.getY(spectObj.staticY);
+                var dx = viewX - destX;
+                var dy = viewY - destY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                blend = Math.max(0, Math.min(1, 1 - (dist / 2500)));
+            } else if (window.fullSpectator) {
+                blend = 1;
+            }
+
+            var tMinX = rawMinX + (clampedMinX - rawMinX) * blend;
+            var tTopY = rawTopY + (clampedTopY - rawTopY) * blend;
+            var tMaxX = rawMaxX + (clampedMaxX - rawMaxX) * blend;
+            var tBottomY = rawBottomY + (clampedBottomY - rawBottomY) * blend;
+
+            if (spectObj) {
+                if (spectObj._drawMinX == null) {
+                    spectObj._drawMinX = rawMinX;
+                    spectObj._drawTopY = rawTopY;
+                    spectObj._drawMaxX = rawMaxX;
+                    spectObj._drawBottomY = rawBottomY;
+                }
+                spectObj._drawMinX += (tMinX - spectObj._drawMinX) * 0.12;
+                spectObj._drawTopY += (tTopY - spectObj._drawTopY) * 0.12;
+                spectObj._drawMaxX += (tMaxX - spectObj._drawMaxX) * 0.12;
+                spectObj._drawBottomY += (tBottomY - spectObj._drawBottomY) * 0.12;
+
+                this.drawViewport(ctx, `Viewport# ${name}`, spectObj._drawMinX, spectObj._drawTopY, spectObj._drawMaxX, spectObj._drawBottomY, defaultSettings.bordersColor, 15);
+            } else {
+                this.drawViewport(ctx, `Viewport# ${name}`, tMinX, tTopY, tMaxX, tBottomY, defaultSettings.bordersColor, 15);
+            }
         },
         drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
 
