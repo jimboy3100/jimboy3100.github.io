@@ -17788,8 +17788,10 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawHelpers();
             this.drawFood();
             this.drawGhostCells();
-            for (var i = 0; i < LM.removedCells.length; i++) {
-                LM.removedCells[i].draw(this.ctx, true);
+            for (var i = LM.removedCells.length - 1; i >= 0; i--) {
+                var rCell = LM.removedCells[i];
+                rCell.moveCell();
+                rCell.draw(this.ctx, true);
             }
             /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
              * in a single draw call. Falls back to Canvas2D for jelly/contours.
