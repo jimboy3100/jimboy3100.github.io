@@ -1,4 +1,4 @@
-window.OgVer = 3.478;
+window.OgVer = 3.479;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -2111,11 +2111,21 @@ setTimeout(function () {
         var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "v15/10890/");
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
-            var key = skin.productId.replace('skin_', '%');
+            var url = null;
             if (skin.image && skin.image !== "uses_spine") {
-                window.VanillaSkinUrlMap[key] = cdnBase + skin.image + "?";
-            } else if (skin.image === "uses_spine" && window.SpineSkinMap[skin.productId]) {
-                window.VanillaSkinUrlMap[key] = cdnBase + window.SpineSkinMap[skin.productId] + ".png?";
+                url = cdnBase + skin.image + "?";
+            } else if (skin.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
+                url = cdnBase + window.SpineSkinMap[skin.productId] + ".png?";
+            }
+            if (url) {
+                var pId = skin.productId;
+                var rawName = pId.replace('skin_', '');
+                window.VanillaSkinUrlMap['%' + rawName] = url;
+                window.VanillaSkinUrlMap[('%' + rawName).toLowerCase()] = url;
+                window.VanillaSkinUrlMap[pId] = url;
+                window.VanillaSkinUrlMap[pId.toLowerCase()] = url;
+                window.VanillaSkinUrlMap[rawName] = url;
+                window.VanillaSkinUrlMap[rawName.toLowerCase()] = url;
             }
         }
 
@@ -6093,11 +6103,12 @@ function thelegendmodproject() {
             }
             $('#helloContainer').hide();
         },
-        escapeHTML(string) {
+        escapeHTML: function (string) {
             return String(string).replace(/[&<>"'\/]/g, function (event) {
                 return escapeChar[event];
             });
-        checkSkinURL(url) {
+        },
+        checkSkinURL: function (url) {
             if (!url || typeof url !== 'string') return '';
             url = url.trim();
             if (!url) return '';
@@ -15674,15 +15685,12 @@ Most cells eaten   : ${mostCellsEaten}
 
 
             ///////////////// establish core.registerSkin
-            if (defaultmapsettings.vanillaSkins === true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] == null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
-                for (i = 0; i <= this.leaderboard.length - 1; i++) {
-                    if (this.leaderboard[i].nick === window.customskinsname) {
-                        application.customSkinsMap[window.customskinsname] = window.customskinsarray[window.customskinsname].customskinsurl;
-                        application.loadSkin(application.customSkinsCache, window.customskinsarray[window.customskinsname].customskinsurl, window.customskinsarray[window.customskinsname].customskinanimated);
-                        window.customskinsname = null;
-                        window.customskinsarray[window.customskinsname] == null
-                    }
-                }
+            if (window.customskinsname != null && window.customskinsarray && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
+                var cSkinUrl = window.customskinsarray[window.customskinsname].customskinsurl;
+                var cSkinAnim = window.customskinsarray[window.customskinsname].customskinanimated;
+                application.cacheCustomSkin(window.customskinsname, '#000000', cSkinUrl);
+                application.loadSkin(application.customSkinsCache, cSkinUrl, cSkinAnim);
+                window.customskinsname = null;
             }
             //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
             for (var e = 0; e < legendmod.ghostCells.length; e++) {
@@ -15844,43 +15852,72 @@ Most cells eaten   : ${mostCellsEaten}
             //return !(x + size < this.viewX - x2s || y + size < this.viewY - y2s || x - size > this.viewX + x2s || y - size > this.viewY + y2s);
         },
         vanillaskins(y, g, cellColor) {
-            if (application.customSkinsMap[y] === undefined) {
-                if (LM.gameMode === ":party") {
-                    y = y + (cellColor || "#000000");
+            if (!y && !g) return;
+            var playerKey = y || g;
+            if (LM.gameMode === ":party" && cellColor) {
+                playerKey = playerKey + cellColor;
+            }
+
+            var skinUrl = null;
+            var isAnimated = false;
+
+            /* 1. Direct HTTP/HTTPS skin URL */
+            if (g && typeof g === 'string' && (g.startsWith('http://') || g.startsWith('https://'))) {
+                skinUrl = g;
+            } 
+            /* 2. Flag skins */
+            else if (y && legendflags.includes(LowerCase(y))) {
+                skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
+            } 
+            /* 3. Free skins map */
+            else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
+                for (var p = 0; p < window.FreeSkins.length; p++) {
+                    if (LowerCase(y) === window.FreeSkins[p].id) {
+                        skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
+                        break;
+                    }
                 }
-                /* Direct URL skin (e.g. https://i.imgur.com/xxx.png from bots/players) */
-                if (g != null && g.includes && (g.startsWith('http://') || g.startsWith('https://'))) {
-                    application.customSkinsMap[y] = g;
-                    application.loadSkin(application.customSkinsCache, g);
-                } else if (legendflags.includes(LowerCase(y))) {
-                    core.registerSkin(y, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
-                } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
-                    for (var player = 0; player < window.FreeSkins.length; player++) {
-                        if (LowerCase(y) === window.FreeSkins[player].id) {
-                            core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
-                            //console.log("https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image)
-                        }
-                    }
-                } else if (g != null && g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))) {
-                    var g1 = g.replace('%custom_', 'skin_custom_')
-                    //core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null); // OLD — may point to wrong domain
-                    core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?", null);
-                } else if (g != null && g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))) {
-                    var g1 = g.replace('%', '')
-                    g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
-                    g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
-                    g1 = makeUpperCaseAfterUnderline(g1);
-                    var customskinanimated = true;
-                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png?", customskinanimated);
-                } else if (g != null && g !== '%empty' && defaultmapsettings.vanillaSkins === true && window.VanillaSkinUrlMap) {
-                    var skinUrl = window.VanillaSkinUrlMap[g];
-                    if (skinUrl) {
-                        window.lastusednameforskin = y;
-                        if (!application.customSkinsMap[y]) {
-                            application.customSkinsMap[y] = skinUrl;
-                            application.loadSkin(application.customSkinsCache, skinUrl);
-                        }
-                    }
+            } 
+            /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, etc.) */
+            else if (g && typeof g === 'string' && (g.includes("custom") || g.includes("skin_custom"))) {
+                var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
+                if (!g1.startsWith('skin_custom')) {
+                    g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                }
+                skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
+            } 
+            /* 5. Level skins (_level_1, _level_2, etc.) */
+            else if (g && typeof g === 'string' && g.includes("_level_")) {
+                var g1 = g.replace('%', '');
+                g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
+                g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
+                g1 = makeUpperCaseAfterUnderline(g1);
+                isAnimated = true;
+                skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
+            } 
+            /* 6. Vanilla named skins (%earth, %doge, fly, etc.) */
+            else if (g && typeof g === 'string' && g !== '%empty') {
+                if (window.VanillaSkinUrlMap) {
+                    skinUrl = window.VanillaSkinUrlMap[g] ||
+                              window.VanillaSkinUrlMap[g.toLowerCase()] ||
+                              window.VanillaSkinUrlMap['%' + g.replace('%', '')] ||
+                              window.VanillaSkinUrlMap[g.replace('%', '')] ||
+                              window.VanillaSkinUrlMap[g.replace('%', '').toLowerCase()];
+                }
+            }
+
+            if (skinUrl) {
+                if (y) {
+                    window.lastusednameforskin = y;
+                    core.registerSkin(y, null, skinUrl, isAnimated);
+                    application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                }
+                if (playerKey && playerKey !== y) {
+                    core.registerSkin(playerKey, null, skinUrl, isAnimated);
+                    application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
+                }
+                if (g) {
+                    application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
                 }
             }
         },
@@ -16048,6 +16085,8 @@ Most cells eaten   : ${mostCellsEaten}
                     if (flags & 0x08) {
                         name = encode(); namePresent = true;
                         try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
+                    }
+                    if (skin || namePresent) {
                         if (legendmod && legendmod.gameMode && legendmod.gameMode != ':teams') {
                             this.vanillaskins(name, skin, color);
                         }
@@ -16201,16 +16240,14 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (4 & flags) {
                     skin = encode();
-                    //console.log('skin '+g);
-
                 }
                 if (8 & flags) {
                     name = window.decodeURIComponent(escape(encode())); namePresent = true;
-                    //console.log('name '+name+ 'skin '+skin);
-                    //if (LM.ws.includes("imsolo.pro") && name.includes('}')){
                     if (!LM.integrity && name.includes('}')) {
                         name = name.split('}')[1]
                     }
+                }
+                if (skin || namePresent) {
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin, color);
                     }
@@ -19939,10 +19976,15 @@ Most cells eaten   : ${mostCellsEaten}
         registerSkin(a, b, c, d) {
             if (a) {
                 window.customskinsname = a;
-                window.customskinsarray[window.customskinsname] = [];
-                window.customskinsarray[window.customskinsname].customskinsname = a
-                window.customskinsarray[window.customskinsname].customskinsurl = c
-                window.customskinsarray[window.customskinsname].customskinanimated = d
+                window.customskinsarray[a] = {
+                    customskinsname: a,
+                    customskinsurl: c,
+                    customskinanimated: d
+                };
+                if (c) {
+                    this.cacheCustomSkin(a, '#000000', c);
+                    this.loadSkin(this.customSkinsCache, c, d);
+                }
             }
         },
         //lulko
