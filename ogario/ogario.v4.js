@@ -6056,7 +6056,15 @@ function thelegendmodproject() {
                                 }
                             }
                             var teamboardskin = skinUrl ? (this.customSkinsCache[skinUrl + "_cached2"] || this.customSkinsCache[skinUrl + "_cached"] || this.customSkinsCache[skinUrl]) : null;
-                            var teamboardImgSrc = (teamboardskin && (teamboardskin.complete || teamboardskin.width)) ? teamboardskin.src : (skinUrl || "https://www.legendmod.ml/banners/icon32croped.ico.gif");
+                            /* Stable image source: use cached .src only when fully loaded,
+                             * otherwise use the raw skinUrl (browser caches it). This avoids
+                             * flip-flopping between data-URL and raw URL each frame. */
+                            var teamboardImgSrc;
+                            if (teamboardskin && teamboardskin.complete && teamboardskin.width) {
+                                teamboardImgSrc = teamboardskin.src;
+                            } else {
+                                teamboardImgSrc = skinUrl || "https://www.legendmod.ml/banners/icon32croped.ico.gif";
+                            }
                             t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + p.id + '" style="background-color: ' + p.color +
                                 '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt=""><img src="' + teamboardImgSrc + '" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt=""/></span></a><div style="margin-top: -30px; margin-left: 32px;">');
                             // t = t + ('<div><img src=' + teamboardskin.src + 'class="player-skin" style="border: solid 3px' + this.top5[o].color + '">' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
@@ -6116,7 +6124,12 @@ function thelegendmodproject() {
                                     </div>`);
                         }
                     }
-                    this.top5pos.innerHTML = t;
+                    /* Only update DOM when content actually changed — prevents img elements
+                     * from being destroyed/recreated every frame, which causes skin blinking */
+                    if (this._lastTop5Html !== t) {
+                        this._lastTop5Html = t;
+                        this.top5pos.innerHTML = t;
+                    }
                     if (ogario.play && ogario.playerMass) {
                         e = e + ogario.playerMass;
                         s++;
