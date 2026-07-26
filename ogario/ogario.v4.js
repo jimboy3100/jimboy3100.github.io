@@ -13487,6 +13487,17 @@ function thelegendmodproject() {
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() === "") {
                         application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
+                    /* ── Auto-reconnect on server restart chat ── */
+                    if (server && message.toLowerCase().includes('restarting')) {
+                        var reconnWs = this.ws;
+                        console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
+                        this._reconnAttempts = 0;
+                        setTimeout(function() {
+                            if (window.core && window.core.connect) {
+                                window.core.connect(reconnWs);
+                            }
+                        }, 5000);
+                    }
                     break;
 
                 case 102:
