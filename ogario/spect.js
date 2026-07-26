@@ -1524,7 +1524,7 @@ class Spect {
 
         for (let length = 0; length < legendmod.playerCellsMulti.length; length++) {
             const n = legendmod.playerCellsMulti[length];
-            if (this.playerCellIDs && this.playerCellIDs.indexOf(n.id) !== -1) {
+            if (n && n.size && this.playerCellIDs && this.playerCellIDs.indexOf(n.id) !== -1) {
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x;
@@ -1577,18 +1577,30 @@ class Spect {
     }
 
     recalculatePlayerMass() {
-        if (this.playerScore = Math.max(this.playerScore, this.playerMass),
-        defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
-            const cells = legendmod.playerCellsMulti;
-            const CellLength = cells.length;
-            cells.sort(function (cells, CellLength) {
-                return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-            });
-            this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
-            this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
-            this.playerSplitCells = CellLength;
+        this.playerScore = Math.max(this.playerScore || 0, this.playerMass || 0);
+        if (defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+            let minS = Infinity, maxS = 0, count = 0;
+            if (legendmod.playerCellsMulti) {
+                for (let i = 0; i < legendmod.playerCellsMulti.length; i++) {
+                    const c = legendmod.playerCellsMulti[i];
+                    if (c && c.size && this.playerCellIDs && this.playerCellIDs.indexOf(c.id) !== -1) {
+                        if (c.size < minS) minS = c.size;
+                        if (c.size > maxS) maxS = c.size;
+                        count++;
+                    }
+                }
+            }
+            if (count > 0) {
+                this.playerMinMass = ~~(minS * minS / 100);
+                this.playerMaxMass = ~~(maxS * maxS / 100);
+                this.playerSplitCells = count;
+            } else {
+                this.playerMinMass = 0;
+                this.playerMaxMass = 0;
+                this.playerSplitCells = 0;
+            }
         }
-        const mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+        const mass = legendmod.selectBiggestCell ? (this.playerMaxMass || 0) : (this.playerMinMass || 0);
         this.STE = Math.floor(mass * defaultmapsettings.dominationRate / 4);
         this.MTE = Math.floor(mass * defaultmapsettings.dominationRate / 2);
         this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate);
