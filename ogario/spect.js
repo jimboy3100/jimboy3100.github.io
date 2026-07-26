@@ -187,8 +187,8 @@ class Spect {
         try {
             this.handleMessage(message);
         } catch (e) {
-            if (e instanceof RangeError) {
-                // Buffer overrun — truncated or malformed message, skip silently
+            if (e instanceof RangeError || e instanceof URIError) {
+                // Buffer overrun or malformed UTF-8 nick — skip silently
             } else {
                 throw e;
             }
@@ -648,7 +648,8 @@ class Spect {
                     if (isMe) {
                         isMe = 'isPlayer'
                     }
-                    let nick = window.decodeURIComponent(window.escape(encode()));
+                    let nick;
+                    try { nick = window.decodeURIComponent(window.escape(encode())); } catch (_e) { nick = encode() || ''; }
                     temp = null;
 
                     if (nick.includes('}')) {
@@ -677,20 +678,20 @@ class Spect {
                     let isFriend = false;
                     let isFBFriend = false;
                     position++;
-                    if (flags && 2) {
-                        nick = window.decodeURIComponent(window.escape(encode()));
+                    if (flags & 2) {
+                        try { nick = window.decodeURIComponent(window.escape(encode())); } catch (_e) { nick = encode() || ''; }
                     }
-                    if (flags && 4) {
+                    if (flags & 4) {
                         id = view.getUint32(offset, true);
                         offset += 4;
                     }
-                    if (flags && 8) {
+                    if (flags & 8) {
                         nick = this.playerNick;
                         id = 'isPlayer';
                         this.playerPosition = position;
 
                     }
-                    if (flags && 16) {
+                    if (flags & 16) {
                         isFriend = true;
                         this.friends++;
                     }
@@ -1275,30 +1276,30 @@ class Spect {
 
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
-            if (flags && 128) {
+            if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
             let color = null
             let skin = null;
             let name = '';
             let accountID = null;
-            if (flags && 2) {
+            if (flags & 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
-            if (flags && 4) {
+            if (flags & 4) {
                 skin = encode();
             }
-            if (flags && 8) {
-                name = window.decodeURIComponent(escape(encode()));
+            if (flags & 8) {
+                try { name = window.decodeURIComponent(escape(encode())); } catch (_e) { name = encode() || ''; }
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
                 }
             }
-            if (flags && 10) {
+            if (flags & 10) {
             }
             const isVirus = flags & 1;
             let isFood = extendedFlags & 1;
