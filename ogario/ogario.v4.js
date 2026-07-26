@@ -12208,6 +12208,9 @@ function thelegendmodproject() {
             ]; //Sonia3
             window.legendmod.setrot = false; //Sonia3
             window.legendmod.delstate = -1; //Sonia3			
+            /* Cancel any pending auto-reconnect timer from a previous onClose */
+            if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
+            this._reconnAttempts = 0;
             this.closeConnection();
             this.flushCellsData();
             this.protocolKey = null;
@@ -15809,6 +15812,14 @@ Most cells eaten   : ${mostCellsEaten}
             this.food = [];
             this.foodMulti = []; //for multi fix
             this.viruses = [];
+            this.removedCells = [];
+            /* Reset map bounds to defaults so stale borders don't persist */
+            this.mapMinX = -7071;
+            this.mapMinY = -7071;
+            this.mapMaxX = 7071;
+            this.mapMaxY = 7071;
+            this.mapMidX = 0;
+            this.mapMidY = 0;
 
             //for SPECT
             //this.ghostCellsStep = 0;
