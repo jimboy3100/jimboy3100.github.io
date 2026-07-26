@@ -10677,50 +10677,11 @@ function thelegendmodproject() {
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
-                var customTxt;
-                var temp;
-                for (var i = 0; i < application.chatHistory.length; i++) {
-                    if (application.chatHistory[i].nick === this.nick && (Date.now() - application.chatHistory[i].time < 15000)) {
-                        if (!application.chatHistory[i].message.includes('emoticon') && !application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
-                            !application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') &&
-                            !application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick != "") {
-                            if (application.chatHistory[i].nick === $('#nick').val() || application.chatHistory[i].nick === application.lastSentNick) {
-                                if (application.chatHistory[i].message.split('&')[1] && application.chatHistory[i].message.split('&')[1].split(';')[0]) {
-                                    application.chatHistory[i].message.replace(application.chatHistory[i].message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
-                                }
-                                //application.chatHistory[i].message = application.chatHistory[i].message.replace("&#x2F;", "");
-                                if (defaultmapsettings.showChatMyOwn) {
-                                    temp = Date.now() - application.chatHistory[i].time
-                                    customTxt = application.chatHistory[i].message
-                                }
-                            } else {
-                                temp = Date.now() - application.chatHistory[i].time
-                                customTxt = application.chatHistory[i].message
-                            }
-                        }
-                    }
-                }
-                for (var i = 0; i < application.commandHistory.length; i++) {
-                    if (application.commandHistory[i].nick === this.nick && (Date.now() - application.commandHistory[i].time < 15000)) {
-                        if (this.nick != "") {
-                            if (application.commandHistory[i].nick === $('#nick').val() || application.commandHistory[i].nick === application.lastSentNick) {
-
-                                if (defaultmapsettings.showChatMyOwn) {
-                                    if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
-                                        temp = Date.now() - application.commandHistory[i].time
-                                        customTxt = application.commandHistory[i].message
-                                    }
-                                }
-                            } else {
-                                if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
-                                    temp = Date.now() - application.commandHistory[i].time
-                                    customTxt = application.commandHistory[i].message
-                                }
-                            }
-                        }
-                    }
-                }
-                if (customTxt) {
+                /* ── Perf: O(1) map lookup instead of O(N) loop ── */
+                var _entry = drawRender._chatMap && drawRender._chatMap.get(this.nick);
+                if (_entry) {
+                    var customTxt = _entry.message;
+                    var temp = _entry.age;
                     if (this.redrawChat) {
                         chatCanvas.setTxt(customTxt);
                     }
@@ -10826,6 +10787,14 @@ function thelegendmodproject() {
             }
         };
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
+            /* ── Perf: cache Path2D until position or size changes ── */
+            if (this._cachedVirusPath &&
+                this._cachedVPx === shadowXpos &&
+                this._cachedVPy === shadowYpos &&
+                this._cachedVPsz === zeroSizeMax &&
+                this._cachedVPsp === pixelSizeTargetMax) {
+                return this._cachedVirusPath;
+            }
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
             const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
@@ -10839,6 +10808,11 @@ function thelegendmodproject() {
                 ctxfx.lineTo(~~(shadowXpos + radiusX * Math.sin(i)), ~~(shadowYpos + radiusX * Math.cos(i)));
                 ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
             }
+            this._cachedVirusPath = ctxfx;
+            this._cachedVPx = shadowXpos;
+            this._cachedVPy = shadowYpos;
+            this._cachedVPsz = zeroSizeMax;
+            this._cachedVPsp = pixelSizeTargetMax;
             return ctxfx;
         };
         this.drawSpecialSkinDancer = function (style, y) {
@@ -11212,12 +11186,20 @@ function thelegendmodproject() {
                     return;
                 }
                 /* ── Perf: view frustum culling — skip cells off-screen ── */
-                var _halfW = drawRender.canvasWidth / drawRender.scale / 2;
-                var _halfH = drawRender.canvasHeight / drawRender.scale / 2;
-                if (this.x + this.size < drawRender.camX - _halfW ||
-                    this.x - this.size > drawRender.camX + _halfW ||
-                    this.y + this.size < drawRender.camY - _halfH ||
-                    this.y - this.size > drawRender.camY + _halfH) {
+                var _cullingScale = drawRender.scale || 1;
+                var _halfW = drawRender.canvasWidth / _cullingScale / 2;
+                var _halfH = drawRender.canvasHeight / _cullingScale / 2;
+                /* Use LM.viewX/Y (server-reported center) as fallback when
+                   drawRender.camX/Y hasn't converged yet (e.g. first frames) */
+                var _cx = drawRender.camX, _cy = drawRender.camY;
+                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
+                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) {
+                    _cx = _vx; _cy = _vy;
+                }
+                if (this.x + this.size < _cx - _halfW ||
+                    this.x - this.size > _cx + _halfW ||
+                    this.y + this.size < _cy - _halfH ||
+                    this.y - this.size > _cy + _halfH) {
                     return;
                 }
                 /* ── Perf: manual state tracking instead of save/restore ── */
@@ -16554,6 +16536,41 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.start2D();
             this.renderStarted = performance.now()
             LM.time = Date.now();
+            /* ── Perf: build per-frame chat lookup map for O(1) per cell ── */
+            var _chatMap = this._chatMap || (this._chatMap = new Map());
+            _chatMap.clear();
+            var _now = LM.time;
+            var _myNick = window.$ ? $('#nick').val() : '';
+            var _lastNick = application.lastSentNick;
+            var _showOwn = defaultmapsettings.showChatMyOwn;
+            var _hist, _hEntry;
+            for (var _ci = 0; _ci < application.chatHistory.length; _ci++) {
+                _hEntry = application.chatHistory[_ci];
+                if ((_now - _hEntry.time) < 15000 && _hEntry.nick && _hEntry.nick !== "" &&
+                    !_hEntry.message.includes('emoticon') && !_hEntry.message.includes('<img src') &&
+                    !_hEntry.message.includes('DosAttack') && !_hEntry.message.includes('DosFight') &&
+                    !_hEntry.message.includes('DosRun') && !_hEntry.message.includes('https://agar.io/sip=151.80.91.73:1511')) {
+                    var _isOwn = (_hEntry.nick === _myNick || _hEntry.nick === _lastNick);
+                    if (_isOwn && !_showOwn) continue;
+                    var _age = _now - _hEntry.time;
+                    var _prev = _chatMap.get(_hEntry.nick);
+                    if (!_prev || _age < _prev.age) {
+                        _chatMap.set(_hEntry.nick, { message: _hEntry.message, age: _age });
+                    }
+                }
+            }
+            for (var _ci = 0; _ci < application.commandHistory.length; _ci++) {
+                _hEntry = application.commandHistory[_ci];
+                if ((_now - _hEntry.time) < 15000 && _hEntry.nick && _hEntry.nick !== "") {
+                    var _isOwn = (_hEntry.nick === _myNick || _hEntry.nick === _lastNick);
+                    if (_isOwn && !_showOwn) continue;
+                    var _age = _now - _hEntry.time;
+                    var _prev = _chatMap.get(_hEntry.nick);
+                    if (!_prev || _age < _prev.age) {
+                        _chatMap.set(_hEntry.nick, { message: _hEntry.message, age: _age });
+                    }
+                }
+            }
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
             }
@@ -16943,37 +16960,36 @@ Most cells eaten   : ${mostCellsEaten}
             LM.Waves.push(wave)		  		*/
         },
         drawFBTracking(ctx, players, x, y) { //Yahnych
+            if (!players.length) return;
+            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
                 //distance to target
-                var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
+                var dx = x - t.x, dy = y - t.y;
+                var dis = Math.sqrt(dx * dx + dy * dy);
                 //angle 
                 var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
                 //if target on left side
-
                 if ((t.x - x > 0 && t.y - y < 0) || (t.x - x > 0 && t.y - y > 0)) {
                     angl = 180 + (180 - angl);
                 }
-                // Store the current context state (i.e. rotation, translation etc..)
-                ctx.save()
 
-                //Convert degrees to radian 
                 var rad = angl * Math.PI / 180;
+                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                //Set the origin to the center of the image
-                ctx.translate(t.x, t.y);
-
-                //Rotate the canvas around the origin
-                ctx.rotate(rad);
-
-                //draw the image    
-                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
+                ctx.setTransform(
+                    _worldTx.a * cos + _worldTx.c * sin,
+                    _worldTx.b * cos + _worldTx.d * sin,
+                    _worldTx.c * cos - _worldTx.a * sin,
+                    _worldTx.d * cos - _worldTx.b * sin,
+                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
+                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
+                );
 
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, defaultSettings.splitRangeColor);
                 grad.addColorStop(1, defaultSettings.splitRangeColor + "00");
-
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
@@ -16981,9 +16997,8 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
-                // Restore canvas state as saved from above
-                ctx.restore();
             }
+            ctx.setTransform(_worldTx);
         },
         newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = []) {
             var size = 0
@@ -17716,6 +17731,8 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawBCursorTracking(ctx, players, cursorX, cursorY) { //Yahnych
+            if (!players.length) return;
+            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = LM.playerCells[length];
                 if (LM.playerCells[length].angle === undefined) {
@@ -17723,11 +17740,11 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 let r = t.size / 3;
                 //distance to target
-                var dis = Math.sqrt((cursorX - t.x) * (cursorX - t.x) + (cursorY - t.y) * (cursorY - t.y));
+                var dx = cursorX - t.x, dy = cursorY - t.y;
+                var dis = Math.sqrt(dx * dx + dy * dy);
                 //angle in deg
                 var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
                 //if target on left side
-
                 if ((t.x - cursorX > 0 && t.y - cursorY < 0) || (t.x - cursorX > 0 && t.y - cursorY > 0)) {
                     angl = 180 + (180 - angl);
                 }
@@ -17744,20 +17761,21 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                ctx.save()
-
-                //Convert degrees to radian 
                 var rad = t.angle * Math.PI / 180;
+                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                ctx.translate(t.x, t.y);
+                ctx.setTransform(
+                    _worldTx.a * cos + _worldTx.c * sin,
+                    _worldTx.b * cos + _worldTx.d * sin,
+                    _worldTx.c * cos - _worldTx.a * sin,
+                    _worldTx.d * cos - _worldTx.b * sin,
+                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
+                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
+                );
 
-                ctx.rotate(rad);
-
-                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, defaultSettings.cursorTrackingColor);
                 grad.addColorStop(1, defaultSettings.cursorTrackingColor + "00");
-
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
@@ -17765,9 +17783,8 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
-                // Restore canvas state as saved from above
-                ctx.restore();
             }
+            ctx.setTransform(_worldTx);
         },
         drawCursorTracking(ctx, players, cursorX, cursorY) {
             ctx.lineWidth = 4,
@@ -17779,50 +17796,52 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
+            ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
-                ctx.beginPath();
+                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
             }
+            ctx.stroke();
             ctx.globalAlpha = 1;
         },
         drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
+            if (!players.length) return;
+            /* ── Perf: cache world transform, use setTransform instead of save/restore ── */
+            var _worldTx = ctx.getTransform();
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 let r = t.size / 3;
                 //distance to target
-                var dis = Math.sqrt((t.targetX - t.x) * (t.targetX - t.x) + (t.targetY - t.y) * (t.targetY - t.y));
+                var dx = t.targetX - t.x, dy = t.targetY - t.y;
+                var dis = Math.sqrt(dx * dx + dy * dy);
                 //angle 
                 var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
                 //if target on left side
-
                 if ((t.x - t.targetX > 0 && t.y - t.targetY < 0) || (t.x - t.targetX > 0 && t.y - t.targetY > 0)) {
                     angl = 180 + (180 - angl);
                 }
-                //console.log(t.x, t.targetX)
-
-                // Store the current context state (i.e. rotation, translation etc..)
-                ctx.save()
 
                 //Convert degrees to radian 
                 var rad = angl * Math.PI / 180;
+                var cos = Math.cos(rad), sin = Math.sin(rad);
 
-                //Set the origin to the center of the image
-                ctx.translate(t.x, t.y);
+                // Manual transform: world * translate(t.x,t.y) * rotate(rad)
+                ctx.setTransform(
+                    _worldTx.a * cos + _worldTx.c * sin,
+                    _worldTx.b * cos + _worldTx.d * sin,
+                    _worldTx.c * cos - _worldTx.a * sin,
+                    _worldTx.d * cos - _worldTx.b * sin,
+                    _worldTx.a * t.x + _worldTx.c * t.y + _worldTx.e,
+                    _worldTx.b * t.x + _worldTx.d * t.y + _worldTx.f
+                );
 
-                //Rotate the canvas around the origin
-                ctx.rotate(rad);
-
-                //draw the image    
-                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
                 let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
                 grad.addColorStop(0, stroke);
                 grad.addColorStop(1, stroke + "00");
-
 
                 ctx.fillStyle = grad;
                 ctx.globalAlpha = alpha;
@@ -17830,34 +17849,34 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
                 ctx.fill();
                 ctx.globalAlpha = 1;
-                // Restore canvas state as saved from above
-                ctx.restore();
             }
+            // Restore world transform
+            ctx.setTransform(_worldTx);
 
         },
         //Sonia (added entire function)
         draw2Circles(ctx, players, scale, width, alpha, color) {
+            if (!players.length) return;
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
-            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
             if (defaultmapsettings.qdsplitRange) { //Sonia2
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //760+2*cell.size is the correct
                 }
+                ctx.stroke();
             } //Sonia2
             if (defaultmapsettings.sdsplitRange) { //Sonia2
+                ctx.setLineDash([20, 30]);
+                ctx.lineWidth = 2 * width;
+                ctx.beginPath();
                 for (var n = 0; n < players.length; n++) {
-                    ctx.setLineDash([20, 30]);
-                    ctx.lineWidth = 2 * width;
-                    ctx.beginPath();
+                    ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
                     ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke(); //Sonia2
                 }
+                ctx.stroke();
                 ctx.setLineDash([]); //Sonia2
                 ctx.lineWidth = width; //Sonia2
             } //Sonia2
@@ -17971,7 +17990,17 @@ Most cells eaten   : ${mostCellsEaten}
         drawGhostCells() {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
+                if (!ghostsCells.length) return;
+                var _showInfo = defaultmapsettings.showGhostCellsInfo;
+                var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
                 this.ctx.beginPath();
+                /* ── Perf: hoist constant state outside loop ── */
+                if (_showInfo) {
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillStyle = defaultSettings.namesColor;
+                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                    this.ctx.lineWidth = 4;
+                }
                 var length = 0;
                 for (; length < ghostsCells.length; length++) {
                     if (!ghostsCells[length].inView) {
@@ -17980,15 +18009,11 @@ Most cells eaten   : ${mostCellsEaten}
                         this.ctx.moveTo(x, y);
                         this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
                         //
-                        if (defaultmapsettings.showGhostCellsInfo) {
+                        if (_showInfo) {
                             this.nickScale = 1;
                             this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
                             this.nickSize = ~~(this.fontSize * this.nickScale);
                             this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                            this.ctx.textAlign = 'center';
-                            this.ctx.fillStyle = defaultSettings.namesColor;
-                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                            this.ctx.lineWidth = 4;
                             angle = Math.PI * 0.8;
 
                             if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
@@ -17998,7 +18023,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.ghostcellstext = "Ghost cell";
                             }
                             this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            if (_showSkins) {
                                 if (LM.leaderboard[length] != undefined) {
                                     node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
                                     if (node) {
