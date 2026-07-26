@@ -428,6 +428,28 @@ class Spect {
         this.sendAction(17);
     }
 
+    sendDoubleSplit() {
+        this.sendSplit();
+        setTimeout(() => { this.sendSplit(); }, 40);
+    }
+
+    sendTripleSplit() {
+        this.sendSplit();
+        setTimeout(() => { this.sendSplit(); }, 40);
+        setTimeout(() => { this.sendSplit(); }, 80);
+    }
+
+    sendQuadSplit() {
+        this.sendSplit();
+        setTimeout(() => { this.sendSplit(); }, 40);
+        setTimeout(() => { this.sendSplit(); }, 80);
+        setTimeout(() => { this.sendSplit(); }, 120);
+    }
+
+    sendPlayerFreeze() {
+        this.sendAction(22);
+    }
+
     sendNick(nick) {
         if (!this.active) { //if cell didn't start
             //console.log(nick)

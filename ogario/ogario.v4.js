@@ -21159,18 +21159,33 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.sendSplit();
             }
         },
-        // Multi-protocol split macros (Imsolo/Agar2)
         doubleSplit() {
-            LM.sendDoubleSplit();
+            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                spects[window.multiboxPlayerEnabled - 1].sendDoubleSplit();
+            } else {
+                LM.sendDoubleSplit();
+            }
         },
         tripleSplit() {
-            LM.sendTripleSplit();
+            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                spects[window.multiboxPlayerEnabled - 1].sendTripleSplit();
+            } else {
+                LM.sendTripleSplit();
+            }
         },
         quadSplit() {
-            LM.sendQuadSplit();
+            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                spects[window.multiboxPlayerEnabled - 1].sendQuadSplit();
+            } else {
+                LM.sendQuadSplit();
+            }
         },
         playerFreeze() {
-            LM.sendPlayerFreeze();
+            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                spects[window.multiboxPlayerEnabled - 1].sendPlayerFreeze();
+            } else {
+                LM.sendPlayerFreeze();
+            }
         },
         specialOn() {
             LM.sendFreeSpectate();
