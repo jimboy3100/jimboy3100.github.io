@@ -10948,16 +10948,18 @@ function thelegendmodproject() {
                     LM.food.splice(cells, 1);
                 }
             }
-            //cells = LM.playerCellsMulti.indexOf(this);
             cells = LM.foodMulti.indexOf(this);
             if (cells !== -1) {
                 LM.foodMulti.splice(cells, 1);
+            }
+            cells = LM.playerCellsMulti.indexOf(this);
+            if (cells !== -1) {
+                LM.playerCellsMulti.splice(cells, 1);
             }
             cells = LM.playerCells.indexOf(this);
             if (cells !== -1) {
                 LM.removePlayerCell = true;
                 LM.playerCells.splice(cells, 1);
-                //LM.playerCellsMulti.splice(cells, 1);
                 cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells !== -1) {
                     LM.playerCellIDs.splice(cells, 1);
@@ -10970,26 +10972,35 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
-            var time = LM.time - this.time;
-            var delay = time / defaultmapsettings.animation;
+            var anim = defaultmapsettings.animation || 120;
+            var time = LM.time - (this.updateTime || this.time);
+            var delay = time / anim;
             if (delay < 0) {
-                delay = 0
+                delay = 0;
             } else if (delay > 1) {
-                delay = 1
+                delay = 1;
             }
-            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
-            this.x += (this.targetX - this.x) * delay;
-            this.y += (this.targetY - this.y) * delay;
+
+            if (this.startX != null && this.targetX != null) {
+                this.x = this.startX + (this.targetX - this.startX) * delay;
+                this.y = this.startY + (this.targetY - this.startY) * delay;
+            } else {
+                this.x += (this.targetX - this.x) * delay;
+                this.y += (this.targetY - this.y) * delay;
+            }
+
             if (!defaultmapsettings.suckAnimation) {
-                this.size += (this.targetSize - this.size) * delay;
-            }
-            else {
+                if (this.startSize != null && this.targetSize != null) {
+                    this.size = this.startSize + (this.targetSize - this.startSize) * delay;
+                } else {
+                    this.size += (this.targetSize - this.size) * delay;
+                }
+            } else {
                 this.size += (this.targetSize - this.size) * (time / 800);
-                if (this.size < 0) this.size = 0 //fix
+                if (this.size < 0) this.size = 0;
             }
             this.alpha = delay;
             if (!this.removed) {
-                this.time = LM.time;
                 return;
             }
             if (delay >= 1) {
