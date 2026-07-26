@@ -10676,6 +10676,7 @@ function thelegendmodproject() {
             this.isVirus = isVirus;
             this.isPlayerCell = isPlayer;
             this.updateTime = Date.now();
+            this.time = 0;
             return this;
         };
         //lylko
@@ -11633,11 +11634,11 @@ function thelegendmodproject() {
 
 
                 //26/7/2020
-                if (LM.ws.includes("replay") && window.replayGreyScale) {
+                if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
                     style.filter = 'grayscale(100%)';
-                } else if (LM.ws.includes("replay") && window.replaySepia) {
+                } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
                     style.filter = 'sepia(100%)';
-                } else if (LM.ws.includes("replay") && window.replayHueRotate) {
+                } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
                     style.filter = 'hue-rotate(90deg)';
                 }
                 //style.filter='grayscale(100%)';
@@ -12281,6 +12282,17 @@ function thelegendmodproject() {
                     self.socket.onmessage = function (t) { app.onMessage(t); };
                     self.socket.onerror = function (t) { app.onError(t); };
                     self.socket.onclose = function (t) { app.onClose(t); };
+                    /* Run the same post-connect setup that non-Garix path does */
+                    application.getWS(self.ws);
+                    application.sendServerJoin();
+                    application.sendServerData();
+                    application.displayLeaderboard('');
+                    application.displayPartyBots();
+                    application.setUniversalChat();
+                    application.setAnimatedRainbowColor();
+                    if (window.master && window.master.onConnect) window.master.onConnect();
+                    self.play = false;
+                    self.replayfunctions();
                 })();
                 return;
             } else {
@@ -17798,11 +17810,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.drawCustomBackgrounds()
             if (defaultmapsettings.showMapBorders) {
                 var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
-                var bMinX = (typeof LM.mapMinX !== "undefined" && LM.mapMinX !== 0) ? LM.mapMinX : -7071;
-                var bMinY = (typeof LM.mapMinY !== "undefined" && LM.mapMinY !== 0) ? LM.mapMinY : -7071;
-                var bMaxX = (typeof LM.mapMaxX !== "undefined" && LM.mapMaxX !== 0) ? LM.mapMaxX : 7071;
-                var bMaxY = (typeof LM.mapMaxY !== "undefined" && LM.mapMaxY !== 0) ? LM.mapMaxY : 7071;
-                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, bMinX - tempborderwidthradius, bMinY - tempborderwidthradius, bMaxX + tempborderwidthradius, bMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
             /* ── Expanding Land: Draw warning/danger zone overlay ── */
             if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
@@ -17829,7 +17837,7 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = LM.removedCells.length - 1; i >= 0; i--) {
                 var rCell = LM.removedCells[i];
                 rCell.moveCell();
-                rCell.draw(this.ctx, true);
+                rCell.draw(this.ctx);
             }
             /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
              * in a single draw call. Falls back to Canvas2D for jelly/contours.
