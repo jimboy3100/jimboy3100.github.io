@@ -184,7 +184,15 @@ class Spect {
         if (this.protocolKey) {
             message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
         }
-        this.handleMessage(message);
+        try {
+            this.handleMessage(message);
+        } catch (e) {
+            if (e instanceof RangeError) {
+                // Buffer overrun — truncated or malformed message, skip silently
+            } else {
+                throw e;
+            }
+        }
     }
 
     onerror() {
