@@ -8806,16 +8806,7 @@ function thelegendmodproject() {
 
         },
         Socket3connect(srv) {
-            //if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
-            //setTimeout(function() {
-            //Socket3enabler(window.legendmod.ws);
-            if (Socket3) {
-                Socket3.closeAndOpen();
-            } else {
-                Socket3enabler(window.legendmod.ws);
-            }
-            //}, 1000);
-            //}
+            // Secondary socket replaced by zero-width chat steganography
         },
         //Sonia6			
         SLGconnect(srv) {
@@ -20954,62 +20945,15 @@ function timernow() {
 }
 
 function Socket3enabler(srv) {
-    if (srv && srv.match("-([A-Za-z0-9]{6,7})\.")) {
-        var room = $("#server-token").val();
-        try {
-            Socket3 = new WebSocket("wss://cloud.achex.ca/JIMBOY3100" + room);
-            Socket3.onmessage = function (message) {
-                Socket3handler(message.data);
+    if (!window.socket3Opened && window.noOgarioSocket) {
+        $("#message").keydown(function (event) {
+            if (event.keyCode === 13) {
+                enterChatMessage2();
             }
-            Socket3.onopen = function (e) {
-                window.socket3NumberTries = 0;
-                try {
-                    Socket3.send(JSON.stringify({
-                        "auth": "JIM" + customLMID,
-                        "password": "legendmod"
-                    }));
-                    Socket3.send(JSON.stringify({
-                        "joinHub": $("#server-token").val() + "3"
-                    }));
-                } catch (err) {}
-                if (!window.socket3Opened && window.noOgarioSocket) {
-                    $("#message").keydown(function (event) {
-                        if (event.keyCode === 13) {
-                            enterChatMessage2();
-                        }
-                    });
-                }
-                window.socket3Opened = true;
-            }
-            Socket3.onerror = function (e) {
-                window.socket3NumberTries++;
-            }
-            Socket3.onclose = function (e) {
-                window.socket3NumberTries++;
-                if (window.socket3NumberTries < 2) {
-                    //Socket3enabler(window.legendmod.ws)
-                }
-            }
-            Socket3.closeAndOpen = function (e) {
-                Socket3.onclose = function (e) {}
-
-                if (window.Socket3) {
-                    window.Socket3['onmessage'] = null;
-                    try {
-                        window.Socket3['close']();
-                    } catch (ogarcloseconlabel) { }
-                    window.Socket3 = null;
-                }
-
-                if (window.socket3NumberTries < 2) {
-                    Socket3enabler(window.legendmod.ws);
-                }
-            }
-            return Socket3;
-        } catch (err) {
-            window.socket3NumberTries++;
-        }
+        });
+        window.socket3Opened = true;
     }
+    return null;
 }
 
 window.encodeLMInvisibleData = function (dataObj) {
