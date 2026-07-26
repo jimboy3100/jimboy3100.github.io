@@ -6756,61 +6756,85 @@ function thelegendmodproject() {
         },
         updateProfileBadges() {
             if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
-            $('.skin-box .mb-badge, .mb-badge').remove();
+            $('.mb-badge').remove();
             var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
 
+            var profileSlots = {};
             for (var slot = 0; slot < maxMb; slot++) {
                 var pIdx = -1;
                 if (slot === 0) {
                     pIdx = this.selectedProfile;
                 } else if (slot === 1) {
                     pIdx = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((this.selectedProfile + 1) % profiles.length);
-                } else {
-                    pIdx = (this.selectedProfiles && this.selectedProfiles[slot] != null) ? this.selectedProfiles[slot] : ((this.selectedProfile + slot) % profiles.length);
+                } else if (slot === 2) {
+                    pIdx = (this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((this.selectedProfile + 2) % profiles.length);
+                } else if (slot === 3) {
+                    pIdx = (this.selectedProfiles && this.selectedProfiles[3] != null) ? this.selectedProfiles[3] : ((this.selectedProfile + 3) % profiles.length);
                 }
 
                 if (pIdx >= 0 && pIdx < profiles.length) {
-                    var $el = $('#profile-' + pIdx);
-                    if ($el.length) {
-                        var $parent = $el.closest('.skin-box');
-                        if (!$parent || !$parent.length) $parent = $el.parent();
-                        if ($parent && $parent.length) {
-                            $parent.css('position', 'relative');
-                            $parent.append('<span class="mb-badge mb-badge-' + (slot + 1) + '" data-slot="' + slot + '" title="Unit ' + (slot + 1) + '">' + (slot + 1) + '</span>');
-                        }
+                    if (!profileSlots[pIdx]) profileSlots[pIdx] = [];
+                    profileSlots[pIdx].push(slot);
+                }
+            }
+
+            for (var pKey in profileSlots) {
+                var pIdxInt = parseInt(pKey);
+                var slots = profileSlots[pKey];
+                var $el = $('#profile-' + pIdxInt);
+                if ($el.length) {
+                    $el.css({ 'position': 'relative', 'overflow': 'visible' });
+                    for (var k = 0; k < slots.length; k++) {
+                        var slotNum = slots[k];
+                        var badgeNum = slotNum + 1;
+                        var rightPx = 2 + (k * 20);
+                        $el.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="right: ' + rightPx + 'px !important;">' + badgeNum + '</span>');
                     }
                 }
             }
         },
         prevProfile() {
+            if (!this.selectedProfiles) this.selectedProfiles = [];
+            this.selectedProfiles[3] = this.selectedProfiles[2];
+            this.selectedProfiles[2] = this.selectedOldProfile;
             this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
+            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length;
+            this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
-                this.setProfileboxShadow()
+                this.setProfileboxShadow();
             } else {
-                this.eraseProfileboxShadow()
+                this.eraseProfileboxShadow();
             }
         },
         nextProfile() {
+            if (!this.selectedProfiles) this.selectedProfiles = [];
+            this.selectedProfiles[3] = this.selectedProfiles[2];
+            this.selectedProfiles[2] = this.selectedOldProfile;
             this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
+            this.selectedProfile = (this.selectedProfile + 1) % profiles.length;
+            this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
-                this.setProfileboxShadow()
+                this.setProfileboxShadow();
             } else {
-                this.eraseProfileboxShadow()
+                this.eraseProfileboxShadow();
             }
         },
         selectProfile(value) {
+            var val = parseInt(value);
+            if (!this.selectedProfiles) this.selectedProfiles = [];
+            this.selectedProfiles[3] = (this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((val + 3) % profiles.length);
+            this.selectedProfiles[2] = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((val + 2) % profiles.length);
             this.selectedOldProfile = this.selectedProfile;
+            this.selectedProfile = val;
+
             this.setPlayerSettings();
-            this.selectedProfile = parseInt(value);
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
-                this.setProfileboxShadow()
+                this.setProfileboxShadow();
             } else {
-                this.eraseProfileboxShadow()
+                this.eraseProfileboxShadow();
             }
         },
         /* ─── §4.7 UI Builder ─── */
