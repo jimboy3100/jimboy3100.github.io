@@ -17969,6 +17969,13 @@ Most cells eaten   : ${mostCellsEaten}
             LM.camMaxX = this.camX + this.canvasWidth * 0.5 * _invScale;
             LM.camMaxY = this.camY + this.canvasHeight * 0.5 * _invScale;
 
+            if (LM.multiBoxPlayerExists && window.multiboxPlayerEnabled) {
+                LM.camMinMultiX = this.camXMulti - this.canvasWidth * 0.5 * _invScale;
+                LM.camMinMultiY = this.camYMulti - this.canvasHeight * 0.5 * _invScale;
+                LM.camMaxMultiX = this.camXMulti + this.canvasWidth * 0.5 * _invScale;
+                LM.camMaxMultiY = this.camYMulti + this.canvasHeight * 0.5 * _invScale;
+            }
+
             /* Build chat/command lookup map once per frame — with message filters */
             var _chatMap = this._chatLookup || (this._chatLookup = new Map());
             _chatMap.clear();
@@ -18153,34 +18160,36 @@ Most cells eaten   : ${mostCellsEaten}
 
         },
         drawHelpers() {
-            if (LM.play || LM.playerCellsMulti.length) {
+            if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
                 if (defaultmapsettings.splitRange) {
-                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
-                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                    //
-                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
-                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
-                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
+                    if (LM.playerCells && LM.playerCells.length) {
+                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
+                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
+                    }
+                    if (LM.playerCellsMulti && LM.playerCellsMulti.length) {
+                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                    }
                 }
                 if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
-                    //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache , LM.SSCellsCache); //Sonia
-                    this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
+                    this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache);
                 }
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
-                            this.drawSplitVectorGuide(this.ctx, LM.playerCells);
-                        } else if (window.multiboxPlayerEnabled) {
+                            if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(this.ctx, LM.playerCells);
+                        } else if (window.multiboxPlayerEnabled && LM.playerCellsMulti && LM.playerCellsMulti.length) {
                             this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
                         }
                     } else {
-                        this.drawSplitVectorGuide(this.ctx, LM.playerCells);
-                        this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
+                        if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(this.ctx, LM.playerCells);
+                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
                     }
 
-                    this.drawMergeProgressRings(this.ctx, LM.playerCells);
-                    this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
+                    if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(this.ctx, LM.playerCells);
+                    if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
                 }
             }
         },
