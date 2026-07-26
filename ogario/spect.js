@@ -359,23 +359,26 @@ class Spect {
     }
 
     sendCursor() {
+        if (this.positionController) {
+            clearInterval(this.positionController);
+            this.positionController = null;
+        }
         this.positionController = setInterval(() => {
-
+            if (!this.connectionOpened) return;
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-            } else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-
-                this.distX = this.convertX(legendmod.cursorX) - this.playerX
-                this.distY = this.convertY(legendmod.cursorY) - this.playerY
-            } else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) {
-                if (defaultmapsettings.multiKeepMoving) {
-                    this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
-                }
+            } else if (window.multiboxPlayerEnabled || window.multiboxFollowMouse || this.isFreeSpectate) {
+                var targetX = legendmod.cursorX;
+                var targetY = legendmod.cursorY;
+                var rawTargetX = this.convertX(targetX);
+                var rawTargetY = this.convertY(targetY);
+                this.sendPosition(rawTargetX, rawTargetY);
+                this.distX = rawTargetX - (this.playerX || 0);
+                this.distY = rawTargetY - (this.playerY || 0);
+            } else if (defaultmapsettings.multiKeepMoving) {
+                this.sendPosition((this.playerX || 0) + (this.distX || 0), (this.playerY || 0) + (this.distY || 0));
             }
         }, 50);
-        //this.sendSpectate()
-        //this.sendFreeSpectate()
     }
 
     sendSpectate() {

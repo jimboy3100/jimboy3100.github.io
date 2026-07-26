@@ -16844,21 +16844,39 @@ Most cells eaten   : ${mostCellsEaten}
             var x = 0;
             var y = 0;
             var minSize = Infinity, maxSize = 0;
-            playersLength = this.playerCells.length;
+            var playersLength = this.playerCells.length;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
-                x += n.x / playersLength;
-                y += n.y / playersLength;
+                x += n.x / (playersLength || 1);
+                y += n.y / (playersLength || 1);
                 /* Track min/max inline to avoid redundant sort in recalculatePlayerMass */
                 if (n.size < minSize) minSize = n.size;
                 if (n.size > maxSize) maxSize = n.size;
             }
 
-            if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
-                //
-            } else if (!window.multiboxPlayerEnabled) {
+            /* Calculate Multibox player center position */
+            if (this.playerCellsMulti && this.playerCellsMulti.length) {
+                var xMulti = 0, yMulti = 0;
+                var multiLen = this.playerCellsMulti.length;
+                for (var mi = 0; mi < multiLen; mi++) {
+                    var mCell = this.playerCellsMulti[mi];
+                    xMulti += mCell.x / multiLen;
+                    yMulti += mCell.y / multiLen;
+                }
+                this.viewXMulti = xMulti;
+                this.viewYMulti = yMulti;
+            } else {
+                this.viewXMulti = x;
+                this.viewYMulti = y;
+            }
+
+            /* Update Viewport Coordinates for Main Player and Multibox */
+            if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists && this.playerCellsMulti && this.playerCellsMulti.length) {
+                this.viewX = (x + this.viewXMulti) / 2;
+                this.viewY = (y + this.viewYMulti) / 2;
+            } else {
                 this.viewX = x;
                 this.viewY = y;
             }
@@ -17892,12 +17910,6 @@ Most cells eaten   : ${mostCellsEaten}
         },
         setView() {
             this.setScale(LM.playerSize);
-            var speed = 30;
-            //if (LM.playerCellsMulti.length) {
-            if (window.multiboxPlayerEnabled) {
-                this.camXMulti = (this.camXMulti + LM.viewX) / 2;
-                this.camYMulti = (this.camYMulti + LM.viewY) / 2;
-            }
             if (LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition();
                 this.camX = (this.camX + 2 * LM.viewX) / 3;
@@ -17906,13 +17918,21 @@ Most cells eaten   : ${mostCellsEaten}
                 this.camX = (29 * this.camX + LM.viewX) / 30;
                 this.camY = (29 * this.camY + LM.viewY) / 30;
             }
-            //this.camX=LM.viewX
-            //this.camY=LM.viewY
+
+            if (LM.playerCellsMulti && LM.playerCellsMulti.length) {
+                var targetMultiX = (LM.viewXMulti !== undefined) ? LM.viewXMulti : LM.viewX;
+                var targetMultiY = (LM.viewYMulti !== undefined) ? LM.viewYMulti : LM.viewY;
+                this.camXMulti = (this.camXMulti + 2 * targetMultiX) / 3;
+                this.camYMulti = (this.camYMulti + 2 * targetMultiY) / 3;
+            } else {
+                this.camXMulti = (29 * this.camXMulti + LM.viewX) / 30;
+                this.camYMulti = (29 * this.camYMulti + LM.viewY) / 30;
+            }
+
             LM.playerXMulti = this.camXMulti;
             LM.playerYMulti = this.camYMulti;
             LM.playerX = this.camX;
             LM.playerY = this.camY;
-
         },
         setScale(size) {
             if (!LM.autoZoom) {
