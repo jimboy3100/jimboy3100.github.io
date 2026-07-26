@@ -1,4 +1,4 @@
-window.OgVer = 3.411;
+window.OgVer = 3.413;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -11210,19 +11210,21 @@ function thelegendmodproject() {
                 var s = false;
                 var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
                 //
-                var node = null
-                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                    node = application.getCustomSkin(this.targetNick, this.color);
-                }
-                var node2, node2IsVideo = false;
-                if (defaultmapsettings.videoSkins) {
-                    if (LM.gameMode != ":party") {
-                        node2 = application.customSkinsMap[this.targetNick];
+                var node = null;
+                var node2 = null, node2IsVideo = false;
+                if (!this.isFood && !this.isVirus) {
+                    if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        node = application.getCustomSkin(this.targetNick, this.color);
                     }
-                    else {
-                        node2 = application.customSkinsMap[this.targetNick + this.color];
+                    if (defaultmapsettings.videoSkins) {
+                        if (LM.gameMode != ":party") {
+                            node2 = application.customSkinsMap[this.targetNick];
+                        }
+                        else {
+                            node2 = application.customSkinsMap[this.targetNick + this.color];
+                        }
+                        if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
                     }
-                    if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -11236,8 +11238,8 @@ function thelegendmodproject() {
                             this.color = ogarcopythelb.color;
                         }
                     }
-                    else {
-                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
+                    else if (!this.isFood && !this.isVirus) {
+                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
                             this.color = this.oppColor;
                         }
                     }
@@ -11253,17 +11255,24 @@ function thelegendmodproject() {
                     }
                 }
                 else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                    style.lineJoin = "miter"
-                    var pointCount = 120;
-                    var incremental = this.pi2 / pointCount;
+                    style.lineJoin = "miter";
+                    if (!window._virusSinTable) {
+                        window._virusSinTable = new Float32Array(120);
+                        window._virusCosTable = new Float32Array(120);
+                        for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
+                            var _vAng = _vIdx * (Math.PI * 2 / 120);
+                            window._virusSinTable[_vIdx] = Math.sin(_vAng);
+                            window._virusCosTable[_vIdx] = Math.cos(_vAng);
+                        }
+                    }
+                    var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
                     style.moveTo(this.x, this.y + this.size + 3);
-                    for (var i = 1; i < pointCount; i++) {
-                        var angle = i * incremental;
-                        var dist = this.size - 3 + (i % 2 === 0) * 6;
+                    for (var i = 1; i < 120; i++) {
+                        var dist = this.size - 3 + ((i & 1) ? 0 : 6);
                         style.lineTo(
-                            this.x + dist * Math.sin(angle),
-                            this.y + dist * Math.cos(angle)
-                        )
+                            this.x + dist * _vSin[i],
+                            this.y + dist * _vCos[i]
+                        );
                     }
                     style.lineTo(this.x, this.y + this.size + 3);
                 }
@@ -17992,8 +18001,14 @@ Most cells eaten   : ${mostCellsEaten}
             this.pieChart || (this.pieChart = document.createElement('canvas'));
             var ctx = this.pieChart.getContext('2d'),
                 mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
-            this.pieChart.width = 200 * mincanvasWidth;
-            this.pieChart.height = 240 * mincanvasWidth;
+            var w = ~~(200 * mincanvasWidth);
+            var h = ~~(240 * mincanvasWidth);
+            if (this.pieChart.width !== w || this.pieChart.height !== h) {
+                this.pieChart.width = w;
+                this.pieChart.height = h;
+            } else {
+                ctx.clearRect(0, 0, w, h);
+            }
             ctx.scale(mincanvasWidth, mincanvasWidth);
             for (var colors = ['#333333', '#FF3333', '#33FF33', '#3333FF'], time = 0, length = 0; length < LM.pieChart.length; length++) {
                 var currentPie = time + LM.pieChart[length] * this.pi2;
