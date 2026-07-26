@@ -11643,48 +11643,6 @@ function thelegendmodproject() {
                 if (cellMoved) {
                     this.moveCell();
                 }
-                // WebGL2 rendered this cell's body+skin → draw text overlay only
-                if (this._webglRendered && !cellMoved) {
-                    this._webglRendered = false;
-                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass) { return; }
-                    style.save();
-                    try {
-                    var y = this.size;
-                    var recursive = false;
-                    if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
-                        this.setDrawing();
-                        this.setDrawingScale();
-                        if (defaultSettings.textAlpha != 1) {
-                            style.globalAlpha *= defaultSettings.textAlpha;
-                        }
-                        var node = (defaultmapsettings.customSkins && LM.showCustomSkins) ? application.getCustomSkin(this.targetNick, this.color) : null;
-                        if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
-                            if (this.setNick(this.targetNick)) {
-                                this.drawNick(style);
-                            }
-                        }
-                        if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
-                            if (this.setMass(this.size)) {
-                                this.drawMass(style);
-                                if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                    this.drawMerge(style);
-                                }
-                                if (defaultmapsettings.showChat) {
-                                    this.drawChat(style);
-                                }
-                            }
-                        }
-                    }
-                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                        window.teammatenicks && this.targetNick != "" &&
-                        (window.teammatenicks.includes(this.targetNick))) {
-                        drawRender.drawTeammatesInd(style, this.x, this.y, y);
-                    }
-                    } finally {
-                        style.restore();
-                    }
-                    return;
-                }
                 style.save();
                 try {
                 if (this.removed) {
@@ -18586,14 +18544,12 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* WebGL2 instanced cell body+skin batch — eliminates clip() stencil bottleneck.
-                 * Renders circle bodies via GPU SDF (discard outside radius) + skin textures via
-                 * sampler2DArray. Cells rendered here get _webglRendered=true, so cell.draw()
-                 * only draws Canvas2D text overlays (nick/mass). Skips viruses, jelly, contours. */
-                if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
-                    && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
-                    this.drawWebGLCellBatch(LM.cells);
-                }
+                /* WebGL2 cell body+skin batch — DISABLED: cells stay on Canvas2D.
+                 * Kept for future opt-in toggle. */
+                // if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
+                //     && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
+                //     this.drawWebGLCellBatch(LM.cells);
+                // }
 
                 /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
                 var _cW = 0;
