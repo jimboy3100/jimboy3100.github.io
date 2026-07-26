@@ -12292,6 +12292,8 @@ function thelegendmodproject() {
                     application.setAnimatedRainbowColor();
                     if (window.master && window.master.onConnect) window.master.onConnect();
                     self.play = false;
+                    self.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
+                    if (self.totalPlayerMass === "NaN" || !self.totalPlayerMass) self.totalPlayerMass = 0;
                     self.replayfunctions();
                 })();
                 return;
@@ -15839,6 +15841,8 @@ Most cells eaten   : ${mostCellsEaten}
             this.mapMaxY = 7071;
             this.mapMidX = 0;
             this.mapMidY = 0;
+            this.viewX = 0;
+            this.viewY = 0;
 
             //for SPECT
             //this.ghostCellsStep = 0;
@@ -16206,7 +16210,7 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                     }
                     // tabID (always present for added nodes, flag 0x40)
-                    if (offset + 1 < data.byteLength) {
+                    if (offset + 2 <= data.byteLength) {
                         var tabID = data.getUint16(offset, true); offset += 2;
                     }
                     // flag 0x100 = has nickColor
@@ -16269,9 +16273,9 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             // 3. Remove list (UInt16 count)
-            if (offset + 1 < data.byteLength) {
+            if (offset + 2 <= data.byteLength) {
                 var removeCount = data.getUint16(offset, true); offset += 2;
-                for (var ri = 0; ri < removeCount && offset + 3 < data.byteLength; ri++) {
+                for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
                     var removeID = data.getUint32(offset, true); offset += 4;
                     var rcell = this.indexedCells[removeID];
                     if (rcell) rcell.removeCell();
@@ -16482,7 +16486,7 @@ Most cells eaten   : ${mostCellsEaten}
                 cellUpdateCells.invisible = invisible;
                 if (cellUpdateCells.isPlayerCell) {
                     name = this.playerNick;
-                    if (this.ws.includes("replay")) {
+                    if (this.ws && this.ws.includes("replay")) {
                         name = window.RecordedArenasSpecifications[legendmod.playingReplayServer][3]
                     }
                 }
@@ -17822,7 +17826,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.drawVirusesRange(this.ctx, LM.viruses);
             }
             //if (defaultmapsettings.waves ) {
-            if (LM.Waves && LM.Waves && LM.Waves.length > 0) {
+            if (LM.Waves && LM.Waves.length > 0) {
                 this.drawWaves();
             }
 
