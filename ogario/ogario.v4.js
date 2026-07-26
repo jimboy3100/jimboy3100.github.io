@@ -17385,6 +17385,78 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_gridSpacing = gl.getUniformLocation(gridProgram, 'u_gridSpacing');
                 this.u_gridColor = gl.getUniformLocation(gridProgram, 'u_gridColor');
 
+                // --- WebGL2 Procedural Border Shader ---
+                var borderVsSource = `#version 300 es
+                in vec2 a_unitPos;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec2 v_worldPos;
+                void main() {
+                    gl_Position = vec4(a_unitPos, 0.0, 1.0);
+                    v_worldPos = u_viewCenter + (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
+                }`;
+
+                var borderFsSource = `#version 300 es
+                precision highp float;
+                in vec2 v_worldPos;
+                uniform vec4 u_borderRect;   // minX, minY, maxX, maxY
+                uniform float u_lineWidth;
+                uniform vec4 u_borderColor;
+                uniform float u_glowSize;    // 0 = no glow
+                out vec4 fragColor;
+                void main() {
+                    float x = v_worldPos.x;
+                    float y = v_worldPos.y;
+                    float hw = u_lineWidth * 0.5;
+                    float minX = u_borderRect.x;
+                    float minY = u_borderRect.y;
+                    float maxX = u_borderRect.z;
+                    float maxY = u_borderRect.w;
+
+                    // Signed distances to each edge (negative = inside the line)
+                    float dLeft  = abs(x - minX) - hw;
+                    float dRight = abs(x - maxX) - hw;
+                    float dTop   = abs(y - minY) - hw;
+                    float dBot   = abs(y - maxY) - hw;
+
+                    // Clamp to border extent for each edge
+                    float inRangeX = step(minX - hw, x) * step(x, maxX + hw);
+                    float inRangeY = step(minY - hw, y) * step(y, maxY + hw);
+
+                    // Core line: distance <= 0 means inside the line stroke
+                    float lineLeft  = step(dLeft, 0.0) * inRangeY;
+                    float lineRight = step(dRight, 0.0) * inRangeY;
+                    float lineTop   = step(dTop, 0.0) * inRangeX;
+                    float lineBot   = step(dBot, 0.0) * inRangeX;
+                    float coreLine  = max(max(lineLeft, lineRight), max(lineTop, lineBot));
+
+                    if (u_glowSize > 0.0) {
+                        // Glow: soft falloff beyond the line edge
+                        float glowLeft  = max(0.0, 1.0 - max(dLeft, 0.0) / u_glowSize) * inRangeY;
+                        float glowRight = max(0.0, 1.0 - max(dRight, 0.0) / u_glowSize) * inRangeY;
+                        float glowTop   = max(0.0, 1.0 - max(dTop, 0.0) / u_glowSize) * inRangeX;
+                        float glowBot   = max(0.0, 1.0 - max(dBot, 0.0) / u_glowSize) * inRangeX;
+                        float glow      = max(max(glowLeft, glowRight), max(glowTop, glowBot));
+                        float alpha     = max(coreLine, glow * 0.5);
+                        if (alpha <= 0.001) discard;
+                        fragColor = vec4(u_borderColor.rgb, u_borderColor.a * alpha);
+                    } else {
+                        if (coreLine <= 0.0) discard;
+                        fragColor = vec4(u_borderColor.rgb, u_borderColor.a * coreLine);
+                    }
+                }`;
+
+                var borderProgram = createAndLinkProgram(gl, borderVsSource, borderFsSource);
+                if (borderProgram) {
+                    this.glBorderProgram = borderProgram;
+                    this.u_border_viewCenter = gl.getUniformLocation(borderProgram, 'u_viewCenter');
+                    this.u_border_viewScale = gl.getUniformLocation(borderProgram, 'u_viewScale');
+                    this.u_borderRect = gl.getUniformLocation(borderProgram, 'u_borderRect');
+                    this.u_borderLineWidth = gl.getUniformLocation(borderProgram, 'u_lineWidth');
+                    this.u_borderColor = gl.getUniformLocation(borderProgram, 'u_borderColor');
+                    this.u_borderGlowSize = gl.getUniformLocation(borderProgram, 'u_glowSize');
+                }
+
                 this.glMaxInstances = 50000;
                 this.glInstanceData = new Float32Array(this.glMaxInstances * 7);
 
@@ -17517,6 +17589,34 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform2f(this.u_grid_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
             gl.uniform1f(this.u_gridSpacing, 50.0);
             gl.uniform4f(this.u_gridColor, 1.0, 1.0, 1.0, 0.08);
+
+            gl.bindVertexArray(this.glVAO);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        drawWebGLBorders(minX, minY, maxX, maxY, colorHex, lineWidth) {
+            if (!this.gl || !this.glBorderProgram) return false;
+            var gl = this.gl;
+            var viewScale = this.scale || 1;
+
+            // Parse hex color → RGB floats
+            var cInt = parseInt((colorHex || '#FF0000').replace('#', ''), 16) || 0xFF0000;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+
+            var lw = lineWidth || 20;
+            var glowSize = defaultmapsettings.borderGlow ? (defaultSettings.borderGlowSize || 15) : 0;
+
+            gl.useProgram(this.glBorderProgram);
+            gl.uniform2f(this.u_border_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_border_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.uniform4f(this.u_borderRect, minX, minY, maxX, maxY);
+            gl.uniform1f(this.u_borderLineWidth, lw);
+            gl.uniform4f(this.u_borderColor, rR, rG, rB, 1.0);
+            gl.uniform1f(this.u_borderGlowSize, glowSize);
 
             gl.bindVertexArray(this.glVAO);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -17999,7 +18099,13 @@ Most cells eaten   : ${mostCellsEaten}
                 this.drawCustomBackgrounds()
                 if (defaultmapsettings.showMapBorders) {
                     var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
-                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                    var _bMinX = LM.mapMinX - tempborderwidthradius;
+                    var _bMinY = LM.mapMinY - tempborderwidthradius;
+                    var _bMaxX = LM.mapMaxX + tempborderwidthradius;
+                    var _bMaxY = LM.mapMaxY + tempborderwidthradius;
+                    if (!LM.mapOffsetFixed || !this.drawWebGLBorders(_bMinX, _bMinY, _bMaxX, _bMaxY, defaultSettings.bordersColor, defaultSettings.bordersWidth)) {
+                        this.drawMapBorders(this.ctx, LM.mapOffsetFixed, _bMinX, _bMinY, _bMaxX, _bMaxY, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                    }
                 }
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
                 if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
