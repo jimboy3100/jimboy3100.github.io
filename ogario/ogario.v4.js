@@ -11024,13 +11024,14 @@ function thelegendmodproject() {
             var cells = LM.cells.indexOf(this);
             if (cells !== -1) {
                 LM.cells.splice(cells, 1);
-                if (defaultmapsettings.virusesRange) {
-                    cells = LM.viruses.indexOf(this);
-                    if (cells !== -1) {
-                        LM.viruses.splice(cells, 1);
-                    }
+            }
+            if (this.isVirus || defaultmapsettings.virusesRange) {
+                var virIdx = LM.viruses.indexOf(this);
+                if (virIdx !== -1) {
+                    LM.viruses.splice(virIdx, 1);
                 }
-            } else {
+            }
+            if (cells === -1) {
                 cells = LM.food.indexOf(this);
                 if (cells !== -1) {
                     LM.food.splice(cells, 1);
@@ -13788,8 +13789,8 @@ function thelegendmodproject() {
                         s += 5;
                         var g = ~~Math.sqrt(100 * m);
                         this.ghostCells.push({
-                            'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
-                            'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
+                            'x': (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d) - this.mapOffsetX,
+                            'y': (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f) - this.mapOffsetY,
                             'size': g,
                             'mass': m,
                             'inView': this.isInView(d, f, g)
@@ -16075,24 +16076,40 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             if (!this.mapOffsetFixed) {
-                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
-                    var halfW = Math.abs(right - left) / 2 || 7071;
-                    var halfH = Math.abs(bottom - top) / 2 || 7071;
+                //console.log(right - left, bottom - top)
+                if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
+                    //if (this.integrity || this.ws.includes("replay")) {
+                    if (this.integrity || temp2) {
+                        this.mapOffsetX = this.mapOffset - right;
+                        this.mapOffsetY = this.mapOffset - bottom;
 
-                    this.mapOffsetX = (left + right) / 2;
-                    this.mapOffsetY = (top + bottom) / 2;
+                        this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                        this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                        this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                        this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    }
+                    else {
+                        this.mapOffsetX = this.mapSize / 2;
+                        this.mapOffsetY = this.mapSize / 2;
+                        this.mapMinX = left;
+                        this.mapMinY = top;
+                        this.mapMaxX = right;
+                        this.mapMaxY = bottom;
+                    }
+                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 
-                    this.mapMinX = -halfW;
-                    this.mapMinY = -halfH;
-                    this.mapMaxX = halfW;
-                    this.mapMaxY = halfH;
-                    this.mapMidX = 0;
-                    this.mapMidY = 0;
-
+                    /* LEGENDWORLD FIX: 
+                     * Do NOT snap `this.viewX` and `this.viewY` to the center of the map
+                     * during active dynamic map rescaling (Expanding Land).
+                     * This caused violent 25Hz juddering when the map border shrunk!
+                     */
                     if (!this.mapOffsetFixed) {
+                        // Only center camera if we genuinely haven't fixed the offset yet (very first load)
+                        // For subsequent dynamic resizes, leave viewX alone so it stays locked to the player cell!
                         if (this.mapSize === 0 || !LM.isLegendWorld) {
-                            this.viewX = 0;
-                            this.viewY = 0;
+                            this.viewX = (right + left) / 2;
+                            this.viewY = (bottom + top) / 2;
                         }
                     }
 
