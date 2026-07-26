@@ -14,8 +14,8 @@ let spects;
 function addBox() {
     let spect = new Spect();
     spect.player = true;
-    legendmod.multiBoxPlayerExists = spect.player
-    spects.unshift(spect);
+    legendmod.multiBoxPlayerExists = spect.player;
+    spects.push(spect);
 }
 
 function addSpectator() {
