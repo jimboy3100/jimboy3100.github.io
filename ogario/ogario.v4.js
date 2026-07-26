@@ -12888,7 +12888,12 @@ function thelegendmodproject() {
                 while (s < data.byteLength && data.getUint8(s) !== 0) s++;
                 var slice = new Uint8Array(data.buffer, data.byteOffset + start, s - start);
                 if (s < data.byteLength) s++;
-                return textDecoder.decode(slice);
+                var rawStr = textDecoder.decode(slice);
+                try {
+                    return window.decodeURIComponent(window.escape(rawStr));
+                } catch(e) {
+                    return rawStr;
+                }
             };
             var s = 0;
             var opcode = data.getUint8(s++);
@@ -12906,7 +12911,7 @@ function thelegendmodproject() {
 
                         user.id = data.getUint32(s, true);
                         s += 4;
-                        user.fbId = window.decodeURIComponent(window.escape(encode()));
+                        user.fbId = encode();
 
                         for (i = 0; i <= this.leaderboard.length - 1; i++) {
                             if (this.leaderboard[i].id === user.id) {
@@ -12998,7 +13003,7 @@ function thelegendmodproject() {
                         let isFBFriend = false;
                         position++;
                         if (flags & 2) {
-                            nick = window.decodeURIComponent(window.escape(encode()));
+                            nick = encode();
                         }
                         if (flags & 4) {
                             id = data.getUint32(s, true);
@@ -16718,9 +16723,12 @@ Most cells eaten   : ${mostCellsEaten}
             }
             this.drawCustomBackgrounds()
             if (defaultmapsettings.showMapBorders) {
-
-                var tempborderwidthradius = defaultSettings.bordersWidth / 2;
-                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
+                var bMinX = (typeof LM.mapMinX !== "undefined") ? LM.mapMinX : -7071;
+                var bMinY = (typeof LM.mapMinY !== "undefined") ? LM.mapMinY : -7071;
+                var bMaxX = (typeof LM.mapMaxX !== "undefined") ? LM.mapMaxX : 7071;
+                var bMaxY = (typeof LM.mapMaxY !== "undefined") ? LM.mapMaxY : 7071;
+                this.drawMapBorders(this.ctx, true, bMinX - tempborderwidthradius, bMinY - tempborderwidthradius, bMaxX + tempborderwidthradius, bMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
             /* ── Expanding Land: Draw warning/danger zone overlay ── */
             if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
@@ -17358,64 +17366,34 @@ Most cells eaten   : ${mostCellsEaten}
                     e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
                 */
-        drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
-            if (macros) {
-                ctx.strokeStyle = radius;
-                ctx.lineWidth = canvas;
-                ctx.beginPath();
-                ctx.moveTo(text + ctx.lineWidth, x1);
-                ctx.lineTo(x0 - ctx.lineWidth, x1);
+        drawMapBorders(ctx, macros, minX, minY, maxX, maxY, strokeColor, borderWidth) {
+            if (!macros) return;
+            ctx.save();
+            var bColor = strokeColor || defaultSettings.bordersColor || "#FF0000";
+            var bWidth = borderWidth || defaultSettings.bordersWidth || 20;
 
-                //
-                ctx.moveTo(x0, x1); //ctx.moveTo(x0, x1);
-                ctx.lineTo(x0 + ctx.lineWidth, x1 - ctx.lineWidth);
-                //
+            ctx.strokeStyle = bColor;
+            ctx.lineWidth = bWidth;
 
-                ctx.moveTo(x0, x1 + ctx.lineWidth);
-                ctx.lineTo(x0, y0 - ctx.lineWidth);
-
-                //
-                ctx.moveTo(x0, y0);
-                ctx.lineTo(x0 + ctx.lineWidth, y0 + ctx.lineWidth);
-                //
-
-                ctx.moveTo(x0 - ctx.lineWidth, y0);
-                ctx.lineTo(text + ctx.lineWidth, y0);
-
-                //
-                ctx.moveTo(text, y0);
-                ctx.lineTo(text - ctx.lineWidth, y0 + ctx.lineWidth);
-                //
-
-                ctx.moveTo(text, y0 - ctx.lineWidth);
-                ctx.lineTo(text, x1 + ctx.lineWidth);
-
-                //
-                ctx.moveTo(text, x1);
-                ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
-                //					
-                //ctx.lineTo(text, x1);
-                if (defaultmapsettings.borderGlow) {
-                    ctx.shadowBlur = defaultSettings.borderGlowSize;
-                    ctx.shadowColor = defaultSettings.borderGlowColor;
-                } else {
-                    "skrrt";
-                }
-                //ctx.closePath();
-                ctx.stroke();
-            }
             if (defaultmapsettings.borderGlow) {
-                ctx.shadowBlur = 0;
-            } else {
-                "skrrt";
+                ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
+                ctx.shadowColor = defaultSettings.borderGlowColor || bColor;
             }
+
+            var w = maxX - minX;
+            var h = maxY - minY;
+
+            ctx.beginPath();
+            ctx.rect(minX, minY, w, h);
+            ctx.stroke();
+
+            ctx.restore();
         },
         /* ── Expanding Land: Warning/Danger zone overlay ── */
         drawLegendWorldZone(ctx) {
             if (!LM.mapEvent || !LM.mapEvent.active) return;
             var me = LM.mapEvent;
             var now = Date.now();
-            var elapsed = (now - me.startTime) / 1000; // seconds since event
             var pulse = Math.sin(now / 600) * 0.5 + 0.5; // 0-1 smooth pulse
             var fastPulse = Math.sin(now / 250) * 0.5 + 0.5; // faster for danger
 
@@ -17428,105 +17406,101 @@ Most cells eaten   : ${mostCellsEaten}
             var targetHalf = me.targetSize / 2;
             var tMinX = -targetHalf, tMinY = -targetHalf;
 
-            ctx.save();
-
             if (me.phase === 1) {
-                /* ═══ EXPANSION: highlight the NEW territory being added ═══
-                 * Blue/cyan glow on the band between old border and new (larger) target.
-                 * Old border is INSIDE, target border is OUTSIDE. */
-                if (Math.abs(me.targetSize - oW) < 2) { ctx.restore(); return; }
-
-                // Fill the expansion band (target minus current) with blue glow
-                var alpha = 0.06 + 0.04 * pulse;
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#22aaff';
-                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                // Cut out the old (current) area so only the new band is highlighted
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.globalAlpha = 1;
-                ctx.fillRect(oMinX, oMinY, oW, oH);
-                ctx.restore();
-
-                // Animated dashed border on the NEW outer border
-                ctx.save();
-                var dashOffset = (now / 30) % 60;
-                ctx.strokeStyle = 'rgba(34, 170, 255, ' + (0.35 + 0.2 * pulse) + ')';
-                ctx.lineWidth = 3;
-                ctx.setLineDash([30, 15]);
-                ctx.lineDashOffset = dashOffset;
-                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                ctx.setLineDash([]);
-                ctx.restore();
-
-                // Subtle inner glow line on the expansion edge
-                ctx.save();
-                ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
-                ctx.lineWidth = 8;
-                ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
-                ctx.shadowBlur = 12;
-                ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
-                ctx.restore();
-
-            } else {
-                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══
-                 * Overlay the danger zone (between current border and smaller target).
-                 * Phase 2: soft green warning. Phase 3: red pulsing. Phase 4: intense red. */
-                if (Math.abs(oMaxX - targetHalf) < 1) { ctx.restore(); return; }
-
-                var alpha, color;
-                if (me.phase === 2) {
-                    alpha = 0.25 + 0.05 * pulse;
-                    color = '#44dd66';
-                } else if (me.phase === 3) {
-                    alpha = 0.35 + 0.1 * fastPulse;
-                    color = '#ff3333';
-                } else {
-                    alpha = 0.45 + 0.15 * fastPulse;
-                    color = '#ff2222';
-                }
-
-                // Fill current map, cut out safe zone
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = color;
-                ctx.fillRect(oMinX, oMinY, oW, oH);
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.globalAlpha = 1;
-                ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                ctx.restore();
-
-                // Safe zone border
-                ctx.save();
-                var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
-                var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
-                    : 'rgba(255, 80, 80, ' + borderAlpha + ')';
-                ctx.strokeStyle = borderColor;
-                ctx.lineWidth = me.phase >= 3 ? 5 : 3;
-                ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
-                if (me.phase >= 3) ctx.lineDashOffset = (now / 20) % 23;
-                ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                ctx.setLineDash([]);
-                ctx.restore();
-
-                // Glow on danger border for phase 3+
-                if (me.phase >= 3) {
+                /* ═══ EXPANSION: highlight the NEW territory being added ═══ */
+                if (Math.abs(me.targetSize - oW) >= 2) {
+                    // Fill the expansion band (target minus current) with blue glow
                     ctx.save();
-                    ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
-                    ctx.lineWidth = 10;
-                    ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
-                    ctx.shadowBlur = 16;
-                    ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
+                    var alpha = 0.06 + 0.04 * pulse;
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = '#22aaff';
+                    ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.globalAlpha = 1;
+                    ctx.fillRect(oMinX, oMinY, oW, oH);
+                    ctx.globalCompositeOperation = 'source-over';
                     ctx.restore();
+
+                    // Animated dashed border on the NEW outer border
+                    ctx.save();
+                    var dashOffset = (now / 30) % 60;
+                    ctx.strokeStyle = 'rgba(34, 170, 255, ' + (0.35 + 0.2 * pulse) + ')';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([30, 15]);
+                    ctx.lineDashOffset = dashOffset;
+                    ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                    ctx.setLineDash([]);
+                    ctx.restore();
+
+                    // Subtle inner glow line on the expansion edge
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
+                    ctx.lineWidth = 8;
+                    ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
+                    ctx.shadowBlur = 12;
+                    ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
+                    ctx.restore();
+                }
+            } else {
+                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══ */
+                if (Math.abs(oMaxX - targetHalf) >= 1) {
+                    var alpha, color;
+                    if (me.phase === 2) {
+                        alpha = 0.25 + 0.05 * pulse;
+                        color = '#44dd66';
+                    } else if (me.phase === 3) {
+                        alpha = 0.35 + 0.1 * fastPulse;
+                        color = '#ff3333';
+                    } else {
+                        alpha = 0.45 + 0.15 * fastPulse;
+                        color = '#ff2222';
+                    }
+
+                    // Fill current map, cut out safe zone
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(oMinX, oMinY, oW, oH);
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.globalAlpha = 1;
+                    ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.restore();
+
+                    // Safe zone border
+                    ctx.save();
+                    var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
+                    var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
+                        : 'rgba(255, 80, 80, ' + borderAlpha + ')';
+                    ctx.strokeStyle = borderColor;
+                    ctx.lineWidth = me.phase >= 3 ? 5 : 3;
+                    ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
+                    if (me.phase >= 3) ctx.lineDashOffset = (now / 20) % 23;
+                    ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
+                    ctx.setLineDash([]);
+                    ctx.restore();
+
+                    // Glow on danger border for phase 3+
+                    if (me.phase >= 3) {
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
+                        ctx.lineWidth = 10;
+                        ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
+                        ctx.shadowBlur = 16;
+                        ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
+                        ctx.restore();
+                    }
                 }
             }
 
             // ═══ STATUS LABEL (all phases) ═══
-            ctx.save();
             var label = '', labelColor = '', labelAlpha = 0.8;
             if (me.phase === 1) { label = '🌍 MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
             else if (me.phase === 2) { label = '⚠ MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
             else if (me.phase === 3) { label = '⛔ DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
             else if (me.phase === 4) { label = '💀 MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
             if (label) {
+                ctx.save();
                 var labelY = me.phase === 1 ? tMinY + 16 : tMinY + 12;
                 var fontSize = Math.max(26, Math.min(40, me.targetSize * 0.004));
                 ctx.font = '700 ' + fontSize + 'px Ubuntu, sans-serif';
@@ -17537,8 +17511,8 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.shadowColor = 'rgba(0,0,0,0.6)';
                 ctx.shadowBlur = 6;
                 ctx.fillText(label, 0, labelY);
+                ctx.restore();
             }
-            ctx.restore();
         },
         /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
