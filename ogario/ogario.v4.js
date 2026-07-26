@@ -13489,7 +13489,7 @@ function thelegendmodproject() {
                     if (this.serverType === 'garix') {
                         for (i = 0; i < count; ++i) {
                             var gPlayerID = data.getUint32(s, true); s += 4;
-                            var gNick = window.decodeURIComponent(window.escape(encode()));
+                            var gNick = encode();
                             var gMass = data.getUint32(s, true); s += 4;
                             var gSector = encode();
                             var gColor = encode();
@@ -13889,9 +13889,8 @@ function thelegendmodproject() {
                         // color2 = prefix color, nickColor = name color
                     }
 
-                    var name = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
-
-                    var message = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();	
+                    var name = encode();
+                    var message = encode();
                     var server = !!(flag & 128),
                         admin = !!(flag & 64),
                         // Imsolo/Agar2 uses bit 2 (0x04) for moderator, Garix uses its own flags
@@ -14503,7 +14502,7 @@ function thelegendmodproject() {
                         }
                         s += 2;
                         if (s < data.byteLength) {
-                            friendNick = window.decodeURIComponent(window.escape(encode()));
+                            friendNick = encode();
                         } else {
                             friendNick = "";
                         }
