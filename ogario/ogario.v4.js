@@ -7823,16 +7823,16 @@ function thelegendmodproject() {
                     var i = document.createElement("canvas");
                     i.width = depth;
                     i.height = depth;
-                    var $ = i.getContext("2d");
-                    $.beginPath();
-                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    $.clip();
+                    var sCtx = i.getContext("2d");
+                    sCtx.beginPath();
+                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    sCtx.clip();
                     try {
                         if (!animated) {
-                            $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                         } else {
                             //console.log('was animated')
-                            $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
                     try {
@@ -7857,12 +7857,12 @@ function thelegendmodproject() {
                     let i = document.createElement("canvas");
                     i.width = depth;
                     i.height = depth;
-                    const $ = i.getContext("2d");
-                    $.beginPath();
-                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    $.clip();
+                    const sCtx = i.getContext("2d");
+                    sCtx.beginPath();
+                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    sCtx.clip();
                     try {
-                        $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached2"] = new Image;
@@ -7887,12 +7887,12 @@ function thelegendmodproject() {
                     let i = document.createElement("canvas");
                     i.width = depth;
                     i.height = depth;
-                    const $ = i.getContext("2d");
-                    $.beginPath();
-                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    $.clip();
+                    const sCtx = i.getContext("2d");
+                    sCtx.beginPath();
+                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    sCtx.clip();
                     try {
-                        $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                        sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached3"] = new Image;
@@ -7917,12 +7917,12 @@ function thelegendmodproject() {
                     let i = document.createElement("canvas");
                     i.width = depth;
                     i.height = depth;
-                    const $ = i.getContext("2d");
-                    $.beginPath();
-                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    $.clip();
+                    const sCtx = i.getContext("2d");
+                    sCtx.beginPath();
+                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    sCtx.clip();
                     try {
-                        $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                        sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached4"] = new Image;
@@ -7947,12 +7947,12 @@ function thelegendmodproject() {
                     let i = document.createElement("canvas");
                     i.width = depth;
                     i.height = depth;
-                    const $ = i.getContext("2d");
-                    $.beginPath();
-                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    $.clip();
+                    const sCtx = i.getContext("2d");
+                    sCtx.beginPath();
+                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    sCtx.clip();
                     try {
-                        $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached" + skinCache] = new Image;
@@ -8032,6 +8032,9 @@ function thelegendmodproject() {
                 ) : null);
 
             if (!skinUrl) return null;
+            if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
+                this.loadSkin(this.customSkinsCache, skinUrl);
+            }
             return this.getCachedSkin(this.customSkinsCache, skinUrl);
         },
         calculateMapSector(t, xgh2, closeExpr = false) {
@@ -8202,15 +8205,16 @@ function thelegendmodproject() {
 
                 }
                 //
-                if (application.top5) {
-                    for (var temp = 0; temp < application.top5.length; temp++) {
-                        if (application.top5[temp].nick === LM.arrowFB[0].nick) {
-                            LM.arrowFB[0].isIncluded = true
+                if (LM.arrowFB && LM.arrowFB[0]) {
+                    if (application.top5) {
+                        for (var temp = 0; temp < application.top5.length; temp++) {
+                            if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
+                                LM.arrowFB[0].isIncluded = true;
+                            }
                         }
                     }
-                }
 
-                if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                    if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
                     this.miniMapCtx.save()
                     this.miniMapCtx.beginPath();
                     this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
@@ -8233,6 +8237,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     this.miniMapCtx.restore();
                     //}
+                }
                 }
                 //				
                 if (this.miniMapCtx.beginPath(),
@@ -8829,7 +8834,9 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
-            this.socket.send(value.buffer);
+            if (this.socket && this.socket.readyState === 1) {
+                this.socket.send(value.buffer);
+            }
         },
         //Sonia4
         sendSLG(i, t) {
@@ -9117,9 +9124,7 @@ function thelegendmodproject() {
                 //console.log(ids)
                 //var id = this.checkPlayerID(ids);
                 const id = this.checkPlayerNick(ids);
-                if (null != id) {
-                    //console.log("id found", id, s) ;
-
+                if (id !== null && this.teamPlayers[id]) {
                     this.teamPlayers[id].lbgpi = parseInt(message.s);
                     //if (this.top5[id]){
                     //this.top5[id].lbgpi = parseInt(lbgpi); //
@@ -9520,16 +9525,16 @@ function thelegendmodproject() {
                 cellUpdateSLGCells.isVirus = true;
                 temp.push(cellUpdateSLGCells);
                 if (!cellUpdateSLGCells.isInView()) {
-                    if (legendmod.indexedCells.hasOwnProperty(e)) {
-                        cellUpdateSLGCells = legendmod.indexedCells[e]
-                        //legendmod.cells.push(cellUpdateSLGCells);													 
+                    if (legendmod.indexedCells.hasOwnProperty(di)) {
+                        cellUpdateSLGCells = legendmod.indexedCells[di];
                     } else {
-                        legendmod.indexedCells.push(cellUpdateSLGCells);
+                        legendmod.indexedCells[di] = cellUpdateSLGCells;
                     }
                 }
-                //cellUpdateSLGCells.removeCell();
             }
-            this.teamPlayers[id].dvirs = temp;
+            if (this.teamPlayers[id]) {
+                this.teamPlayers[id].dvirs = temp;
+            }
 
             //Get normal cells
             var clen = this.unpackInt(msg.slice(0, 1));
@@ -9548,16 +9553,16 @@ function thelegendmodproject() {
                 cellUpdateSLGCells.isVirus = false;
                 temp.push(cellUpdateSLGCells);
                 if (!cellUpdateSLGCells.isInView()) {
-                    if (legendmod.indexedCells.hasOwnProperty(e)) {
-                        cellUpdateSLGCells = legendmod.indexedCells[e]
-                        //legendmod.cells.push(cellUpdateSLGCells);													 
+                    if (legendmod.indexedCells.hasOwnProperty(di)) {
+                        cellUpdateSLGCells = legendmod.indexedCells[di];
                     } else {
-                        legendmod.indexedCells.push(cellUpdateSLGCells);
+                        legendmod.indexedCells[di] = cellUpdateSLGCells;
                     }
                 }
-                //cellUpdateSLGCells.removeCell();
             }
-            this.teamPlayers[id].dcells = tempx;
+            if (this.teamPlayers[id]) {
+                this.teamPlayers[id].dcells = tempx;
+            }
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
             console.log("Package Received:", ids, id, time)
@@ -10186,7 +10191,7 @@ function thelegendmodproject() {
         },
         setTarget(id) {
             const userId = this.checkPlayerID(id);
-            if (userId !== null) {
+            if (userId !== null && this.teamPlayers[userId]) {
                 const teamPlayer = this.teamPlayers[userId];
                 this.targetID = teamPlayer.id;
                 this.updateTarget(teamPlayer.nick, teamPlayer.skinURL, teamPlayer.x, teamPlayer.y, teamPlayer.mass, teamPlayer.color);
@@ -11872,21 +11877,14 @@ function thelegendmodproject() {
                                 style.restore();
 
                             } else {
-                                var _vScale = (window.drawRender && window.drawRender.viewScale) ? window.drawRender.viewScale : 1;
-                                if (_vScale < 0.08) {
-                                    /* GPU Texture Optimization: Bypass high-res 512x512 texture downsampling at full map view */
-                                    style.fillStyle = color2 || this.color;
-                                    style.fill();
-                                } else {
-                                    try {
-                                        style.save();
-                                        style.beginPath();
-                                        style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
-                                        style.clip();
-                                        style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
-                                        style.restore();
-                                    } catch (e) { }
-                                }
+                                try {
+                                    style.save();
+                                    style.beginPath();
+                                    style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
+                                    style.clip();
+                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    style.restore();
+                                } catch (e) { }
                             }
                             if (defaultmapsettings.FBTracking) {
                                 var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
@@ -12533,7 +12531,9 @@ function thelegendmodproject() {
             return new DataView(new ArrayBuffer(t));
         },
         sendBuffer(data) {
-            this.socket.send(data.buffer);
+            if (this.socket && this.socket.readyState === 1) {
+                this.socket.send(data.buffer);
+            }
         },
         sendMessage(message) {
             if (this.connectionOpened && this.integrity) {
@@ -16293,7 +16293,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            for (length = 0; ;) {
+            for (var cellIdx = 0; ;) {
                 //extendedFlags = false;
                 var id = view.readUInt32LE(offset);
                 if (offset += 4, 0 === id) break;
@@ -18174,14 +18174,18 @@ Most cells eaten   : ${mostCellsEaten}
                 let r = Math.max(1, (Date.now() - wave.time) / 2);
                 let innerR = Math.max(0.1, r - r / 4);
 
+                let wColor = wave.color || "#00e6ff";
+                let transparentColor = (typeof wColor === "string" && wColor.startsWith("#") && wColor.length === 7) ? (wColor + "00") : "rgba(0,0,0,0)";
                 let gradient = this.ctx.createRadialGradient(wave.x, wave.y, innerR, wave.x, wave.y, r);
                 if (wave.moreAnimation && r > 1160 && r > (wave.wavelength + 760) / 2) {
-                    gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
-                    gradient.addColorStop(1, defaultSettings.splitRangeColor);
+                    let sColor = defaultSettings.splitRangeColor || "#00e6ff";
+                    let sTransparent = (typeof sColor === "string" && sColor.startsWith("#") && sColor.length === 7) ? (sColor + "00") : "rgba(0,0,0,0)";
+                    gradient.addColorStop(0, sTransparent);
+                    gradient.addColorStop(1, sColor);
                 }
                 else {
-                    gradient.addColorStop(0, (wave.color || "#00e6ff") + "00");
-                    gradient.addColorStop(1, wave.color || "#00e6ff");
+                    gradient.addColorStop(0, transparentColor);
+                    gradient.addColorStop(1, wColor);
                 }
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = Math.max(1, r / 4);
@@ -19269,45 +19273,42 @@ Most cells eaten   : ${mostCellsEaten}
                     this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
                     this.ctx.lineWidth = 4;
                 }
-                var length = 0;
                 for (; length < ghostsCells.length; length++) {
-                    var x = ghostsCells[length].x;
-                    var y = ghostsCells[length].y;
-                    var sz = ghostsCells[length].size;
-                    /* Live inView check: if the ghost cell center is within the visible
-                       viewport, the server is already sending real cell data for this
-                       position — skip ghost to prevent double-draw blink/flash */
-                    if (x > _vMinX && x < _vMaxX && y > _vMinY && y < _vMaxY) {
-                        continue;
-                    }
+                    var ghost = ghostsCells[length];
+                    if (!ghost) continue;
+                    var x = ghost.x;
+                    var y = ghost.y;
+                    var sz = ghost.size || 50;
+
                     /* Standard viewport culling: skip if fully outside view */
                     if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
                         continue;
                     }
-                        this.ctx.moveTo(x, y);
-                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
 
-                        if (_showInfo) {
-                            this.nickScale = 1;
-                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
-                            this.nickSize = ~~(this.fontSize * this.nickScale);
-                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                            var angle = Math.PI * 0.8;
+                    /* Skip ghost if real server cell for this ID is currently alive & visible in viewport */
+                    if (ghost.id && LM.cellsId && LM.cellsId[ghost.id]) {
+                        continue;
+                    }
 
-                            if (LM.leaderboard[length] != undefined) {
-                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick));
-                            } else {
-                                this.ghostcellstext = "Ghost cell";
+                    this.ctx.moveTo(x, y);
+                    this.ctx.arc(x, y, sz, 0, this.pi2, false);
+
+                    if (_showInfo) {
+                        this.nickScale = 1;
+                        this.fontSize = Math.max(sz * 0.3, 26) * this.scale;
+                        this.nickSize = ~~(this.fontSize * this.nickScale);
+                        this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                        var angle = Math.PI * 0.8;
+
+                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
+                        this.ghostcellstext = removeEmojis(application.escapeHTML(ghostNick));
+                        this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
+                        if (_showSkins && ghostNick) {
+                            var node = application.getCustomSkin(ghostNick, "#000000");
+                            if (node) {
+                                this.ctx.drawImage(node, x - sz, y - sz, sz * 2, sz * 2);
                             }
-                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                            if (_showSkins) {
-                                if (LM.leaderboard[length] != undefined) {
-                                    var node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                    if (node) {
-                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
-                                    }
-                                }
-                            }
+                        }
                     }
                 }
                 this.ctx.fillStyle = defaultSettings.ghostCellsColor;
@@ -19325,9 +19326,10 @@ Most cells eaten   : ${mostCellsEaten}
             this.pellet = null;
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            canvas.width = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
+            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = defaultSettings.foodColor;
             ctx.fill();
@@ -19339,14 +19341,11 @@ Most cells eaten   : ${mostCellsEaten}
             this.pelletColored[color] = null;
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
-            //canvas.width = size,
-            //canvas.height = size;
+            canvas.width = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
-            //ctx.arc(size/2, size/2, size/2, 0, this.pi2, false);
+            ctx.beginPath();
             ctx.arc(size, size, size, 0, this.pi2, false);
-            //ctx.fillStyle = defaultSettings.foodColor;
             ctx.fillStyle = color;
             ctx.fill();
             this.pelletColored[color] = new Image();
@@ -19388,9 +19387,9 @@ Most cells eaten   : ${mostCellsEaten}
             canvas = null;
         },
         preDrawSmileIndicator() {
-            var canvas = document.getElementById('canvas');
-            canvas.x = 90;
-            canvas.y = 90;
+            var canvas = document.createElement('canvas');
+            canvas.width = 150;
+            canvas.height = 150;
             var ctx = canvas.getContext('2d');
             ctx.lineWidth = 2;
             ctx.fillStyle = defaultSettings.teammatesIndColor;
@@ -19407,6 +19406,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.stroke();
             this.smileIndicator = new Image();
             this.smileIndicator.src = canvas.toDataURL();
+            canvas = null;
         },
         preDrawHeartIndicator() {
             this.heartIndicator = null;
@@ -19419,6 +19419,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.strokeStyle = '#000000';
             var d = Math.min(canvas.width, canvas.height);
             var k = 0;
+            ctx.beginPath();
 
             ctx.moveTo(k, k + d / 4);
             ctx.quadraticCurveTo(k, k, k + d / 4, k);
@@ -21015,17 +21016,17 @@ var reverseTrick = {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     },
     pointInCircle: function (x, y, type) {
-        for (length = 0; length < legendmod.cells.length; length++) {
-            var distancesquared = (x - legendmod.cells[length].x) * (x - legendmod.cells[length].x) + (y - legendmod.cells[length].y) * (y - legendmod.cells[length].y);
+        for (var ci = 0; ci < legendmod.cells.length; ci++) {
+            var distancesquared = (x - legendmod.cells[ci].x) * (x - legendmod.cells[ci].x) + (y - legendmod.cells[ci].y) * (y - legendmod.cells[ci].y);
 
-            if (type === 1 && distancesquared <= legendmod.cells[length].size * legendmod.cells[length].size) {
-                reverseTrick.biggerEnemy = legendmod.cells[length].id;
-                reverseTrick.biggerEnemyAcc = legendmod.cells[length].accID;
-                reverseTrick.biggerSize = ~~(legendmod.cells[length].size * legendmod.cells[length].size / 100);
-            } else if (type === 3 && distancesquared <= legendmod.cells[length].size * legendmod.cells[length].size) {
-                reverseTrick.smallerEnemy = legendmod.cells[length].id;
-                reverseTrick.smallerEnemyAcc = legendmod.cells[length].accID;
-                reverseTrick.smallerSize = ~~(legendmod.cells[length].size * legendmod.cells[length].size / 100);
+            if (type === 1 && distancesquared <= legendmod.cells[ci].size * legendmod.cells[ci].size) {
+                reverseTrick.biggerEnemy = legendmod.cells[ci].id;
+                reverseTrick.biggerEnemyAcc = legendmod.cells[ci].accID;
+                reverseTrick.biggerSize = ~~(legendmod.cells[ci].size * legendmod.cells[ci].size / 100);
+            } else if (type === 3 && distancesquared <= legendmod.cells[ci].size * legendmod.cells[ci].size) {
+                reverseTrick.smallerEnemy = legendmod.cells[ci].id;
+                reverseTrick.smallerEnemyAcc = legendmod.cells[ci].accID;
+                reverseTrick.smallerSize = ~~(legendmod.cells[ci].size * legendmod.cells[ci].size / 100);
             }
         }
     },
