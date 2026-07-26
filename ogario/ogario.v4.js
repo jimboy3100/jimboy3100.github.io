@@ -1,4 +1,4 @@
-window.OgVer = 3.472;
+window.OgVer = 3.473;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -18401,13 +18401,19 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 var length = 0;
                 for (; length < ghostsCells.length; length++) {
-                    if (!ghostsCells[length].inView) {
-                        var x = ghostsCells[length].x;
-                        var y = ghostsCells[length].y;
-                        var sz = ghostsCells[length].size;
-                        if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
-                            continue;
-                        }
+                    var x = ghostsCells[length].x;
+                    var y = ghostsCells[length].y;
+                    var sz = ghostsCells[length].size;
+                    /* Live inView check: if the ghost cell center is within the visible
+                       viewport, the server is already sending real cell data for this
+                       position — skip ghost to prevent double-draw blink/flash */
+                    if (x > _vMinX && x < _vMaxX && y > _vMinY && y < _vMaxY) {
+                        continue;
+                    }
+                    /* Standard viewport culling: skip if fully outside view */
+                    if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
+                        continue;
+                    }
                         this.ctx.moveTo(x, y);
                         this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
 
