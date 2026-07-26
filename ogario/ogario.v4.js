@@ -10678,7 +10678,7 @@ function thelegendmodproject() {
                 chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
                 /* ── Perf: O(1) map lookup instead of O(N) loop ── */
-                var _entry = drawRender._chatMap && drawRender._chatMap.get(this.nick);
+                var _entry = this.nick && this.nick !== "" && drawRender._chatMap && drawRender._chatMap.get(this.nick);
                 if (_entry) {
                     var customTxt = _entry.message;
                     var temp = _entry.age;
@@ -11301,6 +11301,7 @@ function thelegendmodproject() {
                     style.shadowBlur = 0;
                     style.shadowColor = 'transparent';
                     style.globalCompositeOperation = 'source-over';
+                    style.filter = 'none';
                     return
                 }
                 //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
@@ -11351,6 +11352,7 @@ function thelegendmodproject() {
                     style.shadowBlur = 0;
                     style.shadowColor = 'transparent';
                     style.globalCompositeOperation = 'source-over';
+                    style.filter = 'none';
                     return;
                 }
 
@@ -11522,6 +11524,7 @@ function thelegendmodproject() {
                 style.shadowBlur = 0;
                 style.shadowColor = 'transparent';
                 style.globalCompositeOperation = 'source-over';
+                style.filter = 'none';
             }
     }
     window.legendmod1 = ogarbasicassembly;
@@ -16968,6 +16971,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //distance to target
                 var dx = x - t.x, dy = y - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
+                if (dis < 1) continue; // avoid NaN from acos(0/0)
                 //angle 
                 var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
                 //if target on left side
@@ -17544,13 +17548,23 @@ Most cells eaten   : ${mostCellsEaten}
             if (!food.length) {
                 return;
             }
+            /* ── Move food (position interpolation) — was in per-cell draw() ── */
+            for (var i = 0; i < food.length; i++) {
+                food[i].moveCell();
+            }
             /* ── Perf: frustum bounds for food culling ── */
-            var _halfW = this.canvasWidth / this.scale / 2;
-            var _halfH = this.canvasHeight / this.scale / 2;
-            var _vMinX = this.camX - _halfW;
-            var _vMaxX = this.camX + _halfW;
-            var _vMinY = this.camY - _halfH;
-            var _vMaxY = this.camY + _halfH;
+            var _cullingScale = this.scale || 1;
+            var _halfW = this.canvasWidth / _cullingScale / 2;
+            var _halfH = this.canvasHeight / _cullingScale / 2;
+            var _camCX = this.camX, _camCY = this.camY;
+            var _svx = LM.viewX || 0, _svy = LM.viewY || 0;
+            if (Math.abs(_camCX - _svx) > _halfW || Math.abs(_camCY - _svy) > _halfH) {
+                _camCX = _svx; _camCY = _svy;
+            }
+            var _vMinX = _camCX - _halfW;
+            var _vMaxX = _camCX + _halfW;
+            var _vMinY = _camCY - _halfH;
+            var _vMaxY = _camCY + _halfH;
             var pi2 = 2 * Math.PI;
 
             if (!defaultmapsettings.rainbowFood) {
@@ -17742,6 +17756,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //distance to target
                 var dx = cursorX - t.x, dy = cursorY - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
+                if (dis < 1) { dis = 1; } // avoid NaN from acos(0/0)
                 //angle in deg
                 var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
                 //if target on left side
@@ -17818,6 +17833,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //distance to target
                 var dx = t.targetX - t.x, dy = t.targetY - t.y;
                 var dis = Math.sqrt(dx * dx + dy * dy);
+                if (dis < 1) continue; // avoid NaN from acos(0/0)
                 //angle 
                 var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
                 //if target on left side
