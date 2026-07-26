@@ -1,4 +1,4 @@
-window.OgVer = 3.405;
+window.OgVer = 3.406;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -9521,7 +9521,7 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
-                var currentNick = ($('#nick').val() && $('#nick').val().trim().length > 0) ? $('#nick').val().trim() : (ogarcopythelb.nick || 'Unnamed');
+                var currentNick = ogarcopythelb.nick || 'Unnamed';
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
@@ -10506,35 +10506,9 @@ function thelegendmodproject() {
             } else if (delay > 1) {
                 delay = 1
             }
-
-            /* ── Client-side prediction for own cells ──
-             * Own cells predict movement toward cursor using the same physics
-             * as the server: speed = 88 * pow(radius, -0.44). This gives
-             * instant visual response without waiting for server round-trip.
-             * The server's authoritative position arrives via targetX/Y and
-             * normal interpolation blends toward it (automatic reconciliation). */
-            if (this.isPlayerCell && LM.play && this.size > 0) {
-                var dx = LM.cursorX - this.x;
-                var dy = LM.cursorY - this.y;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist > 1) {
-                    // Same formula as server: 88 * pow(radius, -0.4396754)
-                    // Scaled by frame delta (server tick = 40ms, render ≈ 16.7ms)
-                    var serverSpeed = 88.0 * Math.pow(this.size, -0.4396754);
-                    var frameDt = Math.min(time, 40) / 40.0; // fraction of a server tick
-                    var moveSpeed = Math.min(dist, serverSpeed * frameDt);
-                    this.x += (dx / dist) * moveSpeed;
-                    this.y += (dy / dist) * moveSpeed;
-                }
-                // Still blend toward server's authoritative position
-                this.x += (this.targetX - this.x) * delay * 0.5;
-                this.y += (this.targetY - this.y) * delay * 0.5;
-            } else {
-                // Non-player cells: standard interpolation
-                this.x += (this.targetX - this.x) * delay;
-                this.y += (this.targetY - this.y) * delay;
-            }
-
+            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
+            this.x += (this.targetX - this.x) * delay;
+            this.y += (this.targetY - this.y) * delay;
             if (!defaultmapsettings.suckAnimation) {
                 this.size += (this.targetSize - this.size) * delay;
             }
@@ -11277,7 +11251,6 @@ function thelegendmodproject() {
                     else {
                         node2 = application.customSkinsMap[this.targetNick + this.color];
                     }
-                    /* Cache video extension check once instead of 2-3x per cell */
                     if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
@@ -11517,7 +11490,6 @@ function thelegendmodproject() {
                                         }
                                         style.restore();
                                     } catch (e) { }
-                                }
                             }
                         }
                         if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
@@ -12564,11 +12536,6 @@ function thelegendmodproject() {
                     this.distX = cursorX - this.viewXTrue
                     this.distY = cursorY - this.viewYTrue
                 }
-                // Skip unchanged mouse position (saves bandwidth)
-                var cx = cursorX | 0, cy = cursorY | 0;
-                if (cx === this._lastSentMX && cy === this._lastSentMY) return;
-                this._lastSentMX = cx;
-                this._lastSentMY = cy;
                 // Garix: mouse packet includes tabID at bytes 1-2
                 // Server uses message.length to pick precision: 11=Int16, 15=Int32, 23=Float64
                 if (this.serverType === 'garix') {
@@ -16100,18 +16067,11 @@ Most cells eaten   : ${mostCellsEaten}
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
         sortCells() {
-            /* Insertion sort: O(N) for nearly-sorted arrays. Cells rarely
-             * change relative order (only when eating/growing), so this is
-             * ~50x faster than Array.sort() with its callback overhead. */
             var cells = this.cells;
             for (var i = 1; i < cells.length; i++) {
-                var key = cells[i];
-                var kSize = key.size;
-                var kId = key.id;
-                var j = i - 1;
+                var key = cells[i], kSize = key.size, kId = key.id, j = i - 1;
                 while (j >= 0 && (cells[j].size > kSize || (cells[j].size === kSize && cells[j].id > kId))) {
-                    cells[j + 1] = cells[j];
-                    j--;
+                    cells[j + 1] = cells[j]; j--;
                 }
                 cells[j + 1] = key;
             }
@@ -16193,8 +16153,6 @@ Most cells eaten   : ${mostCellsEaten}
         compareCells() {
             if ((this.play || LM.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
-                    /* Reuse arrays instead of allocating new ones every frame
-                     * to reduce GC pressure (~18K objects/sec eliminated) */
                     (this.biggerSTECellsCache || (this.biggerSTECellsCache = [])).length = 0;
                     (this.biggerCellsCache || (this.biggerCellsCache = [])).length = 0;
                     (this.smallerCellsCache || (this.smallerCellsCache = [])).length = 0;
@@ -16630,8 +16588,6 @@ Most cells eaten   : ${mostCellsEaten}
             for (i = 0; i < LM.cells.length; i++) {
 
                 if (defaultmapsettings.jellyPhisycs) {
-                    /* Skip jelly physics for off-screen cells — saves
-                     * quadtree queries + point simulation for invisible cells */
                     if (LM.cells[i].isInView()) {
                         LM.cells[i].updateNumPoints();
                         LM.cells[i].movePoints();
