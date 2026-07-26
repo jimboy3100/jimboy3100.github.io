@@ -18438,7 +18438,6 @@ Most cells eaten   : ${mostCellsEaten}
                                     }
                                 }
                             }
-                        }
                     }
                 }
                 this.ctx.fillStyle = defaultSettings.ghostCellsColor;
