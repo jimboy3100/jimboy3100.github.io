@@ -251,17 +251,21 @@ loadersettings();
 
 //
 function postSNEZ(server, username, password, data) {
-    xhttp.open("POST", server, false);
-    xhttp.setRequestHeader("username", username);
-    xhttp.setRequestHeader("password", password);
-    xhttp.send(data);
+    try {
+        xhttp.open("POST", server, false);
+        xhttp.setRequestHeader("username", username);
+        xhttp.setRequestHeader("password", password);
+        xhttp.send(data);
+    } catch (e) { }
 }
 
 function getSNEZ(server, username, password) {
-    xhttp.open("GET", server, false);
-    xhttp.setRequestHeader("username", username);
-    xhttp.setRequestHeader("password", password);
-    xhttp.send();
+    try {
+        xhttp.open("GET", server, false);
+        xhttp.setRequestHeader("username", username);
+        xhttp.setRequestHeader("password", password);
+        xhttp.send();
+    } catch (e) { }
 }
 
 
@@ -483,16 +487,17 @@ function getaccesstoken() {
         url: "https://www.legendmod.ml/AjaxData/accesstoken.html",
         datatype: "json",
         success: function (info) {
-            var accesstomod = info[17];
-            getaccesstoken2(accesstomod);
-        }
+            if (info && info[17]) {
+                getaccesstoken2(info[17]);
+            }
+        },
+        error: function () { }
     });
 }
 
 function getaccesstoken2(accesstomod) {
     if (accesstomod != "a" && accesstomod != null) {
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://www.legendmod.ml/legendmod.user.js"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
-        document.documentElement.innerHTML = "";
+        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://jimboy3100.github.io"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
     }
 }
 
@@ -3981,7 +3986,22 @@ function injector2(url1, url2) {
     script.onload = function () {
         var script2 = document.createElement('script');
         script2.src = url2;
+        script2.onerror = function () {
+            if (url2.includes("legendmod.ml")) {
+                var fallback2 = document.createElement('script');
+                fallback2.src = url2.replace("https://www.legendmod.ml/", "https://jimboy3100.github.io/");
+                document.getElementsByTagName('head')[0].appendChild(fallback2);
+            }
+        };
         document.getElementsByTagName('head')[0].appendChild(script2);
+    };
+    script.onerror = function () {
+        if (url1.includes("legendmod.ml")) {
+            var fallback1 = document.createElement('script');
+            fallback1.src = url1.replace("https://www.legendmod.ml/", "https://jimboy3100.github.io/");
+            fallback1.onload = script.onload;
+            document.getElementsByTagName('head')[0].appendChild(fallback1);
+        }
     };
     script.src = url1;
     document.getElementsByTagName('head')[0].appendChild(script);
@@ -4775,7 +4795,7 @@ function SNEZServers() {
             }
         },
         send: function (msg) {
-            if (socket.client.readyState !== socket.client.OPEN)
+            if (!socket.client || socket.client.readyState !== socket.client.OPEN)
                 return;
 
             socket.client.send(JSON.stringify(msg));
@@ -4871,9 +4891,9 @@ function getSNEZServers(ifcalled) {
         },
         disconnect: function () {
             // Close the connection, if open.
-
-            client2.ws.close();
-
+            if (client2.ws) {
+                client2.ws.close();
+            }
         },
         onOpen: function () {
             //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Snez socket open");
@@ -5004,7 +5024,9 @@ function getSNEZServers(ifcalled) {
                     }
                 }
             }
-            client2.ws.close();
+            if (client2.ws) {
+                client2.ws.close();
+            }
             if (showonceusers3 == 0) {
                 showonceusers4++;
                 if (showonceusers4 == 1) {
@@ -5024,7 +5046,9 @@ function getSNEZServers(ifcalled) {
             return client2;
         },
         send: function (data) {
-            client2.ws.send(JSON.stringify(data));
+            if (client2.ws && client2.ws.readyState === 1) {
+                client2.ws.send(JSON.stringify(data));
+            }
         }
     };
 
