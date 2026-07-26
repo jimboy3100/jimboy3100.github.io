@@ -17242,12 +17242,12 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.showGrid) {
                 /* WebGL2 procedural grid renders on GL layer (behind food).
                  * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
-                if (this.gl && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLGridShader()) {
-                    // Grid rendered on WebGL layer — correctly behind food
-                } else if (defaultmapsettings.showOptimisedGrid) {
-                    this.drawCustomNewGrid();
-                } else {
-                    this.drawGrid(this.ctx);
+                if (!this.gl || (typeof defaultmapsettings.webgl2Acceleration !== "undefined" && !defaultmapsettings.webgl2Acceleration) || !this.drawWebGLGridShader()) {
+                    if (defaultmapsettings.showOptimisedGrid) {
+                        this.drawCustomNewGrid();
+                    } else {
+                        this.drawGrid(this.ctx);
+                    }
                 }
             }
             if (defaultmapsettings.showBgSectors) {
@@ -17291,10 +17291,12 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.removedCells[i].draw(this.ctx, true);
             }
             /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
-             * in a single draw call. Falls back to Canvas2D for jelly/contours. */
+             * in a single draw call. Falls back to Canvas2D for jelly/contours.
+             * TODO: enable once shader + Canvas2D text overlay integration is complete.
             if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours && !defaultSettings.customBackground) {
                 this.drawWebGLCellBatch(LM.cells);
             }
+            */
             for (i = 0; i < LM.cells.length; i++) {
 
                 if (defaultmapsettings.jellyPhisycs) {
