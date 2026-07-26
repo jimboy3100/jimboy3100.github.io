@@ -7739,7 +7739,14 @@ function thelegendmodproject() {
         },
         loadSkin(img, url, animated) {
             var app = this;
-            //console.log ("img:" + img + "url:" + url);
+            if (img && Object.keys(img).length > 200) {
+                var keys = Object.keys(img);
+                for (var k = 0; k < 50; k++) {
+                    if (keys[k] && !keys[k].endsWith("_cached")) {
+                        delete img[keys[k]];
+                    }
+                }
+            }
             if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")) {
                 if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
                     img[url] = new Video();
@@ -16963,7 +16970,7 @@ Most cells eaten   : ${mostCellsEaten}
             };
         },
         resizeCanvas() {
-            var dpr = (window.LM_IS_MOBILE) ? (window.devicePixelRatio || 1) : 1;
+            var dpr = (defaultmapsettings.highDPI || window.LM_IS_MOBILE) ? Math.min(window.devicePixelRatio || 1, 2) : 1;
             this.dpr = dpr;
             window.LM_DPR = dpr;
             this.canvasWidth = window.innerWidth;
@@ -17913,7 +17920,36 @@ Most cells eaten   : ${mostCellsEaten}
                     this.drawMergeProgressRings(this.ctx, LM.playerCells);
                     this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
                 }
+                if (defaultmapsettings.cursorTracking || defaultmapsettings.splitRange) {
+                    this.drawSplitVectorGuide(this.ctx, LM.playerCells);
+                }
             }
+        },
+        drawSplitVectorGuide(ctx, playerCells) {
+            if (!playerCells || !playerCells.length) return;
+            ctx.save();
+            ctx.setLineDash([8, 6]);
+            ctx.lineWidth = 2;
+            for (var i = 0; i < playerCells.length; i++) {
+                var cell = playerCells[i];
+                if (!cell || !cell.isInView()) continue;
+                var angle = Math.atan2(LM.cursorY - cell.y, LM.cursorX - cell.x);
+                var splitDistance = Math.min(700, Math.hypot(LM.cursorX - cell.x, LM.cursorY - cell.y));
+                var targetX = cell.x + Math.cos(angle) * splitDistance;
+                var targetY = cell.y + Math.sin(angle) * splitDistance;
+
+                ctx.beginPath();
+                ctx.moveTo(cell.x, cell.y);
+                ctx.lineTo(targetX, targetY);
+                ctx.strokeStyle = "rgba(0, 230, 255, 0.4)";
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(targetX, targetY, Math.max(12, cell.size * 0.7), 0, Math.PI * 2);
+                ctx.strokeStyle = "rgba(0, 230, 255, 0.6)";
+                ctx.stroke();
+            }
+            ctx.restore();
         },
         drawMergeProgressRings(ctx, playerCells) {
             if (!playerCells || playerCells.length <= 1) return;
