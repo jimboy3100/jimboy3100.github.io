@@ -1,4 +1,4 @@
-window.OgVer = 3.466;
+window.OgVer = 3.467;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
