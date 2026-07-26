@@ -10899,34 +10899,26 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
-            var now = LM.time || Date.now();
-            var anim = defaultmapsettings.animation || 80;
-            var elapsed = now - (this.updateTime || now);
-            var delay = elapsed / anim;
-            if (delay < 0) delay = 0;
-            else if (delay > 1) delay = 1;
-
-            if (this.startX !== undefined && this.startY !== undefined) {
-                this.x = this.startX + (this.targetX - this.startX) * delay;
-                this.y = this.startY + (this.targetY - this.startY) * delay;
-                this.size = this.startSize + (this.targetSize - this.startSize) * delay;
-            } else {
-                this.x += (this.targetX - this.x) * delay;
-                this.y += (this.targetY - this.y) * delay;
+            var time = LM.time - this.time;
+            var delay = time / defaultmapsettings.animation;
+            if (delay < 0) {
+                delay = 0
+            } else if (delay > 1) {
+                delay = 1
             }
-
+            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
+            this.x += (this.targetX - this.x) * delay;
+            this.y += (this.targetY - this.y) * delay;
             if (!defaultmapsettings.suckAnimation) {
-                if (this.startSize !== undefined) {
-                    this.size = this.startSize + (this.targetSize - this.startSize) * delay;
-                } else {
-                    this.size += (this.targetSize - this.size) * delay;
-                }
-            } else {
-                this.size += (this.targetSize - this.size) * (elapsed / 800);
-                if (this.size < 0) this.size = 0;
+                this.size += (this.targetSize - this.size) * delay;
+            }
+            else {
+                this.size += (this.targetSize - this.size) * (time / 800);
+                if (this.size < 0) this.size = 0 //fix
             }
             this.alpha = delay;
             if (!this.removed) {
+                this.time = LM.time;
                 return;
             }
             if (delay === 1) {
