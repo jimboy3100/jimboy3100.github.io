@@ -629,10 +629,16 @@ class Spect {
                     if (isMe) {
                         isMe = 'isPlayer'
                     }
-                    let nick = window.decodeURIComponent(window.escape(encode()));
+                    let rawNick = encode();
+                    let nick = rawNick;
+                    try {
+                        nick = window.decodeURIComponent(window.escape(rawNick));
+                    } catch (eDecNick) {
+                        console.error('[SPECT LB DECODE ERROR] Failed decoding nick:', eDecNick, rawNick);
+                    }
                     temp = null;
 
-                    if (nick.includes('}')) {
+                    if (nick && nick.includes('}')) {
                         temp = nick.split('}')[0].split('{')[1]
                         nick = nick.split('}')[1]
                     }
@@ -659,7 +665,13 @@ class Spect {
                     let isFBFriend = false;
                     position++;
                     if (flags && 2) {
-                        nick = window.decodeURIComponent(window.escape(encode()));
+                        let rawLbNick = encode();
+                        nick = rawLbNick;
+                        try {
+                            nick = window.decodeURIComponent(window.escape(rawLbNick));
+                        } catch (eLbDec) {
+                            console.error('[SPECT LB DECODE ERROR] Failed decoding nick:', eLbDec, rawLbNick);
+                        }
                     }
                     if (flags && 4) {
                         id = view.getUint32(offset, true);
@@ -1185,7 +1197,13 @@ class Spect {
                 skin = encode();
             }
             if (flags && 8) {
-                name = window.decodeURIComponent(escape(encode()));
+                var rawName = encode();
+                try {
+                    name = window.decodeURIComponent(escape(rawName));
+                } catch (eDecName) {
+                    name = rawName || '';
+                    console.error('[SPECT CELL NAME DECODE ERROR] Failed decoding name for cell ID ' + id + ' (rawName: "' + rawName + '"):', eDecName);
+                }
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
                 }

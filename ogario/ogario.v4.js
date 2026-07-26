@@ -7918,15 +7918,25 @@ function thelegendmodproject() {
                 };
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
+                    img[url]._failed = true;
                     console.warn("[LM] Failed to load skin image (retrying without CORS & referrer): " + url);
                     var retryImg = new Image();
                     retryImg.referrerPolicy = 'no-referrer';
                     retryImg.onload = function () {
-                        img[url] = retryImg;
-                        if (app && app.customSkinsCache) {
-                            app.customSkinsCache[url] = retryImg;
-                            app.customSkinsCache[url + "_cached"] = retryImg;
+                        if (this.width > 0 && this.height > 0) {
+                            img[url] = retryImg;
+                            if (app && app.customSkinsCache) {
+                                app.customSkinsCache[url] = retryImg;
+                                app.customSkinsCache[url + "_cached"] = retryImg;
+                            }
+                        } else {
+                            retryImg._failed = true;
+                            img[url]._failed = true;
                         }
+                    };
+                    retryImg.onerror = function () {
+                        retryImg._failed = true;
+                        img[url]._failed = true;
                     };
                     retryImg.src = url;
                 };
@@ -8105,7 +8115,11 @@ function thelegendmodproject() {
         },
         getCachedSkin(skinCache, skinMap) {
             function isValid(s) {
-                return s && (s.width || s.videoWidth || s.complete);
+                if (!s || s._failed) return false;
+                if (typeof s.videoWidth === "number" && s.videoWidth > 0) return true;
+                if (typeof s.naturalWidth === "number" && s.naturalWidth > 0) return true;
+                if (typeof s.width === "number" && s.width > 0) return true;
+                return false;
             }
             if (!skinMap) return null;
             if (skinCache[skinMap + '_cached3']) {
@@ -16616,9 +16630,16 @@ Most cells eaten   : ${mostCellsEaten}
                     skin = encode();
                 }
                 if (8 & flags) {
-                    name = window.decodeURIComponent(escape(encode())); namePresent = true;
-                    if (!LM.integrity && name.includes('}')) {
-                        name = name.split('}')[1]
+                    var rawName = encode();
+                    try {
+                        name = window.decodeURIComponent(escape(rawName));
+                    } catch (eDecName) {
+                        name = rawName || '';
+                        console.error('[OGARIO PACKET DECODE ERROR] Failed decoding name for cell ID ' + id + ' (rawName: "' + rawName + '"):', eDecName);
+                    }
+                    namePresent = true;
+                    if (!LM.integrity && name && name.includes('}')) {
+                        name = name.split('}')[1];
                     }
                 }
                 if (skin || namePresent) {
