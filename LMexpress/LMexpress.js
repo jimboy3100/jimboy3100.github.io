@@ -758,6 +758,7 @@ function findIP(searchIP) {
                 }).css("width", "210px");
             } else {
                 changeServer();
+                if (timerId) clearInterval(timerId);
                 timerId = setInterval(function () {
                     if (numAttempts == maxAttempts) {
                         numAttempts = 0;
@@ -848,6 +849,7 @@ function searchPlayer(searchString) {
 
                 // start timer
 
+                if (timerId) clearInterval(timerId);
                 timerId = setInterval(function () {
                     if (numAttempts == maxAttempts) {
 
@@ -3734,7 +3736,6 @@ function displayTimer() {
     // minutes
     if (TimerLM.difference > 60000) {
         minutes = Math.floor(TimerLM.difference / 60000);
-        1
         if (minutes > 60) {
             minutes = minutes % 60;
         }
@@ -4843,7 +4844,7 @@ function SNEZServers() {
 
         socket.connect();
         //console.log('start snez')
-        setInterval(socket.updateDetails, 5000);
+        socket._updateIntervalId = setInterval(socket.updateDetails, 5000);
     };
 
     function getSessionID() {
@@ -4977,7 +4978,7 @@ function getSNEZServers(ifcalled) {
                         temporaryserver2 = temporaryserver.split('live-arena-').pop();
                         temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
                         temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
-                        if (data[player].hidecountry == true && data[player].extra) {
+                        if (data[player].hidecountry == true && data[player].extra && data[player].extra.ip_info) {
                             data[player].extra.ip_info.country = "UN";
                         }
                         if (temporaryserver1a && data[player].extra && data[player].extra.ip_info) {
@@ -5008,7 +5009,7 @@ function getSNEZServers(ifcalled) {
                             temporaryserver2 = temporaryserver.split('live-arena-').pop();
                             temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
                             temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
-                            if (data[player].hidecountry == true) {
+                            if (data[player].hidecountry == true && data[player].extra && data[player].extra.ip_info) {
                                 data[player].extra.ip_info.country = "UN";
                             }
                             if (temporaryserver1a && data[player].extra && data[player].extra.ip_info) {
@@ -6562,7 +6563,7 @@ function findUserLang() {
         if (window.navigator.languages[0] && (window.navigator.languages[0] == "en" || window.navigator.languages[1] && window.navigator.languages[1].includes('-'))) {
             if (window.navigator.languages[1] && (window.navigator.languages[1] == "en" || window.navigator.languages[1].includes('-'))) {
                 if (window.navigator.languages[2] && (window.navigator.languages[2] == "en" || window.navigator.languages[2].includes('-'))) {
-                    if (window.navigator.languages[3] && !(window.navigator.languages[2] == "en" || window.navigator.languages[2].includes('-'))) window.userLanguage = window.navigator.languages[3]
+                    if (window.navigator.languages[3] && !(window.navigator.languages[3] == "en" || window.navigator.languages[3].includes('-'))) window.userLanguage = window.navigator.languages[3]
                 }
                 else window.userLanguage = window.navigator.languages[2]
             }
