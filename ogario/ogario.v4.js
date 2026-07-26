@@ -17853,7 +17853,7 @@ Most cells eaten   : ${mostCellsEaten}
             // Pass border rect as view-relative offsets (small values near zero)
             // to avoid float precision loss on huge maps
             gl.uniform4f(this.u_borderRect, minX - this.camX, minY - this.camY, maxX - this.camX, maxY - this.camY);
-            gl.uniform1f(this.u_borderLineWidth, lw);
+            gl.uniform1f(this.u_borderLineWidth, lw * 0.5);
             gl.uniform4f(this.u_borderColor, rR, rG, rB, 1.0);
             gl.uniform1f(this.u_borderGlowSize, glowSize);
 
