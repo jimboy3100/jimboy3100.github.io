@@ -1,4 +1,4 @@
-window.OgVer = 3.467;
+window.OgVer = 3.468;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16836,7 +16836,12 @@ Most cells eaten   : ${mostCellsEaten}
                     data[idx] = coords[i*3];
                     data[idx + 1] = coords[i*3+1];
                     data[idx + 2] = coords[i*3+2];
-                    var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    var cInt = cell._colorInt;
+                    if (cInt === undefined || cell._colorStr !== colorHex) {
+                        cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                        cell._colorInt = cInt;
+                        cell._colorStr = colorHex;
+                    }
                     data[idx + 3] = ((cInt >> 16) & 255) / 255;
                     data[idx + 4] = ((cInt >> 8) & 255) / 255;
                     data[idx + 5] = (cInt & 255) / 255;
@@ -16856,7 +16861,12 @@ Most cells eaten   : ${mostCellsEaten}
                     data[idx + 1] = y;
                     data[idx + 2] = r;
 
-                    var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                    var cInt = cell._colorInt;
+                    if (cInt === undefined || cell._colorStr !== colorHex) {
+                        cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                        cell._colorInt = cInt;
+                        cell._colorStr = colorHex;
+                    }
                     data[idx + 3] = ((cInt >> 16) & 255) / 255;
                     data[idx + 4] = ((cInt >> 8) & 255) / 255;
                     data[idx + 5] = (cInt & 255) / 255;
@@ -16867,8 +16877,6 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (count === 0) return true;
 
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
 
             gl.useProgram(this.glProgram);
             gl.uniform2f(this.u_viewCenter, this.camX, this.camY);
@@ -16929,8 +16937,11 @@ Most cells eaten   : ${mostCellsEaten}
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-            window.OgVer = 3.458;
-            /* Native C SIMD Render Pipeline (ogario_physics_simd.c AVX2 Suite) */
+            /* Clear WebGL overlay once per frame (not per-batch) */
+            if (this.gl) {
+                this.gl.clearColor(0, 0, 0, 0);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+            }
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
             this.renderStarted = performance.now()
@@ -17903,7 +17914,9 @@ Most cells eaten   : ${mostCellsEaten}
                 LM.foodIsHidden = true;
                 return;
             }
-            //if (!defaultmapsettings.rainbowFood) {
+            /* WebGL2 GPU batch: 1 draw call for all food dots */
+            if (this.gl && this.drawWebGLFoodBatch(LM.food)) return;
+            /* Canvas2D fallback */
             this.drawCachedFood(this.ctx, LM.food, this.scale);
             //return;
             //}
