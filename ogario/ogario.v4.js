@@ -5673,13 +5673,20 @@ function thelegendmodproject() {
             if (!switched) {
                 if (!window.multiboxPlayerEnabled) {
                     window.multiboxPlayerEnabled = 1;
-                    if (!legendmod.play) {
-                        play();
-                    }
                 } else if (window.multiboxPlayerEnabled < neededSpects) {
                     window.multiboxPlayerEnabled++;
                 } else {
                     window.multiboxPlayerEnabled = null;
+                }
+            }
+            if (window.multiboxPlayerEnabled !== null && typeof spects !== "undefined") {
+                var sIdx = window.multiboxPlayerEnabled - 1;
+                if (spects[sIdx]) {
+                    if (!spects[sIdx].isSocketOpen()) {
+                        spects[sIdx].connect();
+                    } else if (!spects[sIdx].playerCellIDs || !spects[sIdx].playerCellIDs.length) {
+                        spects[sIdx].handleSendNick();
+                    }
                 }
             }
             window.multiboxPlayerEnabledSaved = null;
@@ -5705,6 +5712,16 @@ function thelegendmodproject() {
                     window.multiboxPlayerEnabled--;
                 } else {
                     window.multiboxPlayerEnabled = null;
+                }
+            }
+            if (window.multiboxPlayerEnabled !== null && typeof spects !== "undefined") {
+                var sIdx = window.multiboxPlayerEnabled - 1;
+                if (spects[sIdx]) {
+                    if (!spects[sIdx].isSocketOpen()) {
+                        spects[sIdx].connect();
+                    } else if (!spects[sIdx].playerCellIDs || !spects[sIdx].playerCellIDs.length) {
+                        spects[sIdx].handleSendNick();
+                    }
                 }
             }
             window.multiboxPlayerEnabledSaved = null;
@@ -16013,6 +16030,7 @@ Most cells eaten   : ${mostCellsEaten}
             this.time = Date.now(); // prevent stale timestamp on first frame after switch
             this.mapOffsetFixed = false;
             LM.mapOffsetFixed = false;
+            window.multiboxPlayerEnabled = null;
             /* Reset camera so the render view doesn't stay at the old server's position.
              * Without this, the camera drifts slowly (1/30 per frame) to the new view
              * which causes "ghost" old content when the tab is backgrounded. */
@@ -16035,6 +16053,13 @@ Most cells eaten   : ${mostCellsEaten}
             this.foodMulti = []; //for multi fix
             this.viruses = [];
             this.removedCells = [];
+            if (typeof spects !== "undefined" && spects) {
+                for (var s = 0; s < spects.length; s++) {
+                    if (spects[s] && typeof spects[s].flushCellsData === "function") {
+                        spects[s].flushCellsData();
+                    }
+                }
+            }
             /* Reset map bounds to defaults so stale borders don't persist */
             if (this.integrity) {
                 this.mapMinX = 0;
@@ -18603,17 +18628,17 @@ Most cells eaten   : ${mostCellsEaten}
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
 
-            if (defaultmapsettings.middleMultiView && LM.playerCells.length && LM.playerCellsMulti && LM.playerCellsMulti.length) {
+            if (defaultmapsettings.middleMultiView && LM.playerCells.length) {
                 var spect = (typeof spects !== "undefined" && spects) ? spects[window.multiboxPlayerEnabled ? (window.multiboxPlayerEnabled - 1) : 0] : null;
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = (LM.viewXTrue + spect.playerX) / 2;
-                    targetCamY = (LM.viewYTrue + spect.playerY) / 2;
+                    targetCamX = (LM.viewXTrue + spect.playerX + (spect.fix3x || 0)) / 2;
+                    targetCamY = (LM.viewYTrue + spect.playerY + (spect.fix3y || 0)) / 2;
                 }
             } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
                 var spect = spects[window.multiboxPlayerEnabled - 1];
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
-                    targetCamX = spect.playerX;
-                    targetCamY = spect.playerY;
+                    targetCamX = spect.playerX + (spect.fix3x || 0);
+                    targetCamY = spect.playerY + (spect.fix3y || 0);
                 }
             }
 

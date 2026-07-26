@@ -129,12 +129,12 @@ class Spect {
         this.targetX = null
         this.targetY = null
         this.playerCellIDs = []
-        legendmod.playerCellsMulti = []
-        legendmod.multiBoxPlayerExists = null
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
         this.playerSize = 0
+        this.playerX = null
+        this.playerY = null
     }
 
     connect() {
@@ -240,18 +240,15 @@ class Spect {
     }
 
     flushCellsData() {
-        this.isSpectateEnabled = false
+        this.isSpectateEnabled = false;
         this.isFreeSpectate = false;
         this.ghostCells = [];
-        //this.indexedCells = {};
-        //this.deletefromObject("indexedCells")
-        //this.cells = [];
-        //this.deleteFromArray("cells")
-        legendmod.playerCellsMulti = [];
         this.playerCellIDs = [];
-        //this.food = [];
-        //this.viruses = [];
-        //this.deleteFromArray("viruses")
+        this.playerScore = 0;
+        this.playerSize = 0;
+        this.playerX = null;
+        this.playerY = null;
+        this.active = null;
         for (let cell of Object.values(legendmod.indexedCells)) {
             if (cell.spectator === this.number) {
                 cell.removeCell();
@@ -262,7 +259,6 @@ class Spect {
                 cell.removeCell();
             }
         }
-
     }
 
     isSocketOpen() {
@@ -1523,14 +1519,17 @@ class Spect {
         let y = 0;
         let count = 0;
 
-        for (let length = 0; length < legendmod.playerCellsMulti.length; length++) {
-            const n = legendmod.playerCellsMulti[length];
-            if (n && n.size && this.playerCellIDs && this.playerCellIDs.indexOf(n.id) !== -1) {
-                size += n.size;
-                targetSize += n.targetSize * n.targetSize;
-                x += n.x;
-                y += n.y;
-                count++;
+        if (this.playerCellIDs && this.playerCellIDs.length) {
+            for (let i = 0; i < this.playerCellIDs.length; i++) {
+                const cellId = this.playerCellIDs[i];
+                const n = legendmod.indexedCells[cellId];
+                if (n && n.size && !n.removed) {
+                    size += n.size;
+                    targetSize += (n.targetSize || n.size) * (n.targetSize || n.size);
+                    x += n.x;
+                    y += n.y;
+                    count++;
+                }
             }
         }
 
