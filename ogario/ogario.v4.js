@@ -17539,6 +17539,75 @@ Most cells eaten   : ${mostCellsEaten}
                 this.glSkinMap = {};
                 this.glSkinNextLayer = 0;
 
+                // ===== WebGL2 Solid Ring Shader (stroke outlines matching Canvas2D ctx.stroke) =====
+                var solidRingVs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_cellPos;
+                in float a_radius;
+                in vec4 a_color;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec4 v_color;
+                out vec2 v_unitPos;
+                void main() {
+                    v_color = a_color;
+                    v_unitPos = a_unitPos;
+                    vec2 worldPos = a_cellPos + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+                var solidRingFs = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                in vec2 v_unitPos;
+                uniform float u_ringThickness; // 0..1 fraction of radius
+                out vec4 fragColor;
+                void main() {
+                    float distSq = dot(v_unitPos, v_unitPos);
+                    if (distSq > 1.0) discard;
+                    float dist = sqrt(distSq);
+                    float inner = 1.0 - u_ringThickness;
+                    // Smooth ring band between inner and 1.0
+                    float halfPx = 0.015; // smoothing width
+                    float ringAlpha = smoothstep(inner - halfPx, inner + halfPx, dist)
+                                    * smoothstep(1.0 + halfPx, 1.0 - halfPx, dist);
+                    if (ringAlpha < 0.01) discard;
+                    fragColor = vec4(v_color.rgb, v_color.a * ringAlpha);
+                }`;
+                var solidRingProg = createAndLinkProgram(gl, solidRingVs, solidRingFs);
+                if (solidRingProg) {
+                    this.glSolidRingProgram = solidRingProg;
+                    this.u_solidRing_viewCenter = gl.getUniformLocation(solidRingProg, 'u_viewCenter');
+                    this.u_solidRing_viewScale = gl.getUniformLocation(solidRingProg, 'u_viewScale');
+                    this.u_solidRing_thickness = gl.getUniformLocation(solidRingProg, 'u_ringThickness');
+
+                    this.glSolidRingVAO = gl.createVertexArray();
+                    gl.bindVertexArray(this.glSolidRingVAO);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                    var a_sr_unit = gl.getAttribLocation(solidRingProg, 'a_unitPos');
+                    gl.enableVertexAttribArray(a_sr_unit);
+                    gl.vertexAttribPointer(a_sr_unit, 2, gl.FLOAT, false, 0, 0);
+
+                    this.glSolidRingInstanceVBO = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glSolidRingInstanceVBO);
+                    gl.bufferData(gl.ARRAY_BUFFER, 5000 * 7 * 4, gl.DYNAMIC_DRAW);
+                    var srStride = 7 * 4;
+                    var a_sr_pos = gl.getAttribLocation(solidRingProg, 'a_cellPos');
+                    gl.enableVertexAttribArray(a_sr_pos);
+                    gl.vertexAttribPointer(a_sr_pos, 2, gl.FLOAT, false, srStride, 0);
+                    gl.vertexAttribDivisor(a_sr_pos, 1);
+                    var a_sr_r = gl.getAttribLocation(solidRingProg, 'a_radius');
+                    gl.enableVertexAttribArray(a_sr_r);
+                    gl.vertexAttribPointer(a_sr_r, 1, gl.FLOAT, false, srStride, 2 * 4);
+                    gl.vertexAttribDivisor(a_sr_r, 1);
+                    var a_sr_col = gl.getAttribLocation(solidRingProg, 'a_color');
+                    gl.enableVertexAttribArray(a_sr_col);
+                    gl.vertexAttribPointer(a_sr_col, 4, gl.FLOAT, false, srStride, 3 * 4);
+                    gl.vertexAttribDivisor(a_sr_col, 1);
+                    gl.bindVertexArray(null);
+                    this.glSolidRingData = new Float32Array(5000 * 7);
+                }
+
                 // ===== WebGL2 Dashed Ring Shader (for sdsplitRange) =====
                 var dashedRingVs = `#version 300 es
                 in vec2 a_unitPos;
@@ -17807,13 +17876,14 @@ Most cells eaten   : ${mostCellsEaten}
         drawWebGLViruses(virusesArray) {
             return this.drawWebGLBatch(virusesArray);
         },
-        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
+        /* Filled circle batch with uniform color — used by ghost cells and similar
+         * cases where Canvas2D uses ctx.fill() (not ctx.stroke()). */
+        drawWebGLFilledBatch(players, colorHex, alphaVal) {
             if (!this.gl || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
             var max = this.glMaxInstances;
-            var _sizeMul = sizeMultiplier || 1.0;
 
             var viewScale = this.scale || 1;
             var halfW = (this.canvasWidth / viewScale / 2) + 500;
@@ -17830,7 +17900,7 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < players.length && count < max; i++) {
                 var p = players[i];
                 if (!p) continue;
-                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
+                var x = p.x, y = p.y, r = p.size || 50;
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
 
                 var idx = count * 7;
@@ -17854,6 +17924,68 @@ Most cells eaten   : ${mostCellsEaten}
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
 
             gl.bindVertexArray(this.glVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
+        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
+            if (!this.gl || !this.glSolidRingProgram || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glSolidRingData;
+            var count = 0;
+            var max = 5000;
+            var _sizeMul = sizeMultiplier || 1.0;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            /* Canvas2D uses ctx.lineWidth = (14 + 2/scale) for opponent rings,
+             * or 4-6 for split range. We compute thickness as fraction of each ring radius. */
+            var _lineWidth = (14 + 2 / viewScale);
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var p = players[i];
+                if (!p) continue;
+                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
+                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                var idx = count * 7;
+                data[idx] = x;
+                data[idx + 1] = y;
+                data[idx + 2] = r;
+                data[idx + 3] = rR;
+                data[idx + 4] = rG;
+                data[idx + 5] = rB;
+                data[idx + 6] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            /* Ring thickness: Canvas2D lineWidth in world units → fraction of ring radius.
+             * Use the average radius across all rings. For uniform rings this is exact. */
+            var avgRadius = data[2]; // Use first ring's radius as representative
+            var thickness = Math.min(0.15, Math.max(0.01, _lineWidth / avgRadius));
+
+            gl.useProgram(this.glSolidRingProgram);
+            gl.uniform2f(this.u_solidRing_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_solidRing_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.uniform1f(this.u_solidRing_thickness, thickness);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glSolidRingInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+
+            gl.bindVertexArray(this.glSolidRingVAO);
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
             gl.bindVertexArray(null);
 
@@ -20021,7 +20153,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(ghostsCells, 0, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
+                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLFilledBatch(ghostsCells, defaultSettings.ghostCellsColor, defaultSettings.ghostCellsAlpha)) {
                     return;
                 }
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
