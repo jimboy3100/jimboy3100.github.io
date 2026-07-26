@@ -10141,7 +10141,15 @@ function thelegendmodproject() {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
                 var activeNick = ogarcopythelb.nick || 'Unnamed';
                 if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
-                    var pIdx = (application.selectedProfiles && application.selectedProfiles[window.multiboxPlayerEnabled] != null) ? application.selectedProfiles[window.multiboxPlayerEnabled] : application.selectedOldProfile;
+                    var mbSlot = window.multiboxPlayerEnabled;
+                    var pIdx;
+                    if (application.selectedProfiles && application.selectedProfiles[mbSlot] != null) {
+                        pIdx = application.selectedProfiles[mbSlot];
+                    } else if (mbSlot === 1 && application.selectedOldProfile != null) {
+                        pIdx = application.selectedOldProfile;
+                    } else {
+                        pIdx = ((application.selectedProfile || 0) + mbSlot) % profiles.length;
+                    }
                     if (profiles[pIdx] && profiles[pIdx].nick) {
                         activeNick = profiles[pIdx].nick;
                     }
