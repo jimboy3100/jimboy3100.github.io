@@ -1,4 +1,4 @@
-window.OgVer = 3.442;
+window.OgVer = 3.446;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7816,7 +7816,8 @@ function thelegendmodproject() {
                             $.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                         }
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached"] = i;
+                    this.customSkinsCache[e + "_cached"] = new Image;
+                    this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                     this.cacheSkin(this.customSkinsCache, animated);
                 }
             }
@@ -7836,7 +7837,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached2"] = i;
+                    this.customSkinsCache[e + "_cached2"] = new Image;
+                    this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
                     this.cacheSkin2(this.customSkinsCache);
                 }
             }
@@ -7861,7 +7863,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached3"] = i;
+                    this.customSkinsCache[e + "_cached3"] = new Image;
+                    this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
                     this.cacheSkin3(this.customSkinsCache);
                 }
             }
@@ -7886,7 +7889,8 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached4"] = i;
+                    this.customSkinsCache[e + "_cached4"] = new Image;
+                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
                     this.cacheSkin4(this.customSkinsCache);
                 }
             }
@@ -7911,22 +7915,25 @@ function thelegendmodproject() {
                     try {
                         $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
-                    this.customSkinsCache[e + "_cached" + skinCache] = i;
+                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
+                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
         },
         getCachedSkin(skinCache, skinMap) {
+            function isValid(s) {
+                return s && s.width && (s.complete === undefined || s.complete);
+            }
             if (skinCache[skinMap + '_cached3']) {
                 const today = new Date();
-                if (today.getSeconds() < 30) { //vanilla animated skins
-                    return skinCache[skinMap + '_cached'] && skinCache[skinMap + '_cached'].complete && skinCache[skinMap + '_cached'].width ? skinCache[skinMap + '_cached'] : null;
-                } else if (today.getSeconds() >= 30) {
-                    return skinCache[skinMap + '_cached3'] && skinCache[skinMap + '_cached3'].complete && skinCache[skinMap + '_cached3'].width ? skinCache[skinMap + '_cached3'] : null;
+                if (today.getSeconds() < 30) {
+                    return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
+                } else {
+                    return isValid(skinCache[skinMap + '_cached3']) ? skinCache[skinMap + '_cached3'] : null;
                 }
             }
-            return skinCache[skinMap + '_cached'] && skinCache[skinMap + '_cached'].complete && skinCache[skinMap + '_cached'].width ? skinCache[skinMap + '_cached'] : null;
-
+            return isValid(skinCache[skinMap + '_cached']) ? skinCache[skinMap + '_cached'] : null;
         },
         cacheCustomSkin(nick, color, skinUrl) {
             if (skinUrl) {
@@ -10373,70 +10380,55 @@ function thelegendmodproject() {
             return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
         }
         this.movePoints = function () {
-            //console.log(this.id)
-            var pointsVel = this.pointsVel.slice();
             var len = this.points.length;
+            if (!len) return;
+
+            if (!window._pointsVelScratch || window._pointsVelScratch.length < len) {
+                window._pointsVelScratch = new Float32Array(Math.max(len, 256));
+            }
+            var pointsVel = window._pointsVelScratch;
+            for (var k = 0; k < len; ++k) {
+                pointsVel[k] = this.pointsVel[k];
+            }
+
             for (var i = 0; i < len; ++i) {
                 var prevVel = pointsVel[(i - 1 + len) % len];
                 var nextVel = pointsVel[(i + 1) % len];
                 var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
-                newVel = Math.max(Math.min(newVel, 10), -10);
+                if (newVel > 10) newVel = 10; else if (newVel < -10) newVel = -10;
                 this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
             }
-            this.maxPointRad = 0
+
+            this.maxPointRad = 0;
+            var invLen = (2 * Math.PI) / len;
+
             for (var i = 0; i < len; ++i) {
                 var curP = this.points[i];
                 var curRl = curP.rl;
                 var prevRl = this.points[(i - 1 + len) % len].rl;
-                var nextRl = this.points[(i + 1) % len].rl;
-                var self = this;
-                var affected
-                if (LM.quadtree) {
-                    affected = LM.quadtree.some({
-                        x: curP.x - 5,
-                        y: curP.y - 5,
-                        w: 10,
-                        h: 10
-                    }, function (item) {
-                        return item.parent != self && this.sqDist(item, curP) <= 25;
-                    }.bind(this));
-                }
-                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+                var affected = false;
 
-                //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-
-
-                //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
-                //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
-
-                /*if (!affected &&
-                    (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
-                    curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
-                {
+                if (curP.x < LM.mapMinX || curP.x > LM.mapMaxX || curP.y < LM.mapMinY || curP.y > LM.mapMaxY) {
                     affected = true;
-                }*/
+                }
+
                 if (affected) {
-                    //console.log('affected!!!!!')
-                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                    if (this.pointsVel[i] > 0) this.pointsVel[i] = 0;
                     this.pointsVel[i] -= 1;
                 }
                 curRl += this.pointsVel[i];
-                curRl = Math.max(curRl, 0);
+                if (curRl < 0) curRl = 0;
 
-                curRl = (9 * curRl + this.size) / 10; //??????
+                curRl = (9 * curRl + this.size) / 10;
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10;
 
-                curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
-
-                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
-
-                var angle = 2 * Math.PI * i / len;
                 var rl = curP.rl;
-                if (rl > this.maxPointRad) this.maxPointRad = rl
-                if (this.isVirus && i % 2 === 0) {
+                if (rl > this.maxPointRad) this.maxPointRad = rl;
+                if (this.isVirus && (i & 1) === 0) {
                     rl += 5;
                 }
 
+                var angle = i * invLen;
                 curP.x = this.x + Math.cos(angle) * rl;
                 curP.y = this.y + Math.sin(angle) * rl;
             }
@@ -11234,13 +11226,15 @@ function thelegendmodproject() {
                 }
                 var node2, node2IsVideo = false;
                 if (defaultmapsettings.videoSkins) {
-                    if (LM.gameMode != ":party") {
-                        node2 = application.customSkinsMap[this.targetNick];
+                    node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
+                    if (node2) {
+                        if (typeof node2._isVideo === "boolean") {
+                            node2IsVideo = node2._isVideo;
+                        } else {
+                            node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
+                            try { Object.defineProperty(node2, '_isVideo', { value: node2IsVideo, writable: true }); } catch (e) { }
+                        }
                     }
-                    else {
-                        node2 = application.customSkinsMap[this.targetNick + this.color];
-                    }
-                    if (node2) node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
                 }
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                     style.globalAlpha *= defaultSettings.cellsAlpha;
@@ -17190,35 +17184,37 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.globalAlpha = 1;
         },
         drawGrid(ctx, width, heigth, scale, camX, camY) {
-            /* Skip grid entirely at extreme zoom-out — lines are sub-pixel
-             * and globalAlpha is near-zero, wasting GPU on invisible geometry */
             if (scale < 0.02) return;
 
-            const reWidth = width / scale;
-            const reHeigth = heigth / scale;
-
-            /* Dynamically increase step so lines stay at least 4px apart.
-             * At scale 0.3 (normal play): step=50, spacing=15px — unchanged.
-             * At scale 0.03 (extreme zoom-out): step doubles 50→200,
-             * reducing line count from ~2560 to ~320. */
             let step = 50;
             while (step * scale < 4) step *= 2;
 
-            let x = (-camX + reWidth / 2) % step;
-            let y = (-camY + reHeigth / 2) % step;
-            ctx.strokeStyle = defaultSettings.gridColor;
-            ctx.globalAlpha = 1 * scale;
-            ctx.beginPath();
-            for (; x < reWidth; x += step) {
-                ctx.moveTo(x * scale - 0.5, 0);
-                ctx.lineTo(x * scale - 0.5, reHeigth * scale);
+            var patternKey = defaultSettings.gridColor + "_" + step;
+            if (!this._gridPatternCache) this._gridPatternCache = {};
+
+            if (!this._gridPatternCache[patternKey]) {
+                var pCanvas = document.createElement("canvas");
+                pCanvas.width = step;
+                pCanvas.height = step;
+                var pCtx = pCanvas.getContext("2d");
+                pCtx.strokeStyle = defaultSettings.gridColor;
+                pCtx.beginPath();
+                pCtx.moveTo(0, 0);
+                pCtx.lineTo(step, 0);
+                pCtx.moveTo(0, 0);
+                pCtx.lineTo(0, step);
+                pCtx.stroke();
+                this._gridPatternCache[patternKey] = ctx.createPattern(pCanvas, "repeat");
             }
-            for (; y < reHeigth; y += step) {
-                ctx.moveTo(0, y * scale - 0.5);
-                ctx.lineTo(reWidth * scale, y * scale - 0.5);
+
+            var pattern = this._gridPatternCache[patternKey];
+            if (pattern) {
+                ctx.save();
+                ctx.globalAlpha = 1 * scale;
+                ctx.fillStyle = pattern;
+                ctx.fillRect(0, 0, width, heigth);
+                ctx.restore();
             }
-            ctx.stroke();
-            ctx.globalAlpha = 1;
         },
         /*drawGridCached() {
             //for (var xx = 1; xx > 0; xx -= 0.025){
