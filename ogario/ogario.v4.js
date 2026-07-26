@@ -11759,8 +11759,8 @@ function thelegendmodproject() {
                 if ((LM.hideSmallBots && this.size <= 36) || this.invisible === true) {
                     return;
                 }
-                //					
                 style.save();
+                try {
 
                 //if (this.isFood){ //food never happens here
                 //console.log('isFood')
@@ -12137,8 +12137,12 @@ function thelegendmodproject() {
                     }
 
                 }
+            } catch (eCellDraw) {
+                console.error('[OGARIO CELL DRAW ERROR] Failed drawing cell ID ' + this.id + ' (nick: "' + (this.targetNick || '') + '", skin: "' + (this.skin || '') + '"):', eCellDraw);
+            } finally {
                 style.restore();
             }
+        }
     }
     window.legendmod1 = ogarbasicassembly;
 
@@ -16184,83 +16188,87 @@ Most cells eaten   : ${mostCellsEaten}
             //return !(x + size < this.viewX - x2s || y + size < this.viewY - y2s || x - size > this.viewX + x2s || y - size > this.viewY + y2s);
         },
         vanillaskins(y, g, cellColor) {
-            if (!y && !g) return;
-            var playerKey = y || g;
-            if (LM.gameMode === ":party" && cellColor) {
-                playerKey = playerKey + cellColor;
-            }
+            try {
+                if (!y && !g) return;
+                var playerKey = y || g;
+                if (LM.gameMode === ":party" && cellColor) {
+                    playerKey = playerKey + cellColor;
+                }
 
-            var skinUrl = null;
-            var isAnimated = false;
+                var skinUrl = null;
+                var isAnimated = false;
 
-            /* 1. Direct HTTP/HTTPS skin URL */
-            if (g && typeof g === 'string' && (g.startsWith('http://') || g.startsWith('https://'))) {
-                skinUrl = g;
-            }
-            /* 2. Flag skins */
-            else if (y && legendflags.includes(LowerCase(y))) {
-                skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
-            }
-            /* 3. Free skins map */
-            else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
-                for (var p = 0; p < window.FreeSkins.length; p++) {
-                    if (LowerCase(y) === window.FreeSkins[p].id) {
-                        skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
-                        break;
+                /* 1. Direct HTTP/HTTPS skin URL */
+                if (g && typeof g === 'string' && (g.startsWith('http://') || g.startsWith('https://'))) {
+                    skinUrl = g;
+                }
+                /* 2. Flag skins */
+                else if (y && legendflags.includes(LowerCase(y))) {
+                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
+                }
+                /* 3. Free skins map */
+                else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
+                    for (var p = 0; p < window.FreeSkins.length; p++) {
+                        if (LowerCase(y) === window.FreeSkins[p].id) {
+                            skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
+                            break;
+                        }
                     }
                 }
-            }
-            /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
-            else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
-                var digits = g.replace(/[^0-9]/g, '');
-                if (digits) {
-                    skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
-                } else {
-                    var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
-                    if (!g1.startsWith('skin_custom')) {
-                        g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
+                else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
+                    var digits = g.replace(/[^0-9]/g, '');
+                    if (digits) {
+                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                    } else {
+                        var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
+                        if (!g1.startsWith('skin_custom')) {
+                            g1 = 'skin_custom_' + g1.replace(/^_+/, '');
+                        }
+                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
                     }
-                    skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
                 }
-            }
-            /* 5. Level skins (_level_1, _level_2, etc.) */
-            else if (g && typeof g === 'string' && g.includes("_level_")) {
-                var g1 = g.replace('%', '');
-                g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
-                g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
-                g1 = makeUpperCaseAfterUnderline(g1);
-                isAnimated = true;
-                skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
-            }
-            /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
-            else if (g && typeof g === 'string' && g !== '%empty') {
-                if (window.VanillaSkinUrlMap) {
-                    skinUrl = window.VanillaSkinUrlMap[g] ||
-                        window.VanillaSkinUrlMap[g.toLowerCase()] ||
-                        window.VanillaSkinUrlMap['%' + g.replace('%', '')] ||
-                        window.VanillaSkinUrlMap[g.replace('%', '')] ||
-                        window.VanillaSkinUrlMap[g.replace('%', '').toLowerCase()];
+                /* 5. Level skins (_level_1, _level_2, etc.) */
+                else if (g && typeof g === 'string' && g.includes("_level_")) {
+                    var g1 = g.replace('%', '');
+                    g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
+                    g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
+                    g1 = makeUpperCaseAfterUnderline(g1);
+                    isAnimated = true;
+                    skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
                 }
-            }
-            /* 7. Fallback lookup by player nick (y) if g did not produce skinUrl */
-            if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
-                var cleanY = y.toLowerCase().trim();
-                skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
-            }
+                /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
+                else if (g && typeof g === 'string' && g !== '%empty') {
+                    if (window.VanillaSkinUrlMap) {
+                        skinUrl = window.VanillaSkinUrlMap[g] ||
+                            window.VanillaSkinUrlMap[g.toLowerCase()] ||
+                            window.VanillaSkinUrlMap['%' + g.replace('%', '')] ||
+                            window.VanillaSkinUrlMap[g.replace('%', '')] ||
+                            window.VanillaSkinUrlMap[g.replace('%', '').toLowerCase()];
+                    }
+                }
+                /* 7. Fallback lookup by player nick (y) if g did not produce skinUrl */
+                if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
+                    var cleanY = y.toLowerCase().trim();
+                    skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
+                }
 
-            if (skinUrl) {
-                if (y) {
-                    window.lastusednameforskin = y;
-                    core.registerSkin(y, null, skinUrl, isAnimated);
-                    application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                if (skinUrl) {
+                    if (y) {
+                        window.lastusednameforskin = y;
+                        core.registerSkin(y, null, skinUrl, isAnimated);
+                        application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                    }
+                    if (playerKey && playerKey !== y) {
+                        core.registerSkin(playerKey, null, skinUrl, isAnimated);
+                        application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
+                    }
+                    if (g) {
+                        application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
+                    }
                 }
-                if (playerKey && playerKey !== y) {
-                    core.registerSkin(playerKey, null, skinUrl, isAnimated);
-                    application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
-                }
-                if (g) {
-                    application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
-                }
+            } catch (eVanilla) {
+                console.error('[OGARIO SKIN ERROR] Failed resolving skin for name/skin:', y, g, eVanilla);
             }
         },
         //Sonia3 Adding three below functions
@@ -18074,100 +18082,98 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.scale(this.scale, this.scale);
             //this.ctx.translate(-this.camX, -this.camY);
 
-            if (defaultmapsettings.showGrid) {
-                /* WebGL2 procedural grid renders on GL layer (behind food).
-                 * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
-                if (!this.gl || (typeof defaultmapsettings.webgl2Acceleration !== "undefined" && !defaultmapsettings.webgl2Acceleration) || !this.drawWebGLGridShader()) {
-                    if (defaultmapsettings.showOptimisedGrid) {
-                        this.drawCustomNewGrid();
-                    } else {
-                        this.drawGrid(this.ctx);
+            try {
+                if (defaultmapsettings.showGrid) {
+                    /* WebGL2 procedural grid renders on GL layer (behind food).
+                     * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
+                    if (!this.gl || (typeof defaultmapsettings.webgl2Acceleration !== "undefined" && !defaultmapsettings.webgl2Acceleration) || !this.drawWebGLGridShader()) {
+                        if (defaultmapsettings.showOptimisedGrid) {
+                            this.drawCustomNewGrid();
+                        } else {
+                            this.drawGrid(this.ctx);
+                        }
                     }
                 }
-            }
-            if (defaultmapsettings.showBgSectors) {
-                this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
-            }
-            if (LM.gameMode === ':battleroyale') {
-                this.drawBattleArea(this.ctx);
-            }
-            this.drawCustomBackgrounds()
-            if (defaultmapsettings.showMapBorders) {
-                var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
-                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
-            }
-            /* ── Expanding Land: Draw warning/danger zone overlay ── */
-            if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
-                this.drawLegendWorldZone(this.ctx);
-            }
-            this.drawCommander(this.ctx);
-            this.drawCommander2(this.ctx);
-            if (defaultmapsettings.virusesRange) {
-                this.drawVirusesRange(this.ctx, LM.viruses);
-            }
-            //if (defaultmapsettings.waves ) {
-            if (LM.Waves && LM.Waves.length > 0) {
-                this.drawWaves();
-            }
-
-
-            if (LM.playerCellsMulti.length) {
-                this.calMinMaxMulti();
-            }
-            this.calMinMax();
-            this.drawHelpers();
-            this.drawFood();
-            this.drawGhostCells();
-            for (var i = LM.removedCells.length - 1; i >= 0; i--) {
-                var rCell = LM.removedCells[i];
-                rCell.draw(this.ctx, true);
-            }
-            /* WebGL2 GPU-instanced cell rendering: circle bodies + skin textures
-             * in a single draw call. Falls back to Canvas2D for jelly/contours.
-             * TODO: enable once shader + Canvas2D text overlay integration is complete.
-            if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours && !defaultSettings.customBackground) {
-                this.drawWebGLCellBatch(LM.cells);
-            }
-            */
-            for (i = 0; i < LM.cells.length; i++) {
-                if (LM.cells[i].removed) {
-                    LM.cells.splice(i, 1);
-                    i--;
-                    continue;
+                if (defaultmapsettings.showBgSectors) {
+                    this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
+                }
+                if (LM.gameMode === ':battleroyale') {
+                    this.drawBattleArea(this.ctx);
+                }
+                this.drawCustomBackgrounds()
+                if (defaultmapsettings.showMapBorders) {
+                    var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
+                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                }
+                /* ── Expanding Land: Draw warning/danger zone overlay ── */
+                if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
+                    this.drawLegendWorldZone(this.ctx);
+                }
+                this.drawCommander(this.ctx);
+                this.drawCommander2(this.ctx);
+                if (defaultmapsettings.virusesRange) {
+                    this.drawVirusesRange(this.ctx, LM.viruses);
+                }
+                if (LM.Waves && LM.Waves.length > 0) {
+                    this.drawWaves();
                 }
 
-                if (defaultmapsettings.jellyPhisycs) {
-                    if (LM.cells[i].isInView()) {
-                        LM.cells[i].updateNumPoints();
-                        LM.cells[i].movePoints();
+                if (LM.playerCellsMulti.length) {
+                    this.calMinMaxMulti();
+                }
+                this.calMinMax();
+                this.drawHelpers();
+                this.drawFood();
+                this.drawGhostCells();
+                for (var i = LM.removedCells.length - 1; i >= 0; i--) {
+                    var rCell = LM.removedCells[i];
+                    if (rCell) {
+                        try {
+                            rCell.draw(this.ctx, true);
+                        } catch (eRCell) { }
                     }
                 }
 
-                LM.cells[i].draw(this.ctx);
+                for (i = 0; i < LM.cells.length; i++) {
+                    var cell = LM.cells[i];
+                    if (!cell) continue;
+                    if (cell.removed) {
+                        LM.cells.splice(i, 1);
+                        i--;
+                        continue;
+                    }
 
-                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
-                    //
-                    //console.log("LM.selected") 
-                    //
-                    LM.selected = LM.cells[i].id
-                    //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
+                    if (defaultmapsettings.jellyPhisycs) {
+                        try {
+                            if (cell.isInView()) {
+                                cell.updateNumPoints();
+                                cell.movePoints();
+                            }
+                        } catch (eJelly) { }
+                    }
+
+                    cell.draw(this.ctx);
+
+                    if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, cell.x, cell.y, cell.size)) {
+                        LM.selected = cell.id;
+                    }
                 }
-            }
-            //}
-            this.drawMiscRings();
-            //lylko
-            if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells);
 
-            this.drawRings();
-            this.drawRMB();
-            //
-            if (defaultmapsettings.debug) {
-                this.drawViewPorts(this.ctx)
-            }
-            //
+                this.drawMiscRings();
+                if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells);
 
-            this.ctx.restore();
-            this.ctx.restore(); // restore DPR scale
+                this.drawRings();
+                this.drawRMB();
+
+                if (defaultmapsettings.debug) {
+                    this.drawViewPorts(this.ctx);
+                }
+            } catch (eRenderScene) {
+                console.error('[OGARIO RENDER SCENE EXCEPTION] Failed rendering scene frame:', eRenderScene);
+            } finally {
+                this.ctx.restore();
+                this.ctx.restore(); // restore DPR scale
+            }
 
             if (LM.gameMode === ':teams') {
                 // Agar2: redraw pie if canvas wasn't ready when op50 first arrived
