@@ -17876,17 +17876,25 @@ Most cells eaten   : ${mostCellsEaten}
                 this.camX = LM.viewX;
                 this.camY = LM.viewY;
             }
-            /* Diagnostic cell array deduplication & monitoring */
+            /* Diagnostic cell array deduplication — only when actual duplicates exist.
+             * In full-map spectate, LM.cells can legitimately hold 5000+ food dots;
+             * we must NOT rebuild the array or spam console.warn every frame. */
             if (LM.cells.length > 2500) {
+                var _cellsBefore = LM.cells.length;
                 var uniqueCellsMap = new Map();
-                for (var ci = 0; ci < LM.cells.length; ci++) {
+                for (var ci = 0; ci < _cellsBefore; ci++) {
                     var cellItem = LM.cells[ci];
                     if (cellItem && cellItem.id && !uniqueCellsMap.has(cellItem.id)) {
                         uniqueCellsMap.set(cellItem.id, cellItem);
                     }
                 }
-                LM.cells = Array.from(uniqueCellsMap.values());
-                console.warn('[DIAGNOSTIC] Pruned duplicate cells array. Active cell count:', LM.cells.length);
+                if (uniqueCellsMap.size < _cellsBefore) {
+                    LM.cells = Array.from(uniqueCellsMap.values());
+                    if (!this._lastDedupLog || _now - this._lastDedupLog > 5000) {
+                        console.warn('[DIAGNOSTIC] Pruned', _cellsBefore - uniqueCellsMap.size, 'duplicate cells. Active:', LM.cells.length);
+                        this._lastDedupLog = _now;
+                    }
+                }
             }
 
             LM.time = _now;
