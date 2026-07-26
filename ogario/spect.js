@@ -456,15 +456,23 @@ class Spect {
         if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {
             return;
         }
+        if ((typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbFreeze) || window.multiboxFrozen) {
+            if (this.frozenX == null) {
+                this.frozenX = this.targetX || x;
+                this.frozenY = this.targetY || y;
+            }
+            x = this.frozenX;
+            y = this.frozenY;
+        } else {
+            this.frozenX = null;
+            this.frozenY = null;
+        }
         const view = this.createView(13);
         view.setUint8(0, 16);
         if (this.player === true && !this.active === true) {
-
             view.setInt32(1, this.targetX, true);
             view.setInt32(5, this.targetY, true);
-            console.log(this.targetX, this.targetY)
         } else {
-
             view.setInt32(1, x, true);
             view.setInt32(5, y, true);
             this.targetX = x;
@@ -1210,6 +1218,18 @@ class Spect {
                 var _pciIdx = this.playerCellIDs.indexOf(victimID.id);
                 if (_pciIdx !== -1) {
                     this.playerCellIDs.splice(_pciIdx, 1);
+                }
+                if (!legendmod.playerCellsMulti.length) {
+                    if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbSwitchAfterDeath && legendmod.playerCells && legendmod.playerCells.length) {
+                        window.multiboxPlayerEnabled = null;
+                    }
+                    if (typeof defaultmapsettings !== "undefined" && defaultmapsettings.mbAutoRespawn && this.isSocketOpen()) {
+                        setTimeout(() => {
+                            if (this.isSocketOpen() && !this.playerCellIDs.length) {
+                                this.sendPlay();
+                            }
+                        }, 500);
+                    }
                 }
             }
 

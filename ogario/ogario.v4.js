@@ -4130,6 +4130,11 @@ var defaultmapsettings = {
     multiKeepMoving: true,
     middleMultiView: false,
     middleMultiViewWhenClose: true,
+    mbSwitchAfterDeath: true,
+    mbRings: true,
+    mbFreeze: false,
+    mbAutoRespawn: true,
+    cameraSmoothLerp: true,
     optimizedMass: true,
     shortMass: true,
     cellContours: false,
@@ -11895,6 +11900,11 @@ function thelegendmodproject() {
                         }
                     }
                 }
+                if (defaultmapsettings.mbRings && LM.playerCellsMulti && LM.playerCellsMulti.indexOf(this) !== -1) {
+                    style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
+                    style.lineWidth = Math.max(~~(y / 40), 8);
+                    style.stroke();
+                }
                 //lylko
                 if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                     //node = application.getCustomSkin(this.targetNick, this.color);
@@ -16391,11 +16401,16 @@ Most cells eaten   : ${mostCellsEaten}
 
             // Death check
             if (this.removePlayerCell && !this.playerCells.length) {
-                this.play = false;
-                application.onPlayerDeath();
-                application.showMenu(300);
-                window.userBots.isAlive = false;
-                if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
+                    window.multiboxPlayerEnabled = 1;
+                    this.removePlayerCell = false;
+                } else {
+                    this.play = false;
+                    application.onPlayerDeath();
+                    application.showMenu(300);
+                    window.userBots.isAlive = false;
+                    if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                }
             }
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
@@ -18473,27 +18488,32 @@ Most cells eaten   : ${mostCellsEaten}
         },
         setView() {
             this.setScale(LM.playerSize);
-            var speed = 30;
-            //if (LM.playerCellsMulti.length) {
-            if (window.multiboxPlayerEnabled) {
-                this.camXMulti = (this.camXMulti + LM.viewX) / 2;
-                this.camYMulti = (this.camYMulti + LM.viewY) / 2;
+            var targetCamX = LM.viewX;
+            var targetCamY = LM.viewY;
+
+            if (defaultmapsettings.middleMultiView && LM.playerCells.length && LM.playerCellsMulti && LM.playerCellsMulti.length) {
+                var spect = (typeof spects !== "undefined" && spects) ? spects[window.multiboxPlayerEnabled ? (window.multiboxPlayerEnabled - 1) : 0] : null;
+                if (spect && spect.playerX != null) {
+                    targetCamX = (LM.viewXTrue + spect.playerX) / 2;
+                    targetCamY = (LM.viewYTrue + spect.playerY) / 2;
+                }
+            } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
+                var spect = spects[window.multiboxPlayerEnabled - 1];
+                if (spect && spect.playerX != null) {
+                    targetCamX = spect.playerX;
+                    targetCamY = spect.playerY;
+                }
             }
-            if (LM.playerCells.length) {
-                LM.calculatePlayerMassAndPosition();
-                this.camX = (this.camX + 2 * LM.viewX) / 3;
-                this.camY = (this.camY + 2 * LM.viewY) / 3;
+
+            if (defaultmapsettings.cameraSmoothLerp) {
+                this.camX += (targetCamX - this.camX) * 0.15;
+                this.camY += (targetCamY - this.camY) * 0.15;
             } else {
-                this.camX = (29 * this.camX + LM.viewX) / 30;
-                this.camY = (29 * this.camY + LM.viewY) / 30;
+                this.camX = targetCamX;
+                this.camY = targetCamY;
             }
-            //this.camX=LM.viewX
-            //this.camY=LM.viewY
-            LM.playerXMulti = this.camXMulti;
-            LM.playerYMulti = this.camYMulti;
             LM.playerX = this.camX;
             LM.playerY = this.camY;
-
         },
         setScale(size) {
             if (!LM.autoZoom) {
