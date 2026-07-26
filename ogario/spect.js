@@ -1384,12 +1384,12 @@ class Spect {
                 //if (!isFood) {
                 if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
-                        legendmod.viruses.push(cell);
+                        if (legendmod.viruses.indexOf(cell) === -1) {
+                            legendmod.viruses.push(cell);
+                        }
                     }
-                    //legendmod.cells.push(cell);
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        //this.playerColor = color;
                         this.playerColor = profiles[application.selectedOldProfile].color;
                         cell.color = profiles[application.selectedOldProfile].color;
 
@@ -1399,18 +1399,20 @@ class Spect {
                             this.active = true
                             this.sendCursor()
                             loadMultiCellSkin()
-
                         }
                     }
                 } else if (isFood) {
-                    legendmod.foodMulti.push(cell); //this causes problems					
+                    if (legendmod.foodMulti.indexOf(cell) === -1) {
+                        legendmod.foodMulti.push(cell);
+                    }
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove) legendmod.cells.push(cell);
+                    if (!isFood && !remove && legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
                 } else {
-                    //if (!remove && (!invisible && isVirus)){
                     if (!remove) {
-                        legendmod.cells.push(cell);
+                        if (legendmod.cells.indexOf(cell) === -1) {
+                            legendmod.cells.push(cell);
+                        }
                     }
                 }
                 legendmod.indexedCells[id] = cell;
