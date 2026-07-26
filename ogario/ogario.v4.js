@@ -6739,6 +6739,7 @@ function thelegendmodproject() {
 
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
+            this.updateProfileBadges();
         },
         eraseProfileboxShadow() {
             for (i = 0; i < profiles.length; i++) {
@@ -6755,7 +6756,7 @@ function thelegendmodproject() {
         },
         updateProfileBadges() {
             if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
-            $('.skin-box .mb-badge').remove();
+            $('.skin-box .mb-badge, .mb-badge').remove();
             var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
 
             for (var slot = 0; slot < maxMb; slot++) {
@@ -6772,8 +6773,10 @@ function thelegendmodproject() {
                     var $el = $('#profile-' + pIdx);
                     if ($el.length) {
                         var $parent = $el.closest('.skin-box');
-                        if ($parent.length) {
-                            $parent.append('<span class="mb-badge" data-slot="' + slot + '" style="position: absolute; top: -4px; right: -4px; background: #00E5FF; color: #000; font-weight: bold; font-size: 11px; border-radius: 50%; width: 18px; height: 18px; line-height: 18px; text-align: center; z-index: 10; pointer-events: none; box-shadow: 0 0 5px rgba(0,229,255,0.8);">' + (slot + 1) + '</span>');
+                        if (!$parent || !$parent.length) $parent = $el.parent();
+                        if ($parent && $parent.length) {
+                            $parent.css('position', 'relative');
+                            $parent.append('<span class="mb-badge mb-badge-' + (slot + 1) + '" data-slot="' + slot + '" title="Unit ' + (slot + 1) + '">' + (slot + 1) + '</span>');
                         }
                     }
                 }
