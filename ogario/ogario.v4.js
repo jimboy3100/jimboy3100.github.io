@@ -9965,7 +9965,14 @@ function thelegendmodproject() {
         },
         sendChatMessage(type, message) {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
-                var currentNick = ogarcopythelb.nick || 'Unnamed';
+                var activeNick = ogarcopythelb.nick || 'Unnamed';
+                if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
+                    var pIdx = (application.selectedProfiles && application.selectedProfiles[window.multiboxPlayerEnabled] != null) ? application.selectedProfiles[window.multiboxPlayerEnabled] : application.selectedOldProfile;
+                    if (profiles[pIdx] && profiles[pIdx].nick) {
+                        activeNick = profiles[pIdx].nick;
+                    }
+                }
+                var currentNick = activeNick;
                 /* Expanding Land + has clan tag → send via game server opcode 202 (0xCA)
                  * instead of relay socket. Server broadcasts to same-tag teammates.
                  * Format: [202][u8 type][UTF-16LE message] */
