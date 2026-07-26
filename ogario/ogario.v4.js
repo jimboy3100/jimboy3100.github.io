@@ -1,4 +1,4 @@
-window.OgVer = 3.407;
+window.OgVer = 3.435;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -16483,6 +16483,7 @@ Most cells eaten   : ${mostCellsEaten}
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
+            this.initWebGL();
             this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
                 LM.clientY = event.clientY;
@@ -16499,7 +16500,165 @@ Most cells eaten   : ${mostCellsEaten}
             this.canvas.height = this.canvasHeight * dpr;
             LM.canvasWidth = this.canvasWidth;
             LM.canvasHeight = this.canvasHeight;
-            //this.renderFrame();
+            if (this.glCanvas) {
+                this.glCanvas.width = this.canvasWidth * dpr;
+                this.glCanvas.height = this.canvasHeight * dpr;
+                this.glCanvas.style.width = this.canvasWidth + 'px';
+                this.glCanvas.style.height = this.canvasHeight + 'px';
+                if (this.gl) this.gl.viewport(0, 0, this.canvasWidth * dpr, this.canvasHeight * dpr);
+            }
+        },
+        initWebGL() {
+            try {
+                if (!this.glCanvas) {
+                    this.glCanvas = document.createElement('canvas');
+                    this.glCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:0;';
+                    if (this.canvas && this.canvas.parentNode) {
+                        this.canvas.parentNode.insertBefore(this.glCanvas, this.canvas);
+                    }
+                }
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, antialias: true, depth: false });
+                if (!gl) return;
+                this.gl = gl;
+
+                var vsSource = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_cellPos;
+                in float a_radius;
+                in vec4 a_color;
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                out vec4 v_color;
+                out vec2 v_unitPos;
+                void main() {
+                    v_color = a_color;
+                    v_unitPos = a_unitPos;
+                    vec2 worldPos = a_cellPos + a_unitPos * a_radius;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                }`;
+
+                var fsSource = `#version 300 es
+                precision highp float;
+                in vec4 v_color;
+                in vec2 v_unitPos;
+                out vec4 fragColor;
+                void main() {
+                    float distSq = dot(v_unitPos, v_unitPos);
+                    if (distSq > 1.0) discard;
+                    float alpha = smoothstep(1.0, 0.9, distSq);
+                    fragColor = vec4(v_color.rgb, v_color.a * alpha);
+                }`;
+
+                function compileShader(gl, type, source) {
+                    var shader = gl.createShader(type);
+                    gl.shaderSource(shader, source);
+                    gl.compileShader(shader);
+                    return shader;
+                }
+
+                var program = gl.createProgram();
+                gl.attachShader(program, compileShader(gl, gl.VERTEX_SHADER, vsSource));
+                gl.attachShader(program, compileShader(gl, gl.FRAGMENT_SHADER, fsSource));
+                gl.linkProgram(program);
+                this.glProgram = program;
+
+                var unitQuad = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+                var quadVBO = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                gl.bufferData(gl.ARRAY_BUFFER, unitQuad, gl.STATIC_DRAW);
+
+                this.glVAO = gl.createVertexArray();
+                gl.bindVertexArray(this.glVAO);
+
+                var a_unitPos = gl.getAttribLocation(program, 'a_unitPos');
+                gl.enableVertexAttribArray(a_unitPos);
+                gl.vertexAttribPointer(a_unitPos, 2, gl.FLOAT, false, 0, 0);
+
+                this.glInstanceVBO = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.glInstanceVBO);
+                var stride = 7 * 4;
+
+                var a_cellPos = gl.getAttribLocation(program, 'a_cellPos');
+                gl.enableVertexAttribArray(a_cellPos);
+                gl.vertexAttribPointer(a_cellPos, 2, gl.FLOAT, false, stride, 0);
+                gl.vertexAttribDivisor(a_cellPos, 1);
+
+                var a_radius = gl.getAttribLocation(program, 'a_radius');
+                gl.enableVertexAttribArray(a_radius);
+                gl.vertexAttribPointer(a_radius, 1, gl.FLOAT, false, stride, 2 * 4);
+                gl.vertexAttribDivisor(a_radius, 1);
+
+                var a_color = gl.getAttribLocation(program, 'a_color');
+                gl.enableVertexAttribArray(a_color);
+                gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, stride, 3 * 4);
+                gl.vertexAttribDivisor(a_color, 1);
+
+                gl.bindVertexArray(null);
+
+                this.glMaxInstances = 20000;
+                this.glInstanceData = new Float32Array(this.glMaxInstances * 7);
+
+                this.u_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
+                this.u_viewScale = gl.getUniformLocation(program, 'u_viewScale');
+
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            } catch (e) {
+                console.warn('[WebGL2 Instanced Renderer] Initialization failed:', e);
+                this.gl = null;
+            }
+        },
+        drawWebGLBatch(cellsArray) {
+            if (!this.gl || !cellsArray || !cellsArray.length) return false;
+            var gl = this.gl;
+            var data = this.glInstanceData;
+            var count = 0;
+            var max = this.glMaxInstances;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 200;
+            var halfH = (this.canvasHeight / viewScale / 2) + 200;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            for (var i = 0; i < cellsArray.length && count < max; i++) {
+                var cell = cellsArray[i];
+                if (!cell || cell.invisible) continue;
+                var x = cell.x, y = cell.y, r = cell.size;
+                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                var colorHex = cell.color || '#ff0000';
+                var idx = count * 7;
+                data[idx] = x;
+                data[idx + 1] = y;
+                data[idx + 2] = r;
+
+                var cInt = parseInt(colorHex.replace('#', ''), 16) || 0xff0000;
+                data[idx + 3] = ((cInt >> 16) & 255) / 255;
+                data[idx + 4] = ((cInt >> 8) & 255) / 255;
+                data[idx + 5] = (cInt & 255) / 255;
+                data[idx + 6] = cell.alpha || 1.0;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.useProgram(this.glProgram);
+            gl.uniform2f(this.u_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+
+            gl.bindVertexArray(this.glVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
         },
         setView() {
             this.setScale(LM.playerSize);
