@@ -17906,20 +17906,17 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
-                            this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                            this.drawSplitVectorGuide(this.ctx, LM.playerCells);
                         } else if (window.multiboxPlayerEnabled) {
-                            this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+                            this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
                         }
                     } else {
-                        this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                        this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+                        this.drawSplitVectorGuide(this.ctx, LM.playerCells);
+                        this.drawSplitVectorGuide(this.ctx, LM.playerCellsMulti);
                     }
 
                     this.drawMergeProgressRings(this.ctx, LM.playerCells);
                     this.drawMergeProgressRings(this.ctx, LM.playerCellsMulti);
-                }
-                if (defaultmapsettings.cursorTracking || defaultmapsettings.splitRange) {
-                    this.drawSplitVectorGuide(this.ctx, LM.playerCells);
                 }
             }
         },
