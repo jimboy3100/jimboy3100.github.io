@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.483)
+ * ogario.v4.js — LegendMod Client (OgVer 3.484)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.483;
+window.OgVer = 3.484;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -6826,43 +6826,36 @@ function thelegendmodproject() {
                 }
             }
         },
-
-        /* Push a new profile index into the n1 slot, shifting all other
-         * multibox slots down:  new→n1, old n1→n2, old n2→n3, old n3→n4 */
-        _pushProfileToN1(newIdx) {
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-            // Gather current slots: [n1, n2, n3, n4]
-            var oldN1 = this.selectedProfile;
-            var oldN2 = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((oldN1 + 1) % profiles.length);
-            var oldN3 = (this.selectedProfiles && this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((oldN1 + 2) % profiles.length);
-
-            // Assign: new→n1, old n1→n2, old n2→n3, old n3→n4
-            this.selectedProfile = newIdx;
-            this.selectedOldProfile = oldN1;
-            if (!this.selectedProfiles) this.selectedProfiles = {};
-            if (maxMb > 2) this.selectedProfiles[2] = oldN2;
-            if (maxMb > 3) this.selectedProfiles[3] = oldN3;
-
-            this.setProfile();
+        prevProfile() {
+            this.selectedOldProfile = this.selectedProfile;
+            this.setPlayerSettings();
+            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
             if (defaultmapsettings.multiBoxShadow) {
                 this.setProfileboxShadow();
             } else {
                 this.eraseProfileboxShadow();
             }
         },
-        prevProfile() {
-            this.setPlayerSettings();
-            var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
-            this._pushProfileToN1(newIdx);
-        },
         nextProfile() {
+            this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            var newIdx = (this.selectedProfile + 1) % profiles.length;
-            this._pushProfileToN1(newIdx);
+            this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
+            if (defaultmapsettings.multiBoxShadow) {
+                this.setProfileboxShadow();
+            } else {
+                this.eraseProfileboxShadow();
+            }
         },
         selectProfile(value) {
+            this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-            this._pushProfileToN1(parseInt(value));
+            this.selectedProfile = parseInt(value);
+            this.setProfile();
+            if (defaultmapsettings.multiBoxShadow) {
+                this.setProfileboxShadow();
+            } else {
+                this.eraseProfileboxShadow();
+            }
         },
         /* ─── §4.7 UI Builder ─── */
         addOption(id, name, text, checked) {
