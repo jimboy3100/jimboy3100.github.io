@@ -6784,11 +6784,12 @@ function thelegendmodproject() {
                 var $el = $('#profile-' + pIdxInt);
                 if ($el.length) {
                     $el.css({ 'position': 'relative', 'overflow': 'visible' });
-                    for (var k = 0; k < slots.length; k++) {
+                    var total = slots.length;
+                    for (var k = 0; k < total; k++) {
                         var slotNum = slots[k];
                         var badgeNum = slotNum + 1;
-                        var rightPx = 2 + (k * 20);
-                        $el.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="right: ' + rightPx + 'px !important;">' + badgeNum + '</span>');
+                        var offset = (k - (total - 1) / 2) * 24;
+                        $el.append('<span class="mb-badge mb-badge-' + badgeNum + '" data-slot="' + slotNum + '" title="Unit ' + badgeNum + '" style="top: 50% !important; left: calc(50% + ' + offset + 'px) !important; transform: translate(-50%, -50%) !important;">' + badgeNum + '</span>');
                     }
                 }
             }
@@ -6823,23 +6824,11 @@ function thelegendmodproject() {
         },
         selectProfile(value) {
             var val = parseInt(value);
-            if (typeof this.activeMbSkinSlot === 'undefined' || this.activeMbSkinSlot === null) {
-                this.activeMbSkinSlot = 0;
-            }
             if (!this.selectedProfiles) this.selectedProfiles = [];
-
-            var maxMb = (defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2;
-            var targetSlot = this.activeMbSkinSlot % maxMb;
-
-            if (targetSlot === 0) {
-                this.selectedProfile = val;
-            } else if (targetSlot === 1) {
-                this.selectedOldProfile = val;
-            } else {
-                this.selectedProfiles[targetSlot] = val;
-            }
-
-            this.activeMbSkinSlot = (targetSlot + 1) % maxMb;
+            this.selectedProfiles[3] = (this.selectedProfiles[2] != null) ? this.selectedProfiles[2] : ((val + 3) % profiles.length);
+            this.selectedProfiles[2] = (this.selectedOldProfile != null) ? this.selectedOldProfile : ((val + 2) % profiles.length);
+            this.selectedOldProfile = this.selectedProfile;
+            this.selectedProfile = val;
 
             this.setPlayerSettings();
             this.setProfile();
@@ -7597,7 +7586,7 @@ function thelegendmodproject() {
             var i = t.parent();
             if ('menu-panel' === e) {
                 if (t.hasClass('hotkeys-link')) return;
-                i.hasClass('profile-tab') && (this.activeMbSkinSlot = 0, this.setBlockPopups());
+                i.hasClass('profile-tab') && this.setBlockPopups();
             }
             t.addClass('active'),
                 i.addClass('active'),

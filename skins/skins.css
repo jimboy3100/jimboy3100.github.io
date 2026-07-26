@@ -149,8 +149,9 @@ padding: 20px;
 
 .mb-badge {
     position: absolute !important;
-    bottom: 6px !important;
-    right: 6px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
     width: 22px !important;
     height: 22px !important;
     line-height: 19px !important;
