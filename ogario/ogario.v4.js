@@ -16651,6 +16651,57 @@ Most cells eaten   : ${mostCellsEaten}
         drawWebGLViruses(virusesArray) {
             return this.drawWebGLBatch(virusesArray);
         },
+        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal) {
+            if (!this.gl || !players || !players.length) return false;
+            var gl = this.gl;
+            var data = this.glInstanceData;
+            var count = 0;
+            var max = this.glMaxInstances;
+
+            var viewScale = this.scale || 1;
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            var minX = this.camX - halfW, maxX = this.camX + halfW;
+            var minY = this.camY - halfH, maxY = this.camY + halfH;
+
+            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            var rR = ((cInt >> 16) & 255) / 255;
+            var rG = ((cInt >> 8) & 255) / 255;
+            var rB = (cInt & 255) / 255;
+            var rA = alphaVal || 0.75;
+
+            for (var i = 0; i < players.length && count < max; i++) {
+                var p = players[i];
+                if (!p) continue;
+                var x = p.x, y = p.y, r = (p.size || 10) + (scaleOffset || 0);
+                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                var idx = count * 7;
+                data[idx] = x;
+                data[idx + 1] = y;
+                data[idx + 2] = r;
+                data[idx + 3] = rR;
+                data[idx + 4] = rG;
+                data[idx + 5] = rB;
+                data[idx + 6] = rA;
+                count++;
+            }
+
+            if (count === 0) return true;
+
+            gl.useProgram(this.glProgram);
+            gl.uniform2f(this.u_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+
+            gl.bindVertexArray(this.glVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindVertexArray(null);
+
+            return true;
+        },
         drawWebGLBatch(cellsArray) {
             if (!this.gl || !cellsArray || !cellsArray.length) return false;
             var gl = this.gl;
@@ -17950,6 +18001,9 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawCircles(ctx, players, scale, width, alpha, stroke) {
             if (!players || !players.length) return;
+            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha)) {
+                return;
+            }
             ctx.lineWidth = width;
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = stroke;
