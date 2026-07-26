@@ -8832,69 +8832,8 @@ function thelegendmodproject() {
             // Secondary socket replaced by zero-width chat steganography
         },
         //Sonia6			
-        SLGconnect(srv) {
-            if (window.SLG3NumberTries < 2) {
-                if (window.SLGconnected == null) {
-                    window.SLGconnected = true; //do this only once	
-                    this.SLGconnect2(srv);
-                } else {
-                    if (window.SLGsocket) {
-                        window.SLGsocket.closeAndOpen();
-                    }
-                }
-            }
-        },
-        SLGconnect2(srv) {
-            this.closeSLGConnection();
-            //var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
-            var room = $("#server-token").val();
-            this.roomc = ogarcopythelb.clanTag;
-            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to SLG:', this.room);				
-            //window.SLGsocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=" + this.room);
-            window.SLGsocket = new WebSocket("wss://cloud.achex.ca/JIMBOY3200" + room);
-            window.SLGsocket.binaryType = 'arraybuffer';
-            app = this;
-            window.SLGsocket.onopen = function () {
-                window.SLG3NumberTries = 0;
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket open:', room);
-                //
-                window.SLGsocket.send(JSON.stringify({
-                    "auth": "JIM2" + customLMID,
-                    //"auth": "JIM2" + application.playerID,
-                    "password": "legendmod2"
-                }));
-                window.SLGsocket.send(JSON.stringify({
-                    //"joinHub": "legendmod2"
-                    "joinHub": $("#server-token").val()
-                }));
-                //					
-            }
-            window.SLGsocket.onmessage = function (e) {
-                //console.log(e)
-                application.handleSLGMessage(e);
-            }
-            window.SLGsocket.onclose = function (e) {
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket close');
-                //setTimeout(function() {
-                if (window.SLG3NumberTries < 2) {
-                    application.SLGconnect2(legendmod.ws)
-                }
-                //}, 1000)					
-            }
-            window.SLGsocket.onerror = function (e) {
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket error', e);	
-                window.SLG3NumberTries++;
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket error');
-            };
-            window.SLGsocket.closeAndOpen = function (e) {
-                window.SLGsocket.onclose = function (e) {
-                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Previous SLG socket closed async');
-                }
-                if (window.SLG3NumberTries < 2) {
-                    application.SLGconnect2(legendmod.ws)
-                }
-            };
-        },
+        SLGconnect(srv) {},
+        SLGconnect2(srv) {},
         closeConnection() {
             if (this.socket) {
                 this.socket.onmessage = null;
@@ -8902,14 +8841,6 @@ function thelegendmodproject() {
                     this.socket.close();
                 } catch (ogarcloseconlabel) { }
                 this.socket = null;
-            }
-            //Sonia4
-            if (window.SLGsocket) {
-                window.SLGsocket.onmessage = null;
-                try {
-                    window.SLGsocket.close();
-                } catch (ogarcloseconlabel) { }
-                window.SLGsocket = null;
             }
             if (window.Socket3) {
                 window.Socket3.onmessage = null;
@@ -8919,16 +8850,7 @@ function thelegendmodproject() {
                 window.Socket3 = null;
             }
         },
-        //Sonia6
-        closeSLGConnection() {
-            if (window.SLGsocket) {
-                window.SLGsocket.onmessage = null;
-                try {
-                    window.SLGsocket.close();
-                } catch (ogarcloseconlabel) { }
-                window.SLGsocket = null;
-            }
-        },
+        closeSLGConnection() {},
         reconnect() {
             this.setParty();
             var app = this;
@@ -8962,11 +8884,7 @@ function thelegendmodproject() {
         },
         //Sonia6 Below
         isSLGSocketOpen() {
-            var state = false;
-            if (window.SLGsocket) {
-                state = window.SLGsocket.readyState === window.SLGsocket.OPEN;
-            }
-            return state;
+            return false;
         },
         /* ─── §4.13 Protocol I/O ─── */
         writeUint32(data, value) {
@@ -8995,44 +8913,13 @@ function thelegendmodproject() {
             }
         },
         //Sonia4
-        sendSLG(i, t) {
-            if (this.isSLGSocketOpen()) {
-                //if (ogarcopythelb.clanTag != this.roomc) {
-                //console.log("Sending failed. Reconnecting required..")
-                //this.SLGconnect(window.legendmod.ws);
-                //if (window.SLGsocket) {
-                //window.SLGsocket.closeAndOpen();
-                //}
-                //return;
-                //}
-                var s = this.packSLG(i);
-                if (s != null) {
-                    //window.SLGsocket['send'](s + t);
-                    var temp = s + t;
-                    console.log(temp);
-                    SLGsocket.send(JSON.stringify({
-                        //"toH": "legendmod2",
-                        "toH": $("#server-token").val(),
-                        "msg": temp
-                    }));
-                }
-            }
-        },
+        sendSLG(i, t) {},
         /* ─── §4.14 Message Handling ─── */
         handleMessage(message) {
             this.readMessage(new DataView(message.data));
         },
         //Sonia4
-        handleSLGMessage(message) {
-            //this['SLGHandler'](t.data);
-            var temp = message.data;
-            //console.log(message.data);
-            temp = JSON.parse(temp);
-            //if (temp){
-            //this['SLGHandler'](temp.msg);     
-            this.SLGSimpleHandler(temp.msg);
-            //}
-        },
+        handleSLGMessage(message) {},
         readMessage(message) {
             var opcode = message.getUint8(0);
             switch (opcode) {
@@ -9789,37 +9676,7 @@ function thelegendmodproject() {
                 this.sendSLG("R", s);
             }
         },
-        sendSimpleLegendSDATA() {
-            if (ogario.play && this.playerID) {
-                //var t = this.playerID;
-                var t = window.unescape(window.encodeURIComponent(application.lastSentNick));
-                var s = window.legendmod.bgpi;
-                if (this.isSLGSocketOpen()) {
-                    if (ogarcopythelb.clanTag !== this.roomc) {
-                        console.log("Sending failed. Reconnecting required..")
-                        //this.SLGconnect(window.legendmod.ws);
-                        if (window.SLGsocket) {
-                            window.SLGsocket.closeAndOpen();
-                        }
-                        return;
-                    }
-                    if (s != null) {
-                        temp = {
-                            "t": t,
-                            "s": s
-                        }
-                        //console.log("send", temp)
-                        if (SLGsocket && SLGsocket.readyState === 1) {
-                            SLGsocket.send(JSON.stringify({
-                                //"toH": "legendmod2",
-                                "toH": $("#server-token").val(),
-                                "msg": temp
-                            }));
-                        }
-                    }
-                }
-            }
-        },
+        sendSimpleLegendSDATA() {},
         //Sonia4
         getSuperLegendSDATA(t) {
             var ids = this.getSLGID(t);
