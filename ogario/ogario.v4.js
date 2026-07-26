@@ -4868,7 +4868,7 @@ function thelegendmodproject() {
 
     var application = window.application = {
         name: 'LM express',
-        version: 'v1',
+        version: 'v1.1-WASM',
         privateMode: false,
         protocolMode: true,
         publicIP: 'wss://wss.ogario.eu:3443',
