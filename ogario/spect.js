@@ -24,6 +24,13 @@ function addSpectator() {
 }
 
 function addFullSpectator() {
+    if (Array.isArray(spects)) {
+        for (let i = 0; i < spects.length; i++) {
+            if (spects[i]) {
+                spects[i].closeConnection();
+            }
+        }
+    }
     spects = []; // Reset spectator list for clean grid alignment
     
     const mapMinX = legendmod.mapMinX || -7071;
@@ -192,6 +199,10 @@ class Spect {
     }
 
     closeConnection() {
+        if (this.positionController) {
+            clearInterval(this.positionController);
+            this.positionController = null;
+        }
         if (this.socket) {
             this.socket.onopen = null;
             this.socket.onmessage = null;
@@ -1074,9 +1085,13 @@ class Spect {
                 this.sendSpectate();
             }
             if (this.staticX != null && this.staticY != null) {
-                setInterval(() => {
-                    this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
-                }, 50);
+                if (!this.positionController) {
+                    this.positionController = setInterval(() => {
+                        if (this.staticX != null && this.staticY != null) {
+                            this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
+                        }
+                    }, 50);
+                }
                 if (!this.player) {
                     this.sendFreeSpectate()
                 }
