@@ -1,4 +1,4 @@
-window.OgVer = 3.470;
+window.OgVer = 3.471;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -12826,14 +12826,44 @@ function thelegendmodproject() {
         decompressMessage(message) {
             const buffer = window.buffer.Buffer;
             const messageBuffer = new buffer(message.buffer);
-            const readMessage = new buffer(messageBuffer.readUInt32LE(1));
+            const uncompressedSize = messageBuffer.readUInt32LE(1);
+            const readMessage = new buffer(uncompressedSize);
+
+            /* ── Wasm LZ4 fast path ── */
+            if (window.legendWasmInstance && window.legendWasmMemory) {
+                try {
+                    var compressedData = messageBuffer.slice(5);
+                    var inLen = compressedData.length;
+                    var mem = new Uint8Array(window.legendWasmMemory.buffer);
+                    /* Layout in wasm memory: [0..inLen) = compressed, [inLen..inLen+outMax) = output */
+                    var inPtr = 0;
+                    var outPtr = inLen;
+                    /* Bounds check: ensure data fits in 16MB wasm memory */
+                    if (outPtr + uncompressedSize < mem.length) {
+                        /* Copy compressed data into wasm memory */
+                        mem.set(compressedData, inPtr);
+                        /* Decompress */
+                        var written = window.legendWasmInstance.exports.wasm_lz4_decompress(
+                            inPtr, inLen, outPtr, uncompressedSize
+                        );
+                        if (written > 0) {
+                            /* Copy result back */
+                            readMessage.set(mem.subarray(outPtr, outPtr + written));
+                            if (!this._wasmLz4Logged) {
+                                this._wasmLz4Logged = true;
+                                console.log('[LegendMod] Wasm LZ4 decompress active (' + inLen + 'B → ' + written + 'B)');
+                            }
+                            return readMessage;
+                        }
+                    }
+                } catch (e) {
+                    /* Fall through to LZ4.js fallback */
+                }
+            }
+
+            /* ── LZ4.js fallback ── */
             LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
             return readMessage;
-            /*
-                var buffer = new LMbuffer(message['buffer']);
-                var readMessage = new LMbuffer(buffer.readUInt32LE(1));
-                return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
-                */
         },
         /* ── Expanding Land: Handle map resize events (opcode 200) ── */
         handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
