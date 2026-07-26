@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.484)
+ * ogario.v4.js — LegendMod Client (OgVer 3.485)
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * TABLE OF CONTENTS
@@ -102,7 +102,7 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
-window.OgVer = 3.484;
+window.OgVer = 3.485;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -5657,127 +5657,61 @@ function thelegendmodproject() {
             }
         },
         multiboxswap() {
-            this.hideMenu();
-            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
-            var neededSpects = targetBoxes - 1;
-
-            if (typeof spects === "undefined" || !spects) spects = [];
-            while (spects.length < neededSpects) {
-                addBox();
-            }
-            if (!legendmod.multiBoxPlayerExists) {
-                legendmod.multiBoxPlayerExists = true;
-            }
-
-            var switched = this.switchToNextLivingUnit(true);
-            if (!switched) {
-                if (!window.multiboxPlayerEnabled) {
-                    window.multiboxPlayerEnabled = 1;
-                } else if (window.multiboxPlayerEnabled < neededSpects) {
-                    window.multiboxPlayerEnabled++;
-                } else {
-                    window.multiboxPlayerEnabled = null;
+            this.hideMenu()
+            if (!spects.length) {
+                //if (!legendmod.multiBoxPlayerExists){
+                addBox()
+            } else if (!window.multiboxPlayerEnabledSaved) {
+                if (!legendmod.play) {
+                    play()
                 }
-            }
-            if (window.multiboxPlayerEnabled !== null && typeof spects !== "undefined") {
-                var sIdx = window.multiboxPlayerEnabled - 1;
-                if (spects[sIdx]) {
-                    if (!spects[sIdx].isSocketOpen()) {
-                        spects[sIdx].connect();
-                    } else if (!spects[sIdx].playerCellIDs || !spects[sIdx].playerCellIDs.length) {
-                        spects[sIdx].handleSendNick();
-                    }
-                }
+                window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
+                window.multiboxPlayerEnabled = null
             } else {
-                /* Returning to main player (n1) — re-register skin so it doesn't
-                 * get lost from being overwritten by multibox handleSendNick */
-                if (ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-                    core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                    if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
-                }
+                window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
+                window.multiboxPlayerEnabledSaved = null
             }
-            window.multiboxPlayerEnabledSaved = null;
+            if (spects.length && !legendmod.multiBoxPlayerExists) {
+                window.fullSpectator = false
+                LM.flushSpecsData()
+                addBox()
+            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) { //handle error
+                LM.flushSpecsData()
+                addBox()
+            }
+            /* Re-register n1 skin when returning to main player so it doesn't
+             * get lost from being overwritten by multibox handleSendNick */
+            if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+                core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
+                if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
+            }
         },
         multiboxback() {
-            this.hideMenu();
-            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
-            var neededSpects = targetBoxes - 1;
-
-            if (typeof spects === "undefined" || !spects) spects = [];
-            while (spects.length < neededSpects) {
-                addBox();
-            }
-            if (!legendmod.multiBoxPlayerExists) {
-                legendmod.multiBoxPlayerExists = true;
-            }
-
-            var switched = this.switchToPrevLivingUnit(true);
-            if (!switched) {
-                if (!window.multiboxPlayerEnabled) {
-                    window.multiboxPlayerEnabled = neededSpects;
-                } else if (window.multiboxPlayerEnabled > 1) {
-                    window.multiboxPlayerEnabled--;
-                } else {
-                    window.multiboxPlayerEnabled = null;
+            this.hideMenu()
+            if (!spects.length) {
+                addBox()
+            } else if (!window.multiboxPlayerEnabledSaved) {
+                if (!legendmod.play) {
+                    play()
                 }
-            }
-            if (window.multiboxPlayerEnabled !== null && typeof spects !== "undefined") {
-                var sIdx = window.multiboxPlayerEnabled - 1;
-                if (spects[sIdx]) {
-                    if (!spects[sIdx].isSocketOpen()) {
-                        spects[sIdx].connect();
-                    } else if (!spects[sIdx].playerCellIDs || !spects[sIdx].playerCellIDs.length) {
-                        spects[sIdx].handleSendNick();
-                    }
-                }
+                window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
+                window.multiboxPlayerEnabled = null
             } else {
-                /* Returning to main player (n1) — re-register skin */
-                if (ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-                    core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                    if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
-                }
+                window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
+                window.multiboxPlayerEnabledSaved = null
             }
-            window.multiboxPlayerEnabledSaved = null;
-        },
-        switchToNextLivingUnit(onlyLiving) {
-            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
-            var currentSlot = window.multiboxPlayerEnabled === null ? 0 : window.multiboxPlayerEnabled;
-            for (var step = 1; step <= targetBoxes; step++) {
-                var checkSlot = (currentSlot + step) % (targetBoxes + 1);
-                if (checkSlot === 0) {
-                    if (LM.playerCells && LM.playerCells.length) {
-                        window.multiboxPlayerEnabled = null;
-                        return true;
-                    }
-                } else {
-                    var sIdx = checkSlot - 1;
-                    if (typeof spects !== "undefined" && spects[sIdx] && spects[sIdx].playerCellIDs && spects[sIdx].playerCellIDs.length) {
-                        window.multiboxPlayerEnabled = checkSlot;
-                        return true;
-                    }
-                }
+            if (spects.length && !legendmod.multiBoxPlayerExists) {
+                window.fullSpectator = false
+                LM.flushSpecsData()
+                addBox()
+            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) {
+                LM.flushSpecsData()
+                addBox()
             }
-            return false;
-        },
-        switchToPrevLivingUnit(onlyLiving) {
-            var targetBoxes = defaultmapsettings.multiboxAmount || 2;
-            var currentSlot = window.multiboxPlayerEnabled === null ? 0 : window.multiboxPlayerEnabled;
-            for (var step = 1; step <= targetBoxes; step++) {
-                var checkSlot = (currentSlot - step + (targetBoxes + 1)) % (targetBoxes + 1);
-                if (checkSlot === 0) {
-                    if (LM.playerCells && LM.playerCells.length) {
-                        window.multiboxPlayerEnabled = null;
-                        return true;
-                    }
-                } else {
-                    var sIdx = checkSlot - 1;
-                    if (typeof spects !== "undefined" && spects[sIdx] && spects[sIdx].playerCellIDs && spects[sIdx].playerCellIDs.length) {
-                        window.multiboxPlayerEnabled = checkSlot;
-                        return true;
-                    }
-                }
+            if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
+                core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
+                if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
-            return false;
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
