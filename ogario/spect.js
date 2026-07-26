@@ -1352,10 +1352,9 @@ class Spect {
                     legendmod.foodMulti.push(cell); //this causes problems					
                 }
                 if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove) legendmod.cells.push(cell);
+                    if (!isFood && !remove && legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
                 } else {
-                    //if (!remove && (!invisible && isVirus)){
-                    if (!remove) {
+                    if (!remove && legendmod.cells.indexOf(cell) === -1) {
                         legendmod.cells.push(cell);
                     }
                 }

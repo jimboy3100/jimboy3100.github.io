@@ -16501,6 +16501,20 @@ Most cells eaten   : ${mostCellsEaten}
             }
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
+
+            /* Telemetry monitoring logger */
+            this._updateCellsTelemetryCount = (this._updateCellsTelemetryCount || 0) + 1;
+            if (this._updateCellsTelemetryCount % 300 === 0) {
+                console.log('[OGARIO TELEMETRY] updateCells stats:', {
+                    cellsLength: this.cells.length,
+                    indexedCount: Object.keys(this.indexedCells).length,
+                    playerCells: this.playerCells.length,
+                    mapOffsetX: this.mapOffsetX,
+                    mapOffsetY: this.mapOffsetY,
+                    camX: (typeof drawRender !== "undefined" && drawRender) ? drawRender.camX : null,
+                    camY: (typeof drawRender !== "undefined" && drawRender) ? drawRender.camY : null
+                });
+            }
         },
         updateCells(view, offset) {
 
@@ -17953,6 +17967,19 @@ Most cells eaten   : ${mostCellsEaten}
                 this.camX = LM.viewX;
                 this.camY = LM.viewY;
             }
+            /* Diagnostic cell array deduplication & monitoring */
+            if (LM.cells.length > 2500) {
+                var uniqueCellsMap = new Map();
+                for (var ci = 0; ci < LM.cells.length; ci++) {
+                    var cellItem = LM.cells[ci];
+                    if (cellItem && cellItem.id && !uniqueCellsMap.has(cellItem.id)) {
+                        uniqueCellsMap.set(cellItem.id, cellItem);
+                    }
+                }
+                LM.cells = Array.from(uniqueCellsMap.values());
+                console.warn('[DIAGNOSTIC] Pruned duplicate cells array. Active cell count:', LM.cells.length);
+            }
+
             LM.time = _now;
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
