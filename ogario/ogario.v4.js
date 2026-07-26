@@ -16713,7 +16713,11 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.translate(-this.camX, -this.camY);
 
             if (defaultmapsettings.showGrid) {
-                this.drawCustomNewGrid();
+                if (defaultmapsettings.showOptimisedGrid) {
+                    this.drawCustomNewGrid();
+                } else {
+                    this.drawGrid(this.ctx);
+                }
             }
             if (defaultmapsettings.showBgSectors) {
                 this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
