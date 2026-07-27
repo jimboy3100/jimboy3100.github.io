@@ -12021,6 +12021,13 @@ function thelegendmodproject() {
                         this._webglRendered = false;
                         /* Still need text, special skins, teammates indicator */
                         if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
+                        /* Draw 2D canvas body mask so text of smaller cells underneath is occluded */
+                        if (!this.isFood && y > 15) {
+                            style.beginPath();
+                            style.arc(this.x, this.y, y, 0, this.pi2, false);
+                            style.fillStyle = this.color;
+                            style.fill();
+                        }
                         /* Skip body+skin, jump to text/effects section */
                     } else {
 
@@ -19139,6 +19146,13 @@ Most cells eaten   : ${mostCellsEaten}
                             rCell.draw(this.ctx, true);
                         } catch (eRCell) { }
                     }
+                }
+
+                /* Ensure cells are rendered in size-ascending order (smaller cells first, larger on top) */
+                if (LM.cells && LM.cells.length > 1) {
+                    LM.cells.sort(function (a, b) {
+                        return (a && a.size ? a.size : 0) - (b && b.size ? b.size : 0);
+                    });
                 }
 
                 /* WebGL2 cell body+skin batch — draws all eligible cell bodies on GPU in 1 draw call.
