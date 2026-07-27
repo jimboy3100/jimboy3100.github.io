@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.490;
+window.OgVer = 3.491;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -12023,13 +12023,6 @@ function thelegendmodproject() {
                         this._webglRendered = false;
                         /* Still need text, special skins, teammates indicator */
                         if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
-                        /* Draw 2D canvas body mask so text of smaller cells underneath is occluded */
-                        if (!this.isFood && y > 15) {
-                            style.beginPath();
-                            style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            style.fillStyle = this.color;
-                            style.fill();
-                        }
                         /* Skip body+skin, jump to text/effects section */
                     } else {
 
@@ -18830,30 +18823,21 @@ Most cells eaten   : ${mostCellsEaten}
                 if (cell.removed) alpha *= (1 - (cell.alpha || 0));
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) alpha *= defaultSettings.cellsAlpha;
 
-                // Skin layer lookup & WebGL texture resolution
+                // Skin layer lookup
                 var skinLayer = -1.0;
-                var hasSkinNode = false;
                 if (_showSkins && (cell.targetNick || cell.skin)) {
-                    var skinNode = application.getCustomSkin(cell.targetNick, cell.color, cell.skin);
-                    if (skinNode && skinNode.src) {
-                        hasSkinNode = true;
-                        var sUrl = skinNode.src;
-                        if (this.glSkinMap[sUrl] !== undefined) {
-                            skinLayer = this.glSkinMap[sUrl];
-                        } else if (skinNode.complete && skinNode.width > 0 && skinNode.height > 0) {
-                            skinLayer = this.uploadSkinTexture(sUrl, skinNode);
-                        }
-                        if (skinLayer !== -1.0) {
-                            if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                                if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
-                            }
+                    var skinUrl = (cell.skin ? application.customSkinsMap[cell.skin] : null);
+                    if (!skinUrl && cell.targetNick) {
+                        var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
+                        skinUrl = application.customSkinsMap[mode] || application.customSkinsMap[cell.targetNick] || application.customSkinsMap[cell.targetNick + '#000000'];
+                    }
+                    if (skinUrl && this.glSkinMap[skinUrl] !== undefined) {
+                        skinLayer = this.glSkinMap[skinUrl];
+                        // Transparent skin alpha
+                        if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                            if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
                         }
                     }
-                }
-
-                // If cell has a skin but WebGL skin texture is not ready, skip WebGL batch so 2D canvas renders skin fully
-                if (hasSkinNode && skinLayer === -1.0) {
-                    continue;
                 }
 
                 var idx = count * 8;
@@ -18963,6 +18947,7 @@ Most cells eaten   : ${mostCellsEaten}
         getZoom() {
             return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
         },
+
         renderFrame() {
             /* Clear WebGL with game background color each frame */
             if (this.gl) {
