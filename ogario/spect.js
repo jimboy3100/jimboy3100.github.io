@@ -1078,55 +1078,37 @@ class Spect {
     }
 
     setMapOffset(left, top, right, bottom) {
+        var pWidth = Math.abs(right - left);
+        var pHeight = Math.abs(bottom - top);
+        var temp2 = pWidth > 14000 && pHeight > 14000;
 
-        if (!legendmod.integrity) {
-            this.mapSize = Math.abs((left - right));
-            this.mapOffset = 0
-        } else if (legendmod.integrity) {
-            this.mapSize = 14142; //14142.13562
-            this.mapOffset = this.mapSize / 2
+        if (typeof legendmod !== 'undefined' && legendmod.mapOffsetFixed && legendmod.mapOffsetX != null) {
+            this.mapSize = legendmod.mapSize || 14142;
+            this.mapOffset = legendmod.mapOffset || (this.mapSize / 2);
+            this.mapOffsetX = legendmod.mapOffsetX;
+            this.mapOffsetY = legendmod.mapOffsetY;
+            this.mapMinX = legendmod.mapMinX;
+            this.mapMinY = legendmod.mapMinY;
+            this.mapMaxX = legendmod.mapMaxX;
+            this.mapMaxY = legendmod.mapMaxY;
+        } else {
+            this.mapSize = (legendmod.integrity || temp2) ? 14142 : (pWidth || 14142);
+            this.mapOffset = this.mapSize / 2;
+            this.mapOffsetX = this.mapOffset - right;
+            this.mapOffsetY = this.mapOffset - bottom;
+            this.mapMinX = -this.mapOffset - this.mapOffsetX;
+            this.mapMinY = -this.mapOffset - this.mapOffsetY;
+            this.mapMaxX = this.mapOffset - this.mapOffsetX;
+            this.mapMaxY = this.mapOffset - this.mapOffsetY;
         }
-        if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) {
-            //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
-            if (legendmod.integrity) {
-                /*
-                this.stretchX = this.mapSize - right + left
-                this.stretchY = this.mapSize - bottom + top
-                console.log("stretch", this.stretchX, this.stretchY)
-                right += this.stretchX/2
-                left -=  this.stretchX/2
-                bottom += this.stretchY/2
-                top -=  this.stretchY/2
-                */
-                this.mapOffsetX = this.mapOffset - right;
-                this.mapOffsetY = this.mapOffset - bottom;
-                this.mapMinX = -this.mapOffset - this.mapOffsetX;
-                this.mapMinY = -this.mapOffset - this.mapOffsetY;
-                this.mapMaxX = this.mapOffset - this.mapOffsetX;
-                this.mapMaxY = this.mapOffset - this.mapOffsetY;
-            } else {
-                this.mapOffsetX = this.mapSize / 2
-                this.mapOffsetY = this.mapSize / 2
-                this.mapMinX = left
-                this.mapMinY = top
-                this.mapMaxX = right
-                this.mapMaxY = bottom
-            }
-
-            /*
-            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-            */
-            if (!this.mapOffsetFixed) {
-                this.viewX = (right + left) / 2;
-                this.viewY = (bottom + top) / 2;
-            }
-            this.mapOffsetFixed = true;
-            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-
-
+        if (!this.mapOffsetFixed) {
+            this.viewX = (right + left) / 2;
+            this.viewY = (bottom + top) / 2;
         }
+        this.mapOffsetFixed = true;
+        console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+    }
         if (!legendmod.integrity) {
             if (this.player) {
                 this.handleSendNick()
