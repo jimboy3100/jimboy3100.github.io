@@ -6781,24 +6781,8 @@ function thelegendmodproject() {
                 ).appendTo('head');
             }
 
-            // Remove all existing badges
+            // Badges hidden per user request
             $('.mb-badge').remove();
-
-            // Render one badge per slot
-            for (var slot = 0; slot < this.mbSlots.length; slot++) {
-                var pIdx = this.mbSlots[slot];
-                if (pIdx >= 0 && pIdx < profiles.length) {
-                    var $anchor = $('#profile-' + pIdx);
-                    if ($anchor.length) {
-                        var $box = $anchor.closest('.skin-box');
-                        if (!$box.length) $box = $anchor;
-                        $box.css({ 'position': 'relative', 'overflow': 'visible' });
-                        $anchor.css({ 'overflow': 'visible' });
-                        var badgeNum = slot + 1;
-                        $box.append('<span class="mb-badge mb-badge-' + badgeNum + '" title="Multibox ' + badgeNum + '" style="top: -2px !important; right: -2px !important; position: absolute !important;">' + badgeNum + '</span>');
-                    }
-                }
-            }
         },
         prevProfile() {
             var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
@@ -7084,7 +7068,7 @@ function thelegendmodproject() {
 
             this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
-            this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
+            // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
             $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>");
