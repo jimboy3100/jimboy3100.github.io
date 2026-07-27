@@ -973,17 +973,16 @@ class Spect {
     }
 
     constantrecalculation3(x, y, z) {
-        //this.fix3x = legendmod.playerCells[0].x - cell.x
-        //this.fix3y = legendmod.playerCells[0].y - cell.y
-        this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
-        this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
-        if (z) {
-            //this.moveExistedCells();
-            //if (this.player){
-            console.log('[SPECT] Found user cell, Offset fixed', x, y, legendmod.playerCells[0].x, legendmod.playerCells[0].y)
-            toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," + Math.round(this.fix3y) + ") px");
+        if (!legendmod.playerCells || !legendmod.playerCells[0]) return;
+        var diffX = legendmod.playerCells[0].x - x;
+        var diffY = legendmod.playerCells[0].y - y;
+        if (Math.abs(diffX) > 0.001 || Math.abs(diffY) > 0.001) {
+            this.fix3x += diffX * (this.fixX || 1);
+            this.fix3y += diffY * (this.fixY || 1);
+            if (z) {
+                console.log('[SPECT] Map offset calibrated (diffX, diffY):', diffX, diffY, 'New fix3:', this.fix3x, this.fix3y);
+            }
         }
-        //}
     }
 
     /*
@@ -1454,14 +1453,10 @@ class Spect {
                 cell.targetNick = this.nick
                 cell.isPlayerCellMulti = true
             }
-            //if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
             if (!cell.isPlayerCell && (cell.targetNick === profiles[application.selectedOldProfile].nick || cell.targetNick === profiles[application.selectedProfile].nick) && cell.targetNick !== "" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size === ~~cell.size) {
-                this.openFourth = true
                 if (!this.openFourth) {
-                    this.constantrecalculation3(cell.x, cell.y, true)
-                } else {
-                    //this.constantrecalculation3(cell.x, cell.y, false)
-                    //console.log(this.fix3x,this.fix3y)
+                    this.openFourth = true;
+                    this.constantrecalculation3(cell.x, cell.y, true);
                 }
             }
             cell.targetX = x;
