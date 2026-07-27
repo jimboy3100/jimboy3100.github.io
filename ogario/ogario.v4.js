@@ -7898,6 +7898,7 @@ function thelegendmodproject() {
         },
         onPlayerSpawn() {
             ogario.play = true;
+            window.mainPlayerDeadMbActive = false; // Re-enable main client cell updates
             if (ogario.playerColor) {
                 this.sendPlayerSpawn();
                 /* If ownVanillaSkin is ON and player has no custom skin,
@@ -7971,6 +7972,18 @@ function thelegendmodproject() {
                     if (spects[_i] && spects[_i].active) {
                         window.multiboxPlayerEnabled = _i + 1;
                         console.log('[MB] Main player died, auto-switched to spect ' + (_i + 1));
+
+                        // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
+                        legendmod.playerCells = [];
+                        legendmod.cells = legendmod.cells.filter(function(c) { return c.spectator && c.spectator > 0; });
+                        for (var _cid in legendmod.indexedCells) {
+                            if (!legendmod.indexedCells[_cid].spectator || legendmod.indexedCells[_cid].spectator === 0) {
+                                delete legendmod.indexedCells[_cid];
+                            }
+                        }
+                        // Flag to suppress main client adding spectator cells
+                        window.mainPlayerDeadMbActive = true;
+
                         return; // don't show menu or autoResp
                     }
                 }
@@ -14942,6 +14955,8 @@ function thelegendmodproject() {
 
 
                 case 16: //2020 jimboy3100 specific private servers
+                    // Skip main client's cell updates when dead and multibox spect is active
+                    if (window.mainPlayerDeadMbActive) break;
                     // Garix: use dedicated parser for protocol 6-10 format
                     if (this.serverType === 'garix') {
                         this.garixUpdateCells(data, s);
