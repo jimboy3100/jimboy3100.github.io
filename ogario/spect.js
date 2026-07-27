@@ -988,34 +988,47 @@ class Spect {
     }
 
     calibrateWithFood(spectCell, isFood) {
-        if (this.foodCalibrated || !isFood || !legendmod.indexedCells) return;
+        if (this.foodCalibrated || !legendmod) return;
         var rawID = spectCell.id % 1000000000;
-        var mainCell = legendmod.indexedCells[rawID];
-        if (mainCell && (mainCell.isFood || mainCell.size < 21)) {
+        var mainCell = (legendmod.indexedCells && legendmod.indexedCells[rawID]) ? legendmod.indexedCells[rawID] : null;
+        if (!mainCell && legendmod.food) {
+            for (var f = 0; f < legendmod.food.length; f++) {
+                if (legendmod.food[f] && legendmod.food[f].id === rawID) {
+                    mainCell = legendmod.food[f];
+                    break;
+                }
+            }
+        }
+        if (mainCell && (mainCell.isFood || mainCell.size < 21 || isFood || spectCell.size < 21)) {
             var unFixedX = spectCell.x - this.fix3x;
             var unFixedY = spectCell.y - this.fix3y;
             var dX = mainCell.x - unFixedX;
             var dY = mainCell.y - unFixedY;
-            this.foodSamples.push({ x: dX, y: dY });
 
-            if (this.foodSamples.length >= 4) {
-                var sumX = 0, sumY = 0;
-                for (var i = 0; i < 4; i++) {
-                    sumX += this.foodSamples[i].x;
-                    sumY += this.foodSamples[i].y;
-                }
-                var avgX = sumX / 4;
-                var avgY = sumY / 4;
-                var adjX = avgX - this.fix3x;
-                var adjY = avgY - this.fix3y;
+            if (!this.foodSampleIDs) this.foodSampleIDs = {};
+            if (!this.foodSampleIDs[rawID]) {
+                this.foodSampleIDs[rawID] = true;
+                this.foodSamples.push({ x: dX, y: dY });
 
-                this.fix3x = avgX;
-                this.fix3y = avgY;
-                this.foodCalibrated = true;
-                if (Math.abs(adjX) > 0.001 || Math.abs(adjY) > 0.001) {
-                    this.moveExistedCells(adjX, adjY);
+                if (this.foodSamples.length >= 4) {
+                    var sumX = 0, sumY = 0;
+                    for (var i = 0; i < 4; i++) {
+                        sumX += this.foodSamples[i].x;
+                        sumY += this.foodSamples[i].y;
+                    }
+                    var avgX = sumX / 4;
+                    var avgY = sumY / 4;
+                    var adjX = avgX - this.fix3x;
+                    var adjY = avgY - this.fix3y;
+
+                    this.fix3x = avgX;
+                    this.fix3y = avgY;
+                    this.foodCalibrated = true;
+                    if (Math.abs(adjX) > 0.001 || Math.abs(adjY) > 0.001) {
+                        this.moveExistedCells(adjX, adjY);
+                    }
+                    console.log('[SPECT] Intelligent 4-Food Offset Calibrated (fix3x, fix3y):', avgX.toFixed(3), avgY.toFixed(3));
                 }
-                console.log('[SPECT] Intelligent 4-Food Offset Calibrated (fix3x, fix3y):', avgX.toFixed(3), avgY.toFixed(3));
             }
         }
     }
@@ -1486,7 +1499,7 @@ class Spect {
             cell.invisible = invisible;
 
             // Intelligent 4-Food Map Offset Calibration
-            if (isFood && !this.foodCalibrated) {
+            if ((isFood || size < 21) && !this.foodCalibrated) {
                 this.calibrateWithFood(cell, isFood);
             }
 
