@@ -7940,8 +7940,20 @@ function thelegendmodproject() {
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
             this.unlockButtons();
             resetonkeydown();
-            this.autoResp();
 
+            // Auto-switch to surviving multibox spect if any
+            if (typeof spects !== 'undefined' && spects && spects.length > 0) {
+                for (var _i = 0; _i < spects.length; _i++) {
+                    if (spects[_i] && spects[_i].active) {
+                        window.multiboxPlayerEnabled = _i + 1;
+                        console.log('[MB] Main player died, auto-switched to spect ' + (_i + 1));
+                        return; // don't show menu or autoResp
+                    }
+                }
+            }
+
+            // No surviving spects — solo death handling
+            this.autoResp();
         },
         findOwnedVanillaSkin() {
             let player;
