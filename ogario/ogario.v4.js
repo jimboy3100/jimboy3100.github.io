@@ -5656,7 +5656,7 @@ function thelegendmodproject() {
                 $('#pause-hud').hide();
             }
         },
-        multiboxswap() {
+        multiboxchange() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
@@ -5671,25 +5671,29 @@ function thelegendmodproject() {
                 return;
             }
 
-            var numBoxes = spects.length;
-            if (!window.multiboxPlayerEnabled) {
-                window.multiboxPlayerEnabled = 1;
+            var totalUnits = 1 + spects.length;
+            var currentIdx = (!window.multiboxPlayerEnabled) ? 0 : window.multiboxPlayerEnabled;
+            var nextIdx = (currentIdx + 1) % totalUnits;
+
+            if (nextIdx === 0) {
+                window.multiboxPlayerEnabled = null;
                 if (!legendmod.play) {
                     play();
                 }
-            } else if (window.multiboxPlayerEnabled < numBoxes) {
-                window.multiboxPlayerEnabled++;
             } else {
-                window.multiboxPlayerEnabled = null;
-            }
-            window.multiboxPlayerEnabledSaved = null;
-            if (window.multiboxPlayerEnabled) {
-                var spectIdx = window.multiboxPlayerEnabled - 1;
-                if (spects[spectIdx] && !spects[spectIdx].active) {
-                    spects[spectIdx].respawn();
+                window.multiboxPlayerEnabled = nextIdx;
+                var spectIdx = nextIdx - 1;
+                if (spects[spectIdx]) {
+                    if (!spects[spectIdx].active) {
+                        spects[spectIdx].respawn();
+                    }
+                    var pSlot = (application.mbSlots && spectIdx < application.mbSlots.length) ? application.mbSlots[spectIdx] : application.selectedOldProfile;
+                    if (profiles[pSlot] && profiles[pSlot].skinURL) {
+                        this.cacheCustomSkin(profiles[pSlot].nick, profiles[pSlot].color || '#000000', profiles[pSlot].skinURL);
+                    }
                 }
             }
-            /* Re-register n1 skin when returning to main player */
+            window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
@@ -5710,24 +5714,29 @@ function thelegendmodproject() {
                 return;
             }
 
-            var numBoxes = spects.length;
-            if (!window.multiboxPlayerEnabled) {
-                window.multiboxPlayerEnabled = numBoxes;
+            var totalUnits = 1 + spects.length;
+            var currentIdx = (!window.multiboxPlayerEnabled) ? 0 : window.multiboxPlayerEnabled;
+            var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
+
+            if (prevIdx === 0) {
+                window.multiboxPlayerEnabled = null;
                 if (!legendmod.play) {
                     play();
                 }
-            } else if (window.multiboxPlayerEnabled > 1) {
-                window.multiboxPlayerEnabled--;
             } else {
-                window.multiboxPlayerEnabled = null;
-            }
-            window.multiboxPlayerEnabledSaved = null;
-            if (window.multiboxPlayerEnabled) {
-                var spectIdx2 = window.multiboxPlayerEnabled - 1;
-                if (spects[spectIdx2] && !spects[spectIdx2].active) {
-                    spects[spectIdx2].respawn();
+                window.multiboxPlayerEnabled = prevIdx;
+                var spectIdx2 = prevIdx - 1;
+                if (spects[spectIdx2]) {
+                    if (!spects[spectIdx2].active) {
+                        spects[spectIdx2].respawn();
+                    }
+                    var pSlot2 = (application.mbSlots && spectIdx2 < application.mbSlots.length) ? application.mbSlots[spectIdx2] : application.selectedOldProfile;
+                    if (profiles[pSlot2] && profiles[pSlot2].skinURL) {
+                        this.cacheCustomSkin(profiles[pSlot2].nick, profiles[pSlot2].color || '#000000', profiles[pSlot2].skinURL);
+                    }
                 }
             }
+            window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
