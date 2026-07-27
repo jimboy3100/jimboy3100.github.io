@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.488;
+window.OgVer = 3.489;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -8161,7 +8161,9 @@ function thelegendmodproject() {
                 } else {
                     img[url] = new Image();
                 }
-                img[url].crossOrigin = 'anonymous';
+                if (!url.includes('imgur.com')) {
+                    img[url].crossOrigin = 'anonymous';
+                }
                 img[url].onload = function () {
                     processOnLoad(this);
                     if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0) {
