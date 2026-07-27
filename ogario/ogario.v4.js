@@ -18952,10 +18952,6 @@ Most cells eaten   : ${mostCellsEaten}
         getZoom() {
             return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
         },
-        //Sonia5
-        sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        },
         renderFrame() {
             /* Clear WebGL with game background color each frame */
             if (this.gl) {
