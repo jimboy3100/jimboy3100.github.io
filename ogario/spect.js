@@ -1297,9 +1297,7 @@ class Spect {
                 console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
             }*/
             let remove = false;
-            //!this.player
-            //if (!this.player){
-            if (this.ghostFixed || !legendmod.integrity) {
+            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
                 const a = x - legendmod.playerX;
                 const b = y - legendmod.playerY;
                 const distanceX = Math.round(Math.sqrt(a * a));
@@ -1390,37 +1388,10 @@ class Spect {
                     }
                 }
             }
-            //if (this.player && isVirus && !isFood && !invisible){
-            if (this.player && this.active) {
-                // Is this one of OUR player cells or the main player's cells? Never hide those.
-                var isOwnCell = (this.playerCellIDs.indexOf(id) !== -1);
-                // Also check if this cell belongs to the main player or another multibox unit
-                // Use current name OR previously stored targetNick (server only sends name once)
-                var cellNick = name;
-                if (!cellNick && legendmod.indexedCells[id]) {
-                    cellNick = legendmod.indexedCells[id].targetNick;
-                }
-                if (!isOwnCell && cellNick) {
-                    var mainNick = profiles[application.selectedProfile] ? profiles[application.selectedProfile].nick : '';
-                    if (cellNick === mainNick) isOwnCell = true;
-                    // Check all mbSlots profiles
-                    if (!isOwnCell && application.mbSlots) {
-                        for (var _s = 0; _s < application.mbSlots.length; _s++) {
-                            var _p = profiles[application.mbSlots[_s]];
-                            if (_p && cellNick === _p.nick) { isOwnCell = true; break; }
-                        }
-                    }
-                }
-                if (!isOwnCell) {
-                    // Hide regular cells already visible in main camera to prevent doubles
-                    if (!isVirus && !isFood) {
-                        if (this.isInViewCustom(x, y, size)) invisible = true;
-                    }
-                    if (isFood) remove = this.isInViewCustom(x, y, size);
-                    if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
-                }
-            } else if (this.player && !this.active) {
-                invisible = true;
+            if (this.player) {
+                // When in multibox mode, never hide or remove any cells received by spect
+                invisible = false;
+                remove = false;
             }
 
             if (isFood && !defaultmapsettings.rainbowFood) {
@@ -1502,8 +1473,8 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
-            // Player cells (own multibox cells) must NEVER be hidden
-            if (cell.isPlayerCell || cell.isPlayerCellMulti) {
+            // In multibox mode or for player cells, cells must NEVER be hidden
+            if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {
                 cell.invisible = false;
             }
             if (skin) {
