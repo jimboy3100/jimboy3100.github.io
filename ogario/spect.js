@@ -1373,14 +1373,19 @@ class Spect {
                 }
             }
             //if (this.player && isVirus && !isFood && !invisible){
-            if (this.player && (isVirus || isFood)) {
-                if (isFood) remove = this.isInViewCustom(x, y, size)
-                if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
-
-
-                if (!this.active) {
-                    invisible = true
+            if (this.player && this.active) {
+                // Is this one of OUR player cells? If so, never hide it.
+                var isOwnCell = (this.playerCellIDs.indexOf(id) !== -1);
+                if (!isOwnCell) {
+                    // Hide regular cells already visible in main camera to prevent doubles
+                    if (!isVirus && !isFood) {
+                        if (this.isInViewCustom(x, y, size)) invisible = true;
+                    }
+                    if (isFood) remove = this.isInViewCustom(x, y, size);
+                    if (isVirus) invisible = (this.isInViewCustom(x, y, size) && !this.isInViewCustom3(x, y, size));
                 }
+            } else if (this.player && !this.active) {
+                invisible = true;
             }
 
             if (isFood && !defaultmapsettings.rainbowFood) {
@@ -1462,6 +1467,10 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
+            // Player cells (own multibox cells) must NEVER be hidden
+            if (cell.isPlayerCell || cell.isPlayerCellMulti) {
+                cell.invisible = false;
+            }
             if (skin) {
                 cell.skin = skin;
             }
