@@ -7925,6 +7925,30 @@ function thelegendmodproject() {
             }
             */
             LegendModSpawn();
+
+            // Force re-register skins for main player and all multibox profiles on spawn
+            var app = this;
+            setTimeout(function() {
+                // Main player skin
+                if (ogarcopythelb.nick && ogarcopythelb.skinURL) {
+                    app.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor || '#000000', ogarcopythelb.skinURL);
+                    if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
+                        core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
+                    }
+                }
+                // All mbSlots profile skins
+                if (app.mbSlots) {
+                    for (var _ms = 0; _ms < app.mbSlots.length; _ms++) {
+                        var _prof = profiles[app.mbSlots[_ms]];
+                        if (_prof && _prof.nick && _prof.skinURL) {
+                            app.cacheCustomSkin(_prof.nick, _prof.color || '#000000', _prof.skinURL);
+                            if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
+                                core.registerSkin(_prof.nick, null, _prof.skinURL, null);
+                            }
+                        }
+                    }
+                }
+            }, 200);
         },
         onPlayerDeath() {
             //
