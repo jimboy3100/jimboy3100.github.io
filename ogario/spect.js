@@ -112,6 +112,8 @@ class Spect {
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
+        this.foodCalibrated = false
+        this.foodSamples = []
         this.playerSize = 0
         this.connect()
     }
@@ -1001,6 +1003,39 @@ class Spect {
         }
     }
 
+    calibrateWithFood(spectCell, isFood) {
+        if (this.foodCalibrated || !isFood || !legendmod.indexedCells) return;
+        var rawID = spectCell.id % 1000000000;
+        var mainCell = legendmod.indexedCells[rawID];
+        if (mainCell && (mainCell.isFood || mainCell.size < 21)) {
+            var unFixedX = spectCell.x - this.fix3x;
+            var unFixedY = spectCell.y - this.fix3y;
+            var dX = mainCell.x - unFixedX;
+            var dY = mainCell.y - unFixedY;
+            this.foodSamples.push({ x: dX, y: dY });
+
+            if (this.foodSamples.length >= 4) {
+                var sumX = 0, sumY = 0;
+                for (var i = 0; i < 4; i++) {
+                    sumX += this.foodSamples[i].x;
+                    sumY += this.foodSamples[i].y;
+                }
+                var avgX = sumX / 4;
+                var avgY = sumY / 4;
+                var adjX = avgX - this.fix3x;
+                var adjY = avgY - this.fix3y;
+
+                this.fix3x = avgX;
+                this.fix3y = avgY;
+                this.foodCalibrated = true;
+                if (Math.abs(adjX) > 0.001 || Math.abs(adjY) > 0.001) {
+                    this.moveExistedCells(adjX, adjY);
+                }
+                console.log('[SPECT] Intelligent 4-Food Offset Calibrated (fix3x, fix3y):', avgX.toFixed(3), avgY.toFixed(3));
+            }
+        }
+    }
+
     moveExistedCells(deltaX, deltaY) {
         if (!deltaX && !deltaY) return;
         legendmod.cells.forEach((found) => {
@@ -1457,6 +1492,12 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
+
+            // Intelligent 4-Food Map Offset Calibration
+            if (isFood && !this.foodCalibrated) {
+                this.calibrateWithFood(cell, isFood);
+            }
+
             // In multibox mode or for player cells, cells must NEVER be hidden
             if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {
                 cell.invisible = false;
