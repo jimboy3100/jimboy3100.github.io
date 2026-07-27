@@ -7901,30 +7901,16 @@ function thelegendmodproject() {
             window.mainPlayerDeadMbActive = false; // Re-enable main client cell updates
             if (ogario.playerColor) {
                 this.sendPlayerSpawn();
-                /* If ownVanillaSkin is ON and player has no custom skin,
-                 * skip cacheCustomSkin to preserve the vanilla skin that
-                 * opcode 102 already put in customSkinsMap[nick]. */
                 if (!(defaultmapsettings.ownVanillaSkin && (!ogarcopythelb.skinURL || ogarcopythelb.skinURL === ''))) {
                     this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 }
+            } else {
+                const app = this;
+                setTimeout(() => {
+                    app.onPlayerSpawn();
+                }, 100);
                 return;
             }
-            const app = this;
-            setTimeout(() => {
-                app.onPlayerSpawn();
-            }, 100);
-            /* Spawn special effects disabled — causes visual glitches
-            if (defaultmapsettings.spawnSpecialEffects) {
-                var _gm = (typeof application !== "undefined" && application && application.gameMode) || '';
-                if (_gm === ":party" || (window.legendmod && (window.legendmod.ws && (window.legendmod.ws.includes("expanding.land") || window.legendmod.ws.includes("legendmod.ml"))))) {
-                    setTimeout(function () {
-                        ogario.spawnX = ogario.playerX;
-                        ogario.spawnY = ogario.playerY;
-                        LM.drawCommander = true;
-                    }, 110);
-                }
-            }
-            */
             LegendModSpawn();
 
             // Force re-register skins for main player and all multibox profiles on spawn

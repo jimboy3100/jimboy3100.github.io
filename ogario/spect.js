@@ -686,7 +686,11 @@ class Spect {
                     let isFBFriend = false;
                     position++;
                     if (flags && 2) {
-                        nick = window.decodeURIComponent(window.escape(encode()));
+                        try {
+                            nick = window.decodeURIComponent(window.escape(encode()));
+                        } catch (e) {
+                            nick = '';
+                        }
                     }
                     if (flags && 4) {
                         id = view.getUint32(offset, true);
