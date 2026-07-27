@@ -981,28 +981,6 @@ class Spect {
         return ((res + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y);
     }
 
-    constantrecalculation2() {
-        //snez
-        const mapX = legendmod.mapMaxX - legendmod.mapMinX;
-        const mapY = legendmod.mapMaxY - legendmod.mapMinY;
-        this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
-        this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
-    }
-
-    constantrecalculation3(x, y, z) {
-        if (!legendmod.playerCells || !legendmod.playerCells[0]) return;
-        var diffX = legendmod.playerCells[0].x - x;
-        var diffY = legendmod.playerCells[0].y - y;
-        if (Math.abs(diffX) > 0.001 || Math.abs(diffY) > 0.001) {
-            this.fix3x += diffX;
-            this.fix3y += diffY;
-            this.moveExistedCells(diffX, diffY);
-            if (z) {
-                console.log('[SPECT] Map offset calibrated (diffX, diffY):', diffX, diffY, 'New fix3:', this.fix3x, this.fix3y);
-            }
-        }
-    }
-
     calibrateWithFood(spectCell, isFood) {
         if (this.foodCalibrated || !isFood || !legendmod.indexedCells) return;
         var rawID = spectCell.id % 1000000000;
@@ -1479,12 +1457,6 @@ class Spect {
                 cell.targetNick = this.nick
                 cell.isPlayerCellMulti = true
             }
-            if (!cell.isPlayerCell && (cell.targetNick === profiles[application.selectedOldProfile].nick || cell.targetNick === profiles[application.selectedProfile].nick) && cell.targetNick !== "" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size === ~~cell.size) {
-                if (!this.openFourth) {
-                    this.openFourth = true;
-                    this.constantrecalculation3(cell.x, cell.y, true);
-                }
-            }
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
@@ -1567,16 +1539,14 @@ class Spect {
         }
         window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
         if (defaultmapsettings.middleMultiView && legendmod.play) {
-            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
+            legendmod.viewX = (legendmod.viewXTrue + x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + y) / 2;
         } else if (window.middleMultiViewFlag) {
-            legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
-            legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;
+            legendmod.viewX = (legendmod.viewXTrue + x) / 2;
+            legendmod.viewY = (legendmod.viewYTrue + y) / 2;
         } else if (window.multiboxPlayerEnabled) {
-            //legendmod.viewX = x;
-            //legendmod.viewY = y;
-            legendmod.viewX = x + this.fix3x;
-            legendmod.viewY = y + this.fix3y;
+            legendmod.viewX = x;
+            legendmod.viewY = y;
         }
         this.playerX = x;
         this.playerY = y;
@@ -1591,7 +1561,6 @@ class Spect {
         this.playerMass = ~~(targetSize / 100);
         this.recalculatePlayerMass();
 
-        this.constantrecalculation2()
         if (this.timerDifference > 10) {
             setTimeout(function () {
                 this.timerDifference = this.timerDifference - 10
