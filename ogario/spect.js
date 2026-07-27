@@ -1374,8 +1374,20 @@ class Spect {
             }
             //if (this.player && isVirus && !isFood && !invisible){
             if (this.player && this.active) {
-                // Is this one of OUR player cells? If so, never hide it.
+                // Is this one of OUR player cells or the main player's cells? Never hide those.
                 var isOwnCell = (this.playerCellIDs.indexOf(id) !== -1);
+                // Also check if this cell belongs to the main player or another multibox unit
+                if (!isOwnCell && name !== '') {
+                    var mainNick = profiles[application.selectedProfile] ? profiles[application.selectedProfile].nick : '';
+                    if (name === mainNick) isOwnCell = true;
+                    // Check all mbSlots profiles
+                    if (!isOwnCell && application.mbSlots) {
+                        for (var _s = 0; _s < application.mbSlots.length; _s++) {
+                            var _p = profiles[application.mbSlots[_s]];
+                            if (_p && name === _p.nick) { isOwnCell = true; break; }
+                        }
+                    }
+                }
                 if (!isOwnCell) {
                     // Hide regular cells already visible in main camera to prevent doubles
                     if (!isVirus && !isFood) {
