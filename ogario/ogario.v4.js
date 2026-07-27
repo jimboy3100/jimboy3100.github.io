@@ -11167,6 +11167,28 @@ function thelegendmodproject() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function () {
+            // Snap duplicate spectator cells to the primary socket's cell position for 100% pixel-perfect overlap
+            if (this.spectator && this.spectator > 0) {
+                var rawID = this.id % 1000000000;
+                var master = LM.indexedCells[rawID];
+                if (!master) {
+                    for (var sNum = 1; sNum < this.spectator; sNum++) {
+                        var candidate = LM.indexedCells[rawID + sNum * 1000000000];
+                        if (candidate) { master = candidate; break; }
+                    }
+                }
+                if (master && master !== this) {
+                    this.x = master.x;
+                    this.y = master.y;
+                    this.size = master.size;
+                    this.targetX = master.targetX;
+                    this.targetY = master.targetY;
+                    this.targetSize = master.targetSize;
+                    this.alpha = master.alpha;
+                    return;
+                }
+            }
+
             var anim = defaultmapsettings.animation || 120;
             var time = LM.time - (this.updateTime || this.time);
             var delay = time / anim;
