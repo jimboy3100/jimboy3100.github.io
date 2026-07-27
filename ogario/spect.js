@@ -1,14 +1,16 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
 function loadMultiCellSkin(spect) {
-    // Determine profile from mbSlots based on spect unit number
     var profileIdx = (application.mbSlots && spect && spect.number < application.mbSlots.length)
         ? application.mbSlots[spect.number] : application.selectedOldProfile;
     var prof = profiles[profileIdx];
-    if (prof && prof.nick && !application.customSkinsMap[prof.nick]) {
-        setTimeout(function () {
+    if (prof && prof.nick && prof.skinURL) {
+        if (typeof application !== 'undefined' && application.cacheCustomSkin) {
+            application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
+        }
+        if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
             core.registerSkin(prof.nick, null, prof.skinURL, null);
-        }, 500);
+        }
     }
 }
 

@@ -18644,6 +18644,18 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < cellsArray.length && count < max; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
+                // Skip rendering duplicate spectator cell if primary socket is already drawing it
+                if (cell.spectator && cell.spectator > 0 && !cell.isPlayerCell && !cell.isPlayerCellMulti) {
+                    var rawID = cell.id % 1000000000;
+                    var master = LM.indexedCells[rawID];
+                    if (!master) {
+                        for (var sNum = 1; sNum < cell.spectator; sNum++) {
+                            var candidate = LM.indexedCells[rawID + sNum * 1000000000];
+                            if (candidate && !candidate.removed) { master = candidate; break; }
+                        }
+                    }
+                    if (master && master !== cell && !master.removed) continue;
+                }
                 if (LM.hideSmallBots && cell.size <= 36) continue;
                 if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
                 if (cell.removed) continue; // removed cells need Canvas2D alpha fade
@@ -19017,6 +19029,18 @@ Most cells eaten   : ${mostCellsEaten}
                 for (i = 0; i < LM.cells.length; i++) {
                     var cell = LM.cells[i];
                     if (!cell || cell.removed) continue;
+                    // Skip rendering duplicate spectator cell if primary socket is already drawing it
+                    if (cell.spectator && cell.spectator > 0 && !cell.isPlayerCell && !cell.isPlayerCellMulti) {
+                        var rawID = cell.id % 1000000000;
+                        var master = LM.indexedCells[rawID];
+                        if (!master) {
+                            for (var sNum = 1; sNum < cell.spectator; sNum++) {
+                                var candidate = LM.indexedCells[rawID + sNum * 1000000000];
+                                if (candidate && !candidate.removed) { master = candidate; break; }
+                            }
+                        }
+                        if (master && master !== cell && !master.removed) continue;
+                    }
                     if (_cW !== i) LM.cells[_cW] = cell;
                     _cW++;
 
