@@ -935,33 +935,38 @@ class Spect {
 
     getX(x) {
         if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
-            return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
-
-            /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
-            else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-            else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
-            //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time
-            //return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
+            var res = ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x);
+            if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
+                res = legendmod.mapMaxX - (res - legendmod.mapMinX);
+            }
+            return res;
         }
     }
 
     getY(y) {
         if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
-            return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
-
-            /*if (!window.multifixOffset)
-            else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
-            else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
-            //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
+            var res = ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y);
+            if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
+                res = legendmod.mapMaxY - (res - legendmod.mapMinY);
+            }
+            return res;
         }
     }
 
     convertX(x) { //is used only for SendPosition
-        return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
+        var res = x;
+        if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
+            res = legendmod.mapMaxX - (res - legendmod.mapMinX);
+        }
+        return ((res + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x);
     }
 
     convertY(y) {
-        return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
+        var res = y;
+        if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
+            res = legendmod.mapMaxY - (res - legendmod.mapMinY);
+        }
+        return ((res + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y);
     }
 
     constantrecalculation2() {
