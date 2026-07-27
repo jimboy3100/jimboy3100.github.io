@@ -8522,7 +8522,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.clearRect(0, 0, t, s);
                 } else {
                     this.miniMap = document.getElementById("minimap");
-                    this.miniMapCtx = this.miniMap.getContext("2d", { desynchronized: true });
+                    this.miniMapCtx = this.miniMap.getContext("2d");
                     this.miniMapCtx.ogarioCtx = true;
                     this.miniMap.width = t;
                     this.miniMap.height = s;
@@ -8707,7 +8707,7 @@ function thelegendmodproject() {
         drawMiniMapSectors(x, y, size, height, scale) {
             this.miniMapSectors = document.getElementById('minimap-sectors');
             if (!this.miniMapSectors) return;
-            const ctx = this.miniMapSectors.getContext('2d', { desynchronized: true });
+            const ctx = this.miniMapSectors.getContext('2d');
             ctx.ogarioCtx = true;
             this.miniMapSectors.width = size;
             this.miniMapSectors.height = height;
@@ -17493,7 +17493,7 @@ Most cells eaten   : ${mostCellsEaten}
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             if (!this.canvas) return;
-            this.ctx = this.canvas.getContext('2d', { desynchronized: true });
+            this.ctx = this.canvas.getContext('2d');
             this.initWebGL();
             this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
@@ -17614,7 +17614,7 @@ Most cells eaten   : ${mostCellsEaten}
                     /* Make Canvas2D transparent so WebGL shows through gaps */
                     if (this.canvas) this.canvas.style.background = 'transparent';
                 }
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false, desynchronized: true, powerPreference: 'high-performance' });
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false });
                 if (!gl) return;
                 this.gl = gl;
 
