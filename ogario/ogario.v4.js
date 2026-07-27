@@ -1,110 +1,122 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
- * ogario.v4.js — LegendMod Client (OgVer 3.487)
- * ═══════════════════════════════════════════════════════════════════════════════
- *
- * TABLE OF CONTENTS
- * ─────────────────
- * Note: Line numbers are approximate — search by function name for exact location.
- *
- * §1  GLOBALS & BOOTSTRAP ................................. ~Line 100
- *     - Observer, tab ID, Google OAuth, Discord OAuth
- *     - AWS region map, server config helpers
- *
- * §2  SERVER CONFIG & PROTOCOL MAPS ....................... ~Line 830
- *     - changeregion(), deleteGamemode()
- *     - Imsolo/Agar2 API maps, protocol detection
- *
- * §3  DEFAULT SETTINGS .................................... ~Line 3670
- *     - defaultSettings {} — UI/visual preferences
- *     - defaultmapsettings {} — gameplay toggles
- *     - profiles [] — player profile storage
- *
- * §4  APPLICATION OBJECT .................................. ~Line 4880
- *     Application UI controller — menu, skins, chat, minimap,
- *     party system, settings, and social integration.
- *
- *     §4.1  Properties .................... ~4880   (name, version, sockets, caches)
- *     §4.2  Player Actions ................ ~5010   (feed, split, dance, macros)
- *     §4.3  UI Toggle Methods ............. ~5228   (skins, cells, food, grid, etc.)
- *     §4.4  Display Methods ............... ~5590   (leaderboard, stats, time, chat)
- *     §4.5  Menu & Settings ............... ~6095   (show/hide, load/save/export/import)
- *     §4.6  Profile Management ............ ~6300   (load, switch, skin preview)
- *     §4.7  UI Builder .................... ~6530   (addOption, addSliderBox, setMenu, setUI)
- *     §4.8  Game Flow ..................... ~7515   (play, spectate, join, spawn, death)
- *     §4.9  Skin Loading .................. ~7740   (loadSkin, cacheSkin 1-4, animated)
- *     §4.10 Minimap & HUD ................ ~8040   (drawMiniMap, sectors, cellInfo)
- *     §4.11 Party System .................. ~8347   (create, join, leave, close)
- *     §4.12 WebSocket Management .......... ~8426   (getWS, recreateWS, connect, close)
- *     §4.13 Protocol I/O .................. ~8816   (writeUint32, createView, sendBuffer)
- *     §4.14 Message Handling .............. ~8865   (handleMessage, readMessage, readPpv7)
- *     §4.15 Delta/SLG Protocol ............ ~9012   (chat, quadrants, waves, SLG pack/unpack)
- *     §4.16 Player State Sync ............. ~9156   (sendPlayer*, sendServer*, sendDelta*)
- *     §4.17 Team Player Tracking .......... ~9657   (check, update, dematrix, vnr)
- *     §4.18 Chat System ................... ~9849   (read, send, parse, display, mute)
- *     §4.19 Sound System .................. ~10080  (preload, play, setChatSoundsBtn)
- *     §4.20 Targeting & Spectator ......... ~10130  (setDebug, setTargeting, changeTarget)
- *     §4.21 Skin Upload ................... ~10308  (uploadCustomSkin, setupSkinUploadInterface)
- *     §4.22 Init .......................... ~10463  (init)
- *
- * §5  CELL RENDERING (irenderfromagario) .................. ~Line 10517
- *     Canvas text renderer — nick labels, mass labels, stroke effects.
- *
- * §6  CELL OBJECT (ogarbasicassembly) ..................... ~Line 10653
- *     Cell constructor — properties, moveCell, removeCell, draw,
- *     isInView, setNick, setScale, jelly physics, contours.
- *
- * §7  LEGENDMOD (LM) OBJECT ............................... ~Line 11968
- *     Game state manager — WebSocket, protocol, cell arrays,
- *     map bounds, viewport, and the core game loop.
- *
- *     §7.1  Properties .................... ~11968  (socket, map, cells, viewport)
- *     §7.2  WebSocket Connection .......... ~12149  (connect, onOpen, onMessage, onClose)
- *     §7.3  Send Methods .................. ~12554  (sendBuffer, sendNick, sendPosition, etc.)
- *     §7.4  Protocol Handling ............. ~13249  (shiftMessage, decompress, handleMessage)
- *     §7.5  Server Features ............... ~15021  (products, events, potions, stats)
- *     §7.6  Leaderboard ................... ~15632  (handleLeaderboard, targetingLead)
- *     §7.7  State Reset ................... ~15824  (flushCellsData, flushSpecsData)
- *     §7.8  Map & Viewport ................ ~15874  (setMapOffset, isInView, translate)
- *     §7.9  Cell Update Parsers ........... ~16149  (garixUpdateCells, updateCells)
- *     §7.10 Cell Management ............... ~16610  (sort, compare, cache, oppColor)
- *     §7.11 Input & Init .................. ~16873  (getCursorPosition, setZoom, setKeys, init)
- *
- * §8  DRAW RENDER OBJECT .................................. ~Line 16979
- *     Canvas/WebGL rendering engine — grid, borders, cells,
- *     food, effects, minimap overlays, and the main render loop.
- *
- *     §8.1  Properties .................... ~16979  (canvas, ctx, scale, fps, caches)
- *     §8.2  Canvas Setup .................. ~17006  (setCanvas, resizeCanvas)
- *     §8.3  WebGL Engine .................. ~17034  (initWebGL, shaders, batching, textures)
- *     §8.4  Camera ........................ ~17674  (setView, setScale, getZoom)
- *     §8.5  Main Render Loop .............. ~17719  (renderFrame — the frame entry point)
- *     §8.6  Helper Drawings ............... ~17945  (splitRange, merge rings, opp rings)
- *     §8.7  Grid & Backgrounds ............ ~18096  (drawGrid, drawCustomNewGrid, drawCustomBackgrounds)
- *     §8.8  Map Elements .................. ~18415  (sectors, borders, EL zones, battle area)
- *     §8.9  Commander Effects ............. ~18454  (drawCommander 1&2, update, reset)
- *     §8.10 Food & Cells .................. ~18868  (drawFood, drawCachedFood, drawCircle)
- *     §8.11 Range & Indicator Drawings .... ~18998  (splitRange, oppRings, cursorTracking)
- *     §8.12 Pie Chart & Areas ............. ~19213  (drawPieChart, battle/danger/safe areas)
- *     §8.13 Ghost Cells ................... ~19293  (drawGhostCells)
- *     §8.14 Pre-draw Caches ............... ~19370  (pellet, pelletColors, cellsColors, indicators)
- *     §8.15 FPS & Render Loop ............. ~19485  (countFps, render, init)
- *
- * §9  HOTKEYS SETUP ....................................... ~Line 19553
- *     Keyboard shortcut configuration and binding.
- *
- * §10 SETTINGS UI ......................................... ~Line 19774
- *     ogarhusettings(), ogarhusettingsImportExportMobile()
- *
- * §11 CORE (window.core) .................................. ~Line 20081
- *     Public API — connect, disconnect, sendNick, setRegion, etc.
- *
- * §12 REVERSE TRICK ....................................... ~Line 21072
- *     reverseTrick {} — automated reverse-split detection.
- *
- * ═══════════════════════════════════════════════════════════════════════════════ */
 window.spects = window.spects || [];
 var spects = window.spects;
 window.OgVer = 3.487;
+
+/* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
+(function () {
+    window.LMSkinStorage = {
+        db: null,
+        ready: false,
+        queue: [],
+        init: function () {
+            var self = this;
+            try {
+                var req = indexedDB.open("LegendModSkinCache", 2);
+                req.onupgradeneeded = function (e) {
+                    var db = e.target.result;
+                    if (!db.objectStoreNames.contains("skins")) {
+                        db.createObjectStore("skins");
+                    }
+                    if (!db.objectStoreNames.contains("audio")) {
+                        db.createObjectStore("audio");
+                    }
+                };
+                req.onsuccess = function (e) {
+                    self.db = e.target.result;
+                    self.ready = true;
+                    while (self.queue.length > 0) {
+                        var item = self.queue.shift();
+                        if (item.type === "audio") {
+                            self.getAudio(item.url, item.cb);
+                        } else {
+                            self.get(item.url, item.cb);
+                        }
+                    }
+                };
+                req.onerror = function () {
+                    self.ready = true;
+                    while (self.queue.length > 0) {
+                        var item = self.queue.shift();
+                        item.cb(null);
+                    }
+                };
+            } catch (e) {
+                self.ready = true;
+            }
+        },
+        get: function (url, cb) {
+            if (!this.ready) {
+                this.queue.push({ type: "skin", url: url, cb: cb });
+                return;
+            }
+            if (!this.db || !this.db.objectStoreNames.contains("skins")) return cb(null);
+            try {
+                var tx = this.db.transaction("skins", "readonly");
+                var store = tx.objectStore("skins");
+                var req = store.get(url);
+                req.onsuccess = function () { cb(req.result || null); };
+                req.onerror = function () { cb(null); };
+            } catch (e) { cb(null); }
+        },
+        put: function (url, data) {
+            if (!this.db || !this.db.objectStoreNames.contains("skins")) return;
+            try {
+                var tx = this.db.transaction("skins", "readwrite");
+                var store = tx.objectStore("skins");
+                store.put(data, url);
+            } catch (e) { }
+        },
+        getAudio: function (url, cb) {
+            if (!this.ready) {
+                this.queue.push({ type: "audio", url: url, cb: cb });
+                return;
+            }
+            if (!this.db || !this.db.objectStoreNames.contains("audio")) return cb(null);
+            try {
+                var tx = this.db.transaction("audio", "readonly");
+                var store = tx.objectStore("audio");
+                var req = store.get(url);
+                req.onsuccess = function () { cb(req.result || null); };
+                req.onerror = function () { cb(null); };
+            } catch (e) { cb(null); }
+        },
+        putAudio: function (url, data) {
+            if (!this.db || !this.db.objectStoreNames.contains("audio")) return;
+            try {
+                var tx = this.db.transaction("audio", "readwrite");
+                var store = tx.objectStore("audio");
+                store.put(data, url);
+            } catch (e) { }
+        },
+        clear: function (cb) {
+            if (!this.db) return cb && cb(false);
+            try {
+                var tx = this.db.transaction(["skins", "audio"], "readwrite");
+                tx.objectStore("skins").clear();
+                tx.objectStore("audio").clear();
+                console.log("[LM Skin & Audio Storage] Persistent cache cleared.");
+                if (cb) cb(true);
+            } catch (e) { if (cb) cb(false); }
+        },
+        count: function (cb) {
+            if (!this.db) return cb && cb({ skins: 0, audio: 0 });
+            var result = { skins: 0, audio: 0 };
+            try {
+                var tx = this.db.transaction(["skins", "audio"], "readonly");
+                var reqSkins = tx.objectStore("skins").count();
+                reqSkins.onsuccess = function () {
+                    result.skins = reqSkins.result;
+                    var reqAudio = tx.objectStore("audio").count();
+                    reqAudio.onsuccess = function () {
+                        result.audio = reqAudio.result;
+                        if (cb) cb(result);
+                    };
+                };
+            } catch (e) { if (cb) cb(result); }
+        }
+    };
+    window.LMSkinStorage.init();
+})();
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;
     if (document.URL.includes('expanding.land')) {
@@ -7934,7 +7946,7 @@ function thelegendmodproject() {
 
             // Force re-register skins for main player and all multibox profiles on spawn
             var self = this;
-            setTimeout(function() {
+            setTimeout(function () {
                 // Main player skin
                 if (ogarcopythelb.nick && ogarcopythelb.skinURL) {
                     self.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor || '#000000', ogarcopythelb.skinURL);
@@ -7980,7 +7992,7 @@ function thelegendmodproject() {
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
                         legendmod.playerCells = [];
-                        legendmod.cells = legendmod.cells.filter(function(c) { return c.spectator && c.spectator > 0; });
+                        legendmod.cells = legendmod.cells.filter(function (c) { return c.spectator && c.spectator > 0; });
                         for (var _cid in legendmod.indexedCells) {
                             if (!legendmod.indexedCells[_cid].spectator || legendmod.indexedCells[_cid].spectator === 0) {
                                 delete legendmod.indexedCells[_cid];
@@ -8094,7 +8106,8 @@ function thelegendmodproject() {
             }
 
             if (!app._failedSkinURLs) app._failedSkinURLs = new Set();
-            if (app._failedSkinURLs.has(url)) return;
+            if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
+            if (app._failedSkinURLs.has(url) || app._pendingSkinLoads.has(url)) return;
             if (img && img[url]) return;
 
             if (img && Object.keys(img).length > 200) {
@@ -8105,49 +8118,97 @@ function thelegendmodproject() {
                     }
                 }
             }
-            if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")) {
-                if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
+
+            var isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv");
+            var isVersioned = url.includes("4.0") || url.includes("4.1") || url.includes("4.2") || url.includes("4.3");
+            if (isVersioned) return;
+
+            app._pendingSkinLoads.add(url);
+
+            var processOnLoad = function (imageObj) {
+                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                if (imageObj.complete &&
+                    imageObj.width &&
+                    imageObj.height &&
+                    imageObj.width <= 2000 && imageObj.width > 0 &&
+                    imageObj.height <= 2000 && imageObj.height > 0) {
+
+                    if (animated === "animatedSkins") {
+                        app.cacheQueueSkinAnimated.push(url);
+                        if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
+                        app.cacheQueue2.push(url);
+                        if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
+                    } else if (animated !== "fbSkin") {
+                        app.cacheQueue.push(url);
+                        if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
+                        app.cacheQueue2.push(url);
+                        if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
+                        if (animated === true) app.cacheQueue3.push(url);
+                        if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
+                    } else if (animated === "fbSkin") {
+                        app.cacheQueue4.push(url);
+                        if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
+                    }
+                } else {
+                    imageObj._failed = true;
+                    if (app._failedSkinURLs) app._failedSkinURLs.add(url);
+                }
+            };
+
+            var fetchFromNetwork = function () {
+                if (isVideo) {
                     img[url] = new Video();
                 } else {
                     img[url] = new Image();
                 }
-
                 img[url].crossOrigin = 'anonymous';
                 img[url].onload = function () {
-                    if (this.complete &&
-                        this.width &&
-                        this.height &&
-                        this.width <= 2000 && this.width > 0 &&
-                        this.height <= 2000 && this.height > 0) {
-
-                        if (animated === "animatedSkins") {
-                            app.cacheQueueSkinAnimated.push(url);
-                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
-                            app.cacheQueue2.push(url);
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                        } else if (animated !== "fbSkin") {
-                            app.cacheQueue.push(url);
-                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
-                            app.cacheQueue2.push(url);
-                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                            if (animated === true) app.cacheQueue3.push(url);
-                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
-                        } else if (animated === "fbSkin") {
-                            app.cacheQueue4.push(url);
-                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
-                        }
-                    } else {
-                        this._failed = true;
-                        if (app._failedSkinURLs) app._failedSkinURLs.add(url);
+                    processOnLoad(this);
+                    if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0) {
+                        try {
+                            var cvs = document.createElement("canvas");
+                            cvs.width = this.width;
+                            cvs.height = this.height;
+                            var ctx = cvs.getContext("2d");
+                            ctx.drawImage(this, 0, 0);
+                            var dataUrl = cvs.toDataURL("image/png");
+                            if (dataUrl && dataUrl.length > 100) {
+                                window.LMSkinStorage.put(url, dataUrl);
+                            }
+                        } catch (err) { }
                     }
                 };
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
+                    if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (img[url]) img[url]._failed = true;
                     if (app._failedSkinURLs) app._failedSkinURLs.add(url);
                     console.warn("[LM] Skin URL failed to load (will not retry): " + url);
                 };
                 img[url].src = url;
+            };
+
+            if (!isVideo && window.LMSkinStorage) {
+                window.LMSkinStorage.get(url, function (cachedData) {
+                    if (cachedData && img && !img[url]) {
+                        var cachedImg = new Image();
+                        cachedImg.crossOrigin = 'anonymous';
+                        cachedImg.onload = function () {
+                            img[url] = this;
+                            processOnLoad(this);
+                        };
+                        cachedImg.onerror = function () {
+                            fetchFromNetwork();
+                        };
+                        cachedImg.src = cachedData;
+                    } else if (!img[url]) {
+                        fetchFromNetwork();
+                    } else {
+                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                    }
+                });
+            } else {
+                fetchFromNetwork();
             }
         },
         checkgraphics() {
@@ -8461,7 +8522,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.clearRect(0, 0, t, s);
                 } else {
                     this.miniMap = document.getElementById("minimap");
-                    this.miniMapCtx = this.miniMap.getContext("2d");
+                    this.miniMapCtx = this.miniMap.getContext("2d", { desynchronized: true });
                     this.miniMapCtx.ogarioCtx = true;
                     this.miniMap.width = t;
                     this.miniMap.height = s;
@@ -8486,166 +8547,167 @@ function thelegendmodproject() {
                 if (!this.miniMapSectors) {
                     this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a);
                 }
-                    this.miniMapCtx.save();
-                    try {
-                        this.miniMapCtx.translate(9.5, a);
-                        if (":battleroyale" === this.gameMode && drawRender) {
-                            drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l);
-                        }
-                        /* ── Expanding Land: Draw zone on minimap (all phases) ── */
-                        if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
-                            (function () {
-                                var me = LM.mapEvent;
-                                var targetHalf = me.targetSize / 2;
-                                var tMinX = (-targetHalf + r) * n;
-                                var tMinY = (-targetHalf + l) * n;
-                                var tW = me.targetSize * n;
-                                var tH = me.targetSize * n;
-                                var mmCtx = app.miniMapCtx;
-                                mmCtx.save();
-                                if (me.phase === 1) {
-                                    mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
-                                } else if (me.phase === 2) {
-                                    mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
-                                } else {
-                                    mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
-                                }
-                                mmCtx.lineWidth = 1;
-                                mmCtx.strokeRect(tMinX, tMinY, tW, tH);
-                                mmCtx.restore();
-                            })();
-                        }
-                        if (defaultmapsettings.showMiniMapGhostCells) {
-                            var h = ogario.ghostCells;
-                            this.miniMapCtx.beginPath();
-                            var c = 0;
-                            for (; c < h.length; c++) {
-                                if (!h[c].inView) {
-                                    var u = ~~((h[c].x + r) * n);
-                                    var d = ~~((h[c].y + l) * n);
-                                    if (u >= 0 && u <= o && d >= 0 && d <= o) {
-                                        this.miniMapCtx.moveTo(u, d);
-                                        this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
-                                    }
-                                }
-                            }
-                            this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
-                            this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
-                            this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
-                            this.miniMapCtx.shadowBlur = 10;
-                            this.miniMapCtx.shadowOffsetX = 0;
-                            this.miniMapCtx.shadowOffsetY = 0;
-                            this.miniMapCtx.fill();
-                            this.miniMapCtx.globalAlpha = 1;
-                            this.miniMapCtx.shadowBlur = 0;
-                        }
-                        if (defaultmapsettings.showMiniMapGuides) {
-                            u = Math.round((ogario.playerX + r) * n);
-                            d = Math.round((ogario.playerY + l) * n);
-                            this.miniMapCtx.lineWidth = 1;
-                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapGuidesColor;
-                            this.miniMapCtx.beginPath();
-                            this.miniMapCtx.moveTo(u, 0);
-                            this.miniMapCtx.lineTo(u, o - 1);
-                            this.miniMapCtx.moveTo(0, d);
-                            this.miniMapCtx.lineTo(o - 1, d);
-                            this.miniMapCtx.stroke();
-                        }
-                        if (defaultmapsettings.showExtraMiniMapGuides) {
-                            u = Math.round((ogario.playerX + r) * n);
-                            d = Math.round((ogario.playerY + l) * n);
-
-                            //draw the yellow on minimap
-                            this.miniMapCtx.beginPath();
-                            this.miniMapCtx.lineWidth = "1";
-                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
-                            var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
-                            var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
-                            var minidaxx = application.miniMapSectors.width * miniax;
-                            var minidayy = application.miniMapSectors.width * miniay;
-
-                            var fixminidaxx = u - (minidaxx / 2);
-                            var fixminidayy = d - (minidayy / 2);
-
-                            this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
-                            this.miniMapCtx.stroke();
-
-                        }
-                        //
-                        if (LM.arrowFB && LM.arrowFB[0]) {
-                            if (application.top5) {
-                                for (var temp = 0; temp < application.top5.length; temp++) {
-                                    if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
-                                        LM.arrowFB[0].isIncluded = true;
-                                    }
-                                }
-                            }
-
-                            if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
-                                this.miniMapCtx.save();
-                                try {
-                                    this.miniMapCtx.beginPath();
-                                    this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
-                                    this.miniMapCtx.closePath();
-                                    this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
-                                    this.miniMapCtx.strokeStyle = 'white';
-                                    this.miniMapCtx.stroke();
-                                    this.miniMapCtx.fillStyle = 'blue';
-                                    this.miniMapCtx.fill();
-                                    this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
-                                    this.miniMapCtx.textAlign = 'center';
-                                    this.miniMapCtx.textBaseline = "bottom";
-                                    if (defaultSettings.miniMapNickStrokeSize > 0) {
-                                        this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
-                                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
-                                    }
-                                    this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
-                                } catch (eArrowFB) { } finally {
-                                    this.miniMapCtx.restore();
-                                }
-                            }
-                        }
-                        //				
-                        if (this.miniMapCtx.beginPath(),
-                            this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
-                                defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
-                            this.miniMapCtx.closePath(),
-                            defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
-                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
-                                this.miniMapCtx.stroke()),
-                            this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                            this.miniMapCtx.fill(),
-                            this.teamPlayers.length) {
-                            c = 0;
-                            for (; c < this.teamPlayers.length; c++) {
-                                this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
-                            }
-                        }
-                        if (this.deathLocations.length > 0) {
-                            u = Math.round((this.deathLocations[this.lastDeath].x + LM.mapOffset) * n);
-                            d = Math.round((this.deathLocations[this.lastDeath].y + LM.mapOffset) * n);
-                            var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
-                            this.miniMapCtx.lineWidth = 1;
-                            this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
-                            this.miniMapCtx.beginPath();
-                            this.miniMapCtx.moveTo(u - f, d);
-                            this.miniMapCtx.lineTo(u + f, d);
-                            this.miniMapCtx.moveTo(u, d - f);
-                            this.miniMapCtx.lineTo(u, d + f);
-                            this.miniMapCtx.stroke();
-                        }
-                    } catch (eMiniMap) {
-                        console.error('[OGARIO MINIMAP DRAW EXCEPTION]', eMiniMap);
-                    } finally {
-                        this.miniMapCtx.restore();
+                this.miniMapCtx.save();
+                try {
+                    this.miniMapCtx.translate(9.5, a);
+                    if (":battleroyale" === this.gameMode && drawRender) {
+                        drawRender.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l);
                     }
+                    /* ── Expanding Land: Draw zone on minimap (all phases) ── */
+                    if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
+                        (function () {
+                            var me = LM.mapEvent;
+                            var targetHalf = me.targetSize / 2;
+                            var tMinX = (-targetHalf + r) * n;
+                            var tMinY = (-targetHalf + l) * n;
+                            var tW = me.targetSize * n;
+                            var tH = me.targetSize * n;
+                            var mmCtx = app.miniMapCtx;
+                            mmCtx.save();
+                            if (me.phase === 1) {
+                                mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                            } else if (me.phase === 2) {
+                                mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                            } else {
+                                mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                            }
+                            mmCtx.lineWidth = 1;
+                            mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                            mmCtx.restore();
+                        })();
+                    }
+                    if (defaultmapsettings.showMiniMapGhostCells) {
+                        var h = ogario.ghostCells;
+                        this.miniMapCtx.beginPath();
+                        var c = 0;
+                        for (; c < h.length; c++) {
+                            if (!h[c].inView) {
+                                var u = ~~((h[c].x + r) * n);
+                                var d = ~~((h[c].y + l) * n);
+                                if (u >= 0 && u <= o && d >= 0 && d <= o) {
+                                    this.miniMapCtx.moveTo(u, d);
+                                    this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                                }
+                            }
+                        }
+                        this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
+                        this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
+                        this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
+                        this.miniMapCtx.shadowBlur = 10;
+                        this.miniMapCtx.shadowOffsetX = 0;
+                        this.miniMapCtx.shadowOffsetY = 0;
+                        this.miniMapCtx.fill();
+                        this.miniMapCtx.globalAlpha = 1;
+                        this.miniMapCtx.shadowBlur = 0;
+                    }
+                    if (defaultmapsettings.showMiniMapGuides) {
+                        u = Math.round((ogario.playerX + r) * n);
+                        d = Math.round((ogario.playerY + l) * n);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapGuidesColor;
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u, 0);
+                        this.miniMapCtx.lineTo(u, o - 1);
+                        this.miniMapCtx.moveTo(0, d);
+                        this.miniMapCtx.lineTo(o - 1, d);
+                        this.miniMapCtx.stroke();
+                    }
+                    if (defaultmapsettings.showExtraMiniMapGuides) {
+                        u = Math.round((ogario.playerX + r) * n);
+                        d = Math.round((ogario.playerY + l) * n);
+
+                        //draw the yellow on minimap
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.lineWidth = "1";
+                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
+                        var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
+                        var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+                        var minidaxx = application.miniMapSectors.width * miniax;
+                        var minidayy = application.miniMapSectors.width * miniay;
+
+                        var fixminidaxx = u - (minidaxx / 2);
+                        var fixminidayy = d - (minidayy / 2);
+
+                        this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
+                        this.miniMapCtx.stroke();
+
+                    }
+                    //
+                    if (LM.arrowFB && LM.arrowFB[0]) {
+                        if (application.top5) {
+                            for (var temp = 0; temp < application.top5.length; temp++) {
+                                if (application.top5[temp] && application.top5[temp].nick === LM.arrowFB[0].nick) {
+                                    LM.arrowFB[0].isIncluded = true;
+                                }
+                            }
+                        }
+
+                        if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
+                            this.miniMapCtx.save();
+                            try {
+                                this.miniMapCtx.beginPath();
+                                this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                                this.miniMapCtx.closePath();
+                                this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
+                                this.miniMapCtx.strokeStyle = 'white';
+                                this.miniMapCtx.stroke();
+                                this.miniMapCtx.fillStyle = 'blue';
+                                this.miniMapCtx.fill();
+                                this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
+                                this.miniMapCtx.textAlign = 'center';
+                                this.miniMapCtx.textBaseline = "bottom";
+                                if (defaultSettings.miniMapNickStrokeSize > 0) {
+                                    this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
+                                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
+                                    this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                                }
+                                this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
+                                this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                            } catch (eArrowFB) { } finally {
+                                this.miniMapCtx.restore();
+                            }
+                        }
+                    }
+                    //				
+                    if (this.miniMapCtx.beginPath(),
+                        this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
+                            defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
+                        this.miniMapCtx.closePath(),
+                        defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
+                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
+                            this.miniMapCtx.stroke()),
+                        this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
+                        this.miniMapCtx.fill(),
+                        this.teamPlayers.length) {
+                        c = 0;
+                        for (; c < this.teamPlayers.length; c++) {
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                        }
+                    }
+                    if (this.deathLocations.length > 0) {
+                        u = Math.round((this.deathLocations[this.lastDeath].x + LM.mapOffset) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + LM.mapOffset) * n);
+                        var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u - f, d);
+                        this.miniMapCtx.lineTo(u + f, d);
+                        this.miniMapCtx.moveTo(u, d - f);
+                        this.miniMapCtx.lineTo(u, d + f);
+                        this.miniMapCtx.stroke();
+                    }
+                } catch (eMiniMap) {
+                    console.error('[OGARIO MINIMAP DRAW EXCEPTION]', eMiniMap);
+                } finally {
+                    this.miniMapCtx.restore();
                 }
+            }
         },
         drawMiniMapSectors(x, y, size, height, scale) {
             this.miniMapSectors = document.getElementById('minimap-sectors');
-            const ctx = this.miniMapSectors.getContext('2d');
+            if (!this.miniMapSectors) return;
+            const ctx = this.miniMapSectors.getContext('2d', { desynchronized: true });
             ctx.ogarioCtx = true;
             this.miniMapSectors.width = size;
             this.miniMapSectors.height = height;
@@ -9042,8 +9104,8 @@ function thelegendmodproject() {
             // Secondary socket replaced by zero-width chat steganography
         },
         //Sonia6			
-        SLGconnect(srv) {},
-        SLGconnect2(srv) {},
+        SLGconnect(srv) { },
+        SLGconnect2(srv) { },
         closeConnection() {
             if (this.socket) {
                 this.socket.onmessage = null;
@@ -9060,7 +9122,7 @@ function thelegendmodproject() {
                 window.Socket3 = null;
             }
         },
-        closeSLGConnection() {},
+        closeSLGConnection() { },
         reconnect() {
             this.setParty();
             var app = this;
@@ -9123,13 +9185,13 @@ function thelegendmodproject() {
             }
         },
         //Sonia4
-        sendSLG(i, t) {},
+        sendSLG(i, t) { },
         /* ─── §4.14 Message Handling ─── */
         handleMessage(message) {
             this.readMessage(new DataView(message.data));
         },
         //Sonia4
-        handleSLGMessage(message) {},
+        handleSLGMessage(message) { },
         readMessage(message) {
             var opcode = message.getUint8(0);
             switch (opcode) {
@@ -9886,7 +9948,7 @@ function thelegendmodproject() {
                 this.sendSLG("R", s);
             }
         },
-        sendSimpleLegendSDATA() {},
+        sendSimpleLegendSDATA() { },
         //Sonia4
         getSuperLegendSDATA(t) {
             var ids = this.getSLGID(t);
@@ -10367,11 +10429,50 @@ function thelegendmodproject() {
         setvirusSound() {
             this.virusSoundurl = this.setSound(defaultmapsettings.virusSoundurl);
         },
-        setSound(audio) {
-            if (!audio) {
+        setSound(audioUrl) {
+            if (!audioUrl || typeof audioUrl !== 'string') {
                 return null;
             }
-            return new Audio(audio);
+            var audioObj = new Audio();
+            audioObj.crossOrigin = 'anonymous';
+
+            if (audioUrl.startsWith('data:') || audioUrl.startsWith('blob:')) {
+                audioObj.src = audioUrl;
+                return audioObj;
+            }
+
+            if (window.LMSkinStorage) {
+                window.LMSkinStorage.getAudio(audioUrl, function (cachedData) {
+                    if (cachedData) {
+                        audioObj.src = cachedData;
+                    } else {
+                        try {
+                            fetch(audioUrl)
+                                .then(function (res) { return res.blob(); })
+                                .then(function (blob) {
+                                    var reader = new FileReader();
+                                    reader.onloadend = function () {
+                                        if (reader.result) {
+                                            audioObj.src = reader.result;
+                                            if (window.LMSkinStorage) {
+                                                window.LMSkinStorage.putAudio(audioUrl, reader.result);
+                                            }
+                                        }
+                                    };
+                                    reader.readAsDataURL(blob);
+                                })
+                                .catch(function () {
+                                    audioObj.src = audioUrl;
+                                });
+                        } catch (e) {
+                            audioObj.src = audioUrl;
+                        }
+                    }
+                });
+            } else {
+                audioObj.src = audioUrl;
+            }
+            return audioObj;
         },
         /*            playSound(audio) {
                         //audio && audio.play && (audio.pause(), audio.currentTime = 0, audio.play());
@@ -11908,369 +12009,369 @@ function thelegendmodproject() {
                 }
                 style.save();
                 try {
-                if (this.removed) {
-                    style.globalAlpha *= 1 - this.alpha;
-                }
-                var value = style.globalAlpha;
-                var s = false;
-                var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
+                    if (this.removed) {
+                        style.globalAlpha *= 1 - this.alpha;
+                    }
+                    var value = style.globalAlpha;
+                    var s = false;
+                    var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
-                /* WebGL2 hybrid: if body was already drawn on the GPU, skip to text/effects */
-                if (this._webglRendered) {
-                    this._webglRendered = false;
-                    /* Still need text, special skins, teammates indicator */
-                    if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
-                    /* Skip body+skin, jump to text/effects section */
-                } else {
+                    /* WebGL2 hybrid: if body was already drawn on the GPU, skip to text/effects */
+                    if (this._webglRendered) {
+                        this._webglRendered = false;
+                        /* Still need text, special skins, teammates indicator */
+                        if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
+                        /* Skip body+skin, jump to text/effects section */
+                    } else {
 
 
-                //26/7/2020
-                if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
-                    style.filter = 'grayscale(100%)';
-                } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
-                    style.filter = 'sepia(100%)';
-                } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
-                    style.filter = 'hue-rotate(90deg)';
-                }
-                //style.filter='grayscale(100%)';
-                //
-                var node = null
-                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                    node = application.getCustomSkin(this.targetNick, this.color, this.skin);
-                }
-                var node2, node2IsVideo = false;
-                if (defaultmapsettings.videoSkins) {
-                    node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
-                    if (node2) {
-                        if (typeof node2._isVideo === "boolean") {
-                            node2IsVideo = node2._isVideo;
-                        } else {
-                            node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
-                            try { Object.defineProperty(node2, '_isVideo', { value: node2IsVideo, writable: true }); } catch (e) { }
+                        //26/7/2020
+                        if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
+                            style.filter = 'grayscale(100%)';
+                        } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
+                            style.filter = 'sepia(100%)';
+                        } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
+                            style.filter = 'hue-rotate(90deg)';
                         }
-                    }
-                }
-                if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
-                    style.globalAlpha *= defaultSettings.cellsAlpha;
-                    s = true;
-                }
-
-                var color2 = this.color;
-                if (LM.play || LM.playerCellsMulti.length) {
-                    if (this.isPlayerCell || this.playerCellsMulti) {
-                        if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
-                            this.color = ogarcopythelb.color;
+                        //style.filter='grayscale(100%)';
+                        //
+                        var node = null
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                         }
-                    }
-                    else {
-                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
-                            this.color = this.oppColor;
-                        }
-                    }
-                }
-
-                if (!node) style.beginPath();
-                if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                    var point = this.points[0];
-                    style.moveTo(point.x, point.y);
-                    for (var i = 0; i < this.points.length; ++i) {
-                        var point = this.points[i];
-                        style.lineTo(point.x, point.y);
-                    }
-                }
-                else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                    style.lineJoin = "miter";
-                    if (!window._virusSinTable) {
-                        window._virusSinTable = new Float32Array(120);
-                        window._virusCosTable = new Float32Array(120);
-                        for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
-                            var _vAng = _vIdx * (Math.PI * 2 / 120);
-                            window._virusSinTable[_vIdx] = Math.sin(_vAng);
-                            window._virusCosTable[_vIdx] = Math.cos(_vAng);
-                        }
-                    }
-                    var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
-                    style.moveTo(this.x, this.y + this.size + 3);
-                    for (var i = 1; i < 120; i++) {
-                        var dist = this.size - 3 + ((i & 1) ? 0 : 6);
-                        style.lineTo(
-                            this.x + dist * _vSin[i],
-                            this.y + dist * _vCos[i]
-                        );
-                    }
-                    style.lineTo(this.x, this.y + this.size + 3);
-                }
-                else {
-                    if (!node) {
-                        //this.drawCircle(style, this.x, this.y, y, this.color)
-                        if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
-                            style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            if (!this.isVirus && !defaultmapsettings.cellContours && !node2IsVideo) {
-                                style.fillStyle = color2;
-                                style.fill();
+                        var node2, node2IsVideo = false;
+                        if (defaultmapsettings.videoSkins) {
+                            node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
+                            if (node2) {
+                                if (typeof node2._isVideo === "boolean") {
+                                    node2IsVideo = node2._isVideo;
+                                } else {
+                                    node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
+                                    try { Object.defineProperty(node2, '_isVideo', { value: node2IsVideo, writable: true }); } catch (e) { }
+                                }
                             }
-                            if (!this.isVirus && defaultmapsettings.cellContours) {
-                                style.lineWidth = 20; ///
-                                style.strokeStyle = color2; ///
-                                style.stroke(); ///
+                        }
+                        if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
+                            style.globalAlpha *= defaultSettings.cellsAlpha;
+                            s = true;
+                        }
+
+                        var color2 = this.color;
+                        if (LM.play || LM.playerCellsMulti.length) {
+                            if (this.isPlayerCell || this.playerCellsMulti) {
+                                if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
+                                    this.color = ogarcopythelb.color;
+                                }
                             }
+                            else {
+                                if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
+                                    this.color = this.oppColor;
+                                }
+                            }
+                        }
+
+                        if (!node) style.beginPath();
+                        if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                            var point = this.points[0];
+                            style.moveTo(point.x, point.y);
+                            for (var i = 0; i < this.points.length; ++i) {
+                                var point = this.points[i];
+                                style.lineTo(point.x, point.y);
+                            }
+                        }
+                        else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+                            style.lineJoin = "miter";
+                            if (!window._virusSinTable) {
+                                window._virusSinTable = new Float32Array(120);
+                                window._virusCosTable = new Float32Array(120);
+                                for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
+                                    var _vAng = _vIdx * (Math.PI * 2 / 120);
+                                    window._virusSinTable[_vIdx] = Math.sin(_vAng);
+                                    window._virusCosTable[_vIdx] = Math.cos(_vAng);
+                                }
+                            }
+                            var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
+                            style.moveTo(this.x, this.y + this.size + 3);
+                            for (var i = 1; i < 120; i++) {
+                                var dist = this.size - 3 + ((i & 1) ? 0 : 6);
+                                style.lineTo(
+                                    this.x + dist * _vSin[i],
+                                    this.y + dist * _vCos[i]
+                                );
+                            }
+                            style.lineTo(this.x, this.y + this.size + 3);
                         }
                         else {
-                            this.drawCircle(style, this.x, this.y, y, color2)
+                            if (!node) {
+                                //this.drawCircle(style, this.x, this.y, y, this.color)
+                                if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
+                                    style.arc(this.x, this.y, y, 0, this.pi2, false);
+                                    if (!this.isVirus && !defaultmapsettings.cellContours && !node2IsVideo) {
+                                        style.fillStyle = color2;
+                                        style.fill();
+                                    }
+                                    if (!this.isVirus && defaultmapsettings.cellContours) {
+                                        style.lineWidth = 20; ///
+                                        style.strokeStyle = color2; ///
+                                        style.stroke(); ///
+                                    }
+                                }
+                                else {
+                                    this.drawCircle(style, this.x, this.y, y, color2)
+                                }
+                            }
                         }
-                    }
-                }
-                if (!node) style.closePath();
-                //17/12/2020
-                if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                    if (defaultmapsettings.jellyPhisycs) {
-                        style.fillStyle = this.color;
-                        style.fill();
-                    }
-                    return;
-                }
-                //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
-                //    return style.fillStyle = this.color, style.fill(), void style.restore();
-                //}						
-                if (this.isVirus) {
-                    //console.log("is not jelly");
-                    /*if (dyinglight1load === "yes") {
-                        try {
-                            style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
-                        } catch (e) {}
-                    }*/
-                    if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
-                        style.globalAlpha *= defaultSettings.virusAlpha;
-                        s = true;
-                    }
-                    if (defaultmapsettings.virColors && LM.play) {
-                        style.fillStyle = application.setVirusColor(y);
-                        style.strokeStyle = application.setVirusStrokeColor(y);
-                    }
-                    else {
-                        style.fillStyle = this.virusColor
-                        style.strokeStyle = this.virusStroke
-                    }
-                    style.fill()
-                    if (s) {
-                        style.globalAlpha = value;
-                        s = false;
-                    }
-                    style.lineWidth = defaultSettings.virusStrokeSize
-                    if (defaultmapsettings.virusGlow) {
-                        style.shadowBlur = defaultSettings.virusGlowSize;
-                        style.shadowColor = defaultSettings.virusGlowColor;
-                    }
-                    if (defaultmapsettings.virusSpikes) {
-                        style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
-                    }
-                    else {
-                        style.stroke()
-                    }
-                    if (defaultmapsettings.showMass) {
-                        this.setDrawing();
-                        this.setDrawingScale();
-                        this.setMass(this.size);
-                        this.drawMass(style);
-                    }
-                    return;
-                }
-
-
-
-                /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
-                    style.lineWidth = 20; ///
-                    style.strokeStyle = this.color; ///
-                    style.stroke(); //
-                } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
-                    style.lineWidth = 20; ///
-                    style.strokeStyle = this.color; ///
-                    style.stroke(); //
-                } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick === profiles[application.selectedProfile].nick && LM.play) {
-                    style.lineWidth = 20; ///
-                    style.strokeStyle = this.color; ///
-                    style.stroke(); //
-                }*/
-                if (defaultmapsettings.cellContours) {
-                }
-                else if (node) {
-                    if (!window.drawRender.cellsColored[color2]) {
-                        window.drawRender.preDrawCellsColors(color2);
-                    }
-                    else {
-                        style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
-                    }
-                }
-                else if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                    //else{			
-                    style.fillStyle = color2;
-                    style.fill();
-                }
-                //}
-                if (s) {
-                    style.globalAlpha = value;
-                    s = false;
-                }
-
-                /*if (dyinglight1load != "yes"){
-                                style.globalAlpha = 1;
-                                s = false;
-                            }*/
-                //var node = null;
-
-
-
-                if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick === profiles[application.selectedOldProfile].nick || this.targetNick === profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
-                    if (legendmod.play && legendmod.playerCellsMulti) {
-                        if (this.targetNick === profiles[application.selectedOldProfile].nick) {
-                            style.shadowBlur = 40;
-                            style.shadowColor = profiles[application.selectedOldProfile].color;
-                        } else if (this.targetNick === profiles[application.selectedProfile].nick) {
-                            style.shadowBlur = 40;
-                            style.shadowColor = profiles[application.selectedProfile].color;
-                        }
-                    }
-                }
-                if (defaultmapsettings.mbRings && LM.playerCellsMulti && LM.playerCellsMulti.indexOf(this) !== -1) {
-                    style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
-                    style.lineWidth = Math.max(~~(y / 40), 8);
-                    style.stroke();
-                }
-                //lylko
-                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                    //node = application.getCustomSkin(this.targetNick, this.color);
-                    if (node) {
-                        //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                        if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99) {
-                            //console.log('transparent')
-                            style.globalAlpha *= defaultSettings.skinsAlpha;
-                            //s = true;
-                        }
-                        if (legendmod.gameMode != ":teams") {
+                        if (!node) style.closePath();
+                        //17/12/2020
+                        if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
                             if (defaultmapsettings.jellyPhisycs) {
-                                var lineWidth = Math.max(~~(y / 50), 10);
-                                style.save();
-                                try {
-                                    style.clip();
-                                    this.maxPointRad && (y = this.maxPointRad);
-                                    if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
-                                        style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
-                                    }
-                                } catch (eJellySkin) {
-                                    console.error('[OGARIO JELSKIN DRAW EXCEPTION]', eJellySkin);
-                                } finally {
-                                    style.globalCompositeOperation = 'luminosity';
-                                    style.lineWidth = lineWidth;
-                                    style.strokeStyle = color2;
-                                    style.stroke();
-                                    style.globalCompositeOperation = '';
-                                    style.restore();
-                                }
-                            } else {
-                                style.save();
-                                try {
-                                    style.beginPath();
-                                    style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
-                                    style.clip();
-                                    if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
-                                        style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
-                                    }
-                                } catch (eSkinDraw) {
-                                    console.error('[OGARIO SKIN DRAW EXCEPTION]', eSkinDraw);
-                                } finally {
-                                    style.restore();
-                                }
+                                style.fillStyle = this.color;
+                                style.fill();
                             }
-                            if (defaultmapsettings.FBTracking) {
-                                var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
-                                if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
-                                    var temp = nodeFb + "_cached4";
-                                    var nodeFB = application.customSkinsCache[temp];
-                                    if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
-                                        try {
-                                            style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-                                        } catch (e) { }
-                                    }
-                                }
-                            }
-                            //this.drawSpecialSkin(style, y)
+                            return;
                         }
-                    }
-                    else {
-                        if (defaultmapsettings.videoSkins) {
-                            if (node2 && node2IsVideo) {
-                                checkVideos(node2, this.targetNick);
-                                style.save();
+                        //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                        //    return style.fillStyle = this.color, style.fill(), void style.restore();
+                        //}						
+                        if (this.isVirus) {
+                            //console.log("is not jelly");
+                            /*if (dyinglight1load === "yes") {
                                 try {
-                                    style.clip();
-                                    var vidElement = window.videoSkinPlayer[node2];
-                                    if (vidElement && (vidElement.videoWidth > 0 || vidElement.width > 0)) {
-                                        if (defaultmapsettings.videoDestorted) {
-                                            var temp = vidElement.videoWidth / vidElement.videoHeight;
-                                            style.drawImage(vidElement, this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
-                                        } else {
-                                            style.drawImage(vidElement, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+                                } catch (e) {}
+                            }*/
+                            if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
+                                style.globalAlpha *= defaultSettings.virusAlpha;
+                                s = true;
+                            }
+                            if (defaultmapsettings.virColors && LM.play) {
+                                style.fillStyle = application.setVirusColor(y);
+                                style.strokeStyle = application.setVirusStrokeColor(y);
+                            }
+                            else {
+                                style.fillStyle = this.virusColor
+                                style.strokeStyle = this.virusStroke
+                            }
+                            style.fill()
+                            if (s) {
+                                style.globalAlpha = value;
+                                s = false;
+                            }
+                            style.lineWidth = defaultSettings.virusStrokeSize
+                            if (defaultmapsettings.virusGlow) {
+                                style.shadowBlur = defaultSettings.virusGlowSize;
+                                style.shadowColor = defaultSettings.virusGlowColor;
+                            }
+                            if (defaultmapsettings.virusSpikes) {
+                                style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+                            }
+                            else {
+                                style.stroke()
+                            }
+                            if (defaultmapsettings.showMass) {
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                this.setMass(this.size);
+                                this.drawMass(style);
+                            }
+                            return;
+                        }
+
+
+
+                        /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
+                            style.lineWidth = 20; ///
+                            style.strokeStyle = this.color; ///
+                            style.stroke(); //
+                        } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
+                            style.lineWidth = 20; ///
+                            style.strokeStyle = this.color; ///
+                            style.stroke(); //
+                        } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick === profiles[application.selectedProfile].nick && LM.play) {
+                            style.lineWidth = 20; ///
+                            style.strokeStyle = this.color; ///
+                            style.stroke(); //
+                        }*/
+                        if (defaultmapsettings.cellContours) {
+                        }
+                        else if (node) {
+                            if (!window.drawRender.cellsColored[color2]) {
+                                window.drawRender.preDrawCellsColors(color2);
+                            }
+                            else {
+                                style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
+                            }
+                        }
+                        else if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                            //else{			
+                            style.fillStyle = color2;
+                            style.fill();
+                        }
+                        //}
+                        if (s) {
+                            style.globalAlpha = value;
+                            s = false;
+                        }
+
+                        /*if (dyinglight1load != "yes"){
+                                        style.globalAlpha = 1;
+                                        s = false;
+                                    }*/
+                        //var node = null;
+
+
+
+                        if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick === profiles[application.selectedOldProfile].nick || this.targetNick === profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
+                            if (legendmod.play && legendmod.playerCellsMulti) {
+                                if (this.targetNick === profiles[application.selectedOldProfile].nick) {
+                                    style.shadowBlur = 40;
+                                    style.shadowColor = profiles[application.selectedOldProfile].color;
+                                } else if (this.targetNick === profiles[application.selectedProfile].nick) {
+                                    style.shadowBlur = 40;
+                                    style.shadowColor = profiles[application.selectedProfile].color;
+                                }
+                            }
+                        }
+                        if (defaultmapsettings.mbRings && LM.playerCellsMulti && LM.playerCellsMulti.indexOf(this) !== -1) {
+                            style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
+                            style.lineWidth = Math.max(~~(y / 40), 8);
+                            style.stroke();
+                        }
+                        //lylko
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            //node = application.getCustomSkin(this.targetNick, this.color);
+                            if (node) {
+                                //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                                if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99) {
+                                    //console.log('transparent')
+                                    style.globalAlpha *= defaultSettings.skinsAlpha;
+                                    //s = true;
+                                }
+                                if (legendmod.gameMode != ":teams") {
+                                    if (defaultmapsettings.jellyPhisycs) {
+                                        var lineWidth = Math.max(~~(y / 50), 10);
+                                        style.save();
+                                        try {
+                                            style.clip();
+                                            this.maxPointRad && (y = this.maxPointRad);
+                                            if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
+                                                style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                                            }
+                                        } catch (eJellySkin) {
+                                            console.error('[OGARIO JELSKIN DRAW EXCEPTION]', eJellySkin);
+                                        } finally {
+                                            style.globalCompositeOperation = 'luminosity';
+                                            style.lineWidth = lineWidth;
+                                            style.strokeStyle = color2;
+                                            style.stroke();
+                                            style.globalCompositeOperation = '';
+                                            style.restore();
+                                        }
+                                    } else {
+                                        style.save();
+                                        try {
+                                            style.beginPath();
+                                            style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
+                                            style.clip();
+                                            if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0 || node.videoWidth > 0)) {
+                                                style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                            }
+                                        } catch (eSkinDraw) {
+                                            console.error('[OGARIO SKIN DRAW EXCEPTION]', eSkinDraw);
+                                        } finally {
+                                            style.restore();
                                         }
                                     }
-                                } catch (eVidDraw) {
-                                    console.error('[OGARIO VIDEO DRAW EXCEPTION]', eVidDraw);
-                                } finally {
-                                    style.restore();
+                                    if (defaultmapsettings.FBTracking) {
+                                        var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
+                                        if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
+                                            var temp = nodeFb + "_cached4";
+                                            var nodeFB = application.customSkinsCache[temp];
+                                            if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
+                                                try {
+                                                    style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
+                                                } catch (e) { }
+                                            }
+                                        }
+                                    }
+                                    //this.drawSpecialSkin(style, y)
                                 }
                             }
+                            else {
+                                if (defaultmapsettings.videoSkins) {
+                                    if (node2 && node2IsVideo) {
+                                        checkVideos(node2, this.targetNick);
+                                        style.save();
+                                        try {
+                                            style.clip();
+                                            var vidElement = window.videoSkinPlayer[node2];
+                                            if (vidElement && (vidElement.videoWidth > 0 || vidElement.width > 0)) {
+                                                if (defaultmapsettings.videoDestorted) {
+                                                    var temp = vidElement.videoWidth / vidElement.videoHeight;
+                                                    style.drawImage(vidElement, this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
+                                                } else {
+                                                    style.drawImage(vidElement, this.x - y, this.y - y, 2 * y, 2 * y);
+                                                }
+                                            }
+                                        } catch (eVidDraw) {
+                                            console.error('[OGARIO VIDEO DRAW EXCEPTION]', eVidDraw);
+                                        } finally {
+                                            style.restore();
+                                        }
+                                    }
+                                }
+                                if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
+                                    try {
+                                        style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    } catch (e) { }
+                                }
+                            }
+                            this.drawSpecialSkin(style, y)
                         }
-                        if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
-                            try {
-                                style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-                            } catch (e) { }
-                        }
+                    } /* end of else-block for non-WebGL body rendering */
+                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                        window.teammatenicks && this.targetNick != "" &&
+                        (window.teammatenicks.includes(this.targetNick))) {
+                        drawRender.drawTeammatesInd(style, this.x, this.y, y)
                     }
-                    this.drawSpecialSkin(style, y)
-                }
-                } /* end of else-block for non-WebGL body rendering */
-                if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                    window.teammatenicks && this.targetNick != "" &&
-                    (window.teammatenicks.includes(this.targetNick))) {
-                    drawRender.drawTeammatesInd(style, this.x, this.y, y)
-                }
 
-                if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
-                    //return;
-                }
-                else {
-                    var recursive = false;
-                    if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
-                        this.setDrawing();
-                        this.setDrawingScale();
-                        if (defaultSettings.textAlpha != 1) {
-                            style.globalAlpha *= defaultSettings.textAlpha;
-                        }
-                        if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
-                            if (this.setNick(this.targetNick)) {
-                                this.drawNick(style);
-                            }
-                        }
-                        if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
-                            if (this.setMass(this.size)) {
-
-                                this.drawMass(style);
-                                if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                    this.drawMerge(style);
-                                }
-                                if (defaultmapsettings.showChat) {
-                                    this.drawChat(style);
-                                }
-                            }
-                        }
+                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
+                        //return;
                     }
+                    else {
+                        var recursive = false;
+                        if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
+                            this.setDrawing();
+                            this.setDrawingScale();
+                            if (defaultSettings.textAlpha != 1) {
+                                style.globalAlpha *= defaultSettings.textAlpha;
+                            }
+                            if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                                if (this.setNick(this.targetNick)) {
+                                    this.drawNick(style);
+                                }
+                            }
+                            if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                                if (this.setMass(this.size)) {
 
+                                    this.drawMass(style);
+                                    if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                        this.drawMerge(style);
+                                    }
+                                    if (defaultmapsettings.showChat) {
+                                        this.drawChat(style);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                } catch (eCellDraw) {
+                    console.error('[OGARIO CELL DRAW ERROR] Failed drawing cell ID ' + this.id + ' (nick: "' + (this.targetNick || '') + '", skin: "' + (this.skin || '') + '"):', eCellDraw);
+                } finally {
+                    style.restore();
                 }
-            } catch (eCellDraw) {
-                console.error('[OGARIO CELL DRAW ERROR] Failed drawing cell ID ' + this.id + ' (nick: "' + (this.targetNick || '') + '", skin: "' + (this.skin || '') + '"):', eCellDraw);
-            } finally {
-                style.restore();
             }
-        }
     }
     window.legendmod1 = ogarbasicassembly;
 
@@ -16702,7 +16803,14 @@ Most cells eaten   : ${mostCellsEaten}
             /* Pre-build O(1) lookup structures once per packet instead of
              * O(N) forEach/indexOf inside the per-cell loop. */
             if (!this._playerCellIDSet) {
-                this._playerCellIDSet = new Set(this.playerCellIDs);
+                this._playerCellIDSet = new Set();
+            } else {
+                this._playerCellIDSet.clear();
+            }
+            if (this.playerCellIDs && this.playerCellIDs.length) {
+                for (var _pidx = 0; _pidx < this.playerCellIDs.length; _pidx++) {
+                    this._playerCellIDSet.add(this.playerCellIDs[_pidx]);
+                }
             }
             if (!this._teamColorMap) {
                 this._teamColorMap = new Map();
@@ -17113,8 +17221,8 @@ Most cells eaten   : ${mostCellsEaten}
                     if (!this._cachePool) {
                         /* One-time init: pre-allocate 256-slot object pools per category */
                         this._cachePool = true;
-                        var _initPool = function(arr) {
-                            if (!arr._pool) { arr._pool = []; for (var pi = 0; pi < 256; pi++) arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0}); }
+                        var _initPool = function (arr) {
+                            if (!arr._pool) { arr._pool = []; for (var pi = 0; pi < 256; pi++) arr._pool.push({ x: 0, y: 0, targetX: 0, targetY: 0, size: 0 }); }
                         };
                         (this.biggerSTECellsCache || (this.biggerSTECellsCache = []));
                         (this.biggerCellsCache || (this.biggerCellsCache = []));
@@ -17177,11 +17285,11 @@ Most cells eaten   : ${mostCellsEaten}
                             } else {
                                 cell.oppColor = fixMass >= _thr8 ? _cBSTED :
                                     fixMass >= _thr4 ? _cBSTED :
-                                    fixMass >= _thr2 ? _cBSTE :
-                                    fixMass >= _thr1 ? _cB :
-                                    fixMass >= _thrD ? '#FFDC00' :
-                                    fixMass >= _thrDh ? _cS :
-                                    fixMass >= _thrDq ? _cSSTE : _cSSTED;
+                                        fixMass >= _thr2 ? _cBSTE :
+                                            fixMass >= _thr1 ? _cB :
+                                                fixMass >= _thrD ? '#FFDC00' :
+                                                    fixMass >= _thrDh ? _cS :
+                                                        fixMass >= _thrDq ? _cSSTE : _cSSTED;
                             }
                         }
                         /* Inline cacheCells — reuse pooled objects, zero allocation */
@@ -17197,11 +17305,11 @@ Most cells eaten   : ${mostCellsEaten}
                             /* Grow pool on demand (rare: only if >256 cells in one category) */
                             if (_wi >= _arr.length) {
                                 if (!_arr._pool) _arr._pool = [];
-                                while (_arr._pool.length <= _wi) _arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0});
+                                while (_arr._pool.length <= _wi) _arr._pool.push({ x: 0, y: 0, targetX: 0, targetY: 0, size: 0 });
                                 _arr.push(_arr._pool[_wi]);
                             } else if (!_arr[_wi]) {
                                 if (!_arr._pool) _arr._pool = [];
-                                if (!_arr._pool[_wi]) _arr._pool.push({x:0,y:0,targetX:0,targetY:0,size:0});
+                                if (!_arr._pool[_wi]) _arr._pool.push({ x: 0, y: 0, targetX: 0, targetY: 0, size: 0 });
                                 _arr[_wi] = _arr._pool[_wi];
                             }
                             var _obj = _arr[_wi];
@@ -17384,7 +17492,8 @@ Most cells eaten   : ${mostCellsEaten}
         cellsColored: [],
         setCanvas() {
             this.canvas = document.getElementById('canvas');
-            this.ctx = this.canvas.getContext('2d');
+            if (!this.canvas) return;
+            this.ctx = this.canvas.getContext('2d', { desynchronized: true });
             this.initWebGL();
             this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
@@ -17505,7 +17614,7 @@ Most cells eaten   : ${mostCellsEaten}
                     /* Make Canvas2D transparent so WebGL shows through gaps */
                     if (this.canvas) this.canvas.style.background = 'transparent';
                 }
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false });
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false, desynchronized: true, powerPreference: 'high-performance' });
                 if (!gl) return;
                 this.gl = gl;
 
@@ -19371,7 +19480,7 @@ Most cells eaten   : ${mostCellsEaten}
                             (legendmod.mapMaxX - legendmod.mapMinX) * 3,
                             (legendmod.mapMaxY - legendmod.mapMinY) * 3
                         );
-                    } catch (eCimg5) {}
+                    } catch (eCimg5) { }
                     this.ctx.globalAlpha = this.prevctxglobalAlpha;
                 }
                 if (defaultSettings.customBackground && legendmod.customMidPic && !legendmod.customMidPic._failed && ((legendmod.customMidPic.naturalWidth > 0 && legendmod.customMidPic.naturalHeight > 0) || (legendmod.customMidPic.width > 0 && legendmod.customMidPic.height > 0))) {

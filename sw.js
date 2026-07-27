@@ -1,77 +1,70 @@
-/**
- * Service Worker for Legend Mod PWA
- * Strategy: Network-first with offline fallback
- * - Always tries network first (game needs live WebSocket)
- * - Caches static assets for faster subsequent loads
- * - Works on both Android (TWA/PWA) and iOS (Add to Home Screen)
- */
-
-var CACHE_NAME = 'legendmod-v1';
-var PRECACHE = [
-    '/play.html',
-    '/banners/icon128.png',
-    '/banners/icon48.png',
-    '/banners/profilepic_guest.png',
-    '/LMexpress/master.css',
-    '/css/ogario.v3.css'
+const CACHE_NAME = 'lm-static-v1';
+const ASSETS_TO_CACHE = [
+    'https://jimboy3100.github.io/jquery.min.js',
+    'https://jimboy3100.github.io/protobuf.min.js',
+    'https://code.jquery.com/ui/1.12.1/jquery-ui.js',
+    'https://jimboy3100.github.io/bootstrap.min.js',
+    'https://jimboy3100.github.io/bootstrap-colorpicker.min.js',
+    'https://jimboy3100.github.io/toastr.min.js',
+    'https://jimboy3100.github.io/switchery.min.js',
+    'https://jimboy3100.github.io/rangeslider.min.js',
+    'https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js',
+    'https://jimboy3100.github.io/Youtubeiframe_api.js',
+    'https://jimboy3100.github.io/key-event.js',
+    'https://jimboy3100.github.io/foggy.js',
+    'https://jimboy3100.github.io/LanguagePackEnglish.js',
+    'https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js',
+    'https://jimboy3100.github.io/LMexpress/i18n.js',
+    'https://jimboy3100.github.io/LMexpress/proto.decoder.js',
+    'https://jimboy3100.github.io/ogario/ogario.v4.master.regionobj.js',
+    'https://jimboy3100.github.io/ogario/ogario.v4.master.js',
+    'https://jimboy3100.github.io/TweenMax.min.js',
+    'https://jimboy3100.github.io/context-menu.min.js'
 ];
 
-/* Install — precache essential assets */
-self.addEventListener('install', function (e) {
-    e.waitUntil(
-        caches.open(CACHE_NAME).then(function (cache) {
-            return cache.addAll(PRECACHE);
-        }).then(function () {
-            return self.skipWaiting();
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS_TO_CACHE).catch(() => {});
         })
     );
+    self.skipWaiting();
 });
 
-/* Activate — clean old caches */
-self.addEventListener('activate', function (e) {
-    e.waitUntil(
-        caches.keys().then(function (names) {
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                names.filter(function (n) { return n !== CACHE_NAME; })
-                    .map(function (n) { return caches.delete(n); })
+                cacheNames.map((name) => {
+                    if (name !== CACHE_NAME) {
+                        return caches.delete(name);
+                    }
+                })
             );
-        }).then(function () {
-            return self.clients.claim();
         })
     );
+    self.clients.claim();
 });
 
-/* Fetch — network-first strategy */
-self.addEventListener('fetch', function (e) {
-    /* Don't cache WebSocket, analytics, or external API calls */
-    if (e.request.url.indexOf('ws://') === 0 ||
-        e.request.url.indexOf('wss://') === 0 ||
-        e.request.url.indexOf('google-analytics') > -1 ||
-        e.request.url.indexOf('recaptcha') > -1 ||
-        e.request.url.indexOf('discord.com') > -1 ||
-        e.request.url.indexOf('googleapis.com') > -1) {
-        return;
-    }
+// Stale-While-Revalidate Strategy for JS/CSS/Fonts
+self.addEventListener('fetch', (event) => {
+    const url = event.request.url;
+    if (event.request.method !== 'GET') return;
+    if (url.includes('socket') || url.includes('ws://') || url.includes('wss://') || url.includes('garix')) return;
 
-    e.respondWith(
-        fetch(e.request).then(function (response) {
-            /* Cache successful GET responses */
-            if (response.ok && e.request.method === 'GET') {
-                var clone = response.clone();
-                caches.open(CACHE_NAME).then(function (cache) {
-                    cache.put(e.request, clone);
+    if (url.endsWith('.js') || url.endsWith('.css') || url.endsWith('.woff2') || url.includes('/ogario/') || url.includes('/LMexpress/')) {
+        event.respondWith(
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(event.request).then((cachedResponse) => {
+                    const fetchPromise = fetch(event.request).then((networkResponse) => {
+                        if (networkResponse && networkResponse.status === 200) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
+                        return networkResponse;
+                    }).catch(() => cachedResponse);
+                    return cachedResponse || fetchPromise;
                 });
-            }
-            return response;
-        }).catch(function () {
-            /* Network failed — try cache */
-            return caches.match(e.request).then(function (cached) {
-                if (cached) return cached;
-                /* Fallback for navigation requests */
-                if (e.request.mode === 'navigate') {
-                    return caches.match('/play.html');
-                }
-            });
-        })
-    );
+            })
+        );
+    }
 });

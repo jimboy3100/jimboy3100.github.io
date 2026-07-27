@@ -12,6 +12,17 @@
     <meta property="og:description" content="The most well developed script for smash game" />
     <meta property="og:image" content="https://jimboy3100.github.io/banners/CropedImage128.gif" />
     <link rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+    }
+    </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
     <link rel="stylesheet" href="https://jimboy3100.github.io/LMexpress/master.css">
     <link rel="stylesheet" href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css">
