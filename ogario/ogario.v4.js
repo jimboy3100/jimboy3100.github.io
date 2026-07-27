@@ -5656,6 +5656,9 @@ function thelegendmodproject() {
                 $('#pause-hud').hide();
             }
         },
+        multiboxswap() {
+            this.multiboxchange();
+        },
         multiboxchange() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
