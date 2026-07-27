@@ -1,9 +1,8 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
 function loadMultiCellSkin(spect) {
-    var slotIdx = (spect && spect.number > 0) ? (spect.number - 1) : 0;
-    var profileIdx = (application.mbSlots && slotIdx < application.mbSlots.length)
-        ? application.mbSlots[slotIdx] : application.selectedOldProfile;
+    var profileIdx = (application.mbSlots && spect && spect.number < application.mbSlots.length)
+        ? application.mbSlots[spect.number] : application.selectedOldProfile;
     var prof = profiles[profileIdx];
     if (prof && prof.nick && prof.skinURL) {
         if (typeof application !== 'undefined' && application.cacheCustomSkin) {
@@ -915,13 +914,8 @@ class Spect {
     }
 
     handleSendNick() {
-        var slotIdx = (this.number > 0) ? (this.number - 1) : 0;
-        var profileIdx = null;
-        if (application.mbSlots && slotIdx < application.mbSlots.length) {
-            profileIdx = application.mbSlots[slotIdx];
-        } else {
-            profileIdx = application.selectedOldProfile;
-        }
+        var profileIdx = (application.mbSlots && this.number < application.mbSlots.length)
+            ? application.mbSlots[this.number] : application.selectedOldProfile;
         var prof = profiles[profileIdx] || profiles[0];
         if (prof && prof.nick && defaultmapsettings.multiBoxShadow) {
             this.sendNick(prof.nick);
@@ -1399,9 +1393,8 @@ class Spect {
                     //legendmod.cells.push(cell);
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        var slotIdx = (this.number > 0) ? (this.number - 1) : 0;
-                        var _mbPIdx = (application.mbSlots && slotIdx < application.mbSlots.length)
-                            ? application.mbSlots[slotIdx] : application.selectedOldProfile;
+                        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
+                            ? application.mbSlots[this.number] : application.selectedOldProfile;
                         var _mbProf = profiles[_mbPIdx];
                         if (_mbProf) {
                             this.playerColor = _mbProf.color || '#000000';
