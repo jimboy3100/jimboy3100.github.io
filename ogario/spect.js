@@ -977,45 +977,27 @@ class Spect {
         var diffX = legendmod.playerCells[0].x - x;
         var diffY = legendmod.playerCells[0].y - y;
         if (Math.abs(diffX) > 0.001 || Math.abs(diffY) > 0.001) {
-            this.fix3x += diffX * (this.fixX || 1);
-            this.fix3y += diffY * (this.fixY || 1);
+            this.fix3x += diffX;
+            this.fix3y += diffY;
+            this.moveExistedCells(diffX, diffY);
             if (z) {
                 console.log('[SPECT] Map offset calibrated (diffX, diffY):', diffX, diffY, 'New fix3:', this.fix3x, this.fix3y);
             }
         }
     }
 
-    /*
-        constantrecalculation3(x,y){
-            this.fix3x = (legendmod.playerCells[0].x - x)
-            this.fix3y = (legendmod.playerCells[0].y - y)
-            //this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
-            //this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
-            //toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
-            //toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
+    moveExistedCells(deltaX, deltaY) {
+        if (!deltaX && !deltaY) return;
+        legendmod.cells.forEach((found) => {
+            if (found && found.spectator === this.number) {
+                found.x += deltaX;
+                found.y += deltaY;
+                found.targetX += deltaX;
+                found.targetY += deltaY;
+            }
+        });
+    }
 
-            this.moveExistedCells()
-            if (this.player){
-                console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
-                var result;
-                var temp = Math.abs(Math.round(this.fix3x)) + Math.abs(Math.round(this.fix3y))
-                if (temp<15) result="<font color='Green'><b>Good</b></font>"
-                else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
-                else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
-                else if	(temp >= 40 && temp < 60) result="<font color='Red'><b>Bad</b></font>"
-                else if	(temp >= 60) result="<font color='Red'><b>Very bad</b></font>"
-                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
-            }
-        }
-        constantrecalculation(){
-                //3rd fix - excess processing
-            if (this.ghostCells && this.ghostCells[0] && this.player){
-                this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
-                this.fix3y = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y
-                //this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-                //this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
-            }
-        }*/
     isInView(x, y) {
         let mtp = 4.95,
             w = 1024 / 2 * mtp,
