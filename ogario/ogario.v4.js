@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.491;
+window.OgVer = 3.492;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -8173,10 +8173,11 @@ function thelegendmodproject() {
                             cvs.height = this.height;
                             var ctx = cvs.getContext("2d");
                             ctx.drawImage(this, 0, 0);
-                            var dataUrl = cvs.toDataURL("image/png");
-                            if (dataUrl && dataUrl.length > 100) {
-                                window.LMSkinStorage.put(url, dataUrl);
-                            }
+                            cvs.toBlob(function (blob) {
+                                if (blob && blob.size > 100) {
+                                    window.LMSkinStorage.put(url, blob);
+                                }
+                            }, "image/png");
                         } catch (err) { }
                     }
                 };
@@ -8195,14 +8196,22 @@ function thelegendmodproject() {
                     if (cachedData && img && !img[url]) {
                         var cachedImg = new Image();
                         cachedImg.crossOrigin = 'anonymous';
+                        var objUrl = null;
                         cachedImg.onload = function () {
                             img[url] = this;
                             processOnLoad(this);
+                            if (objUrl) URL.revokeObjectURL(objUrl);
                         };
                         cachedImg.onerror = function () {
+                            if (objUrl) URL.revokeObjectURL(objUrl);
                             fetchFromNetwork();
                         };
-                        cachedImg.src = cachedData;
+                        if (cachedData instanceof Blob) {
+                            objUrl = URL.createObjectURL(cachedData);
+                            cachedImg.src = objUrl;
+                        } else {
+                            cachedImg.src = cachedData;
+                        }
                     } else if (!img[url]) {
                         fetchFromNetwork();
                     } else {
