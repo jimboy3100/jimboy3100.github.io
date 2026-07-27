@@ -247,7 +247,10 @@ class Spect {
         //this.deletefromObject("indexedCells")
         //this.cells = [];
         //this.deleteFromArray("cells")
-        legendmod.playerCellsMulti = [];
+        // Only remove this unit's cells from playerCellsMulti, not all units'
+        legendmod.playerCellsMulti = legendmod.playerCellsMulti.filter(function(c) {
+            return c.spectator !== this.number;
+        }.bind(this));
         this.playerCellIDs = [];
         //this.food = [];
         //this.viruses = [];
@@ -1152,14 +1155,25 @@ class Spect {
 
     terminate() {
         this.active = null;
-        window.multiboxPlayerEnabled = null
-        if (!legendmod.play) {
-            application.showMenu()
-        }
+        window.multiboxPlayerEnabled = null;
+
         const temp = this.number - 1;
         if (spects[temp]) {
-            spects[temp].closeConnection()
-            spects = spects.slice(temp + 1);
+            spects[temp].closeConnection();
+            spects.splice(temp, 1);
+        }
+
+        // Check if any other unit is still alive (main player or other spects)
+        var anyAlive = legendmod.play; // main player alive?
+        if (!anyAlive) {
+            for (var i = 0; i < spects.length; i++) {
+                if (spects[i] && spects[i].active) { anyAlive = true; break; }
+            }
+        }
+
+        if (!anyAlive) {
+            // Last unit died — handle like solo agar.io death
+            application.showMenu();
         }
     }
 
