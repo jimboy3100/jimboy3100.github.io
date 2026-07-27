@@ -6699,15 +6699,22 @@ function thelegendmodproject() {
             if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
                 this.mbSlots = [];
             }
-            // Ensure slot 0 always has selectedProfile
+            // Ensure slot 0 has selectedProfile
             if (this.mbSlots.length === 0 || this.mbSlots[0] !== this.selectedProfile) {
-                // Rebuild from selectedProfile/selectedOldProfile
                 this.mbSlots = [this.selectedProfile];
-                if (this.selectedOldProfile != null && this.selectedOldProfile !== this.selectedProfile) {
+                if (this.selectedOldProfile != null && this.selectedOldProfile !== this.selectedProfile && profiles[this.selectedOldProfile]) {
                     this.mbSlots.push(this.selectedOldProfile);
                 }
             }
-            // Trim or pad to maxMb
+            // Fill remaining slots with distinct available profiles
+            if (typeof profiles !== 'undefined' && profiles.length) {
+                for (var p = 0; p < profiles.length && this.mbSlots.length < maxMb; p++) {
+                    if (this.mbSlots.indexOf(p) === -1) {
+                        this.mbSlots.push(p);
+                    }
+                }
+            }
+            // Trim to maxMb
             while (this.mbSlots.length > maxMb) this.mbSlots.pop();
         },
         syncFromMbSlots() {

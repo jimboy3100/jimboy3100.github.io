@@ -1,8 +1,9 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
 function loadMultiCellSkin(spect) {
-    var profileIdx = (application.mbSlots && spect && spect.number < application.mbSlots.length)
-        ? application.mbSlots[spect.number] : application.selectedOldProfile;
+    var slotIdx = (spect && spect.number > 0) ? (spect.number - 1) : 0;
+    var profileIdx = (application.mbSlots && slotIdx < application.mbSlots.length)
+        ? application.mbSlots[slotIdx] : application.selectedOldProfile;
     var prof = profiles[profileIdx];
     if (prof && prof.nick && prof.skinURL) {
         if (typeof application !== 'undefined' && application.cacheCustomSkin) {
@@ -914,19 +915,28 @@ class Spect {
     }
 
     handleSendNick() {
-        // Each spect unit picks its profile from mbSlots: spect #1 → mbSlots[1], spect #2 → mbSlots[2], etc.
+        var slotIdx = (this.number > 0) ? (this.number - 1) : 0;
         var profileIdx = null;
-        if (application.mbSlots && this.number < application.mbSlots.length) {
-            profileIdx = application.mbSlots[this.number];
+        if (application.mbSlots && slotIdx < application.mbSlots.length) {
+            profileIdx = application.mbSlots[slotIdx];
         } else {
             profileIdx = application.selectedOldProfile;
         }
-        if (profiles[profileIdx] && profiles[profileIdx].nick && defaultmapsettings.multiBoxShadow) {
-            this.sendNick(profiles[profileIdx].nick)
-            this.nick = profiles[profileIdx].nick
+        var prof = profiles[profileIdx] || profiles[0];
+        if (prof && prof.nick && defaultmapsettings.multiBoxShadow) {
+            this.sendNick(prof.nick);
+            this.nick = prof.nick;
+            if (prof.skinURL) {
+                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
+                    application.cacheCustomSkin(prof.nick, prof.color || '#000000', prof.skinURL);
+                }
+                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
+                    core.registerSkin(prof.nick, null, prof.skinURL, null);
+                }
+            }
         } else {
-            this.sendNick($("#nick").val())
-            this.nick = $("#nick").val()
+            this.sendNick($("#nick").val());
+            this.nick = $("#nick").val();
         }
     }
 
@@ -1389,13 +1399,26 @@ class Spect {
                     //legendmod.cells.push(cell);
                     if (this.playerCellIDs.indexOf(id) !== -1 && legendmod.playerCellsMulti.indexOf(cell) === -1) {
                         cell.isPlayerCell = true;
-                        // Use mbSlots-based profile for this unit's color
-                        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
-                            ? application.mbSlots[this.number] : application.selectedOldProfile;
+                        var slotIdx = (this.number > 0) ? (this.number - 1) : 0;
+                        var _mbPIdx = (application.mbSlots && slotIdx < application.mbSlots.length)
+                            ? application.mbSlots[slotIdx] : application.selectedOldProfile;
                         var _mbProf = profiles[_mbPIdx];
                         if (_mbProf) {
-                            this.playerColor = _mbProf.color;
-                            cell.color = _mbProf.color;
+                            this.playerColor = _mbProf.color || '#000000';
+                            cell.color = _mbProf.color || '#000000';
+                            if (_mbProf.nick) {
+                                this.nick = _mbProf.nick;
+                                cell.targetNick = _mbProf.nick;
+                            }
+                            if (_mbProf.skinURL) {
+                                cell.skin = _mbProf.skinURL;
+                                if (typeof application !== 'undefined' && application.cacheCustomSkin) {
+                                    application.cacheCustomSkin(_mbProf.nick, _mbProf.color || '#000000', _mbProf.skinURL);
+                                }
+                                if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
+                                    core.registerSkin(_mbProf.nick, null, _mbProf.skinURL, null);
+                                }
+                            }
                         }
 
                         legendmod.playerCellsMulti.push(cell);
