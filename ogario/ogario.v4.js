@@ -16237,10 +16237,10 @@ Most cells eaten   : ${mostCellsEaten}
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
 
-                    this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                    this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                    this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                    this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                    this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                    this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                    this.mapMaxY = this.mapOffset - this.mapOffsetY;
                 } else {
                     var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
                     if (!this.mapOffsetFixed || pWidth >= currentWidth) {

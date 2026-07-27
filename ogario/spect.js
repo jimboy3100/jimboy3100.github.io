@@ -1108,10 +1108,10 @@ class Spect {
                 */
                 this.mapOffsetX = this.mapOffset - right;
                 this.mapOffsetY = this.mapOffset - bottom;
-                this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-                this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-                this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-                this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                this.mapMaxY = this.mapOffset - this.mapOffsetY;
             } else {
                 this.mapOffsetX = this.mapSize / 2
                 this.mapOffsetY = this.mapSize / 2
