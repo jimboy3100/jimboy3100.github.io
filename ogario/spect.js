@@ -1131,14 +1131,11 @@ class Spect {
         }
         this.mapOffsetFixed = true;
         console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-    }
+
         if (!legendmod.integrity) {
             if (this.player) {
-                this.handleSendNick()
-            }
-            //else if (!this.player && !window.fullSpectator){
-            else if (!this.player) {
-                //console.log(this.number)
+                this.handleSendNick();
+            } else if (!this.player) {
                 this.sendSpectate();
             }
             if (this.staticX != null && this.staticY != null) {
@@ -1146,7 +1143,7 @@ class Spect {
                     this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                 }, 50);
                 if (!this.player) {
-                    this.sendFreeSpectate()
+                    this.sendFreeSpectate();
                 }
             }
         }
