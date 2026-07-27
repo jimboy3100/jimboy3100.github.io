@@ -957,13 +957,11 @@ class Spect {
     }
 
     convertX(x) { //is used only for SendPosition
-        return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
-        //return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX)
+        return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
     }
 
     convertY(y) {
-        //return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY)
-        return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
+        return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
     }
 
     constantrecalculation2() {
