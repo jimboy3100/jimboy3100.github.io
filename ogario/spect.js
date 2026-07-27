@@ -1147,17 +1147,25 @@ class Spect {
     }
 
     terminate() {
-        this.active = null;
-        window.multiboxPlayerEnabled = null;
+        this.active = false;
+        this.playerCellIDs = [];
 
-        const temp = this.number - 1;
-        if (spects[temp]) {
-            spects[temp].closeConnection();
-            spects.splice(temp, 1);
+        // Auto-switch active camera to surviving multibox unit if available
+        if (window.multiboxPlayerEnabled === this.number) {
+            if (legendmod.play) {
+                window.multiboxPlayerEnabled = null;
+            } else {
+                for (var s = 0; s < spects.length; s++) {
+                    if (spects[s] && spects[s] !== this && spects[s].active) {
+                        window.multiboxPlayerEnabled = spects[s].number;
+                        break;
+                    }
+                }
+            }
         }
 
-        // Check if any other unit is still alive (main player or other spects)
-        var anyAlive = legendmod.play; // main player alive?
+        // Check if any unit is still alive (main player or other spects)
+        var anyAlive = legendmod.play;
         if (!anyAlive) {
             for (var i = 0; i < spects.length; i++) {
                 if (spects[i] && spects[i].active) { anyAlive = true; break; }
@@ -1165,8 +1173,17 @@ class Spect {
         }
 
         if (!anyAlive) {
-            // Last unit died — handle like solo agar.io death
+            // Last unit died — show menu
             application.showMenu();
+        }
+    }
+
+    respawn() {
+        if (!this.player) return;
+        if (this.isSocketOpen()) {
+            this.handleSendNick();
+        } else {
+            this.connect();
         }
     }
 

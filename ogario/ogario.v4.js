@@ -5682,6 +5682,12 @@ function thelegendmodproject() {
                 window.multiboxPlayerEnabled = null;
             }
             window.multiboxPlayerEnabledSaved = null;
+            if (window.multiboxPlayerEnabled) {
+                var spectIdx = window.multiboxPlayerEnabled - 1;
+                if (spects[spectIdx] && !spects[spectIdx].active) {
+                    spects[spectIdx].respawn();
+                }
+            }
             /* Re-register n1 skin when returning to main player */
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
@@ -5714,6 +5720,12 @@ function thelegendmodproject() {
                 window.multiboxPlayerEnabled = null;
             }
             window.multiboxPlayerEnabledSaved = null;
+            if (window.multiboxPlayerEnabled) {
+                var spectIdx2 = window.multiboxPlayerEnabled - 1;
+                if (spects[spectIdx2] && !spects[spectIdx2].active) {
+                    spects[spectIdx2].respawn();
+                }
+            }
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
