@@ -102,6 +102,8 @@
  *     reverseTrick {} — automated reverse-split detection.
  *
  * ═══════════════════════════════════════════════════════════════════════════════ */
+window.spects = window.spects || [];
+var spects = window.spects;
 window.OgVer = 3.487;
 if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('legendmod.ml') || document.URL.includes('expanding.land')) {
     window.legendModFromWebsite = true;

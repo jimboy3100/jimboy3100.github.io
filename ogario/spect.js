@@ -14,7 +14,10 @@ function loadMultiCellSkin(spect) {
     }
 }
 
-let spects;
+if (typeof window.spects === "undefined" || !window.spects) {
+    window.spects = [];
+}
+var spects = window.spects;
 
 function addBox() {
     let spect = new Spect();
@@ -78,7 +81,8 @@ function addFullSpectator() {
     }
 }
 
-spects = [];
+if (!window.spects) window.spects = [];
+spects = window.spects;
 
 class Spect {
     friends;
