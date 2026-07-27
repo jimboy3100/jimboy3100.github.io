@@ -1028,13 +1028,17 @@ class Spect {
     }
 
     isInViewCustom(x, y, size) {
-        const randomNum = 0; // randomNum=40
-        const distance = size + randomNum;
-        //var distance = size + randomNum + this.playerSize
-        return !(x + distance < legendmod.camMinX ||
-            y + distance < legendmod.camMinY ||
-            x - distance > legendmod.camMaxX ||
-            y - distance > legendmod.camMaxY)
+        // Use MAIN PLAYER's actual position, not display camera (which follows active multibox)
+        var mainX = ogario.playerX || 0;
+        var mainY = ogario.playerY || 0;
+        var _invScale = 1.0 / (legendmod.scale || 1);
+        var halfW = (legendmod.canvasWidth || 1920) * 0.5 * _invScale;
+        var halfH = (legendmod.canvasHeight || 1080) * 0.5 * _invScale;
+        var distance = size;
+        return !(x + distance < mainX - halfW ||
+            y + distance < mainY - halfH ||
+            x - distance > mainX + halfW ||
+            y - distance > mainY + halfH)
     }
 
     isInViewCustom2(x, y, size) {
