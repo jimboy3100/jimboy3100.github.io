@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.492;
+window.OgVer = 3.493;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -8105,15 +8105,18 @@ function thelegendmodproject() {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
 
-            if (!app._failedSkinURLs) app._failedSkinURLs = new Set();
+            if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
-            if (app._failedSkinURLs.has(url) || app._pendingSkinLoads.has(url)) return;
+            if (app._pendingSkinLoads.has(url)) return;
+            var failTime = app._failedSkinURLs[url];
+            if (failTime && (Date.now() - failTime) < 30000) return;
+            if (failTime) delete app._failedSkinURLs[url];
             if (img && img[url]) return;
 
-            if (img && Object.keys(img).length > 200) {
+            if (img && Object.keys(img).length > 800) {
                 var keys = Object.keys(img);
                 for (var k = 0; k < 50; k++) {
-                    if (keys[k] && !keys[k].endsWith("_cached")) {
+                    if (keys[k] && !keys[k].includes("_cached")) {
                         delete img[keys[k]];
                     }
                 }
@@ -8151,7 +8154,7 @@ function thelegendmodproject() {
                     }
                 } else {
                     imageObj._failed = true;
-                    if (app._failedSkinURLs) app._failedSkinURLs.add(url);
+                    if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
                 }
             };
 
@@ -8164,7 +8167,16 @@ function thelegendmodproject() {
                 if (!url.includes('imgur.com')) {
                     img[url].crossOrigin = 'anonymous';
                 }
+                var _loadTimer = setTimeout(function () {
+                    if (img[url] && !img[url].complete) {
+                        img[url].onerror = img[url].onload = null;
+                        img[url]._failed = true;
+                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                        if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                    }
+                }, 8000);
                 img[url].onload = function () {
+                    clearTimeout(_loadTimer);
                     processOnLoad(this);
                     if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0) {
                         try {
@@ -8183,10 +8195,11 @@ function thelegendmodproject() {
                 };
                 img[url].referrerPolicy = 'no-referrer';
                 img[url].onerror = function () {
+                    clearTimeout(_loadTimer);
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (img[url]) img[url]._failed = true;
-                    if (app._failedSkinURLs) app._failedSkinURLs.add(url);
-                    console.warn("[LM] Skin URL failed to load (will not retry): " + url);
+                    if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                    console.warn("[LM] Skin URL failed to load (will not retry for 30s): " + url);
                 };
                 img[url].src = url;
             };
