@@ -1399,22 +1399,9 @@ class Spect {
             }
             //
 
-            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
-                if (!isFood) {
-                    if (!invisible) invisible = this.isInViewCustom(x, y, size)
-                } else if (isFood) {
-                    if (window.ingameSpectator && legendmod.isSpectateEnabled) {
-                        invisible = true
-                    } else if (!window.fullSpectator) {
-                        if (!invisible) invisible = this.isInViewCustom(x, y, size)
-                    }
-                }
-            }
-            if (this.player) {
-                // When in multibox mode, never hide or remove any cells received by spect
-                invisible = false;
-                remove = false;
-            }
+            // Sockets only receive cells within their active viewport — never mark cells invisible
+            invisible = false;
+            remove = false;
 
             if (isFood && !defaultmapsettings.rainbowFood) {
                 color = defaultSettings.foodColor
