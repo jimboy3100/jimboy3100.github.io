@@ -5661,7 +5661,8 @@ function thelegendmodproject() {
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
-                addBox();
+                if (typeof window.addBox === "function") window.addBox();
+                else if (typeof addBox === "function") addBox();
                 window.multiboxPlayerEnabled = 1;
                 window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
@@ -5699,7 +5700,8 @@ function thelegendmodproject() {
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
-                addBox();
+                if (typeof window.addBox === "function") window.addBox();
+                else if (typeof addBox === "function") addBox();
                 window.multiboxPlayerEnabled = 1;
                 window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {

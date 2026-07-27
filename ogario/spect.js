@@ -19,14 +19,16 @@ let spects;
 function addBox() {
     let spect = new Spect();
     spect.player = true;
-    legendmod.multiBoxPlayerExists = spect.player
+    legendmod.multiBoxPlayerExists = spect.player;
     spects.unshift(spect);
 }
+window.addBox = addBox;
 
 function addSpectator() {
     let spect = new Spect();
-    spects.push(spect)
+    spects.push(spect);
 }
+window.addSpectator = addSpectator;
 
 function addFullSpectator() {
     let mtp = 4.95,
