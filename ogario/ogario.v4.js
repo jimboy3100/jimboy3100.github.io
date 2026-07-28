@@ -17016,15 +17016,25 @@ Most cells eaten   : ${mostCellsEaten}
                 //if (!isVirus && !isFood && name != "" && this.gameMode != ":teams") {
                 //
                 //
-                if (!isVirus && !isFood && name != "" && this.gameMode != ":teams" && this.gameMode != ":party") { //28/6/2020
-                    if (LM.cellcolors[name]) {
-                        color = LM.cellcolors[name]
-                    } else {
-                        /* O(1) Map lookup instead of O(N) forEach */
-                        var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
-                        if (_tmColor) color = _tmColor;
+                var rawServerColor = color;
+                if (!isVirus && !isFood) {
+                    if (name != "" && this.gameMode != ":teams" && this.gameMode != ":party") {
+                        if (LM.cellcolors[name]) {
+                            color = LM.cellcolors[name];
+                        } else {
+                            /* O(1) Map lookup instead of O(N) forEach */
+                            var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
+                            if (_tmColor) color = _tmColor;
+                        }
+                        if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color;
+                        if (rawServerColor && color) {
+                            if (!this._colorByRawMap) this._colorByRawMap = new Map();
+                            this._colorByRawMap.set(rawServerColor, color);
+                        }
+                    } else if (name === "" && rawServerColor && this._colorByRawMap && this._colorByRawMap.has(rawServerColor)) {
+                        /* Nameless popped/split fragment inherits parent cell's unified color */
+                        color = this._colorByRawMap.get(rawServerColor);
                     }
-                    if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color
                 }
                 //				
                 var invisible = false;
@@ -17034,9 +17044,9 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 cellUpdateCells = this.indexedCells[id];
                 if (cellUpdateCells) {
-                    //if (color && !LM.playerCellsMulti.length) {
-                    //cellUpdateCells.color = color;
-                    //}					
+                    if (color && !cellUpdateCells.isFood && !cellUpdateCells.isVirus) {
+                        cellUpdateCells.color = color;
+                    }
                 } else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
@@ -17045,21 +17055,33 @@ Most cells eaten   : ${mostCellsEaten}
                         if (isVirus && defaultmapsettings.virusesRange) {
                             this.viruses.push(cellUpdateCells);
                         }
-                        //this.cells.push(cellUpdateCells);
                         this.cells.push(cellUpdateCells);
-                        if ((this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellUpdateCells) === -1) {
+
+                        /* Fast Player Cell & Fragment Detection */
+                        var isOwnPlayerCell = (this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) != -1));
+                        if (!isOwnPlayerCell && !isVirus && this.play && this.playerCells.length > 0 && rawServerColor) {
+                            /* Check if new nameless cell matches raw server color of an existing player cell */
+                            if (this.playerCells[0].rawServerColor === rawServerColor || (this.playerColor && rawServerColor === this.playerRawServerColor)) {
+                                isOwnPlayerCell = true;
+                                if (this._playerCellIDSet) this._playerCellIDSet.add(id);
+                                if (this.playerCellIDs.indexOf(id) === -1) this.playerCellIDs.push(id);
+                            }
+                        }
+
+                        if (isOwnPlayerCell && this.playerCells.indexOf(cellUpdateCells) === -1) {
                             cellUpdateCells.isPlayerCell = true;
+                            cellUpdateCells.rawServerColor = rawServerColor;
                             if (this.gameMode === ":teams") {
                                 this.playerColor = color;
                             } else {
-                                if (profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor && profiles[application.selectedProfile].color) {
-                                    color = profiles[application.selectedProfile].color
+                                if (profiles[application.selectedProfile] && profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor) {
+                                    color = profiles[application.selectedProfile].color;
                                 }
-                                this.playerColor = color;
-                                cellUpdateCells.color = color;
+                                this.playerColor = color || this.playerColor;
+                                cellUpdateCells.color = this.playerColor || color;
                             }
+                            this.playerRawServerColor = rawServerColor;
                             this.playerCells.push(cellUpdateCells);
-                            //this.playerCellsMulti.push(cellUpdateCells);
                         }
                     } else if (isFood) {
                         this.food.push(cellUpdateCells);
