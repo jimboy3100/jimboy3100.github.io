@@ -8172,11 +8172,15 @@ function thelegendmodproject() {
                 } else {
                     img[url] = new Image();
                 }
-                /* imgur rejects CORS requests (403 Forbidden), so skip crossOrigin for imgur.
-                 * Consequence: imgur skins render fine but can't be cached to IndexedDB
-                 * (canvas becomes tainted). All other skins get crossOrigin for cacheable canvas. */
-                var isImgur = url.includes('imgur.com');
-                if (isImgur) {
+                /* CDNs that reject CORS requests from non-agar.io origins:
+                 * - imgur.com: always returns 403 for CORS
+                 * - configs.agario.miniclippt.com/custom_skins: returns 403 for CORS
+                 * Solution: load as opaque images (no crossOrigin) with no-referrer.
+                 * Consequence: skins render fine but can't be cached to IndexedDB
+                 * (canvas becomes tainted). The try/catch in onload handles this. */
+                var isCorsBlocked = url.includes('imgur.com') ||
+                    (url.includes('agario.miniclippt') && url.includes('/custom_skins/'));
+                if (isCorsBlocked) {
                     img[url].referrerPolicy = 'no-referrer';
                 } else {
                     img[url].crossOrigin = 'anonymous';
@@ -15898,7 +15902,13 @@ function thelegendmodproject() {
         getImg(url, name, callback) {
             const app = this;
             var img = new Image();
-            img.crossOrigin = 'anonymous';
+            var isCorsBlocked = url.includes('imgur.com') ||
+                (url.includes('agario.miniclippt') && url.includes('/custom_skins/'));
+            if (isCorsBlocked) {
+                img.referrerPolicy = 'no-referrer';
+            } else {
+                img.crossOrigin = 'anonymous';
+            }
             img.setAttribute("alt", name);
             img.onload = function () {
                 if (this.complete && this.width && this.height) {
