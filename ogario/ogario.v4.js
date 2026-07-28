@@ -8136,6 +8136,10 @@ function thelegendmodproject() {
                     imageObj.width <= 2000 && imageObj.width > 0 &&
                     imageObj.height <= 2000 && imageObj.height > 0) {
 
+                    if (imageObj.width >= imageObj.height * 1.5) {
+                        animated = true;
+                    }
+
                     if (animated === "animatedSkins") {
                         app.cacheQueueSkinAnimated.push(url);
                         if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
@@ -8276,8 +8280,7 @@ function thelegendmodproject() {
                         } else {
                             var w = imgObj.width || depth;
                             var h = imgObj.height || depth;
-                            sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth / 2, depth);
-                            sCtx.drawImage(imgObj, w / 2, 0, w / 2, h, depth / 2, 0, depth / 2, depth);
+                            sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth, depth);
                         }
                     } catch (error) { }
                     try {
@@ -8339,11 +8342,14 @@ function thelegendmodproject() {
                         var img3 = this.customSkinsCache[e];
                         var w3 = img3.width || depth;
                         var h3 = img3.height || depth;
-                        sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, depth / 2, 0, depth / 2, depth);
+                        sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, 0, 0, depth, depth);
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached3"] = new Image;
                         this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                        if (window.drawRender && window.drawRender.uploadSkinTexture) {
+                            window.drawRender.uploadSkinTexture(e + "_cached3", i);
+                        }
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached3"] = this.customSkinsCache[e];
                     }
@@ -19202,11 +19208,14 @@ Most cells eaten   : ${mostCellsEaten}
                     if (!skinUrl && cell.skin) {
                         skinUrl = application.customSkinsMap[cell.skin];
                     }
-                    if (skinUrl && this.glSkinMap[skinUrl] !== undefined) {
-                        skinLayer = this.glSkinMap[skinUrl];
-                        // Transparent skin alpha
-                        if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                            if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
+                    if (skinUrl) {
+                        var activeKey = (this._skinHalf && this.glSkinMap[skinUrl + "_cached3"] !== undefined) ? (skinUrl + "_cached3") : skinUrl;
+                        if (this.glSkinMap[activeKey] !== undefined) {
+                            skinLayer = this.glSkinMap[activeKey];
+                            // Transparent skin alpha
+                            if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                                if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
+                            }
                         }
                     }
                 }
@@ -19453,7 +19462,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             /* Precompute per-frame constants for cell draw (#2, #3) */
-            this._skinHalf = (_now % 60000) >= 30000; /* animated skin frame toggle */
+            this._skinHalf = (_now % 1000) >= 500; /* animated skin frame toggle: 500ms per frame */
             this._drawSettings = {
                 optimizedNames: defaultmapsettings.optimizedNames,
                 optimizedMass: defaultmapsettings.optimizedMass,
