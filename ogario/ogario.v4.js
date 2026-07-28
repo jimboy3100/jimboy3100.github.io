@@ -8184,6 +8184,7 @@ function thelegendmodproject() {
                  * Delta client uses the same approach (Texture.ts:145-146). */
                 var isCorsBlocked = url.includes('imgur.com') ||
                     url.includes('agario.miniclippt.com') ||
+                    url.includes('legendmod.ml') ||
                     url.includes('jimboy3000.github.io') ||
                     url.includes('jimboy3100.github.io');
                 if (isCorsBlocked) {
@@ -8219,7 +8220,7 @@ function thelegendmodproject() {
                         }
                     }
                 };
-                img[url].referrerPolicy = 'no-referrer';
+                /* referrerPolicy already set above based on isCorsBlocked */
                 img[url].onerror = function () {
                     clearTimeout(_loadTimer);
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
@@ -8229,7 +8230,7 @@ function thelegendmodproject() {
                     var filename = url.split('/').pop().replace('?', '');
                     if (!filename) return;
                     var isCustomSkin = filename.startsWith('skin_custom_');
-                    var PROXY = 'http://188.245.107.158/skin-proxy/vanilla/';
+                    var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
                     var isMirror = url.includes('legendmod.ml') ||
                         url.includes('jimboy3100.github.io') ||
                         url.includes('jimboy3000.github.io');
