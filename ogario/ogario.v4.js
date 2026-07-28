@@ -18009,7 +18009,6 @@ Most cells eaten   : ${mostCellsEaten}
                 out vec2 v_uv;
                 void main() {
                     v_uv = a_pos * 0.5 + 0.5;
-                    v_uv.y = 1.0 - v_uv.y; // flip Y for Canvas2D texture
                     vec2 worldPos = u_worldPos + u_offset + a_pos * u_quadSize;
                     vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
                     gl_Position = vec4(clipPos.x, -clipPos.y, u_z, 1.0);
@@ -18405,6 +18404,7 @@ Most cells eaten   : ${mostCellsEaten}
             var data = this.glInstanceData;
             var count = 0;
             var max = this.glMaxInstances;
+            var viewScale = this.scale || 1;
 
             var minX, maxX, minY, maxY;
             if (window.fullSpectator) {
@@ -18413,7 +18413,6 @@ Most cells eaten   : ${mostCellsEaten}
                 minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
                 maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
             } else {
-                var viewScale = this.scale || 1;
                 var halfW = (this.canvasWidth / viewScale / 2) + 500;
                 var halfH = (this.canvasHeight / viewScale / 2) + 500;
                 minX = this.camX - halfW; maxX = this.camX + halfW;
@@ -18749,6 +18748,7 @@ Most cells eaten   : ${mostCellsEaten}
             var data = this.glInstanceData;
             var count = 0;
             var max = this.glMaxInstances;
+            var viewScale = this.scale || 1;
 
             var minX, maxX, minY, maxY;
             if (window.fullSpectator) {
@@ -18757,7 +18757,6 @@ Most cells eaten   : ${mostCellsEaten}
                 minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
                 maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
             } else {
-                var viewScale = this.scale || 1;
                 var halfW = (this.canvasWidth / viewScale / 2) + 200;
                 var halfH = (this.canvasHeight / viewScale / 2) + 200;
                 minX = this.camX - halfW; maxX = this.camX + halfW;
