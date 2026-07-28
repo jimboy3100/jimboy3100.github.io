@@ -8223,38 +8223,49 @@ function thelegendmodproject() {
                     if (img[url]) img[url]._failed = true;
                     if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
                     console.warn("[LM] Skin URL failed to load: " + url);
-                    /* Fallback chain:
-                     *   jimboy3000/vanillaskins/X  → jimboy3000/vanillaskins2/X → miniclip CDN
-                     *   jimboy3000/lowresskins/X   → jimboy3000/vanillaskins/X  → vanillaskins2 → CDN
-                     *   miniclip CDN configs-web   → jimboy3000/vanillaskins/X  → vanillaskins2
-                     *   miniclip CDN configs       → jimboy3000/lowresskins/X   → vanillaskins → vanillaskins2
-                     */
                     var filename = url.split('/').pop().replace('?', '');
                     if (!filename) return;
+                    var isCustomSkin = filename.startsWith('skin_custom_');
+                    var PROXY = 'http://188.245.107.158/skin-proxy/vanilla/';
 
+                    /* ── Custom skins (user-uploaded) ──
+                     * These only exist on miniclip CDN, never on GitHub mirrors.
+                     *   configs.agario/custom_skins/ → configs-web.agario/custom_skins/ → stop
+                     */
+                    if (isCustomSkin) {
+                        if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
+                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated);
+                        }
+                        // Both CDNs failed — nothing we can do, custom skins CDN is locked
+                        return;
+                    }
+
+                    /* ── Vanilla skins ──
+                     * jimboy3000/vanillaskins → vanillaskins2 → LW proxy (lowercase) → CDN (lowercase)
+                     * miniclip CDN            → jimboy3000/vanillaskins → vanillaskins2 → LW proxy
+                     */
                     if (url.includes('jimboy3000.github.io/vanillaskins2/')) {
-                        // Last mirror failed — try miniclip CDN as final fallback
-                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename + '?', animated);
+                        // Both GitHub mirrors failed — try LegendWorld proxy with lowercase
+                        app.loadSkin(img, PROXY + filename.toLowerCase(), animated);
                     }
                     else if (url.includes('jimboy3000.github.io/vanillaskins/')) {
-                        // vanillaskins failed — try vanillaskins2
                         app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins2/' + filename, animated);
                     }
                     else if (url.includes('jimboy3000.github.io/lowresskins/')) {
-                        // lowresskins failed — try vanillaskins
                         app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('/lowresskins/')) {
-                        // Generic lowresskins → vanillaskins fallback
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
+                    else if (url.includes('188.245.107.158/skin-proxy/')) {
+                        // LW proxy failed — last resort: CDN direct with lowercase
+                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename.toLowerCase(), animated);
+                    }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        // Miniclip CDN failed — try jimboy3000 vanillaskins
                         app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
-                    else if (url.includes('configs.agario.miniclippt.com/live/custom_skins/')) {
-                        // Miniclip custom skins CDN failed — try jimboy3000 lowresskins
+                    else if (url.includes('configs.agario.miniclippt.com/live/')) {
                         app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
                     }
                 };
