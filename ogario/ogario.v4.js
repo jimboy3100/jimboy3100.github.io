@@ -19203,7 +19203,15 @@ Most cells eaten   : ${mostCellsEaten}
                     var skinUrl = null;
                     if (cell.targetNick) {
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
-                        skinUrl = application.customSkinsMap[mode] || application.customSkinsMap[cell.targetNick] || application.customSkinsMap[cell.targetNick + '#000000'];
+                        var cleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
+                        skinUrl = application.customSkinsMap[mode] ||
+                                  application.customSkinsMap[cell.targetNick] ||
+                                  application.customSkinsMap[cell.targetNick + '#000000'] ||
+                                  (cleanNick ? (
+                                      application.customSkinsMap[cleanNick] ||
+                                      application.customSkinsMap[cleanNick + '#000000'] ||
+                                      application.customSkinsMap[cleanNick + cell.color]
+                                  ) : null);
                     }
                     if (!skinUrl && cell.skin) {
                         skinUrl = application.customSkinsMap[cell.skin];
