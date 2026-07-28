@@ -6961,9 +6961,9 @@ function thelegendmodproject() {
             $("#tags-container").appendTo($("#profile"));
             //$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
             //$(".btn-logout").appendTo($("#profile"));
-            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://www.legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
+            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/vanillaskins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
                 //'<a href="https://www.youtube.com/watch?v=CnIfNSpCf70" class="quick-yt ogicon-youtube2" id="legendid" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Legend Promo Video"></a>' +
-                '<a id= "themesBtn" target="_blank" href="https://www.legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
+                '<a id= "themesBtn" target="_blank" href="https://themes.expanding.land/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
                 '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>' +
@@ -7010,7 +7010,7 @@ function thelegendmodproject() {
             $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel");
             $(".agario-party h4, #cancel-party-btn").remove();
             $(".agario-party .btn").addClass("btn-sm");
-            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://www.legendmod.ml/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
+            $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://jimboy3100.github.io/vanillaskins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
             $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none");
             $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
@@ -15932,7 +15932,16 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/vanillaskins')) {
+                } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
+                    var newURL = "https://jimboy3100.github.io/lowresskins/" + rawFileName;
+                    app.urlReplaces[url] = newURL;
+                    if (app.user && app.user.skins && app.user.skins[url]) {
+                        app.user.skins[url].url = newURL;
+                    }
+                    app.getImg(newURL, name, callback);
+                    return newURL;
+
+                } else if (url.includes('jimboy3100.github.io/lowresskins') || url.includes('jimboy3000.github.io/lowresskins')) {
                     if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
                     }
@@ -23517,9 +23526,11 @@ Array.prototype.stDev = function stDev() {
 (function () {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'jimboy3100.github.io/vanillaskins' },
+        { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'jimboy3100.github.io/lowresskins' },
+        { match: /jimboy3000\.github\.io/g, replace: 'jimboy3100.github.io' },
         { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'jimboy3100.github.io/agario/live/flags' },
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
-        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'skins.expanding.land' },
+        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'jimboy3100.github.io/vanillaskins' },
         { match: /(?:www\.)?legendmod\.ml/g, replace: 'jimboy3100.github.io' }
     ];
     function _rewriteExpandingLinks(root) {
