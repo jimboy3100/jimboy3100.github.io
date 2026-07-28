@@ -11378,11 +11378,9 @@ function thelegendmodproject() {
                     LM.viruses.splice(virIdx, 1);
                 }
             }
-            if (cells === -1) {
-                cells = LM.food.indexOf(this);
-                if (cells !== -1) {
-                    LM.food.splice(cells, 1);
-                }
+            var foodIdx = LM.food.indexOf(this);
+            if (foodIdx !== -1) {
+                LM.food.splice(foodIdx, 1);
             }
             cells = LM.foodMulti.indexOf(this);
             if (cells !== -1) {
@@ -17159,8 +17157,10 @@ Most cells eaten   : ${mostCellsEaten}
                 // Imsolo/Agar2: use cellType-based food detection (cellType 1 = food/pellet)
                 if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && imsoloCellType >= 0) {
                     isFood = (imsoloCellType === 1 || imsoloCellType === 5) ? 1 : 0; // 1=pellet, 5=event pellet
+                } else if (extendedFlags & 1) {
+                    isFood = 1;
                 } else if (!LM.integrity) { //fix of food for private servers
-                    if (size < 21 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
+                    if (size <= 30 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
