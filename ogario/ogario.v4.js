@@ -2502,7 +2502,6 @@ var displayText = {
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
         showDevConsole: 'Show developer console',
-        showClientProfiler: 'Show client profiler (ms timings)',
         showLbData: 'Pokaz mase w topce',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
@@ -2524,7 +2523,7 @@ var displayText = {
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
-        showStatsRender: 'Time percentage % consumed for Drawing',
+
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Skroty klawiszowe',
@@ -2999,7 +2998,6 @@ var displayText = {
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
         showDevConsole: 'Show developer console',
-        showClientProfiler: 'Show client profiler (ms timings)',
         showLbData: 'Show leaderboard mass',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
@@ -3019,7 +3017,7 @@ var displayText = {
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
-        showStatsRender: 'Time percentage % consumed for Drawing',
+
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Hotkeys',
@@ -4240,7 +4238,6 @@ var defaultmapsettings = {
     showLbData: true,
     showTime: false,
     showDevConsole: false,
-    showClientProfiler: false,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -4259,7 +4256,7 @@ var defaultmapsettings = {
     showStatsDecayInfo: true,
     showStatsFPS: true,
     //showStatsPPS: true,
-    showStatsRender: false,
+
     blockPopups: false,
     gameOverStats: false,
     streamMode: false,
@@ -5974,7 +5971,7 @@ function thelegendmodproject() {
                     if (t) t += atStr + ' | ';
                     else t += atStr + ' | ';
                 }
-                if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
+                if (defaultmapsettings.showDevConsole && defaultmapsettings.showStatsFPS) {
                     var color = '';
                     if (drawRender.averageRenderTime > 70) color = 'color:red'
                     else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
@@ -7055,7 +7052,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole", "showClientProfiler"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -17621,7 +17618,7 @@ Most cells eaten   : ${mostCellsEaten}
         hudEl: null,
         _lastFrameTs: 0,
         isEnabled() {
-            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showClientProfiler);
+            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showDevConsole);
         },
         sync() {
             var want = this.isEnabled();
