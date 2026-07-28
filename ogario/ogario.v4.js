@@ -8248,14 +8248,13 @@ function thelegendmodproject() {
                     }
 
                     /* ── Vanilla skins ──
-                     * legendmod.ml/vanillaskins → jimboy3100/vanillaskins2 → LW proxy (lc) → CDN (lc)
-                     * jimboy/vanillaskins2      → LW proxy (lowercase) → CDN (lowercase)
-                     * jimboy/vanillaskins       → jimboy/vanillaskins2 → LW proxy
-                     * jimboy/lowresskins        → legendmod.ml/vanillaskins → chain above
+                     * legendmod.ml/vanillaskins → vanillaskins2 → HTTPS proxy → CDN
                      * CDN                       → legendmod.ml/vanillaskins → chain above
+                     * Note: CDN is case-sensitive, so preserve original filename case.
                      */
                     if (isMirror && url.includes('/vanillaskins2/')) {
-                        app.loadSkin(img, PROXY + filename.toLowerCase(), animated);
+                        /* Both mirrors failed — try HTTPS proxy (preserves case) */
+                        app.loadSkin(img, PROXY + filename, animated);
                     }
                     else if (url.includes('legendmod.ml/vanillaskins/')) {
                         app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
@@ -8270,8 +8269,9 @@ function thelegendmodproject() {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
-                    else if (url.includes('188.245.107.158/skin-proxy/')) {
-                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename.toLowerCase(), animated);
+                    else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
+                        /* Proxy failed — try CDN direct (original case) */
+                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated);
                     }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
                         app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
