@@ -13403,13 +13403,24 @@ function thelegendmodproject() {
                 console.log('%c[MultiProto]%c Spawn sent: nick=%s skin=%s party=%s', 'color:#3f3', 'color:inherit', nick, skinName, partyCode);
                 return;
             }
-            // Default (agar.io / Expanding Land / other): just nick
+            // Default (agar.io / Expanding Land / other): <skin>nick format
             if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
                 this.flushCellsData();
             }
-            var view = this.createView(1 + nick.length);
+            /* Include skin in the join packet as <skin>nick format.
+             * The server parses this at client.c:302 to store player->skin.
+             * Without this, the server has no skin to broadcast in cell ADD packets. */
+            var skinForJoin = ogarcopythelb.skinURL || '';
+            if (!skinForJoin && window.UserVanillaSkin) {
+                /* Use equipped vanilla skin if no custom URL set */
+                var vs = window.UserVanillaSkin;
+                if (vs.startsWith('skin_')) vs = vs.substring(5);
+                if (vs && vs !== 'empty') skinForJoin = '%' + vs;
+            }
+            var joinStr = skinForJoin ? ('<' + skinForJoin + '>' + nick) : nick;
+            var view = this.createView(1 + joinStr.length);
             view.setUint8(0, 0);
-            for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
+            for (var length = 0; length < joinStr.length; length++) view.setUint8(length + 1, joinStr.charCodeAt(length));
             this.sendMessage(view);
         },
         sendPosition(cell, target2, specialcommand) {
