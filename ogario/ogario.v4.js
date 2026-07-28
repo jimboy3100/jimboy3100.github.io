@@ -8474,8 +8474,9 @@ function thelegendmodproject() {
 
             var vanillaLookup = (skinKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
 
+            /* Chat socket skins (nick-based) take priority over vanilla skins.
+             * This lets legendmod skins override agar.io server skins. */
             var skinUrl =
-                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
                 (nick ? (
                     this.customSkinsMap[nick] ||
                     this.customSkinsMap[nick + hexColor] ||
@@ -8485,7 +8486,8 @@ function thelegendmodproject() {
                         this.customSkinsMap[cleanNick + "#000000"] ||
                         this.customSkinsMap[cleanNick + hexColor]
                     ) : null)
-                ) : null);
+                ) : null) ||
+                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null);
 
             if (!skinUrl && skinKey && (skinKey.startsWith('http://') || skinKey.startsWith('https://'))) {
                 skinUrl = skinKey;
@@ -18015,12 +18017,12 @@ Most cells eaten   : ${mostCellsEaten}
 
                 this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 9);
 
-                // Skin TEXTURE_2D_ARRAY (512×512, 64 layers, ~64 MB VRAM)
+                // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~128 MB VRAM)
                 this.glSkinArray = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
                 this.glSkinTexSize = 512;
-                this.glSkinMaxLayers = 64;
-                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 64);
+                this.glSkinMaxLayers = 128;
+                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -19191,10 +19193,14 @@ Most cells eaten   : ${mostCellsEaten}
                 // Skin layer lookup
                 var skinLayer = -1.0;
                 if (_showSkins && (cell.targetNick || cell.skin)) {
-                    var skinUrl = (cell.skin ? application.customSkinsMap[cell.skin] : null);
-                    if (!skinUrl && cell.targetNick) {
+                    /* Chat socket skins (nick-based) take priority over vanilla skins */
+                    var skinUrl = null;
+                    if (cell.targetNick) {
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
                         skinUrl = application.customSkinsMap[mode] || application.customSkinsMap[cell.targetNick] || application.customSkinsMap[cell.targetNick + '#000000'];
+                    }
+                    if (!skinUrl && cell.skin) {
+                        skinUrl = application.customSkinsMap[cell.skin];
                     }
                     if (skinUrl && this.glSkinMap[skinUrl] !== undefined) {
                         skinLayer = this.glSkinMap[skinUrl];
