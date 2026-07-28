@@ -8105,9 +8105,9 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
-            // Fallback dead miniclip custom skin URLs to jimboy3100.github.io/lowresskins/
+            // Fallback dead miniclip custom skin URLs to legendmod.ml/lowresskins/
             if (url.includes('configs-web.agario.miniclippt.com/live/custom_skins/')) {
-                url = url.replace('https://configs-web.agario.miniclippt.com/live/custom_skins/', 'https://jimboy3100.github.io/lowresskins/');
+                url = url.replace('https://configs-web.agario.miniclippt.com/live/custom_skins/', 'https://www.legendmod.ml/lowresskins/');
             }
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
@@ -8229,14 +8229,14 @@ function thelegendmodproject() {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
-                    // Fallback miniclip CDN to jimboy3100 vanillaskins mirror
+                    // Fallback miniclip CDN to legendmod.ml vanillaskins mirror
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
                         var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
+                        if (filename) app.loadSkin(img, 'https://www.legendmod.ml/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/custom_skins/')) {
                         var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated);
+                        if (filename) app.loadSkin(img, 'https://www.legendmod.ml/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
