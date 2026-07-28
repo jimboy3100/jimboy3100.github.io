@@ -2233,9 +2233,9 @@ setTimeout(function () {
 
         /* Build VanillaSkinUrlMap: %skinname -> full URL
          * Primary: legendmod.ml/vanillaskins/ (our mirror, no CORS issues)
-         * The onerror fallback chain handles missing files via vanillaskins2 → LW proxy → CDN */
+         * The onerror fallback chain handles missing files via legendmod.ml → proxy → CDN */
         window.VanillaSkinUrlMap = {};
-        var mirrorBase = "https://legendmod.ml/vanillaskins/";
+        var mirrorBase = "https://jimboy3000.github.io/vanillaskins/";
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
             var url = null;
@@ -8248,37 +8248,39 @@ function thelegendmodproject() {
                     }
 
                     /* ── Vanilla skins ──
-                     * legendmod.ml/vanillaskins → jimboy3000/vanillaskins → HTTPS proxy → CDN
-                     * CDN                       → legendmod.ml/vanillaskins → chain above
-                     * Note: CDN is case-sensitive, so preserve original filename case.
+                     * jimboy3000/vanillaskins (primary, direct) → legendmod.ml → proxy → CDN
+                     * CDN → jimboy3000/vanillaskins → chain above
                      */
-                    if (isMirror && url.includes('/vanillaskins2/')) {
-                        /* vanillaskins2 failed — try main vanillaskins on jimboy3000 */
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                    if (url.includes('jimboy3000.github.io/vanillaskins/')) {
+                        /* Primary mirror failed — try legendmod.ml */
+                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('legendmod.ml/vanillaskins/')) {
+                        /* legendmod.ml failed — try HTTPS proxy */
+                        app.loadSkin(img, PROXY + filename, animated);
+                    }
+                    else if (isMirror && url.includes('/vanillaskins2/')) {
                         app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (isMirror && url.includes('/vanillaskins/')) {
-                        /* Both mirrors failed — try HTTPS proxy */
                         app.loadSkin(img, PROXY + filename, animated);
                     }
                     else if (isMirror && url.includes('/lowresskins/')) {
-                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('/lowresskins/')) {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
                     else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
-                        /* Proxy failed — try CDN direct (original case) */
+                        /* Proxy failed — try CDN direct */
                         app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated);
                     }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://legendmod.ml/lowresskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
