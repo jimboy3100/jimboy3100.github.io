@@ -14468,7 +14468,7 @@ function thelegendmodproject() {
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
-                                window.UserVanillaSkin = "https://configs-web.agario.miniclippt.com/live/custom_skins/" + temp.substring(1) + '.png?';
+                                window.UserVanillaSkin = "https://configs.agario.miniclippt.com/live/custom_skins/" + temp.substring(1) + '.png?';
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
@@ -15900,10 +15900,14 @@ function thelegendmodproject() {
             img.onerror = function () {
                 //console.log("error loading image: "+ url);
                 var rawFileName = url.split('/').pop().replace(/\?.*$/, '');
-                if (url.includes('configs-web.agario.miniclippt')) {
+                if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
                     var newURL;
                     if (url.includes('/custom_skins/')) {
-                        newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
+                        if (url.includes('configs-web.agario.miniclippt')) {
+                            newURL = "https://configs.agario.miniclippt.com/live/custom_skins/" + rawFileName + "?";
+                        } else {
+                            newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
+                        }
                     } else {
                         newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     }
@@ -15914,7 +15918,7 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('configs-web.agar.io') && url.includes('/custom_skins/')) {
+                } else if ((url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) && url.includes('/custom_skins/')) {
                     var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
@@ -15956,7 +15960,7 @@ function thelegendmodproject() {
 
                 if (link.includes && link.includes("custom_")) {
                     type = "custom";
-                    return ["https://configs-web.agario.miniclippt.com/live/custom_skins/" + link + ".png", type];
+                    return ["https://configs.agario.miniclippt.com/live/custom_skins/" + link + ".png", type];
                 } else if (link.includes && link.includes("_level_")) {
                     type = "potion";
                     var link1 = link.replace('skin_', '')
@@ -16570,13 +16574,13 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
                     var digits = g.replace(/[^0-9]/g, '');
                     if (digits) {
-                        skinUrl = "https://configs-web.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
                     } else {
                         var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
                         if (!g1.startsWith('skin_custom')) {
                             g1 = 'skin_custom_' + g1.replace(/^_+/, '');
                         }
-                        skinUrl = "https://configs-web.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
+                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
                     }
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */
