@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.495;
+window.OgVer = 3.496;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -12051,6 +12051,33 @@ function thelegendmodproject() {
                         this._webglRendered = false;
                         /* Still need text, special skins, teammates indicator */
                         if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
+
+                        /* Draw 2D canvas body mask so text of smaller cells underneath,
+                         * sector labels (A1 etc.), and other 2D elements are occluded
+                         * by this cell. Without this, everything on Canvas2D (which sits
+                         * above the WebGL canvas) would show through cell bodies. */
+                        if (!this.isFood && y > 15) {
+                            /* 1. Draw solid body circle */
+                            style.beginPath();
+                            style.arc(this.x, this.y, y, 0, this.pi2, false);
+                            style.fillStyle = this.color;
+                            style.fill();
+
+                            /* 2. Draw skin on top of the body mask so it looks correct */
+                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                                var _maskNode = application.getCustomSkin(this.targetNick, this.color, this.skin);
+                                if (_maskNode && !_maskNode._failed && (_maskNode.naturalWidth > 0 || _maskNode.width > 0 || _maskNode.videoWidth > 0)) {
+                                    style.save();
+                                    try {
+                                        style.beginPath();
+                                        style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
+                                        style.clip();
+                                        style.drawImage(_maskNode, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    } catch (eMaskSkin) { }
+                                    finally { style.restore(); }
+                                }
+                            }
+                        }
                         /* Skip body+skin, jump to text/effects section */
                     } else {
 
