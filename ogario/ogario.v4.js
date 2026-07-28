@@ -4240,7 +4240,7 @@ var defaultmapsettings = {
     showLbData: true,
     showTime: false,
     showDevConsole: false,
-    showClientProfiler: true,
+    showClientProfiler: false,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -17623,6 +17623,11 @@ Most cells eaten   : ${mostCellsEaten}
         isEnabled() {
             return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showClientProfiler);
         },
+        sync() {
+            var want = this.isEnabled();
+            if (want && !this.hudVisible) { this.hudVisible = true; this._createHUD(); }
+            if (!want && this.hudVisible) { this.hudVisible = false; if (this.hudEl) { this.hudEl.remove(); this.hudEl = null; } }
+        },
         stats: {
             frameMs: 0, frameAvgMs: '0.00', frameMinMs: 999, frameMaxMs: 0,
             cpuPct: 0, cpuAvgPct: '0.0',
@@ -17661,13 +17666,8 @@ Most cells eaten   : ${mostCellsEaten}
             this.stats[avgKey] = this._avg(cat);
         },
         recordFrame(ms) {
-            if (!this.isEnabled()) {
-                if (this.hudEl) {
-                    this.hudEl.remove();
-                    this.hudEl = null;
-                }
-                return;
-            }
+            this.sync();
+            if (!this.isEnabled()) return;
             var now = performance.now();
             var delta = this._lastFrameTs > 0 ? (now - this._lastFrameTs) : 16.67;
             this._lastFrameTs = now;
