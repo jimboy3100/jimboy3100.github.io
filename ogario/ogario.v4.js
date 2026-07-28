@@ -8950,6 +8950,19 @@ function thelegendmodproject() {
         flushCells() {
             this.cells = {};
         },
+        /* Send opcode 206 to the Expanding Land server requesting a full view resync.
+         * Called when the tab becomes visible after being backgrounded. The server
+         * responds with ClearAll + fresh ADD packets for all visible cells. */
+        sendResyncRequest() {
+            if (!legendmod.isSocketOpen || !legendmod.isSocketOpen()) return;
+            if (!legendmod.isLegendWorld && !document.getElementById('server-token').value.includes('expanding.land')) return;
+            try {
+                var view = legendmod.createView(1);
+                view.setUint8(0, 206); /* 0xCE = resync request */
+                legendmod.sendMessage(view);
+                console.log('%c[LM]%c Tab visible — sent resync request (opcode 206)', 'color:#3f3', 'color:inherit');
+            } catch (e) { /* ignore if socket not ready */ }
+        },
         flushSkinsMap() {
             //
             //this.lastIP = localStorage.getItem("lastIP");
@@ -21699,32 +21712,43 @@ Most cells eaten   : ${mostCellsEaten}
              * requestAnimationFrame stops in hidden tabs, so cells/camera go stale.
              * This ensures the first frame after return starts from correct positions. */
             document.addEventListener('visibilitychange', function () {
-                if (!document.hidden && LM) {
-                    var now = Date.now();
-                    /* Snap all cells to target positions */
-                    for (var i = 0; i < LM.cells.length; i++) {
-                        var c = LM.cells[i];
-                        c.x = c.targetX;
-                        c.y = c.targetY;
-                        c.size = c.targetSize;
-                        c.time = now;
-                    }
-                    /* Snap all food to target positions */
-                    for (var j = 0; j < LM.food.length; j++) {
-                        var f = LM.food[j];
-                        f.x = f.targetX;
-                        f.y = f.targetY;
-                        f.size = f.targetSize;
-                        f.time = now;
-                    }
-                    /* Clear removed cells — they've had time to fade */
-                    LM.removedCells = [];
-                    /* Snap camera to current view position */
-                    if (typeof drawRender !== 'undefined') {
-                        drawRender.camX = LM.viewX;
-                        drawRender.camY = LM.viewY;
-                    }
-                    LM.time = now;
+                if (document.hidden) {
+                    /* Track when the tab was hidden */
+                    window._tabHiddenAt = Date.now();
+                    return;
+                }
+                if (!LM) return;
+                var now = Date.now();
+                var hiddenMs = window._tabHiddenAt ? (now - window._tabHiddenAt) : 0;
+                /* Snap all cells to target positions */
+                for (var i = 0; i < LM.cells.length; i++) {
+                    var c = LM.cells[i];
+                    c.x = c.targetX;
+                    c.y = c.targetY;
+                    c.size = c.targetSize;
+                    c.time = now;
+                }
+                /* Snap all food to target positions */
+                for (var j = 0; j < LM.food.length; j++) {
+                    var f = LM.food[j];
+                    f.x = f.targetX;
+                    f.y = f.targetY;
+                    f.size = f.targetSize;
+                    f.time = now;
+                }
+                /* Clear removed cells — they've had time to fade */
+                LM.removedCells = [];
+                /* Snap camera to current view position */
+                if (typeof drawRender !== 'undefined') {
+                    drawRender.camX = LM.viewX;
+                    drawRender.camY = LM.viewY;
+                }
+                LM.time = now;
+                /* If tab was hidden > 2 seconds, request server resync to clear ghost cells.
+                 * When backgrounded, the browser buffers WS messages but pauses JS processing.
+                 * DEL records may be missed or applied to recycled cell IDs, leaving phantoms. */
+                if (hiddenMs > 2000 && typeof application !== 'undefined') {
+                    application.sendResyncRequest();
                 }
             });
         }
