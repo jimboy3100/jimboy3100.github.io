@@ -9715,7 +9715,8 @@ function thelegendmodproject() {
         },
         sendPartyData() {
             this.sendPlayerClanTag();
-
+            this.sendPlayerSkinURL();
+            this.sendPlayerCustomColorn();
             this.sendPartyToken();
             this.sendServerToken();
             this.sendPlayerNick();
