@@ -12046,39 +12046,13 @@ function thelegendmodproject() {
                     var s = false;
                     var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
 
-                    /* WebGL2 hybrid: if body was already drawn on the GPU, skip to text/effects */
-                    if (this._webglRendered) {
+                    /* WebGL2 hybrid: if body+text were already drawn on the GPU, skip body+text.
+                     * Depth testing in WebGL handles z-ordering, no Canvas2D mask needed. */
+                    var _wasWebGL = this._webglRendered;
+                    if (_wasWebGL) {
                         this._webglRendered = false;
-                        /* Still need text, special skins, teammates indicator */
-                        if (this.isVirus) { style.restore(); return; } /* viruses never go through WebGL */
-
-                        /* Draw 2D canvas body mask so text of smaller cells underneath,
-                         * sector labels (A1 etc.), and other 2D elements are occluded
-                         * by this cell. Without this, everything on Canvas2D (which sits
-                         * above the WebGL canvas) would show through cell bodies. */
-                        if (!this.isFood && y > 15) {
-                            /* 1. Draw solid body circle */
-                            style.beginPath();
-                            style.arc(this.x, this.y, y, 0, this.pi2, false);
-                            style.fillStyle = this.color;
-                            style.fill();
-
-                            /* 2. Draw skin on top of the body mask so it looks correct */
-                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                                var _maskNode = application.getCustomSkin(this.targetNick, this.color, this.skin);
-                                if (_maskNode && !_maskNode._failed && (_maskNode.naturalWidth > 0 || _maskNode.width > 0 || _maskNode.videoWidth > 0)) {
-                                    style.save();
-                                    try {
-                                        style.beginPath();
-                                        style.arc(this.x, this.y, y, 0, 2 * Math.PI, false);
-                                        style.clip();
-                                        style.drawImage(_maskNode, this.x - y, this.y - y, 2 * y, 2 * y);
-                                    } catch (eMaskSkin) { }
-                                    finally { style.restore(); }
-                                }
-                            }
-                        }
-                        /* Skip body+skin, jump to text/effects section */
+                        if (this.isVirus) { style.restore(); return; }
+                        /* Body+skin already on GPU, skip to effects-only section */
                     } else {
 
 
@@ -12392,26 +12366,48 @@ function thelegendmodproject() {
                         drawRender.drawTeammatesInd(style, this.x, this.y, y)
                     }
 
-                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
-                        //return;
-                    }
-                    else {
-                        var recursive = false;
-                        if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
-                            this.setDrawing();
-                            this.setDrawingScale();
-                            if (defaultSettings.textAlpha != 1) {
-                                style.globalAlpha *= defaultSettings.textAlpha;
-                            }
-                            if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
-                                if (this.setNick(this.targetNick)) {
-                                    this.drawNick(style);
+                    /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
+                     * as WebGL textured quads with depth testing for correct z-order.
+                     * Chat bubbles and merge timers still render on Canvas2D (overlay effects). */
+                    if (!_wasWebGL) {
+                        if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
+                            //return;
+                        }
+                        else {
+                            var recursive = false;
+                            if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                if (defaultSettings.textAlpha != 1) {
+                                    style.globalAlpha *= defaultSettings.textAlpha;
+                                }
+                                if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                                    if (this.setNick(this.targetNick)) {
+                                        this.drawNick(style);
+                                    }
+                                }
+                                if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                                    if (this.setMass(this.size)) {
+
+                                        this.drawMass(style);
+                                        if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                            this.drawMerge(style);
+                                        }
+                                        if (defaultmapsettings.showChat) {
+                                            this.drawChat(style);
+                                        }
+                                    }
                                 }
                             }
-                            if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
-                                if (this.setMass(this.size)) {
 
-                                    this.drawMass(style);
+                        }
+                    } else {
+                        /* WebGL cell: still draw chat/merge on Canvas2D (rare overlay effects) */
+                        if (defaultmapsettings.showChat || (window.ExternalScripts && !window.legendmod5.optimizedMass)) {
+                            this.setDrawing();
+                            this.setDrawingScale();
+                            if (this.mass > 0 && !this.isVirus) {
+                                if (this.setMass(this.size)) {
                                     if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
                                         this.drawMerge(style);
                                     }
@@ -12421,7 +12417,6 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-
                     }
                 } catch (eCellDraw) {
                     console.error('[OGARIO CELL DRAW ERROR] Failed drawing cell ID ' + this.id + ' (nick: "' + (this.targetNick || '') + '", skin: "' + (this.skin || '') + '"):', eCellDraw);
@@ -17664,14 +17659,15 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (!this.glCanvas) {
                     this.glCanvas = document.createElement('canvas');
-                    this.glCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:0;';
+                    this.glCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
                     if (this.canvas && this.canvas.parentNode) {
-                        this.canvas.parentNode.insertBefore(this.glCanvas, this.canvas);
+                        /* Insert GL canvas AFTER (on top of) Canvas2D */
+                        this.canvas.parentNode.appendChild(this.glCanvas);
                     }
-                    /* Make Canvas2D transparent so WebGL shows through gaps */
+                    /* Canvas2D is now the BACKGROUND layer (behind WebGL) */
                     if (this.canvas) this.canvas.style.background = 'transparent';
                 }
-                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: false });
+                var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: true });
                 if (!gl) return;
                 this.gl = gl;
 
@@ -17890,13 +17886,14 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
                 this.u_viewScale = gl.getUniformLocation(program, 'u_viewScale');
 
-                // ===== WebGL2 Cell Shader with Skin Textures =====
+                // ===== WebGL2 Cell Shader with Skin Textures + Depth Z =====
                 var cellVsSource = `#version 300 es
                 in vec2 a_unitPos;
                 in vec2 a_cellPos;
                 in float a_radius;
                 in vec4 a_color;
                 in float a_skinLayer;
+                in float a_z;
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
                 out vec4 v_color;
@@ -17908,7 +17905,7 @@ Most cells eaten   : ${mostCellsEaten}
                     v_skinLayer = a_skinLayer;
                     vec2 worldPos = a_cellPos + a_unitPos * a_radius;
                     vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
-                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+                    gl_Position = vec4(clipPos.x, -clipPos.y, a_z, 1.0);
                 }`;
 
                 var cellFsSource = `#version 300 es
@@ -17922,14 +17919,14 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     float distSq = dot(v_unitPos, v_unitPos);
                     if (distSq > 1.0) discard;
+                    float edgeAlpha = smoothstep(1.0, 0.95, distSq);
                     if (v_skinLayer >= 0.0) {
                         vec2 skinUV = v_unitPos * 0.5 + 0.5;
                         fragColor = texture(u_skinArray, vec3(skinUV, v_skinLayer));
                     } else {
-                        float edgeAlpha = smoothstep(1.0, 0.95, distSq);
-                        fragColor = vec4(v_color.rgb, edgeAlpha);
+                        fragColor = vec4(v_color.rgb, 1.0);
                     }
-                    fragColor.a *= v_color.a;
+                    fragColor.a *= v_color.a * edgeAlpha;
                 }`;
 
                 var cellProgram = createAndLinkProgram(gl, cellVsSource, cellFsSource);
@@ -17940,7 +17937,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_cell_viewScale = gl.getUniformLocation(cellProgram, 'u_viewScale');
                 this.u_skinArray = gl.getUniformLocation(cellProgram, 'u_skinArray');
 
-                // Cell VAO (separate from food VAO — 8-float instance stride)
+                // Cell VAO (separate from food VAO — 9-float instance stride with Z for depth)
                 this.glCellVAO = gl.createVertexArray();
                 gl.bindVertexArray(this.glCellVAO);
 
@@ -17949,12 +17946,12 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.enableVertexAttribArray(a_cell_unitPos);
                 gl.vertexAttribPointer(a_cell_unitPos, 2, gl.FLOAT, false, 0, 0);
 
-                // Instance VBO: [x, y, radius, r, g, b, alpha, skinLayer] = 8 floats
+                // Instance VBO: [x, y, radius, r, g, b, alpha, skinLayer, z] = 9 floats
                 this.glCellInstanceVBO = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
                 this.glCellMaxInstances = 2000;
-                gl.bufferData(gl.ARRAY_BUFFER, this.glCellMaxInstances * 8 * 4, gl.DYNAMIC_DRAW);
-                var cellStride = 8 * 4;
+                gl.bufferData(gl.ARRAY_BUFFER, this.glCellMaxInstances * 9 * 4, gl.DYNAMIC_DRAW);
+                var cellStride = 9 * 4;
 
                 var a_cell_cellPos = gl.getAttribLocation(cellProgram, 'a_cellPos');
                 gl.enableVertexAttribArray(a_cell_cellPos);
@@ -17976,9 +17973,14 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.vertexAttribPointer(a_cell_skinLayer, 1, gl.FLOAT, false, cellStride, 7 * 4);
                 gl.vertexAttribDivisor(a_cell_skinLayer, 1);
 
+                var a_cell_z = gl.getAttribLocation(cellProgram, 'a_z');
+                gl.enableVertexAttribArray(a_cell_z);
+                gl.vertexAttribPointer(a_cell_z, 1, gl.FLOAT, false, cellStride, 8 * 4);
+                gl.vertexAttribDivisor(a_cell_z, 1);
+
                 gl.bindVertexArray(null);
 
-                this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 8);
+                this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 9);
 
                 // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~32 MB VRAM)
                 this.glSkinArray = gl.createTexture();
@@ -17994,6 +17996,66 @@ Most cells eaten   : ${mostCellsEaten}
 
                 this.glSkinMap = {};
                 this.glSkinNextLayer = 0;
+
+                // ===== WebGL2 Text Shader (textured quad with depth Z) =====
+                var textVsSource = `#version 300 es
+                in vec2 a_pos;      // [-1,1] unit quad
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+                uniform vec2 u_worldPos;    // cell world position
+                uniform vec2 u_quadSize;    // half-width, half-height in world units
+                uniform float u_z;          // depth value
+                uniform vec2 u_offset;      // vertical offset from cell center (world units)
+                out vec2 v_uv;
+                void main() {
+                    v_uv = a_pos * 0.5 + 0.5;
+                    v_uv.y = 1.0 - v_uv.y; // flip Y for Canvas2D texture
+                    vec2 worldPos = u_worldPos + u_offset + a_pos * u_quadSize;
+                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    gl_Position = vec4(clipPos.x, -clipPos.y, u_z, 1.0);
+                }`;
+
+                var textFsSource = `#version 300 es
+                precision highp float;
+                in vec2 v_uv;
+                uniform sampler2D u_textTex;
+                uniform float u_alpha;
+                out vec4 fragColor;
+                void main() {
+                    fragColor = texture(u_textTex, v_uv);
+                    if (fragColor.a < 0.01) discard;
+                    fragColor.a *= u_alpha;
+                }`;
+
+                var textProgram = createAndLinkProgram(gl, textVsSource, textFsSource);
+                if (textProgram) {
+                    this.glTextProgram = textProgram;
+                    this.u_text_viewCenter = gl.getUniformLocation(textProgram, 'u_viewCenter');
+                    this.u_text_viewScale = gl.getUniformLocation(textProgram, 'u_viewScale');
+                    this.u_text_worldPos = gl.getUniformLocation(textProgram, 'u_worldPos');
+                    this.u_text_quadSize = gl.getUniformLocation(textProgram, 'u_quadSize');
+                    this.u_text_z = gl.getUniformLocation(textProgram, 'u_z');
+                    this.u_text_offset = gl.getUniformLocation(textProgram, 'u_offset');
+                    this.u_text_tex = gl.getUniformLocation(textProgram, 'u_textTex');
+                    this.u_text_alpha = gl.getUniformLocation(textProgram, 'u_alpha');
+
+                    // Text VAO — reuse the unit quad VBO
+                    this.glTextVAO = gl.createVertexArray();
+                    gl.bindVertexArray(this.glTextVAO);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+                    var a_text_pos = gl.getAttribLocation(textProgram, 'a_pos');
+                    gl.enableVertexAttribArray(a_text_pos);
+                    gl.vertexAttribPointer(a_text_pos, 2, gl.FLOAT, false, 0, 0);
+                    gl.bindVertexArray(null);
+                }
+
+                // Text texture cache: Map<cacheKey, {tex, w, h, lastUsed}>
+                this.glTextCache = new Map();
+                this.glTextCacheMaxSize = 500;
+
+                // Offscreen Canvas2D for text rendering → GL texture upload
+                this._textCanvas = document.createElement('canvas');
+                this._textCtx = this._textCanvas.getContext('2d');
 
                 // ===== WebGL2 Solid Ring Shader (stroke outlines matching Canvas2D ctx.stroke) =====
                 var solidRingVs = `#version 300 es
@@ -18805,8 +18867,194 @@ Most cells eaten   : ${mostCellsEaten}
                 this.glSkinMap[url] = layer;
                 return layer;
             } catch (eErr) {
-                this.glSkinMap[url] = 0;
-                return 0;
+                this.glSkinMap[url] = -1;
+                return -1;
+            }
+        },
+        /* ===== WebGL Text-as-Texture Rendering =====
+         * Renders nick/mass/chat text to an offscreen Canvas2D, uploads as GL texture,
+         * then draws as a textured quad on the GL canvas with correct depth Z. */
+        getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth) {
+            if (!this.gl || !this.glTextProgram) return null;
+            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle||'') + '|' + (strokeWidth||0);
+            var cached = this.glTextCache.get(cacheKey);
+            var now = Date.now();
+            if (cached) { cached.lastUsed = now; return cached; }
+
+            var tc = this._textCanvas;
+            var tctx = this._textCtx;
+            tctx.font = font;
+            var metrics = tctx.measureText(text);
+            var pad = (strokeWidth || 0) + 4;
+            var w = Math.ceil(metrics.width + pad * 2);
+            var fontSizeMatch = font.match(/(\d+)\s*px/);
+            var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1]) : 24;
+            var h = Math.ceil(fontPx * 1.4 + pad * 2);
+            if (w < 1 || h < 1) return null;
+            /* Clamp to reasonable size to avoid huge textures */
+            if (w > 2048) w = 2048;
+            if (h > 512) h = 512;
+            tc.width = w;
+            tc.height = h;
+            tctx.clearRect(0, 0, w, h);
+            tctx.font = font;
+            tctx.textAlign = 'center';
+            tctx.textBaseline = 'middle';
+            if (strokeStyle && strokeWidth > 0) {
+                tctx.strokeStyle = strokeStyle;
+                tctx.lineWidth = strokeWidth;
+                tctx.lineJoin = 'round';
+                tctx.miterLimit = 2;
+                tctx.strokeText(text, w / 2, h / 2);
+            }
+            tctx.fillStyle = fillStyle;
+            tctx.fillText(text, w / 2, h / 2);
+
+            var gl = this.gl;
+            var tex = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tc);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+
+            var entry = { tex: tex, w: w, h: h, lastUsed: now };
+            this.glTextCache.set(cacheKey, entry);
+
+            /* Evict old entries if cache too large */
+            if (this.glTextCache.size > this.glTextCacheMaxSize) {
+                var oldest = null, oldestKey = null;
+                this.glTextCache.forEach(function(v, k) {
+                    if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
+                });
+                if (oldestKey) {
+                    gl.deleteTexture(oldest.tex);
+                    this.glTextCache.delete(oldestKey);
+                }
+            }
+            return entry;
+        },
+        drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, cellSize, z) {
+            if (!texEntry || !this.gl || !this.glTextProgram) return;
+            var gl = this.gl;
+            var viewScale = this.scale || 1;
+            /* Convert pixel dimensions to world units */
+            var worldW = texEntry.w / viewScale;
+            var worldH = texEntry.h / viewScale;
+            var halfW = worldW * 0.5;
+            var halfH = worldH * 0.5;
+
+            /* Program, viewCenter, viewScale, texture unit, and VAO are set once by caller */
+            gl.uniform2f(this.u_text_worldPos, worldX, worldY);
+            gl.uniform2f(this.u_text_quadSize, halfW, halfH);
+            gl.uniform1f(this.u_text_z, z - 0.005); /* slightly in front of body */
+            gl.uniform2f(this.u_text_offset, 0, offsetY);
+
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, texEntry.tex);
+
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        },
+        drawWebGLCellText(cell) {
+            if (!cell || !cell._webglRendered || !this.glTextProgram) return;
+            if (!cell.targetNick && !cell.mass) return;
+            if (cell.isFood) return;
+
+            var z = cell._webglZ || 0.5;
+            var cellSize = cell.size || 10;
+            var viewScale = this.scale || 1;
+
+            /* Match Canvas2D auto-hide: pass cell size (world units), same as Canvas2D's `y` */
+            var recursive = false;
+            if (!cell.isPlayerCell) {
+                recursive = application.setAutoHideCellInfo(cellSize);
+                if (recursive && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) return;
+            }
+
+            /* No text to draw at all? */
+            if (defaultmapsettings.noNames && !defaultmapsettings.showMass) return;
+
+            /* Check if cell has a skin (for hideTeammatesNames, matching Canvas2D's `node`) */
+            var hasSkin = false;
+            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                hasSkin = !!application.getCustomSkin(cell.targetNick, cell.color, cell.skin);
+            }
+
+            /* Font sizing: match Canvas2D ogarbasicassembly.setFontSize()
+             * Canvas2D: fontSize = max(size*0.3, 26) * scale
+             *           nickSize = ~~(fontSize * nickScale)
+             * We render at screen pixels, so don't divide by scale later. */
+            var namesScale = defaultSettings.namesScale || 1;
+            var massScale = defaultSettings.massScale || 1;
+            var strokeScale = defaultSettings.strokeScale || 1;
+            var baseFontSize = Math.max(cellSize * 0.3, 26) * viewScale;
+            var nickFontSize = ~~(baseFontSize * namesScale);
+            if (nickFontSize < 6) return;
+
+            /* Read colors and font from settings (matching Canvas2D path) */
+            var nickColor = defaultSettings.namesColor || '#ffffff';
+            var massColor = defaultSettings.massColor || '#ffffff';
+            var fontFamily = defaultSettings.namesFontFamily || 'Ubuntu';
+            var fontWeight = defaultSettings.namesFontWeight || 'bold';
+            var nickStrokeColor = defaultSettings.namesStrokeColor || '#000000';
+            var massStrokeColor = defaultSettings.massStrokeColor || '#000000';
+
+            var nickFont = fontWeight + ' ' + nickFontSize + 'px ' + fontFamily;
+            var nickStrokeW = defaultmapsettings.namesStroke
+                ? ~~(nickFontSize * 0.1 * strokeScale) : 0;
+
+            var showNick = cell.targetNick
+                && !defaultmapsettings.noNames
+                && !(recursive && defaultmapsettings.autoHideNames)
+                && !(cell.isPlayerCell && defaultmapsettings.hideMyName)
+                && !(defaultmapsettings.hideTeammatesNames && hasSkin);
+            var showMass = defaultmapsettings.showMass
+                && cell.mass > 0
+                && !(recursive && defaultmapsettings.autoHideMass)
+                && !(cell.isPlayerCell && defaultmapsettings.hideMyMass)
+                && !(defaultmapsettings.hideEnemiesMass && !cell.isPlayerCell && !cell.isVirus);
+
+            if (!showNick && !showMass) return;
+
+            var offsetY = 0;
+
+            /* Draw nick */
+            if (showNick) {
+                var nickEntry = this.getOrCreateTextTexture(cell.targetNick, nickFont, nickColor, nickStrokeColor, nickStrokeW);
+                if (nickEntry) {
+                    if (showMass) {
+                        offsetY = -cellSize * 0.2;
+                    }
+                    this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, offsetY, cellSize, z);
+                }
+            }
+
+            /* Draw mass — quantize to avoid cache thrashing */
+            if (showMass) {
+                var massFontSize = ~~(baseFontSize * 0.5 * massScale);
+                if (massFontSize < 4) massFontSize = 4;
+                var massFontFamily = defaultSettings.massFontFamily || fontFamily;
+                var massFontWeight = defaultSettings.massFontWeight || fontWeight;
+                var massFont = massFontWeight + ' ' + massFontSize + 'px ' + massFontFamily;
+                var massStrokeW = defaultmapsettings.massStroke
+                    ? ~~(massFontSize * 0.1 * strokeScale) : 0;
+
+                var massVal = ~~cell.mass;
+                var massStr;
+                if (defaultmapsettings.shortMass && massVal >= 1000) {
+                    massStr = (Math.floor(massVal / 100) / 10).toFixed(1) + 'k';
+                } else {
+                    if (massVal >= 1000) massVal = Math.round(massVal / 10) * 10;
+                    else if (massVal >= 100) massVal = Math.round(massVal / 5) * 5;
+                    massStr = '' + massVal;
+                }
+                var massEntry = this.getOrCreateTextTexture(massStr, massFont, massColor, massStrokeColor, massStrokeW);
+                if (massEntry) {
+                    var massOffsetY = showNick ? cellSize * 0.2 : 0;
+                    this.drawWebGLTextQuad(massEntry, cell.x, cell.y, massOffsetY, cellSize, z);
+                }
             }
         },
         drawWebGLCellBatch(cellsArray) {
@@ -18826,6 +19074,16 @@ Most cells eaten   : ${mostCellsEaten}
             var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
             var _isParty = ':party' === application.gameMode;
 
+            /* Count eligible cells first (for Z distribution) */
+            var eligibleCount = 0;
+            for (var i = 0; i < cellsArray.length; i++) {
+                var cell = cellsArray[i];
+                if (!cell || cell.invisible || cell.isVirus || cell.removed) continue;
+                if (cell.isFood) continue;
+                eligibleCount++;
+            }
+
+            var cellIdx = 0; /* running index for Z calculation */
             for (var i = 0; i < cellsArray.length && count < max; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
@@ -18842,6 +19100,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (master && master !== cell && !master.removed) continue;
                 }
                 if (LM.hideSmallBots && cell.size <= 36) continue;
+                if (cell.isFood) continue; // food cells use separate drawFood() path
                 if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
                 if (cell.removed) continue; // removed cells need Canvas2D alpha fade
                 // Video skins require Canvas2D drawImage of video element
@@ -18895,7 +19154,19 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                var idx = count * 8;
+                /* Z depth: cells sorted small→large (index 0=smallest, N-1=largest).
+                 * Larger cells should be IN FRONT (lower Z in GL clip space).
+                 * Z range: 0.9 (back/small) → 0.01 (front/large).
+                 * Body gets base Z, text will get Z - 0.005 (slightly in front of body). */
+                var zDepth = eligibleCount > 1
+                    ? 0.9 - (cellIdx / (eligibleCount - 1)) * 0.89
+                    : 0.45;
+                cellIdx++;
+
+                /* Store Z on cell for text pass to read later */
+                cell._webglZ = zDepth;
+
+                var idx = count * 9;
                 data[idx] = x;
                 data[idx + 1] = y;
                 data[idx + 2] = r;
@@ -18904,11 +19175,17 @@ Most cells eaten   : ${mostCellsEaten}
                 data[idx + 5] = (cInt & 255) / 255;
                 data[idx + 6] = alpha;
                 data[idx + 7] = skinLayer;
+                data[idx + 8] = zDepth;
                 count++;
                 cell._webglRendered = true;
             }
 
             if (count === 0) return true;
+
+            // Enable depth testing: closer fragments (lower Z) occlude farther ones
+            gl.enable(gl.DEPTH_TEST);
+            gl.depthFunc(gl.LESS);
+            gl.depthMask(true);
 
             // Bind skin texture array to unit 0
             gl.activeTexture(gl.TEXTURE0);
@@ -18920,7 +19197,7 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform1i(this.u_skinArray, 0);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 8));
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 9));
 
             gl.bindVertexArray(this.glCellVAO);
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
@@ -19015,7 +19292,7 @@ Most cells eaten   : ${mostCellsEaten}
                     this._glBgStr = _bg;
                 }
                 this.gl.clearColor(0, 0, 0, 0.0);
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             }
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
@@ -19211,6 +19488,32 @@ Most cells eaten   : ${mostCellsEaten}
                     gl.enable(gl.BLEND);
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                     this.drawWebGLCellBatch(LM.cells);
+
+                    /* WebGL text pass: draw nick+mass as textured quads with same depth values.
+                     * The depth buffer from cell bodies ensures larger cells occlude smaller cells' text.
+                     * Disable depth WRITES so text doesn't interfere with other text's depth. */
+                    if (this.glTextProgram) {
+                        gl.depthMask(false); /* read-only depth: text is occluded by bodies but doesn't write */
+                        /* Set shared uniforms once (viewCenter/viewScale don't change per cell) */
+                        var _tvs = this.scale || 1;
+                        gl.useProgram(this.glTextProgram);
+                        gl.uniform2f(this.u_text_viewCenter, this.camX, this.camY);
+                        gl.uniform2f(this.u_text_viewScale, 2.0 * _tvs / this.canvasWidth, 2.0 * _tvs / this.canvasHeight);
+                        gl.uniform1i(this.u_text_tex, 0);
+                        gl.uniform1f(this.u_text_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
+                        gl.bindVertexArray(this.glTextVAO);
+                        for (var ti = 0; ti < LM.cells.length; ti++) {
+                            var tCell = LM.cells[ti];
+                            if (tCell && tCell._webglRendered) {
+                                try { this.drawWebGLCellText(tCell); } catch(eText) {}
+                            }
+                        }
+                        gl.bindVertexArray(null);
+                        gl.depthMask(true);
+                    }
+
+                    /* Disable depth testing for remaining GL draws (grid, borders, rings are overlays) */
+                    gl.disable(gl.DEPTH_TEST);
                 }
 
                 /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
