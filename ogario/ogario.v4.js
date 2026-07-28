@@ -5477,7 +5477,7 @@ function thelegendmodproject() {
             if (window.core && window.core.setSkins) {
                 window.core.setSkins(!this.noSkins)
             }
-            ogario.showCustomSkins = !this.noSkins;
+            LM.showCustomSkins = !this.noSkins;
             this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
         setTransparentSkins() {
@@ -7370,9 +7370,9 @@ function thelegendmodproject() {
                 var p = template.attr("id");
                 if (void 0 !== app[p]) {
                     app[p] = template.prop("checked");
-                    //if ("noSkins" === p) {
-                    //ogario.showCustomSkin = !app.noSkins;
-                    //}
+                    if ("noSkins" === p) {
+                        LM.showCustomSkins = !app.noSkins;
+                    }
                     //if ("showQuest" === p) {
                     //app.setQuest();
                     //}
@@ -7614,8 +7614,8 @@ function thelegendmodproject() {
             //this.noColors = $("#noColors").prop("checked");
             this.skipStats = $("#skipStats").prop("checked");
             this.showQuest = $("#showQuest").prop("checked");
-            ogario.showCustomSkins = !defaultmapsettings.noSkins;
-            ogario.showCustomSkin = !defaultmapsettings.noSkins;
+            LM.showCustomSkins = !defaultmapsettings.noSkins;
+            LM.showCustomSkin = !defaultmapsettings.noSkins;
             if (null !== window.localStorage.getItem("scale_setting")) {
                 var parseScaleSettings = JSON.parse(window.localStorage.getItem("scale_setting"));
                 this.setCanvasScale(parseScaleSettings);
@@ -12090,7 +12090,7 @@ function thelegendmodproject() {
                         //style.filter='grayscale(100%)';
                         //
                         var node = null
-                        if (defaultmapsettings.customSkins && (LM.showCustomSkins !== false)) {
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                             node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                         }
                         var node2, node2IsVideo = false;
@@ -12291,7 +12291,7 @@ function thelegendmodproject() {
                             style.stroke();
                         }
                         //lylko
-                        if (defaultmapsettings.customSkins && (LM.showCustomSkins !== false)) {
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                             //node = application.getCustomSkin(this.targetNick, this.color);
                             if (node) {
                                 //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
