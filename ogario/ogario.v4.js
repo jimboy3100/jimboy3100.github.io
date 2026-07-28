@@ -8223,19 +8223,39 @@ function thelegendmodproject() {
                     if (img[url]) img[url]._failed = true;
                     if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
                     console.warn("[LM] Skin URL failed to load: " + url);
-                    // Automatic fallback from lowresskins to vanillaskins
-                    if (url.includes('/lowresskins/')) {
+                    /* Fallback chain:
+                     *   jimboy3000/vanillaskins/X  → jimboy3000/vanillaskins2/X → miniclip CDN
+                     *   jimboy3000/lowresskins/X   → jimboy3000/vanillaskins/X  → vanillaskins2 → CDN
+                     *   miniclip CDN configs-web   → jimboy3000/vanillaskins/X  → vanillaskins2
+                     *   miniclip CDN configs       → jimboy3000/lowresskins/X   → vanillaskins → vanillaskins2
+                     */
+                    var filename = url.split('/').pop().replace('?', '');
+                    if (!filename) return;
+
+                    if (url.includes('jimboy3000.github.io/vanillaskins2/')) {
+                        // Last mirror failed — try miniclip CDN as final fallback
+                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename + '?', animated);
+                    }
+                    else if (url.includes('jimboy3000.github.io/vanillaskins/')) {
+                        // vanillaskins failed — try vanillaskins2
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins2/' + filename, animated);
+                    }
+                    else if (url.includes('jimboy3000.github.io/lowresskins/')) {
+                        // lowresskins failed — try vanillaskins
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                    }
+                    else if (url.includes('/lowresskins/')) {
+                        // Generic lowresskins → vanillaskins fallback
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
-                    // Fallback miniclip CDN to jimboy3000 vanillaskins mirror
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                        // Miniclip CDN failed — try jimboy3000 vanillaskins
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/custom_skins/')) {
-                        var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
+                        // Miniclip custom skins CDN failed — try jimboy3000 lowresskins
+                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
