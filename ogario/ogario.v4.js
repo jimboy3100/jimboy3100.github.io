@@ -8526,8 +8526,9 @@ function thelegendmodproject() {
             }*/
             //var GearType = i.mapOffsetX + i.mapOffset;
             //var closingExpr = i.mapOffsetY + i.mapOffset;				
-            const GearType = closeExpr ? ogario.mapOffsetX + LM.mapOffset : LM.mapOffset;
-            const closingExpr = closeExpr ? ogario.mapOffsetY + LM.mapOffset : LM.mapOffset;
+            const _effOffset = (LM.isLegendWorld ? 0 : LM.mapOffset);
+            const GearType = closeExpr ? ogario.mapOffsetX + _effOffset : _effOffset;
+            const closingExpr = closeExpr ? ogario.mapOffsetY + _effOffset : _effOffset;
             //var n = Math.floor((xgh2 + closingExpr) / (ogario.mapSize / defaultSettings.sectorsY));
             let n = Math.floor((xgh2 + closingExpr) / (LM.mapSize / defaultSettings.sectorsY));
             let r = Math.floor((t + GearType) / (LM.mapSize / defaultSettings.sectorsX));
@@ -8543,8 +8544,8 @@ function thelegendmodproject() {
         updateDeathLocations(t, e) {
             if (ogario.mapOffsetFixed) {
                 this.deathLocations.push({
-                    "x": t + ogario.mapOffsetX,
-                    "y": e + ogario.mapOffsetY
+                    "x": t + (LM.isLegendWorld ? 0 : ogario.mapOffsetX),
+                    "y": e + (LM.isLegendWorld ? 0 : ogario.mapOffsetY)
                 });
                 if (6 == this.deathLocations.length) {
                     this.deathLocations.shift();
@@ -8574,8 +8575,8 @@ function thelegendmodproject() {
                 }
                 //var n = o / ogario.mapSize;
                 const n = o / LM.mapSize;
-                const r = ogario.mapOffsetX + LM.mapOffset;
-                const l = ogario.mapOffsetY + LM.mapOffset;
+                const r = ogario.mapOffsetX + (LM.isLegendWorld ? 0 : LM.mapOffset);
+                const l = ogario.mapOffsetY + (LM.isLegendWorld ? 0 : LM.mapOffset);
                 this.drawSelectedCell(this.miniMapCtx);
                 this.w = ogario.playerX;
                 this.u = ogario.playerY;
@@ -8722,12 +8723,13 @@ function thelegendmodproject() {
                         this.teamPlayers.length) {
                         c = 0;
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        u = Math.round((this.deathLocations[this.lastDeath].x + LM.mapOffset) * n);
-                        d = Math.round((this.deathLocations[this.lastDeath].y + LM.mapOffset) * n);
+                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
+                        u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
                         this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
@@ -16399,12 +16401,13 @@ Most cells eaten   : ${mostCellsEaten}
                 /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~pWidth;
                 this.mapOffset = 0;
+                LM.mapOffset = 0;
                 if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
                     this.mapOffsetFixed = false;
                 }
                 this.mapSize = newMapSize;
 
-                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569];
+                var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000, 226274, 320000, 452548];
                 var derivedTier = 0;
                 for (var ti = tierSizes.length - 1; ti >= 0; ti--) {
                     if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
@@ -16414,12 +16417,14 @@ Most cells eaten   : ${mostCellsEaten}
                 /* agar.io standard server: hardcoded 14142 */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
+                LM.mapOffset = this.mapOffset;
             } else {
                 /* private or custom servers: expand map size if larger packet arrives */
                 if (!this.mapSize || pWidth > this.mapSize) {
                     this.mapSize = pWidth;
                 }
                 this.mapOffset = this.mapSize / 2;
+                LM.mapOffset = this.mapOffset;
             }
 
             var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
@@ -16454,6 +16459,19 @@ Most cells eaten   : ${mostCellsEaten}
                     this.mapOffsetFixed = true;
                 }
             }
+
+            /* Synchronize legendmod (LM) map boundary state */
+            LM.mapSize = this.mapSize;
+            LM.mapOffset = this.mapOffset;
+            LM.mapOffsetX = this.mapOffsetX;
+            LM.mapOffsetY = this.mapOffsetY;
+            LM.mapMinX = this.mapMinX;
+            LM.mapMinY = this.mapMinY;
+            LM.mapMaxX = this.mapMaxX;
+            LM.mapMaxY = this.mapMaxY;
+            LM.mapMidX = this.mapMidX;
+            LM.mapMidY = this.mapMidY;
+            LM.mapOffsetFixed = this.mapOffsetFixed;
             this.addSpect();
         },
         addSpect() {
