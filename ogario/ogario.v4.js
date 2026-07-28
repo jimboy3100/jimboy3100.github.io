@@ -8107,6 +8107,10 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
+            // Fallback dead miniclip custom skin URLs to jimboy3100.github.io/lowresskins/
+            if (url.includes('configs-web.agario.miniclippt.com/live/custom_skins/')) {
+                url = url.replace('https://configs-web.agario.miniclippt.com/live/custom_skins/', 'https://jimboy3100.github.io/lowresskins/');
+            }
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -8214,7 +8218,12 @@ function thelegendmodproject() {
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (img[url]) img[url]._failed = true;
                     if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
-                    console.warn("[LM] Skin URL failed to load (will not retry for 30s): " + url);
+                    console.warn("[LM] Skin URL failed to load: " + url);
+                    // Automatic fallback from lowresskins to vanillaskins
+                    if (url.includes('/lowresskins/')) {
+                        var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
+                        app.loadSkin(img, fallbackUrl, animated);
+                    }
                 };
                 img[url].src = url;
             };
