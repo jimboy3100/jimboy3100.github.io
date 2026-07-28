@@ -1056,7 +1056,7 @@ function fancyCount2(str){
   return count / split.length;
 }
 function ajaxrequestMaster(){            
-	$.ajax("//agar.io/mc/agario.js", {
+	$.ajax("https://www.legendmod.ml/agario/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
                     //var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);

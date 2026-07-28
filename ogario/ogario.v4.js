@@ -8175,7 +8175,9 @@ function thelegendmodproject() {
                  * Consequence: imgur skins render fine but can't be cached to IndexedDB
                  * (canvas becomes tainted). All other skins get crossOrigin for cacheable canvas. */
                 var isImgur = url.includes('imgur.com');
-                if (!isImgur) {
+                if (isImgur) {
+                    img[url].referrerPolicy = 'no-referrer';
+                } else {
                     img[url].crossOrigin = 'anonymous';
                 }
                 var _loadTimer = setTimeout(function () {
