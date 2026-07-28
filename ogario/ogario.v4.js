@@ -17027,10 +17027,10 @@ Most cells eaten   : ${mostCellsEaten}
                     if (!LM.cellcolors[name] && color) LM.cellcolors[name] = color
                 }
                 //				
-                var invisible;
+                var invisible = false;
 
                 if (LM.playerCellsMulti.length && LM.multiBoxPlayerExists && LM.integrity) {
-                    invisible = this.isInViewCustom3(x, y, size)
+                    invisible = !this.isInViewCustom3(x, y, size);
                 }
                 cellUpdateCells = this.indexedCells[id];
                 if (cellUpdateCells) {
