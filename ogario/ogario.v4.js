@@ -17152,6 +17152,7 @@ Most cells eaten   : ${mostCellsEaten}
                 //    isFriend = extendedFlags & 2,
 
                 const isVirus = flags & 1;
+                const isEjected = Boolean(flags & 32);
                 var isFood = extendedFlags & 1;
                 const isFriend = extendedFlags & 2;
 
@@ -17212,7 +17213,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                         /* Fast Player Cell & Fragment Detection */
                         var isOwnPlayerCell = (this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) != -1));
-                        if (!isOwnPlayerCell && !isVirus && this.play && this.playerCells.length > 0 && rawServerColor) {
+                        if (!isOwnPlayerCell && !isVirus && !isEjected && this.play && this.playerCells.length > 0 && rawServerColor) {
                             /* Check if new nameless cell matches raw server color of an existing player cell */
                             if (this.playerCells[0].rawServerColor === rawServerColor || (this.playerColor && rawServerColor === this.playerRawServerColor)) {
                                 isOwnPlayerCell = true;
