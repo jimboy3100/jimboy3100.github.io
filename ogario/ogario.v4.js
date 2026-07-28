@@ -18343,7 +18343,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawWebGLGridShader() {
-            if (!this.gl || !this.glGridProgram) return false;
+            if (!this.gl || !this.glGridProgram || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var viewScale = this.scale || 1;
 
@@ -18360,7 +18360,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLBorders(minX, minY, maxX, maxY, colorHex, lineWidth) {
-            if (!this.gl || !this.glBorderProgram) return false;
+            if (!this.gl || !this.glBorderProgram || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var viewScale = this.scale || 1;
 
@@ -18399,7 +18399,7 @@ Most cells eaten   : ${mostCellsEaten}
         /* Filled circle batch with uniform color — used by ghost cells and similar
          * cases where Canvas2D uses ctx.fill() (not ctx.stroke()). */
         drawWebGLFilledBatch(players, colorHex, alphaVal) {
-            if (!this.gl || !players || !players.length) return false;
+            if (!this.gl || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
@@ -18458,7 +18458,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier, canvasLineWidth) {
-            if (!this.gl || !this.glSolidRingProgram || !players || !players.length) return false;
+            if (!this.gl || !this.glSolidRingProgram || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glSolidRingData;
             var count = 0;
@@ -18520,7 +18520,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 dashed ring batch — used by draw2Circles sdsplitRange */
         drawWebGLDashedRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
-            if (!this.gl || !this.glDashedRingProgram || !players || !players.length) return false;
+            if (!this.gl || !this.glDashedRingProgram || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glDashedRingData;
             var count = 0;
@@ -18573,7 +18573,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 gradient bubble batch — used by drawBubbleCircles / drawBCursorTracking */
         drawWebGLBubbleBatch(players, colorHex, alphaVal) {
-            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glBubbleData;
             var count = 0;
@@ -18635,7 +18635,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 gradient bubble batch for cursor tracking — direction is toward cursor, not stored targetX/Y */
         drawWebGLBubbleBatchCursor(players, cursorX, cursorY, colorHex, alphaVal) {
-            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glBubbleData;
             var count = 0;
@@ -18698,7 +18698,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 line batch — used by drawCursorTracking */
         drawWebGLLineBatch(players, cursorX, cursorY, colorHex, alphaVal, lineWidth) {
-            if (!this.gl || !this.glLineProgram || !players || !players.length) return false;
+            if (!this.gl || !this.glLineProgram || !players || !players.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glLineData;
             var count = 0;
@@ -18743,7 +18743,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLBatch(cellsArray) {
-            if (!this.gl || !cellsArray || !cellsArray.length) return false;
+            if (!this.gl || !cellsArray || !cellsArray.length || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
@@ -19482,6 +19482,7 @@ Most cells eaten   : ${mostCellsEaten}
                  * Cells rendered by WebGL get _webglRendered=true so cell.draw() skips body/skin.
                  * Fallback: viruses, jelly, contours, video skins, removed cells stay on Canvas2D. */
                 if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
+                    && !defaultSettings.customBackground
                     && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
                     var gl = this.gl;
                     gl.enable(gl.BLEND);
