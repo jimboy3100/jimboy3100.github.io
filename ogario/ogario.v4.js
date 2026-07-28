@@ -8248,19 +8248,20 @@ function thelegendmodproject() {
                     }
 
                     /* ── Vanilla skins ──
-                     * legendmod.ml/vanillaskins → vanillaskins2 → HTTPS proxy → CDN
+                     * legendmod.ml/vanillaskins → jimboy3000/vanillaskins → HTTPS proxy → CDN
                      * CDN                       → legendmod.ml/vanillaskins → chain above
                      * Note: CDN is case-sensitive, so preserve original filename case.
                      */
                     if (isMirror && url.includes('/vanillaskins2/')) {
-                        /* Both mirrors failed — try HTTPS proxy (preserves case) */
-                        app.loadSkin(img, PROXY + filename, animated);
+                        /* vanillaskins2 failed — try main vanillaskins on jimboy3000 */
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('legendmod.ml/vanillaskins/')) {
-                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (isMirror && url.includes('/vanillaskins/')) {
-                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
+                        /* Both mirrors failed — try HTTPS proxy */
+                        app.loadSkin(img, PROXY + filename, animated);
                     }
                     else if (isMirror && url.includes('/lowresskins/')) {
                         app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
