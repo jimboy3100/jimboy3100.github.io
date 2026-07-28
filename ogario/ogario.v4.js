@@ -17541,10 +17541,90 @@ Most cells eaten   : ${mostCellsEaten}
     };
 
     /* ═══════════════════════════════════════════════════════════════════════════
-     * §8  DRAW RENDER OBJECT
-     *     Canvas/WebGL rendering engine — grid, borders, cells, food, effects,
-     *     minimap overlays, ghost cells, and the main requestAnimationFrame loop.
+     * §7.5 CLIENT-SIDE PROFILER SYSTEM
+     *      Sub-millisecond performance tracking for Frame Rendering, WebGL2,
+     *      Packet Decoding, Physics, and DevTools Performance timeline.
      * ═══════════════════════════════════════════════════════════════════════════ */
+    window.clientProfiler = {
+        enabled: true,
+        stats: {
+            frameMs: 0,
+            frameAvgMs: 0,
+            frameMinMs: 999,
+            frameMaxMs: 0,
+            webglMs: 0,
+            webglAvgMs: 0,
+            packetMs: 0,
+            packetAvgMs: 0,
+            physicsMs: 0,
+            physicsAvgMs: 0,
+            frameCount: 0,
+            packetCount: 0
+        },
+        _history: {
+            frame: [],
+            webgl: [],
+            packet: [],
+            physics: []
+        },
+        _push(cat, ms) {
+            var arr = this._history[cat];
+            if (!arr) return;
+            arr.push(ms);
+            if (arr.length > 300) arr.shift();
+        },
+        _avg(cat) {
+            var arr = this._history[cat];
+            if (!arr || !arr.length) return '0.00';
+            var sum = 0;
+            for (var i = 0; i < arr.length; i++) sum += arr[i];
+            return (sum / arr.length).toFixed(2);
+        },
+        recordFrame(ms) {
+            if (!this.enabled) return;
+            this.stats.frameMs = ms;
+            if (ms < this.stats.frameMinMs) this.stats.frameMinMs = ms;
+            if (ms > this.stats.frameMaxMs) this.stats.frameMaxMs = ms;
+            this.stats.frameCount++;
+            this._push('frame', ms);
+            this.stats.frameAvgMs = this._avg('frame');
+        },
+        recordWebGL(ms) {
+            if (!this.enabled) return;
+            this.stats.webglMs = ms;
+            this._push('webgl', ms);
+            this.stats.webglAvgMs = this._avg('webgl');
+        },
+        recordPacket(ms) {
+            if (!this.enabled) return;
+            this.stats.packetMs = ms;
+            this.stats.packetCount++;
+            this._push('packet', ms);
+            this.stats.packetAvgMs = this._avg('packet');
+        },
+        recordPhysics(ms) {
+            if (!this.enabled) return;
+            this.stats.physicsMs = ms;
+            this._push('physics', ms);
+            this.stats.physicsAvgMs = this._avg('physics');
+        },
+        printReport() {
+            console.group('%c [Client Profiler Report] ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 13px;');
+            console.table({
+                'Frame Render (Total)': { 'Last (ms)': this.stats.frameMs.toFixed(2), 'Avg (ms)': this.stats.frameAvgMs, 'Min (ms)': this.stats.frameMinMs.toFixed(2), 'Max (ms)': this.stats.frameMaxMs.toFixed(2) },
+                'WebGL2 Batch Render': { 'Last (ms)': this.stats.webglMs.toFixed(2), 'Avg (ms)': this.stats.webglAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' },
+                'Packet Decode (WS)':  { 'Last (ms)': this.stats.packetMs.toFixed(2), 'Avg (ms)': this.stats.packetAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' },
+                'Physics & Cell Motion': { 'Last (ms)': this.stats.physicsMs.toFixed(2), 'Avg (ms)': this.stats.physicsAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' }
+            });
+            console.log('Total Frames Sampled:', this.stats.frameCount, '| Packets Processed:', this.stats.packetCount);
+            console.groupEnd();
+        }
+    };
+
+    window.printClientProfile = function () { window.clientProfiler.printReport(); };
+    window.startProfile = function (label) { console.profile(label || 'LegendMod_ClientProfile'); };
+    window.stopProfile = function (label) { console.profileEnd(label || 'LegendMod_ClientProfile'); };
+
     window.drawRender = {
         canvas: null,
         ctx: null,
@@ -18811,6 +18891,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawWebGLBatch(cellsArray) {
             if (!this.gl || !this.glProgram || !cellsArray || !cellsArray.length) return false;
+            var _tGL = performance.now();
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
@@ -19308,6 +19389,7 @@ Most cells eaten   : ${mostCellsEaten}
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
             gl.bindVertexArray(null);
 
+            if (window.clientProfiler) window.clientProfiler.recordWebGL(performance.now() - _tGL);
             return true;
         },
         setView() {
@@ -19690,7 +19772,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
             this.lastRenderingDelay = (performance.now() - this.renderStarted)
-            //console.log(this.renderingDelay)
+            if (window.clientProfiler) window.clientProfiler.recordFrame(performance.now() - this.renderStarted);
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
             if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
