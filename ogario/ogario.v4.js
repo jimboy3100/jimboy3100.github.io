@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.494;
+window.OgVer = 3.495;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -8093,10 +8093,10 @@ function thelegendmodproject() {
             if (!url || typeof url !== 'string') return;
 
             // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
-            if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com') || url.includes('miniclippt.com')) {
-                url = url.replace(/miniclippt\.com/g, 'miniclip.com');
-                url = url.replace(/(?:configs-web|configs)\.agar\.io\.miniclip\.com/g, 'configs-web.agario.miniclip.com');
-                url = url.replace(/(?:configs-web|configs)\.agario\.miniclip\.com/g, 'configs-web.agario.miniclip.com');
+            // The correct CDN domain is configs-web.agario.miniclippt.com (Portuguese Miniclip)
+            if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com')) {
+                url = url.replace(/(?:configs-web|configs)\.agar\.io\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
+                url = url.replace(/(?:configs-web|configs)\.agario\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
             }
             if (url.includes('custom skins')) {
                 url = url.replace(/custom skins/g, 'custom_skins');
