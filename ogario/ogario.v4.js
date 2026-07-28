@@ -23529,13 +23529,13 @@ Array.prototype.stDev = function stDev() {
 // Uses MutationObserver so it catches dynamically created elements too.
 (function () {
     var _elRewriteMap = [
-        { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'jimboy3100.github.io/vanillaskins' },
-        { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'jimboy3100.github.io/lowresskins' },
-        { match: /jimboy3000\.github\.io/g, replace: 'jimboy3100.github.io' },
-        { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'jimboy3100.github.io/agario/live/flags' },
+        { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'www.legendmod.ml/vanillaskins' },
+        { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'www.legendmod.ml/lowresskins' },
+        { match: /jimboy3000\.github\.io/g, replace: 'www.legendmod.ml' },
+        { match: /jimboy3100\.github\.io/g, replace: 'www.legendmod.ml' },
+        { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'www.legendmod.ml/agario/live/flags' },
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
-        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'jimboy3100.github.io/vanillaskins' },
-        { match: /(?:www\.)?legendmod\.ml/g, replace: 'jimboy3100.github.io' }
+        { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'www.legendmod.ml/vanillaskins' }
     ];
     function _rewriteExpandingLinks(root) {
         (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function (el) {
