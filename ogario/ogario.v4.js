@@ -8105,10 +8105,8 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
-            // Fallback dead miniclip custom skin URLs to legendmod.ml/lowresskins/
-            if (url.includes('configs-web.agario.miniclippt.com/live/custom_skins/')) {
-                url = url.replace('https://configs-web.agario.miniclippt.com/live/custom_skins/', 'https://www.legendmod.ml/lowresskins/');
-            }
+            /* No pre-redirect: let miniclip CDN be tried first (new skins live there).
+             * On failure, the onerror handler falls back to jimboy3000.github.io mirrors. */
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -8183,7 +8181,8 @@ function thelegendmodproject() {
                  * Load as opaque images with no-referrer to avoid 403s.
                  * Delta client uses the same approach (Texture.ts:145-146). */
                 var isCorsBlocked = url.includes('imgur.com') ||
-                    url.includes('agario.miniclippt.com');
+                    url.includes('agario.miniclippt.com') ||
+                    url.includes('jimboy3000.github.io');
                 if (isCorsBlocked) {
                     img[url].referrerPolicy = 'no-referrer';
                 } else {
@@ -8229,14 +8228,14 @@ function thelegendmodproject() {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
-                    // Fallback miniclip CDN to legendmod.ml vanillaskins mirror
+                    // Fallback miniclip CDN to jimboy3000 vanillaskins mirror
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
                         var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://www.legendmod.ml/vanillaskins/' + filename, animated);
+                        if (filename) app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/custom_skins/')) {
                         var filename = url.split('/').pop().replace('?', '');
-                        if (filename) app.loadSkin(img, 'https://www.legendmod.ml/lowresskins/' + filename, animated);
+                        if (filename) app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
