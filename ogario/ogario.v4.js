@@ -8015,7 +8015,7 @@ function thelegendmodproject() {
         findOwnedVanillaSkin() {
             let player;
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
-                core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
+                core.registerSkin(ogarcopythelb.nick, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
@@ -16559,7 +16559,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 /* 2. Flag skins */
                 else if (y && legendflags.includes(LowerCase(y))) {
-                    skinUrl = "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png";
+                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
                 }
                 /* 3. Free skins map */
                 else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
