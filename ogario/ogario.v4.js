@@ -16096,8 +16096,9 @@ Most cells eaten   : ${mostCellsEaten}
             var e = 0;
             switch ((message = this.decompressMessage(message)).readUInt8(e++)) {
                 case 16:
+                    var _tPkt = performance.now();
                     this.updateCells(message, e);
-                    //this.countPps()
+                    if (window.clientProfiler) window.clientProfiler.recordPacket(performance.now() - _tPkt);
                     break;
                 case 64:
                     this.viewMinX = message.readDoubleLE(e);
@@ -16119,6 +16120,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         handleLeaderboard() {
+            var _tLb = performance.now();
             /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && defaultmapsettings.leaderboardlimit != i; i++) {
                                 var s = '<span>';
                                 'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + application.escapeHTML(this.leaderboard[i].nick) + '</span>';
@@ -16301,9 +16303,7 @@ Most cells eaten   : ${mostCellsEaten}
                     window.predictedGhostCells[e].nick = legendmod.leaderboard[e].nick;
                     window.predictedGhostCells[e].isFriend = legendmod.leaderboard[e].isFriend;
                 }
-            }
-
-            //}				
+            if (window.clientProfiler) window.clientProfiler.recordLeaderboard(performance.now() - _tLb);
         },
         targetingLead(o) {
             window.targetingLeadX = legendmod.ghostCells[o].x;
@@ -17554,24 +17554,19 @@ Most cells eaten   : ${mostCellsEaten}
             return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!(defaultmapsettings.showClientProfiler || defaultmapsettings.showDevConsole || defaultmapsettings.debug));
         },
         stats: {
-            frameMs: 0,
-            frameAvgMs: 0,
-            frameMinMs: 999,
-            frameMaxMs: 0,
-            webglMs: 0,
-            webglAvgMs: 0,
-            packetMs: 0,
-            packetAvgMs: 0,
-            physicsMs: 0,
-            physicsAvgMs: 0,
-            frameCount: 0,
-            packetCount: 0
+            frameMs: 0, frameAvgMs: '0.00', frameMinMs: 999, frameMaxMs: 0,
+            webglMs: 0, webglAvgMs: '0.00', webglMinMs: 999, webglMaxMs: 0,
+            packetMs: 0, packetAvgMs: '0.00', packetMinMs: 999, packetMaxMs: 0,
+            physicsMs: 0, physicsAvgMs: '0.00', physicsMinMs: 999, physicsMaxMs: 0,
+            gridMs: 0, gridAvgMs: '0.00', gridMinMs: 999, gridMaxMs: 0,
+            textMs: 0, textAvgMs: '0.00', textMinMs: 999, textMaxMs: 0,
+            minimapMs: 0, minimapAvgMs: '0.00', minimapMinMs: 999, minimapMaxMs: 0,
+            lbMs: 0, lbAvgMs: '0.00', lbMinMs: 999, lbMaxMs: 0,
+            frameCount: 0, packetCount: 0
         },
         _history: {
-            frame: [],
-            webgl: [],
-            packet: [],
-            physics: []
+            frame: [], webgl: [], packet: [], physics: [],
+            grid: [], text: [], minimap: [], lb: []
         },
         _push(cat, ms) {
             var arr = this._history[cat];
@@ -17586,41 +17581,46 @@ Most cells eaten   : ${mostCellsEaten}
             for (var i = 0; i < arr.length; i++) sum += arr[i];
             return (sum / arr.length).toFixed(2);
         },
+        _recordMetric(cat, msKey, avgKey, minKey, maxKey, ms) {
+            if (!this.isEnabled()) return;
+            this.stats[msKey] = ms;
+            if (ms < this.stats[minKey]) this.stats[minKey] = ms;
+            if (ms > this.stats[maxKey]) this.stats[maxKey] = ms;
+            this._push(cat, ms);
+            this.stats[avgKey] = this._avg(cat);
+        },
         recordFrame(ms) {
             if (!this.isEnabled()) return;
-            this.stats.frameMs = ms;
-            if (ms < this.stats.frameMinMs) this.stats.frameMinMs = ms;
-            if (ms > this.stats.frameMaxMs) this.stats.frameMaxMs = ms;
             this.stats.frameCount++;
-            this._push('frame', ms);
-            this.stats.frameAvgMs = this._avg('frame');
+            this._recordMetric('frame', 'frameMs', 'frameAvgMs', 'frameMinMs', 'frameMaxMs', ms);
         },
-        recordWebGL(ms) {
-            if (!this.isEnabled()) return;
-            this.stats.webglMs = ms;
-            this._push('webgl', ms);
-            this.stats.webglAvgMs = this._avg('webgl');
-        },
+        recordWebGL(ms) { this._recordMetric('webgl', 'webglMs', 'webglAvgMs', 'webglMinMs', 'webglMaxMs', ms); },
         recordPacket(ms) {
             if (!this.isEnabled()) return;
-            this.stats.packetMs = ms;
             this.stats.packetCount++;
-            this._push('packet', ms);
-            this.stats.packetAvgMs = this._avg('packet');
+            this._recordMetric('packet', 'packetMs', 'packetAvgMs', 'packetMinMs', 'packetMaxMs', ms);
         },
-        recordPhysics(ms) {
-            if (!this.isEnabled()) return;
-            this.stats.physicsMs = ms;
-            this._push('physics', ms);
-            this.stats.physicsAvgMs = this._avg('physics');
-        },
+        recordPhysics(ms) { this._recordMetric('physics', 'physicsMs', 'physicsAvgMs', 'physicsMinMs', 'physicsMaxMs', ms); },
+        recordGrid(ms) { this._recordMetric('grid', 'gridMs', 'gridAvgMs', 'gridMinMs', 'gridMaxMs', ms); },
+        recordText(ms) { this._recordMetric('text', 'textMs', 'textAvgMs', 'textMinMs', 'textMaxMs', ms); },
+        recordMinimap(ms) { this._recordMetric('minimap', 'minimapMs', 'minimapAvgMs', 'minimapMinMs', 'minimapMaxMs', ms); },
+        recordLeaderboard(ms) { this._recordMetric('lb', 'lbMs', 'lbAvgMs', 'lbMinMs', 'lbMaxMs', ms); },
         printReport() {
-            console.group('%c [Client Profiler Report] ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 13px;');
+            var frameAvg = parseFloat(this.stats.frameAvgMs) || 0.001;
+            function calcPct(catAvg) {
+                var val = parseFloat(catAvg) || 0;
+                return frameAvg > 0 ? ((val / frameAvg) * 100).toFixed(1) + '%' : '0%';
+            }
+            console.group('%c ⚡ LegendMod Dense Subsystem Performance Profiler ⚡ ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 14px; padding: 4px;');
             console.table({
-                'Frame Render (Total)': { 'Last (ms)': this.stats.frameMs.toFixed(2), 'Avg (ms)': this.stats.frameAvgMs, 'Min (ms)': this.stats.frameMinMs.toFixed(2), 'Max (ms)': this.stats.frameMaxMs.toFixed(2) },
-                'WebGL2 Batch Render': { 'Last (ms)': this.stats.webglMs.toFixed(2), 'Avg (ms)': this.stats.webglAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' },
-                'Packet Decode (WS)':  { 'Last (ms)': this.stats.packetMs.toFixed(2), 'Avg (ms)': this.stats.packetAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' },
-                'Physics & Cell Motion': { 'Last (ms)': this.stats.physicsMs.toFixed(2), 'Avg (ms)': this.stats.physicsAvgMs, 'Min (ms)': '-', 'Max (ms)': '-' }
+                '1. Total Frame Draw':        { 'Last (ms)': this.stats.frameMs.toFixed(2), 'Avg (ms)': this.stats.frameAvgMs, 'Min (ms)': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2), 'Max (ms)': this.stats.frameMaxMs.toFixed(2), '% Frame': '100%' },
+                '2. WebGL2 Batch Draw':      { 'Last (ms)': this.stats.webglMs.toFixed(2), 'Avg (ms)': this.stats.webglAvgMs, 'Min (ms)': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2), 'Max (ms)': this.stats.webglMaxMs.toFixed(2), '% Frame': calcPct(this.stats.webglAvgMs) },
+                '3. Grid & Map Borders':      { 'Last (ms)': this.stats.gridMs.toFixed(2), 'Avg (ms)': this.stats.gridAvgMs, 'Min (ms)': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2), 'Max (ms)': this.stats.gridMaxMs.toFixed(2), '% Frame': calcPct(this.stats.gridAvgMs) },
+                '4. Nick & Mass Text':        { 'Last (ms)': this.stats.textMs.toFixed(2), 'Avg (ms)': this.stats.textAvgMs, 'Min (ms)': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2), 'Max (ms)': this.stats.textMaxMs.toFixed(2), '% Frame': calcPct(this.stats.textAvgMs) },
+                '5. Minimap & Radar':        { 'Last (ms)': this.stats.minimapMs.toFixed(2), 'Avg (ms)': this.stats.minimapAvgMs, 'Min (ms)': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2), 'Max (ms)': this.stats.minimapMaxMs.toFixed(2), '% Frame': calcPct(this.stats.minimapAvgMs) },
+                '6. Leaderboard Processing':  { 'Last (ms)': this.stats.lbMs.toFixed(2), 'Avg (ms)': this.stats.lbAvgMs, 'Min (ms)': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2), 'Max (ms)': this.stats.lbMaxMs.toFixed(2), '% Frame': calcPct(this.stats.lbAvgMs) },
+                '7. Packet 16 Decode (WS)':   { 'Last (ms)': this.stats.packetMs.toFixed(2), 'Avg (ms)': this.stats.packetAvgMs, 'Min (ms)': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2), 'Max (ms)': this.stats.packetMaxMs.toFixed(2), '% Frame': 'Async' },
+                '8. Physics & Jelly Motion': { 'Last (ms)': this.stats.physicsMs.toFixed(2), 'Avg (ms)': this.stats.physicsAvgMs, 'Min (ms)': (this.stats.physicsMinMs === 999 ? 0 : this.stats.physicsMinMs).toFixed(2), 'Max (ms)': this.stats.physicsMaxMs.toFixed(2), '% Frame': calcPct(this.stats.physicsAvgMs) }
             });
             console.log('Total Frames Sampled:', this.stats.frameCount, '| Packets Processed:', this.stats.packetCount);
             console.groupEnd();
@@ -19601,6 +19601,7 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.translate(-this.camX, -this.camY);
 
             try {
+                var _tGrid = performance.now();
                 if (defaultmapsettings.showGrid) {
                     /* WebGL2 procedural grid renders on GL layer (behind food).
                      * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
@@ -19629,6 +19630,7 @@ Most cells eaten   : ${mostCellsEaten}
                         this.drawMapBorders(this.ctx, LM.mapOffsetFixed, _bMinX, _bMinY, _bMaxX, _bMaxY, defaultSettings.bordersColor, defaultSettings.bordersWidth);
                     }
                 }
+                if (window.clientProfiler) window.clientProfiler.recordGrid(performance.now() - _tGrid);
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
                 if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
                     this.drawLegendWorldZone(this.ctx);
@@ -19684,6 +19686,7 @@ Most cells eaten   : ${mostCellsEaten}
                      * The depth buffer from cell bodies ensures larger cells occlude smaller cells' text.
                      * Disable depth WRITES so text doesn't interfere with other text's depth. */
                     if (this.glTextProgram) {
+                        var _tTxt = performance.now();
                         gl.depthMask(false); /* read-only depth: text is occluded by bodies but doesn't write */
                         /* Set shared uniforms once (viewCenter/viewScale don't change per cell) */
                         var _tvs = this.scale || 1;
@@ -19701,6 +19704,7 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                         gl.bindVertexArray(null);
                         gl.depthMask(true);
+                        if (window.clientProfiler) window.clientProfiler.recordText(performance.now() - _tTxt);
                     }
 
                     /* Disable depth testing for remaining GL draws (grid, borders, rings are overlays) */
@@ -19744,11 +19748,17 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (_cW < LM.cells.length) LM.cells.length = _cW;
 
+                var _tMini = performance.now();
                 this.drawMiscRings();
-                if (defaultmapsettings.jellyPhisycs) LM.updateQuadtree(LM.cells);
+                if (defaultmapsettings.jellyPhisycs) {
+                    var _tPhys = performance.now();
+                    LM.updateQuadtree(LM.cells);
+                    if (window.clientProfiler) window.clientProfiler.recordPhysics(performance.now() - _tPhys);
+                }
 
                 this.drawRings();
                 this.drawRMB();
+                if (window.clientProfiler) window.clientProfiler.recordMinimap(performance.now() - _tMini);
 
                 if (defaultmapsettings.debug) {
                     this.drawViewPorts(this.ctx);
