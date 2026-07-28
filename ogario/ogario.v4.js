@@ -8015,7 +8015,7 @@ function thelegendmodproject() {
         findOwnedVanillaSkin() {
             let player;
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
-                core.registerSkin(ogarcopythelb.nick, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
+                core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
@@ -15899,18 +15899,42 @@ function thelegendmodproject() {
             };
             img.onerror = function () {
                 //console.log("error loading image: "+ url);
+                var rawFileName = url.split('/').pop().replace(/\?.*$/, '');
                 if (url.includes('configs-web.agario.miniclippt')) {
-                    var newURL = "https://www.legendmod.ml/vanillaskins/" + url.split('/').pop();
+                    var newURL;
+                    if (url.includes('/custom_skins/')) {
+                        newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
+                    } else {
+                        newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    }
                     app.urlReplaces[url] = newURL;
-                    //console.log("new destination is: " + newURL);
-                    app.user.skins[url].url = newURL;
+                    if (app.user && app.user.skins && app.user.skins[url]) {
+                        app.user.skins[url].url = newURL;
+                    }
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/vanillaskins/"')) {
-                    if (!application.brokenSkins.hasOwnProperty(url)) {
+                } else if (url.includes('configs-web.agar.io') && url.includes('/custom_skins/')) {
+                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    app.urlReplaces[url] = newURL;
+                    if (app.user && app.user.skins && app.user.skins[url]) {
+                        app.user.skins[url].url = newURL;
+                    }
+                    app.getImg(newURL, name, callback);
+                    return newURL;
+
+                } else if (url.includes('legendmod.ml')) {
+                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    app.urlReplaces[url] = newURL;
+                    if (app.user && app.user.skins && app.user.skins[url]) {
+                        app.user.skins[url].url = newURL;
+                    }
+                    app.getImg(newURL, name, callback);
+                    return newURL;
+
+                } else if (url.includes('jimboy3100.github.io/vanillaskins')) {
+                    if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
-                        application.messageToDiscord('Unknown skin: ', url);
                     }
                     return url;
                 }
@@ -16522,7 +16546,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 /* 2. Flag skins */
                 else if (y && legendflags.includes(LowerCase(y))) {
-                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
+                    skinUrl = "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png";
                 }
                 /* 3. Free skins map */
                 else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
@@ -23489,13 +23513,15 @@ Array.prototype.stDev = function stDev() {
     //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
 
-// Replace legendmod.ml URLs with expanding.land equivalents.
+// Replace legendmod.ml URLs with jimboy3100.github.io / expanding.land equivalents.
 // Uses MutationObserver so it catches dynamically created elements too.
-if (window.expandingLand) {
+(function () {
     var _elRewriteMap = [
+        { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'jimboy3100.github.io/vanillaskins' },
+        { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'jimboy3100.github.io/agario/live/flags' },
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
         { match: /(?:www\.)?legendmod\.ml\/skins/g, replace: 'skins.expanding.land' },
-        { match: /(?:www\.)?legendmod\.ml/g, replace: 'expanding.land' }
+        { match: /(?:www\.)?legendmod\.ml/g, replace: 'jimboy3100.github.io' }
     ];
     function _rewriteExpandingLinks(root) {
         (root || document).querySelectorAll('a[href*="legendmod.ml"], [src*="legendmod.ml"], [style*="legendmod.ml"]').forEach(function (el) {
@@ -23509,11 +23535,13 @@ if (window.expandingLand) {
     /* Initial pass */
     _rewriteExpandingLinks();
     /* Watch for new elements added to the DOM */
-    new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-            m.addedNodes.forEach(function (n) {
-                if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
+    if (typeof MutationObserver !== 'undefined') {
+        new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+                m.addedNodes.forEach(function (n) {
+                    if (n.nodeType === 1) _rewriteExpandingLinks(n.parentElement || document);
+                });
             });
-        });
-    }).observe(document.documentElement, { childList: true, subtree: true });
-}
+        }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+})();
