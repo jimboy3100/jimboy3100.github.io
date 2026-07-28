@@ -4240,7 +4240,7 @@ var defaultmapsettings = {
     showLbData: true,
     showTime: false,
     showDevConsole: false,
-    showClientProfiler: false,
+    showClientProfiler: true,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -17592,8 +17592,8 @@ Most cells eaten   : ${mostCellsEaten}
      *      Packet Decoding, Physics, and DevTools Performance timeline.
      * ═══════════════════════════════════════════════════════════════════════════ */
     window.clientProfiler = {
-        enabled: false,
-        hudVisible: false,
+        enabled: true,
+        hudVisible: true,
         hudEl: null,
         _lastFrameTs: 0,
         isEnabled() {
@@ -17637,7 +17637,13 @@ Most cells eaten   : ${mostCellsEaten}
             this.stats[avgKey] = this._avg(cat);
         },
         recordFrame(ms) {
-            if (!this.isEnabled()) return;
+            if (!this.isEnabled()) {
+                if (this.hudEl) {
+                    this.hudEl.remove();
+                    this.hudEl = null;
+                }
+                return;
+            }
             var now = performance.now();
             var delta = this._lastFrameTs > 0 ? (now - this._lastFrameTs) : 16.67;
             this._lastFrameTs = now;
@@ -17647,7 +17653,8 @@ Most cells eaten   : ${mostCellsEaten}
             this.stats.cpuAvgPct = this._avg('cpu');
             this.stats.frameCount++;
             this._recordMetric('frame', 'frameMs', 'frameAvgMs', 'frameMinMs', 'frameMaxMs', ms);
-            if (this.hudVisible) this._updateHUD();
+            if (!this.hudEl) this._createHUD();
+            this._updateHUD();
         },
         recordWebGL(ms) { if (this.isEnabled()) this._recordMetric('webgl', 'webglMs', 'webglAvgMs', 'webglMinMs', 'webglMaxMs', ms); },
         recordPacket(ms) {
@@ -17669,7 +17676,6 @@ Most cells eaten   : ${mostCellsEaten}
                 this.hudEl.remove();
                 this.hudEl = null;
             }
-            console.log('[PROFILER] Profiler is now ' + (this.enabled ? 'ENABLED' : 'DISABLED'));
         },
         _createHUD() {
             if (this.hudEl || !document.body) return;
@@ -17684,7 +17690,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (!this.hudEl) return;
             var s = this.stats;
             this.hudEl.innerHTML =
-                '<div style="font-weight:bold;color:#fff;border-bottom:1px solid #334;margin-bottom:4px;padding-bottom:2px;">⚡ PROFILER (Ctrl+Shift+P)</div>' +
+                '<div style="font-weight:bold;color:#fff;border-bottom:1px solid #334;margin-bottom:4px;padding-bottom:2px;">⚡ CLIENT PROFILER</div>' +
                 '<div><b>CPU Load:</b> <span style="color:#ffcc00;font-weight:bold;">' + s.cpuAvgPct + '%</span></div>' +
                 '<div><b>Frame Time:</b> ' + s.frameMs.toFixed(2) + 'ms (Avg ' + s.frameAvgMs + 'ms)</div>' +
                 '<div><b>WebGL Draw:</b> ' + s.webglMs.toFixed(2) + 'ms (Avg ' + s.webglAvgMs + 'ms)</div>' +
@@ -17715,13 +17721,6 @@ Most cells eaten   : ${mostCellsEaten}
             console.groupEnd();
         }
     };
-
-    window.addEventListener('keydown', function (e) {
-        if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p' || e.keyCode === 80)) {
-            e.preventDefault();
-            if (window.clientProfiler) window.clientProfiler.toggleHUD();
-        }
-    });
 
     window.toggleClientProfilerHUD = function () {
         if (window.clientProfiler) window.clientProfiler.toggleHUD();
