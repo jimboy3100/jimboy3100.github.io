@@ -17616,8 +17616,8 @@ Most cells eaten   : ${mostCellsEaten}
      *      Packet Decoding, Physics, and DevTools Performance timeline.
      * ═══════════════════════════════════════════════════════════════════════════ */
     window.clientProfiler = {
-        enabled: true,
-        hudVisible: true,
+        enabled: false,
+        hudVisible: false,
         hudEl: null,
         _lastFrameTs: 0,
         isEnabled() {
