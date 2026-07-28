@@ -7614,6 +7614,7 @@ function thelegendmodproject() {
             //this.noColors = $("#noColors").prop("checked");
             this.skipStats = $("#skipStats").prop("checked");
             this.showQuest = $("#showQuest").prop("checked");
+            ogario.showCustomSkins = !defaultmapsettings.noSkins;
             ogario.showCustomSkin = !defaultmapsettings.noSkins;
             if (null !== window.localStorage.getItem("scale_setting")) {
                 var parseScaleSettings = JSON.parse(window.localStorage.getItem("scale_setting"));
@@ -12089,7 +12090,7 @@ function thelegendmodproject() {
                         //style.filter='grayscale(100%)';
                         //
                         var node = null
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        if (defaultmapsettings.customSkins && (LM.showCustomSkins !== false)) {
                             node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                         }
                         var node2, node2IsVideo = false;
@@ -12290,7 +12291,7 @@ function thelegendmodproject() {
                             style.stroke();
                         }
                         //lylko
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        if (defaultmapsettings.customSkins && (LM.showCustomSkins !== false)) {
                             //node = application.getCustomSkin(this.targetNick, this.color);
                             if (node) {
                                 //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
