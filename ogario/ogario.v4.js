@@ -19070,19 +19070,10 @@ Most cells eaten   : ${mostCellsEaten}
             var minX = this.camX - halfW, maxX = this.camX + halfW;
             var minY = this.camY - halfH, maxY = this.camY + halfH;
 
+
             var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
             var _isParty = ':party' === application.gameMode;
 
-            /* Count eligible cells first (for Z distribution) */
-            var eligibleCount = 0;
-            for (var i = 0; i < cellsArray.length; i++) {
-                var cell = cellsArray[i];
-                if (!cell || cell.invisible || cell.isVirus || cell.removed) continue;
-                if (cell.isFood) continue;
-                eligibleCount++;
-            }
-
-            var cellIdx = 0; /* running index for Z calculation */
             for (var i = 0; i < cellsArray.length && count < max; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
@@ -19153,18 +19144,6 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* Z depth: cells sorted small→large (index 0=smallest, N-1=largest).
-                 * Larger cells should be IN FRONT (lower Z in GL clip space).
-                 * Z range: 0.9 (back/small) → 0.01 (front/large).
-                 * Body gets base Z, text will get Z - 0.005 (slightly in front of body). */
-                var zDepth = eligibleCount > 1
-                    ? 0.9 - (cellIdx / (eligibleCount - 1)) * 0.89
-                    : 0.45;
-                cellIdx++;
-
-                /* Store Z on cell for text pass to read later */
-                cell._webglZ = zDepth;
-
                 var idx = count * 9;
                 data[idx] = x;
                 data[idx + 1] = y;
@@ -19174,9 +19153,30 @@ Most cells eaten   : ${mostCellsEaten}
                 data[idx + 5] = (cInt & 255) / 255;
                 data[idx + 6] = alpha;
                 data[idx + 7] = skinLayer;
-                data[idx + 8] = zDepth;
+                // Z depth placeholder — filled in post-pass below
+                data[idx + 8] = 0;
+                cell._webglCellIdx = count;
                 count++;
                 cell._webglRendered = true;
+            }
+
+            /* Post-pass: compute Z depth using actual rendered count.
+             * Cells sorted small→large (index 0=smallest, count-1=largest).
+             * Larger cells IN FRONT (lower Z). Z range: 0.9 (back) → 0.01 (front). */
+            for (var ci = 0; ci < count; ci++) {
+                var zDepth = count > 1
+                    ? 0.9 - (ci / (count - 1)) * 0.89
+                    : 0.45;
+                data[ci * 9 + 8] = zDepth;
+            }
+            /* Store Z on cells for text pass (second loop over original array) */
+            for (var i = 0; i < cellsArray.length; i++) {
+                var cell = cellsArray[i];
+                if (cell && cell._webglRendered && cell._webglCellIdx !== undefined) {
+                    var ci2 = cell._webglCellIdx;
+                    cell._webglZ = data[ci2 * 9 + 8];
+                    delete cell._webglCellIdx;
+                }
             }
 
             if (count === 0) return true;
