@@ -37376,7 +37376,7 @@
                                 l = 25;
                                 continue c
                             }
-                        } elseif ((l | 0) == 15) {
+                        } else if ((l | 0) == 15) {
                         e: do
                             if (g) {
                                 while (1) {
