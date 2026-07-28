@@ -12247,7 +12247,7 @@ function thelegendmodproject() {
                         }*/
                         if (defaultmapsettings.cellContours) {
                         }
-                        else if (node) {
+                        else if (!node) {
                             if (!window.drawRender.cellsColored[color2]) {
                                 window.drawRender.preDrawCellsColors(color2);
                             }
@@ -12256,7 +12256,6 @@ function thelegendmodproject() {
                             }
                         }
                         else if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                            //else{			
                             style.fillStyle = color2;
                             style.fill();
                         }
@@ -12313,11 +12312,11 @@ function thelegendmodproject() {
                                         } catch (eJellySkin) {
                                             console.error('[OGARIO JELSKIN DRAW EXCEPTION]', eJellySkin);
                                         } finally {
-                                            style.globalCompositeOperation = 'luminosity';
+                                            style.globalCompositeOperation = 'source-over';
                                             style.lineWidth = lineWidth;
                                             style.strokeStyle = color2;
                                             style.stroke();
-                                            style.globalCompositeOperation = '';
+                                            style.globalCompositeOperation = 'source-over';
                                             style.restore();
                                         }
                                     } else {
