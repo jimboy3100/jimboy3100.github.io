@@ -17666,6 +17666,25 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                     /* Canvas2D is now the BACKGROUND layer (behind WebGL) */
                     if (this.canvas) this.canvas.style.background = 'transparent';
+
+                    /* WebGL context loss recovery: GPU driver reset, tab backgrounding, etc.
+                     * On loss: null out gl so batch functions return false → Canvas2D fallback.
+                     * On restore: re-initialize all shaders, buffers, textures from scratch. */
+                    var _self = this;
+                    this.glCanvas.addEventListener('webglcontextlost', function (e) {
+                        e.preventDefault();
+                        console.warn('[LegendMod WebGL] Context lost — falling back to Canvas2D');
+                        _self.gl = null;
+                    }, false);
+                    this.glCanvas.addEventListener('webglcontextrestored', function () {
+                        console.log('[LegendMod WebGL] Context restored — re-initializing');
+                        _self.gl = null;
+                        _self.glSkinMap = {};
+                        _self.glSkinNextLayer = 0;
+                        _self.glTextCache = new Map();
+                        _self.initWebGL();
+                        _self.resizeCanvas();
+                    }, false);
                 }
                 var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: true, depth: true });
                 if (!gl) return;
@@ -17715,11 +17734,22 @@ Most cells eaten   : ${mostCellsEaten}
                 function createAndLinkProgram(gl, vsSource, fsSource) {
                     var vs = compileShader(gl, gl.VERTEX_SHADER, vsSource);
                     var fs = compileShader(gl, gl.FRAGMENT_SHADER, fsSource);
-                    if (!vs || !fs) return null;
+                    if (!vs || !fs) {
+                        /* Clean up the successful shader if the other failed */
+                        if (vs) gl.deleteShader(vs);
+                        if (fs) gl.deleteShader(fs);
+                        return null;
+                    }
                     var prog = gl.createProgram();
                     gl.attachShader(prog, vs);
                     gl.attachShader(prog, fs);
                     gl.linkProgram(prog);
+                    /* Detach+delete shader objects after link — they're no longer needed
+                     * and holding them leaks GPU memory (18 shader objects across 9 programs). */
+                    gl.detachShader(prog, vs);
+                    gl.detachShader(prog, fs);
+                    gl.deleteShader(vs);
+                    gl.deleteShader(fs);
                     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
                         console.warn('[WebGL Program Link Error]', gl.getProgramInfoLog(prog));
                         gl.deleteProgram(prog);
@@ -17922,7 +17952,10 @@ Most cells eaten   : ${mostCellsEaten}
                     float edgeAlpha = smoothstep(1.0, 0.95, distSq);
                     if (v_skinLayer >= 0.0) {
                         vec2 skinUV = v_unitPos * 0.5 + 0.5;
-                        fragColor = texture(u_skinArray, vec3(skinUV, v_skinLayer));
+                        vec4 skinSample = texture(u_skinArray, vec3(skinUV, v_skinLayer));
+                        /* Blend skin over cell color — Canvas2D draws color first, skin on top.
+                         * If skin is transparent/broken, cell color shows through. */
+                        fragColor = vec4(mix(v_color.rgb, skinSample.rgb, skinSample.a), 1.0);
                     } else {
                         fragColor = vec4(v_color.rgb, 1.0);
                     }
@@ -17982,12 +18015,12 @@ Most cells eaten   : ${mostCellsEaten}
 
                 this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 9);
 
-                // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~32 MB VRAM)
+                // Skin TEXTURE_2D_ARRAY (512×512, 64 layers, ~64 MB VRAM)
                 this.glSkinArray = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
                 this.glSkinTexSize = 512;
-                this.glSkinMaxLayers = 128;
-                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
+                this.glSkinMaxLayers = 64;
+                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 64);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -18343,6 +18376,9 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawWebGLGridShader() {
+            /* customBackground: grid is drawn BEFORE the background in render order.
+             * On Canvas2D the background paints over the grid (correct). On WebGL (z-index:2)
+             * the grid would appear on top of the background (incorrect). Force Canvas2D fallback. */
             if (!this.gl || !this.glGridProgram || defaultSettings.customBackground) return false;
             var gl = this.gl;
             var viewScale = this.scale || 1;
@@ -18360,7 +18396,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLBorders(minX, minY, maxX, maxY, colorHex, lineWidth) {
-            if (!this.gl || !this.glBorderProgram || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glBorderProgram) return false;
             var gl = this.gl;
             var viewScale = this.scale || 1;
 
@@ -18399,7 +18435,7 @@ Most cells eaten   : ${mostCellsEaten}
         /* Filled circle batch with uniform color — used by ghost cells and similar
          * cases where Canvas2D uses ctx.fill() (not ctx.stroke()). */
         drawWebGLFilledBatch(players, colorHex, alphaVal) {
-            if (!this.gl || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
@@ -18458,7 +18494,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier, canvasLineWidth) {
-            if (!this.gl || !this.glSolidRingProgram || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glSolidRingProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glSolidRingData;
             var count = 0;
@@ -18500,7 +18536,8 @@ Most cells eaten   : ${mostCellsEaten}
             if (count === 0) return true;
 
             /* Ring thickness: Canvas2D lineWidth in world units → fraction of ring radius.
-             * Use the average radius across all rings. For uniform rings this is exact. */
+             * Uses first ring's radius as representative — acceptable since opp ring groups
+             * contain cells of similar sizes. Exact per-ring thickness would require an attribute. */
             var avgRadius = data[2]; // Use first ring's radius as representative
             var thickness = Math.min(0.15, Math.max(0.01, _lineWidth / avgRadius));
 
@@ -18520,7 +18557,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 dashed ring batch — used by draw2Circles sdsplitRange */
         drawWebGLDashedRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
-            if (!this.gl || !this.glDashedRingProgram || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glDashedRingProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glDashedRingData;
             var count = 0;
@@ -18573,7 +18610,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 gradient bubble batch — used by drawBubbleCircles / drawBCursorTracking */
         drawWebGLBubbleBatch(players, colorHex, alphaVal) {
-            if (!this.gl || !this.glBubbleProgram || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glBubbleData;
             var count = 0;
@@ -18635,7 +18672,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 gradient bubble batch for cursor tracking — direction is toward cursor, not stored targetX/Y */
         drawWebGLBubbleBatchCursor(players, cursorX, cursorY, colorHex, alphaVal) {
-            if (!this.gl || !this.glBubbleProgram || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glBubbleData;
             var count = 0;
@@ -18698,7 +18735,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* WebGL2 line batch — used by drawCursorTracking */
         drawWebGLLineBatch(players, cursorX, cursorY, colorHex, alphaVal, lineWidth) {
-            if (!this.gl || !this.glLineProgram || !players || !players.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glLineProgram || !players || !players.length) return false;
             var gl = this.gl;
             var data = this.glLineData;
             var count = 0;
@@ -18743,7 +18780,7 @@ Most cells eaten   : ${mostCellsEaten}
             return true;
         },
         drawWebGLBatch(cellsArray) {
-            if (!this.gl || !cellsArray || !cellsArray.length || defaultSettings.customBackground) return false;
+            if (!this.gl || !this.glProgram || !cellsArray || !cellsArray.length) return false;
             var gl = this.gl;
             var data = this.glInstanceData;
             var count = 0;
@@ -18844,7 +18881,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.glSkinMap[url] !== undefined) return this.glSkinMap[url];
             if (this.glSkinNextLayer >= this.glSkinMaxLayers) return -1;
 
-            var layer = this.glSkinNextLayer++;
+            var layer = this.glSkinNextLayer;
             var gl = this.gl;
             var size = this.glSkinTexSize;
 
@@ -18863,6 +18900,8 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
 
+                /* Commit the layer only after successful upload — no slot leak on error */
+                this.glSkinNextLayer++;
                 this.glSkinMap[url] = layer;
                 return layer;
             } catch (eErr) {
@@ -18922,8 +18961,8 @@ Most cells eaten   : ${mostCellsEaten}
             var entry = { tex: tex, w: w, h: h, lastUsed: now };
             this.glTextCache.set(cacheKey, entry);
 
-            /* Evict old entries if cache too large */
-            if (this.glTextCache.size > this.glTextCacheMaxSize) {
+            /* Evict oldest entries until cache is back within limits */
+            while (this.glTextCache.size > this.glTextCacheMaxSize) {
                 var oldest = null, oldestKey = null;
                 this.glTextCache.forEach(function(v, k) {
                     if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
@@ -18931,7 +18970,7 @@ Most cells eaten   : ${mostCellsEaten}
                 if (oldestKey) {
                     gl.deleteTexture(oldest.tex);
                     this.glTextCache.delete(oldestKey);
-                }
+                } else break;
             }
             return entry;
         },
@@ -18958,7 +18997,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawWebGLCellText(cell) {
             if (!cell || !cell._webglRendered || !this.glTextProgram) return;
-            if (!cell.targetNick && !cell.mass) return;
+            if (!cell.targetNick && cell.size <= 40) return;
             if (cell.isFood) return;
 
             var z = cell._webglZ || 0.5;
@@ -19010,23 +19049,26 @@ Most cells eaten   : ${mostCellsEaten}
                 && !(cell.isPlayerCell && defaultmapsettings.hideMyName)
                 && !(defaultmapsettings.hideTeammatesNames && hasSkin);
             var showMass = defaultmapsettings.showMass
-                && cell.mass > 0
+                && cellSize > 40
                 && !(recursive && defaultmapsettings.autoHideMass)
                 && !(cell.isPlayerCell && defaultmapsettings.hideMyMass)
                 && !(defaultmapsettings.hideEnemiesMass && !cell.isPlayerCell && !cell.isVirus);
 
             if (!showNick && !showMass) return;
 
-            var offsetY = 0;
+            /* Match Canvas2D text layout:
+             * - Nick centered at cell center (y)
+             * - Mass top edge flush with nick bottom edge
+             * Canvas2D: nick drawn at y - nickH/2, mass drawn at y + nickH/2 */
+            var nickWorldH = 0;
 
             /* Draw nick */
             if (showNick) {
                 var nickEntry = this.getOrCreateTextTexture(cell.targetNick, nickFont, nickColor, nickStrokeColor, nickStrokeW);
                 if (nickEntry) {
-                    if (showMass) {
-                        offsetY = -cellSize * 0.2;
-                    }
-                    this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, offsetY, cellSize, z);
+                    nickWorldH = nickEntry.h / viewScale;
+                    /* Nick centered at y (offsetY = 0), matching Canvas2D */
+                    this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, 0, cellSize, z);
                 }
             }
 
@@ -19040,7 +19082,9 @@ Most cells eaten   : ${mostCellsEaten}
                 var massStrokeW = defaultmapsettings.massStroke
                     ? ~~(massFontSize * 0.1 * strokeScale) : 0;
 
-                var massVal = ~~cell.mass;
+                /* Compute mass from cell.size directly — cell.mass may not be
+                 * set yet because setMass() only runs inside cell.draw() */
+                var massVal = cell.mass > 0 ? ~~cell.mass : ~~(cellSize * cellSize / 100);
                 var massStr;
                 if (defaultmapsettings.shortMass && massVal >= 1000) {
                     massStr = (Math.floor(massVal / 100) / 10).toFixed(1) + 'k';
@@ -19051,7 +19095,10 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 var massEntry = this.getOrCreateTextTexture(massStr, massFont, massColor, massStrokeColor, massStrokeW);
                 if (massEntry) {
-                    var massOffsetY = showNick ? cellSize * 0.2 : 0;
+                    var massWorldH = massEntry.h / viewScale;
+                    /* Mass top flush with nick bottom: mass center at y + nickH/2 + massH/2
+                     * When no nick shown: mass centered at y (offset = 0) */
+                    var massOffsetY = showNick ? (nickWorldH * 0.5 + massWorldH * 0.5) : 0;
                     this.drawWebGLTextQuad(massEntry, cell.x, cell.y, massOffsetY, cellSize, z);
                 }
             }
@@ -19065,10 +19112,18 @@ Most cells eaten   : ${mostCellsEaten}
             var viewScale = this.scale || 1;
 
             // Viewport culling bounds
-            var halfW = (this.canvasWidth / viewScale / 2) + 200;
-            var halfH = (this.canvasHeight / viewScale / 2) + 200;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
+            var minX, maxX, minY, maxY;
+            if (window.fullSpectator) {
+                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
+                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
+                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
+                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
+            } else {
+                var halfW = (this.canvasWidth / viewScale / 2) + 200;
+                var halfH = (this.canvasHeight / viewScale / 2) + 200;
+                minX = this.camX - halfW; maxX = this.camX + halfW;
+                minY = this.camY - halfH; maxY = this.camY + halfH;
+            }
 
 
             var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
@@ -19122,9 +19177,15 @@ Most cells eaten   : ${mostCellsEaten}
                     cell._colorStr = colorHex;
                 }
 
-                // Alpha: removed cells fade out, transparent cells setting
+                /* Ensure mass is computed even if cell.draw() hasn't run yet.
+                 * Canvas2D computes mass inside setMass() which only runs in cell.draw(),
+                 * but the WebGL text pass runs BEFORE cell.draw(). */
+                if (!cell.mass && cell.size > 40) {
+                    cell.mass = ~~(cell.size * cell.size / 100);
+                }
+
+                // Alpha: transparent cells setting
                 var alpha = 1.0;
-                if (cell.removed) alpha *= (1 - (cell.alpha || 0));
                 if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) alpha *= defaultSettings.cellsAlpha;
 
                 // Skin layer lookup
@@ -19280,16 +19341,9 @@ Most cells eaten   : ${mostCellsEaten}
         },
 
         renderFrame() {
-            /* Clear WebGL with game background color each frame */
+            /* Clear WebGL with transparent black each frame — the GL canvas (z-index:2)
+             * must be transparent so the Canvas2D background (z-index:1) shows through. */
             if (this.gl) {
-                var _bg = defaultSettings.bgColor || '#000000';
-                if (this._glBgStr !== _bg) {
-                    var _bgI = parseInt((_bg || '#000000').replace('#', ''), 16) || 0;
-                    this._glBgR = ((_bgI >> 16) & 255) / 255;
-                    this._glBgG = ((_bgI >> 8) & 255) / 255;
-                    this._glBgB = (_bgI & 255) / 255;
-                    this._glBgStr = _bg;
-                }
                 this.gl.clearColor(0, 0, 0, 0.0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             }
@@ -19482,8 +19536,12 @@ Most cells eaten   : ${mostCellsEaten}
                  * Cells rendered by WebGL get _webglRendered=true so cell.draw() skips body/skin.
                  * Fallback: viruses, jelly, contours, video skins, removed cells stay on Canvas2D. */
                 if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
-                    && !defaultSettings.customBackground
                     && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
+                    /* Pre-clear _webglRendered for ALL cells to prevent stale flags from
+                     * previous frames (e.g., if cell.draw() threw an exception). */
+                    for (var _fi = 0; _fi < LM.cells.length; _fi++) {
+                        if (LM.cells[_fi]) LM.cells[_fi]._webglRendered = false;
+                    }
                     var gl = this.gl;
                     gl.enable(gl.BLEND);
                     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -20626,7 +20684,7 @@ Most cells eaten   : ${mostCellsEaten}
                 return;
             }
             /* WebGL2 GPU batch: 1 draw call for all food dots.
-             * Falls back to Canvas2D when custom background covers WebGL layer. */
+             * Falls back to Canvas2D when custom background is set for compositing consistency. */
             if (this.gl && !defaultSettings.customBackground && this.drawWebGLFoodBatch(LM.food)) return;
             this.drawCachedFood(this.ctx, LM.food, this.scale);
             //return;
