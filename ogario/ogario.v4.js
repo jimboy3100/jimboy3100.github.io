@@ -1,6 +1,6 @@
 window.spects = window.spects || [];
 var spects = window.spects;
-window.OgVer = 3.493;
+window.OgVer = 3.494;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -8164,7 +8164,11 @@ function thelegendmodproject() {
                 } else {
                     img[url] = new Image();
                 }
-                if (!url.includes('imgur.com')) {
+                /* imgur rejects CORS requests (403 Forbidden), so skip crossOrigin for imgur.
+                 * Consequence: imgur skins render fine but can't be cached to IndexedDB
+                 * (canvas becomes tainted). All other skins get crossOrigin for cacheable canvas. */
+                var isImgur = url.includes('imgur.com');
+                if (!isImgur) {
                     img[url].crossOrigin = 'anonymous';
                 }
                 var _loadTimer = setTimeout(function () {
@@ -8190,7 +8194,9 @@ function thelegendmodproject() {
                                     window.LMSkinStorage.put(url, blob);
                                 }
                             }, "image/png");
-                        } catch (err) { }
+                        } catch (err) {
+                            /* Canvas is tainted (e.g. CORS-blocked image) — skip caching */
+                        }
                     }
                 };
                 img[url].referrerPolicy = 'no-referrer';
@@ -8208,7 +8214,7 @@ function thelegendmodproject() {
                 window.LMSkinStorage.get(url, function (cachedData) {
                     if (cachedData && img && !img[url]) {
                         var cachedImg = new Image();
-                        cachedImg.crossOrigin = 'anonymous';
+                        /* No crossOrigin for blob: URLs — they are same-origin by definition */
                         var objUrl = null;
                         cachedImg.onload = function () {
                             img[url] = this;
