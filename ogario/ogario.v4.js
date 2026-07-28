@@ -8179,8 +8179,11 @@ function thelegendmodproject() {
                  * Solution: load as opaque images (no crossOrigin) with no-referrer.
                  * Consequence: skins render fine but can't be cached to IndexedDB
                  * (canvas becomes tainted). The try/catch in onload handles this. */
+                /* Miniclip CDN rejects CORS requests from non-agar.io origins.
+                 * Load as opaque images with no-referrer to avoid 403s.
+                 * Delta client uses the same approach (Texture.ts:145-146). */
                 var isCorsBlocked = url.includes('imgur.com') ||
-                    (url.includes('agario.miniclippt') && url.includes('/custom_skins/'));
+                    url.includes('agario.miniclippt.com');
                 if (isCorsBlocked) {
                     img[url].referrerPolicy = 'no-referrer';
                 } else {
@@ -8225,6 +8228,15 @@ function thelegendmodproject() {
                     if (url.includes('/lowresskins/')) {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
+                    }
+                    // Fallback miniclip CDN to jimboy3100 vanillaskins mirror
+                    else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
+                        var filename = url.split('/').pop().replace('?', '');
+                        if (filename) app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
+                    }
+                    else if (url.includes('configs.agario.miniclippt.com/live/custom_skins/')) {
+                        var filename = url.split('/').pop().replace('?', '');
+                        if (filename) app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
@@ -8300,8 +8312,10 @@ function thelegendmodproject() {
                         }
                     } catch (error) { }
                     try {
-                        this.customSkinsCache[e + "_cached"] = new Image;
-                        this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                        /* Use canvas directly — immediately usable as drawImage source.
+                         * Avoids async data URL decode that caused skins to only
+                         * appear when cells re-entered the viewport. */
+                        this.customSkinsCache[e + "_cached"] = i;
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e, i);
                         }
@@ -8328,8 +8342,7 @@ function thelegendmodproject() {
                         sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
                     try {
-                        this.customSkinsCache[e + "_cached2"] = new Image;
-                        this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
+                        this.customSkinsCache[e + "_cached2"] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached2"] = this.customSkinsCache[e];
                     }
@@ -8361,8 +8374,7 @@ function thelegendmodproject() {
                         sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, 0, 0, depth, depth);
                     } catch (error) { }
                     try {
-                        this.customSkinsCache[e + "_cached3"] = new Image;
-                        this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                        this.customSkinsCache[e + "_cached3"] = i;
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e + "_cached3", i);
                         }
@@ -8394,8 +8406,7 @@ function thelegendmodproject() {
                         sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
                     } catch (error) { }
                     try {
-                        this.customSkinsCache[e + "_cached4"] = new Image;
-                        this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
+                        this.customSkinsCache[e + "_cached4"] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached4"] = this.customSkinsCache[e];
                     }
@@ -8424,8 +8435,7 @@ function thelegendmodproject() {
                         sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) { }
                     try {
-                        this.customSkinsCache[e + "_cached" + skinCache] = new Image;
-                        this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
+                        this.customSkinsCache[e + "_cached" + skinCache] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached" + skinCache] = this.customSkinsCache[e];
                     }
