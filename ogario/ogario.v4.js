@@ -12156,7 +12156,7 @@ function thelegendmodproject() {
                         //style.filter='grayscale(100%)';
                         //
                         var node = null
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected) {
                             node = application.getCustomSkin(this.targetNick, this.color, this.skin);
                         }
                         var node2, node2IsVideo = false;
@@ -17277,7 +17277,13 @@ Most cells eaten   : ${mostCellsEaten}
                 cellUpdateCells.updateTime = this.time || Date.now();
                 cellUpdateCells.isFood = isFood;
                 cellUpdateCells.isVirus = isVirus;
-                if (skin) {
+                cellUpdateCells.isEjected = isEjected;
+                if (isEjected) {
+                    cellUpdateCells.isPlayerCell = false;
+                    cellUpdateCells.targetNick = "";
+                    cellUpdateCells.skin = null;
+                }
+                if (skin && !isEjected) {
                     cellUpdateCells.skin = skin;
                 }
                 /* LW Potion detection: server sends name="$potion" instead of a
@@ -19327,7 +19333,7 @@ Most cells eaten   : ${mostCellsEaten}
         drawWebGLCellText(cell) {
             if (!cell || !cell._webglRendered || !this.glTextProgram) return;
             if (!cell.targetNick && cell.size <= 40) return;
-            if (cell.isFood) return;
+            if (cell.isFood || cell.isEjected) return;
 
             var z = cell._webglZ || 0.5;
             var cellSize = cell.size || 10;
@@ -19520,7 +19526,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 // Skin layer lookup
                 var skinLayer = -1.0;
-                if (_showSkins && (cell.targetNick || cell.skin)) {
+                if (_showSkins && !cell.isEjected && (cell.targetNick || cell.skin)) {
                     /* Chat socket skins (nick-based) take priority over vanilla skins */
                     var skinUrl = null;
                     if (cell.targetNick) {
