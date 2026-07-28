@@ -19462,7 +19462,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             /* Precompute per-frame constants for cell draw (#2, #3) */
-            this._skinHalf = (_now % 1000) >= 500; /* animated skin frame toggle: 500ms per frame */
+            this._skinHalf = (_now % 60000) >= 30000; /* animated skin frame toggle: 30 seconds per frame (vanilla Agar.io) */
             this._drawSettings = {
                 optimizedNames: defaultmapsettings.optimizedNames,
                 optimizedMass: defaultmapsettings.optimizedMass,
