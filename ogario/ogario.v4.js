@@ -16911,7 +16911,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.viruses.push(cellObj);
                             }
                             this.cells.push(cellObj);
-                            if ((this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
+                            if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
                                 cellObj.isPlayerCell = true;
                                 this.playerColor = color;
                                 cellObj.color = color;
@@ -17213,6 +17213,12 @@ Most cells eaten   : ${mostCellsEaten}
 
                         /* Fast Player Cell & Fragment Detection */
                         var isOwnPlayerCell = (this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) != -1));
+                        if (isEjected) {
+                            isOwnPlayerCell = false;
+                            if (this._playerCellIDSet) this._playerCellIDSet.delete(id);
+                            var _pIndex = this.playerCellIDs.indexOf(id);
+                            if (_pIndex !== -1) this.playerCellIDs.splice(_pIndex, 1);
+                        }
                         if (!isOwnPlayerCell && !isVirus && !isEjected && this.play && this.playerCells.length > 0 && rawServerColor) {
                             /* Check if new nameless cell matches raw server color of an existing player cell */
                             if (this.playerCells[0].rawServerColor === rawServerColor || (this.playerColor && rawServerColor === this.playerRawServerColor)) {
@@ -17222,7 +17228,7 @@ Most cells eaten   : ${mostCellsEaten}
                             }
                         }
 
-                        if (isOwnPlayerCell && this.playerCells.indexOf(cellUpdateCells) === -1) {
+                        if (!isEjected && isOwnPlayerCell && this.playerCells.indexOf(cellUpdateCells) === -1) {
                             cellUpdateCells.isPlayerCell = true;
                             cellUpdateCells.rawServerColor = rawServerColor;
                             if (this.gameMode === ":teams") {
