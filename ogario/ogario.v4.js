@@ -2501,8 +2501,7 @@ var displayText = {
         showTop5: 'Pokaz top 5 teamu',
         showTargeting: 'Pokaz namierzanie',
         showTime: 'Pokaz aktualny czas',
-        showDevConsole: 'Show developer console',
-        showClientProfiler: 'Show client profiler (ms timings)',
+        showDevConsole: 'Show developer console & profiler',
         showLbData: 'Pokaz mase w topce',
         //normalLb: 'Naglowek \"Topka\"',
         centeredLb: 'Wysrodkowana topka',
@@ -2551,7 +2550,7 @@ var displayText = {
         'hk-dance': 'Dance',
         'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Pokaz/ukryj aktualny czas',
-        'hk-showDevConsole': 'Show developer console',
+        'hk-showDevConsole': 'Show developer console & profiler',
         'hk-showSplitRange': 'Pokaz/ukryj zasieg podzialu',
         'hk-showSplitInd': 'Pokaz/ukryj zasieg podzialu z ringami',
         'hk-showTeammatesInd': 'Pokaz/ukryj wskazniki graczy teamu',
@@ -2998,8 +2997,7 @@ var displayText = {
         showTop5: 'Show teamboard',
         showTargeting: 'Show targeting',
         showTime: 'Show current time',
-        showDevConsole: 'Show developer console',
-        showClientProfiler: 'Show client profiler (ms timings)',
+        showDevConsole: 'Show developer console & profiler',
         showLbData: 'Show leaderboard mass',
         //normalLb: '\"Leaderboard\" header',
         centeredLb: 'Centered leaderboard',
@@ -3046,7 +3044,7 @@ var displayText = {
         'hk-dance': 'Dance',
         'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Show/hide current time',
-        'hk-showDevConsole': 'Show developer console',
+        'hk-showDevConsole': 'Show developer console & profiler',
         'hk-showSplitRange': 'Show/hide split range',
         'hk-showSplitInd': 'Show/hide split indicators',
         'hk-showTeammatesInd': 'Show/hide teammates indicators',
@@ -4240,7 +4238,6 @@ var defaultmapsettings = {
     showLbData: true,
     showTime: false,
     showDevConsole: false,
-    showClientProfiler: true,
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,
@@ -7055,7 +7052,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole", "showClientProfiler"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -8987,7 +8984,7 @@ function thelegendmodproject() {
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
             }
-            console.log(text);
+            if (defaultmapsettings.showDevConsole) console.log(text);
             return text;
         },
         createServerToken() {
@@ -17616,12 +17613,13 @@ Most cells eaten   : ${mostCellsEaten}
      *      Packet Decoding, Physics, and DevTools Performance timeline.
      * ═══════════════════════════════════════════════════════════════════════════ */
     window.clientProfiler = {
-        enabled: true,
-        hudVisible: true,
+        enabled: false,
+        hudVisible: false,
         hudEl: null,
         _lastFrameTs: 0,
         isEnabled() {
-            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showClientProfiler);
+            /* Profiler is now controlled by showDevConsole toggle */
+            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showDevConsole);
         },
         stats: {
             frameMs: 0, frameAvgMs: '0.00', frameMinMs: 999, frameMaxMs: 0,
