@@ -2232,10 +2232,10 @@ setTimeout(function () {
         } catch (e) { }
 
         /* Build VanillaSkinUrlMap: %skinname -> full URL
-         * Primary: jimboy3100.github.io/vanillaskins/ (our mirror)
+         * Primary: legendmod.ml/vanillaskins/ (our mirror, no CORS issues)
          * The onerror fallback chain handles missing files via vanillaskins2 → LW proxy → CDN */
         window.VanillaSkinUrlMap = {};
-        var mirrorBase = "https://jimboy3100.github.io/vanillaskins/";
+        var mirrorBase = "https://legendmod.ml/vanillaskins/";
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
             var url = null;
@@ -8230,7 +8230,9 @@ function thelegendmodproject() {
                     if (!filename) return;
                     var isCustomSkin = filename.startsWith('skin_custom_');
                     var PROXY = 'http://188.245.107.158/skin-proxy/vanilla/';
-                    var isJimboy = url.includes('jimboy3100.github.io') || url.includes('jimboy3000.github.io');
+                    var isMirror = url.includes('legendmod.ml') ||
+                        url.includes('jimboy3100.github.io') ||
+                        url.includes('jimboy3000.github.io');
 
                     /* ── Custom skins (user-uploaded) ──
                      * These only exist on miniclip CDN, never on GitHub mirrors.
@@ -8245,33 +8247,36 @@ function thelegendmodproject() {
                     }
 
                     /* ── Vanilla skins ──
-                     * jimboy/vanillaskins → vanillaskins2 → LW proxy (lowercase) → CDN (lowercase)
-                     * jimboy/lowresskins  → vanillaskins   → vanillaskins2 → LW proxy
-                     * miniclip CDN        → jimboy/vanillaskins → vanillaskins2 → LW proxy
+                     * legendmod.ml/vanillaskins → jimboy3100/vanillaskins2 → LW proxy (lc) → CDN (lc)
+                     * jimboy/vanillaskins2      → LW proxy (lowercase) → CDN (lowercase)
+                     * jimboy/vanillaskins       → jimboy/vanillaskins2 → LW proxy
+                     * jimboy/lowresskins        → legendmod.ml/vanillaskins → chain above
+                     * CDN                       → legendmod.ml/vanillaskins → chain above
                      */
-                    if (isJimboy && url.includes('/vanillaskins2/')) {
-                        // Both mirrors failed — try LW proxy with lowercase
+                    if (isMirror && url.includes('/vanillaskins2/')) {
                         app.loadSkin(img, PROXY + filename.toLowerCase(), animated);
                     }
-                    else if (isJimboy && url.includes('/vanillaskins/')) {
+                    else if (url.includes('legendmod.ml/vanillaskins/')) {
                         app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
                     }
-                    else if (isJimboy && url.includes('/lowresskins/')) {
-                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
+                    else if (isMirror && url.includes('/vanillaskins/')) {
+                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
+                    }
+                    else if (isMirror && url.includes('/lowresskins/')) {
+                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('/lowresskins/')) {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                         app.loadSkin(img, fallbackUrl, animated);
                     }
                     else if (url.includes('188.245.107.158/skin-proxy/')) {
-                        // LW proxy failed — last resort: CDN direct with lowercase
                         app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename.toLowerCase(), animated);
                     }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated);
+                        app.loadSkin(img, 'https://legendmod.ml/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
