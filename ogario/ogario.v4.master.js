@@ -116,13 +116,6 @@ function legendmaster(self) {
     }
 
     function setup() {
-        /* LW: gapi scripts are blocked by MutationObserver in ogario.v4.js.
-         * Google auth is now handled by Google Identity Services (GIS).
-         * Skip old gapi.auth2 init to prevent CSP/400/404/deprecation errors. */
-        if (!self.gapi || !self.gapi.load) {
-            console.log('[LW-Master] Skipping deprecated gapi.auth2 — using GIS flow');
-            return;
-        }
         self.gapi.load("auth2", function() {
             api = self.gapi.auth2.init({
                 client_id: headers.gplus_client_id,
@@ -948,11 +941,6 @@ function doFB() {
 	}, {scope: 'user_friends'});	
 }
 function doGl() {
-	/* LW: Guard against gapi.auth2 being unavailable (blocked by GIS migration) */
-	if (!window.gapi || !window.gapi.auth2 || !window.gapi.auth2.getAuthInstance()) {
-		console.log('[LW-Master] doGl() skipped — gapi.auth2 unavailable, using GIS flow');
-		return;
-	}
 	var GgImg = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getImageUrl();
 	var GgProfileName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getGivenName(); //First Name
 	var GgProfileSurName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getFamilyName(); //Last Name
@@ -1078,7 +1066,7 @@ function ajaxrequestMaster(){
 					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
-						var pluginName2 = optionMatch2 ? optionMatch2[1] : null;
+						var pluginName2 = optionMatch2[1];
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version from agario.js:", optionMatch[1]);
 						pluginNameLast = pluginName; 
 						//var pluginNameLast = pluginName.substring(pluginName.lastIndexOf(".") + 1); 
@@ -1086,11 +1074,9 @@ function ajaxrequestMaster(){
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Replace with 2 numbers on the end", pluginNameLast);
 						var data = window.master.parseClientVersion(pluginNameLast);
                         window.master.setClientVersion(data, pluginNameLast);
-						if (pluginName2) {
-						    window.master.setxsupportprotoversion(pluginName2);
-						}
+						window.master.setxsupportprotoversion(pluginName2);							
                         console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginNameLast);									
-						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2 || "(not found)");
+						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
 
                     }
                 },
