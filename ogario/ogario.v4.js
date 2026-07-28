@@ -7795,7 +7795,7 @@ function thelegendmodproject() {
                     if (!app.isSocketOpen()) {
                         app.connect();
                     }
-                    legendmod.sendAction(56);
+                    legendmod.sendAction(55);
 
                     if (window.addKeyListeners) window.addKeyListeners();
                     if (defaultmapsettings.autoHideFood) ogario.showFood = false;
