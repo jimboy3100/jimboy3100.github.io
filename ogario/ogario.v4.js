@@ -8609,26 +8609,24 @@ function thelegendmodproject() {
                     }
                     /* ── Expanding Land: Draw zone on minimap (all phases) ── */
                     if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
-                        (function () {
-                            var me = LM.mapEvent;
-                            var targetHalf = me.targetSize / 2;
-                            var tMinX = (-targetHalf + r) * n;
-                            var tMinY = (-targetHalf + l) * n;
-                            var tW = me.targetSize * n;
-                            var tH = me.targetSize * n;
-                            var mmCtx = app.miniMapCtx;
-                            mmCtx.save();
-                            if (me.phase === 1) {
-                                mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
-                            } else if (me.phase === 2) {
-                                mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
-                            } else {
-                                mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
-                            }
-                            mmCtx.lineWidth = 1;
-                            mmCtx.strokeRect(tMinX, tMinY, tW, tH);
-                            mmCtx.restore();
-                        })();
+                        var me = LM.mapEvent;
+                        var targetHalf = me.targetSize / 2;
+                        var tMinX = (-targetHalf + r) * n;
+                        var tMinY = (-targetHalf + l) * n;
+                        var tW = me.targetSize * n;
+                        var tH = me.targetSize * n;
+                        var mmCtx = this.miniMapCtx;
+                        mmCtx.save();
+                        if (me.phase === 1) {
+                            mmCtx.strokeStyle = 'rgba(34, 170, 255, 0.6)';
+                        } else if (me.phase === 2) {
+                            mmCtx.strokeStyle = 'rgba(100, 255, 100, 0.6)';
+                        } else {
+                            mmCtx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                        }
+                        mmCtx.lineWidth = 1;
+                        mmCtx.strokeRect(tMinX, tMinY, tW, tH);
+                        mmCtx.restore();
                     }
                     if (defaultmapsettings.showMiniMapGhostCells) {
                         var h = ogario.ghostCells;
