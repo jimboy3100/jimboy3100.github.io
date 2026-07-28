@@ -2231,16 +2231,18 @@ setTimeout(function () {
             }
         } catch (e) { }
 
-        /* Build VanillaSkinUrlMap: %skinname -> full CDN URL (like Delta's vanillaSkinMap) */
+        /* Build VanillaSkinUrlMap: %skinname -> full URL
+         * Primary: jimboy3100.github.io/vanillaskins/ (our mirror)
+         * The onerror fallback chain handles missing files via vanillaskins2 → LW proxy → CDN */
         window.VanillaSkinUrlMap = {};
-        var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "v15/10890/");
+        var mirrorBase = "https://jimboy3100.github.io/vanillaskins/";
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
             var url = null;
             if (skin.image && skin.image !== "uses_spine") {
-                url = cdnBase + skin.image + "?";
+                url = mirrorBase + skin.image;
             } else if (skin.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
-                url = cdnBase + window.SpineSkinMap[skin.productId] + ".png?";
+                url = mirrorBase + window.SpineSkinMap[skin.productId] + ".png";
             }
             if (url) {
                 var pId = skin.productId;
@@ -8182,7 +8184,8 @@ function thelegendmodproject() {
                  * Delta client uses the same approach (Texture.ts:145-146). */
                 var isCorsBlocked = url.includes('imgur.com') ||
                     url.includes('agario.miniclippt.com') ||
-                    url.includes('jimboy3000.github.io');
+                    url.includes('jimboy3000.github.io') ||
+                    url.includes('jimboy3100.github.io');
                 if (isCorsBlocked) {
                     img[url].referrerPolicy = 'no-referrer';
                 } else {
@@ -8227,6 +8230,7 @@ function thelegendmodproject() {
                     if (!filename) return;
                     var isCustomSkin = filename.startsWith('skin_custom_');
                     var PROXY = 'http://188.245.107.158/skin-proxy/vanilla/';
+                    var isJimboy = url.includes('jimboy3100.github.io') || url.includes('jimboy3000.github.io');
 
                     /* ── Custom skins (user-uploaded) ──
                      * These only exist on miniclip CDN, never on GitHub mirrors.
@@ -8241,18 +8245,19 @@ function thelegendmodproject() {
                     }
 
                     /* ── Vanilla skins ──
-                     * jimboy3000/vanillaskins → vanillaskins2 → LW proxy (lowercase) → CDN (lowercase)
-                     * miniclip CDN            → jimboy3000/vanillaskins → vanillaskins2 → LW proxy
+                     * jimboy/vanillaskins → vanillaskins2 → LW proxy (lowercase) → CDN (lowercase)
+                     * jimboy/lowresskins  → vanillaskins   → vanillaskins2 → LW proxy
+                     * miniclip CDN        → jimboy/vanillaskins → vanillaskins2 → LW proxy
                      */
-                    if (url.includes('jimboy3000.github.io/vanillaskins2/')) {
-                        // Both GitHub mirrors failed — try LegendWorld proxy with lowercase
+                    if (isJimboy && url.includes('/vanillaskins2/')) {
+                        // Both mirrors failed — try LW proxy with lowercase
                         app.loadSkin(img, PROXY + filename.toLowerCase(), animated);
                     }
-                    else if (url.includes('jimboy3000.github.io/vanillaskins/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins2/' + filename, animated);
+                    else if (isJimboy && url.includes('/vanillaskins/')) {
+                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins2/' + filename, animated);
                     }
-                    else if (url.includes('jimboy3000.github.io/lowresskins/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                    else if (isJimboy && url.includes('/lowresskins/')) {
+                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('/lowresskins/')) {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
@@ -8263,10 +8268,10 @@ function thelegendmodproject() {
                         app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename.toLowerCase(), animated);
                     }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated);
                     }
                 };
                 img[url].src = url;
