@@ -16303,6 +16303,7 @@ Most cells eaten   : ${mostCellsEaten}
                     window.predictedGhostCells[e].nick = legendmod.leaderboard[e].nick;
                     window.predictedGhostCells[e].isFriend = legendmod.leaderboard[e].isFriend;
                 }
+            }
             if (window.clientProfiler) window.clientProfiler.recordLeaderboard(performance.now() - _tLb);
         },
         targetingLead(o) {
@@ -17550,11 +17551,15 @@ Most cells eaten   : ${mostCellsEaten}
      * ═══════════════════════════════════════════════════════════════════════════ */
     window.clientProfiler = {
         enabled: false,
+        hudVisible: false,
+        hudEl: null,
+        _lastFrameTs: 0,
         isEnabled() {
-            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!(defaultmapsettings.showClientProfiler || defaultmapsettings.showDevConsole || defaultmapsettings.debug));
+            return this.enabled || (typeof defaultmapsettings !== 'undefined' && !!defaultmapsettings.showClientProfiler);
         },
         stats: {
             frameMs: 0, frameAvgMs: '0.00', frameMinMs: 999, frameMaxMs: 0,
+            cpuPct: 0, cpuAvgPct: '0.0',
             webglMs: 0, webglAvgMs: '0.00', webglMinMs: 999, webglMaxMs: 0,
             packetMs: 0, packetAvgMs: '0.00', packetMinMs: 999, packetMaxMs: 0,
             physicsMs: 0, physicsAvgMs: '0.00', physicsMinMs: 999, physicsMaxMs: 0,
@@ -17565,21 +17570,21 @@ Most cells eaten   : ${mostCellsEaten}
             frameCount: 0, packetCount: 0
         },
         _history: {
-            frame: [], webgl: [], packet: [], physics: [],
+            frame: [], cpu: [], webgl: [], packet: [], physics: [],
             grid: [], text: [], minimap: [], lb: []
         },
         _push(cat, ms) {
             var arr = this._history[cat];
             if (!arr) return;
             arr.push(ms);
-            if (arr.length > 300) arr.shift();
+            if (arr.length > 120) arr.shift();
         },
         _avg(cat) {
             var arr = this._history[cat];
             if (!arr || !arr.length) return '0.00';
             var sum = 0;
             for (var i = 0; i < arr.length; i++) sum += arr[i];
-            return (sum / arr.length).toFixed(2);
+            return (sum / arr.length).toFixed(cat === 'cpu' ? 1 : 2);
         },
         _recordMetric(cat, msKey, avgKey, minKey, maxKey, ms) {
             if (!this.isEnabled()) return;
@@ -17591,42 +17596,94 @@ Most cells eaten   : ${mostCellsEaten}
         },
         recordFrame(ms) {
             if (!this.isEnabled()) return;
+            var now = performance.now();
+            var delta = this._lastFrameTs > 0 ? (now - this._lastFrameTs) : 16.67;
+            this._lastFrameTs = now;
+            var cpu = Math.min(100, (ms / delta) * 100);
+            this.stats.cpuPct = cpu;
+            this._push('cpu', cpu);
+            this.stats.cpuAvgPct = this._avg('cpu');
             this.stats.frameCount++;
             this._recordMetric('frame', 'frameMs', 'frameAvgMs', 'frameMinMs', 'frameMaxMs', ms);
+            if (this.hudVisible) this._updateHUD();
         },
-        recordWebGL(ms) { this._recordMetric('webgl', 'webglMs', 'webglAvgMs', 'webglMinMs', 'webglMaxMs', ms); },
+        recordWebGL(ms) { if (this.isEnabled()) this._recordMetric('webgl', 'webglMs', 'webglAvgMs', 'webglMinMs', 'webglMaxMs', ms); },
         recordPacket(ms) {
             if (!this.isEnabled()) return;
             this.stats.packetCount++;
             this._recordMetric('packet', 'packetMs', 'packetAvgMs', 'packetMinMs', 'packetMaxMs', ms);
         },
-        recordPhysics(ms) { this._recordMetric('physics', 'physicsMs', 'physicsAvgMs', 'physicsMinMs', 'physicsMaxMs', ms); },
-        recordGrid(ms) { this._recordMetric('grid', 'gridMs', 'gridAvgMs', 'gridMinMs', 'gridMaxMs', ms); },
-        recordText(ms) { this._recordMetric('text', 'textMs', 'textAvgMs', 'textMinMs', 'textMaxMs', ms); },
-        recordMinimap(ms) { this._recordMetric('minimap', 'minimapMs', 'minimapAvgMs', 'minimapMinMs', 'minimapMaxMs', ms); },
-        recordLeaderboard(ms) { this._recordMetric('lb', 'lbMs', 'lbAvgMs', 'lbMinMs', 'lbMaxMs', ms); },
+        recordPhysics(ms) { if (this.isEnabled()) this._recordMetric('physics', 'physicsMs', 'physicsAvgMs', 'physicsMinMs', 'physicsMaxMs', ms); },
+        recordGrid(ms) { if (this.isEnabled()) this._recordMetric('grid', 'gridMs', 'gridAvgMs', 'gridMinMs', 'gridMaxMs', ms); },
+        recordText(ms) { if (this.isEnabled()) this._recordMetric('text', 'textMs', 'textAvgMs', 'textMinMs', 'textMaxMs', ms); },
+        recordMinimap(ms) { if (this.isEnabled()) this._recordMetric('minimap', 'minimapMs', 'minimapAvgMs', 'minimapMinMs', 'minimapMaxMs', ms); },
+        recordLeaderboard(ms) { if (this.isEnabled()) this._recordMetric('lb', 'lbMs', 'lbAvgMs', 'lbMinMs', 'lbMaxMs', ms); },
+        toggleHUD() {
+            this.enabled = !this.enabled;
+            this.hudVisible = this.enabled;
+            if (this.hudVisible) {
+                this._createHUD();
+            } else if (this.hudEl) {
+                this.hudEl.remove();
+                this.hudEl = null;
+            }
+            console.log('[PROFILER] Profiler is now ' + (this.enabled ? 'ENABLED' : 'DISABLED'));
+        },
+        _createHUD() {
+            if (this.hudEl || !document.body) return;
+            var el = document.createElement('div');
+            el.id = 'client-profiler-hud';
+            el.style.cssText = 'position:fixed;top:12px;left:12px;z-index:999999;background:rgba(15,15,25,0.88);color:#00ffcc;font-family:Consolas,monospace;font-size:11px;line-height:1.4;padding:8px 12px;border-radius:6px;border:1px solid rgba(0,255,204,0.4);pointer-events:none;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:210px;';
+            document.body.appendChild(el);
+            this.hudEl = el;
+            this._updateHUD();
+        },
+        _updateHUD() {
+            if (!this.hudEl) return;
+            var s = this.stats;
+            this.hudEl.innerHTML =
+                '<div style="font-weight:bold;color:#fff;border-bottom:1px solid #334;margin-bottom:4px;padding-bottom:2px;">⚡ PROFILER (Ctrl+Shift+P)</div>' +
+                '<div><b>CPU Load:</b> <span style="color:#ffcc00;font-weight:bold;">' + s.cpuAvgPct + '%</span></div>' +
+                '<div><b>Frame Time:</b> ' + s.frameMs.toFixed(2) + 'ms (Avg ' + s.frameAvgMs + 'ms)</div>' +
+                '<div><b>WebGL Draw:</b> ' + s.webglMs.toFixed(2) + 'ms (Avg ' + s.webglAvgMs + 'ms)</div>' +
+                '<div><b>Text Pass:</b> ' + s.textMs.toFixed(2) + 'ms (Avg ' + s.textAvgMs + 'ms)</div>' +
+                '<div><b>Packet 16:</b> ' + s.packetMs.toFixed(2) + 'ms (Avg ' + s.packetAvgMs + 'ms)</div>' +
+                '<div><b>Physics:</b> ' + s.physicsMs.toFixed(2) + 'ms (Avg ' + s.physicsAvgMs + 'ms)</div>' +
+                '<div><b>Leaderboard:</b> ' + s.lbMs.toFixed(2) + 'ms</div>';
+        },
         printReport() {
             var frameAvg = parseFloat(this.stats.frameAvgMs) || 0.001;
             function calcPct(catAvg) {
                 var val = parseFloat(catAvg) || 0;
                 return frameAvg > 0 ? ((val / frameAvg) * 100).toFixed(1) + '%' : '0%';
             }
-            console.group('%c ⚡ LegendMod Dense Subsystem Performance Profiler ⚡ ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 14px; padding: 4px;');
+            console.group('%c ⚡ LegendMod Subsystem Performance Profiler ⚡ ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 14px; padding: 4px;');
             console.table({
-                '1. Total Frame Draw':        { 'Last (ms)': this.stats.frameMs.toFixed(2), 'Avg (ms)': this.stats.frameAvgMs, 'Min (ms)': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2), 'Max (ms)': this.stats.frameMaxMs.toFixed(2), '% Frame': '100%' },
-                '2. WebGL2 Batch Draw':      { 'Last (ms)': this.stats.webglMs.toFixed(2), 'Avg (ms)': this.stats.webglAvgMs, 'Min (ms)': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2), 'Max (ms)': this.stats.webglMaxMs.toFixed(2), '% Frame': calcPct(this.stats.webglAvgMs) },
-                '3. Grid & Map Borders':      { 'Last (ms)': this.stats.gridMs.toFixed(2), 'Avg (ms)': this.stats.gridAvgMs, 'Min (ms)': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2), 'Max (ms)': this.stats.gridMaxMs.toFixed(2), '% Frame': calcPct(this.stats.gridAvgMs) },
-                '4. Nick & Mass Text':        { 'Last (ms)': this.stats.textMs.toFixed(2), 'Avg (ms)': this.stats.textAvgMs, 'Min (ms)': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2), 'Max (ms)': this.stats.textMaxMs.toFixed(2), '% Frame': calcPct(this.stats.textAvgMs) },
-                '5. Minimap & Radar':        { 'Last (ms)': this.stats.minimapMs.toFixed(2), 'Avg (ms)': this.stats.minimapAvgMs, 'Min (ms)': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2), 'Max (ms)': this.stats.minimapMaxMs.toFixed(2), '% Frame': calcPct(this.stats.minimapAvgMs) },
-                '6. Leaderboard Processing':  { 'Last (ms)': this.stats.lbMs.toFixed(2), 'Avg (ms)': this.stats.lbAvgMs, 'Min (ms)': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2), 'Max (ms)': this.stats.lbMaxMs.toFixed(2), '% Frame': calcPct(this.stats.lbAvgMs) },
-                '7. Packet 16 Decode (WS)':   { 'Last (ms)': this.stats.packetMs.toFixed(2), 'Avg (ms)': this.stats.packetAvgMs, 'Min (ms)': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2), 'Max (ms)': this.stats.packetMaxMs.toFixed(2), '% Frame': 'Async' },
-                '8. Physics & Jelly Motion': { 'Last (ms)': this.stats.physicsMs.toFixed(2), 'Avg (ms)': this.stats.physicsAvgMs, 'Min (ms)': (this.stats.physicsMinMs === 999 ? 0 : this.stats.physicsMinMs).toFixed(2), 'Max (ms)': this.stats.physicsMaxMs.toFixed(2), '% Frame': calcPct(this.stats.physicsAvgMs) }
+                '0. Main Thread CPU Load':    { 'Last': this.stats.cpuPct.toFixed(1) + '%', 'Avg': this.stats.cpuAvgPct + '%', 'Min': '-', 'Max': '-', '% Frame': 'Main Thread %' },
+                '1. Total Frame Draw':        { 'Last': this.stats.frameMs.toFixed(2) + 'ms', 'Avg': this.stats.frameAvgMs + 'ms', 'Min': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2) + 'ms', 'Max': this.stats.frameMaxMs.toFixed(2) + 'ms', '% Frame': '100%' },
+                '2. WebGL2 Batch Draw':      { 'Last': this.stats.webglMs.toFixed(2) + 'ms', 'Avg': this.stats.webglAvgMs + 'ms', 'Min': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2) + 'ms', 'Max': this.stats.webglMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.webglAvgMs) },
+                '3. Grid & Map Borders':      { 'Last': this.stats.gridMs.toFixed(2) + 'ms', 'Avg': this.stats.gridAvgMs + 'ms', 'Min': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2) + 'ms', 'Max': this.stats.gridMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.gridAvgMs) },
+                '4. Nick & Mass Text':        { 'Last': this.stats.textMs.toFixed(2) + 'ms', 'Avg': this.stats.textAvgMs + 'ms', 'Min': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2) + 'ms', 'Max': this.stats.textMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.textAvgMs) },
+                '5. Minimap & Radar':        { 'Last': this.stats.minimapMs.toFixed(2) + 'ms', 'Avg': this.stats.minimapAvgMs + 'ms', 'Min': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2) + 'ms', 'Max': this.stats.minimapMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.minimapAvgMs) },
+                '6. Leaderboard Processing':  { 'Last': this.stats.lbMs.toFixed(2) + 'ms', 'Avg': this.stats.lbAvgMs + 'ms', 'Min': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2) + 'ms', 'Max': this.stats.lbMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.lbAvgMs) },
+                '7. Packet 16 Decode (WS)':   { 'Last': this.stats.packetMs.toFixed(2) + 'ms', 'Avg': this.stats.packetAvgMs + 'ms', 'Min': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2) + 'ms', 'Max': this.stats.packetMaxMs.toFixed(2) + 'ms', '% Frame': 'Async' },
+                '8. Physics & Jelly Motion': { 'Last': this.stats.physicsMs.toFixed(2) + 'ms', 'Avg': this.stats.physicsAvgMs + 'ms', 'Min': (this.stats.physicsMinMs === 999 ? 0 : this.stats.physicsMinMs).toFixed(2) + 'ms', 'Max': this.stats.physicsMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.physicsAvgMs) }
             });
             console.log('Total Frames Sampled:', this.stats.frameCount, '| Packets Processed:', this.stats.packetCount);
             console.groupEnd();
         }
     };
 
+    window.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.key === 'p' || e.keyCode === 80)) {
+            e.preventDefault();
+            if (window.clientProfiler) window.clientProfiler.toggleHUD();
+        }
+    });
+
+    window.toggleClientProfilerHUD = function () {
+        if (window.clientProfiler) window.clientProfiler.toggleHUD();
+    };
     window.printClientProfile = function () { window.clientProfiler.printReport(); };
     window.startProfile = function (label) { console.profile(label || 'LegendMod_ClientProfile'); };
     window.stopProfile = function (label) { console.profileEnd(label || 'LegendMod_ClientProfile'); };
@@ -19221,6 +19278,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawWebGLCellBatch(cellsArray) {
+            var _tGL = performance.now();
             if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
             var gl = this.gl;
             var data = this.glCellInstanceData;
