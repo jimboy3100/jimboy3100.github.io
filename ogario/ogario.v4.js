@@ -8986,7 +8986,6 @@ function thelegendmodproject() {
                 this.tokenNeedToBtoa = true
                 text = token; //private servers
             }
-            console.log(text);
             return text;
         },
         createServerToken() {
