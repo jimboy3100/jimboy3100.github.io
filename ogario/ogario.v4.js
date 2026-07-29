@@ -4951,7 +4951,7 @@ function thelegendmodproject() {
         version: 'v1',
         privateMode: false,
         protocolMode: true,
-        publicIP: 'wss://wss.ogario.eu:3443',
+        publicIP: 'wss://chat.delt.io/ws',
         privateIP: null,
         updateInterval: 1000,
         updateTick: 0,
