@@ -38,12 +38,17 @@ function opengamepad() {
     		
 var textspeach="";
         function pre_loop() {
-            if (!document.getElementById("message-box")) {
-                setTimeout(pre_loop, 4000);
-//                console.log("VoiceDeOChat:wait for Legend load");
-                return;
+            if (document.getElementById("message-box")) {
+                return initialize();
             }
-            return initialize();
+            /* Use MutationObserver instead of polling every 4 seconds */
+            var _obs = new MutationObserver(function(mutations, obs) {
+                if (document.getElementById("message-box")) {
+                    obs.disconnect();
+                    initialize();
+                }
+            });
+            _obs.observe(document.body, { childList: true, subtree: true });
         }
         pre_loop();
 		

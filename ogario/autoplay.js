@@ -2,10 +2,12 @@
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
-window.doSplitFlag = true;
-window.VirusFlag = true;
-window.BiggerCellFlag = true;
-window.SmallerCellFlag = true;
+/* Cooldown timestamps — replace boolean+setTimeout pattern.
+ * A flag is 'ready' when performance.now() >= the timestamp. */
+window._cooldownSplitUntil = 0;
+window._cooldownVirusUntil = 0;
+window._cooldownBiggerUntil = 0;
+window._cooldownSmallerUntil = 0;
 window.bestDist = 10000;
 
 
@@ -101,11 +103,8 @@ function calcTarget() {
                     //console.log(PlayerCell.mass, PlayerCell.size); //window.legendmod5.virMassShots=false-> 7, 100... 6, 105.9999999999999  .....    window.legendmod5.virMassShots=true->100,100... 112, 106 
 
 
-                    if (window.VirusFlag == true) {
-                        window.VirusFlag = false;
-                        setTimeout(function() {
-                            window.VirusFlag = true;
-                        }, 1000);
+                    if (performance.now() >= window._cooldownVirusUntil) {
+                        window._cooldownVirusUntil = performance.now() + 1000;
                         $('#pause-hud').html("<font color='" + PlayerCell.color + "'>Virus</font> is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                     }
                     if (window.DistanceX[PlayerCell.id] > 0) {
@@ -163,11 +162,8 @@ function calcTarget() {
                     }
                     if (distancePlayerCell - PlayerCell.size <= bestDist2 && !VirusCellDontDoTheRest) { //watch the closer cells
 
-                        if (window.BiggerCellFlag == true) {
-                            window.BiggerCellFlag = false;
-                            setTimeout(function() {
-                                window.BiggerCellFlag = true;
-                            }, 1000);
+                        if (performance.now() >= window._cooldownBiggerUntil) {
+                            window._cooldownBiggerUntil = performance.now() + 1000;
                             $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
 
@@ -201,11 +197,8 @@ function calcTarget() {
                     if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) { //split only when you have 1 cell 
                         //760 
 
-                        if (window.SmallerCellFlag == true) {
-                            window.SmallerCellFlag = false;
-                            setTimeout(function() {
-                                window.SmallerCellFlag = true;
-                            }, 1000);
+                        if (performance.now() >= window._cooldownSmallerUntil) {
+                            window._cooldownSmallerUntil = performance.now() + 1000;
                             $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
                         target2.x = PlayerCell.x;
@@ -216,11 +209,8 @@ function calcTarget() {
                         }
                     } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) { //follow cell
 
-                        if (window.SmallerCellFlag == true) {
-                            window.SmallerCellFlag = false;
-                            setTimeout(function() {
-                                window.SmallerCellFlag = true;
-                            }, 1000);
+                        if (performance.now() >= window._cooldownSmallerUntil) {
+                            window._cooldownSmallerUntil = performance.now() + 1000;
                             $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
                         target2.x = PlayerCell.x;
@@ -235,19 +225,14 @@ function calcTarget() {
     if (target != undefined) { //not needed
         window.legendmod.sendPosition(target, target2);
     }
-    if (doSplit == true && window.doSplitFlag == true) {
+    var _now = performance.now();
+    if (doSplit == true && _now >= window._cooldownSplitUntil) {
         doSplit = false;
-        window.doSplitFlag = false;
-        setTimeout(function() {
-            window.doSplitFlag = true;
-        }, 2000);
+        window._cooldownSplitUntil = _now + 2000;
         window.legendmod.sendAction(17);
-    } else if (doSplittoAvoidCorner == true && window.doSplitFlag == true) {
+    } else if (doSplittoAvoidCorner == true && _now >= window._cooldownSplitUntil) {
         doSplittoAvoidCorner = false;
-        window.doSplitFlag = false;
-        setTimeout(function() {
-            window.doSplitFlag = true;
-        }, 8000);
+        window._cooldownSplitUntil = _now + 8000;
         window.legendmod.sendAction(17);
     } else if (doFeed) {
         doFeed = false;

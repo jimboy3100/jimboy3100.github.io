@@ -1,53 +1,33 @@
-//Time Merger v1.9
+//Time Merger v2.0 — deadline-based, no recursive timers
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
 function CellTimer() {
     if (!window.legendmod5.optimizedMass && window.ExternalScripts) {
+        var now = performance.now();
         myCells = [];
         for (var i = 0; i < window.legendmod.playerCells.length; i++) {
-            //legendmod.cells[i].historyMass->window.playerCellsId[legendmod.cells[i].id].historyMass
+            var cell = window.legendmod.playerCells[i];
+            if (!window.playerCellsId || !cell || !cell.id || !window.playerCellsId[cell.id]) continue;
+            var cellData = window.playerCellsId[cell.id];
+            if (!cellData.historyMass) continue;
 
-            if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] &&
-                window.playerCellsId[legendmod.playerCells[i].id].historyMass &&
-                window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.4) {
-					//console.log("Mass Merge Timer started with mass: " + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
-                var j = i;
-                var x = 0;
-
-                MergeCells(j, x);
-
-            } else {
-                if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] &&
-                    window.playerCellsId[legendmod.playerCells[i].id].historyMass) {
-                    window.playerCellsId[legendmod.playerCells[i].id].mergeTime = null;
+            if (cellData.historyMass[window.legendmod2.fps] > cellData.historyMass[0] * 1.4) {
+                // Cell just gained mass — compute merge deadline once
+                if (!cellData._mergeDeadline) {
+                    var mergeDurationSec = 29 + (8 / 300) * cellData.historyMass[0];
+                    cellData._mergeDeadline = now + mergeDurationSec * 1000;
                 }
+                // Derive display value from deadline
+                var remainingSec = Math.max(0, Math.ceil((cellData._mergeDeadline - now) / 1000));
+                cellData.mergeTime = remainingSec > 0 ? remainingSec : null;
+                if (remainingSec <= 0) {
+                    cellData._mergeDeadline = null;
+                }
+            } else {
+                cellData.mergeTime = null;
+                cellData._mergeDeadline = null;
             }
-
         }
     }
-}
-
-function MergeCells(j, x) {
-    x++;
-    if (window.legendmod.playerCells.length > 1 && window.playerCellsId && window.legendmod.playerCells[j] && window.legendmod.playerCells[j].id && window.playerCellsId[legendmod.playerCells[j].id]) {
-        //window.playerCellsId[legendmod.playerCells[j].id].mergeTime = 29 + (7 / 300) * window.playerCellsId[legendmod.playerCells[j].id].historyMass[0] - x;
-		window.playerCellsId[legendmod.playerCells[j].id].mergeTime = 29 + (8 / 300) * window.playerCellsId[legendmod.playerCells[j].id].historyMass[0] - x;
-        //
-        if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > -20) {
-            setTimeout(function() {
-                MergeCells(j, x);
-				//console.log("Mass Merge: " + j, x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
-            }, 1000);
-        }
-
-    } 
-	else {
-		//console.log("Mass Merge Timer ended: " + j, x);
-                if (window.playerCellsId && window.legendmod.playerCells[j] && window.legendmod.playerCells[j].id && window.playerCellsId[legendmod.playerCells[j].id] &&
-                    window.playerCellsId[legendmod.playerCells[j].id].historyMass) {		
-						window.playerCellsId[legendmod.playerCells[j].id].mergeTime = null;
-					}
-    }
-    return j, x;
 }

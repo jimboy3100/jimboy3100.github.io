@@ -156,7 +156,7 @@ if (!window.recovery) {
                     case 100:
                         if (!this.master && self.sockets[0].isOpened() && message.getInt16(p) == t)
                             try {
-                                setTimeout(display(p + 6, message));
+                                display(p + 6, message);
                             } catch (e) {
                                 //console.error(typeof toastr/*,Failed display toast*/)
                             }
