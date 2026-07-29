@@ -122,13 +122,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     modVersion = "1.8"
     init(modVersion);
     $(".btn.btn-warning.btn-spectate.btn-needs-server").children()[0].className = "ogicon-eye"
-    setTimeout(function () {
-        legendmod.gameMode = ":party"
-    }, 5000);
+    legendmod.gameMode = ":party"
     $("#gamemode").change(function () {
-        setTimeout(function () {
-            legendmod.gameMode = ":party"
-        }, 2000);
+        legendmod.gameMode = ":party"
     });
 
     /* LW: Show both buttons like agar.io — Play as Guest (left) + Login And Play (right) */
@@ -1353,9 +1349,7 @@ function LegendSettingsfirst() {
     LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
     $("#export-settings-btn").click(function () {
         LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-        setTimeout(function () {
-            copy($("#export-settings").val());
-        }, 200);
+        copy($("#export-settings").val());
     });
 
     $("#import-settings-btn").clone().insertAfter("#import-settings-btn").attr('id', 'import-settings-btn2');
@@ -1369,7 +1363,6 @@ function LegendSettingsfirst() {
 }
 
 function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
-    setTimeout(function () {
         if (switcheryLegendSwitch.isChecked()) {
             try { LegendJSON = JSON.parse(document.getElementById("export-settings").value); } catch (e) { console.warn("Invalid settings JSON:", e); return; }
             parseLegendJSONAPI(LegendJSON);
@@ -1383,7 +1376,6 @@ function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
             document.getElementById("export-settings").value = LegendJSONnice;
         }
         return LegendJSON;
-    }, 100);
 }
 
 function parseLegendJSONAPI(LegendJSON) {
@@ -2144,15 +2136,18 @@ function universalchat() {
     };
 
     function pre_loop() {
-        // At this point jQuery can not be used
-        if (!document.getElementById("top5-hud")) {
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for mod to load");
+        if (document.getElementById("top5-hud")) {
+            initialize();
             return;
         }
-        // Just to be sure, another 1 sec wait
-        setTimeout(initialize, 1000);
+        /* Use MutationObserver instead of escalating setTimeout polling */
+        var _obs = new MutationObserver(function(m, obs) {
+            if (document.getElementById("top5-hud")) {
+                obs.disconnect();
+                initialize();
+            }
+        });
+        _obs.observe(document.body, { childList: true, subtree: true });
     }
     pre_loop();
 
@@ -4563,15 +4558,18 @@ function emphasischat() {
         };
 
     function pre_loop() {
-        // At this point jQuery can not be used
-        if (!document.getElementById("top5-hud")) {
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for OGARio load");
+        if (document.getElementById("top5-hud")) {
+            initialize();
             return;
         }
-        // Just to be sure, another 1 wait
-        setTimeout(initialize, 1000);
+        /* Use MutationObserver instead of escalating setTimeout polling */
+        var _obs = new MutationObserver(function(m, obs) {
+            if (document.getElementById("top5-hud")) {
+                obs.disconnect();
+                initialize();
+            }
+        });
+        _obs.observe(document.body, { childList: true, subtree: true });
     }
     pre_loop();
 
@@ -5067,8 +5065,14 @@ function showonceusers3returner(showonceusers3) {
 
 function init(modVersion) {
     if (!document.getElementById("message-box")) {
-        setTimeout(function() { init(modVersion); }, 200);
-        console.log("ogario.js not loaded");
+        /* Use MutationObserver instead of 200ms polling */
+        var _obs = new MutationObserver(function(m, obs) {
+            if (document.getElementById("message-box")) {
+                obs.disconnect();
+                startLM(modVersion);
+            }
+        });
+        _obs.observe(document.body, { childList: true, subtree: true });
         return;
     }
     return startLM(modVersion);
@@ -6033,12 +6037,12 @@ function initializeLM(modVersion) {
     $("#gamemode").change(function () {
         setTimeout(function () {
             adres(null, $('#gamemode').val(), $('#region').val());
-        }, 100);
+        }, 50);
     });
     $("#region").change(function () {
         setTimeout(function () {
             adres(null, $('#gamemode').val(), $('#region').val());
-        }, 100);
+        }, 50);
     });
 
     $('#server-join').click(function () {
@@ -6341,8 +6345,8 @@ function ModeRegionregion() {
 }
 
 function ytFrame() {
-    setTimeout(function () {
-        if (typeof YT !== 'undefined') {
+    function _initYT() {
+        if (typeof YT !== 'undefined' && YT.Player) {
             musicPlayer = new YT.Player('musicFrame', {
                 events: {
                     'onStateChange': function (state) {
@@ -6356,8 +6360,18 @@ function ytFrame() {
                     }
                 }
             });
+            return true;
         }
-    }, 1500);
+        return false;
+    }
+    if (!_initYT()) {
+        /* YT API not ready yet — hook into its callback */
+        var _origCb = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = function() {
+            if (_origCb) _origCb();
+            _initYT();
+        };
+    }
 }
 
 

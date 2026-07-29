@@ -88,9 +88,13 @@ function Recaptcha(curtin, e, n) {
             }
             window.tempo2 = t;
             //window.tempo2 = grecaptcha.getResponse()
-            setTimeout(function() {
+            if (window.tempol > 0) {
+                setTimeout(function() {
+                    legendmod.sendSpawn2(window.tempo2);
+                }, window.tempol * 1000);
+            } else {
                 legendmod.sendSpawn2(window.tempo2);
-            }, window.tempol * 1000);
+            }
         }
         console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
         window.sendTimeOutTokenBots = true;
