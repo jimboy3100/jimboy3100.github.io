@@ -351,10 +351,9 @@ function legendmaster(self) {
 				console.log(playlistCopy.country)
                 canvasLayersManager.setRegionCode(playlistCopy.country);
 				}
-				else if (userData){
-					setTimeout(function() {
-						canvasLayersManager.setRegionCode(userData.responseJSON.country);
-					}, 2000);						
+				else if (userData && userData.responseJSON){
+					/* userData.responseJSON is already available — set region directly */
+					canvasLayersManager.setRegionCode(userData.responseJSON.country);
 				}
                 },
                 dataType: "json",
@@ -527,7 +526,7 @@ function legendmaster(self) {
                     }
                 }, 
 				function() {
-                    options.backoffPeriod *= 2;
+                    options.backoffPeriod = Math.min(options.backoffPeriod * 2, 30000);
                     setTimeout(function() {
                         options.findServer(id, params);
                     }, options.backoffPeriod);

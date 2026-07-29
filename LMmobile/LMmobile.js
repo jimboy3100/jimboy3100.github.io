@@ -228,7 +228,7 @@
     var readyTimer = setInterval(function () {
         if (!document.getElementById('canvas')) return;
         clearInterval(readyTimer);
-        setTimeout(boot, 600);
+        boot(); /* Boot immediately — canvas is ready */
     }, 250);
 
     function boot() {
@@ -276,7 +276,7 @@
             fit();
             setInterval(fit, 4000); /* slow fallback — main triggers are events below */
             window.addEventListener('resize', fit);
-            window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
+            window.addEventListener('orientationchange', function () { requestAnimationFrame(fit); });
         })();
         /* ── Mobile visual overrides: proportional to user settings ── */
         (function mobileVisuals() {
@@ -304,9 +304,12 @@
                 }
             }
             apply();
-            // re-apply after theme loads (ogario loads settings late)
-            setTimeout(apply, 3000);
-            setTimeout(apply, 6000);
+            /* Re-apply after theme loads — observe for defaultSettings changes */
+            if (typeof MutationObserver !== 'undefined') {
+              var _themeObs = new MutationObserver(function() { apply(); });
+              _themeObs.observe(document.body, { childList: true, subtree: true });
+              setTimeout(function() { _themeObs.disconnect(); }, 10000);
+            }
         })();
 
         /* ═══════════════════════════════════════════════════════
@@ -343,8 +346,7 @@
 
             /* Scan now + re-scan for dynamically created inputs */
             scanAll();
-            setTimeout(scanAll, 2000);
-            setTimeout(scanAll, 5000);
+            /* MutationObserver already re-scans on DOM changes — no extra delays needed */
 
             /* MutationObserver for inputs created after DOM ready (e.g. #skin by ogario) */
             var obs = new MutationObserver(function () { scanAll(); });
@@ -408,9 +410,10 @@
                 });
             }
             scan();
-            // Re-scan when DOM changes (in case buttons load late)
-            setTimeout(scan, 2000);
-            setTimeout(scan, 5000);
+            /* MutationObserver handles late-loading buttons */
+            var _btnObs = new MutationObserver(function() { scan(); });
+            _btnObs.observe(document.body, { childList: true, subtree: true });
+            setTimeout(function() { _btnObs.disconnect(); }, 30000);
         })();
 
         /* ── Persistent portrait overlay (replaces one-time toast) ── */
@@ -430,8 +433,8 @@
             }
         }
         window.addEventListener('resize', checkOrientation);
-        window.addEventListener('orientationchange', function () { setTimeout(checkOrientation, 300); });
-        setInterval(checkOrientation, 3000);
+        window.addEventListener('orientationchange', function () { requestAnimationFrame(checkOrientation); });
+        /* No recurring fallback needed — resize + orientationchange events cover it */
 
         /* ── Wake Lock (prevent screen from sleeping during gameplay) ── */
         var wakeLock = null;
@@ -1213,10 +1216,12 @@
         setInterval(repositionButtons, 2500);
         window.addEventListener('resize', repositionButtons);
         window.addEventListener('orientationchange', function () {
-            // Browser needs time to re-layout after rotation
-            setTimeout(repositionButtons, 300);
-            setTimeout(repositionButtons, 600);
-            setTimeout(repositionButtons, 1200);
+            /* Single rAF ensures layout is complete after rotation */
+            requestAnimationFrame(function() {
+                repositionButtons();
+                /* Second pass after browser settles */
+                requestAnimationFrame(repositionButtons);
+            });
         });
 
         /* ═══════════════════════════════════════════════════════

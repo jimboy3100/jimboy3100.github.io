@@ -21,9 +21,16 @@ setTimeout(function () {
 document.title = "LM express";   
 }, 1500);
 */
-setTimeout(function () {
-$(".agario-profile-name").css('vertical-align', '');
-}, 6000);
+/* Fix profile-name CSS when element becomes available */
+(function() {
+  var el = document.querySelector('.agario-profile-name');
+  if (el) { $(el).css('vertical-align', ''); return; }
+  var _obs = new MutationObserver(function(m, obs) {
+    var el = document.querySelector('.agario-profile-name');
+    if (el) { obs.disconnect(); $(el).css('vertical-align', ''); }
+  });
+  _obs.observe(document.body, { childList: true, subtree: true });
+})();
 
 
 
@@ -44,7 +51,21 @@ var Userscripttexture2;
 var Userscripttexture3;
 var Userscripttexture4;
 var Userscripttexture5;
-setTimeout(function () {
+/* Initialize userscript UI — wait for #Userscripttexture1 to exist */
+(function _initUserscripts() {
+  if (!document.getElementById('Userscripttexture1')) {
+    var _obs = new MutationObserver(function(m, obs) {
+      if (document.getElementById('Userscripttexture1')) {
+        obs.disconnect();
+        _setupUserscripts();
+      }
+    });
+    _obs.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
+  _setupUserscripts();
+})();
+function _setupUserscripts() {
 	
 
 /*
@@ -131,23 +152,23 @@ $("#userscripts").hide();
 $('#UserscriptA').blur(function(){
 if ($("#UserscriptA").val()!=""){
 Userscript1=$("#UserscriptA").val();localStorage.setItem("Userscript1", Userscript1);
-$("#Userscripttexture1").load(Userscript1);setTimeout(function () {$("#userscriptBtn1").click(); }, 300); }return false;});
+$("#Userscripttexture1").load(Userscript1, function() { $("#userscriptBtn1").click(); }); }return false;});
 $('#UserscriptB').blur(function(){
 if ($("#UserscriptB").val()!=""){
 Userscript2=$("#UserscriptB").val();localStorage.setItem("Userscript2", Userscript2);
-$("#Userscripttexture2").load(Userscript2);setTimeout(function () {$("#userscriptBtn2").click(); }, 400); }return false;});
+$("#Userscripttexture2").load(Userscript2, function() { $("#userscriptBtn2").click(); }); }return false;});
 $('#UserscriptC').blur(function(){
 if ($("#UserscriptC").val()!=""){
 Userscript3=$("#UserscriptC").val();localStorage.setItem("Userscript3", Userscript3);
-$("#Userscripttexture3").load(Userscript3);setTimeout(function () {$("#userscriptBtn3").click(); }, 500); }return false;});
+$("#Userscripttexture3").load(Userscript3, function() { $("#userscriptBtn3").click(); }); }return false;});
 $('#UserscriptD').blur(function(){
 if ($("#UserscriptD").val()!=""){
 Userscript4=$("#UserscriptD").val();localStorage.setItem("Userscript4", Userscript4);
-$("#Userscripttexture4").load(Userscript4);setTimeout(function () {$("#userscriptBtn4").click(); }, 600); }return false;});
+$("#Userscripttexture4").load(Userscript4, function() { $("#userscriptBtn4").click(); }); }return false;});
 $('#UserscriptE').blur(function(){
 if ($("#UserscriptE").val()!=""){
 Userscript5=$("#UserscriptE").val();localStorage.setItem("Userscript5", Userscript5);
-$("#Userscripttexture5").load(Userscript5);setTimeout(function () {$("#userscriptBtn5").click(); }, 700); }return false;});
+$("#Userscripttexture5").load(Userscript5, function() { $("#userscriptBtn5").click(); }); }return false;});
 
 $("#Userscripttexture1").blur(function(){
 if ($("#Userscripttexture1").val()!=""){Userscripttexture1=$("#Userscripttexture1").val();localStorage.setItem("Userscripttexture1", Userscripttexture1);}});	
@@ -184,22 +205,22 @@ $("#userscriptBtn5").click(function() {
 
 	$('#UserscriptA').val(localStorage.getItem("Userscript1"));
 	if($('#UserscriptA').val()!=""){$('#UserscriptA').blur();}
-	else if($('#UserscriptA').val()==""){document.getElementById("Userscripttexture1").value =localStorage.getItem("Userscripttexture1");setTimeout(function () {$("#userscriptBtn1").click(); }, 100);}
+	else if($('#UserscriptA').val()==""){document.getElementById("Userscripttexture1").value =localStorage.getItem("Userscripttexture1");$("#userscriptBtn1").click();}
 	$('#UserscriptB').val(localStorage.getItem("Userscript2"));
 	if($('#UserscriptB').val()!=""){$('#UserscriptB').blur();}
-	else if($('#UserscriptB').val()==""){document.getElementById("Userscripttexture2").value =localStorage.getItem("Userscripttexture2");setTimeout(function () {$("#userscriptBtn2").click(); }, 100);}
+	else if($('#UserscriptB').val()==""){document.getElementById("Userscripttexture2").value =localStorage.getItem("Userscripttexture2");$("#userscriptBtn2").click();}
 	$('#UserscriptC').val(localStorage.getItem("Userscript3"));
 	if($('#UserscriptC').val()!=""){$('#UserscriptC').blur();}
-	else if($('#UserscriptC').val()==""){document.getElementById("Userscripttexture3").value =localStorage.getItem("Userscripttexture3");setTimeout(function () {$("#userscriptBtn3").click(); }, 100);}
+	else if($('#UserscriptC').val()==""){document.getElementById("Userscripttexture3").value =localStorage.getItem("Userscripttexture3");$("#userscriptBtn3").click();}
 	$('#UserscriptD').val(localStorage.getItem("Userscript4"));
 	if($('#UserscriptD').val()!=""){$('#UserscriptD').blur();}
-	else if($('#UserscriptD').val()==""){document.getElementById("Userscripttexture4").value =localStorage.getItem("Userscripttexture4");setTimeout(function () {$("#userscriptBtn4").click(); }, 100);}
+	else if($('#UserscriptD').val()==""){document.getElementById("Userscripttexture4").value =localStorage.getItem("Userscripttexture4");$("#userscriptBtn4").click();}
 	$('#UserscriptE').val(localStorage.getItem("Userscript5"));
 	if($('#UserscriptE').val()!=""){$('#UserscriptE').blur();}
-	else if($('#UserscriptE').val()==""){document.getElementById("Userscripttexture5").value =localStorage.getItem("Userscripttexture5");setTimeout(function () {$("#userscriptBtn5").click(); }, 100);}
+	else if($('#UserscriptE').val()==""){document.getElementById("Userscripttexture5").value =localStorage.getItem("Userscripttexture5");$("#userscriptBtn5").click();}
 
 	datatooltipfix();
-}, 5000);
+}
 
 function Userscripttext11(){ Userscripttext11=$("#UserscripttextA").val();localStorage.setItem("Userscripttext11", Userscripttext11);
 if (Userscripttext11!=""){$('#Userscriptpages3>option:nth-child(1)').text(Userscripttext11);}}
@@ -1727,12 +1748,18 @@ function datatooltipfix(){
 	$('[data-toggle="tooltip"]').tooltip();
 }
 //5. fixes:
-setTimeout(function () {
-if ($("#comm15").val()=="undefined"){
-for (var i=15;i<=30;i++){
-$("#comm"+i).parent().parent().hide();
-}
-}
-}, 6000);
+/* Hide undefined command controls when #comm15 becomes available */
+(function() {
+  function _hideUndefined() {
+    if ($("#comm15").val()=="undefined"){
+      for (var i=15;i<=30;i++){ $("#comm"+i).parent().parent().hide(); }
+    }
+  }
+  if (document.getElementById('comm15')) { _hideUndefined(); return; }
+  var _obs = new MutationObserver(function(m, obs) {
+    if (document.getElementById('comm15')) { obs.disconnect(); _hideUndefined(); }
+  });
+  _obs.observe(document.body, { childList: true, subtree: true });
+})();
 //6. Banned Users
 var bannedUserUIDs=[];
