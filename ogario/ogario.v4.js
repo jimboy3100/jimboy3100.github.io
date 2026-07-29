@@ -17274,7 +17274,6 @@ Most cells eaten   : ${mostCellsEaten}
                         name = window.decodeURIComponent(escape(rawName));
                     } catch (eDecName) {
                         name = rawName || '';
-                        console.error('[OGARIO PACKET DECODE ERROR] Failed decoding name for cell ID ' + id + ' (rawName: "' + rawName + '"):', eDecName);
                     }
                     namePresent = true;
                     if (!LM.integrity && name && name.includes('}')) {
