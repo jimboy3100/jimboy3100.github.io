@@ -6459,6 +6459,8 @@ function AgarVersionDestinations() {
                     window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
                     postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
                 }
+                /* Populate the version dropdown now that data is ready (async-safe) */
+                if (typeof populateLibConfig === 'function') populateLibConfig();
             } catch (e) { }
         });
     } catch (e) { }
