@@ -630,7 +630,7 @@ class Spect {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                } else if (this.player && window.multiboxPlayerEnabled === this.number && spects[window.multiboxPlayerEnabled - 1]) {
                     legendmod.viewX = this.viewX
                 }
                 //var x=this.viewX = view.getFloat32(offset, true);
@@ -641,7 +641,7 @@ class Spect {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
                 } else if (window.middleMultiViewFlag) {
                     legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
-                } else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+                } else if (this.player && window.multiboxPlayerEnabled === this.number && spects[window.multiboxPlayerEnabled - 1]) {
                     legendmod.viewY = this.viewY
                 }
                 //var y=this.viewX = view.getFloat32(offset, true);
@@ -1474,8 +1474,8 @@ class Spect {
                         }
 
                         legendmod.playerCellsMulti.push(cell);
-                        if (legendmod.playerCellsMulti.length === 1) {
-                            console.log('[SPECT] Player cell is active')
+                        if (!this.active) {
+                            console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
                             this.active = true
                             this.sendCursor()
                             loadMultiCellSkin(this)
@@ -1606,7 +1606,7 @@ class Spect {
         } else if (window.middleMultiViewFlag) {
             legendmod.viewX = (legendmod.viewXTrue + x) / 2;
             legendmod.viewY = (legendmod.viewYTrue + y) / 2;
-        } else if (window.multiboxPlayerEnabled) {
+        } else if (window.multiboxPlayerEnabled === this.number) {
             legendmod.viewX = x;
             legendmod.viewY = y;
         }

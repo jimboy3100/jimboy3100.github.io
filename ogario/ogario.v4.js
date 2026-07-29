@@ -744,7 +744,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * After Discord OAuth completes, we feed the token into MC.doLoginWithGPlus()
      * which sends it to the game server via opcode 102 — same path as Google. */
     (function () {
-        var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
+        /* Generate a one-time nonce for CSRF protection on OAuth state */
+        var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+        var _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
+        sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce);
+        var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
         var discordPopupRef = null;
         var discordSetupAttempts = 0;
 
@@ -16935,16 +16939,16 @@ Most cells eaten   : ${mostCellsEaten}
                     localStorage.setItem("proLicenceUID", window.proLicenceUID);
                     var dateNow = parseInt(new Date().toISOString().slice(0, new Date().toISOString().indexOf("T")).replace(/-/g, ""));
                     localStorage.setItem("PremiumLimitedDateStart", dateNow);
-                    var tempdateNow = dateNow.toString()
-                    var tempdateNow2 = parseInt(tempdateNow.slice(6, 8))
-                    if (tempdateNow2 < 24) {
-                        tempdateNow2 += 7
-                    } else {
-                        tempdateNow2 += 77
-                        //tempdateNow2 = "last day"
-                    }
-                    tempdateNow2 += "th";
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+                    /* Calculate expiration date: 7 days from now using proper Date math */
+                    var expiryDate = new Date();
+                    expiryDate.setDate(expiryDate.getDate() + 7);
+                    var expiryDay = expiryDate.getDate();
+                    var expiryMonth = expiryDate.toLocaleString('default', { month: 'long' });
+                    var daySuffix = (expiryDay === 1 || expiryDay === 21 || expiryDay === 31) ? "st" :
+                                    (expiryDay === 2 || expiryDay === 22) ? "nd" :
+                                    (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
+                    var tempdateNow2 = expiryDay + daySuffix + " of " + expiryMonth;
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b>. Thank you for using our mod!").css("width", "350px");
                 }
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
