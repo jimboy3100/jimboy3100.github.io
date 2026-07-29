@@ -24,6 +24,18 @@ window.OgVer = 3.496;
                 req.onsuccess = function (e) {
                     self.db = e.target.result;
                     self.ready = true;
+                    /* Request persistent storage so Chrome never evicts the skin cache
+                     * under storage pressure.  persist() returns a Promise and only
+                     * prompts on first call — subsequent calls are silent no-ops. */
+                    if (navigator.storage && navigator.storage.persist) {
+                        navigator.storage.persist().then(function (granted) {
+                            if (granted) {
+                                console.log('[LM Skin Storage] Persistent storage granted — cache will survive browser restarts.');
+                            } else {
+                                console.warn('[LM Skin Storage] Persistent storage denied — cache may be evicted by Chrome.');
+                            }
+                        });
+                    }
                     while (self.queue.length > 0) {
                         var item = self.queue.shift();
                         if (item.type === "audio") {
@@ -13271,11 +13283,28 @@ function thelegendmodproject() {
             var self = this
             this.playerNick = nick;
 
+            /* ── Build <skin>nick prefix for ExpandingLand servers ──
+             * The server's ProtocolLegacy parses <skin>nick format on spawn.
+             * Only applied to ExpandingLand — other servers are unaffected. */
+            var _getSkinPrefix = function () {
+                var isEL = self.isLegendWorld || self.serverType === 'expandingland' ||
+                    (document.getElementById('server-token') && document.getElementById('server-token').value.includes('expanding.land'));
+                if (!isEL) return '';
+                var skinForJoin = ogarcopythelb.skinURL || '';
+                if (!skinForJoin && window.UserVanillaSkin) {
+                    var vs = window.UserVanillaSkin;
+                    if (vs.startsWith('skin_')) vs = vs.substring(5);
+                    if (vs && vs !== 'empty') skinForJoin = '%' + vs;
+                }
+                return skinForJoin ? ('<' + skinForJoin + '>') : '';
+            };
+
             var sendSpawn = function (token) {
                 //console.log(token);
                 //var token = grecaptcha.getResponse();
                 //console.log(self.playerNick);
-                nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                var skinPrefix = _getSkinPrefix();
+                nick = skinPrefix + window.unescape(window.encodeURIComponent(self.playerNick));
                 //console.log(nick);
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
 
@@ -13293,7 +13322,8 @@ function thelegendmodproject() {
             }
             var sendSpawnPrivateServer = function () {
                 var token = '0'
-                nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                var skinPrefix = _getSkinPrefix();
+                nick = skinPrefix + window.unescape(window.encodeURIComponent(self.playerNick));
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
                 var pos = 1
                 for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
@@ -16702,6 +16732,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 if (skinUrl) {
+                    console.log('[LM SKIN] Resolved: name="' + y + '" skin="' + g + '" → url="' + skinUrl.substring(0, 80) + '"');
                     if (y) {
                         window.lastusednameforskin = y;
                         core.registerSkin(y, null, skinUrl, isAnimated);
@@ -16714,6 +16745,8 @@ Most cells eaten   : ${mostCellsEaten}
                     if (g) {
                         application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
                     }
+                } else if (g) {
+                    console.warn('[LM SKIN] UNRESOLVED: name="' + y + '" skin="' + g + '" — VanillaSkinUrlMap has ' + (window.VanillaSkinUrlMap ? Object.keys(window.VanillaSkinUrlMap).length : 0) + ' entries');
                 }
             } catch (eVanilla) {
                 console.error('[OGARIO SKIN ERROR] Failed resolving skin for name/skin:', y, g, eVanilla);
@@ -17098,6 +17131,12 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (4 & flags) {
                     skin = encode();
+                    /* Diagnostic: log skin strings received from server */
+                    if (skin && !this._loggedSkinIDs) this._loggedSkinIDs = {};
+                    if (skin && !this._loggedSkinIDs[id]) {
+                        this._loggedSkinIDs[id] = true;
+                        console.log('[LM SKIN] Server sent skin="' + skin + '" for cellID=' + id);
+                    }
                 }
                 if (8 & flags) {
                     var rawName = encode();
