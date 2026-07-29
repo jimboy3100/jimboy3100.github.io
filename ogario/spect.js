@@ -1413,6 +1413,24 @@ class Spect {
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
+                if (cell._renderSuppressed) {
+                    var suppressedRawID = id % 1000000000;
+                    var preferredCopy = legendmod.indexedCells[suppressedRawID];
+                    if (preferredCopy === cell || (preferredCopy && preferredCopy.removed)) preferredCopy = null;
+                    if (!preferredCopy) {
+                        for (var preferredNumber = 1; preferredNumber < this.number; preferredNumber++) {
+                            var lowerCopy = legendmod.indexedCells[suppressedRawID + preferredNumber * 1000000000];
+                            if (lowerCopy && lowerCopy !== cell && !lowerCopy.removed) {
+                                preferredCopy = lowerCopy;
+                                break;
+                            }
+                        }
+                    }
+                    if (!preferredCopy) {
+                        cell._renderSuppressed = false;
+                        if (legendmod.cells.indexOf(cell) === -1) legendmod.cells.push(cell);
+                    }
+                }
 
             } else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);

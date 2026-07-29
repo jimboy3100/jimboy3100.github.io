@@ -20070,7 +20070,7 @@ Most cells eaten   : ${mostCellsEaten}
                 for (i = 0; i < LM.cells.length; i++) {
                     var cell = LM.cells[i];
                     if (!cell || cell.removed) continue;
-                    // Skip rendering duplicate spectator cell if primary socket is already drawing it
+                    // Suppressed copies remain in indexedCells and are restored by their next packet update.
                     if (cell.spectator && cell.spectator > 0 && !cell.isPlayerCell && !cell.isPlayerCellMulti) {
                         var rawID = cell.id % 1000000000;
                         var master = LM.indexedCells[rawID];
@@ -20080,8 +20080,12 @@ Most cells eaten   : ${mostCellsEaten}
                                 if (candidate && !candidate.removed) { master = candidate; break; }
                             }
                         }
-                        if (master && master !== cell && !master.removed) continue;
+                        if (master && master !== cell && !master.removed) {
+                            cell._renderSuppressed = true;
+                            continue;
+                        }
                     }
+                    if (cell._renderSuppressed) cell._renderSuppressed = false;
                     if (_cW !== i) LM.cells[_cW] = cell;
                     _cW++;
 
