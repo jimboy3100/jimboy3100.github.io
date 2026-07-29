@@ -8631,7 +8631,7 @@ function thelegendmodproject() {
 
             if (!skinUrl) return null;
             if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
-                this.loadSkin(this.customSkinsCache, skinUrl);
+                this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
             }
             return this.getCachedSkin(this.customSkinsCache, skinUrl);
         },
@@ -19640,7 +19640,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (skinUrl) {
                         skinRequested = true;
                         if (!application.customSkinsCache.hasOwnProperty(skinUrl)) {
-                            application.loadSkin(application.customSkinsCache, skinUrl);
+                            application.loadSkin(application.customSkinsCache, skinUrl, undefined, true);
                         }
                         var activeKey = (this._skinHalf && this.glSkinMap[skinUrl + "_cached3"] !== undefined) ? (skinUrl + "_cached3") : skinUrl;
                         var skinNode = application.customSkinsCache[skinUrl + "_cached3"] || application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl];
