@@ -9274,6 +9274,8 @@ function thelegendmodproject() {
             $('#server-ws').val(this.ws),
                 $('#server-token').val(this.serverToken),
                 $('#party-token, .party-token').val(this.partyToken);
+            /* Notify LMexpress callers that server-token is now populated */
+            $(document).trigger('lm:serverTokenReady', [this.serverToken]);
         },
         gameServerConnect(ws) {
             if (!ws) {

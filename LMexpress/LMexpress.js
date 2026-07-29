@@ -524,7 +524,8 @@ function adres(info, thismode, thisregion) {
         joinSERVERfindinfo();
     }
     if ($("#gamemode").val() != ":party") {
-        setTimeout(function () {
+        /* Wait for server-token to be set instead of blind 1.8s delay */
+        $(document).one('lm:serverTokenReady', function () {
             currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
             if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
             if (realmode != ":party") {
@@ -557,13 +558,13 @@ function adres(info, thismode, thisregion) {
                 window.history.pushState(null, null, window.location.pathname);
                 window.location.href = "https://agar.io/#" + $('#party-token').val()
             }
-
-        }, 1800);
+        });
     } else { //if party
-        setTimeout(function () {
+        /* Party mode: wait for token then redirect */
+        $(document).one('lm:serverTokenReady', function () {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
-        }, 2000);
+        });
     }
 }
 
@@ -587,8 +588,8 @@ function LMserverbox() {
 }
 
 function urlIpWhenOpened() {
-
-    setTimeout(function () {
+    /* React to server-token being set instead of waiting 6 seconds */
+    $(document).one('lm:serverTokenReady', function() {
         currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
         if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
         if (searchSip != null) {
@@ -611,9 +612,7 @@ function urlIpWhenOpened() {
                 else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
             }
         }
-
-    }, //5000
-        6000); //8000
+    });
 }
 
 function play() {
@@ -4885,6 +4884,7 @@ function getSNEZServers(ifcalled) {
         onOpenCallback: null,
         onCloseCallback: null,
         onMessageCallback: null,
+        onDataReady: null, /* Callback invoked when updatePlayers finishes */
 
         // Methods
         connect: function () {
@@ -5047,6 +5047,12 @@ function getSNEZServers(ifcalled) {
                         searchHandler(searchString);
                     });
                 }
+            }
+            /* Invoke onDataReady callback if set — replaces setTimeout polling */
+            if (typeof client2.onDataReady === 'function') {
+                var _cb = client2.onDataReady;
+                client2.onDataReady = null;
+                _cb(showonceusers3);
             }
             return client2;
         },
@@ -6098,50 +6104,52 @@ function initializeLM(modVersion) {
 
 
 function joinSIPonstart() {
-    setTimeout(function () {
-        if (searchSip != null) {
-            if (realmodePS != null && region != null) {
+    if (searchSip != null) {
+        var sipTarget = getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "");
 
-
-                if (region == "Private") {
-                    setTimeout(function () {
-                        $('#gamemode').val(realmodePS);
-                    }, 100);
-                    $('#region').val(region);
-                    deleteGamemode();
-                }
-
+        if (realmodePS != null && region != null) {
+            if (region == "Private") {
+                $('#gamemode').val(realmodePS);
+                $('#region').val(region);
+                deleteGamemode();
             }
-            if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
-                joinSIPonstart1();
-                joinSIPonstart2();
-            }
-        } else if (url.includes('https://agar.io/#') == true) {
-            $('#gamemode').val(":party");
-            realmodereturnfromStart();
-            joinpartyfromconnect();
         }
 
-        //adres();
-    }, 1000);
-}
+        /* If token already matches, we're done */
+        if (sipTarget == $("#server-token").val()) return;
 
-function joinSIPonstart2() {
-    setTimeout(function () {
-        if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
+        /* Try to join immediately */
+        joinSIPonstart1();
+
+        /* Listen for server-token to be set — retry up to 2 times */
+        var _sipRetries = 0;
+        var _sipHandler = function() {
+            if (sipTarget == $("#server-token").val()) return; /* matched */
+            _sipRetries++;
+            if (_sipRetries >= 2) {
+                toastr.error("Server not found!");
+                return;
+            }
+            /* Retry join */
             joinSIPonstart1();
-            joinSIPonstart3();
-        }
-    }, 1000);
+            /* Re-listen for next token update */
+            $(document).one('lm:serverTokenReady', _sipHandler);
+        };
+        $(document).one('lm:serverTokenReady', _sipHandler);
+
+        /* Safety timeout — stop listening after 5s */
+        setTimeout(function() {
+            $(document).off('lm:serverTokenReady', _sipHandler);
+        }, 5000);
+
+    } else if (url.includes('https://agar.io/#') == true) {
+        $('#gamemode').val(":party");
+        realmodereturnfromStart();
+        joinpartyfromconnect();
+    }
 }
 
-function joinSIPonstart3() {
-    setTimeout(function () {
-        if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
-            toastr.error("Server not found!");
-        }
-    }, 1500);
-}
+/* joinSIPonstart2/3 merged into joinSIPonstart above */
 
 function joinSIPonstart1() {
     realmodereturnfromStart();
@@ -6154,24 +6162,22 @@ function joinSIPonstart1() {
 }
 
 function joinPLAYERonstart() {
-    setTimeout(function () {
-        if (searchedplayer != null) {
-            $("#searchInput").val(searchedplayer);
-            getSNEZServers("NoText");
-            client2.connect();
-
-            setTimeout(function () {
-                if ($('.logEntry').html() != undefined) {
-                    toastr.info("Player <font color='yellow'>" + $('.logEntry>#playerinfo').html() + "</font> contains <font color='yellow'>" + searchedplayer + "!</font>. Connected into Server");
-                    $('.logEntry').click();
-                }
-            }, 1000);
-        }
-        if (autoplayplayer == "yes") {
-            autoplayplaying();
-            window.autoPlay = true;
-        }
-    }, 1000);
+    if (searchedplayer != null) {
+        $("#searchInput").val(searchedplayer);
+        getSNEZServers("NoText");
+        /* Use onDataReady callback instead of setTimeout polling */
+        client2.onDataReady = function() {
+            if ($('.logEntry').html() != undefined) {
+                toastr.info("Player <font color='yellow'>" + $('.logEntry>#playerinfo').html() + "</font> contains <font color='yellow'>" + searchedplayer + "!</font>. Connected into Server");
+                $('.logEntry').click();
+            }
+        };
+        client2.connect();
+    }
+    if (autoplayplayer == "yes") {
+        autoplayplaying();
+        window.autoPlay = true;
+    }
 }
 function joinreplayURLonstart() {
     setTimeout(function () {
@@ -6218,17 +6224,13 @@ function autoplayplaying() {
 
 function joinSERVERfindinfo() {
     $('#log').html('');
-    var searchedtoken;
-    setTimeout(function () {
-        searchedtoken = $("#server-token").val();
-        if (searchedtoken != null) {
-            $("#searchInput").val(searchedtoken);
-            getSNEZServers("NoText");
-            client2.connect();
-
-            setTimeout(function () {
+    var searchedtoken = $("#server-token").val();
+    if (searchedtoken != null) {
+        $("#searchInput").val(searchedtoken);
+        getSNEZServers("NoText");
+        /* Use onDataReady callback instead of 1.5s setTimeout */
+        client2.onDataReady = function() {
                 if ($('.logEntry').html() != undefined && $('.logEntry').html() != "") {
-                    //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Searching Snez servers..");
                     for (var i = 0; i < $('.logEntry').length; i++) {
                         if ($('.logEntry>#playerinfo').eq(i).html() == $('#nick').val()) {
                             $('.logEntry').eq(i).remove();
@@ -6285,7 +6287,6 @@ function joinSERVERfindinfo() {
                             if (countRegions[i] > 0) {
                                 if (i != 0) {
                                     FinalText = FinalText + countRegions[i] + " player(s) wispered it is:" + Regions[i] + "<br>";
-                                    //toastr.info(countRegions[i]+" player(s) wispered it is "+Regions[i] );
                                     if (countRegions[i] > countRegionsMax) {
                                         countRegionsMax = countRegions[i];
                                         MaxRegion = Regions[i];
@@ -6297,7 +6298,6 @@ function joinSERVERfindinfo() {
                             if (countModes[i] > 0) {
                                 if (i != -1) {
                                     FinalText = FinalText + countModes[i] + " player(s) wispered it is" + Modes[i] + "<br>";
-                                    //toastr.info(countModes[i]+" player(s) wispered it is "+Modes[i] );
                                     if (countModes[i] > countModesMax) {
                                         countModesMax = countModes[i];
                                         MaxMode = Modes[i];
@@ -6307,15 +6307,13 @@ function joinSERVERfindinfo() {
                         }
                         realmode = MaxMode;
                         region = MaxRegion;
-                        setTimeout(function () {
-
-                            if (MaxRegion != 0 && MaxRegion != null && MaxMode != 0 && MaxMode != null) {
-                                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
-                                else if (legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + MaxRegion + "&m=" + MaxMode); }
-                                else if (!legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP); }
-                            }
-                            ModeRegionregion();
-                        }, 1500);
+                        /* URL update — data is already processed, no need to wait */
+                        if (MaxRegion != 0 && MaxRegion != null && MaxMode != 0 && MaxMode != null) {
+                            if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
+                            else if (legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + MaxRegion + "&m=" + MaxMode); }
+                            else if (!legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP); }
+                        }
+                        ModeRegionregion();
                         if ($("#region").val() != MaxRegion || $("#gamemode").val() != MaxMode) {
                             FinalText = FinalText + "<font color='yellow'>Best choice: Region:" + MaxRegion + ", Mode" + MaxMode + "</font><br>";
                             FinalText = FinalText + "Information changed!";
@@ -6329,14 +6327,18 @@ function joinSERVERfindinfo() {
                                 master.gameMode = $("#gamemode").val();
                                 legendmod.gameMode = master.gameMode;
                             }
-                            //adres();
                         }
                     }
                 }
-            }, 1500);
-        }
-    }, 100);
+        };
+        client2.connect();
+    }
 }
+
+
+
+
+
 
 function ModeRegionregion() {
     realmode = $("#gamemode").val();
