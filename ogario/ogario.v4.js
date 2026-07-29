@@ -21383,13 +21383,15 @@ Most cells eaten   : ${mostCellsEaten}
             //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
             var width = 14 + 2 / scale;
             var alpha = 12 + 1 / scale;
-            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
-            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
-            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor); //Sonia2
+            /* Keep opponent rings on the lower Canvas2D layer so every cell skin,
+             * including Canvas2D fallbacks, is composited above them. */
+            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor, true); //Sonia2
+            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor, true); //Sonia2
+            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor, true); //Sonia2
             //this.drawCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);						
-            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor); //Sonia2
-            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor); //Sonia2
-            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor, true); //Sonia2
+            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor, true); //Sonia2
+            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor, true); //Sonia2
             if (reset) {
                 biggerSte = [];
                 biggetCell = [];
@@ -21448,9 +21450,9 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
-        drawCircles(ctx, players, scale, width, alpha, stroke) {
+        drawCircles(ctx, players, scale, width, alpha, stroke, forceCanvas2D) {
             if (!players || !players.length) return;
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha, 1.0, width)) {
+            if (!forceCanvas2D && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha, 1.0, width)) {
                 return;
             }
             ctx.lineWidth = width;
