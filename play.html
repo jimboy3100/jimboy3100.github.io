@@ -41,14 +41,12 @@
     <!--div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/loader/LoaderNew.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div-->
     <link rel="stylesheet" href="https://jimboy3100.github.io/context-menu.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css">
-    <!--script src="https://deltav4.gitlab.io/standby-server.js"></script-->
     <script src="https://delt.io/v7/js/runtimechunk~P2PWebSocket.js"></script>
     <script src="https://delt.io/v7/js/P2PWebSocket.js"></script>
     <script>
     /* P2P WebSocket proxy — intercepts hash:// server connections */
     (function() {
         var OrigWS = window.WebSocket;
-        /* Bug #34 fix: Anchored regex requires hash to be the main path component, not an incidental substring */
         var hashPattern = /\/\/([a-z0-9]{20,30})(?:[:/]|$)/;
         window.WebSocket = new Proxy(OrigWS, {
             construct: function(target, args, newTarget) {
@@ -57,7 +55,6 @@
                 var hashMatch = url.match(hashPattern);
                 if (hashMatch && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
                     console.log('[P2P] Intercepting hash connection:', url);
-                    /* Bug #35 fix: Track integrity per-socket, not globally */
                     var socket = new P2PWebSocket('http://' + hashMatch[1], protocols);
                     socket._lwIntegrity = true;
                     if (typeof legendmod !== 'undefined') legendmod.integrity = true;
@@ -74,7 +71,8 @@
         });
     })();
     </script>
-    <script src="https://jimboy3100.github.io/LMexpress/standby-server.js"></script>
+    <script src="https://deltav4.gitlab.io/standby-server.js"></script>
+    <!--script src="https://jimboy3100.github.io/LMexpress/standby-server.js"></script-->
     <script>delete localStorage['s/s']</script>
 
     <script src="https://jimboy3100.github.io/jquery.min.js"></script>
@@ -161,7 +159,7 @@
                             <div id="close-stats" style="float: right;">X</div>
                             <br />
                             <div id="stats-content"
-                                style="float: right; width: 50%; display: inline-block; font-size: 12px;"></div>
+                                style="float: right; width: 50%; font-size: 12px;"></div>
                             <div id="user-info" style="font-size: 12px;"></div>
                             <div style="font-size: 12px;">
                                 <div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name"

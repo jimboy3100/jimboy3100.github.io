@@ -96,7 +96,11 @@ if(Externalletter12==null){Externalletter12 = "Leave this empty if script not im
 if(Externalletter13==null){Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES";}
 
 
-$("#menu-footer").after('<div id="userscripts" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; height: 600px; width: 600px; ";>'+
+/* Read theme values at point-of-use — LMexpress.js globals may not exist yet */
+var _legbgpic = (typeof legbgpic !== 'undefined') ? legbgpic : ($("#menuBg").val() || '');
+var _legbgcolor = (typeof legbgcolor !== 'undefined') ? legbgcolor : ($("#menuPanelColor").val() || '');
+
+$("#menu-footer").after('<div id="userscripts" style="background-image: url('+_legbgpic+'); background-color: '+_legbgcolor+'; border: 1px solid black; height: 600px; width: 600px; ";>'+
 	'<div id="Userscriptshud" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"
 	'<div id="Userscriptshud2" align="middle"><h5 class="main-color">USER SCRIPTS</h5>'+
 	
