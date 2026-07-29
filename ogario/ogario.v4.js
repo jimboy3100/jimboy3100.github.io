@@ -8182,11 +8182,12 @@ function thelegendmodproject() {
                 /* Miniclip CDN rejects CORS requests from non-agar.io origins.
                  * Load as opaque images with no-referrer to avoid 403s.
                  * Delta client uses the same approach (Texture.ts:145-146). */
+                /* GitHub Pages (jimboy3000/jimboy3100) sends Access-Control-Allow-Origin: *
+                 * so CORS works fine — they must NOT be in this list, otherwise canvas
+                 * becomes tainted and skins can't be cached to IndexedDB. */
                 var isCorsBlocked = url.includes('imgur.com') ||
                     url.includes('agario.miniclippt.com') ||
-                    url.includes('legendmod.ml') ||
-                    url.includes('jimboy3000.github.io') ||
-                    url.includes('jimboy3100.github.io');
+                    url.includes('legendmod.ml');
                 if (isCorsBlocked) {
                     img[url].referrerPolicy = 'no-referrer';
                 } else {
