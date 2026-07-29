@@ -8478,7 +8478,8 @@ function thelegendmodproject() {
         },
         cacheSkin(skinCache, animated) {
             //console.log(skinCache);  //////// return the image src
-            if (0 !== this.cacheQueue.length) {
+        cacheSkin(skinCache, animated) {
+            while (0 !== this.cacheQueue.length) {
                 var e = this.cacheQueue.shift();
                 if (e && !this.customSkinsCache[e + "_cached"]) {
                     var depth = 512;
@@ -8495,18 +8496,17 @@ function thelegendmodproject() {
                     sCtx.clip();
                     try {
                         var imgObj = this.customSkinsCache[e];
-                        if (!animated) {
-                            sCtx.drawImage(imgObj, 0, 0, depth, depth);
-                        } else {
-                            var w = imgObj.width || depth;
-                            var h = imgObj.height || depth;
-                            sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth, depth);
+                        if (imgObj) {
+                            if (!animated) {
+                                sCtx.drawImage(imgObj, 0, 0, depth, depth);
+                            } else {
+                                var w = imgObj.width || depth;
+                                var h = imgObj.height || depth;
+                                sCtx.drawImage(imgObj, 0, 0, w / 2, h, 0, 0, depth, depth);
+                            }
                         }
                     } catch (error) { }
                     try {
-                        /* Use canvas directly — immediately usable as drawImage source.
-                         * Avoids async data URL decode that caused skins to only
-                         * appear when cells re-entered the viewport. */
                         this.customSkinsCache[e + "_cached"] = i;
                         if (window.drawRender && window.drawRender.uploadSkinTexture) {
                             window.drawRender.uploadSkinTexture(e, i);
@@ -8514,12 +8514,11 @@ function thelegendmodproject() {
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached"] = this.customSkinsCache[e];
                     }
-                    this.cacheSkin(this.customSkinsCache, animated);
                 }
             }
         },
         cacheSkin2(skinCache) {
-            if (0 !== this.cacheQueue2.length) {
+            while (0 !== this.cacheQueue2.length) {
                 var e = this.cacheQueue2.shift();
                 if (e && !this.customSkinsCache[e + "_cached2"]) {
                     const depth = 64;
@@ -8531,20 +8530,20 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        if (this.customSkinsCache[e]) {
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        }
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached2"] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached2"] = this.customSkinsCache[e];
                     }
-                    this.cacheSkin2(this.customSkinsCache);
                 }
             }
         },
         cacheSkin3(skinCache) {
-            //console.log(skinCache);  //////// return the image src
-            if (0 !== this.cacheQueue3.length) {
+            while (0 !== this.cacheQueue3.length) {
                 const e = this.cacheQueue3.shift();
                 if (e && !this.customSkinsCache[e + "_cached3"]) {
                     let depth = 512;
@@ -8561,9 +8560,11 @@ function thelegendmodproject() {
                     sCtx.clip();
                     try {
                         var img3 = this.customSkinsCache[e];
-                        var w3 = img3.width || depth;
-                        var h3 = img3.height || depth;
-                        sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, 0, 0, depth, depth);
+                        if (img3) {
+                            var w3 = img3.width || depth;
+                            var h3 = img3.height || depth;
+                            sCtx.drawImage(img3, w3 / 2, 0, w3 / 2, h3, 0, 0, depth, depth);
+                        }
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached3"] = i;
@@ -8573,13 +8574,11 @@ function thelegendmodproject() {
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached3"] = this.customSkinsCache[e];
                     }
-                    this.cacheSkin3(this.customSkinsCache);
                 }
             }
         },
         cacheSkin4(skinCache) {
-            //console.log(skinCache);  //////// return the image src
-            if (0 !== this.cacheQueue4.length) {
+            while (0 !== this.cacheQueue4.length) {
                 var e = this.cacheQueue4.shift();
                 if (e && !this.customSkinsCache[e + "_cached4"]) {
                     let depth = 512;
@@ -8595,20 +8594,20 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                        if (this.customSkinsCache[e]) {
+                            sCtx.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                        }
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached4"] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached4"] = this.customSkinsCache[e];
                     }
-                    this.cacheSkin4(this.customSkinsCache);
                 }
             }
         },
         cacheSkinAnimated(skinCache, animated) {
-            //console.log(skinCache);  //////// return the image src
-            if (0 !== this.cacheQueueSkinAnimated.length) {
+            while (0 !== this.cacheQueueSkinAnimated.length) {
                 const e = this.cacheQueueSkinAnimated.shift();
                 if (e && !this.customSkinsCache[e + "_cached" + skinCache]) {
                     let depth = 512;
@@ -8624,14 +8623,15 @@ function thelegendmodproject() {
                     sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     sCtx.clip();
                     try {
-                        sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        if (this.customSkinsCache[e]) {
+                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        }
                     } catch (error) { }
                     try {
                         this.customSkinsCache[e + "_cached" + skinCache] = i;
                     } catch (eErr) {
                         this.customSkinsCache[e + "_cached" + skinCache] = this.customSkinsCache[e];
                     }
-                    this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
         },
