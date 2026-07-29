@@ -8477,8 +8477,6 @@ function thelegendmodproject() {
             }
         },
         cacheSkin(skinCache, animated) {
-            //console.log(skinCache);  //////// return the image src
-        cacheSkin(skinCache, animated) {
             while (0 !== this.cacheQueue.length) {
                 var e = this.cacheQueue.shift();
                 if (e && !this.customSkinsCache[e + "_cached"]) {
