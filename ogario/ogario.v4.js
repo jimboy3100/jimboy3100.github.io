@@ -144,16 +144,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (document.URL.includes('expanding.land')) {
         window.expandingLand = true;
     }
-    /* LW: Swap Google OAuth client ID for our domains.
+    /* LW: Swap Google OAuth client ID for our domains only.
      * Agar.io's Google app only allows agar.io as origin.
      * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
      * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
-    if (window.EnvConfig) {
-        window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+    var _lwHostname = window.location.hostname || '';
+    if (_lwHostname.indexOf('legendmod') !== -1 || _lwHostname.indexOf('expanding.land') !== -1 || _lwHostname.indexOf('jimboy3100') !== -1) {
+        if (window.EnvConfig) {
+            window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+        }
     }
-
-    /* The page uses Google Identity Services exclusively; legacy gapi.auth2 is not loaded. */
-    window.gapiAsyncInit = function () { };
 
     /* Suppress third-party iframe CSP report / sandbox errors from polluting console */
     window.addEventListener('error', function (e) {
@@ -272,192 +272,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* Initialize on page load */
     window._lwResetAuthState();
 
-    /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
-     * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
-     * This loads GIS, intercepts the Google login button, and uses the new token flow.
-     * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
-    var _lwHost = window.location.hostname || '';
-    if (_lwHost.indexOf('legendmod') !== -1 || _lwHost.indexOf('expanding.land') !== -1 || _lwHost.indexOf('jimboy3100') !== -1) (function () {
-        var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
-        var gisLoaded = false;
-        var tokenClient = null;
-
-        /* Load the GIS library */
-        var script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = function () {
-            gisLoaded = true;
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: LW_CLIENT_ID,
-                scope: 'email profile openid',
-                callback: onTokenResponse
-            });
-        };
-        script.onerror = function () {
-            gisLoaded = false;
-            console.error('[LW Google] Failed to load Google Identity Services');
-        };
-        document.head.appendChild(script);
-
-        function onTokenResponse(response) {
-            var attemptId = window._lwAuth && window._lwAuth.googleAttemptId;
-            if (response.error) {
-                if (window.MC) window.MC.onGoogleLoginComplete(false);
-                window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] Token error: ' + response.error);
-                return;
-            }
-            /* Atomic check+consume — only the first handler wins */
-            if (!window._lwTryConsume(attemptId, 'google')) {
-                console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
-                return;
-            }
-            var accessToken = response.access_token;
-
-
-            /* Fetch user profile for picture and social ID */
-            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { 'Authorization': 'Bearer ' + accessToken }
-            })
-                .then(function (r) {
-                    if (!r.ok) throw new Error('userinfo HTTP ' + r.status);
-                    return r.json();
-                })
-                .then(function (profile) {
-                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
-
-
-                    /* Update storage info like the old flow does */
-                    var st = window.storageInfo || window.defaultSt;
-                    if (st) {
-                        st.context = 'google';
-                        st.loginIntent = '1';
-                        if (profile.picture) st.userInfo.picture = profile.picture;
-                        if (profile.sub) st.userInfo.socialId = profile.sub;
-                        if (window.updateStorage) window.updateStorage();
-                    }
-
-                    /* Set profile picture */
-                    if (profile.picture) {
-                        var pics = document.querySelectorAll('.agario-profile-picture');
-                        for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
-                        window.googlePic = profile.picture;
-                    }
-
-                    /* Send token to game server */
-                    if (window.MC && window.MC.doLoginWithGPlus) {
-                        /* MC available (agar.io or domains with agario.core.js) */
-                        if (profile.sub) window.MC.setSocialId(profile.sub);
-                        if (profile.picture) window.MC.setProfilePicture(profile.picture);
-                        window.MC.doLoginWithGPlus(accessToken);
-                        window.MC.onGoogleLoginComplete(true);
-                        window.MC.showInstructionsPanel(true);
-                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                        /* MC unavailable (expanding.land / private server) */
-
-
-                        /* Store token in master so login() can resend on Play clicks */
-                        if (window.master && window.master.doLoginWithGPlus) {
-                            window.master.doLoginWithGPlus(accessToken);
-                        }
-
-                        /* Send opcode 102 directly to game server with social ID and name */
-                        _lw_sendLogin102(accessToken, profile.sub, profile.name, attemptId, 'google');
-                        /* Transition: OAuth done → waiting for server confirmation */
-                        if (window._lwAuth && window._lwAuth.provider === 'google') {
-                            window._lwAuth.state = 'waiting_server';
-                        }
-
-
-                        /* Update profile UI — TEMPORARY fallback only.
-                         * Once protobuf type-11 login response arrives from the
-                         * server (with refreshed profile from 204→102 resend),
-                         * updateUserInfo() becomes the single source of truth.
-                         * Do NOT set agarioUID here — it must come from server. */
-                        if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
-                            console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
-                            if (profile.picture) {
-                                $('.agario-profile-picture').attr('src', profile.picture);
-                            }
-                            if (profile.name) {
-                                $('#UserProfileName1').text(profile.name);
-                                window.userfirstname = profile.name;
-                                localStorage.setItem('userfirstname', profile.name);
-                            }
-                            if (profile.sub) {
-                                $('#UserProfileUID1').val(profile.sub);
-                                $('#replayuid').val(profile.sub);
-                                window.userid = profile.sub;
-                                localStorage.setItem('userid', profile.sub);
-                            }
-                            /* Set logged-in state so Play/Logout buttons appear */
-                            $('#helloContainer').attr('data-logged-in', '1');
-                        }
-
-                    } else {
-                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
-                        return;
-                    }
-                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
-                })
-                .catch(function (err) {
-                    console.error('[LW Google] Profile fetch failed:', err);
-                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
-                    /* Still try to log in with just the token */
-                    if (window.MC && window.MC.doLoginWithGPlus) {
-                        window.MC.doLoginWithGPlus(accessToken);
-                        window.MC.onGoogleLoginComplete(true);
-                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                        _lw_sendLogin102(accessToken, null, null, attemptId, 'google');
-                    } else {
-                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
-                        return;
-                    }
-                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
-                });
-        }
-
-        /* Intercept the Google login button click on our domains.
-         * Wait for DOM to be ready, then override the #gplusLogin handler. */
-        var setupAttempts = 0;
-        function setupLoginOverride() {
-            var btn = document.getElementById('gplusLogin');
-            if (!btn) {
-                if (++setupAttempts < 40) setTimeout(setupLoginOverride, 500);
-                return;
-            }
-
-            /* Clone and replace to remove ALL old event listeners */
-            var newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-
-            newBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!gisLoaded || !tokenClient) {
-                    console.error('[LW Google] Login service is not ready');
-                    return;
-                }
-
-                /* Start fresh login attempt */
-                var attemptId = window._lwBeginLogin('google');
-                window._lwArmLoginTimeout(attemptId);
-                window._lwAuth.googleAttemptId = attemptId;
-
-                /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
-                tokenClient.requestAccessToken();
-            }, true);
-
-
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function () { setTimeout(setupLoginOverride, 1000); });
-        } else {
-            setTimeout(setupLoginOverride, 1000);
-        }
-    })();
+    /* Google login is handled by gapi.auth2 loaded in play.html and
+     * master.js's gapiAsyncInit → setup() → api.attachClickHandler(). */
 
     /* LW: Send opcode 102 directly via legendmod's socket.
      * Used when MC (from agario.core.js) is unavailable (e.g. expanding.land).
