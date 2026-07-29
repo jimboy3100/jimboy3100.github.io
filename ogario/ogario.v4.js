@@ -17209,12 +17209,6 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (4 & flags) {
                     skin = encode();
-                    /* Diagnostic: log skin strings received from server */
-                    if (skin && !this._loggedSkinIDs) this._loggedSkinIDs = {};
-                    if (skin && !this._loggedSkinIDs[id]) {
-                        this._loggedSkinIDs[id] = true;
-                        console.log('[LM SKIN] Server sent skin="' + skin + '" for cellID=' + id);
-                    }
                 }
                 if (8 & flags) {
                     var rawName = encode();
