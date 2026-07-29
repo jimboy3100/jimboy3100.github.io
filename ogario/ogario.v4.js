@@ -14098,12 +14098,7 @@ function thelegendmodproject() {
                 while (s < data.byteLength && data.getUint8(s) !== 0) s++;
                 var slice = new Uint8Array(data.buffer, data.byteOffset + start, s - start);
                 if (s < data.byteLength) s++;
-                var rawStr = textDecoder.decode(slice);
-                try {
-                    return window.decodeURIComponent(window.escape(rawStr));
-                } catch (e) {
-                    return rawStr;
-                }
+                return textDecoder.decode(slice);
             };
             var s = 0;
             var opcode = data.getUint8(s++);
@@ -17269,12 +17264,7 @@ Most cells eaten   : ${mostCellsEaten}
                     skin = encode();
                 }
                 if (8 & flags) {
-                    var rawName = encode();
-                    try {
-                        name = window.decodeURIComponent(escape(rawName));
-                    } catch (eDecName) {
-                        name = rawName || '';
-                    }
+                    name = encode() || '';
                     namePresent = true;
                     if (!LM.integrity && name && name.includes('}')) {
                         name = name.split('}')[1];
