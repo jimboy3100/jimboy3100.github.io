@@ -441,7 +441,7 @@ function legendmaster(self) {
 						else if (that.regionNames[i] == " -- Select a Region -- "){
 							tempRegion = Premadeletter140a;
 						}						
-						$('#region option[value="' + i + '').text(tempRegion + " (" + regions[i].numPlayers + ")");
+						$('#region option').filter(function() { return this.value === i; }).text(tempRegion + " (" + regions[i].numPlayers + ")");
                         //$('#region option[value="' + i + '').text(that.regionNames[i] + " (" + regions[i].numPlayers + ")");
                     }
                 }
@@ -535,35 +535,50 @@ function legendmaster(self) {
             }
         },
         setRequestMsg(args, object, source, source2) {
-            var output;
-			var output2 = 0;
-			if (source2){
-				output2= "" + friends;
-			}
-			if (!output2.length){
-				output2a=0;
-			}
-			else{
-				output2a=output2.length
-			}
-			output = [10, 4 + args.length + object.length + output2a, 10];
-			var getOwnPropertyNames = function(data) {
-                output.push(data.length);
-                var value = 0;
-                for (; value < data.length; value++) {
-                    output.push(data.charCodeAt(value));
-                }
+            var encodeVarint = function(target, value) {
+                value = Math.max(0, Number(value) || 0);
+                do {
+                    var byte = value & 127;
+                    value = Math.floor(value / 128);
+                    target.push(value ? byte | 128 : byte);
+                } while (value);
             };
-            var getOwnPropertyNames2 = function(data) {
-					output.push(18);
-					output.push(184);
-					output.push(4);
-					data.forEach(function(element) {
-					output.push(18);	
-					getOwnPropertyNames(element);
-					});					
-            };			          
-            return getOwnPropertyNames(args), output.push(18), getOwnPropertyNames(object), source2 && getOwnPropertyNames2(source2), source && (output.push(26, 8, 10), getOwnPropertyNames(source)), new Uint8Array(output);
+            var encodeText = function(value) {
+                var text = unescape(encodeURIComponent(String(value == null ? '' : value)));
+                var bytes = [];
+                for (var i = 0; i < text.length; i++) bytes.push(text.charCodeAt(i));
+                return bytes;
+            };
+            var appendBytes = function(target, bytes) {
+                for (var i = 0; i < bytes.length; i++) target.push(bytes[i]);
+            };
+            var appendField = function(target, tag, bytes) {
+                target.push(tag);
+                encodeVarint(target, bytes.length);
+                appendBytes(target, bytes);
+            };
+
+            var payload = [];
+            appendField(payload, 10, encodeText(args));
+            appendField(payload, 18, encodeText(object));
+
+            if (Array.isArray(source2) && source2.length) {
+                var friendsPayload = [];
+                source2.forEach(function(element) {
+                    appendField(friendsPayload, 18, encodeText(element));
+                });
+                appendField(payload, 18, friendsPayload);
+            }
+            if (source != null) {
+                var sourcePayload = [];
+                appendField(sourcePayload, 10, encodeText(source));
+                appendField(payload, 26, sourcePayload);
+            }
+
+            var output = [10];
+            encodeVarint(output, payload.length);
+            appendBytes(output, payload);
+            return new Uint8Array(output);
         },
         makeMasterRequest(_wid_attr, data, callback, timeout_callback, type) {
             var header = this;
@@ -907,28 +922,32 @@ function doFB() {
     FB.api('/me', {
         fields: 'first_name, last_name, gender, id'
     }, function(fbresponse) {
-        $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
+        var firstName = fbresponse && fbresponse.first_name || "";
+        var lastName = fbresponse && fbresponse.last_name || "";
+        var facebookID = fbresponse && fbresponse.id || "";
+        var gender = fbresponse && fbresponse.gender || "";
 
-        $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
-        $("#UserProfileUID1").val(fbresponse[Object.keys(fbresponse)[2]]);
-		$("#replayuid").val(fbresponse[Object.keys(fbresponse)[2]])
+        $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + encodeURIComponent(facebookID) + '/picture?type=large');
+        $("#UserProfileName1").text(firstName);
+        $("#UserProfileUID1").val(facebookID);
+		$("#replayuid").val(facebookID)
 		
-		if (userid == fbresponse[Object.keys(fbresponse)[2]]){
+		if (userid == facebookID){
 			setLevelProgressBar();
 		}		
-        userfirstname = fbresponse[Object.keys(fbresponse)[0]];
+		userfirstname = firstName;
         if (userfirstname != null) {
             localStorage.setItem("userfirstname", userfirstname);
         }
-        userlastname = fbresponse[Object.keys(fbresponse)[1]];
+        userlastname = lastName;
         if (userlastname != null) {
             localStorage.setItem("userlastname", userlastname);
         }
-        userid = fbresponse[Object.keys(fbresponse)[2]];
+        userid = facebookID;
         if (userid != null) {
             localStorage.setItem("userid", userid);
         }
-        usergender = fbresponse[Object.keys(fbresponse)[3]];
+        usergender = gender;
         if (usergender != null) {
             localStorage.setItem("usergender", usergender);
         }
@@ -954,10 +973,10 @@ function doGl() {
 	
 	if (userid == GgUID){
 		setLevelProgressBar();
-	}
+    }
     userfirstname = GgProfileName;
     userid = GgUID;
-    userlastname = GgProfileName;
+    userlastname = GgProfileSurName;
     if (userfirstname != null) {
         localStorage.setItem("userfirstname", userfirstname);
     }
@@ -974,30 +993,30 @@ window.master.fbUsers=[];
 
 var Lmagarversion = "";
 
-window.LMGameConfiguration = $.ajax({
-    type: "GET",
-    url: "https://www.legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json",
-    async: false,
-    datatype: "jsonp",
-    success: function(info) {
-        //var GameConfiguration = info;
-    }
-}).responseJSON;
-//weird but it works....
+window.LMGameConfiguration = null;
+window.LMGameConfigurationReady = new Promise(function(resolve) {
+    var primaryUrl = "https://www.legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json";
+    var fallbackUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + "GameConfiguration.json";
+    var settled = false;
 
-setTimeout(function() {
-    if (window.LMGameConfiguration == undefined) {
-        window.LMGameConfiguration = $.ajax({
-            type: "GET",
-            url: "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json",
-            async: false,
-            datatype: "jsonp",
-            success: function(info) {
-                //var GameConfiguration = info;
-            }
-        }).responseJSON;
+    function finish(configuration) {
+        if (settled) return;
+        settled = true;
+        window.LMGameConfiguration = configuration || null;
+        window.dispatchEvent(new CustomEvent("lm-game-configuration-ready", {
+            detail: window.LMGameConfiguration
+        }));
+        resolve(window.LMGameConfiguration);
     }
-}, 3000);
+
+    $.ajax({ type: "GET", url: primaryUrl, dataType: "json" })
+        .done(finish)
+        .fail(function() {
+            $.ajax({ type: "GET", url: fallbackUrl, dataType: "json" })
+                .done(finish)
+                .fail(function() { finish(null); });
+        });
+});
 
 function getInfo() {
     $.ajax({
@@ -1062,22 +1081,19 @@ function ajaxrequestMaster(){
                     //var optionMatch = sketchContents.match(/versionString = "(\d+\.\d+\.\d+)"/);
 					//var optionMatch = sketchContents.match(/{\s\s\svar\s*versionString\s?=\s?"(\d+\.\d+\.\d+)"/g);
 					//var optionMatch = sketchContents.match(/versionString\s?=\s?"(\d+\.\d+\.\d+)"/g);
-					var optionMatch = sketchContents.match(/versionString\s?=\s,?"(\d+\.\d+).\d+"/);	
+					var optionMatch = sketchContents.match(/versionString\s*=\s*,?"(\d+\.\d+\.\d+)"/);	
 					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
-                        var pluginName = optionMatch[1];
-						var pluginName2 = optionMatch2[1];
+						var pluginNameLast = optionMatch[1];
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version from agario.js:", optionMatch[1]);
-						pluginNameLast = pluginName; 
-						//var pluginNameLast = pluginName.substring(pluginName.lastIndexOf(".") + 1); 
-						pluginNameLast = pluginNameLast + ".11";
-						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Replace with 2 numbers on the end", pluginNameLast);
 						var data = window.master.parseClientVersion(pluginNameLast);
                         window.master.setClientVersion(data, pluginNameLast);
-						window.master.setxsupportprotoversion(pluginName2);							
-                        console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginNameLast);									
+						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginNameLast);									
+                    }
+                    if (optionMatch2) {
+						var pluginName2 = optionMatch2[1];
+						window.master.setxsupportprotoversion(pluginName2);
 						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
-
                     }
                 },
                 dataType: "text",

@@ -142,23 +142,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
     }
 
-    /* LW: Block old gapi.auth2 from initializing — it causes redirect_uri_mismatch.
-     * Override gapiAsyncInit so the old script does nothing, and remove the script tag. */
-    window.gapiAsyncInit = function () {
-
-    };
-    /* Remove old gapi script tags from DOM before they load */
-    var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-            m.addedNodes.forEach(function (node) {
-                if (node.tagName === 'SCRIPT' && node.src && node.src.includes('apis.google.com')) {
-                    node.remove();
-
-                }
-            });
-        });
-    });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
+    /* The page uses Google Identity Services exclusively; legacy gapi.auth2 is not loaded. */
+    window.gapiAsyncInit = function () { };
 
     /* Suppress third-party iframe CSP report / sandbox errors from polluting console */
     window.addEventListener('error', function (e) {
@@ -181,14 +166,35 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      *   5. tabId matches (cross-tab isolation)
      *   6. timestamp within window (stale rejection) */
     var _lwTabId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    var _lwAuthAsync = {
+        loginTimeout: null,
+        discordPoll: null,
+        discordFinalCheck: null,
+        retryTimers: {}
+    };
+
+    window._lwCancelAuthAsync = function () {
+        if (_lwAuthAsync.loginTimeout) clearTimeout(_lwAuthAsync.loginTimeout);
+        if (_lwAuthAsync.discordPoll) clearInterval(_lwAuthAsync.discordPoll);
+        if (_lwAuthAsync.discordFinalCheck) clearTimeout(_lwAuthAsync.discordFinalCheck);
+        _lwAuthAsync.loginTimeout = null;
+        _lwAuthAsync.discordPoll = null;
+        _lwAuthAsync.discordFinalCheck = null;
+        Object.keys(_lwAuthAsync.retryTimers).forEach(function (key) {
+            clearTimeout(_lwAuthAsync.retryTimers[key]);
+        });
+        _lwAuthAsync.retryTimers = {};
+    };
 
     window._lwResetAuthState = function () {
+        window._lwCancelAuthAsync();
         window._lwAuth = {
             attemptId: (window._lwAuth && window._lwAuth.attemptId) || 0,
             provider: null,
-            state: 'idle', /* idle | waiting_oauth | waiting_server | logged_in */
+            state: 'idle', /* idle | waiting_oauth | processing_oauth | waiting_server | logged_in */
             startedAt: 0,
-            done: false,           /* single-use: true after first callback */
+            oauthHandled: false,
+            done: false,
             tabId: _lwTabId,       /* cross-tab isolation */
             googleAttemptId: 0,    /* snapshot for Google callbacks */
             discordAttemptId: 0    /* snapshot for Discord callbacks */
@@ -197,38 +203,54 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window._discordLoginDone = false;
         window.legendmod_discordUser = null;
         try { localStorage.removeItem('legendmod_discord'); } catch (e) { }
+        try { localStorage.removeItem('legendmod_discord_profile'); } catch (e) { }
         console.log('[LW AUTH] State reset to idle');
     };
     window._lwBeginLogin = function (provider) {
         if (!window._lwAuth) window._lwResetAuthState();
+        window._lwCancelAuthAsync();
         window._lwAuth.attemptId += 1;
         window._lwAuth.provider = provider;
         window._lwAuth.state = 'waiting_oauth';
         window._lwAuth.startedAt = Date.now();
-        window._lwAuth.done = false; /* new attempt = not consumed */
+        window._lwAuth.oauthHandled = false;
+        window._lwAuth.done = false;
         window._lwAuth.tabId = _lwTabId;
         window._lw_protobuf102Received = false;
         window._discordLoginDone = false;
         console.log('[LW AUTH] Begin login attempt #' + window._lwAuth.attemptId + ' provider=' + provider);
         return window._lwAuth.attemptId;
     };
-    /* Atomic check+consume: validates ALL conditions AND sets done=true in one call.
-     * Returns true exactly once — the first handler to call this wins. */
+    /* Accept one OAuth result without declaring the server login complete. */
     window._lwTryConsume = function (attemptId, provider) {
         var a = window._lwAuth;
         if (!a) return false;
         if (a.attemptId !== attemptId) return false;
         if (a.provider !== provider) return false;
-        if (a.done) return false;
+        if (a.done || a.oauthHandled) return false;
         if (a.tabId !== _lwTabId) return false;
         if (Date.now() - a.startedAt > 30000) return false;
-        if (a.state !== 'waiting_oauth' && a.state !== 'waiting_server') return false;
-        a.done = true; /* consumed — no other handler can pass from here */
-        console.log('[LW AUTH] Attempt #' + a.attemptId + ' consumed (' + provider + ')');
+        if (a.state !== 'waiting_oauth') return false;
+        a.oauthHandled = true;
+        a.state = 'processing_oauth';
+        console.log('[LW AUTH] Attempt #' + a.attemptId + ' accepted OAuth result (' + provider + ')');
         return true;
     };
+    window._lwFailAuthAttempt = function (attemptId, provider, message) {
+        var a = window._lwAuth;
+        if (!a || a.attemptId !== attemptId || a.provider !== provider || a.state === 'logged_in') return;
+        if (message) console.error(message);
+        window._lwResetAuthState();
+    };
+    window._lwIsCurrentAuthAttempt = function (attemptId, provider) {
+        var a = window._lwAuth;
+        return !!(a && a.attemptId === attemptId && a.provider === provider &&
+            a.tabId === _lwTabId && !a.done && Date.now() - a.startedAt <= 30000);
+    };
     window._lwArmLoginTimeout = function (attemptId) {
-        setTimeout(function () {
+        if (_lwAuthAsync.loginTimeout) clearTimeout(_lwAuthAsync.loginTimeout);
+        _lwAuthAsync.loginTimeout = setTimeout(function () {
+            _lwAuthAsync.loginTimeout = null;
             if (window._lwAuth &&
                 window._lwAuth.attemptId === attemptId &&
                 window._lwAuth.state !== 'logged_in') {
@@ -262,16 +284,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 callback: onTokenResponse
             });
         };
+        script.onerror = function () {
+            gisLoaded = false;
+            console.error('[LW Google] Failed to load Google Identity Services');
+        };
         document.head.appendChild(script);
 
         function onTokenResponse(response) {
+            var attemptId = window._lwAuth && window._lwAuth.googleAttemptId;
             if (response.error) {
-                console.error('[LW Google] Token error:', response.error);
                 if (window.MC) window.MC.onGoogleLoginComplete(false);
+                window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] Token error: ' + response.error);
                 return;
             }
             /* Atomic check+consume — only the first handler wins */
-            if (!window._lwTryConsume(window._lwAuth && window._lwAuth.googleAttemptId, 'google')) {
+            if (!window._lwTryConsume(attemptId, 'google')) {
                 console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
                 return;
             }
@@ -282,8 +309,12 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                 headers: { 'Authorization': 'Bearer ' + accessToken }
             })
-                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('userinfo HTTP ' + r.status);
+                    return r.json();
+                })
                 .then(function (profile) {
+                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
 
 
                     /* Update storage info like the old flow does */
@@ -321,7 +352,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         }
 
                         /* Send opcode 102 directly to game server with social ID and name */
-                        _lw_sendLogin102(accessToken, profile.sub, profile.name);
+                        _lw_sendLogin102(accessToken, profile.sub, profile.name, attemptId, 'google');
                         /* Transition: OAuth done → waiting for server confirmation */
                         if (window._lwAuth && window._lwAuth.provider === 'google') {
                             window._lwAuth.state = 'waiting_server';
@@ -354,35 +385,35 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         }
 
                     } else {
-                        console.error('[LW Google] No MC or legendmod available to send token');
+                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
+                        return;
                     }
-
-
+                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
                 })
                 .catch(function (err) {
                     console.error('[LW Google] Profile fetch failed:', err);
+                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
                     /* Still try to log in with just the token */
                     if (window.MC && window.MC.doLoginWithGPlus) {
                         window.MC.doLoginWithGPlus(accessToken);
                         window.MC.onGoogleLoginComplete(true);
                     } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                        var view = legendmod.createView(1 + accessToken.length);
-                        view.setUint8(0, 102);
-                        for (var ti = 0; ti < accessToken.length; ti++) {
-                            view.setUint8(1 + ti, accessToken.charCodeAt(ti));
-                        }
-                        legendmod.sendMessage(view);
+                        _lw_sendLogin102(accessToken, null, null, attemptId, 'google');
+                    } else {
+                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
+                        return;
                     }
+                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
                 });
         }
 
         /* Intercept the Google login button click on our domains.
          * Wait for DOM to be ready, then override the #gplusLogin handler. */
+        var setupAttempts = 0;
         function setupLoginOverride() {
             var btn = document.getElementById('gplusLogin');
             if (!btn) {
-                /* Button not yet in DOM, retry */
-                setTimeout(setupLoginOverride, 500);
+                if (++setupAttempts < 40) setTimeout(setupLoginOverride, 500);
                 return;
             }
 
@@ -394,8 +425,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 e.preventDefault();
                 e.stopPropagation();
                 if (!gisLoaded || !tokenClient) {
-
-                    setTimeout(function () { newBtn.click(); }, 500);
+                    console.error('[LW Google] Login service is not ready');
                     return;
                 }
 
@@ -423,11 +453,45 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The server's fallback parser scans for the longest printable ASCII run
      * in the opcode 102 payload, so we just embed the token as raw bytes.
      * Format: [102][token ASCII bytes] — server hashes this into a UID. */
-    function _lw_sendLogin102(token, socialId, displayName) {
-        var sendFn = function () {
+    function _lwScheduleAuthSocketSend(key, attemptId, provider, initialDelay, sendWhenOpen) {
+        var auth = window._lwAuth;
+        if (!auth || auth.attemptId !== attemptId || auth.provider !== provider) return;
+        var socketTarget = typeof legendmod !== 'undefined' ? legendmod.ws : null;
+        var attempts = 0;
+        var maxAttempts = 10;
+        if (_lwAuthAsync.retryTimers[key]) clearTimeout(_lwAuthAsync.retryTimers[key]);
+
+        var attemptSend = function () {
+            delete _lwAuthAsync.retryTimers[key];
+            var current = window._lwAuth;
+            if (!current || current.attemptId !== attemptId || current.provider !== provider) return;
+            if (current.state !== 'logged_in' && !window._lwIsCurrentAuthAttempt(attemptId, provider)) return;
+            if (socketTarget && typeof legendmod !== 'undefined' && legendmod.ws !== socketTarget) return;
+            if (sendWhenOpen()) return;
+            attempts++;
+            if (attempts >= maxAttempts) {
+                if (current.state !== 'logged_in') {
+                    window._lwFailAuthAttempt(attemptId, provider, '[LW AUTH] Socket did not open for ' + key);
+                }
+                return;
+            }
+            _lwAuthAsync.retryTimers[key] = setTimeout(attemptSend, 1000);
+        };
+
+        if (initialDelay > 0) {
+            _lwAuthAsync.retryTimers[key] = setTimeout(attemptSend, initialDelay);
+        } else {
+            attemptSend();
+        }
+    }
+
+    function _lw_sendLogin102(token, socialId, displayName, attemptId, provider) {
+        attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
+        provider = provider || (window._lwAuth && window._lwAuth.provider);
+        _lwScheduleAuthSocketSend(provider + ':102', attemptId, provider, 0, function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Login] Skipping opcode 102 for legacy server: ' + window.LM.serverType);
-                return;
+                return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 /* Prepend social ID and display name as header lines before the token.
@@ -448,21 +512,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 }
                 legendmod.sendMessage(view);
                 console.log('[LW Login] Sent opcode 102 (token_len=' + token.length + ' socialId=' + (socialId || 'none') + ')');
-            } else {
-                setTimeout(sendFn, 1000);
+                return true;
             }
-        };
-        sendFn();
+            return false;
+        });
     }
 
     /* LW: Send opcode 204 (Discord profile data) via legendmod's socket.
      * Format: [204][auth_provider=3][socialId\0][displayName\0]
      * Avatar is NOT sent — profile picture is rendered client-side only. */
-    function _lw_sendDiscordProfile(discordUser) {
-        var sendFn = function () {
+    function _lw_sendDiscordProfile(discordUser, attemptId) {
+        attemptId = attemptId || (window._lwAuth && window._lwAuth.attemptId);
+        _lwScheduleAuthSocketSend('discord:204', attemptId, 'discord', 500, function () {
             if (typeof window.LM !== 'undefined' && (window.LM.serverType === 'imsolo' || window.LM.serverType === 'agar2')) {
                 console.log('[LW Discord] Skipping opcode 204 for legacy server: ' + window.LM.serverType);
-                return;
+                return true;
             }
             if (typeof legendmod !== 'undefined' && legendmod.isSocketOpen && legendmod.isSocketOpen()) {
                 var socialId = discordUser.id || '';
@@ -482,11 +546,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 view.setUint8(offset++, 0); // null terminator
                 legendmod.sendMessage(view);
                 console.log('[LW Discord] Sent opcode 204 (id=' + socialId + ' name=' + displayName + ')');
-            } else {
-                setTimeout(sendFn, 2000);
+                return true;
             }
-        };
-        setTimeout(sendFn, 500);
+            return false;
+        });
     }
 
     /* LW: Core Discord login function — used by both initial auth and reconnects.
@@ -494,6 +557,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * On expanding.land: sends opcode 102 directly via legendmod socket. */
     window._lw_applyDiscordLogin = function (discordUser) {
         if (!discordUser || !discordUser.token) return;
+        var attemptId = window._lwAuth && window._lwAuth.discordAttemptId;
+        if (!window._lwIsCurrentAuthAttempt(attemptId, 'discord')) return;
         /* Reset protobuf flag so temporary fallback can run for this new login.
          * It will be set back to true when the server's type-11 response arrives. */
         window._lw_protobuf102Received = false; /* debug marker */
@@ -512,12 +577,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             });
         } else {
             /* expanding.land path: MC unavailable, send opcode 102 directly */
-            _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username);
-            /* Transition: OAuth done → waiting for server confirmation */
-            if (window._lwAuth && window._lwAuth.provider === 'discord') {
-                window._lwAuth.state = 'waiting_server';
-            }
+            _lw_sendLogin102(discordUser.token, discordUser.id, discordUser.globalName || discordUser.username, attemptId, 'discord');
         }
+        if (window._lwIsCurrentAuthAttempt(attemptId, 'discord')) window._lwAuth.state = 'waiting_server';
 
         /* UI updates — work on both domains */
         if (discordUser.avatar) {
@@ -557,7 +619,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         }
 
         /* Send opcode 204 with Discord avatar for server-side profile */
-        _lw_sendDiscordProfile(discordUser);
+        _lw_sendDiscordProfile(discordUser, attemptId);
 
         /* Update storageInfo context for Discord */
         var st = window.storageInfo || window.defaultSt;
@@ -574,22 +636,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         /* Register gplusRelogin for reconnects.
          * On agar.io the engine calls this; on expanding.land our hook calls it. */
         window.gplusRelogin = function (callback) {
-            var cached = localStorage.getItem('legendmod_discord');
-            if (cached) {
-                try {
-                    var user = JSON.parse(cached);
-                    if (user && user.token) {
-                        if (window.MC) {
-                            MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
-                        } else {
-                            _lw_sendLogin102(user.token, user.id, user.globalName || user.username);
-                        }
-                        _lw_sendDiscordProfile(user);
-                        console.log('[LW Discord] gplusRelogin: re-authenticated with cached token');
-                    }
-                } catch (e) {
-                    console.error('[LW Discord] gplusRelogin error:', e);
+            var user = window.legendmod_discordUser;
+            var auth = window._lwAuth;
+            if (user && user.token && auth && auth.provider === 'discord' && auth.state === 'logged_in') {
+                if (window.MC) {
+                    MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
+                } else {
+                    _lw_sendLogin102(user.token, user.id, user.globalName || user.username, auth.attemptId, 'discord');
                 }
+                _lw_sendDiscordProfile(user, auth.attemptId);
+                console.log('[LW Discord] gplusRelogin: re-authenticated with in-memory token');
             }
             if (callback) callback();
         };
@@ -633,10 +689,22 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         /* Build notification element */
         var el = document.createElement('div');
         el.id = 'lw-login-notif';
-        el.innerHTML =
-            '<span class="lw-ln-icon">' + icon + '</span>' +
-            '<span class="lw-ln-text">Logged in to <b>' + provider + '</b> as ' +
-            '<span class="lw-ln-name">' + (displayName || 'Player').replace(/</g, '&lt;') + '</span></span>';
+        var iconEl = document.createElement('span');
+        iconEl.className = 'lw-ln-icon';
+        iconEl.textContent = icon;
+        var textEl = document.createElement('span');
+        textEl.className = 'lw-ln-text';
+        textEl.appendChild(document.createTextNode('Logged in to '));
+        var providerEl = document.createElement('b');
+        providerEl.textContent = provider || 'Legend Mod';
+        textEl.appendChild(providerEl);
+        textEl.appendChild(document.createTextNode(' as '));
+        var nameEl = document.createElement('span');
+        nameEl.className = 'lw-ln-name';
+        nameEl.textContent = displayName || 'Player';
+        textEl.appendChild(nameEl);
+        el.appendChild(iconEl);
+        el.appendChild(textEl);
         document.body.appendChild(el);
 
         /* Animate in */
@@ -677,31 +745,72 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * which sends it to the game server via opcode 102 — same path as Google. */
     (function () {
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(window.location.origin);
+        var discordPopupRef = null;
+        var discordSetupAttempts = 0;
+
+        function stopDiscordPolling() {
+            if (_lwAuthAsync.discordPoll) clearInterval(_lwAuthAsync.discordPoll);
+            if (_lwAuthAsync.discordFinalCheck) clearTimeout(_lwAuthAsync.discordFinalCheck);
+            _lwAuthAsync.discordPoll = null;
+            _lwAuthAsync.discordFinalCheck = null;
+        }
+
+        function rememberDiscordProfile(discordUser) {
+            var safeProfile = {
+                id: discordUser.id || '',
+                username: discordUser.username || '',
+                globalName: discordUser.globalName || '',
+                avatar: discordUser.avatar || ''
+            };
+            try {
+                localStorage.removeItem('legendmod_discord');
+                localStorage.setItem('legendmod_discord_profile', JSON.stringify(safeProfile));
+            } catch (e) { }
+        }
+
+        function acceptDiscordUser(discordUser, channel) {
+            if (!discordUser || !discordUser.id || !discordUser.token) return false;
+            var attemptId = window._lwAuth && window._lwAuth.discordAttemptId;
+            if (!window._lwTryConsume(attemptId, 'discord')) {
+                console.log('[LW Discord] ' + channel + ' ignored (stale/consumed)');
+                return false;
+            }
+            stopDiscordPolling();
+            window._discordLoginDone = true;
+            rememberDiscordProfile(discordUser);
+            window.legendmod_discordUser = discordUser;
+            window._lw_applyDiscordLogin(discordUser);
+            try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch (e) { }
+            return true;
+        }
+
+        function readStoredDiscordUser() {
+            var data = null;
+            try {
+                data = localStorage.getItem('legendmod_discord');
+                if (data) localStorage.removeItem('legendmod_discord');
+            } catch (e) { }
+            if (!data) return null;
+            try { return JSON.parse(data); } catch (e) { return null; }
+        }
 
         function replaceWithDiscord() {
             /* LW: BroadcastChannel listener — PRIMARY method for receiving Discord data.
              * The relay page (same origin) sends via BroadcastChannel, which is
              * 100% reliable for same-origin communication. */
             try {
+                if (window._lwDiscordBroadcastChannel) {
+                    // Listener is already installed for this page lifecycle.
+                } else {
                 var bc = new BroadcastChannel('legendmod_discord');
                 bc.onmessage = function (event) {
                     if (!event.data || event.data.type !== 'legendmod_discord_login') return;
                     var discordUser = event.data.data;
-                    console.log('[LW Discord] Received via BroadcastChannel!', discordUser.id);
-                    if (discordUser && discordUser.id && discordUser.token) {
-                        /* Atomic check+consume — only the first handler wins */
-                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
-                            console.log('[LW Discord] BroadcastChannel ignored (stale/consumed)');
-                            return;
-                        }
-                        window._discordLoginDone = true; /* debug only */
-                        try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
-                        window.legendmod_discordUser = discordUser;
-                        window._lw_applyDiscordLogin(discordUser);
-                        /* Login message now comes from server via chat (opcode 204 handler) */
-                    }
+                    acceptDiscordUser(discordUser, 'BroadcastChannel');
                 };
+                window._lwDiscordBroadcastChannel = bc;
                 console.log('[LW Discord] BroadcastChannel listener registered');
+                }
             } catch (e) {
                 console.log('[LW Discord] BroadcastChannel not supported:', e.message);
             }
@@ -713,7 +822,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 fbBtn = document.querySelector('.btn-fb .btn-text') || document.querySelector('.btn-fb');
             }
             if (!fbBtn) {
-                setTimeout(replaceWithDiscord, 500);
+                if (++discordSetupAttempts < 40) setTimeout(replaceWithDiscord, 500);
                 return;
             }
 
@@ -733,8 +842,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
              * Chrome's storage partitioning blocks localStorage sharing between
              * popup and parent when the popup navigates through a cross-origin
              * redirect (discord.com). postMessage bypasses this entirely. */
-            var discordPopupRef = null;
-            window.addEventListener('message', function (event) {
+            if (!window._lwDiscordMessageListenerInstalled) window.addEventListener('message', function (event) {
                 /* Accept messages from our domains (relay page or callback) */
                 var trusted = ['https://expanding.land', 'https://jimboy3100.github.io', 'https://legendmod.ml'];
                 if (trusted.indexOf(event.origin) === -1) return;
@@ -742,27 +850,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
                 var discordUser = event.data.data;
                 console.log('[LW Discord DBG] Received postMessage from popup!', JSON.stringify({ id: discordUser.id, hasToken: !!discordUser.token }));
-
-                if (discordUser && discordUser.id && discordUser.token) {
-                    /* Atomic check+consume — only the first handler wins */
-                    if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
-                        console.log('[LW Discord] postMessage ignored (stale/consumed)');
-                        return;
-                    }
-                    window._discordLoginDone = true; /* debug only */
-                    /* Also save to localStorage for reconnect/reload */
-                    try { localStorage.setItem('legendmod_discord', JSON.stringify(discordUser)); } catch (e) { }
-
-                    window.legendmod_discordUser = discordUser;
-                    console.log('[LW Discord DBG] Applying login via postMessage...');
-                    window._lw_applyDiscordLogin(discordUser);
-
-                    /* Close popup */
-                    try { if (discordPopupRef && !discordPopupRef.closed) discordPopupRef.close(); } catch (ex) { }
-
-                    /* Login message now comes from server via chat (opcode 204 handler) */
-                }
+                acceptDiscordUser(discordUser, 'postMessage');
             });
+            window._lwDiscordMessageListenerInstalled = true;
 
             discordBtn.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -784,65 +874,32 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 discordPopupRef = popup;
                 console.log('[LW Discord DBG] Popup opened:', popup ? 'OK' : 'BLOCKED');
 
+                if (!popup) {
+                    window._lwFailAuthAttempt(attemptId, 'discord', '[LW Discord] Popup was blocked');
+                    return;
+                }
+
                 var pollCount = 0;
-                /* Poll localStorage for the Discord auth result from the callback page */
-                var poll = setInterval(function () {
+                stopDiscordPolling();
+                /* Bounded fallback for callback pages that can only write localStorage. */
+                _lwAuthAsync.discordPoll = setInterval(function () {
                     pollCount++;
-                    try {
-                        var data = localStorage.getItem('legendmod_discord');
-                        if (pollCount <= 5 || pollCount % 5 === 0) {
-                            console.log('[LW Discord DBG] Poll #' + pollCount + ' localStorage=' + (data ? 'HAS DATA (' + data.length + ' bytes)' : 'empty'));
-                        }
-                        if (data) {
-                            var discordUser = JSON.parse(data);
-                            console.log('[LW Discord DBG] Parsed user data:', JSON.stringify({ id: discordUser.id, username: discordUser.username, hasToken: !!discordUser.token, tokenLen: discordUser.token ? discordUser.token.length : 0 }));
-                            if (discordUser && discordUser.id && discordUser.token) {
-                                /* Atomic check+consume — only the first handler wins */
-                                if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
-                                    clearInterval(poll);
-                                    console.log('[LW Discord] localStorage poll ignored (stale/consumed)');
-                                    return;
-                                }
-                                window._discordLoginDone = true; /* debug only */
-                                clearInterval(poll);
-                                window.legendmod_discordUser = discordUser;
-                                console.log('[LW Discord DBG] Login data valid! Calling _lw_applyDiscordLogin...');
+                    var storedUser = readStoredDiscordUser();
+                    if (storedUser && acceptDiscordUser(storedUser, 'localStorage')) return;
 
-                                window._lw_applyDiscordLogin(discordUser);
-                                console.log('[LW Discord DBG] _lw_applyDiscordLogin called successfully');
-
-                                /* Close the popup if still open */
-                                try { if (popup && !popup.closed) popup.close(); } catch (ex) { }
-
-                                /* Login message now comes from server via chat (opcode 204 handler) */
-                            }
-                        }
-                    } catch (err) {
-                        console.error('[LW Discord DBG] Poll error:', err);
+                    var auth = window._lwAuth;
+                    if (!auth || auth.attemptId !== attemptId || auth.state === 'waiting_server' || auth.state === 'logged_in') {
+                        stopDiscordPolling();
+                        return;
                     }
-                    /* Stop polling if popup closed without completing */
-                    if (popup && popup.closed) {
-                        clearInterval(poll);
-                        console.log('[LW Discord DBG] Popup closed after ' + pollCount + ' polls');
-                        /* Check one last time after popup closes */
-                        setTimeout(function () {
-                            var finalData = localStorage.getItem('legendmod_discord');
-                            if (finalData) {
-                                console.log('[LW Discord DBG] Found data after popup close! Processing...');
-                                try {
-                                    var discordUser = JSON.parse(finalData);
-                                    if (discordUser && discordUser.id && discordUser.token) {
-                                        /* Atomic check+consume — only the first handler wins */
-                                        if (!window._lwTryConsume(window._lwAuth && window._lwAuth.discordAttemptId, 'discord')) {
-                                            console.log('[LW Discord] Late popup-close ignored (stale/consumed)');
-                                            return;
-                                        }
-                                        window._lw_applyDiscordLogin(discordUser);
-                                        console.log('[LW Discord DBG] Late login applied successfully');
-                                    }
-                                } catch (e) { console.error('[LW Discord DBG] Late parse error:', e); }
-                            } else {
-                                console.log('[LW Discord DBG] Popup closed without completing auth - NO DATA in localStorage');
+
+                    if (popup.closed || pollCount >= 30) {
+                        stopDiscordPolling();
+                        _lwAuthAsync.discordFinalCheck = setTimeout(function () {
+                            _lwAuthAsync.discordFinalCheck = null;
+                            var finalUser = readStoredDiscordUser();
+                            if (!finalUser || !acceptDiscordUser(finalUser, 'popup-close')) {
+                                window._lwFailAuthAttempt(attemptId, 'discord', '[LW Discord] Login did not complete');
                             }
                         }, 500);
                     }
@@ -15493,8 +15550,10 @@ function thelegendmodproject() {
                     if (LM.isLegendWorld) {
                         window._lw_protobuf102Received = true; /* debug marker */
                         /* Transition: login confirmed by server */
-                        if (window._lwAuth && window._lwAuth.state === 'waiting_server') {
+                        if (window._lwAuth && (window._lwAuth.state === 'waiting_server' || window._lwAuth.state === 'processing_oauth')) {
                             window._lwAuth.state = 'logged_in';
+                            window._lwAuth.done = true;
+                            window._lwCancelAuthAsync();
                             console.log('[LW AUTH] Login confirmed by server, provider=' + window._lwAuth.provider);
                         }
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
@@ -16809,7 +16868,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 if (skinUrl) {
-                    console.log('[LM SKIN] Resolved: name="' + y + '" skin="' + g + '" → url="' + skinUrl.substring(0, 80) + '"');
+
                     if (y) {
                         window.lastusednameforskin = y;
                         core.registerSkin(y, null, skinUrl, isAnimated);
@@ -16823,7 +16882,7 @@ Most cells eaten   : ${mostCellsEaten}
                         application.cacheCustomSkin(g, cellColor || '#000000', skinUrl);
                     }
                 } else if (g) {
-                    console.warn('[LM SKIN] UNRESOLVED: name="' + y + '" skin="' + g + '" — VanillaSkinUrlMap has ' + (window.VanillaSkinUrlMap ? Object.keys(window.VanillaSkinUrlMap).length : 0) + ' entries');
+
                 }
             } catch (eVanilla) {
                 console.error('[OGARIO SKIN ERROR] Failed resolving skin for name/skin:', y, g, eVanilla);
