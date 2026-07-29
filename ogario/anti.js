@@ -11,7 +11,7 @@ mysmallercell.mass = 25000;
 var _antiTimerInterval = null;
 var _antiPauseResetTimer = null;
 
-function celltimertrigger() {
+function CellTimerTrigger() {
     if (_antiTimerInterval) return; // already running
     if (!window.legendmod5.optimizedMass) {
         _antiTimerInterval = setInterval(celltimer, 1000);

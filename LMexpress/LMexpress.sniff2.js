@@ -51,11 +51,11 @@ var Userscripttexture2;
 var Userscripttexture3;
 var Userscripttexture4;
 var Userscripttexture5;
-/* Initialize userscript UI — wait for #Userscripttexture1 to exist */
+/* Initialize userscript UI — wait for #menu-footer to exist (sniff2 creates #Userscripttexture1 inside _setupUserscripts) */
 (function _initUserscripts() {
-  if (!document.getElementById('Userscripttexture1')) {
+  if (!document.getElementById('menu-footer')) {
     var _obs = new MutationObserver(function(m, obs) {
-      if (document.getElementById('Userscripttexture1')) {
+      if (document.getElementById('menu-footer')) {
         obs.disconnect();
         _setupUserscripts();
       }
@@ -65,6 +65,7 @@ var Userscripttexture5;
   }
   _setupUserscripts();
 })();
+
 function _setupUserscripts() {
 	
 

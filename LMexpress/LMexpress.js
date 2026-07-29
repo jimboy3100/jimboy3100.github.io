@@ -201,7 +201,7 @@ var usedonceSkin = 0;
 var detailed = "";
 var detailed1;
 
-userData = {};
+var userData = {};
 try {
     userData = JSON.parse(localStorage.getItem("userData")) || {};
 } catch (e) {
@@ -251,22 +251,23 @@ loadersettings();
 function postSNEZ(server, username, password, data) {
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", server, false);
+        xhttp.open("POST", server, true);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send(data);
     } catch (e) { }
 }
 
-function getSNEZ(server, username, password) {
+function getSNEZ(server, username, password, callback) {
     var xhttp = new XMLHttpRequest();
     try {
-        xhttp.open("GET", server, false);
+        xhttp.open("GET", server, true);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
+        xhttp.onload = function () { if (callback) callback(xhttp); };
+        xhttp.onerror = function () { if (callback) callback(xhttp); };
         xhttp.send();
-    } catch (e) { }
-    return xhttp;
+    } catch (e) { if (callback) callback(xhttp); }
 }
 
 
@@ -422,20 +423,19 @@ function loadericon() {
 function PremiumUsersFFAScore() {
     if (window.proLicenceUID && window.proLicenceUID.includes("MegaFFA")) {
         if (PremiumLimitedDateStart && !isNaN(parseInt(PremiumLimitedDateStart))) {
-            //var tempdateNow = parseInt(new Date().toISOString().slice(0,new Date().toISOString().indexOf("T")).replace(/-/g,""))
-            var tempdateNow = new Date().toISOString().slice(0, new Date().toISOString().indexOf("T")).replace(/-/g, "")
+            /* Parse YYYYMMDD start date into a proper Date object */
+            var startStr = String(PremiumLimitedDateStart);
+            var startDate = new Date(
+                parseInt(startStr.slice(0, 4)),
+                parseInt(startStr.slice(4, 6)) - 1, /* months are 0-indexed */
+                parseInt(startStr.slice(6, 8))
+            );
+            /* Giveaway lasts 6 days from start */
+            var expiryDate = new Date(startDate.getTime());
+            expiryDate.setDate(expiryDate.getDate() + 6);
 
-            var tempdateNow2 = parseInt(tempdateNow.slice(6, 8)) - 6
-            var tempdateNow3 = parseInt(tempdateNow.slice(0, 6)) * 100
-
-            if (tempdateNow2 < 0) {
-                tempdateNow2 = tempdateNow2 - 70
-            }
-            tempdateNow2 = tempdateNow3 + tempdateNow2
-            var temp = parseInt(PremiumLimitedDateStart)
-
-            if (PremiumLimitedDateStart && parseInt(PremiumLimitedDateStart) < tempdateNow2 && window.proLicenceUID) {
-                window.proLicenceUID = null
+            if (new Date() > expiryDate && window.proLicenceUID) {
+                window.proLicenceUID = null;
                 toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
             }
         }
@@ -478,6 +478,7 @@ function PremiumUsers() {
 }
 function PremiumUsersLMscore() {
     if (!window.proLicenceUID) {
+        window.proLicenceUID = "permanent";
         localStorage.setItem("proLicenceUID", "permanent");
         toastr.warning("<b>[SERVER]:</b> Congratulations! Your LM level is " + window.LMscore + ". Your licence is stored as Premium permanently. Thank you for using our mod!").css("width", "350px");
     }
@@ -519,13 +520,25 @@ function enableshortcuts() {
 
 }
 
+/* Helper: call back with server token, immediately if already set.
+ * Uses namespaced event to prevent handler accumulation from repeated calls. */
+function whenServerTokenReady(callback) {
+    var token = $('#server-token').val();
+    if (token) { callback(token); return; }
+    $(document)
+        .off('lm:serverTokenReady.lmState')
+        .one('lm:serverTokenReady.lmState', function(_, t) {
+            callback(t || $('#server-token').val());
+        });
+}
+
 function adres(info, thismode, thisregion) {
     if (thismode == null || thisregion == null) {
         joinSERVERfindinfo();
     }
     if ($("#gamemode").val() != ":party") {
         /* Wait for server-token to be set instead of blind 1.8s delay */
-        $(document).one('lm:serverTokenReady', function () {
+        whenServerTokenReady(function () {
             currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
             if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
             if (realmode != ":party") {
@@ -561,7 +574,7 @@ function adres(info, thismode, thisregion) {
         });
     } else { //if party
         /* Party mode: wait for token then redirect */
-        $(document).one('lm:serverTokenReady', function () {
+        whenServerTokenReady(function () {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
         });
@@ -589,7 +602,7 @@ function LMserverbox() {
 
 function urlIpWhenOpened() {
     /* React to server-token being set instead of waiting 6 seconds */
-    $(document).one('lm:serverTokenReady', function() {
+    whenServerTokenReady(function() {
         currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
         if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
         if (searchSip != null) {
@@ -4680,11 +4693,13 @@ function SNEZOgarDownload() {
         toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
     }
     else {
-        var xhttp = getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
-        var responseSNEZ = xhttp.response;
-        $('#import-settings').val(unescape(responseSNEZ));
-        //$('#import-settings').val(responseSNEZ);
-        $("#import-settings-btn2").click();
+        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", function (xhttp) {
+            if (!xhttp) return;
+            var responseSNEZ = xhttp.response;
+            $('#import-settings').val(unescape(responseSNEZ));
+            //$('#import-settings').val(responseSNEZ);
+            $("#import-settings-btn2").click();
+        });
     }
 }
 
@@ -6135,7 +6150,13 @@ function joinSIPonstart() {
             /* Re-listen for next token update */
             $(document).one('lm:serverTokenReady', _sipHandler);
         };
-        $(document).one('lm:serverTokenReady', _sipHandler);
+        /* Check if token is already set before waiting for event */
+        var existingToken = $('#server-token').val();
+        if (existingToken) {
+            _sipHandler();
+        } else {
+            $(document).one('lm:serverTokenReady', _sipHandler);
+        }
 
         /* Safety timeout — stop listening after 5s */
         setTimeout(function() {
@@ -6420,23 +6441,26 @@ function AgarVersionDestinations() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
 
     try {
-        var xhttp = getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
-        if (!xhttp.response || xhttp.response.length === 0) return;
-        var responseagarversionDestinations = JSON.parse(xhttp.response);
-        for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
-            if (responseagarversionDestinations[i] == window.agarversion) {
-                window.agarversionDestinationFound = true;
-            }
-        }
+        getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass", function (xhttp) {
+            try {
+                if (!xhttp || !xhttp.response || xhttp.response.length === 0) return;
+                var responseagarversionDestinations = JSON.parse(xhttp.response);
+                for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
+                    if (responseagarversionDestinations[i] == window.agarversion) {
+                        window.agarversionDestinationFound = true;
+                    }
+                }
 
-        if (window.agarversionDestinationFound == true) {
-            window.agarversionDestinations = responseagarversionDestinations;
-            window.agarversionDestinationFound = false;
-        } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
-            window.agarversionDestinations = responseagarversionDestinations;
-            window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
-            postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
-        }
+                if (window.agarversionDestinationFound == true) {
+                    window.agarversionDestinations = responseagarversionDestinations;
+                    window.agarversionDestinationFound = false;
+                } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
+                    window.agarversionDestinations = responseagarversionDestinations;
+                    window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
+                    postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
+                }
+            } catch (e) { }
+        });
     } catch (e) { }
 }
 
@@ -6470,18 +6494,22 @@ function UIDcontroller() {
 function AgarBannedUIDs() {
     //postSNEZ('https://lmsettings.snez.org/', 'LMAgarBannedUIDs', 'LMAgarBannedUIDsPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
     try {
-        var xhttp = getSNEZ("https://lmsettings.snez.org/", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass");
-        var responseLMAgarBannedUIDs = JSON.parse(xhttp.response);
-        for (var i = 0; i < Object.keys(responseLMAgarBannedUIDs).length; i++) {
-            if (window.bannedUserUIDs) {
-                var bannedUID_entry = responseLMAgarBannedUIDs[i].split('@')[0];
-                if (!bannedUserUIDs.includes(responseLMAgarBannedUIDs[i])) {
-                    //console.log('does not include', responseLMAgarBannedUIDs[i])
-                    window.bannedUserUIDs.push(responseLMAgarBannedUIDs[i])
+        getSNEZ("https://lmsettings.snez.org/", "LMAgarBannedUIDs", "LMAgarBannedUIDsPass", function (xhttp) {
+            try {
+                if (!xhttp || !xhttp.response) return;
+                var responseLMAgarBannedUIDs = JSON.parse(xhttp.response);
+                for (var i = 0; i < Object.keys(responseLMAgarBannedUIDs).length; i++) {
+                    if (window.bannedUserUIDs) {
+                        var bannedUID_entry = responseLMAgarBannedUIDs[i].split('@')[0];
+                        if (!bannedUserUIDs.includes(responseLMAgarBannedUIDs[i])) {
+                            //console.log('does not include', responseLMAgarBannedUIDs[i])
+                            window.bannedUserUIDs.push(responseLMAgarBannedUIDs[i])
+                        }
+                    }
                 }
-            }
-        }
-        window.AgarBannedUIDsAdded = true;
+                window.AgarBannedUIDsAdded = true;
+            } catch (error) { }
+        });
     }
     catch (error) { }
 }
