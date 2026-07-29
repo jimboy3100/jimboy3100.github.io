@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="AcapelaRelease">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/extras/AcapelaRelease.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
