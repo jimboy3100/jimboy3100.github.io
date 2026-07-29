@@ -255,7 +255,7 @@ loadersettings();
 function postSNEZ(server, username, password, data) {
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", server, true);
+        xhttp.open("POST", server, false);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send(data);
@@ -265,7 +265,7 @@ function postSNEZ(server, username, password, data) {
 function getSNEZ(server, username, password) {
     var xhttp = new XMLHttpRequest();
     try {
-        xhttp.open("GET", server, true);
+        xhttp.open("GET", server, false);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send();
