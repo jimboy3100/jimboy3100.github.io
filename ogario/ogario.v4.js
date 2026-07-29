@@ -9050,7 +9050,6 @@ function thelegendmodproject() {
          * responds with ClearAll + fresh ADD packets for all visible cells. */
         sendResyncRequest() {
             if (!legendmod.isSocketOpen || !legendmod.isSocketOpen()) return;
-            if (!legendmod.isLegendWorld && !document.getElementById('server-token').value.includes('expanding.land')) return;
             try {
                 var view = legendmod.createView(1);
                 view.setUint8(0, 206); /* 0xCE = resync request */
@@ -21902,7 +21901,7 @@ Most cells eaten   : ${mostCellsEaten}
                 /* If tab was hidden > 2 seconds, request server resync to clear ghost cells.
                  * When backgrounded, the browser buffers WS messages but pauses JS processing.
                  * DEL records may be missed or applied to recycled cell IDs, leaving phantoms. */
-                if (hiddenMs > 2000 && typeof application !== 'undefined') {
+                if (hiddenMs > 500 && typeof application !== 'undefined') {
                     application.sendResyncRequest();
                 }
             });
