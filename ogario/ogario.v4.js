@@ -19579,6 +19579,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 // Skin layer lookup
                 var skinLayer = -1.0;
+                var skinRequested = false;
                 if (_showSkins && !cell.isEjected && (cell.targetNick || cell.skin)) {
                     /* Chat socket skins (nick-based) take priority over vanilla skins */
                     var skinUrl = null;
@@ -19595,18 +19596,41 @@ Most cells eaten   : ${mostCellsEaten}
                                   ) : null);
                     }
                     if (!skinUrl && cell.skin) {
-                        skinUrl = application.customSkinsMap[cell.skin];
+                        skinUrl = application.customSkinsMap[cell.skin] ||
+                                  (window.VanillaSkinUrlMap ? (
+                                      window.VanillaSkinUrlMap[cell.skin] ||
+                                      window.VanillaSkinUrlMap['%' + cell.skin] ||
+                                      window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
+                                  ) : null);
                     }
                     if (skinUrl) {
+                        skinRequested = true;
+                        if (!application.customSkinsCache.hasOwnProperty(skinUrl)) {
+                            application.loadSkin(application.customSkinsCache, skinUrl);
+                        }
                         var activeKey = (this._skinHalf && this.glSkinMap[skinUrl + "_cached3"] !== undefined) ? (skinUrl + "_cached3") : skinUrl;
-                        if (this.glSkinMap[activeKey] !== undefined) {
-                            skinLayer = this.glSkinMap[activeKey];
+                        var skinNode = application.customSkinsCache[skinUrl + "_cached3"] || application.customSkinsCache[skinUrl + "_cached"] || application.customSkinsCache[skinUrl];
+
+                        var mappedLayer = this.glSkinMap[activeKey];
+                        if (mappedLayer === undefined && skinNode && !skinNode._failed && (skinNode.naturalWidth > 0 || skinNode.width > 0)) {
+                            mappedLayer = this.uploadSkinTexture(activeKey, skinNode);
+                        }
+
+                        if (typeof mappedLayer === 'number' && mappedLayer >= 0) {
+                            skinLayer = mappedLayer;
                             // Transparent skin alpha
-                            if (defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin) || cell.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                            if ((defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin)) || (cell.isPlayerCell && defaultmapsettings.myTransparentSkin)) {
                                 if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
                             }
                         }
                     }
+                }
+
+                /* FALLBACK: If cell has a skin requested but no WebGL texture layer could be assigned
+                 * (e.g. 128-layer GL capacity full), skip WebGL rendering for this cell so Canvas2D
+                 * draws the cell body + skin natively. */
+                if (skinRequested && skinLayer < 0) {
+                    continue;
                 }
 
                 var idx = count * 9;
