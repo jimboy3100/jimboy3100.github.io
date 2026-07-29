@@ -276,7 +276,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
      * This loads GIS, intercepts the Google login button, and uses the new token flow.
      * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
-    (function () {
+    var _lwHost = window.location.hostname || '';
+    if (_lwHost.indexOf('legendmod') !== -1 || _lwHost.indexOf('expanding.land') !== -1 || _lwHost.indexOf('jimboy3100') !== -1) (function () {
         var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
         var gisLoaded = false;
         var tokenClient = null;
