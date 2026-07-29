@@ -8128,7 +8128,7 @@ function thelegendmodproject() {
             if (failTime) delete app._failedSkinURLs[url];
             if (img && img[url]) return;
 
-            /* 1. Fast zero-latency Memory Cache Hit */
+            /* 1. Zero-Latency LRU Memory Cache (Capped at 2,000 entries) */
             window._skinMemoryCache = window._skinMemoryCache || new Map();
             if (window._skinMemoryCache.has(url)) {
                 var memImg = window._skinMemoryCache.get(url);
@@ -8158,22 +8158,6 @@ function thelegendmodproject() {
                 }
             }
 
-            /* Cache eviction: only triggers when cache has over 10000 entries */
-            if (img && Object.keys(img).length > 10000) {
-                var keys = Object.keys(img);
-                var activeUrls = new Set(Object.values(app.customSkinsMap || {}));
-                var evicted = 0;
-                for (var k = 0; k < keys.length && evicted < 100; k++) {
-                    if (keys[k] && !keys[k].includes("_cached") && !activeUrls.has(keys[k])) {
-                        delete img[keys[k]];
-                        delete img[keys[k] + "_cached"];
-                        delete img[keys[k] + "_cached2"];
-                        delete img[keys[k] + "_cached3"];
-                        evicted++;
-                    }
-                }
-            }
-
             var isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv");
             var isVersioned = url.includes("4.0") || url.includes("4.1") || url.includes("4.2") || url.includes("4.3");
             if (isVersioned) return;
@@ -8188,7 +8172,13 @@ function thelegendmodproject() {
                     imageObj.width <= 2000 && imageObj.width > 0 &&
                     imageObj.height <= 2000 && imageObj.height > 0) {
 
+                    /* LRU memory cache update */
+                    if (window._skinMemoryCache.has(url)) window._skinMemoryCache.delete(url);
                     window._skinMemoryCache.set(url, imageObj);
+                    if (window._skinMemoryCache.size > 2000) {
+                        var oldestKey = window._skinMemoryCache.keys().next().value;
+                        if (oldestKey) window._skinMemoryCache.delete(oldestKey);
+                    }
 
                     if (imageObj.width >= imageObj.height * 1.5) {
                         animated = true;
@@ -8216,12 +8206,12 @@ function thelegendmodproject() {
                 }
             };
 
-            /* 2. Global Concurrency-Controlled Queue */
+            /* 2. Global Adaptive Concurrency Queue (24 streams max) */
             if (!window._skinLoadQueue) {
                 window._skinLoadQueue = {
                     queue: [],
                     activeCount: 0,
-                    maxConcurrent: 8,
+                    maxConcurrent: 24,
                     push: function (task, priority) {
                         if (priority) {
                             this.queue.unshift(task);
@@ -8243,117 +8233,14 @@ function thelegendmodproject() {
                 };
             }
 
-            var fetchFromNetwork = function (doneCb) {
-                var onDone = function () {
-                    if (doneCb) { doneCb(); doneCb = null; }
-                };
+            var isResolved = false;
 
-                if (isVideo) {
-                    img[url] = new Video();
-                } else {
-                    img[url] = new Image();
-                }
-                var isCorsBlocked = url.includes('imgur.com') ||
-                    url.includes('agario.miniclippt.com') ||
-                    url.includes('legendmod.ml');
-                if (isCorsBlocked) {
-                    img[url].referrerPolicy = 'no-referrer';
-                } else {
-                    img[url].crossOrigin = 'anonymous';
-                }
-
-                /* 3. Timeout triggers error handler to advance to mirror fallback immediately */
-                var _loadTimer = setTimeout(function () {
-                    if (img[url] && !img[url].complete) {
-                        if (typeof img[url].onerror === 'function') {
-                            var errHandler = img[url].onerror;
-                            img[url].onerror = img[url].onload = null;
-                            errHandler();
-                        } else {
-                            img[url]._failed = true;
-                            if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                            if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
-                        }
-                        onDone();
-                    }
-                }, 8000);
-
-                img[url].onload = function () {
-                    clearTimeout(_loadTimer);
-                    processOnLoad(this);
-                    onDone();
-                    /* 4. Cache raw blob directly without CPU-heavy Canvas & PNG re-encoding */
-                    if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0 && !isCorsBlocked) {
-                        try {
-                            fetch(url).then(function (res) {
-                                if (res.ok) return res.blob();
-                            }).then(function (blob) {
-                                if (blob && blob.size > 100) {
-                                    window.LMSkinStorage.put(url, blob);
-                                }
-                            }).catch(function () {});
-                        } catch (err) {}
-                    }
-                };
-
-                img[url].onerror = function () {
-                    clearTimeout(_loadTimer);
-                    onDone();
-                    if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                    if (img[url]) img[url]._failed = true;
-                    if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
-                    console.warn("[LM] Skin URL failed to load: " + url);
-                    var filename = url.split('/').pop().replace('?', '');
-                    if (!filename) return;
-                    var isCustomSkin = filename.startsWith('skin_custom_');
-                    var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
-                    var isMirror = url.includes('legendmod.ml') ||
-                        url.includes('jimboy3100.github.io') ||
-                        url.includes('jimboy3000.github.io');
-
-                    if (isCustomSkin) {
-                        if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
-                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
-                        }
-                        return;
-                    }
-
-                    if (url.includes('jimboy3000.github.io/vanillaskins/')) {
-                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
-                    }
-                    else if (url.includes('legendmod.ml/vanillaskins/')) {
-                        app.loadSkin(img, PROXY + filename, animated, isPriority);
-                    }
-                    else if (isMirror && url.includes('/vanillaskins2/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                    }
-                    else if (isMirror && url.includes('/vanillaskins/')) {
-                        app.loadSkin(img, PROXY + filename, animated, isPriority);
-                    }
-                    else if (isMirror && url.includes('/lowresskins/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                    }
-                    else if (url.includes('/lowresskins/')) {
-                        var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
-                        app.loadSkin(img, fallbackUrl, animated, isPriority);
-                    }
-                    else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
-                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
-                    }
-                    else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                    }
-                    else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
-                    }
-                };
-                img[url].src = url;
-            };
-
-            /* 5. Parallel IndexedDB lookup + Queued network fetch */
+            /* 3. True First-Win Race: IndexedDB lookup runs concurrently */
             if (!isVideo && window.LMSkinStorage) {
                 window.LMSkinStorage.get(url, function (cachedData) {
-                    if (cachedData && img && !img[url]) {
+                    if (isResolved || (img && img[url])) return;
+                    if (cachedData) {
+                        isResolved = true;
                         var cachedImg = new Image();
                         var objUrl = null;
                         cachedImg.onload = function () {
@@ -8363,6 +8250,7 @@ function thelegendmodproject() {
                         };
                         cachedImg.onerror = function () {
                             if (objUrl) URL.revokeObjectURL(objUrl);
+                            isResolved = false;
                         };
                         if (cachedData instanceof Blob) {
                             objUrl = URL.createObjectURL(cachedData);
@@ -8374,7 +8262,150 @@ function thelegendmodproject() {
                 });
             }
 
-            /* Push to skin load queue concurrently */
+            /* 4. Network Task: Single Fetch for Display & Storage */
+            var fetchFromNetwork = function (doneCb) {
+                var onDone = function () {
+                    if (doneCb) { doneCb(); doneCb = null; }
+                };
+
+                /* If IndexedDB already resolved the skin while queued, exit network task immediately */
+                if (isResolved || (img && img[url])) {
+                    onDone();
+                    return;
+                }
+
+                var isCorsBlocked = url.includes('imgur.com') ||
+                    url.includes('agario.miniclippt.com') ||
+                    url.includes('legendmod.ml');
+
+                var fallbackToImageTag = function () {
+                    if (isResolved || (img && img[url])) { onDone(); return; }
+                    if (isVideo) {
+                        img[url] = new Video();
+                    } else {
+                        img[url] = new Image();
+                    }
+                    if (isCorsBlocked) {
+                        img[url].referrerPolicy = 'no-referrer';
+                    } else {
+                        img[url].crossOrigin = 'anonymous';
+                    }
+
+                    var _loadTimer = setTimeout(function () {
+                        if (img[url] && !img[url].complete) {
+                            if (typeof img[url].onerror === 'function') {
+                                var errHandler = img[url].onerror;
+                                img[url].onerror = img[url].onload = null;
+                                errHandler();
+                            } else {
+                                img[url]._failed = true;
+                                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                                if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                            }
+                            onDone();
+                        }
+                    }, 8000);
+
+                    img[url].onload = function () {
+                        clearTimeout(_loadTimer);
+                        isResolved = true;
+                        processOnLoad(this);
+                        onDone();
+                    };
+
+                    img[url].onerror = function () {
+                        clearTimeout(_loadTimer);
+                        onDone();
+                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                        if (img[url]) img[url]._failed = true;
+                        if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                        console.warn("[LM] Skin URL failed to load: " + url);
+                        var filename = url.split('/').pop().replace('?', '');
+                        if (!filename) return;
+                        var isCustomSkin = filename.startsWith('skin_custom_');
+                        var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
+                        var isMirror = url.includes('legendmod.ml') ||
+                            url.includes('jimboy3100.github.io') ||
+                            url.includes('jimboy3000.github.io');
+
+                        if (isCustomSkin) {
+                            if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
+                                app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
+                            }
+                            return;
+                        }
+
+                        if (url.includes('jimboy3000.github.io/vanillaskins/')) {
+                            app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
+                        }
+                        else if (url.includes('legendmod.ml/vanillaskins/')) {
+                            app.loadSkin(img, PROXY + filename, animated, isPriority);
+                        }
+                        else if (isMirror && url.includes('/vanillaskins2/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                        }
+                        else if (isMirror && url.includes('/vanillaskins/')) {
+                            app.loadSkin(img, PROXY + filename, animated, isPriority);
+                        }
+                        else if (isMirror && url.includes('/lowresskins/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                        }
+                        else if (url.includes('/lowresskins/')) {
+                            var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
+                            app.loadSkin(img, fallbackUrl, animated, isPriority);
+                        }
+                        else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
+                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
+                        }
+                        else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                        }
+                        else if (url.includes('configs.agario.miniclippt.com/live/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
+                        }
+                    };
+                    img[url].src = url;
+                };
+
+                /* Single Fetch Strategy for CORS-enabled assets */
+                if (!isVideo && !isCorsBlocked && typeof fetch === 'function') {
+                    fetch(url).then(function (res) {
+                        if (!res.ok) throw new Error("HTTP " + res.status);
+                        return res.blob();
+                    }).then(function (blob) {
+                        if (isResolved || (img && img[url])) { onDone(); return; }
+                        if (!blob || blob.size < 100) { fallbackToImageTag(); return; }
+                        isResolved = true;
+
+                        /* Store single fetch blob in IndexedDB */
+                        if (window.LMSkinStorage) {
+                            window.LMSkinStorage.put(url, blob);
+                        }
+
+                        /* Create Object URL for display from exact same blob */
+                        var blobUrl = URL.createObjectURL(blob);
+                        var loadedImg = new Image();
+                        loadedImg.onload = function () {
+                            img[url] = this;
+                            processOnLoad(this);
+                            URL.revokeObjectURL(blobUrl);
+                            onDone();
+                        };
+                        loadedImg.onerror = function () {
+                            URL.revokeObjectURL(blobUrl);
+                            isResolved = false;
+                            fallbackToImageTag();
+                        };
+                        loadedImg.src = blobUrl;
+                    }).catch(function () {
+                        fallbackToImageTag();
+                    });
+                } else {
+                    fallbackToImageTag();
+                }
+            };
+
+            /* Push network task to 24-concurrency queue */
             window._skinLoadQueue.push(fetchFromNetwork, isPriority);
         },
         checkgraphics() {
