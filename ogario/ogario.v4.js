@@ -8103,12 +8103,12 @@ function thelegendmodproject() {
             this.findOwnedVanillaSkin();
         },
         /* ─── §4.9 Skin Loading ─── */
-        loadSkin(img, url, animated) {
+        /* ─── §4.9 High-Performance Skin Loading ─── */
+        loadSkin(img, url, animated, isPriority) {
             var app = this;
             if (!url || typeof url !== 'string') return;
 
             // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
-            // The correct CDN domain is configs-web.agario.miniclippt.com (Portuguese Miniclip)
             if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com')) {
                 url = url.replace(/(?:configs-web|configs)\.agar\.io\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
                 url = url.replace(/(?:configs-web|configs)\.agario\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
@@ -8119,8 +8119,6 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
-            /* No pre-redirect: let miniclip CDN be tried first (new skins live there).
-             * On failure, the onerror handler falls back to jimboy3000.github.io mirrors. */
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -8130,19 +8128,43 @@ function thelegendmodproject() {
             if (failTime) delete app._failedSkinURLs[url];
             if (img && img[url]) return;
 
-            /* Cache eviction: only triggers when cache has over 10000 entries.
-             * With 860+ bots each having ~4 cache entries (url, _cached, _cached2, _cached3),
-             * we need ~3500 entries minimum.  Old limit of 800 caused constant eviction
-             * and re-download cycles, making skins appear slow to load.
-             * Only evict raw Image objects (not _cached canvas variants) for URLs
-             * that are no longer in the active customSkinsMap. */
+            /* 1. Fast zero-latency Memory Cache Hit */
+            window._skinMemoryCache = window._skinMemoryCache || new Map();
+            if (window._skinMemoryCache.has(url)) {
+                var memImg = window._skinMemoryCache.get(url);
+                if (memImg && img && !img[url]) {
+                    img[url] = memImg;
+                    if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                    if (memImg.complete && memImg.width > 0 && memImg.height > 0) {
+                        if (memImg.width >= memImg.height * 1.5) animated = true;
+                        if (animated === "animatedSkins") {
+                            app.cacheQueueSkinAnimated.push(url);
+                            if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
+                            app.cacheQueue2.push(url);
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
+                        } else if (animated !== "fbSkin") {
+                            app.cacheQueue.push(url);
+                            if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
+                            app.cacheQueue2.push(url);
+                            if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
+                            if (animated === true) app.cacheQueue3.push(url);
+                            if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
+                        } else if (animated === "fbSkin") {
+                            app.cacheQueue4.push(url);
+                            if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
+                        }
+                    }
+                    return;
+                }
+            }
+
+            /* Cache eviction: only triggers when cache has over 10000 entries */
             if (img && Object.keys(img).length > 10000) {
                 var keys = Object.keys(img);
                 var activeUrls = new Set(Object.values(app.customSkinsMap || {}));
                 var evicted = 0;
                 for (var k = 0; k < keys.length && evicted < 100; k++) {
                     if (keys[k] && !keys[k].includes("_cached") && !activeUrls.has(keys[k])) {
-                        /* Also remove the _cached variants for this URL */
                         delete img[keys[k]];
                         delete img[keys[k] + "_cached"];
                         delete img[keys[k] + "_cached2"];
@@ -8165,6 +8187,8 @@ function thelegendmodproject() {
                     imageObj.height &&
                     imageObj.width <= 2000 && imageObj.width > 0 &&
                     imageObj.height <= 2000 && imageObj.height > 0) {
+
+                    window._skinMemoryCache.set(url, imageObj);
 
                     if (imageObj.width >= imageObj.height * 1.5) {
                         animated = true;
@@ -8192,24 +8216,43 @@ function thelegendmodproject() {
                 }
             };
 
-            var fetchFromNetwork = function () {
+            /* 2. Global Concurrency-Controlled Queue */
+            if (!window._skinLoadQueue) {
+                window._skinLoadQueue = {
+                    queue: [],
+                    activeCount: 0,
+                    maxConcurrent: 8,
+                    push: function (task, priority) {
+                        if (priority) {
+                            this.queue.unshift(task);
+                        } else {
+                            this.queue.push(task);
+                        }
+                        this.process();
+                    },
+                    process: function () {
+                        while (this.activeCount < this.maxConcurrent && this.queue.length > 0) {
+                            var task = this.queue.shift();
+                            this.activeCount++;
+                            task(function () {
+                                window._skinLoadQueue.activeCount--;
+                                window._skinLoadQueue.process();
+                            });
+                        }
+                    }
+                };
+            }
+
+            var fetchFromNetwork = function (doneCb) {
+                var onDone = function () {
+                    if (doneCb) { doneCb(); doneCb = null; }
+                };
+
                 if (isVideo) {
                     img[url] = new Video();
                 } else {
                     img[url] = new Image();
                 }
-                /* CDNs that reject CORS requests from non-agar.io origins:
-                 * - imgur.com: always returns 403 for CORS
-                 * - configs.agario.miniclippt.com/custom_skins: returns 403 for CORS
-                 * Solution: load as opaque images (no crossOrigin) with no-referrer.
-                 * Consequence: skins render fine but can't be cached to IndexedDB
-                 * (canvas becomes tainted). The try/catch in onload handles this. */
-                /* Miniclip CDN rejects CORS requests from non-agar.io origins.
-                 * Load as opaque images with no-referrer to avoid 403s.
-                 * Delta client uses the same approach (Texture.ts:145-146). */
-                /* GitHub Pages (jimboy3000/jimboy3100) sends Access-Control-Allow-Origin: *
-                 * so CORS works fine — they must NOT be in this list, otherwise canvas
-                 * becomes tainted and skins can't be cached to IndexedDB. */
                 var isCorsBlocked = url.includes('imgur.com') ||
                     url.includes('agario.miniclippt.com') ||
                     url.includes('legendmod.ml');
@@ -8218,37 +8261,44 @@ function thelegendmodproject() {
                 } else {
                     img[url].crossOrigin = 'anonymous';
                 }
+
+                /* 3. Timeout triggers error handler to advance to mirror fallback immediately */
                 var _loadTimer = setTimeout(function () {
                     if (img[url] && !img[url].complete) {
-                        img[url].onerror = img[url].onload = null;
-                        img[url]._failed = true;
-                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                        if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                        if (typeof img[url].onerror === 'function') {
+                            var errHandler = img[url].onerror;
+                            img[url].onerror = img[url].onload = null;
+                            errHandler();
+                        } else {
+                            img[url]._failed = true;
+                            if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                            if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                        }
+                        onDone();
                     }
                 }, 8000);
+
                 img[url].onload = function () {
                     clearTimeout(_loadTimer);
                     processOnLoad(this);
-                    if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0) {
+                    onDone();
+                    /* 4. Cache raw blob directly without CPU-heavy Canvas & PNG re-encoding */
+                    if (!isVideo && window.LMSkinStorage && this.complete && this.width > 0 && this.height > 0 && !isCorsBlocked) {
                         try {
-                            var cvs = document.createElement("canvas");
-                            cvs.width = this.width;
-                            cvs.height = this.height;
-                            var ctx = cvs.getContext("2d");
-                            ctx.drawImage(this, 0, 0);
-                            cvs.toBlob(function (blob) {
+                            fetch(url).then(function (res) {
+                                if (res.ok) return res.blob();
+                            }).then(function (blob) {
                                 if (blob && blob.size > 100) {
                                     window.LMSkinStorage.put(url, blob);
                                 }
-                            }, "image/png");
-                        } catch (err) {
-                            /* Canvas is tainted (e.g. CORS-blocked image) — skip caching */
-                        }
+                            }).catch(function () {});
+                        } catch (err) {}
                     }
                 };
-                /* referrerPolicy already set above based on isCorsBlocked */
+
                 img[url].onerror = function () {
                     clearTimeout(_loadTimer);
+                    onDone();
                     if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     if (img[url]) img[url]._failed = true;
                     if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
@@ -8261,62 +8311,50 @@ function thelegendmodproject() {
                         url.includes('jimboy3100.github.io') ||
                         url.includes('jimboy3000.github.io');
 
-                    /* ── Custom skins (user-uploaded) ──
-                     * These only exist on miniclip CDN, never on GitHub mirrors.
-                     *   configs.agario/custom_skins/ → configs-web.agario/custom_skins/ → stop
-                     */
                     if (isCustomSkin) {
                         if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
-                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated);
+                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
                         }
-                        // Both CDNs failed — nothing we can do, custom skins CDN is locked
                         return;
                     }
 
-                    /* ── Vanilla skins ──
-                     * jimboy3000/vanillaskins (primary, direct) → legendmod.ml → proxy → CDN
-                     * CDN → jimboy3000/vanillaskins → chain above
-                     */
                     if (url.includes('jimboy3000.github.io/vanillaskins/')) {
-                        /* Primary mirror failed — try legendmod.ml */
-                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
                     }
                     else if (url.includes('legendmod.ml/vanillaskins/')) {
-                        /* legendmod.ml failed — try HTTPS proxy */
-                        app.loadSkin(img, PROXY + filename, animated);
+                        app.loadSkin(img, PROXY + filename, animated, isPriority);
                     }
                     else if (isMirror && url.includes('/vanillaskins2/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                     }
                     else if (isMirror && url.includes('/vanillaskins/')) {
-                        app.loadSkin(img, PROXY + filename, animated);
+                        app.loadSkin(img, PROXY + filename, animated, isPriority);
                     }
                     else if (isMirror && url.includes('/lowresskins/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                     }
                     else if (url.includes('/lowresskins/')) {
                         var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
-                        app.loadSkin(img, fallbackUrl, animated);
+                        app.loadSkin(img, fallbackUrl, animated, isPriority);
                     }
                     else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
-                        /* Proxy failed — try CDN direct */
-                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated);
+                        app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
                     }
                     else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                     }
                     else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated);
+                        app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                     }
                 };
                 img[url].src = url;
             };
 
+            /* 5. Parallel IndexedDB lookup + Queued network fetch */
             if (!isVideo && window.LMSkinStorage) {
                 window.LMSkinStorage.get(url, function (cachedData) {
                     if (cachedData && img && !img[url]) {
                         var cachedImg = new Image();
-                        /* No crossOrigin for blob: URLs — they are same-origin by definition */
                         var objUrl = null;
                         cachedImg.onload = function () {
                             img[url] = this;
@@ -8325,7 +8363,6 @@ function thelegendmodproject() {
                         };
                         cachedImg.onerror = function () {
                             if (objUrl) URL.revokeObjectURL(objUrl);
-                            fetchFromNetwork();
                         };
                         if (cachedData instanceof Blob) {
                             objUrl = URL.createObjectURL(cachedData);
@@ -8333,15 +8370,12 @@ function thelegendmodproject() {
                         } else {
                             cachedImg.src = cachedData;
                         }
-                    } else if (!img[url]) {
-                        fetchFromNetwork();
-                    } else {
-                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                     }
                 });
-            } else {
-                fetchFromNetwork();
             }
+
+            /* Push to skin load queue concurrently */
+            window._skinLoadQueue.push(fetchFromNetwork, isPriority);
         },
         checkgraphics() {
             if (defaultSettings.graphics === "high") {
