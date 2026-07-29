@@ -8130,11 +8130,24 @@ function thelegendmodproject() {
             if (failTime) delete app._failedSkinURLs[url];
             if (img && img[url]) return;
 
-            if (img && Object.keys(img).length > 800) {
+            /* Cache eviction: only triggers when cache has over 5000 entries.
+             * With 860+ bots each having ~4 cache entries (url, _cached, _cached2, _cached3),
+             * we need ~3500 entries minimum.  Old limit of 800 caused constant eviction
+             * and re-download cycles, making skins appear slow to load.
+             * Only evict raw Image objects (not _cached canvas variants) for URLs
+             * that are no longer in the active customSkinsMap. */
+            if (img && Object.keys(img).length > 5000) {
                 var keys = Object.keys(img);
-                for (var k = 0; k < 50; k++) {
-                    if (keys[k] && !keys[k].includes("_cached")) {
+                var activeUrls = new Set(Object.values(app.customSkinsMap || {}));
+                var evicted = 0;
+                for (var k = 0; k < keys.length && evicted < 100; k++) {
+                    if (keys[k] && !keys[k].includes("_cached") && !activeUrls.has(keys[k])) {
+                        /* Also remove the _cached variants for this URL */
                         delete img[keys[k]];
+                        delete img[keys[k] + "_cached"];
+                        delete img[keys[k] + "_cached2"];
+                        delete img[keys[k] + "_cached3"];
+                        evicted++;
                     }
                 }
             }
