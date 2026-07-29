@@ -48,15 +48,21 @@
     /* P2P WebSocket proxy — intercepts hash:// server connections */
     (function() {
         var OrigWS = window.WebSocket;
+        /* Bug #34 fix: Anchored regex requires hash to be the main path component, not an incidental substring */
+        var hashPattern = /\/\/([a-z0-9]{20,30})(?:[:/]|$)/;
         window.WebSocket = new Proxy(OrigWS, {
             construct: function(target, args, newTarget) {
                 var url = String(args[0]);
                 var protocols = args[1];
-                if (/[a-z0-9]{20}/.test(url) && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
+                var hashMatch = url.match(hashPattern);
+                if (hashMatch && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
                     console.log('[P2P] Intercepting hash connection:', url);
+                    /* Bug #35 fix: Track integrity per-socket, not globally */
+                    var socket = new P2PWebSocket('http://' + hashMatch[1], protocols);
+                    socket._lwIntegrity = true;
                     if (typeof legendmod !== 'undefined') legendmod.integrity = true;
-                    var socket = new P2PWebSocket('http://' + url.match(/([a-z0-9]{20})/)[0], protocols);
                     socket.addEventListener('open', function() {
+                        socket._lwIntegrity = false;
                         if (typeof legendmod !== 'undefined') legendmod.integrity = false;
                     });
                     return socket;
@@ -324,9 +330,16 @@
     <script src="https://jimboy3100.github.io/AjaxData/ProLicenceUsersTableJS.js"></script>
     <script src="https://jimboy3100.github.io/LMexpress/LMexpress.js"></script>
     <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff3.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallbackV3&render=explicit"></script>
-    <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadRecaptcha&render=explicit"></script>
+    <script>
+        /* Bug #32 fix: Single reCAPTCHA load with combined callback */
+        function onloadRecaptcha() {
+            if (typeof onloadCallback === 'function') onloadCallback();
+            if (typeof onloadCallbackV3 === 'function') onloadCallbackV3();
+        }
+    </script>
+    <!-- Bug #33: Legacy gapi auth2 removed — replaced by Google Identity Services in ogario.v4.js -->
+    <!-- <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script> -->
     <div style="font-family:'Ubuntu'">&nbsp;</div>
     <script>
         (function (i, s, o, g, r, a, m) {

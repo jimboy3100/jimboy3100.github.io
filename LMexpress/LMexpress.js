@@ -206,7 +206,11 @@ var detailed = "";
 var detailed1;
 
 userData = {};
-userData = JSON.parse(localStorage.getItem("userData"));
+try {
+    userData = JSON.parse(localStorage.getItem("userData")) || {};
+} catch (e) {
+    userData = {};
+}
 var userip = "0.0.0.0:0";
 var usercity = "NotFound";
 var usercountry = "NotFound";
@@ -251,7 +255,7 @@ loadersettings();
 function postSNEZ(server, username, password, data) {
     try {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("POST", server, false);
+        xhttp.open("POST", server, true);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send(data);
@@ -261,7 +265,7 @@ function postSNEZ(server, username, password, data) {
 function getSNEZ(server, username, password) {
     var xhttp = new XMLHttpRequest();
     try {
-        xhttp.open("GET", server, false);
+        xhttp.open("GET", server, true);
         xhttp.setRequestHeader("username", username);
         xhttp.setRequestHeader("password", password);
         xhttp.send();
@@ -469,7 +473,7 @@ function PremiumUsers() {
             }
             else {
                 window.proLicenceUID = ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason
-                localStorage.setItem("proLicenceUID", true);
+                localStorage.setItem("proLicenceUID", window.proLicenceUID);
                 toastr.warning("<b>[SERVER]:</b> Your licence is stored as Premium. Thank you for using our mod!").css("width", "350px");
             }
         }
@@ -478,7 +482,7 @@ function PremiumUsers() {
 }
 function PremiumUsersLMscore() {
     if (!window.proLicenceUID) {
-        localStorage.setItem("proLicenceUID", true);
+        localStorage.setItem("proLicenceUID", "permanent");
         toastr.warning("<b>[SERVER]:</b> Congratulations! Your LM level is " + window.LMscore + ". Your licence is stored as Premium permanently. Thank you for using our mod!").css("width", "350px");
     }
 }
@@ -539,12 +543,12 @@ function adres(info, thismode, thisregion) {
                     region = thisregion;
                 }
                 if (currentIPopened == true) {
-                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
+                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
                     return currentIPopened = false;
                 } else if (thismode != null && thisregion != null) {
-                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
+                    if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                    else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
 
                 } else {
                     if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
@@ -596,19 +600,19 @@ function urlIpWhenOpened() {
                 if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip);
                 else history.pushState(stateObj, "page 2", "?sip=" + searchSip);
             } else {
-                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode);
-                else history.pushState(stateObj, "page 2", "?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode);
+                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip + "&r=" + region + "&m=" + realmode);
+                else history.pushState(stateObj, "page 2", "?sip=" + searchSip + "&r=" + region + "&m=" + realmode);
             }
         } else if (searchSip == null) {
-            if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + $('#gamemode').val());
-            else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + $('#gamemode').val());
+            if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + $('#gamemode').val());
+            else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + $('#gamemode').val());
             region = $('#region').val();
             realmode = $('#gamemode').val();
             return region, realmode;
         } else {
             if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
+                if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
+                else history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + $('#region').val() + "&m=" + realmode);
             }
         }
 
@@ -714,7 +718,7 @@ function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF 
 
 
         }
-        findIP(ip.replace("wss://", ""));
+        findIP(getParameterByName("search", searchStr).replace("wss://", ""));
     } else {
         return false;
     }
@@ -4757,11 +4761,11 @@ function SNEZServers() {
         },
         updateDetails: function () {
             var nick = document.getElementById(elements.nickname);
-            //		var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "")+"&?r=" + $('#region').val() + "&?m=" + realmode;		
+            //		var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "")+"&r=" + $('#region').val() + "&m=" + realmode;		
             //        var server = document.getElementById(elements.server);
             var servertemp;
             if (realmode != null && region != null) {
-                servertemp = "live-arena-" + $('#server-token').val() + ".agar.io" + "&?r=" + $('#region').val() + "&?m=" + realmode;
+                servertemp = "live-arena-" + $('#server-token').val() + ".agar.io" + "&r=" + $('#region').val() + "&m=" + realmode;
             } else {
                 servertemp = "live-arena-" + $('#server-token').val() + ".agar.io";
             }
@@ -5487,8 +5491,8 @@ function initializeLM(modVersion) {
             copy(CopyTkPwLb2);
         } else if (realmode != ":party") {
             if (region != null && realmode != null) {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             } else {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
@@ -5499,8 +5503,8 @@ function initializeLM(modVersion) {
                 CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
         }
@@ -5509,21 +5513,21 @@ function initializeLM(modVersion) {
     $("#copySIPandPass").click(function () {
         if (searchSip != null) {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
 
             }
         } else {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copy(CopyTkPwLb2);
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
         }
@@ -5532,20 +5536,20 @@ function initializeLM(modVersion) {
     $("#copySIPPassLB").click(function () {
         if (searchSip != null) {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copy(CopyTkPwLb2);
             }
         } else {
             if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
+                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val();
                 copyToClipboardAll();
             } else if (realmode != ":party") {
-                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
+                if (document.URL.includes("jimboy3100.github.io")) CopyTkPwLb2 = "https://agar.io/play?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
+                else CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&pass=" + $("#clantag").val() + "&r=" + $('#region').val() + "&m=" + realmode;
                 copyToClipboardAll();
             }
         }
@@ -6303,7 +6307,7 @@ function joinSERVERfindinfo() {
 
                             if (MaxRegion != 0 && MaxRegion != null && MaxMode != 0 && MaxMode != null) {
                                 if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
-                                else if (legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + MaxRegion + "&?m=" + MaxMode); }
+                                else if (legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + MaxRegion + "&m=" + MaxMode); }
                                 else if (!legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP); }
                             }
                             ModeRegionregion();
