@@ -83,7 +83,7 @@ if (location.host === "agar.io" && location.pathname === "/") {
     document.documentElement.innerHTML = "";
     GM_xmlhttpRequest({
         method: "GET",
-        url: "https://jimboy3100.github.io/v3/",
+        url: "https://jimboy3100.github.io/AjaxData/accesstoken.html",
         onload: function(legend) {
             var doc = inject(legend.responseText);
             document.open();

@@ -5,7 +5,7 @@
 param(
     [string]$ConfigId = "",
     [string]$OutputDir = "vanillaskins",
-    [string]$RepoRoot = "c:\Github_repos\jimboy3000.github.io"
+    [string]$RepoRoot = "c:\Github_repos\jimboy3100.github.io"
 )
 
 $ErrorActionPreference = "Continue"

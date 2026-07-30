@@ -2157,7 +2157,7 @@ setTimeout(function () {
          * Primary: legendmod.ml/vanillaskins/ (our mirror, no CORS issues)
          * The onerror fallback chain handles missing files via legendmod.ml → proxy → CDN */
         window.VanillaSkinUrlMap = {};
-        var mirrorBase = "https://jimboy3000.github.io/vanillaskins/";
+        var mirrorBase = "https://jimboy3100.github.io/vanillaskins/";
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
             var url = null;
@@ -8254,8 +8254,7 @@ function thelegendmodproject() {
                         var isCustomSkin = filename.startsWith('skin_custom_');
                         var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
                         var isMirror = url.includes('legendmod.ml') ||
-                            url.includes('jimboy3100.github.io') ||
-                            url.includes('jimboy3000.github.io');
+                            url.includes('jimboy3100.github.io');
 
                         if (isCustomSkin) {
                             if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
@@ -8264,20 +8263,20 @@ function thelegendmodproject() {
                             return;
                         }
 
-                        if (url.includes('jimboy3000.github.io/vanillaskins/')) {
+                        if (url.includes('jimboy3100.github.io/vanillaskins/')) {
                             app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('legendmod.ml/vanillaskins/')) {
                             app.loadSkin(img, PROXY + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins2/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins/')) {
                             app.loadSkin(img, PROXY + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/lowresskins/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('/lowresskins/')) {
                             var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
@@ -8287,10 +8286,10 @@ function thelegendmodproject() {
                             app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated, isPriority);
                         }
                     };
                     img[url].src = url;
@@ -16135,7 +16134,7 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
+                } else if (url.includes('jimboy3100.github.io/vanillaskins')) {
                     var newURL = "https://jimboy3100.github.io/lowresskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
@@ -16144,7 +16143,7 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/lowresskins') || url.includes('jimboy3000.github.io/lowresskins')) {
+                } else if (url.includes('jimboy3100.github.io/lowresskins')) {
                     if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
                     }
@@ -23783,7 +23782,7 @@ Array.prototype.stDev = function stDev() {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'www.legendmod.ml/vanillaskins' },
         { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'www.legendmod.ml/lowresskins' },
-        { match: /jimboy3000\.github\.io/g, replace: 'www.legendmod.ml' },
+        { match: /jimboy3000\.github\.io/g, replace: 'jimboy3100.github.io' },
         { match: /jimboy3100\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'www.legendmod.ml/agario/live/flags' },
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },

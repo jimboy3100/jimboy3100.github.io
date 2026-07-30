@@ -1,6 +1,6 @@
 # download_missing_skins.ps1 - Downloads ALL missing skins (accepts any image format)
 param(
-    [string]$RepoRoot = "C:\Github_repos\jimboy3000.github.io",
+    [string]$RepoRoot = "C:\Github_repos\jimboy3100.github.io",
     [string]$ConfigId = "10912",
     [int]$MaxPerFolder = 999
 )
