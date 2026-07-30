@@ -582,6 +582,15 @@ function openCustomSkinUploader() {
 }
 
 function equipSkin(productId, imageName) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to equip skins');
+        return;
+    }
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        return;
+    }
+
     var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
@@ -607,6 +616,15 @@ function equipSkin(productId, imageName) {
 }
 
 function unequipSkin() {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to unequip skins');
+        return;
+    }
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        return;
+    }
+
     localStorage.removeItem('equippedSkinId');
     localStorage.removeItem('equippedSkinImage');
 
@@ -724,9 +742,13 @@ function renderSkinPage() {
 }
 
 function buySkin(productId) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to buy skins');
+        return;
+    }
     var uid = $('#exp-uid').text() || window.agarioEncodedUID;
     if (!uid) {
-        toastr && toastr.warning('<b>[SHOP]:</b> You must be logged in to buy skins');
+        toastr && toastr.warning('<b>[SHOP]:</b> No UID found. Log in again.');
         return;
     }
     var currency = $('#BuyDealCurrency').val() || 'USD';
