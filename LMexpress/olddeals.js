@@ -235,7 +235,7 @@ function SpecialDeals() {
         }
 
         // --- Login & UID status checker (shared across tabs) ---
-        function updateShopLoginState() {
+        window.updateShopLoginState = function updateShopLoginState() {
             var uploadBtn = $('#legendSaveBtnModal');
             var chooseLabel = $('#legendChooseFileBtn');
             var fileInput = $('#legendUploadInputModal');
@@ -894,7 +894,7 @@ function renderSkinPage() {
         }
 
         updateEquippedSkinUI();
-        updateShopLoginState(); // re-apply login state to new buttons
+        if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState(); // re-apply login state to new buttons
     }
 }
 
