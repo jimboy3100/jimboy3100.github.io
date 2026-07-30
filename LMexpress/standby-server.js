@@ -298,11 +298,7 @@ if (!window.recovery) {
         } catch (e) {}
 
         //this.sockets.push(this.url)
-        // DISABLED: The relay socket consumes 1 of the 2 per-IP connection
-        // slots on the chat server (listenerMaxConnectionsPerIP=2).
-        // ogario's direct socket handles all chat communication; the relay
-        // was unhandshaked and never received data from the server anyway.
-        //var masterid = this.sockets.push(('wss://snez.dev:8080/ws' + query).replace('snez.dev:8080', 'chat.delt.io'));
+        var masterid = this.sockets.push(('wss://snez.dev:8080/ws' + query).replace('snez.dev:8080', 'chat.delt.io'));
         //this.sockets.push('')
         //this.sockets.push("wss://map-srv.fly.dev/ws"+query);
 
