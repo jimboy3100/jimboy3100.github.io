@@ -15576,7 +15576,10 @@ function thelegendmodproject() {
                         skinPieces: {},
                         potions: {},
                         potionsStatus: {},
-                        skipBrew: {}
+                        skipBrew: {},
+                        sessionId: u.userSessionId,
+                        tokens: u.tokens,
+                        info: u.userInfo
                     };
                     var u = r.uncompressedData.loginResponseField;
 
