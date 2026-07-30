@@ -405,23 +405,25 @@ function populateSkins() {
             return;
         }
 
-        var query = $('#skinSearchBar').val().toLowerCase().trim();
-        var userSkins = (window.application && window.application.user && window.application.user.skins) || {};
+        var app = window.application || (typeof application !== 'undefined' ? application : null);
+        var userSkins = (app && app.user && app.user.skins) || {};
 
         if (currentFilter === 'owned') {
             var ownedList = [];
             var seenIds = {};
 
+            // 1. Extract from application.user.skins
             for (var k in userSkins) {
                 if (!userSkins.hasOwnProperty(k)) continue;
                 var item = userSkins[k];
+                if (!item) continue;
                 var pid = item.productId || k;
                 if (seenIds[pid]) continue;
                 seenIds[pid] = true;
 
-                var imgUrl = item.url || '';
-                if (window.application && typeof window.application.getLink === 'function') {
-                    var linkRes = window.application.getLink(pid);
+                var imgUrl = item.url || k;
+                if (app && typeof app.getLink === 'function') {
+                    var linkRes = app.getLink(pid);
                     if (linkRes && linkRes[0]) imgUrl = linkRes[0];
                 }
 
@@ -434,13 +436,35 @@ function populateSkins() {
                 }
 
                 if (matchedCatalog) {
-                    ownedList.push(matchedCatalog);
+                    ownedList.push({
+                        productId: matchedCatalog.productId,
+                        gameplayId: matchedCatalog.gameplayId,
+                        image: matchedCatalog.image,
+                        url: imgUrl || matchedCatalog.image,
+                        cellColor: matchedCatalog.cellColor
+                    });
                 } else {
                     ownedList.push({
                         productId: pid,
                         gameplayId: pid,
                         image: '',
                         url: imgUrl,
+                        isCustom: true
+                    });
+                }
+            }
+
+            // 2. Include window.UserVanillaSkin if present and not seen yet
+            if (window.UserVanillaSkin) {
+                var uvUrl = window.UserVanillaSkin;
+                var uvPid = "skin_custom_" + uvUrl.split('custom_skins/').pop().replace('.png', '').replace(/\?.*/, '');
+                if (!seenIds[uvPid]) {
+                    seenIds[uvPid] = true;
+                    ownedList.push({
+                        productId: uvPid,
+                        gameplayId: uvPid,
+                        image: '',
+                        url: uvUrl,
                         isCustom: true
                     });
                 }
