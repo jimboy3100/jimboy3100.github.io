@@ -97,14 +97,14 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 560px;">' +
-            '<div class="modal-content">' +
+            '<div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; width: 580px; max-width: 95vw; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">' +
+            '<div class="modal-content" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(79, 195, 247, 0.3);">' +
 
             // Header
-            '<div id="CloseSpecialDeals2" class="modal-header">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
-            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
+            '<div id="CloseSpecialDeals2" class="modal-header" style="position: relative; text-align: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1);">' +
+            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 15px; top: 12px; opacity: 0.8; font-size: 22px; color: #fff;"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
+            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 40px; top: 12px; opacity: 0.8; font-size: 18px; color: #4fc3f7; margin-right: 8px;"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7; margin: 0; font-size: 18px; text-align: center; width: 100%; display: block;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
             // Tab bar (Skins active by default)
