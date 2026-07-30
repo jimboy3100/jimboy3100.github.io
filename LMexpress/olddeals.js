@@ -51,21 +51,34 @@ function SpecialDeals() {
                 '#specialShopModal .shop-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }',
                 '#specialShopModal .tab-pane { display: none; }',
                 '#specialShopModal .tab-pane.active { display: block; }',
-                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 12px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
+                '.active-skin-banner { display: flex; align-items: center; background: rgba(79, 195, 247, 0.12); border: 1px solid rgba(79, 195, 247, 0.4); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }',
+                '.active-skin-banner img { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; border: 2px solid #4fc3f7; object-fit: cover; background: #222; }',
+                '.active-skin-banner .info { flex: 1; }',
+                '.active-skin-banner .info .title { font-size: 10px; color: #4fc3f7; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }',
+                '.active-skin-banner .info .name { font-size: 14px; font-weight: 700; color: #fff; font-family: "Roboto Condensed", sans-serif; }',
+                '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; }',
+                '.active-skin-banner .unequip-btn:hover { background: #ff5722; color: #fff; }',
+                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
                 '#skinSearchBar:focus { border-color: #4fc3f7; box-shadow: 0 0 5px rgba(79,195,247,0.3); }',
                 '#skinSearchBar::placeholder { color: #888; }',
-                '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 350px; overflow-y: auto; padding: 4px; }',
+                '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px; }',
                 '.skin-grid::-webkit-scrollbar { width: 6px; }',
                 '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
                 '.skin-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
                 '.skin-grid::-webkit-scrollbar-thumb:hover { background: #777; }',
-                '.skin-card { position: relative; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; }',
+                '.skin-card { position: relative; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
                 '.skin-card:hover { border-color: #4fc3f7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,195,247,0.2); }',
-                '.skin-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; display: block; margin: 4px auto; }',
-                '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }',
-                '.skin-card .skin-color { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 1px solid rgba(255,255,255,0.3); }',
-                '.skin-card .skin-buy-btn { display: none; position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #4fc3f7, #0288d1); color: #fff; border: none; padding: 4px 0; font-size: 11px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }',
-                '.skin-card:hover .skin-buy-btn { display: block; }',
+                '.skin-card.equipped { border-color: #00e676 !important; background: rgba(0, 230, 118, 0.12) !important; box-shadow: 0 0 10px rgba(0,230,118,0.3) !important; }',
+                '.skin-card .equipped-badge { position: absolute; top: 3px; left: 3px; background: #00e676; color: #000; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; z-index: 2; }',
+                '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; margin: 2px auto; }',
+                '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
+                '.skin-card .skin-color { width: 10px; height: 10px; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 1px solid rgba(255,255,255,0.3); }',
+                '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
+                '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
+                '.skin-btn-equip { flex: 1; background: #4fc3f7; color: #000; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
+                '.skin-card.equipped .skin-btn-equip { background: #00e676; color: #000; }',
+                '.skin-btn-buy { flex: 1; background: #ffb74d; color: #000; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
+                '.skin-btn-buy:hover { background: #ffa726; }',
                 '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #888; font-family: "Roboto Condensed", sans-serif; }',
                 '.skin-stats span { color: #4fc3f7; font-weight: 700; }',
                 '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.3); border-radius: 4px; color: #4fc3f7; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
@@ -78,7 +91,7 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 520px;">' +
+            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 540px;">' +
             '<div class="modal-content">' +
 
             // Header
@@ -121,6 +134,17 @@ function SpecialDeals() {
             // === Skins tab (new) ===
             '<div class="tab-pane" id="tab-skins">' +
             '<div class="modal-body">' +
+
+            // Active Skin Banner
+            '<div class="active-skin-banner" id="activeSkinBanner">' +
+            '<img id="activeSkinImg" src="" alt="Active Skin" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
+            '<div class="info">' +
+            '<div class="title">&#x2714; Currently Equipped Skin</div>' +
+            '<div class="name" id="activeSkinName">None (Default)</div>' +
+            '</div>' +
+            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">Unequip</button>' +
+            '</div>' +
+
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
             '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
@@ -151,6 +175,9 @@ function SpecialDeals() {
             // Populate skins on first switch
             if (tab === 'skins' && $('#skinGrid').children().length === 0 && window.GameConfiguration && window.GameConfiguration.gameConfig) {
                 populateSkins();
+            }
+            if (tab === 'skins') {
+                updateEquippedSkinUI();
             }
         });
 
@@ -305,6 +332,93 @@ function populateSkins() {
     $('#skinLoadMore').off('click').on('click', function() {
         renderSkinPage();
     });
+
+    updateEquippedSkinUI();
+}
+
+function equipSkin(productId, imageName) {
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+    localStorage.setItem('equippedSkinId', productId);
+    if (imageName) localStorage.setItem('equippedSkinImage', imageName);
+
+    // Call official Agar.io/LegendMod skin change function if available
+    if (typeof window.changeSkin === 'function') {
+        try {
+            window.changeSkin(productId);
+        } catch (e) {
+            console.warn('[Skin Shop] changeSkin call exception:', e);
+        }
+    }
+
+    // Backup custom skin URL setters
+    if (window.ogario && imageName) {
+        window.ogario.customSkinUrl = cdnBase + imageName;
+    }
+
+    var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+    if (window.toastr) {
+        toastr.success('<b>[SKIN]:</b> Equipped ' + displayName);
+    }
+
+    updateEquippedSkinUI();
+}
+
+function unequipSkin() {
+    localStorage.removeItem('equippedSkinId');
+    localStorage.removeItem('equippedSkinImage');
+
+    if (typeof window.changeSkin === 'function') {
+        try {
+            window.changeSkin('skin_empty');
+        } catch (e) {}
+    }
+    if (window.ogario) {
+        window.ogario.customSkinUrl = '';
+    }
+
+    if (window.toastr) {
+        toastr.info('<b>[SKIN]:</b> Unequipped skin (Default skin active)');
+    }
+
+    updateEquippedSkinUI();
+}
+
+function updateEquippedSkinUI() {
+    var equippedId = localStorage.getItem('equippedSkinId');
+    var equippedImg = localStorage.getItem('equippedSkinImage');
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+
+    var bannerName = $('#activeSkinName');
+    var bannerImg = $('#activeSkinImg');
+    var unequipBtn = $('#unequipSkinBtn');
+
+    if (equippedId && equippedId !== 'skin_empty') {
+        var displayName = equippedId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        bannerName.text(displayName);
+        if (equippedImg) {
+            bannerImg.attr('src', cdnBase + equippedImg);
+        } else {
+            bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
+        }
+        unequipBtn.show();
+    } else {
+        bannerName.text('None (Default Skin)');
+        bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
+        unequipBtn.hide();
+    }
+
+    // Highlight cards in the grid
+    $('.skin-card').removeClass('equipped');
+    $('.skin-card .equipped-badge').remove();
+    $('.skin-card .skin-btn-equip').text('Equip');
+
+    if (equippedId) {
+        $('.skin-card[data-product-id="' + equippedId + '"]').each(function() {
+            $(this).addClass('equipped');
+            $(this).prepend('<div class="equipped-badge">&#x2714; Equipped</div>');
+            $(this).find('.skin-btn-equip').text('Equipped');
+        });
+    }
 }
 
 function renderSkinPage() {
@@ -312,38 +426,42 @@ function renderSkinPage() {
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
     var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
     var grid = document.getElementById('skinGrid');
+    var currentEquippedId = localStorage.getItem('equippedSkinId');
 
     for (var i = start; i < end; i++) {
         var skin = skinShopFiltered[i];
         var name = skin.productId.replace('skin_', '').replace(/_/g, ' ');
-        // Capitalize first letter of each word
         var displayName = name.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-        // Parse cell color (0xRRGGBBAA hex string)
         var colorHex = skin.cellColor || '0x88888800';
         var r = parseInt(colorHex.substring(2, 4), 16);
         var g = parseInt(colorHex.substring(4, 6), 16);
         var b = parseInt(colorHex.substring(6, 8), 16);
         var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 
+        var isEquipped = (currentEquippedId === skin.productId);
+
         var card = document.createElement('div');
-        card.className = 'skin-card';
+        card.className = 'skin-card' + (isEquipped ? ' equipped' : '');
         card.setAttribute('data-product-id', skin.productId);
         card.setAttribute('data-gameplay-id', skin.gameplayId);
-        card.innerHTML =
+        card.setAttribute('data-image', skin.image);
+
+        var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
+        var equipBtnText = isEquipped ? 'Equipped' : 'Equip';
+
+        card.innerHTML = badgeHtml +
             '<div class="skin-color" style="background:' + cssColor + '"></div>' +
             '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
             '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
-            '<button class="skin-buy-btn" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy</button>';
+            '<div class="skin-card-actions">' +
+            '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + equipBtnText + '</button>' +
+            '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy</button>' +
+            '</div>';
 
-        // Click card to equip skin locally (client-side)
+        // Click card body to equip skin
         card.addEventListener('click', (function(skinData) {
             return function() {
-                if (window.ogario && window.ogario.customSkinUrl) {
-                    window.ogario.customSkinUrl = cdnBase + skinData.image;
-                    toastr && toastr.success('<b>Skin equipped:</b> ' + skinData.productId.replace('skin_', '').replace(/_/g, ' '));
-                } else {
-                    toastr && toastr.info('<b>Skin:</b> ' + skinData.productId + ' (ID: ' + skinData.gameplayId + ')');
-                }
+                equipSkin(skinData.productId, skinData.image);
             };
         })(skin));
 
@@ -360,6 +478,8 @@ function renderSkinPage() {
     } else {
         $('#skinLoadMore').hide();
     }
+
+    updateEquippedSkinUI();
 }
 
 function buySkin(productId) {
