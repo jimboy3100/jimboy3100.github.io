@@ -741,6 +741,9 @@ function populateSkins() {
 
     // Update filter button with actual skin count
     $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
+
+    // Expose for external refresh (server wallet updates, purchases, etc.)
+    window._skinShopRefresh = applySkinFilters;
 }
 
 function openCustomSkinUploader() {
@@ -753,6 +756,69 @@ function openCustomSkinUploader() {
         $('.quick-custom-skin').trigger('click');
     }
 }
+
+/**
+ * Refresh the skin shop grid — call after server confirms a purchase,
+ * wallet update, or custom skin creation to update owned/equipped badges.
+ */
+function refreshSkinGrid() {
+    if (typeof window._skinShopRefresh === 'function') {
+        window._skinShopRefresh();
+        console.log('[SKIN SHOP] Grid refreshed');
+    } else {
+        // populateSkins hasn't run yet or tab not opened — defer
+        console.log('[SKIN SHOP] Grid refresh deferred (shop not initialized)');
+    }
+    updateEquippedSkinUI();
+}
+window.refreshSkinGrid = refreshSkinGrid;
+
+/**
+ * Delete a custom skin from the server (opcode 152).
+ * Custom skins have productId like "skin_custom_<uuid>_<uuid>".
+ */
+function deleteCustomSkin(productId) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to delete skins');
+        return;
+    }
+    if (!productId || !productId.includes('custom_')) {
+        toastr && toastr.error('<b>[SHOP]:</b> Only custom skins can be deleted');
+        return;
+    }
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        return;
+    }
+
+    // Encode opcode 152 (userSkinsDeleteField) with the productId
+    if (window.mesega) {
+        try {
+            var buffer = window.mesega.encode({
+                contentType: 1,
+                uncompressedData: {
+                    type: 152,
+                    userSkinsDeleteField: {
+                        productId: productId
+                    }
+                }
+            }).finish();
+            window.core.proxyMobileData(buffer);
+            console.log('[SKIN] Sent delete request for ' + productId);
+            toastr && toastr.info('<b>[SERVER]:</b> Delete request sent for custom skin...');
+        } catch (e) {
+            console.error('[SKIN] Delete encode error:', e);
+            // Fallback: manual protobuf bytes for delete
+            var bytes = [8, 1, 18, productId.length + 6, 8, 152, 1, 194, 9, productId.length + 1, 10, productId.length];
+            for (var i = 0; i < productId.length; i++) bytes.push(productId.charCodeAt(i));
+            window.core.proxyMobileData(new Uint8Array(bytes));
+            toastr && toastr.info('<b>[SERVER]:</b> Delete request sent (fallback)...');
+        }
+    } else {
+        toastr && toastr.error('<b>[ERROR]:</b> Protobuf not loaded');
+    }
+}
+window.deleteCustomSkin = deleteCustomSkin;
 
 function equipSkin(productId, imageName) {
     if (!window.loggedIn) {

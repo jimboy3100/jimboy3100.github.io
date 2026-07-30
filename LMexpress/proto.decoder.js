@@ -687,6 +687,7 @@ message userSkinsCreateResponseField {
 }
 
 message userSkinsDeleteField {
+  string productId = 1;
 ///
 }
 

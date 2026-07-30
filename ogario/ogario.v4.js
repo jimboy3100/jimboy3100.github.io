@@ -15725,6 +15725,8 @@ function thelegendmodproject() {
                                 if (sp.productUpdates && sp.productUpdates.length) {
                                     this.updateProducts(sp.productUpdates);
                                 }
+                                try { this.createSkinsHTML(); } catch(e) {}
+                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             } else if (spResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Purchase failed — not enough DNA/coins.');
                             } else if (spResult === 3) {
@@ -15763,6 +15765,8 @@ function thelegendmodproject() {
                         if (wu && wu.productUpdates && wu.productUpdates.length) {
                             console.log("[LM] Wallet update — " + wu.productUpdates.length + " items changed");
                             this.updateProducts(wu.productUpdates);
+                            try { this.createSkinsHTML(); } catch(e) {}
+                            if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                         }
                     } catch(wuErr) {
                         console.warn("[LM] Error parsing wallet updates:", wuErr);
@@ -15861,6 +15865,10 @@ function thelegendmodproject() {
                                 if (skinResp.productUpdates && skinResp.productUpdates.length) {
                                     this.updateProducts(skinResp.productUpdates);
                                 }
+                                try { this.createSkinsHTML(); } catch(e) {}
+                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                                // Close the upload panel
+                                $('#custom-skin-uploader').fadeOut(200);
                             } else if (skinResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Skin creation failed — not enough DNA.');
                             } else if (skinResult === 3) {
@@ -15873,6 +15881,17 @@ function thelegendmodproject() {
                         }
                     } catch(skinErr) {
                         console.warn("[LM] Error parsing skin create response:", skinErr);
+                    }
+                    break;
+                case 152:
+                    // Skin delete response/notification
+                    try {
+                        console.log("[LM] Skin Delete — opcode 152 received");
+                        toastr.info('<b>[SERVER]:</b> Custom skin deleted');
+                        try { this.createSkinsHTML(); } catch(e) {}
+                        if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                    } catch(sdErr) {
+                        console.warn("[LM] Error handling skin delete:", sdErr);
                     }
                     break;
                 case 170:
