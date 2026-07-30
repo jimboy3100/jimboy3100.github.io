@@ -264,18 +264,6 @@ if (!window.recovery) {
                 };
 
                 so.onopen = function () {
-                    /* Handshake: identify as ProtocolLegacy/LM to the chat server.
-                     * Without this, the server doesn't know our protocol and
-                     * rejects opcodes 9/16 (ppv7) that ogario sends through us. */
-                    var hs = new ArrayBuffer(3);
-                    var hv = new DataView(hs);
-                    hv.setUint8(0, 5);
-                    hv.setUint16(1, 20, true);
-                    so.send(hs);
-                    hv.setUint8(0, 0);
-                    hv.setUint16(1, 401, true);
-                    so.send(hs);
-
                     for (var opcode in self.cached) {
                         so.send(self.cached[opcode].buffer);
                     }
@@ -310,7 +298,11 @@ if (!window.recovery) {
         } catch (e) {}
 
         //this.sockets.push(this.url)
-        var masterid = this.sockets.push(('wss://snez.dev:8080/ws' + query).replace('snez.dev:8080', 'chat.delt.io'));
+        // DISABLED: The relay socket consumes 1 of the 2 per-IP connection
+        // slots on the chat server (listenerMaxConnectionsPerIP=2).
+        // ogario's direct socket handles all chat communication; the relay
+        // was unhandshaked and never received data from the server anyway.
+        //var masterid = this.sockets.push(('wss://snez.dev:8080/ws' + query).replace('snez.dev:8080', 'chat.delt.io'));
         //this.sockets.push('')
         //this.sockets.push("wss://map-srv.fly.dev/ws"+query);
 
