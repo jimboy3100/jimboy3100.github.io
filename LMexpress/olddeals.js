@@ -777,12 +777,12 @@ window.refreshSkinGrid = refreshSkinGrid;
  * Delete a custom skin from the server (opcode 152).
  * Custom skins have productId like "skin_custom_<uuid>_<uuid>".
  */
-function deleteCustomSkin(productId) {
+function deleteCustomSkin(skinId) {
     if (!window.loggedIn) {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to delete skins');
         return;
     }
-    if (!productId || !productId.includes('custom_')) {
+    if (!skinId || !skinId.includes('custom_')) {
         toastr && toastr.error('<b>[SHOP]:</b> Only custom skins can be deleted');
         return;
     }
@@ -791,7 +791,9 @@ function deleteCustomSkin(productId) {
         return;
     }
 
-    // Encode opcode 152 (userSkinsDeleteField) with the productId
+    // Official client flow (agario.js:38643-38644):
+    //   createDeleteUserSkinRequestMessage(skinId) → set_skinId(skinId)
+    //   sendMessage(152, deleteMsg)
     if (window.mesega) {
         try {
             var buffer = window.mesega.encode({
@@ -799,18 +801,26 @@ function deleteCustomSkin(productId) {
                 uncompressedData: {
                     type: 152,
                     userSkinsDeleteField: {
-                        productId: productId
+                        skinId: skinId
                     }
                 }
             }).finish();
             window.core.proxyMobileData(buffer);
-            console.log('[SKIN] Sent delete request for ' + productId);
+            console.log('[SKIN] Sent delete request for ' + skinId);
             toastr && toastr.info('<b>[SERVER]:</b> Delete request sent for custom skin...');
         } catch (e) {
             console.error('[SKIN] Delete encode error:', e);
-            // Fallback: manual protobuf bytes for delete
-            var bytes = [8, 1, 18, productId.length + 6, 8, 152, 1, 194, 9, productId.length + 1, 10, productId.length];
-            for (var i = 0; i < productId.length; i++) bytes.push(productId.charCodeAt(i));
+            // Fallback: manual protobuf bytes — field 1 (skinId), wire type 2 (string)
+            // Tag = (1 << 3) | 2 = 10, then varint length, then bytes
+            var skinIdBytes = [];
+            for (var i = 0; i < skinId.length; i++) skinIdBytes.push(skinId.charCodeAt(i));
+            var innerMsg = [10, skinId.length].concat(skinIdBytes); // field 1, wire type 2
+            var outerField = [194, 9]; // field 152, wire type 2 = (152 << 3 | 2) encoded as varint
+            application.writeUint32(outerField, innerMsg.length);
+            var wrapper = [8, 1, 18];
+            var innerPayload = [8, 152, 1].concat(outerField).concat(innerMsg);
+            application.writeUint32(wrapper, innerPayload.length);
+            var bytes = wrapper.concat(innerPayload);
             window.core.proxyMobileData(new Uint8Array(bytes));
             toastr && toastr.info('<b>[SERVER]:</b> Delete request sent (fallback)...');
         }
