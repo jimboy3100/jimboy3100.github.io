@@ -282,6 +282,7 @@ function SpecialDeals() {
         });
 
         $('#legendSaveBtnModal').off('click').on('click', function() {
+            var btn = $(this);
             var name = $('#legendSkinNameModal').val() || "test";
             var color = $('#legendSkinColorModal').val() || "#FFFF00";
 
@@ -289,6 +290,21 @@ function SpecialDeals() {
                 toastr.warning("<b>[SERVER]:</b> Select an image first.");
                 return;
             }
+
+            // Disable button immediately to prevent double-click
+            btn.prop('disabled', true).css('opacity', 0.5);
+            var cooldown = 30;
+            var origText = btn.text();
+            btn.text("Please wait... " + cooldown + "s");
+            var timer = setInterval(function() {
+                cooldown--;
+                if (cooldown <= 0) {
+                    clearInterval(timer);
+                    btn.text(origText).prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                } else {
+                    btn.text("Please wait... " + cooldown + "s");
+                }
+            }, 1000);
 
             // Method 1: Inject into official skin-editor-canvas (most reliable)
             var skinEditorCanvas = document.getElementById('skin-editor-canvas');
@@ -298,7 +314,6 @@ function SpecialDeals() {
                     var ctx = skinEditorCanvas.getContext('2d');
                     ctx.clearRect(0, 0, skinEditorCanvas.width, skinEditorCanvas.height);
                     ctx.drawImage(legendCanvas, 0, 0, skinEditorCanvas.width, skinEditorCanvas.height);
-                    // Dispatch events so the agar.io client detects the change
                     skinEditorCanvas.dispatchEvent(new Event('change', { bubbles: true }));
                     skinEditorCanvas.dispatchEvent(new Event('input', { bubbles: true }));
                     toastr.success("<b>[SERVER]:</b> Image injected into skin editor! Click the Save button in the editor to upload.");
@@ -307,56 +322,9 @@ function SpecialDeals() {
                 }
             }
 
-            // Method 2: Protocol upload via proxyMobileData
+            // Method 2: Protocol upload via uploadCustomSkin (uses protobuf encoder)
             if (window.application && typeof window.application.uploadCustomSkin === 'function') {
                 window.application.uploadCustomSkin(processedBufferModal, name, color);
-            } else if (window.core && window.core.proxyMobileData) {
-                // Direct protocol fallback — build packet inline
-                var imageBytes = processedBufferModal;
-                var xmlStr = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-                    '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
-                    '<plist version="1.0">\n<dict>\n' +
-                    '\t<key>name</key>\n\t<string>' + name.replace(/[^\x20-\x7E]/g, "").substring(0, 15) + '</string>\n' +
-                    '\t<key>color</key>\n\t<integer>' + (parseInt(color.replace('#', ''), 16) || 14703104) + '</integer>\n' +
-                    '\t<key>indexedSubscriptions</key>\n\t<array/>\n' +
-                    '\t<key>creationDate</key>\n\t<integer>' + Math.floor(Date.now() / 1000) + '</integer>\n' +
-                    '</dict>\n</plist>';
-
-                // Encode XML to bytes
-                var xmlBytes = [];
-                for (var xi = 0; xi < xmlStr.length; xi++) xmlBytes.push(xmlStr.charCodeAt(xi) & 0xFF);
-
-                // Varint helper
-                function wv(v) { var b = []; while (v > 127) { b.push((v & 127) | 128); v >>>= 7; } b.push(v); return b; }
-
-                // XML field: [18][len][data]
-                var xmlLenV = wv(xmlBytes.length);
-                var xmlField = [18].concat(xmlLenV).concat(xmlBytes);
-
-                // Image field: [10][len][data]
-                var imgLenV = wv(imageBytes.length);
-
-                // Skin object content size
-                var skinContentSize = 1 + imgLenV.length + imageBytes.length + xmlField.length;
-                var skinLenV = wv(skinContentSize);
-
-                // Payload size: [8, 150, 1] + [178, 9] + skinLenV + skinContent
-                var payloadSize = 3 + 2 + skinLenV.length + skinContentSize;
-                var payloadLenV = wv(payloadSize);
-
-                // Build header
-                var header = [8, 1, 18].concat(payloadLenV).concat([8, 150, 1, 178, 9]).concat(skinLenV).concat([10]).concat(imgLenV);
-
-                // Assemble final packet using Uint8Array (fast)
-                var total = header.length + imageBytes.length + xmlField.length;
-                var packet = new Uint8Array(total);
-                packet.set(header, 0);
-                packet.set(imageBytes, header.length);
-                packet.set(xmlField, header.length + imageBytes.length);
-
-                window.core.proxyMobileData(packet);
-                console.log("%c[LM] Skin upload sent: " + total + " bytes", "color: #00FF00;");
-                toastr.success("<b>[SERVER]:</b> Skin Data Uploaded! Account Deduct: 90 DNA.");
             } else {
                 toastr.warning("<b>[SERVER]:</b> Not connected. Play a game first.");
             }
