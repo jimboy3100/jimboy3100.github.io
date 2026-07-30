@@ -87,6 +87,47 @@
         return _send.call(this, data);
     };
 
+    // ─── PART 1b: Hook proxyMobileData to get UNENCRYPTED protocol bytes ───
+    // WebSocket.send only sees encrypted data. proxyMobileData is the clean protobuf.
+    function hookProxyMobileData() {
+        if (window.core && window.core.proxyMobileData && !window.core._origProxyMobileData) {
+            window.core._origProxyMobileData = window.core.proxyMobileData;
+            window.core.proxyMobileData = function (data) {
+                try {
+                    var buf = (data instanceof Uint8Array) ? data : new Uint8Array(data);
+                    console.log('%c[PROTO] proxyMobileData (' + buf.length + 'B):', 'color:#0ad;font-weight:bold', Array.from(buf));
+                    log('📤 PROTO (' + buf.length + 'B): [' + bytesPreview(buf, 30) + ']', '#0ad');
+
+                    // Detect skin upload in clean protobuf
+                    var png = findPNG(buf);
+                    if (png !== -1) {
+                        savedImage = new Uint8Array(buf);
+                        var iend = findIEND(buf);
+                        savedFooter = iend !== -1 ? new Uint8Array(buf.slice(iend)) : null;
+                        log('🎨 SKIN UPLOAD (clean)! ' + buf.length + 'B, PNG@' + png, '#0f0');
+                        log('Proto header: [' + bytesPreview(buf.slice(0, png), 30) + ']', 'lime');
+                        if (savedFooter && savedFooter.length > 0) {
+                            log('Proto footer: [' + bytesPreview(savedFooter, 30) + ']', 'lime');
+                        }
+                        console.log('%c[SKIN SNIFFER] CLEAN packet captured!', 'color:#0f0;font-weight:bold');
+                        console.log('Header (before PNG):', Array.from(buf.slice(0, png)).join(', '));
+                        console.log('Full:', Array.from(buf).join(', '));
+                        if (savedFooter) console.log('Footer (after IEND):', Array.from(savedFooter).join(', '));
+                    }
+                } catch (e) { console.warn('[Sniffer] proxyMobileData hook error:', e); }
+                return window.core._origProxyMobileData(data);
+            };
+            log('✅ proxyMobileData hooked — clean protocol bytes will be captured!', '#0f0');
+            return true;
+        }
+        return false;
+    }
+
+    // Keep trying until core is available
+    var _hookInterval = setInterval(function () {
+        if (hookProxyMobileData()) clearInterval(_hookInterval);
+    }, 2000);
+
     // ─── Logging ───
     function log(msg, color) {
         color = color || '#aaa';
