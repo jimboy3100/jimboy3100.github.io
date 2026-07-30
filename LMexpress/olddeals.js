@@ -97,7 +97,7 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 560px;">' +
+            '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; margin: 0;">' +
             '<div class="modal-content">' +
 
             // Header
