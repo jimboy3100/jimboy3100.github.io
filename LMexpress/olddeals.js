@@ -865,7 +865,7 @@ function renderSkinPage() {
             var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 
             var isEquipped = (currentEquippedId === skin.productId);
-            var isOwned = isSkinOwned(skin, ownedSkinsObj);
+            var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);
 
             var card = document.createElement('div');
             card.className = 'skin-card' + (isEquipped ? ' equipped' : '');
@@ -875,9 +875,9 @@ function renderSkinPage() {
 
             var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
             var ownedBadgeHtml = (isOwned && !isEquipped) ? '<div class="owned-badge">&#x2B50; Owned</div>' : '';
-            var equipBtnText = isEquipped ? 'Equipped' : 'Equip';
-            var buyBtnHtml = isOwned
-                ? '<span class="skin-btn-owned">&#x2B50; Owned</span>'
+
+            var actionBtnHtml = isOwned
+                ? '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>'
                 : '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy</button>';
 
             card.innerHTML = badgeHtml + ownedBadgeHtml +
@@ -885,16 +885,19 @@ function renderSkinPage() {
                 '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
                 '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
                 '<div class="skin-card-actions">' +
-                '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + equipBtnText + '</button>' +
-                buyBtnHtml +
+                actionBtnHtml +
                 '</div>';
 
-            // Click card body to equip skin
-            card.addEventListener('click', (function(skinData) {
+            // Click card body to equip (if owned) or buy (if unowned)
+            card.addEventListener('click', (function(skinData, owned) {
                 return function() {
-                    equipSkin(skinData.productId, skinData.image);
+                    if (owned) {
+                        equipSkin(skinData.productId, skinData.image);
+                    } else {
+                        buySkin(skinData.productId);
+                    }
                 };
-            })(skin));
+            })(skin, isOwned));
 
             grid.appendChild(card);
         }
