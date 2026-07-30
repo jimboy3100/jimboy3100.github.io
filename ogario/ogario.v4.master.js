@@ -55,10 +55,18 @@ function legendmaster(self) {
                 self.FB.getLoginStatus(function(res) {
                     if (res.status === "connected") {
                         init(res);
-                    } else if (!window.loggedIn && !window._lwReconnecting) {
-                        /* Only logout if we're not already logged in via another provider
-                         * and not in the middle of a game server reconnect */
-                        self.logout();
+                    } else {
+                        /* FB cookies expired or blocked by browser —
+                         * DON'T call self.logout(), that would delete
+                         * storeObjectInfo and prevent future auto-login.
+                         * Just log a warning and let the user click
+                         * the Facebook button to re-authenticate. */
+                        console.log("[Master] FB session expired on page load. Click Facebook button to re-login.");
+                        /* Restore saved profile picture and name from localStorage
+                         * so the UI doesn't reset to Guest while session is stale */
+                        if (options.userInfo && options.userInfo.picture) {
+                            $(".agario-profile-picture").attr("src", options.userInfo.picture);
+                        }
                     }
                 });
             }
@@ -884,7 +892,7 @@ function legendmaster(self) {
         if (options.context === "google" && api) {
             api.signOut();
         }
-        delete self.localStorage.storeObjectInfo;
+        self.localStorage.removeItem("storeObjectInfo");
         $("#helloContainer").attr("data-logged-in", "0");
 		$('.progress-bar-star3').text(0);
 		$('.progress-bar-star2').text(0);
@@ -918,6 +926,26 @@ function legendmaster(self) {
         self.getStorage();
         setup();
     };
+
+    /* Early login-state restoration from localStorage.
+     * This runs BEFORE FB/Google SDKs load, so the UI immediately shows
+     * the user's saved profile picture, name, and login state instead of
+     * flashing "Guest" until the SDK callback fires. */
+    (function earlyRestore() {
+        self.getStorage();
+        if (options.loginIntent === "1" && options.context) {
+            /* User was logged in last session — restore UI */
+            if (options.userInfo && options.userInfo.picture) {
+                $(".agario-profile-picture").attr("src", options.userInfo.picture);
+            }
+            var savedName = self.localStorage.getItem("userfirstname");
+            if (savedName) {
+                $("#UserProfileName1").text(savedName);
+            }
+            $("#helloContainer").attr("data-logged-in", "1");
+            console.log("[Master] Restored saved login state: " + options.context);
+        }
+    })();
 	
 };
 function continuelogout(){
