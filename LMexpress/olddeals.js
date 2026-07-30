@@ -835,10 +835,6 @@ function equipSkin(productId, imageName) {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to equip skins');
         return;
     }
-    if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
-        return;
-    }
     if (!(window.core && window.core.proxyMobileData)) {
         toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
         return;
@@ -848,16 +844,56 @@ function equipSkin(productId, imageName) {
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
-    // Call official Agar.io/LegendMod skin change function if available
-    if (typeof window.changeSkin === 'function') {
+    // ─── Official Protocol: Send opcode 80 (updateUserSettingsRequest) ───
+    // The official client (agario.js:9938-9941) does:
+    //   set_skinId(v) → saveSingleSetting(1, v)
+    //   saveSingleSetting(key, value) → sendMessage(80, updateSettingsMsg)
+    //
+    // User_setting proto (agario.js:37046-37168):
+    //   type = 1 (STRING) or 2 (INT32)  — field 1, enum
+    //   key  = 1 (skinId)               — field 2, enum
+    //   valueString = skinId            — field 3, string
+    //   valueInt32                      — field 4, int32
+    if (window.mesega) {
         try {
-            window.changeSkin(productId);
+            var buffer = window.mesega.encode({
+                contentType: 1,
+                uncompressedData: {
+                    type: 80,
+                    updateUserSettingsRequestField: {
+                        userSettingsUpdates: [{
+                            type: 1,          // STRING type
+                            key: 1,           // key 1 = skinId
+                            valueString: productId
+                        }]
+                    }
+                }
+            }).finish();
+            window.core.proxyMobileData(buffer);
+            console.log('[SKIN] Sent equip settings update (opcode 80) for: ' + productId);
         } catch (e) {
-            console.warn('[Skin Shop] changeSkin call exception:', e);
+            console.error('[SKIN] Equip encode error:', e);
         }
     }
 
-    // Backup custom skin URL setters
+    // Tell the WASM renderer to load the skin texture
+    // Official client (agario.js:39541): window.core.loadSkin(skinName)
+    if (window.core && window.core.loadSkin) {
+        try {
+            // For standard skins, strip 'skin_' prefix. For custom skins, pass as-is.
+            var skinName = productId.startsWith('skin_custom_') ? productId : productId.replace('skin_', '');
+            window.core.loadSkin(skinName);
+        } catch (e) {
+            console.warn('[SKIN] loadSkin call exception:', e);
+        }
+    }
+
+    // Backup: also call legacy changeSkin if available
+    if (typeof window.changeSkin === 'function') {
+        try { window.changeSkin(productId); } catch (e) {}
+    }
+
+    // Update ogario custom skin URL
     if (window.ogario && imageName) {
         window.ogario.customSkinUrl = cdnBase + imageName;
     }
@@ -873,10 +909,6 @@ function unequipSkin() {
         toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to unequip skins');
         return;
     }
-    if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
-        return;
-    }
     if (!(window.core && window.core.proxyMobileData)) {
         toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
         return;
@@ -885,10 +917,38 @@ function unequipSkin() {
     localStorage.removeItem('equippedSkinId');
     localStorage.removeItem('equippedSkinImage');
 
-    if (typeof window.changeSkin === 'function') {
+    // ─── Official Protocol: Send opcode 80 with empty skinId ───
+    // The official client (agario.js:39522-39524):
+    //   setDefaultSkin() → setSkin(defaultSkin)
+    //   set_skinId("") → saveSingleSetting(1, "")
+    if (window.mesega) {
         try {
-            window.changeSkin('skin_empty');
-        } catch (e) {}
+            var buffer = window.mesega.encode({
+                contentType: 1,
+                uncompressedData: {
+                    type: 80,
+                    updateUserSettingsRequestField: {
+                        userSettingsUpdates: [{
+                            type: 1,          // STRING type
+                            key: 1,           // key 1 = skinId
+                            valueString: ''   // empty = unequip
+                        }]
+                    }
+                }
+            }).finish();
+            window.core.proxyMobileData(buffer);
+            console.log('[SKIN] Sent unequip settings update (opcode 80)');
+        } catch (e) {
+            console.error('[SKIN] Unequip encode error:', e);
+        }
+    }
+
+    // Tell WASM to unload skin
+    if (window.core && window.core.loadSkin) {
+        try { window.core.loadSkin(''); } catch (e) {}
+    }
+    if (typeof window.changeSkin === 'function') {
+        try { window.changeSkin('skin_empty'); } catch (e) {}
     }
     if (window.ogario) {
         window.ogario.customSkinUrl = '';
