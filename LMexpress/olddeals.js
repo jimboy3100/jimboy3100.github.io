@@ -198,7 +198,7 @@ function SpecialDeals() {
         LoadGameConfiguration();
 
         //populateSD();
-        $(".modal-dialog").draggable()
+        $(".modal-dialog").draggable({ handle: ".modal-header", containment: "window" });
         setTimeout(function() {
             populateLibConfig();
         }, 2500);
@@ -220,26 +220,49 @@ function SpecialDeals() {
             img.onload = function() {
                 var canvas = document.getElementById("legendCanvasModal");
                 if (!canvas) return;
-                var ctx = canvas.getContext("2d");
-                ctx.clearRect(0, 0, 512, 512);
-                ctx.drawImage(img, 0, 0, 512, 512);
+                // Try progressively smaller sizes until under 100KB
+                var sizes = [512, 384, 256, 192, 128];
+                var attempt = 0;
 
-                canvas.toBlob(function(blob) {
-                    if (!blob) return;
-                    var reader = new FileReader();
-                    reader.onload = function() {
-                        processedBufferModal = new Uint8Array(reader.result);
-                        var kb = (processedBufferModal.length / 1024).toFixed(1);
-                        if (processedBufferModal.length > 102400) {
-                            $('#legendStatusModal').text("Too Big: " + kb + "KB (Limit 100KB)").css('color', '#ff5252');
-                            $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
-                        } else {
-                            $('#legendStatusModal').text("PNG Ready: " + kb + "KB").css('color', '#00e676');
-                            $('#legendSaveBtnModal').prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
-                        }
-                    };
-                    reader.readAsArrayBuffer(blob);
-                }, 'image/png');
+                function trySize() {
+                    var size = sizes[attempt] || 128;
+                    var ctx = canvas.getContext("2d");
+                    canvas.width = 512; canvas.height = 512; // keep canvas display size
+                    ctx.clearRect(0, 0, 512, 512);
+
+                    // Draw at target resolution then scale up for display
+                    var tmpCanvas = document.createElement('canvas');
+                    tmpCanvas.width = size; tmpCanvas.height = size;
+                    var tmpCtx = tmpCanvas.getContext('2d');
+                    tmpCtx.drawImage(img, 0, 0, size, size);
+
+                    // Show on modal canvas at 512x512
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.drawImage(tmpCanvas, 0, 0, 512, 512);
+
+                    // Export PNG at actual reduced size
+                    tmpCanvas.toBlob(function(blob) {
+                        if (!blob) return;
+                        var reader = new FileReader();
+                        reader.onload = function() {
+                            processedBufferModal = new Uint8Array(reader.result);
+                            var kb = (processedBufferModal.length / 1024).toFixed(1);
+                            if (processedBufferModal.length > 102400 && attempt < sizes.length - 1) {
+                                attempt++;
+                                $('#legendStatusModal').text("Compressing... " + kb + "KB → trying " + sizes[attempt] + "px").css('color', '#ffd740');
+                                trySize();
+                            } else if (processedBufferModal.length > 102400) {
+                                $('#legendStatusModal').text("Too Big: " + kb + "KB even at " + size + "px").css('color', '#ff5252');
+                                $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
+                            } else {
+                                $('#legendStatusModal').text("PNG Ready: " + kb + "KB (" + size + "x" + size + ")").css('color', '#00e676');
+                                $('#legendSaveBtnModal').prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                            }
+                        };
+                        reader.readAsArrayBuffer(blob);
+                    }, 'image/png');
+                }
+                trySize();
             };
             img.onerror = function() {
                 $('#legendStatusModal').text("Error loading image").css('color', '#ff5252');
