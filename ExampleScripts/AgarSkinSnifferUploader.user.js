@@ -85,98 +85,72 @@
         return str;
     }
 
-    function refer(master, slave, prop) {
-        Object.defineProperty(master, prop, {
-            get: function () { return slave[prop]; },
-            set: function (val) { slave[prop] = val; },
-            enumerable: true,
-            configurable: true
-        });
-    }
-
-    // WebSocket proxy
+    // WebSocket proxy — patch send() on each new instance
+    // We override the constructor to return a real WebSocket with send() hooked.
+    var _origWS = window.WebSocket;
     window.WebSocket = function (url, protocols) {
-        if (protocols === undefined) protocols = [];
-        var ws = new _WebSocket(url, protocols);
+        var ws;
+        if (protocols !== undefined) {
+            ws = new _origWS(url, protocols);
+        } else {
+            ws = new _origWS(url);
+        }
 
-        refer(this, ws, 'binaryType');
-        refer(this, ws, 'bufferedAmount');
-        refer(this, ws, 'extensions');
-        refer(this, ws, 'protocol');
-        refer(this, ws, 'readyState');
-        refer(this, ws, 'url');
+        // Patch send to intercept outgoing packets
+        var _origSend = ws.send.bind(ws);
+        ws.send = function (data) {
+            try {
+                var buf = new Uint8Array(data);
+                window._snifferBufferCount++;
 
-        var self = this;
-
-        this.send = function (data) {
-            var buf = new Uint8Array(data);
-            window._snifferBufferCount++;
-
-            if (buf[0] === 255) {
-                window.key255 = buf;
-                logToPanel('🔑 Client key sent (op 255)', 'key');
-            } else if (buf[0] === 254) {
-                logToPanel('📡 Protocol version: ' + buf[1], 'info');
-            } else {
-                // Decrypt a copy for logging (don't mutate original)
-                var decrypted = new Uint8Array(buf);
-                try {
-                    // Save/restore encryption key so we don't desync
-                    var savedKey = window.encryptionKey;
-                    decrypted = window.decryptPacket(decrypted);
-                    // Key already rotated by decryptPacket
-                } catch (e) { }
-
-                // Check if this is a skin upload (contains PNG)
-                var pngOffset = containsPNG(decrypted);
-                if (pngOffset !== -1) {
-                    window.SAVED_IMAGE = new Uint8Array(decrypted);
-                    window.SAVED_FOOTER = extractFooter(decrypted);
-                    logToPanel('🎨 SKIN UPLOAD DETECTED! (' + decrypted.length + ' bytes, PNG at offset ' + pngOffset + ')', 'skin');
-                    logToPanel('📋 Header bytes: [' + formatBytes(decrypted, 30) + ']', 'skin');
-                    if (window.SAVED_FOOTER && window.SAVED_FOOTER.length > 0) {
-                        logToPanel('📋 Footer (' + window.SAVED_FOOTER.length + ' bytes): [' + formatBytes(window.SAVED_FOOTER, 40) + ']', 'skin');
+                if (buf[0] === 255) {
+                    window.key255 = buf;
+                    logToPanel('🔑 Client key sent (op 255)', 'key');
+                } else if (buf[0] === 254) {
+                    logToPanel('📡 Protocol version: ' + buf[1], 'info');
+                } else if (buf.length > 3) {
+                    // Log raw bytes (don't decrypt — key sync is fragile)
+                    var pngOffset = containsPNG(buf);
+                    if (pngOffset !== -1) {
+                        window.SAVED_IMAGE = new Uint8Array(buf);
+                        window.SAVED_FOOTER = extractFooter(buf);
+                        logToPanel('🎨 SKIN UPLOAD DETECTED! (' + buf.length + ' bytes, PNG at offset ' + pngOffset + ')', 'skin');
+                        logToPanel('📋 Header bytes: [' + formatBytes(buf, 30) + ']', 'skin');
+                        if (window.SAVED_FOOTER && window.SAVED_FOOTER.length > 0) {
+                            logToPanel('📋 Footer (' + window.SAVED_FOOTER.length + ' bytes): [' + formatBytes(window.SAVED_FOOTER, 40) + ']', 'skin');
+                        }
+                        console.log('%c[SKIN SNIFFER] Full skin upload packet:', 'color: #00ff00; font-weight: bold;');
+                        console.log('Raw bytes:', Array.from(buf).join(', '));
+                        console.log('Header (before PNG):', Array.from(buf.slice(0, pngOffset)).join(', '));
+                        if (window.SAVED_FOOTER) {
+                            console.log('Footer (after IEND):', Array.from(window.SAVED_FOOTER).join(', '));
+                        }
+                    } else {
+                        logToPanel('#' + window._snifferBufferCount + ' SEND (' + buf.length + 'B): [' + formatBytes(buf, 20) + ']', 'send');
                     }
-                    // Log full packet to console for copy-paste
-                    console.log('%c[SKIN SNIFFER] Full skin upload packet:', 'color: #00ff00; font-weight: bold;');
-                    console.log('Bytes:', Array.from(decrypted).join(', '));
-                    console.log('Header (before PNG):', Array.from(decrypted.slice(0, pngOffset)).join(', '));
-                    if (window.SAVED_FOOTER) {
-                        console.log('Footer (after IEND):', Array.from(window.SAVED_FOOTER).join(', '));
-                    }
-                } else if (decrypted.length > 3) {
-                    logToPanel('#' + window._snifferBufferCount + ' SEND (' + decrypted.length + 'B): [' + formatBytes(decrypted, 20) + ']', 'send');
                 }
+            } catch (e) {
+                console.warn('[Sniffer] send hook error:', e);
             }
-
-            return ws.send.call(ws, data);
+            return _origSend(data);
         };
 
-        this.close = function () {
-            return ws.close.call(ws);
-        };
-
-        this.onopen = function (event) { };
-        this.onclose = function (event) { };
-        this.onerror = function (event) { };
-        this.onmessage = function (event) { };
-
-        ws.onopen = function (event) {
-            logToPanel('🟢 Connected: ' + url.substring(0, 50), 'info');
-            if (self.onopen) return self.onopen.call(ws, event);
-        };
-        ws.onmessage = function (event) {
-            if (self.onmessage) return self.onmessage.call(ws, event);
-        };
-        ws.onclose = function (event) {
+        // Log connection
+        ws.addEventListener('open', function () {
+            logToPanel('🟢 Connected: ' + url.substring(0, 60), 'info');
+        });
+        ws.addEventListener('close', function () {
             logToPanel('🔴 Disconnected', 'info');
-            if (self.onclose) return self.onclose.call(ws, event);
-        };
-        ws.onerror = function (event) {
-            if (self.onerror) return self.onerror.call(ws, event);
-        };
+        });
+
+        return ws;
     };
-    window.WebSocket.prototype = _WebSocket.prototype;
+    // Preserve static properties and prototype so instanceof checks work
+    window.WebSocket.prototype = _origWS.prototype;
+    window.WebSocket.CONNECTING = _origWS.CONNECTING;
+    window.WebSocket.OPEN = _origWS.OPEN;
+    window.WebSocket.CLOSING = _origWS.CLOSING;
+    window.WebSocket.CLOSED = _origWS.CLOSED;
 
     /* ══════════════════════════════════════════════════════════
      *  PART 2: MAKE CUSTOM SKINS CLICKABLE
