@@ -38,9 +38,15 @@ function SpecialDeals() {
     // Remove any existing modal + backdrop first (prevents duplicates from re-loading the script)
     $('#specialShopModal').remove();
 
-    if (window.agarioEncodedUID != null) {
+    // Auto-restore encoded UID from memory/localStorage
+    if (!window.agarioEncodedUID) {
+        window.agarioEncodedUID = localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID") || "";
+    }
+    if (window.agarioEncodedUID) {
+        localStorage.setItem("agarioEncodedUID", window.agarioEncodedUID);
+    }
 
-        // --- Inject skin shop CSS ---
+    // --- Inject skin shop CSS ---
         if (!document.getElementById('skinShopStyles')) {
             var styleEl = document.createElement('style');
             styleEl.id = 'skinShopStyles';
@@ -355,9 +361,6 @@ function SpecialDeals() {
                 $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped1 + '")');
             }, 500);
         });
-    } else {
-        toastr["warning"]('<b>[SERVER]: </b>Please play the game before you can use that feature');
-    }
 }
 
 //EU OR USD
