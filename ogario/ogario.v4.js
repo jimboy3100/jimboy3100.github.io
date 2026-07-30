@@ -10940,9 +10940,12 @@ function thelegendmodproject() {
             // 3. IMAGE PROCESSING LOGIC
             const processAndFormat = (src) => {
                 const img = new Image();
-                img.crossOrigin = "Anonymous";
+                if (typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'))) {
+                    img.crossOrigin = "Anonymous";
+                }
                 img.onload = () => {
                     const canvas = document.getElementById("legendCanvas");
+                    if (!canvas) return;
                     const ctx = canvas.getContext("2d");
 
                     // FORCE 512x512 PNG
@@ -10950,6 +10953,7 @@ function thelegendmodproject() {
                     ctx.drawImage(img, 0, 0, 512, 512);
 
                     canvas.toBlob((blob) => {
+                        if (!blob) return;
                         const reader = new FileReader();
                         reader.onload = () => {
                             processedBuffer = new Uint8Array(reader.result);
@@ -10966,6 +10970,9 @@ function thelegendmodproject() {
                         reader.readAsArrayBuffer(blob);
                     }, 'image/png');
                 };
+                img.onerror = () => {
+                    status.text("Error loading image").css('color', 'red');
+                };
                 img.src = src;
             };
 
@@ -10978,12 +10985,18 @@ function thelegendmodproject() {
                 }
             });
 
-            $('#legendUploadInput').on('change', (e) => {
-                const file = e.target.files[0];
-                if (file) processAndFormat(URL.createObjectURL(file));
+            $('#legendUploadInput').off('change').on('change', (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        processAndFormat(evt.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
 
-            $('.quick-custom-skin').on('click', (e) => {
+            $('.quick-custom-skin').off('click').on('click', (e) => {
                 e.preventDefault();
                 panel.fadeIn(200);
                 const currentUrl = $('#skin').val();

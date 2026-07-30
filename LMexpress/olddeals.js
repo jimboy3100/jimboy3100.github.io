@@ -104,7 +104,7 @@ function SpecialDeals() {
             // Tab bar
             '<div class="shop-tabs">' +
             '<div class="shop-tab active" data-tab="deals"><i class="fa fa-briefcase"></i> Deals</div>' +
-            '<div class="shop-tab" data-tab="skins"><i class="fa fa-paint-brush"></i> Skins</div>' +
+            '<div class="shop-tab" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
             '</div>' +
 
             // === Deals tab (original content) ===
