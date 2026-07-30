@@ -66,7 +66,11 @@ function SpecialDeals() {
             styleEl.id = 'skinShopStyles';
             styleEl.textContent = [
                 '#specialShopModal .modal-content { background: #1a1d24 !important; color: #eee !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; }',
-                '#specialShopModal .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; }',
+                '#specialShopModal .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; position: relative; }',
+                '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: #fff !important; font-size: 22px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
+                '#CloseSpecialDeals:hover { opacity: 1; color: #ff5252 !important; transform: scale(1.15); }',
+                '#FAQSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: #4fc3f7 !important; font-size: 18px; line-height: 1; margin-right: 6px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
+                '#FAQSpecialDeals:hover { opacity: 1; color: #81d4fa !important; transform: scale(1.15); }',
                 '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid #333; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
                 '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: #90a4ae !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
                 '#specialShopModal .shop-tab:hover { color: #4fc3f7 !important; background: rgba(79,195,247,0.12); }',
@@ -145,8 +149,8 @@ function SpecialDeals() {
 
             // Header
             '<div id="CloseSpecialDeals2" class="modal-header">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
-            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
@@ -585,14 +589,18 @@ function SpecialDeals() {
                 //populateSD();
             //}, 1500);
         });
-        $("#CloseSpecialDeals").click(function() {
+        $("#CloseSpecialDeals").off('click').on('click', function(e) {
+            if (e) e.stopPropagation();
             if (window._shopLoginCheckInterval) {
                 clearInterval(window._shopLoginCheckInterval);
                 window._shopLoginCheckInterval = null;
             }
             $("#specialShopModal").remove();
+            $(".modal-backdrop").remove();
+            $("body").removeClass("modal-open");
         });
-        $("#FAQSpecialDeals").click(function() {
+        $("#FAQSpecialDeals").off('click').on('click', function(e) {
+            if (e) e.stopPropagation();
             window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
