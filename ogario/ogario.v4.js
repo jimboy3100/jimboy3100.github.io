@@ -9323,6 +9323,15 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
+            if (!value || !value.buffer) return;
+            var opcode = new DataView(value.buffer).getUint8(0);
+            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
+            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
+                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
+                    window.ogarioWS.send(value.buffer);
+                }
+                return;
+            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
