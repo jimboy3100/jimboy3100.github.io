@@ -6399,6 +6399,12 @@ function ytFrame() {
 
 
 function BeforeSpecialDeals() {
+    if ($('#specialShopModal').length) {
+        /* Script already loaded — just show the existing modal */
+        $('#specialShopModal').modal('show');
+        if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
+        return;
+    }
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/olddeals.js";

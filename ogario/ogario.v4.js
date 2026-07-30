@@ -15571,13 +15571,19 @@ function thelegendmodproject() {
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
                     }
                     var u = r.uncompressedData.loginResponseField;
+                    /* Preserve previous coins/dna/trophy across re-login to prevent
+                     * the UI from flashing to 0 between reset and updateWalletInfo */
+                    var prevCoins = (this.user && this.user.coins) || 0;
+                    var prevDna = (this.user && this.user.dna) || 0;
+                    var prevTrophy = (this.user && this.user.trophy) || 0;
+                    var prevSkins = (this.user && this.user.skins) || {};
                     this.user = {
-                        coins: 0,
-                        dna: 0,
-                        trophy: 0,
+                        coins: prevCoins,
+                        dna: prevDna,
+                        trophy: prevTrophy,
                         boosts: {},
                         rushBoosts: {},
-                        skins: {},
+                        skins: prevSkins,
                         skinPieces: {},
                         potions: {},
                         potionsStatus: {},

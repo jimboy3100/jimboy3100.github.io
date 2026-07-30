@@ -35,6 +35,12 @@ AgarVersionDestinations();
 
 function SpecialDeals() {
 
+    // Clear any leaked interval from a previous SpecialDeals() run
+    if (window._shopLoginCheckInterval) {
+        clearInterval(window._shopLoginCheckInterval);
+        window._shopLoginCheckInterval = null;
+    }
+
     // Remove any existing modal + backdrop first (prevents duplicates from re-loading the script)
     $('#specialShopModal').remove();
 
@@ -308,10 +314,14 @@ function SpecialDeals() {
 
         // Check login state immediately and every 3 seconds
         updateShopLoginState();
-        var loginCheckInterval = setInterval(updateShopLoginState, 3000);
+        if (window._shopLoginCheckInterval) clearInterval(window._shopLoginCheckInterval);
+        window._shopLoginCheckInterval = setInterval(updateShopLoginState, 3000);
         // Clean up when modal closes (bootstrap event)
         $('#specialShopModal').on('hidden.bs.modal', function() {
-            clearInterval(loginCheckInterval);
+            if (window._shopLoginCheckInterval) {
+                clearInterval(window._shopLoginCheckInterval);
+                window._shopLoginCheckInterval = null;
+            }
         });
 
         // --- Embedded Custom Skin Uploader Handlers ---
