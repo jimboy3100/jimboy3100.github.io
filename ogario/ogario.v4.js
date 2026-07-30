@@ -9323,15 +9323,6 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
-            if (!value || !value.buffer) return;
-            var opcode = new DataView(value.buffer).getUint8(0);
-            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
-            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
-                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
-                    window.ogarioWS.send(value.buffer);
-                }
-                return;
-            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
@@ -9488,8 +9479,8 @@ function thelegendmodproject() {
             var targetID = view.getUint16(offset, true); offset += 2;
 
             function readUTF16Len() {
-                if (offset + 1 >= view.byteLength) return '';
-                var len = view.getUint16(offset, true); offset += 2;
+                if (offset >= view.byteLength) return '';
+                var len = view.getUint8(offset++);
                 var str = '';
                 for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
                     str += String.fromCharCode(view.getUint16(offset, true));
