@@ -1058,6 +1058,51 @@ function findSkinInConfig(productId) {
 }
 window.findSkinInConfig = findSkinInConfig;
 
+/**
+ * Look up the price for a skin from the GameConfiguration.
+ * The pricing chain is:
+ *   "Shop - Skins" → find entry by productId → get referenceValue (= purchaseId)
+ *   "Wallet - Soft Purchases" → find entry by purchaseId → { currencyAmount, currencyProductId }
+ * Returns { amount: number, currency: 'coin'|'dna' } or null if not found.
+ */
+function getSkinPrice(productId) {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+
+    // Build the lookup caches on first call
+    if (!window._skinPriceCache) {
+        window._skinPriceCache = {};
+
+        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"];
+        var softPurchases = window.GameConfiguration.gameConfig["Wallet - Soft Purchases"];
+
+        if (!shopSkins || !softPurchases) return null;
+
+        // Index soft purchases by purchaseId
+        var purchaseMap = {};
+        for (var p = 0; p < softPurchases.length; p++) {
+            var sp = softPurchases[p];
+            if (sp.purchaseId) purchaseMap[sp.purchaseId] = sp;
+        }
+
+        // Map skin productId → price info
+        for (var s = 0; s < shopSkins.length; s++) {
+            var shopSkin = shopSkins[s];
+            var pid = shopSkin.productId;
+            var refVal = shopSkin.referenceValue;
+            if (pid && refVal && purchaseMap[refVal]) {
+                var purchase = purchaseMap[refVal];
+                window._skinPriceCache[pid] = {
+                    amount: purchase.currencyAmount || 0,
+                    currency: (purchase.currencyProductId === 'dna') ? 'dna' : 'coin'
+                };
+            }
+        }
+    }
+
+    return window._skinPriceCache[productId] || null;
+}
+window.getSkinPrice = getSkinPrice;
+
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
@@ -1101,9 +1146,19 @@ function renderSkinPage() {
             var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
             var ownedBadgeHtml = (isOwned && !isEquipped) ? '<div class="owned-badge">&#x2B50; Owned</div>' : '';
 
-            var actionBtnHtml = isOwned
-                ? '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>'
-                : '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy</button>';
+            var actionBtnHtml;
+            if (isOwned) {
+                actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
+            } else {
+                // Look up price for unowned skins
+                var priceInfo = getSkinPrice(skin.productId);
+                var priceLabel = '';
+                if (priceInfo && priceInfo.amount > 0) {
+                    var icon = priceInfo.currency === 'dna' ? '🧬' : '💰';
+                    priceLabel = ' ' + icon + ' ' + priceInfo.amount;
+                }
+                actionBtnHtml = '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy' + priceLabel + '</button>';
+            }
 
             card.innerHTML = badgeHtml + ownedBadgeHtml +
                 '<div class="skin-color" style="background:' + cssColor + '"></div>' +
