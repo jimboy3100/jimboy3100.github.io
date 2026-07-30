@@ -615,7 +615,7 @@ var Premadeletter143 = "فرق"; //Teams
 var Premadeletter144 = "تجريبي"; //Experimental
 var Premadeletter145 = "حفلة"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "اللغات"; //LANGUAGES
 var Externalletter0b = "اختر لغة"; //Choose a language
 var Externalletter0c = "ستحدث التغييرات تمامًا بعد إعادة التشغيل"; //Changes will take place completely after the restart
@@ -625,7 +625,7 @@ var Externalletter3 = "الدليل اليدوي"; //MANUAL TEMPLATES
 var Externalletter4 = "اختر القالب الخاص بك"; //Choose your template
 var Externalletter5 = "أو اختيار التوسع"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "إرسال الكود إلى المطورين"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

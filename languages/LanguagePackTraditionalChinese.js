@@ -608,7 +608,7 @@ var Premadeletter143 = "小組"; //Teams
 var Premadeletter144 = "試驗"; //Experimental
 var Premadeletter145 = "黨"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "語言"; //LANGUAGES
 var Externalletter0b = "選擇一種語言"; //Choose a language
 var Externalletter0c = "重新啟動後，更改將完全發生"; //Changes will take place completely after the restart
@@ -618,7 +618,7 @@ var Externalletter3 = "手冊模板"; //MANUAL TEMPLATES
 var Externalletter4 = "選擇你的模板"; //Choose your template
 var Externalletter5 = "或者選擇一個擴展"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "向開發者發送代碼"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

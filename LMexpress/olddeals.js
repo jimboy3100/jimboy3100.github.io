@@ -6,7 +6,7 @@
 /* you will need this
 	var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackEnglish.js";
+        s.src = "https://jimboy3100.github.io/languages/LanguagePackEnglish.js";
         $("body").append(s);
 
 

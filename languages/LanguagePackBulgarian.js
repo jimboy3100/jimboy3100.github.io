@@ -606,7 +606,7 @@ var Premadeletter143 = "Отбори"; //Teams
 var Premadeletter144 = "Eкспериментал"; //Experimental
 var Premadeletter145 = "Парти"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "ЕЗИЦИ"; //LANGUAGES
 var Externalletter0b = "Изберете език"; //Choose a language
 var Externalletter0c = "Промените ще се извършват напълно след рестартирането"; //Changes will take place completely after the restart
@@ -616,7 +616,7 @@ var Externalletter3 = "РЪЧНИ ТАБЕЛИ"; //MANUAL TEMPLATES
 var Externalletter4 = "Изберете шаблона си"; //Choose your template
 var Externalletter5 = "Или изберете разширение"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "Изпратете кода на разработчиците"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

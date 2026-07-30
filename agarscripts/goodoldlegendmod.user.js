@@ -99,19 +99,19 @@ else if (location.host == "agar.io" && location.pathname == "/") {
     document.documentElement.innerHTML = "";
 
 // Dependencies
-var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
-var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
-var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
-var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
-var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
+var cpickerCSS = '<link href="https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
+var toastrCSS = '<link href="https://jimboy3100.github.io/lib/toastr.min.css" rel="stylesheet"></link>';
+var toastrJS = '<script src="https://jimboy3100.github.io/lib/toastr.min.js"></script>';
+var rangeCSS = '<link href="https://jimboy3100.github.io/lib/rangeslider.css" rel="stylesheet"></link>';
+var perfectCSS = '<link href="https://jimboy3100.github.io/lib/perfect-scrollbar.min.css" rel="stylesheet"></link>';
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
 var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" rel="stylesheet"></link>';
-var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
-var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
-var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
-var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
-var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
-var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
+var keyJS = '<script src="https://jimboy3100.github.io/extras/key-event.js"></script>';
+var cpickerJS = '<script src="https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.js"></script>';
+var toastrJS = '<script src="https://jimboy3100.github.io/lib/toastr.min.js"></script>';
+var switchJS = '<script src="https://jimboy3100.github.io/lib/switchery.min.js"></script>';
+var rangeJS = '<script src="https://jimboy3100.github.io/lib/rangeslider.min.js"></script>';
+var perfectJS = '<script src="https://jimboy3100.github.io/lib/perfect-scrollbar.jquery.min.js"></script>';
 var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
 var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
 var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';

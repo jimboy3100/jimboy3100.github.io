@@ -621,7 +621,7 @@ var Premadeletter143 = "Takımlar"; //Teams
 var Premadeletter144 = "Deneysel"; //Experimental
 var Premadeletter145 = "Parti Modu"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "DİLLER"; //LANGUAGES
 var Externalletter0b = "Bir dil seçiniz"; //Choose a language
 var Externalletter0c = "Değişiklikler yeniden başlattıktan sonra tamamen gerçekleşecek"; //Changes will take place completely after the restart
@@ -632,7 +632,7 @@ var Externalletter3 = "ÖZEL ŞABLONLAR"; //MANUAL TEMPLATES
 var Externalletter4 = "Kendi şablonunuzu seçin"; //Choose your template
 var Externalletter5 = "Veya bir genişleme seçin"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "KODLARI GELİŞTİRİCİYE YOLLAYIN"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

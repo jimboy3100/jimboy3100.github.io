@@ -1,25 +1,25 @@
 const CACHE_NAME = 'lm-static-v1';
 const ASSETS_TO_CACHE = [
-    'https://jimboy3100.github.io/jquery.min.js',
-    'https://jimboy3100.github.io/protobuf.min.js',
+    'https://jimboy3100.github.io/lib/jquery.min.js',
+    'https://jimboy3100.github.io/lib/protobuf.min.js',
     'https://code.jquery.com/ui/1.12.1/jquery-ui.js',
-    'https://jimboy3100.github.io/bootstrap.min.js',
-    'https://jimboy3100.github.io/bootstrap-colorpicker.min.js',
-    'https://jimboy3100.github.io/toastr.min.js',
-    'https://jimboy3100.github.io/switchery.min.js',
-    'https://jimboy3100.github.io/rangeslider.min.js',
-    'https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js',
-    'https://jimboy3100.github.io/Youtubeiframe_api.js',
-    'https://jimboy3100.github.io/key-event.js',
-    'https://jimboy3100.github.io/foggy.js',
-    'https://jimboy3100.github.io/LanguagePackEnglish.js',
+    'https://jimboy3100.github.io/lib/bootstrap.min.js',
+    'https://jimboy3100.github.io/lib/bootstrap-colorpicker.min.js',
+    'https://jimboy3100.github.io/lib/toastr.min.js',
+    'https://jimboy3100.github.io/lib/switchery.min.js',
+    'https://jimboy3100.github.io/lib/rangeslider.min.js',
+    'https://jimboy3100.github.io/lib/perfect-scrollbar.jquery.min.js',
+    'https://jimboy3100.github.io/lib/Youtubeiframe_api.js',
+    'https://jimboy3100.github.io/extras/key-event.js',
+    'https://jimboy3100.github.io/extras/foggy.js',
+    'https://jimboy3100.github.io/languages/LanguagePackEnglish.js',
     'https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js',
     'https://jimboy3100.github.io/LMexpress/i18n.js',
     'https://jimboy3100.github.io/LMexpress/proto.decoder.js',
     'https://jimboy3100.github.io/ogario/ogario.v4.master.regionobj.js',
     'https://jimboy3100.github.io/ogario/ogario.v4.master.js',
-    'https://jimboy3100.github.io/TweenMax.min.js',
-    'https://jimboy3100.github.io/context-menu.min.js'
+    'https://jimboy3100.github.io/lib/TweenMax.min.js',
+    'https://jimboy3100.github.io/lib/context-menu.min.js'
 ];
 
 self.addEventListener('install', (event) => {

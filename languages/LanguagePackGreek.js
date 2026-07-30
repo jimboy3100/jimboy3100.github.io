@@ -608,7 +608,7 @@ var Premadeletter143 = "Ομάδες"; //Teams
 var Premadeletter144 = "Πειραματικό"; //Experimental
 var Premadeletter145 = "Πάρτι"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "ΓΛΩΣΣΕΣ"; //LANGUAGES
 var Externalletter0b = "Επιλέξτε μια γλώσσα"; //Choose a language
 var Externalletter0c = "Οι αλλαγές θα πραγματοποιηθούν πλήρως μετά την επανεκκίνηση"; //Changes will take place completely after the restart
@@ -618,7 +618,7 @@ var Externalletter3 = "ΧΕΙΡΟΚΙΝΗΤΑ ΥΠΟΔΕΙΓΜΑΤΑ"; //MANUAL 
 var Externalletter4 = "Επιλέξτε το υπόδειγμα σας"; //Choose your template
 var Externalletter5 = "Ή επιλέξτε επέκταση"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "ΑΠΟΣΤΟΛΤΕ ΚΩΔΙΚΑ ΣΤΟΥΣ ΠΡΟΓΡΑΜΜΑΤΙΣΤΕΣ"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

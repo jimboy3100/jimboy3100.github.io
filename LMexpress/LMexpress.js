@@ -3908,7 +3908,7 @@ function setdiscwebhook1() {
         localStorage.setItem("discwebhook1", discwebhook1);
         var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "https://www.legendmod.ml/DiscordSIP.user.js";
+        s.src = "https://www.legendmod.ml/agarscripts/DiscordSIP.user.js";
         $("body").append(s);
     } else {
         if (containsrealwebhook == "") {
@@ -3937,14 +3937,14 @@ function setdiscwebhook2() {
 function openbleedmod() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/BleedingMod.js";
+    s.src = "https://www.legendmod.ml/extras/BleedingMod.js";
     $("body").append(s);
 }
 
 function openrotatingmod() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/rotating500images.js";
+    s.src = "https://jimboy3100.github.io/extras/rotating500images.js";
     $("body").append(s);
 }
 
@@ -3958,40 +3958,40 @@ function languagemodfun() {
 function changeModLanguage() {
     localStorage.setItem("languagemod", $("#legendlanguages").val());
     if ($("#legendlanguages").val() == 1) {
-        languageinjector("https://www.legendmod.ml/LanguagePackEnglish.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackEnglish.js");
     }
     else if ($("#legendlanguages").val() == 2) {
-        languageinjector("https://www.legendmod.ml/LanguagePackGreek.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackGreek.js");
     }
     else if ($("#legendlanguages").val() == 3) {
-        languageinjector("https://www.legendmod.ml/LanguagePackSpanish.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackSpanish.js");
     }
     else if ($("#legendlanguages").val() == 4) {
-        languageinjector("https://www.legendmod.ml/LanguagePackBulgarian.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackBulgarian.js");
     }
     else if ($("#legendlanguages").val() == 5) {
-        languageinjector("https://www.legendmod.ml/LanguagePackFrench.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackFrench.js");
     }
     else if ($("#legendlanguages").val() == 6) {
-        languageinjector("https://www.legendmod.ml/LanguagePackArabic.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackArabic.js");
     }
     else if ($("#legendlanguages").val() == 7) {
-        languageinjector("https://www.legendmod.ml/LanguagePackTraditionalChinese.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackTraditionalChinese.js");
     }
     else if ($("#legendlanguages").val() == 8) {
-        languageinjector("https://www.legendmod.ml/LanguagePackRussian.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackRussian.js");
     }
     else if ($("#legendlanguages").val() == 9) {
-        languageinjector("https://www.legendmod.ml/LanguagePackGerman.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackGerman.js");
     }
     else if ($("#legendlanguages").val() == 10) {
-        languageinjector("https://www.legendmod.ml/LanguagePackTurkish.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackTurkish.js");
     }
     else if ($("#legendlanguages").val() == 11) {
-        languageinjector("https://www.legendmod.ml/LanguagePackPolish.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackPolish.js");
     }
     else if ($("#legendlanguages").val() == 12) {
-        languageinjector("https://www.legendmod.ml/LanguagePackDutch.js");
+        languageinjector("https://www.legendmod.ml/languages/LanguagePackDutch.js");
     }
 }
 
@@ -4022,7 +4022,7 @@ function injector2(url1, url2) {
 }
 
 function languageinjector(url) {
-    injector2(url, "https://www.legendmod.ml/LanguagePackHandler.js");
+    injector2(url, "https://www.legendmod.ml/languages/LanguagePackHandler.js");
 }
 function newsubmit() {
     if (legendmod.play == true) {
@@ -4230,7 +4230,7 @@ function triggerLMbtns() {
 function opendyinglight() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/dyinglight.js";
+    s.src = "https://www.legendmod.ml/extras/dyinglight.js";
     $("body").append(s);
 
 }
@@ -5264,7 +5264,7 @@ function initializeLM(modVersion) {
         '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
         '</div></div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/ LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/languages/LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
         '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
         '<option value="1" data-itr="" selected>English</option>' +
         '<option value="6" data-itr="">Arabic</option>' +

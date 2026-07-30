@@ -597,7 +597,7 @@ var Premadeletter143 = "Equipos"; //Teams
 var Premadeletter144 = "Experimental"; //Experimental
 var Premadeletter145 = "Partido"; //Party Mode
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
+//These are for file: https://jimboy3100.github.io/extras/legendhelper.js
 var Externalletter0a = "IDIOMAS"; //LANGUAGES
 var Externalletter0b = "Elija un idioma"; //Choose a language
 var Externalletter0c = "Los cambios tendrán lugar completamente después del reinicio"; //Changes will take place completely after the restart
@@ -607,7 +607,7 @@ var Externalletter3 = "PLANTILLAS MANUALES"; //MANUAL TEMPLATES
 var Externalletter4 = "Elige tu plantilla"; //Choose your template
 var Externalletter5 = "O elige una expansión"; //Or choose an expansion
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
+//These are for file: https://jimboy3100.github.io/extras/legendformIframe.js
 var Externalletter5a = "ENVIAR CÓDIGO A LOS DESARROLLADORES"; //SEND CODE TO DEVELOPERS
 
 //These are for file: https://jimboy3100.github.io/legend.sniff3.js

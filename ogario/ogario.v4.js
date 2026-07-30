@@ -23337,7 +23337,7 @@ function preUserLeaguesInfoRequest() {
 function openhelper() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/legendhelper.js";
+    s.src = "https://www.legendmod.ml/extras/legendhelper.js";
     $("body").append(s);
 }
 
@@ -23351,7 +23351,7 @@ function opennamechars() {
 function legendformIframe() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/legendformIframe.js";
+    s.src = "https://www.legendmod.ml/extras/legendformIframe.js";
     $("body").append(s);
 }
 
