@@ -94,10 +94,11 @@ function SpecialDeals() {
                 '.skin-card.owned-card { border-color: rgba(255, 215, 64, 0.4); background: rgba(255, 215, 64, 0.06); }',
                 '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: #00e676; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
                 '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: #ffd740; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
-                '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; margin: 2px auto; }',
+                '.skin-card .skin-cell-wrap { position: relative; width: 64px; height: 64px; margin: 2px auto; }',
+                '.skin-card .skin-color { width: 64px; height: 64px; border-radius: 50%; position: absolute; top: 0; left: 0; border: 2px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }',
+                '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; position: absolute; top: 2px; left: 2px; z-index: 1; }',
                 '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
                 '.skin-card:hover .skin-name { color: #fff; }',
-                '.skin-card .skin-color { width: 10px; height: 10px; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 1px solid rgba(255,255,255,0.3); }',
                 '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
                 '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
                 '.skin-btn-equip { flex: 1; background: #4fc3f7; color: #000; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
@@ -1134,6 +1135,13 @@ function renderSkinPage() {
             var b = parseInt(colorHex.substring(6, 8), 16);
             var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 
+            // Resolve image URL: spine skins use SpineSkinMap, others use image directly
+            var imgFile = skin.image;
+            if (skin.image === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
+                imgFile = window.SpineSkinMap[skin.productId] + '.png';
+            }
+            var imgUrl = (imgFile && imgFile !== 'uses_spine') ? (cdnBase + imgFile) : '';
+
             var isEquipped = (currentEquippedId === skin.productId);
             var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);
 
@@ -1141,14 +1149,14 @@ function renderSkinPage() {
             card.className = 'skin-card' + (isEquipped ? ' equipped' : (isOwned ? ' owned-card' : ''));
             card.setAttribute('data-product-id', skin.productId);
             card.setAttribute('data-gameplay-id', skin.gameplayId);
-            card.setAttribute('data-image', skin.image);
+            card.setAttribute('data-image', imgFile);
 
             var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
             var ownedBadgeHtml = (isOwned && !isEquipped) ? '<div class="owned-badge">&#x2B50; Owned</div>' : '';
 
             var actionBtnHtml;
             if (isOwned) {
-                actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
+                actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + imgFile + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
             } else {
                 // Look up price for unowned skins
                 var priceInfo = getSkinPrice(skin.productId);
@@ -1160,9 +1168,16 @@ function renderSkinPage() {
                 actionBtnHtml = '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy' + priceLabel + '</button>';
             }
 
+            // Build image HTML with cell color circle behind it (like agar.io)
+            var imgHtml = imgUrl
+                ? '<img src="' + imgUrl + '" alt="' + displayName + '" loading="lazy" onerror="this.style.opacity=\'0\';">'
+                : '';
+
             card.innerHTML = badgeHtml + ownedBadgeHtml +
-                '<div class="skin-color" style="background:' + cssColor + '"></div>' +
-                '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+                '<div class="skin-cell-wrap">' +
+                    '<div class="skin-color" style="background:' + cssColor + '"></div>' +
+                    imgHtml +
+                '</div>' +
                 '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
                 '<div class="skin-card-actions">' +
                 actionBtnHtml +
