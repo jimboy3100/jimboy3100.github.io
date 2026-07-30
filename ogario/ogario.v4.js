@@ -549,19 +549,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
     };
 
-    if (!window.agarioUID) window.agarioUID = localStorage.getItem("agarioUID") || null;
-    if (!window.agarioEncodedUID) window.agarioEncodedUID = localStorage.getItem("agarioEncodedUID") || null;
-
-    /* Reset ALL login state on logout so provider switching works.
-     * BUT skip during game-socket reconnect — only user-initiated logout
-     * should clear auth (window._lwReconnecting is set by onDisconnect). */
+    /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
-        if (window._lwReconnecting) {
-            console.log('[LW AUTH] Logout called during reconnect — skipping auth reset');
-            if (_origLogout) _origLogout.apply(this, arguments);
-            return;
-        }
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
         /* Reset UI */
@@ -4961,8 +4951,7 @@ function thelegendmodproject() {
         version: 'v1',
         privateMode: false,
         protocolMode: true,
-        publicIP: 'wss://chat.delt.io/ws?m=2',
-        comebackTimeout: 500,
+        publicIP: 'wss://wss.ogario.eu:3443',
         privateIP: null,
         updateInterval: 1000,
         updateTick: 0,
@@ -6843,7 +6832,7 @@ function thelegendmodproject() {
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-images" title="Upload Custom Skin (90 DNA)" data-toggle="tab-tooltip" data-placement="right"></a>' +
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy" style="display: none;"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
@@ -7247,10 +7236,10 @@ function thelegendmodproject() {
                 }
             });
             $(document).on(`click`, `.vanilla-skin-preview`, () => {
-                if (typeof window.BeforeSpecialDeals === 'function') {
-                    window.BeforeSpecialDeals();
-                } else if ($("#player-skins").length) {
-                    $("#player-skins").toggle();
+                if ($("#player-skins").is(":visible")) {
+                    $("#player-skins").hide();
+                } else {
+                    $('#player-skins').show();
                 }
             });
             $(document).on(`click`, `.agario-profile-picture`, () => {
@@ -9205,9 +9194,7 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             var app = this;
             if (!this.privateMode) {
-                /* Public server: ogario handshake for /ws endpoint.
-                 * /ws serves the ogario-compat protocol (UInt32 playerID).
-                 * /delta7 requires WebSocketRTC + fingerprint (500 without it). */
+                /* Public server: send ogario handshake and wire handleMessage */
                 this.socket.onopen = () => {
                     var buf = app.createView(3);
                     buf.setUint8(0, 0);
@@ -9218,7 +9205,6 @@ function thelegendmodproject() {
                     buf.setUint16(1, 20, true);
                     app.sendBuffer(buf);
 
-                    app.comebackTimeout = 500;
                     app.sendPartyData();
                 }
                 this.socket.onmessage = function (buf) {
@@ -9267,11 +9253,10 @@ function thelegendmodproject() {
         closeSLGConnection() { },
         reconnect() {
             this.setParty();
-            this.comebackTimeout = this.comebackTimeout < 40000 ? this.comebackTimeout * 2 : 40000;
             var app = this;
             setTimeout(function () {
                 app.connect();
-            }, app.comebackTimeout);
+            }, 1000);
         },
         switchServerMode() {
             if (this.privateIP) {
@@ -9339,7 +9324,6 @@ function thelegendmodproject() {
             var opcode = message.getUint8(0);
             switch (opcode) {
                 case 0:
-                    /* /ws endpoint returns UInt32 playerID */
                     this.playerID = message.getUint32(1, true);
                     break;
                 case 1:
@@ -9370,6 +9354,9 @@ function thelegendmodproject() {
                     this.readWavePing(message);
                     break;
                 case 96:
+                    break;
+                case 25:
+                    this.readDeltaChatMessage(message);
                     break;
                 case 100:
                     this.readChatMessage(message);
@@ -9819,8 +9806,34 @@ function thelegendmodproject() {
             //
         },
         sendPlayerUpdate() {
-            /* Delta v7: player data is sent via ppv7 opcode 16 only */
-            this.sendDeltaPlayerUpdate();
+            if ((this.isSocketOpen() || window.ogarioWS) && ogario.play && this.playerID && ogario.playerColor) {
+                function encode(str) {
+                    for (let length = 0; length < str.length; length++) {
+                        view.setUint16(offset, str.charCodeAt(length), true);
+                        offset += 2;
+                    }
+                    view.setUint16(offset, 0, true);
+                    offset += 2;
+                }
+                let text = 41;
+                text += ogarcopythelb.nick.length * 2;
+                text += ogarcopythelb.skinURL.length * 2;
+                var view = this.createView(text);
+                view.setUint8(0, 20);
+                view.setUint32(1, this.playerID, true);
+                var offset = 5;
+                encode(ogarcopythelb.nick);
+                encode(ogarcopythelb.skinURL);
+                encode(ogarcopythelb.color);
+                encode(ogario.playerColor);
+                /* Route op20 to relay (not game server) when on private server */
+                if (this.privateMode && window.ogarioWS) {
+                    window.ogarioWS.send(view.buffer);
+                } else {
+                    this.sendBuffer(view);
+                }
+                this.sendDeltaPlayerUpdate();
+            }
         },
         sendPlayerPosition() {
             if (this.isSocketOpen() && (ogario.play || LM.playerCellsMulti.length) && this.playerID) {
@@ -10222,7 +10235,7 @@ function thelegendmodproject() {
             }
         },
         updateTeamPlayers() {
-            this.sendDeltaPlayerUpdate();
+            this.sendPlayerPosition();
             //this.sendSuperLegendSDATA();
             this.sendSimpleLegendSDATA(); //SEND ROTATION INFO
 
@@ -10943,12 +10956,9 @@ function thelegendmodproject() {
             // 3. IMAGE PROCESSING LOGIC
             const processAndFormat = (src) => {
                 const img = new Image();
-                if (typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'))) {
-                    img.crossOrigin = "Anonymous";
-                }
+                img.crossOrigin = "Anonymous";
                 img.onload = () => {
                     const canvas = document.getElementById("legendCanvas");
-                    if (!canvas) return;
                     const ctx = canvas.getContext("2d");
 
                     // FORCE 512x512 PNG
@@ -10956,7 +10966,6 @@ function thelegendmodproject() {
                     ctx.drawImage(img, 0, 0, 512, 512);
 
                     canvas.toBlob((blob) => {
-                        if (!blob) return;
                         const reader = new FileReader();
                         reader.onload = () => {
                             processedBuffer = new Uint8Array(reader.result);
@@ -10973,9 +10982,6 @@ function thelegendmodproject() {
                         reader.readAsArrayBuffer(blob);
                     }, 'image/png');
                 };
-                img.onerror = () => {
-                    status.text("Error loading image").css('color', 'red');
-                };
                 img.src = src;
             };
 
@@ -10988,18 +10994,12 @@ function thelegendmodproject() {
                 }
             });
 
-            $('#legendUploadInput').off('change').on('change', (e) => {
-                const file = e.target.files && e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (evt) => {
-                        processAndFormat(evt.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                }
+            $('#legendUploadInput').on('change', (e) => {
+                const file = e.target.files[0];
+                if (file) processAndFormat(URL.createObjectURL(file));
             });
 
-            $('.quick-custom-skin').off('click').on('click', (e) => {
+            $('.quick-custom-skin').on('click', (e) => {
                 e.preventDefault();
                 panel.fadeIn(200);
                 const currentUrl = $('#skin').val();
@@ -12772,9 +12772,8 @@ function thelegendmodproject() {
                 : t.includes('imsolo.pro') ? 'imsolo'
                     : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
-                            : (t.includes('delt.io') || t.includes('deltav4') || t.includes('delta')) ? 'delta'
-                                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                                    : 'private';
+                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
@@ -12885,8 +12884,8 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            if (this.serverType === 'garix' || this.serverType === 'delta' || this.serverType === 'expandingland') {
-                // Generate valid fingerprint lazily on connection
+            if (this.serverType === 'garix') {
+                // Generate fingerprint lazily on first Garix connection
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
@@ -12991,29 +12990,6 @@ function thelegendmodproject() {
                 this.sendBuffer(gView);
                 this.connectionOpened = true;
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
-            } else if (this.serverType === 'delta' || (this.ws && (this.ws.includes('delt.io') || this.ws.includes('deltav4')))) {
-                // ===== Delta Protocol Handshake: Opcode 126 (0x7E) =====
-                var dView = this.createView(5);
-                dView.setUint8(0, 126); // 0x7E - Client Protocol
-                dView.setUint32(1, 123456, true);
-                this.sendBuffer(dView);
-                this.connectionOpened = true;
-                console.log('%c[DeltaProtocol]%c Handshake: sent opcode 126 (protocol=123456)', 'color:#01d9cc', 'color:inherit');
-
-                // Start Delta 9-byte Ping Loop (Opcode 226 every 4000ms)
-                if (this.deltaPingInterval) clearInterval(this.deltaPingInterval);
-                var self = this;
-                this.deltaPingInterval = setInterval(function () {
-                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
-                        var pView = self.createView(9);
-                        pView.setUint8(0, 226);
-                        pView.setUint32(1, Math.floor(Math.random() * 100000), true);
-                        pView.setUint32(5, Date.now() >>> 0, true);
-                        self.sendBuffer(pView);
-                    } else {
-                        clearInterval(self.deltaPingInterval);
-                    }
-                }, 4000);
             } else {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
                 var view = this.createView(5);
@@ -14685,16 +14661,6 @@ function thelegendmodproject() {
                                         $("#UserProfileUUID1").val(window.agarioUID);
                                         console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
                                     }
-                                    if (window.testobjects2.split('"  ')[1]) {
-                                        window.agarioEncodedUID = window.testobjects2.split('"  ')[1].split('= ')[0] + "%3D";
-                                    }
-                                    else if (window.testobjects2.split('"\x01')[1]) { //6/8/2024 fix
-                                        //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('= ')[0] + "%3D"; 
-                                        window.agarioEncodedUID = window.testobjects2.split('"\x01')[1].split('= ')[0] + "%3D"; //3/11/2024 TEST
-                                    }
-                                    if (window.agarioEncodedUID) {
-                                        localStorage.setItem("agarioEncodedUID", window.agarioEncodedUID);
-                                    }
                                 } catch (lwErr) {
                                     console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
                                 }
@@ -15770,11 +15736,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html('&#x1F4B0; ' + this.user.coins);
+                                $("#coins").html(`💰` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html('&#x1F9EC; ' + this.user.dna);
+                                $("#dna").html(`🧬` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -15839,7 +15805,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html('&#x1F3C6; ' + this.user.trophy);
+                        $("#trophy").html(`🏅` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -17781,14 +17747,12 @@ Most cells eaten   : ${mostCellsEaten}
             var encoder = new TextEncoder();
             var data = encoder.encode(raw);
             var hashBuffer = await crypto.subtle.digest("SHA-256", data);
-            var hashArray = Array.from(new Uint8Array(hashBuffer)).slice(0, 16);
-            for (var fi = 0; fi < 16; fi += 5) {
-                hashArray[fi] = hashArray[fi + 2] ^ hashArray[fi + 3];
-            }
-            LM.garixFingerprint = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
-            console.log('[Garix/Delta] Valid fingerprint generated:', LM.garixFingerprint);
+            var hashArray = Array.from(new Uint8Array(hashBuffer));
+            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            LM.garixFingerprint = hex.slice(0, 32);
+            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
         } catch (e) {
-            console.warn('[Garix/Delta] Fingerprint generation failed:', e);
+            console.warn('[Garix] Fingerprint generation failed:', e);
         }
     };
     try {
