@@ -398,25 +398,66 @@ function populateSkins() {
 
     function applySkinFilters() {
         var query = $('#skinSearchBar').val().toLowerCase().trim();
-        var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
+        var userSkins = (window.application && window.application.user && window.application.user.skins) || {};
 
-        skinShopFiltered = skins.filter(function(s) {
-            if (s.productId === 'skin_empty') return false;
+        if (currentFilter === 'owned') {
+            var ownedList = [];
+            var seenIds = {};
 
-            if (currentFilter === 'owned') {
-                var rawId = s.productId;
-                var modId = s.productId.replace('skin_', '%');
-                var isOwned = ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId);
-                if (!isOwned) return false;
+            for (var k in userSkins) {
+                if (!userSkins.hasOwnProperty(k)) continue;
+                var item = userSkins[k];
+                var pid = item.productId || k;
+                if (seenIds[pid]) continue;
+                seenIds[pid] = true;
+
+                var imgUrl = item.url || '';
+                if (window.application && typeof window.application.getLink === 'function') {
+                    var linkRes = window.application.getLink(pid);
+                    if (linkRes && linkRes[0]) imgUrl = linkRes[0];
+                }
+
+                // Match with catalog skin if available
+                var matchedCatalog = null;
+                for (var ci = 0; ci < skins.length; ci++) {
+                    if (skins[ci].productId === pid) {
+                        matchedCatalog = skins[ci];
+                        break;
+                    }
+                }
+
+                if (matchedCatalog) {
+                    ownedList.push(matchedCatalog);
+                } else {
+                    ownedList.push({
+                        productId: pid,
+                        gameplayId: pid,
+                        image: '',
+                        url: imgUrl,
+                        isCustom: true
+                    });
+                }
             }
 
-            if (query !== '') {
-                var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
-                if (name.indexOf(query) === -1) return false;
-            }
+            skinShopFiltered = ownedList.filter(function(s) {
+                if (query !== '') {
+                    var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
+                    return name.indexOf(query) > -1;
+                }
+                return true;
+            });
+        } else {
+            skinShopFiltered = skins.filter(function(s) {
+                if (s.productId === 'skin_empty') return false;
 
-            return true;
-        });
+                if (query !== '') {
+                    var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
+                    if (name.indexOf(query) === -1) return false;
+                }
+
+                return true;
+            });
+        }
 
         skinShopPage = 0;
         $('#skinGrid').empty();
@@ -577,9 +618,11 @@ function renderSkinPage() {
         var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
         var equipBtnText = isEquipped ? 'Equipped' : 'Equip';
 
+        var imgSrc = skin.url ? skin.url : (cdnBase + skin.image);
+
         card.innerHTML = badgeHtml +
             '<div class="skin-color" style="background:' + cssColor + '"></div>' +
-            '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+            '<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
             '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
             '<div class="skin-card-actions">' +
             '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + equipBtnText + '</button>' +
