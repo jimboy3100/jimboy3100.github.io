@@ -97,14 +97,14 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; width: 580px; max-width: 95vw; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">' +
-            '<div class="modal-content" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(79, 195, 247, 0.3);">' +
+            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 560px;">' +
+            '<div class="modal-content">' +
 
             // Header
-            '<div id="CloseSpecialDeals2" class="modal-header" style="position: relative; text-align: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1);">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 15px; top: 12px; opacity: 0.8; font-size: 22px; color: #fff;"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
-            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 40px; top: 12px; opacity: 0.8; font-size: 18px; color: #4fc3f7; margin-right: 8px;"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7; margin: 0; font-size: 18px; text-align: center; width: 100%; display: block;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
+            '<div id="CloseSpecialDeals2" class="modal-header">' +
+            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
+            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
             // Tab bar (Skins active by default)
@@ -297,7 +297,13 @@ function SpecialDeals() {
             window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
-            buydeals();
+            toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + 'This is a BETA function, it may not work and you may loose your money' + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "300px");
+            $(".btn.btn-sm.btn-primary").click(function() {
+                buydeals();
+            });
         });
         $('#agario_uid_input').blur(function() {
             //if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
@@ -391,116 +397,32 @@ function populateSkins() {
     var currentFilter = 'all';
 
     function applySkinFilters() {
-        var uid = window.agarioEncodedUID || window.agarioUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID");
-        if (!uid) {
-            skinShopFiltered = [];
-            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #fff;">' +
-                '<div style="font-size: 36px; margin-bottom: 10px;">🔒</div>' +
-                '<div style="font-size: 16px; font-weight: 700; color: #ffca28; margin-bottom: 6px;">Login Required</div>' +
-                '<div style="font-size: 13px; color: #aaa;">Please log in with <b>Google</b> or <b>Facebook</b> to access Agar.io Skins & Deals.</div>' +
-                '</div>');
-            $('#skinCount').text(0);
-            $('#skinTotal').text(0);
-            $('#skinLoadMore').hide();
-            return;
-        }
+        var query = $('#skinSearchBar').val().toLowerCase().trim();
+        var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
 
-        var app = window.application || (typeof application !== 'undefined' ? application : null);
-        var userSkins = (app && app.user && app.user.skins) || {};
+        skinShopFiltered = skins.filter(function(s) {
+            if (s.productId === 'skin_empty') return false;
 
-        if (currentFilter === 'owned') {
-            var ownedList = [];
-            var seenIds = {};
-
-            // 1. Extract from application.user.skins
-            for (var k in userSkins) {
-                if (!userSkins.hasOwnProperty(k)) continue;
-                var item = userSkins[k];
-                if (!item) continue;
-                var pid = item.productId || k;
-                if (seenIds[pid]) continue;
-                seenIds[pid] = true;
-
-                var imgUrl = item.url || k;
-                if (app && typeof app.getLink === 'function') {
-                    var linkRes = app.getLink(pid);
-                    if (linkRes && linkRes[0]) imgUrl = linkRes[0];
-                }
-
-                var matchedCatalog = null;
-                for (var ci = 0; ci < skins.length; ci++) {
-                    if (skins[ci].productId === pid) {
-                        matchedCatalog = skins[ci];
-                        break;
-                    }
-                }
-
-                if (matchedCatalog) {
-                    ownedList.push({
-                        productId: matchedCatalog.productId,
-                        gameplayId: matchedCatalog.gameplayId,
-                        image: matchedCatalog.image,
-                        url: imgUrl || matchedCatalog.image,
-                        cellColor: matchedCatalog.cellColor
-                    });
-                } else {
-                    ownedList.push({
-                        productId: pid,
-                        gameplayId: pid,
-                        image: '',
-                        url: imgUrl,
-                        isCustom: true
-                    });
-                }
-            }
-
-            // 2. Include window.UserVanillaSkin if present and not seen yet
-            if (window.UserVanillaSkin) {
-                var uvUrl = window.UserVanillaSkin;
-                var uvPid = "skin_custom_" + uvUrl.split('custom_skins/').pop().replace('.png', '').replace(/\?.*/, '');
-                if (!seenIds[uvPid]) {
-                    seenIds[uvPid] = true;
-                    ownedList.push({
-                        productId: uvPid,
-                        gameplayId: uvPid,
-                        image: '',
-                        url: uvUrl,
-                        isCustom: true
-                    });
-                }
-            }
-
-            skinShopFiltered = ownedList.filter(function(s) {
-                if (query !== '') {
-                    var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
-                    return name.indexOf(query) > -1;
-                }
-                return true;
-            });
-        } else {
-            skinShopFiltered = skins.filter(function(s) {
-                if (s.productId === 'skin_empty') return false;
-
-                // Exclude skins the user already owns from All Skins
+            if (currentFilter === 'owned') {
                 var rawId = s.productId;
                 var modId = s.productId.replace('skin_', '%');
-                var isOwned = userSkins.hasOwnProperty(rawId) || userSkins.hasOwnProperty(modId);
-                if (isOwned) return false;
+                var isOwned = ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId);
+                if (!isOwned) return false;
+            }
 
-                if (query !== '') {
-                    var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
-                    if (name.indexOf(query) === -1) return false;
-                }
+            if (query !== '') {
+                var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
+                if (name.indexOf(query) === -1) return false;
+            }
 
-                return true;
-            });
-        }
+            return true;
+        });
 
         skinShopPage = 0;
         $('#skinGrid').empty();
 
         if (currentFilter === 'owned' && skinShopFiltered.length === 0) {
-            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #aaa; font-size: 13px;">No owned skins detected on this account.<br><span style="font-size: 11px; color: #666;">Log in with Google/Facebook or switch to <b>All Skins (955+)</b> to equip or buy any skin.</span></div>');
+            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #aaa; font-size: 13px;">No owned skins detected on this session.<br><span style="font-size: 11px; color: #666;">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>');
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
@@ -562,6 +484,10 @@ function equipSkin(productId, imageName) {
     }
 
     var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+    if (window.toastr) {
+        toastr.success('<b>[SKIN]:</b> Equipped ' + displayName);
+    }
+
     updateEquippedSkinUI();
 }
 
@@ -576,6 +502,10 @@ function unequipSkin() {
     }
     if (window.ogario) {
         window.ogario.customSkinUrl = '';
+    }
+
+    if (window.toastr) {
+        toastr.info('<b>[SKIN]:</b> Unequipped skin (Default skin active)');
     }
 
     updateEquippedSkinUI();
@@ -647,11 +577,9 @@ function renderSkinPage() {
         var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
         var equipBtnText = isEquipped ? 'Equipped' : 'Equip';
 
-        var imgSrc = skin.url ? skin.url : (cdnBase + skin.image);
-
         card.innerHTML = badgeHtml +
             '<div class="skin-color" style="background:' + cssColor + '"></div>' +
-            '<img src="' + imgSrc + '" alt="' + displayName + '" loading="lazy" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
+            '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
             '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
             '<div class="skin-card-actions">' +
             '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + skin.image + '\');event.stopPropagation();">' + equipBtnText + '</button>' +
@@ -689,6 +617,7 @@ function buySkin(productId) {
         return;
     }
     var currency = $('#BuyDealCurrency').val() || 'USD';
+    toastr && toastr.info('<b>[SHOP]:</b> Opening payment for ' + productId.replace('skin_', '').replace(/_/g, ' ') + '...');
     $.ajax({
         type: "GET",
         url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,
