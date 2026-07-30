@@ -4951,7 +4951,8 @@ function thelegendmodproject() {
         version: 'v1',
         privateMode: false,
         protocolMode: true,
-        publicIP: 'wss://chat.delt.io/ws',
+        publicIP: 'wss://chat.delt.io/delta7?protocol=v1',
+        comebackTimeout: 500,
         privateIP: null,
         updateInterval: 1000,
         updateTick: 0,
@@ -9194,17 +9195,13 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             var app = this;
             if (!this.privateMode) {
-                /* Public server: send ogario handshake and wire handleMessage */
+                /* Public server: Delta v7 handshake + wire handleMessage */
                 this.socket.onopen = () => {
-                    var buf = app.createView(3);
-                    buf.setUint8(0, 0);
-                    buf.setUint16(1, 401, true);
-                    app.sendBuffer(buf);
-
-                    buf.setUint8(0, 5);
-                    buf.setUint16(1, 20, true);
-                    app.sendBuffer(buf);
-
+                    /* Delta v7 handshake: 2 zero bytes */
+                    var handshake = new ArrayBuffer(2);
+                    new DataView(handshake).setUint16(0, 0, true);
+                    app.socket.send(handshake);
+                    app.comebackTimeout = 500;
                     app.sendPartyData();
                 }
                 this.socket.onmessage = function (buf) {
@@ -9253,10 +9250,11 @@ function thelegendmodproject() {
         closeSLGConnection() { },
         reconnect() {
             this.setParty();
+            this.comebackTimeout = this.comebackTimeout < 40000 ? this.comebackTimeout * 2 : 40000;
             var app = this;
             setTimeout(function () {
                 app.connect();
-            }, 1000);
+            }, app.comebackTimeout);
         },
         switchServerMode() {
             if (this.privateIP) {
@@ -9324,7 +9322,8 @@ function thelegendmodproject() {
             var opcode = message.getUint8(0);
             switch (opcode) {
                 case 0:
-                    this.playerID = message.getUint32(1, true);
+                    /* Delta v7: connectionID is UInt16 */
+                    this.playerID = message.getUint16(1, true);
                     break;
                 case 1:
                     this.sendPlayerUpdate();
@@ -9354,9 +9353,6 @@ function thelegendmodproject() {
                     this.readWavePing(message);
                     break;
                 case 96:
-                    break;
-                case 25:
-                    this.readDeltaChatMessage(message);
                     break;
                 case 100:
                     this.readChatMessage(message);
@@ -9806,34 +9802,8 @@ function thelegendmodproject() {
             //
         },
         sendPlayerUpdate() {
-            if ((this.isSocketOpen() || window.ogarioWS) && ogario.play && this.playerID && ogario.playerColor) {
-                function encode(str) {
-                    for (let length = 0; length < str.length; length++) {
-                        view.setUint16(offset, str.charCodeAt(length), true);
-                        offset += 2;
-                    }
-                    view.setUint16(offset, 0, true);
-                    offset += 2;
-                }
-                let text = 41;
-                text += ogarcopythelb.nick.length * 2;
-                text += ogarcopythelb.skinURL.length * 2;
-                var view = this.createView(text);
-                view.setUint8(0, 20);
-                view.setUint32(1, this.playerID, true);
-                var offset = 5;
-                encode(ogarcopythelb.nick);
-                encode(ogarcopythelb.skinURL);
-                encode(ogarcopythelb.color);
-                encode(ogario.playerColor);
-                /* Route op20 to relay (not game server) when on private server */
-                if (this.privateMode && window.ogarioWS) {
-                    window.ogarioWS.send(view.buffer);
-                } else {
-                    this.sendBuffer(view);
-                }
-                this.sendDeltaPlayerUpdate();
-            }
+            /* Delta v7: player data is sent via ppv7 opcode 16 only */
+            this.sendDeltaPlayerUpdate();
         },
         sendPlayerPosition() {
             if (this.isSocketOpen() && (ogario.play || LM.playerCellsMulti.length) && this.playerID) {
@@ -10235,7 +10205,7 @@ function thelegendmodproject() {
             }
         },
         updateTeamPlayers() {
-            this.sendPlayerPosition();
+            this.sendDeltaPlayerUpdate();
             //this.sendSuperLegendSDATA();
             this.sendSimpleLegendSDATA(); //SEND ROTATION INFO
 
