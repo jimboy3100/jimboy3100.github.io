@@ -9479,8 +9479,8 @@ function thelegendmodproject() {
             var targetID = view.getUint16(offset, true); offset += 2;
 
             function readUTF16Len() {
-                if (offset >= view.byteLength) return '';
-                var len = view.getUint8(offset++);
+                if (offset + 1 >= view.byteLength) return '';
+                var len = view.getUint16(offset, true); offset += 2;
                 var str = '';
                 for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
                     str += String.fromCharCode(view.getUint16(offset, true));

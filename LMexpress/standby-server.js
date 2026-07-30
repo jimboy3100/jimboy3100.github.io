@@ -85,29 +85,41 @@ function webgl() {
     return n;
 }
 
+function generateChatFingerprint() {
+    var bytes = new Uint8Array(16);
+    if (window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(bytes);
+    } else {
+        for (var i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    for (var i = 0; i < 16; i += 5) {
+        bytes[i] = bytes[i + 2] ^ bytes[i + 3];
+    }
+    var hex = "";
+    for (var j = 0; j < 16; j++) {
+        hex += bytes[j].toString(16).padStart(2, "0");
+    }
+    return hex;
+}
+
 var weirdoitem = undefined;
 (function () {
-    if (localStorage['fnp2']) {
-        weirdoitem = localStorage['fnp2'] || localStorage['fnp'];
-        delete localStorage['fnp'];
+    if (localStorage['fnp2'] && localStorage['fnp2'].length === 32) {
+        var fpTest = localStorage['fnp2'];
+        var s = fpTest.match(/.{2}/g).map(function(b) { return parseInt(b, 16); });
+        var valid = s.length === 16;
+        for (var i = 0; valid && s.length > i; i += 5) {
+            if (!(i % 5 === 0 && s[i] === (s[i + 2] ^ s[i + 2] ^ s[i + 3] ^ s[i + 2]))) valid = false;
+        }
+        if (valid) {
+            weirdoitem = fpTest;
+        } else {
+            weirdoitem = generateChatFingerprint();
+            localStorage['fnp2'] = weirdoitem;
+        }
     } else {
-        Object.assign(FingerprintJS.sources, {
-            hash1: function () {
-                try {
-                    return webgl();
-                } catch (e) { }
-                return false;
-            }
-        });
-        FingerprintJS.load({})
-            .then(function (fp) {
-                return fp.get();
-            })
-            .then(function (r) {
-                if (r.visitorId) {
-                    localStorage['fnp2'] = weirdoitem = r.visitorId;
-                }
-            });
+        weirdoitem = generateChatFingerprint();
+        localStorage['fnp2'] = weirdoitem;
     }
 })();
 
