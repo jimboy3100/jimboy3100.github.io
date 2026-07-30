@@ -142,6 +142,7 @@ function SpecialDeals() {
             '<div class="title">&#x2714; Currently Equipped Skin</div>' +
             '<div class="name" id="activeSkinName">None (Default)</div>' +
             '</div>' +
+            '<button class="btn btn-sm btn-primary" style="margin-right: 6px; font-weight: 700; background: #01d9cc; border: none; color: #000;" onclick="openCustomSkinUploader();">&#x1F3A8; Upload Custom Skin</button>' +
             '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">Unequip</button>' +
             '</div>' +
 
@@ -334,6 +335,17 @@ function populateSkins() {
     });
 
     updateEquippedSkinUI();
+}
+
+function openCustomSkinUploader() {
+    if (window.application && typeof window.application.setupSkinUploadInterface === 'function') {
+        window.application.setupSkinUploadInterface();
+    }
+    if ($('#custom-skin-uploader').length) {
+        $('#custom-skin-uploader').fadeIn(200);
+    } else {
+        $('.quick-custom-skin').trigger('click');
+    }
 }
 
 function equipSkin(productId, imageName) {
