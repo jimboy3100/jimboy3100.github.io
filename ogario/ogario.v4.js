@@ -9323,6 +9323,15 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
+            if (!value || !value.buffer) return;
+            var opcode = new DataView(value.buffer).getUint8(0);
+            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
+            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
+                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
+                    window.ogarioWS.send(value.buffer);
+                }
+                return;
+            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
@@ -9479,8 +9488,8 @@ function thelegendmodproject() {
             var targetID = view.getUint16(offset, true); offset += 2;
 
             function readUTF16Len() {
-                if (offset >= view.byteLength) return '';
-                var len = view.getUint8(offset++);
+                if (offset + 1 >= view.byteLength) return '';
+                var len = view.getUint16(offset, true); offset += 2;
                 var str = '';
                 for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
                     str += String.fromCharCode(view.getUint16(offset, true));
@@ -15770,11 +15779,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`💰` + this.user.coins);
+                                $("#coins").html('&#x1F4B0; ' + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`🧬` + this.user.dna);
+                                $("#dna").html('&#x1F9EC; ' + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -15839,7 +15848,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`🏅` + this.user.trophy);
+                        $("#trophy").html('&#x1F3C6; ' + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
