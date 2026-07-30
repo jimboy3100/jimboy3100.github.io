@@ -1427,10 +1427,12 @@ window.changeSkin = function (productID) {
     };
     var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
     encode(productID);
-    //console.log(productID)
-    //core.registerSkin(profiles[application.selectedProfile].nick, null, legendmod.getLink(productID)[0], null);
-    application.customSkinsMap[profiles[application.selectedProfile].nick] = legendmod.getLink(productID)[0];
-    application.loadSkin(application.customSkinsCache, legendmod.getLink(productID)[0]);
+    var skinLink = legendmod.getLink(productID);
+    var skinUrl = skinLink ? skinLink[0] : null;
+    if (skinUrl) {
+        application.customSkinsMap[profiles[application.selectedProfile].nick] = skinUrl;
+        application.loadSkin(application.customSkinsCache, skinUrl);
+    }
     window.core.proxyMobileData(bytes);
 }
 
@@ -15611,11 +15613,21 @@ function thelegendmodproject() {
                             var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + freshVersion;
                             for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
                                 var skn = window.EquippableSkins[sk];
-                                var skKey = skn.productId.replace('skin_', '%');
+                                var skUrl = null;
                                 if (skn.image && skn.image !== "uses_spine") {
-                                    window.VanillaSkinUrlMap[skKey] = cdnBase + skn.image + "?";
+                                    skUrl = cdnBase + skn.image + "?";
                                 } else if (skn.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skn.productId]) {
-                                    window.VanillaSkinUrlMap[skKey] = cdnBase + window.SpineSkinMap[skn.productId] + ".png?";
+                                    skUrl = cdnBase + window.SpineSkinMap[skn.productId] + ".png?";
+                                }
+                                if (skUrl) {
+                                    var skPid = skn.productId;
+                                    var skRaw = skPid.replace('skin_', '');
+                                    window.VanillaSkinUrlMap['%' + skRaw] = skUrl;
+                                    window.VanillaSkinUrlMap[('%' + skRaw).toLowerCase()] = skUrl;
+                                    window.VanillaSkinUrlMap[skPid] = skUrl;
+                                    window.VanillaSkinUrlMap[skPid.toLowerCase()] = skUrl;
+                                    window.VanillaSkinUrlMap[skRaw] = skUrl;
+                                    window.VanillaSkinUrlMap[skRaw.toLowerCase()] = skUrl;
                                 }
                             }
                         }
