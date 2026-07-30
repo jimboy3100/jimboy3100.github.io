@@ -552,6 +552,10 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
+        if (window._lwReconnecting) {
+            console.log('[LW AUTH] logout() blocked — reconnecting');
+            return;
+        }
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
         /* Reset UI */

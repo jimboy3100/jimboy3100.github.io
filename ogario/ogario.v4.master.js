@@ -872,6 +872,13 @@ function legendmaster(self) {
         self.localStorage.setItem("storeObjectInfo", JSON.stringify(options));
     };
     self.logout = function() {
+        /* Don't nuke login state during game server reconnect —
+         * reconnect() can trigger FB.getLoginStatus which calls logout
+         * when FB cookies expire, killing the Google session too. */
+        if (window._lwReconnecting) {
+            console.log("[Master] logout() blocked — reconnecting");
+            return;
+        }
         if (options.context === "google" && api) {
             api.signOut();
         }
