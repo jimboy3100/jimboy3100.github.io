@@ -151,6 +151,7 @@ function SpecialDeals() {
             '<div class="tab-pane" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
             '<h5 style="color: #4fc3f7; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
+            '<div id="skinUploadLoginStatus" style="padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-bottom: 10px; display: inline-block;"></div>' +
             '<p style="color: #aaa; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
             '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">' +
@@ -159,7 +160,7 @@ function SpecialDeals() {
             '<div style="text-align: center; margin-bottom: 12px;">' +
             '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid #01d9cc; background-color: #000; box-shadow: 0 0 12px rgba(1,217,204,0.3);"></canvas>' +
             '</div>' +
-            '<label for="legendUploadInputModal" class="btn btn-primary" style="margin-bottom: 8px; width: 220px; font-weight: 700; background: #0288d1; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
+            '<label for="legendUploadInputModal" class="btn btn-primary" id="legendChooseFileBtn" style="margin-bottom: 8px; width: 220px; font-weight: 700; background: #0288d1; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
             '<br>' +
             '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="width: 220px; font-weight: 700;">Upload & Buy (90 DNA)</button>' +
@@ -210,6 +211,39 @@ function SpecialDeals() {
             setTimeout(populateSkins, 1500);
         }
 
+        // --- Login status checker for Custom Skin tab ---
+        function updateSkinUploadLoginState() {
+            var statusEl = $('#skinUploadLoginStatus');
+            var uploadBtn = $('#legendSaveBtnModal');
+            var chooseBtn = $('#legendChooseFileBtn');
+            var isLoggedIn = !!(window.loggedIn);
+            var hasConnection = !!(window.core && window.core.proxyMobileData);
+
+            if (isLoggedIn && hasConnection) {
+                statusEl.html('&#x2705; Logged In — Ready to upload')
+                    .css({ background: 'rgba(0,230,118,0.15)', color: '#00e676', border: '1px solid rgba(0,230,118,0.3)' });
+                chooseBtn.prop('disabled', false).css('opacity', 1);
+                // Only enable upload btn if an image is also ready
+                if (processedBufferModal) {
+                    uploadBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                }
+            } else {
+                var reason = !isLoggedIn ? 'Not logged in' : 'No server connection';
+                statusEl.html('&#x26D4; ' + reason + ' — Upload disabled')
+                    .css({ background: 'rgba(255,82,82,0.15)', color: '#ff5252', border: '1px solid rgba(255,82,82,0.3)' });
+                uploadBtn.prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
+                chooseBtn.prop('disabled', true).css('opacity', 0.4);
+            }
+        }
+
+        // Check login state immediately and every 3 seconds
+        updateSkinUploadLoginState();
+        var loginCheckInterval = setInterval(updateSkinUploadLoginState, 3000);
+        // Clean up when modal closes
+        $('#legendShop').on('hidden.bs.modal', function() {
+            clearInterval(loginCheckInterval);
+        });
+
         // --- Embedded Custom Skin Uploader Handlers ---
         var processedBufferModal = null;
         function processAndFormatModal(src) {
@@ -256,7 +290,8 @@ function SpecialDeals() {
                                 $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
                             } else {
                                 $('#legendStatusModal').text("PNG Ready: " + kb + "KB (" + size + "x" + size + ")").css('color', '#00e676');
-                                $('#legendSaveBtnModal').prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                                // Only enable if logged in
+                                updateSkinUploadLoginState();
                             }
                         };
                         reader.readAsArrayBuffer(blob);
@@ -286,6 +321,16 @@ function SpecialDeals() {
             var name = $('#legendSkinNameModal').val() || "test";
             var color = $('#legendSkinColorModal').val() || "#FFFF00";
 
+            // Login gate
+            if (!window.loggedIn) {
+                toastr.error("<b>[ERROR]:</b> You must be logged in to upload skins. Log in first!");
+                return;
+            }
+            if (!(window.core && window.core.proxyMobileData)) {
+                toastr.error("<b>[ERROR]:</b> No server connection. Join a game first!");
+                return;
+            }
+
             if (!processedBufferModal) {
                 toastr.warning("<b>[SERVER]:</b> Select an image first.");
                 return;
@@ -300,7 +345,8 @@ function SpecialDeals() {
                 cooldown--;
                 if (cooldown <= 0) {
                     clearInterval(timer);
-                    btn.text(origText).prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                    btn.text(origText);
+                    updateSkinUploadLoginState(); // re-check login before re-enabling
                 } else {
                     btn.text("Please wait... " + cooldown + "s");
                 }
