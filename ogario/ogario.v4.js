@@ -10,7 +10,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.496;
+window.OgVer = 3.497;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
