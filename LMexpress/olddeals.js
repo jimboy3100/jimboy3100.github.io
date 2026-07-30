@@ -626,6 +626,28 @@ var skinShopPage = 0;
 var skinShopPerPage = 60;
 var skinShopFiltered = [];
 
+function isSkinOwned(s, ownedSkinsObj) {
+    if (!ownedSkinsObj) return false;
+    var rawId = s.productId;
+    var modId = s.productId ? s.productId.replace('skin_', '%') : '';
+    var cleanId = s.productId ? s.productId.replace('skin_', '') : '';
+
+    if (ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId) || ownedSkinsObj.hasOwnProperty(cleanId)) {
+        return true;
+    }
+
+    for (var k in ownedSkinsObj) {
+        if (ownedSkinsObj.hasOwnProperty(k)) {
+            var item = ownedSkinsObj[k];
+            if (item) {
+                if (item.productId === rawId || item.productId === modId || item.productId === cleanId) return true;
+                if (typeof k === 'string' && s.image && k.indexOf(s.image) !== -1) return true;
+            }
+        }
+    }
+    return false;
+}
+
 function populateSkins() {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig || !window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"]) {
         setTimeout(populateSkins, 1500);
@@ -643,10 +665,7 @@ function populateSkins() {
             if (s.productId === 'skin_empty') return false;
 
             if (currentFilter === 'owned') {
-                var rawId = s.productId;
-                var modId = s.productId.replace('skin_', '%');
-                var isOwned = ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId);
-                if (!isOwned) return false;
+                if (!isSkinOwned(s, ownedSkinsObj)) return false;
             }
 
             if (query !== '') {
@@ -846,9 +865,7 @@ function renderSkinPage() {
             var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
 
             var isEquipped = (currentEquippedId === skin.productId);
-            var rawId = skin.productId;
-            var modId = skin.productId.replace('skin_', '%');
-            var isOwned = ownedSkinsObj.hasOwnProperty(rawId) || ownedSkinsObj.hasOwnProperty(modId);
+            var isOwned = isSkinOwned(skin, ownedSkinsObj);
 
             var card = document.createElement('div');
             card.className = 'skin-card' + (isEquipped ? ' equipped' : '');
