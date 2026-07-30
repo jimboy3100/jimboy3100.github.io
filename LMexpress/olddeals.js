@@ -1249,20 +1249,52 @@ function buySkin(productId) {
         return;
     }
 
+    // Look up price and purchaseId from config
+    var priceInfo = getSkinPrice(productId);
+    var purchaseId = getSkinPurchaseId(productId);
+    var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+
+    // Show confirmation with price
+    var confirmMsg = 'Buy "' + displayName + '"?';
+    if (priceInfo && priceInfo.amount > 0) {
+        var currencyName = priceInfo.currency === 'dna' ? 'DNA 🧬' : 'Coins 💰';
+        var currentBalance = 0;
+        if (window.application && window.application.user) {
+            currentBalance = priceInfo.currency === 'dna' ? (window.application.user.dna || 0) : (window.application.user.coins || 0);
+        }
+        confirmMsg += '\n\nCost: ' + priceInfo.amount + ' ' + currencyName;
+        confirmMsg += '\nYour balance: ' + currentBalance + ' ' + currencyName;
+        if (currentBalance < priceInfo.amount) {
+            confirmMsg += '\n\n⚠️ You may not have enough ' + currencyName + '!';
+        }
+    }
+
+    if (!confirm(confirmMsg)) return;
+
     // Disable the clicked button temporarily (10s cooldown)
     var btn = $('.skin-card[data-product-id="' + productId + '"] .skin-btn-buy');
     if (btn.data('buying')) return; // already in progress
-    btn.data('buying', true).css({ opacity: 0.5, pointerEvents: 'none' });
+    btn.data('buying', true).css({ opacity: 0.5, pointerEvents: 'none' }).text('Buying...');
     setTimeout(function() {
         btn.data('buying', false).css({ opacity: 1, pointerEvents: 'auto' });
+        // Restore original text if still showing "Buying..."
+        if (btn.text() === 'Buying...') {
+            var pi = getSkinPrice(productId);
+            var label = 'Buy';
+            if (pi && pi.amount > 0) {
+                label += ' ' + (pi.currency === 'dna' ? '🧬' : '💰') + ' ' + pi.amount;
+            }
+            btn.text(label);
+        }
     }, 10000);
 
-    // Try protocol-based soft purchase first (DNA buy — opcode 70)
+    // Try protocol-based soft purchase first (DNA/coin buy — opcode 70)
+    // The official client uses referenceValue from "Shop - Skins" as the purchaseId
     if (window.application && typeof window.application.softPurchase === 'function') {
-        var purchaseId = productId; // skin productId IS the purchaseId
-        var sent = window.application.softPurchase(purchaseId);
+        var pid = purchaseId || productId;
+        var sent = window.application.softPurchase(pid);
         if (sent) {
-            console.log('[SHOP]: Sent soft purchase for ' + productId);
+            console.log('[SHOP]: Sent soft purchase for ' + pid + ' (skin: ' + productId + ')');
             return;
         }
     }
@@ -1287,6 +1319,23 @@ function buySkin(productId) {
         }
     });
 }
+
+/**
+ * Get the correct purchaseId for a skin from the "Shop - Skins" config.
+ * The official client uses referenceValue as the purchaseId for soft purchases.
+ */
+function getSkinPurchaseId(productId) {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+    var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"];
+    if (!shopSkins) return null;
+    for (var i = 0; i < shopSkins.length; i++) {
+        if (shopSkins[i].productId === productId) {
+            return shopSkins[i].referenceValue || null;
+        }
+    }
+    return null;
+}
+window.getSkinPurchaseId = getSkinPurchaseId;
 
 function populateSDlines(select, i) {
     var item = GameConfiguration.gameConfig["Wallet - In-App Purchases"][i];
