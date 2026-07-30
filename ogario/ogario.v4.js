@@ -10904,6 +10904,33 @@ function thelegendmodproject() {
             console.log("[LM] Inspect User Stats for: " + userId);
             return this.sendProto(82, { userStatsRequestField: { userId: userId } });
         },
+        /* ─── §4.20k Parse Plist XML Metadata ─── */
+        parseSkinMeta(metaXmlString) {
+            if (!metaXmlString) return null;
+            try {
+                var metaObj = {};
+                var nameMatch = metaXmlString.match(/<key>name<\/key>\s*<string>(.*?)<\/string>/i);
+                if (nameMatch) metaObj.name = nameMatch[1];
+
+                var colorMatch = metaXmlString.match(/<key>color<\/key>\s*<integer>(\d+)<\/integer>/i);
+                if (colorMatch) {
+                    var colorInt = parseInt(colorMatch[1], 10);
+                    metaObj.color = colorInt;
+                    metaObj.colorHex = '#' + ('000000' + colorInt.toString(16)).slice(-6).toUpperCase();
+                }
+
+                var dateMatch = metaXmlString.match(/<key>creationDate<\/key>\s*<integer>(\d+)<\/integer>/i);
+                if (dateMatch) {
+                    var dateSec = parseInt(dateMatch[1], 10);
+                    metaObj.creationDate = new Date(dateSec * 1000).toLocaleString();
+                }
+
+                return metaObj;
+            } catch (e) {
+                console.warn("[LM] Error parsing skin metadata plist:", e);
+                return null;
+            }
+        },
         sendProto(type, payload) {
             if (!window.mesega) {
                 toastr.error("<b>[ERROR]:</b> Protocol not ready.");
@@ -15806,6 +15833,9 @@ function thelegendmodproject() {
                             console.log("[LM] Skin Create Response — result: " + skinResult);
                             if (skinResult === 1 || skinResult === 0) {
                                 toastr.success('<b>[SERVER]:</b> Custom skin created successfully! &#x2714;');
+                                if (skinResp.productUpdates && skinResp.productUpdates.length) {
+                                    this.updateProducts(skinResp.productUpdates);
+                                }
                             } else if (skinResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Skin creation failed — not enough DNA.');
                             } else if (skinResult === 3) {
