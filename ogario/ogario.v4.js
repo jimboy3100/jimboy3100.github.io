@@ -9323,6 +9323,15 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
+            if (!value || !value.buffer) return;
+            var opcode = new DataView(value.buffer).getUint8(0);
+            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
+            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
+                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
+                    window.ogarioWS.send(value.buffer);
+                }
+                return;
+            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
@@ -9479,8 +9488,8 @@ function thelegendmodproject() {
             var targetID = view.getUint16(offset, true); offset += 2;
 
             function readUTF16Len() {
-                if (offset >= view.byteLength) return '';
-                var len = view.getUint8(offset++);
+                if (offset + 1 >= view.byteLength) return '';
+                var len = view.getUint16(offset, true); offset += 2;
                 var str = '';
                 for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
                     str += String.fromCharCode(view.getUint16(offset, true));
@@ -12772,8 +12781,9 @@ function thelegendmodproject() {
                 : t.includes('imsolo.pro') ? 'imsolo'
                     : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
-                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                                : 'private';
+                            : (t.includes('delt.io') || t.includes('deltav4') || t.includes('delta')) ? 'delta'
+                                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                    : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
@@ -12884,8 +12894,8 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            if (this.serverType === 'garix') {
-                // Generate fingerprint lazily on first Garix connection
+            if (this.serverType === 'garix' || this.serverType === 'delta' || this.serverType === 'expandingland') {
+                // Generate valid fingerprint lazily on connection
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
@@ -12990,6 +13000,29 @@ function thelegendmodproject() {
                 this.sendBuffer(gView);
                 this.connectionOpened = true;
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
+            } else if (this.serverType === 'delta' || (this.ws && (this.ws.includes('delt.io') || this.ws.includes('deltav4')))) {
+                // ===== Delta Protocol Handshake: Opcode 126 (0x7E) =====
+                var dView = this.createView(5);
+                dView.setUint8(0, 126); // 0x7E - Client Protocol
+                dView.setUint32(1, 123456, true);
+                this.sendBuffer(dView);
+                this.connectionOpened = true;
+                console.log('%c[DeltaProtocol]%c Handshake: sent opcode 126 (protocol=123456)', 'color:#01d9cc', 'color:inherit');
+
+                // Start Delta 9-byte Ping Loop (Opcode 226 every 4000ms)
+                if (this.deltaPingInterval) clearInterval(this.deltaPingInterval);
+                var self = this;
+                this.deltaPingInterval = setInterval(function () {
+                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                        var pView = self.createView(9);
+                        pView.setUint8(0, 226);
+                        pView.setUint32(1, Math.floor(Math.random() * 100000), true);
+                        pView.setUint32(5, Date.now() >>> 0, true);
+                        self.sendBuffer(pView);
+                    } else {
+                        clearInterval(self.deltaPingInterval);
+                    }
+                }, 4000);
             } else {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
                 var view = this.createView(5);
@@ -15746,11 +15779,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`💰` + this.user.coins);
+                                $("#coins").html('&#x1F4B0; ' + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`🧬` + this.user.dna);
+                                $("#dna").html('&#x1F9EC; ' + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -15815,7 +15848,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`🏅` + this.user.trophy);
+                        $("#trophy").html('&#x1F3C6; ' + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -17757,12 +17790,14 @@ Most cells eaten   : ${mostCellsEaten}
             var encoder = new TextEncoder();
             var data = encoder.encode(raw);
             var hashBuffer = await crypto.subtle.digest("SHA-256", data);
-            var hashArray = Array.from(new Uint8Array(hashBuffer));
-            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
-            LM.garixFingerprint = hex.slice(0, 32);
-            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
+            var hashArray = Array.from(new Uint8Array(hashBuffer)).slice(0, 16);
+            for (var fi = 0; fi < 16; fi += 5) {
+                hashArray[fi] = hashArray[fi + 2] ^ hashArray[fi + 3];
+            }
+            LM.garixFingerprint = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            console.log('[Garix/Delta] Valid fingerprint generated:', LM.garixFingerprint);
         } catch (e) {
-            console.warn('[Garix] Fingerprint generation failed:', e);
+            console.warn('[Garix/Delta] Fingerprint generation failed:', e);
         }
     };
     try {
