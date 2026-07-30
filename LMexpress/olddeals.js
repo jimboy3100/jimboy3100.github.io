@@ -484,9 +484,7 @@ function equipSkin(productId, imageName) {
     }
 
     var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-    if (window.toastr) {
-        toastr.success('<b>[SKIN]:</b> Equipped ' + displayName);
-    }
+    console.log('[SKIN]: Equipped ' + displayName);
 
     updateEquippedSkinUI();
 }
@@ -504,9 +502,7 @@ function unequipSkin() {
         window.ogario.customSkinUrl = '';
     }
 
-    if (window.toastr) {
-        toastr.info('<b>[SKIN]:</b> Unequipped skin (Default skin active)');
-    }
+    console.log('[SKIN]: Unequipped skin');
 
     updateEquippedSkinUI();
 }
@@ -617,7 +613,7 @@ function buySkin(productId) {
         return;
     }
     var currency = $('#BuyDealCurrency').val() || 'USD';
-    toastr && toastr.info('<b>[SHOP]:</b> Opening payment for ' + productId.replace('skin_', '').replace(/_/g, ' ') + '...');
+    console.log('[SHOP]: Opening payment for ' + productId);
     $.ajax({
         type: "GET",
         url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,
