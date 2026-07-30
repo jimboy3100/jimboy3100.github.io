@@ -15566,6 +15566,7 @@ function thelegendmodproject() {
                         }
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
                     }
+                    var u = r.uncompressedData.loginResponseField;
                     this.user = {
                         coins: 0,
                         dna: 0,
@@ -15581,7 +15582,6 @@ function thelegendmodproject() {
                         tokens: u.tokens,
                         info: u.userInfo
                     };
-                    var u = r.uncompressedData.loginResponseField;
 
                     if (window.coinsTimer) clearTimeout(window.coinsTimer);
                     window.coinsTimer = setTimeout(() => {
