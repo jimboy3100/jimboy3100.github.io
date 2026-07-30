@@ -111,15 +111,14 @@
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
 				'<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>' +
-				'<div class="modal-backdrop fade in"></div>' +
-                //'<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 780px; height:500">' +
-				'<div class="modal-dialog" style="top: calc(50vh - 400px); width: 900px; height:500px">' +
-                '<div class="modal-content">' +
-                '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+				'<div class="modal-backdrop fade in" style="z-index: 1040;"></div>' +
+				'<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; max-height: 85vh; margin: 0; z-index: 1050;">' +
+                '<div class="modal-content" style="background: #fff; color: #333; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
+                '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" title="Help"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Shop' + '</h4>' +
                 '</div>' +
 				
-				'<div id="LMShop3">' +
+				'<div id="LMShop3" style="overflow-y: auto; max-height: 70vh;">' +
 				
         '<div id="customskins">' +
     '<div id="navbar">' +
@@ -191,10 +190,14 @@
                 '</div>');
 			$("#animatedLikeGif").children().css("width", "55px");	
 			$("#animatedLikeGif").css("padding-right", "100px");
-            $("#CloseLMShop").click(function() {
+            $("#CloseLMShop").off('click').on('click', function(e) {
+                if (e) e.stopPropagation();
                 $("#LMShop").remove();
+                $(".modal-backdrop").remove();
+                $("body").removeClass("modal-open");
             });
-            $("#FAQLMShop").click(function() {
-				window.open('https://jimboy3100.github.io/', '_blank');
+            $("#FAQLMShop").off('click').on('click', function(e) {
+                if (e) e.stopPropagation();
+                window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
             });	
 //$(".modal-dialog").draggable()
