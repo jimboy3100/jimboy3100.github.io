@@ -124,6 +124,14 @@ function SpecialDeals() {
                 '.upload-drop-zone.drag-over { border-color: #4fc3f7; background: rgba(79,195,247,0.08); }',
                 '.upload-clear-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 6px; }',
                 '.upload-clear-btn:hover { background: #ff5722; color: #fff; }',
+                // Deal cards
+                '.deal-card:hover { border-color: #4fc3f7 !important; background: rgba(79,195,247,0.08) !important; }',
+                '.deal-buy-btn:hover { background: #0277bd !important; transform: scale(1.05); }',
+                '#dealsGrid::-webkit-scrollbar { width: 6px; }',
+                '#dealsGrid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
+                '#dealsGrid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
+                '#dealsGrid::-webkit-scrollbar-thumb:hover { background: #777; }',
+                '#claimFreeCoinsBtn:hover { background: #00e676 !important; transform: scale(1.05); }',
             ].join('\n');
             document.head.appendChild(styleEl);
         }
@@ -202,24 +210,36 @@ function SpecialDeals() {
             // === 3. Deals tab ===
             '<div class="tab-pane" id="tab-deals">' +
             '<div class="modal-body">' +
-            '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' +
-            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend Encoded uid <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
-            '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' +
-            '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' +
-            '<h4 id="dealcost" class="text-right">99.99 $</h4>' +
-            '<div class="xpmt-buy-content" style="font-size: 13px; margin-top: -30px; float: left;font-weight: 700; background-color: rgba(0, 0, 0, 0.2); background-image: url(https://jimboy3100.github.io/banners/icondeal2.png);padding: 3px; align: middle; border-radius: 4px;width: 100%;height: 150px;z-index: 15;margin: auto;">' +
-            '<div class="xpmt-money-stack" style="display: inline-block; margin-left: 70px; margin-top: 115px;"><span class="coins" style=""><b>125000 C</b></span></div>' +
-            '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(\'\'); background-size: cover; border-color: #7c0001"></div>' +
-            '<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(\'\'); background-size: cover; border-color: #7c0001"></div>' +
+
+            // Balance display
+            '<div id="dealsBalanceBar" style="font-size: 12px; color: #ffd740; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255,215,64,0.3);">' +
+            '🧬 DNA: <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="dealsCoinsCount">0</span></div>' +
+
+            // Free coins section
+            '<div id="freeCoinsSection" style="background: linear-gradient(135deg, rgba(0,150,136,0.2), rgba(0,200,83,0.15)); border: 1px solid rgba(0,200,83,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">' +
+            '<div><span style="font-size: 20px;">🎁</span> <b style="color: #69f0ae;">Free Coins</b><br><span id="freeCoinsTimer" style="font-size: 11px; color: #aaa;">Claim your hourly bonus</span></div>' +
+            '<button id="claimFreeCoinsBtn" class="btn btn-sm" style="background: #00c853; color: #fff; font-weight: 700; border: none; border-radius: 6px; padding: 6px 16px; cursor: pointer;" onclick="claimFreeCoins()">Claim!</button>' +
             '</div>' +
+
+            // Deal cards container
+            '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
+
+            // Encoded UID & Config section (collapsible)
+            '<details style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">' +
+            '<summary style="cursor: pointer; color: #90a4ae; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID & Config</summary>' +
+            '<div style="margin-top: 8px;">' +
+            '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block; margin-bottom: 6px;">' +
+            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend UID <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
+            '<div style="display: flex; gap: 6px; margin-bottom: 6px;">' +
+            '<select id="BuyDealCurrency" class="form-control" style="width: 25%;"><option value="USD">USD</option><option value="EU">EU</option></select>' +
+            '<select id="ss-select-agarVersionDestinations" class="form-control" style="width: 35%;"></select>' +
+            '<span style="color: #90a4ae; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
             '</div>' +
-            '<select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select>' +
-            '<select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select>' +
-            '<color="red" style="display:inline"> ' + Premadeletter112 + '</color>' +
-            '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select>' +
-            '<color="red" style="display:inline">' + Premadeletter117 + '</color>' +
-            '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
-            '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' +
+            '<input type="text" class="form-control" id="GameConfigurationUrl" value="' + window.MiniclipConfigDestination + '" placeholder="GameConfiguration.json URL" style="width: 100%; margin-bottom: 6px;">' +
+            '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius: 4px;">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' +
+            '</div>' +
+            '</details>' +
+
             '</div>' +
             '</div>' +
 
@@ -544,6 +564,10 @@ function SpecialDeals() {
             if (tab === 'skins') {
                 updateEquippedSkinUI();
             }
+            if (tab === 'deals') {
+                populateDealsGrid();
+                updateDealsBalance();
+            }
             // Re-apply login state when switching tabs
             updateShopLoginState();
         });
@@ -673,7 +697,266 @@ function buydeals() {
     });
 }
 
-// --- Skin Shop Functions ---
+// ========================================
+// === DEALS TAB — Enhanced Functions ===
+// ========================================
+
+/**
+ * Update the deals tab balance display
+ */
+function updateDealsBalance() {
+    var dna = 0, coins = 0;
+    if (window.application && window.application.userInfo) {
+        var items = window.application.userInfo.userWalletItems || [];
+        for (var i = 0; i < items.length; i++) {
+            var prod = items[i].productId || '';
+            var qty = items[i].quantity || 0;
+            if (prod.indexOf('dna') !== -1) dna += qty;
+            if (prod.indexOf('coins') !== -1) coins += qty;
+        }
+    }
+    $('#dealsDnaCount').text(dna.toLocaleString());
+    $('#dealsCoinsCount').text(coins.toLocaleString());
+}
+
+/**
+ * Claim free coins via opcode 110 (activateTimedEvent)
+ */
+function claimFreeCoins() {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+        return;
+    }
+    if (!window.application || !window.application.activateTimedEvent) {
+        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
+        return;
+    }
+    var btn = document.getElementById('claimFreeCoinsBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Claiming...';
+        btn.style.opacity = '0.6';
+    }
+    window.application.activateTimedEvent('hourlyBonus');
+    // Re-enable after response timeout
+    setTimeout(function() {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Claim!';
+            btn.style.opacity = '1';
+        }
+        updateDealsBalance();
+    }, 5000);
+}
+window.claimFreeCoins = claimFreeCoins;
+
+/**
+ * Populate the deals grid with cards from GameConfiguration
+ */
+function populateDealsGrid() {
+    var grid = document.getElementById('dealsGrid');
+    if (!grid) return;
+
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
+        grid.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Loading deals... Configuration not ready.</div>';
+        return;
+    }
+
+    var iaps = window.GameConfiguration.gameConfig['Wallet - In-App Purchases'] || [];
+    var bundles = window.GameConfiguration.gameConfig['Visual - Bundles'] || [];
+    var softPurchases = window.GameConfiguration.gameConfig['Wallet - Soft Purchases'] || [];
+    var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
+
+    if (iaps.length === 0 && softPurchases.length === 0) {
+        grid.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No deals available.</div>';
+        return;
+    }
+
+    var html = '';
+    var priceMap = { '2': '$1.99', '5': '$4.99', '10': '$9.99', '20': '$19.99', '50': '$49.99', '60': '$99.99' };
+
+    // Build bundle lookup
+    var bundleLookup = {};
+    for (var b = 0; b < bundles.length; b++) {
+        bundleLookup[bundles[b].bundleId] = bundles[b];
+    }
+
+    // Build product lookup for bundle contents
+    var productLookup = {};
+    for (var bp = 0; bp < bundleProducts.length; bp++) {
+        var bpId = bundleProducts[bp].bundleId;
+        if (!productLookup[bpId]) productLookup[bpId] = [];
+        productLookup[bpId].push(bundleProducts[bp]);
+    }
+
+    // --- IAP Deals (real money) ---
+    for (var i = 0; i < iaps.length; i++) {
+        var deal = iaps[i];
+        var bundleInfo = bundleLookup[deal.bundleId] || {};
+        var price = priceMap[deal.priceTier] || ('Tier ' + deal.priceTier);
+        var desc = (bundleInfo.description && bundleInfo.description !== 'na')
+            ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
+            : deal.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+
+        // Figure out what's in the bundle
+        var contents = productLookup[deal.bundleId] || [];
+        var contentText = '';
+        for (var c = 0; c < contents.length; c++) {
+            var pid = contents[c].productId || '';
+            var qty = contents[c].quantity || 1;
+            var label = pid.replace(/_/g, ' ');
+            if (pid.indexOf('coins') !== -1) label = '💰 ' + qty.toLocaleString() + ' Coins';
+            else if (pid.indexOf('dna') !== -1) label = '🧬 ' + qty.toLocaleString() + ' DNA';
+            else if (pid.indexOf('skin') !== -1) label = '🎨 Skin: ' + pid.replace('skin_', '');
+            else if (pid.indexOf('boost') !== -1) label = '🚀 Boost: ' + pid;
+            else label = qty + 'x ' + label;
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
+        }
+        if (!contentText) contentText = '<span style="font-size: 10px; color: #666;">Bundle contents</span>';
+
+        // Resolve skin image if available
+        var skinImg = getDealSkinImage(deal.bundleId);
+
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: rgba(33,150,243,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid rgba(33,150,243,0.4);">';
+        if (skinImg) {
+            html += '<img src="' + skinImg + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
+        } else {
+            html += '💎';
+        }
+        html += '</div>';
+        html += '<div style="flex: 1; min-width: 0;">';
+        html += '<div style="font-weight: 700; font-size: 13px; color: #e0e0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
+        html += '<div>' + contentText + '</div>';
+        html += '</div>';
+        html += '<div style="text-align: right; min-width: 70px;">';
+        html += '<div style="font-size: 14px; font-weight: 700; color: #4fc3f7;">' + price + '</div>';
+        html += '<button class="btn btn-xs deal-buy-btn" onclick="buyDealIAP(\'' + deal.id + '\', \'' + desc.replace(/'/g, "\\'") + '\')" style="background: #0288d1; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '</div>';
+        html += '</div>';
+    }
+
+    // --- Soft Purchases (DNA/Coins) ---
+    for (var s = 0; s < softPurchases.length; s++) {
+        var sp = softPurchases[s];
+        if (!sp.purchaseId) continue;
+        var spDesc = sp.purchaseId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+        var currType = (sp.currencyType || '').toLowerCase();
+        var currIcon = currType.indexOf('dna') !== -1 ? '🧬' : '💰';
+        var currAmount = sp.currencyAmount || 0;
+
+        // Only show relevant soft purchases (skip internal ones)
+        if (sp.purchaseId.indexOf('skin_') !== -1 || sp.purchaseId.indexOf('boost') !== -1 || sp.purchaseId.indexOf('potion') !== -1) continue;
+
+        html += '<div class="deal-card" style="background: rgba(255,215,64,0.05); border: 1px solid rgba(255,215,64,0.15); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,215,64,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid rgba(255,215,64,0.3);">🛒</div>';
+        html += '<div style="flex: 1; min-width: 0;">';
+        html += '<div style="font-weight: 700; font-size: 13px; color: #ffd740;">' + spDesc + '</div>';
+        html += '<div style="font-size: 11px; color: #aaa;">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
+        html += '</div>';
+        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: #f57f17; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '</div>';
+    }
+
+    if (!html) {
+        html = '<div style="text-align: center; color: #888; padding: 20px;">No deals found in configuration.</div>';
+    }
+
+    grid.innerHTML = html;
+}
+window.populateDealsGrid = populateDealsGrid;
+window.refreshDealsTab = function() {
+    populateDealsGrid();
+    updateDealsBalance();
+};
+
+/**
+ * Get skin image URL for a deal bundle
+ */
+function getDealSkinImage(bundleId) {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+    var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
+    var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
+
+    for (var bp = 0; bp < bundleProducts.length; bp++) {
+        if (bundleProducts[bp].bundleId === bundleId) {
+            var prodId = bundleProducts[bp].productId;
+            if (prodId && prodId.indexOf('skin') !== -1) {
+                for (var s = 0; s < skins.length; s++) {
+                    if (skins[s].productId === prodId && skins[s].image) {
+                        return 'https://configs-web.agario.miniclippt.com/live/' + window.agarversion + skins[s].image;
+                    }
+                }
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Buy a deal via IAP payment URL (real money)
+ */
+function buyDealIAP(dealId, dealDesc) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to buy deals');
+        return;
+    }
+    if (!window.agarioEncodedUID) {
+        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
+        return;
+    }
+
+    if (!confirm('Purchase "' + dealDesc + '"?\n\nThis will open a payment window.\nMake sure you are logged in.')) {
+        return;
+    }
+
+    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
+    var currency = $('#BuyDealCurrency').val() || 'USD';
+
+    $.ajax({
+        type: 'GET',
+        url: 'https://payments.agario.miniclippt.com/pay/' + uid + '/' + dealId + '/' + currency,
+        datatype: 'json',
+        success: function(info) {
+            if (info && info.iframe_url) {
+                window.open(info.iframe_url, 'PopupWindow', 'width=600,height=600,scrollbars=yes,resizable=no');
+                toastr.info('<b>[SHOP]:</b> Payment window opened. Complete the purchase there.');
+            } else {
+                toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this deal');
+            }
+        },
+        error: function() {
+            toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
+        }
+    });
+}
+window.buyDealIAP = buyDealIAP;
+
+/**
+ * Buy a deal via soft purchase (DNA/Coins) — opcode 70
+ */
+function buyDealSoft(purchaseId, cost, currencyType) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+        return;
+    }
+    if (!window.application || !window.application.softPurchase) {
+        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
+        return;
+    }
+
+    var currLabel = currencyType.indexOf('dna') !== -1 ? 'DNA' : 'Coins';
+    if (!confirm('Buy "' + purchaseId.replace(/_/g, ' ') + '" for ' + cost.toLocaleString() + ' ' + currLabel + '?')) {
+        return;
+    }
+
+    toastr.info('<b>[SHOP]:</b> Sending purchase request...');
+    window.application.softPurchase(purchaseId);
+    setTimeout(updateDealsBalance, 3000);
+}
+window.buyDealSoft = buyDealSoft;
+
+
 var skinShopPage = 0;
 var skinShopPerPage = 60;
 var skinShopFiltered = [];
@@ -1349,6 +1632,7 @@ function populateSD() {
     var agarVersionSelect = document.getElementById("ss-select-agarVersionDestinations");
 
     var select = document.getElementById("ss-select-purchases");
+    if (!select) return; // Element no longer exists in new deals UI
     if (agarVersionSelect.options && agarVersionSelect.options[0] && agarVersionSelect.value !== agarVersionSelect.options[0].value) {
         // Check if an option with the same text already exists
         
@@ -1410,8 +1694,12 @@ function letterCount(string, letter, caseSensitive) {
 }
 
 function LoadGameConfiguration() {
-    for (var i = document.getElementById("ss-select-purchases").options.length; i-- > 0; ){
-		document.getElementById("ss-select-purchases").options[i] = null;}
+    var selectEl = document.getElementById("ss-select-purchases");
+    if (selectEl) {
+        for (var i = selectEl.options.length; i-- > 0; ){
+            selectEl.options[i] = null;
+        }
+    }
     $(".xpmt-skins2").css('background-image', '');
     $(".xpmt-skins").css('background-image', '');	
     GameConfiguration = {};
@@ -1447,6 +1735,7 @@ function LoadGameConfiguration() {
 				window.GameConfiguration = info;
 			}
 			populateSD();
+			if (typeof populateDealsGrid === 'function') populateDealsGrid();
 			}
          ),
 		error: ((info)=>{ 

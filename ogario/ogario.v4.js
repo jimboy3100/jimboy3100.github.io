@@ -10893,12 +10893,19 @@ function thelegendmodproject() {
             console.log("[LM] Open Potion in slot " + slot);
             return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
+        activateTimedEvent(eventId) {
+            console.log("[LM] Activate Timed Event: " + eventId);
+            toastr.info('<b>[SERVER]:</b> Claiming ' + eventId.replace(/([A-Z])/g, ' $1').trim() + '...');
+            return this.sendProto(110, { activateTimedEventRequestField: { eventId: eventId } });
+        },
         activateQuest(productId) {
             console.log("[LM] Activate Quest: " + productId);
+            toastr.info('<b>[SERVER]:</b> Activating quest...');
             return this.sendProto(114, { activateQuestRequestField: { productId: productId } });
         },
         activateBoost(productId) {
             console.log("[LM] Activate Boost: " + productId);
+            toastr.info('<b>[SERVER]:</b> Activating boost...');
             return this.sendProto(112, { activateBoostRequestField: { productId: productId } });
         },
         requestAdRewardToken() {
@@ -15816,19 +15823,68 @@ function thelegendmodproject() {
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
                     break;
                 case 111:
-                    var u = r.uncompressedData.activateTimedEventResponseField;
-                    this.updateProducts(u.productUpdates);
-                    this.updateEvents([u.userTimedEvent])
+                    // Timed event response (free coins, daily rewards)
+                    try {
+                        var te = r.uncompressedData.activateTimedEventResponseField;
+                        if (te) {
+                            if (te.productUpdates && te.productUpdates.length) {
+                                this.updateProducts(te.productUpdates);
+                            }
+                            if (te.userTimedEvent) {
+                                this.updateEvents([te.userTimedEvent]);
+                                var nextIn = te.userTimedEvent.nextAvailableInSeconds || 0;
+                                var mins = Math.floor(nextIn / 60);
+                                toastr.success('<b>[SERVER]:</b> Reward claimed! &#x2714; Next available in ' + mins + ' min');
+                            } else {
+                                toastr.success('<b>[SERVER]:</b> Timed event reward claimed! &#x2714;');
+                            }
+                            if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                        }
+                    } catch(teErr) {
+                        console.warn("[LM] Error parsing timed event response:", teErr);
+                    }
                     break;
                 case 113:
-                    var u = r.uncompressedData.activateBoostResponseField;
-                    this.updateWalletInfo([u.productUpdates[0].userWalletItem]);
-                    this.displayActiveBoosts([u.userBoostItem]);
+                    // Boost activation response
+                    try {
+                        var ba = r.uncompressedData.activateBoostResponseField;
+                        if (ba) {
+                            if (ba.productUpdates && ba.productUpdates.length) {
+                                this.updateWalletInfo([ba.productUpdates[0].userWalletItem]);
+                            }
+                            if (ba.userBoostItem) {
+                                this.displayActiveBoosts([ba.userBoostItem]);
+                                var expMins = Math.floor((ba.userBoostItem.expiresInSeconds || 0) / 60);
+                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680; Expires in ' + expMins + ' min');
+                            } else {
+                                toastr.success('<b>[SERVER]:</b> Boost activated! &#x1F680;');
+                            }
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                        }
+                    } catch(baErr) {
+                        console.warn("[LM] Error parsing boost response:", baErr);
+                    }
                     break;
                 case 115:
-                    var u = r.uncompressedData.activateQuestResponseField;
-                    this.updateProducts(u.productUpdates);
-                    this.displayActiveQuests([u.userQuest])
+                    // Quest activation response
+                    try {
+                        var qa = r.uncompressedData.activateQuestResponseField;
+                        if (qa) {
+                            if (qa.productUpdates && qa.productUpdates.length) {
+                                this.updateProducts(qa.productUpdates);
+                            }
+                            if (qa.userQuest) {
+                                this.displayActiveQuests([qa.userQuest]);
+                                toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF; Type: ' + (qa.userQuest.type || 'unknown'));
+                            } else {
+                                toastr.success('<b>[SERVER]:</b> Quest activated! &#x1F3AF;');
+                            }
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                        }
+                    } catch(qaErr) {
+                        console.warn("[LM] Error parsing quest response:", qaErr);
+                    }
                     break;
                 case 116:
                     console.log("returnMessage = r.get_userTimedEventUpdatesField();");
