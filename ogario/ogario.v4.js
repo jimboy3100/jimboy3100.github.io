@@ -16002,7 +16002,19 @@ function thelegendmodproject() {
                                 url: url,
                                 productId: pID
                             };
-                        } else { //console.log("undefined skin", items[i].productId, skin ) 
+                            /* Also store by productId for fast ownership lookup */
+                            this.user.skins[pID] = this.user.skins[skin[0]];
+                        } else {
+                            /* Fallback: getLink failed (skin not in VanillaSkinUrlMap)
+                             * Store by productId anyway so ownership detection works */
+                            var fbPID = items[i].productId;
+                            this.user.skins[fbPID] = {
+                                amount: items[i].amount,
+                                type: 'premium',
+                                url: '',
+                                productId: fbPID
+                            };
+                            console.log("[LM] Skin not in map, stored by productId:", fbPID);
                         };
                         break;
                     case 4:
@@ -16028,14 +16040,25 @@ function thelegendmodproject() {
                         //this.user.skinCreateTokens = items[i].amount;
                         break;
                     case 11:
-                        var skin = this.getLink(items[i].productId),
-                            url = this.urlReplaces.hasOwnProperty(skin[0]) ? this.urlReplaces[skin[0]] : skin[0];
-                        if (skin) this.user.skins[skin[0]] = {
-                            amount: items[i].amount,
-                            type: skin[1],
-                            url: url,
-                            productId: items[i].productId
-                        };
+                        var skin = this.getLink(items[i].productId);
+                        if (skin) {
+                            var url = this.urlReplaces.hasOwnProperty(skin[0]) ? this.urlReplaces[skin[0]] : skin[0];
+                            this.user.skins[skin[0]] = {
+                                amount: items[i].amount,
+                                type: skin[1],
+                                url: url,
+                                productId: items[i].productId
+                            };
+                            this.user.skins[items[i].productId] = this.user.skins[skin[0]];
+                        } else {
+                            var fbPID = items[i].productId;
+                            this.user.skins[fbPID] = {
+                                amount: items[i].amount,
+                                type: 'premium',
+                                url: '',
+                                productId: fbPID
+                            };
+                        }
                         break;
                     case 12:
                         //this.user.gameContinueToken = items[i].amount;
@@ -16346,7 +16369,10 @@ function thelegendmodproject() {
                     return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + link1 + ".png", type];
                 } else if (window.VanillaSkinUrlMap) {
                     var mapKey = link.replace('skin_', '%');
-                    var mapUrl = window.VanillaSkinUrlMap[mapKey];
+                    var mapUrl = window.VanillaSkinUrlMap[mapKey]
+                        || window.VanillaSkinUrlMap[mapKey.toLowerCase()]
+                        || window.VanillaSkinUrlMap[link]
+                        || window.VanillaSkinUrlMap[link.toLowerCase()];
                     if (mapUrl) { return [mapUrl, type]; }
                 }
             }
@@ -16358,9 +16384,15 @@ function thelegendmodproject() {
                 img.style = "display:inline-block;width:100px;height:100px;border-radius: 50px;";
                 $("#player-skins").append(img);
             };
+            var seen = {};
             for (var [key, value] of Object.entries(s)) {
-                //if(value.hasOwnProperty('disabled')) return;
-                this.getImg(value.url, value.productId, callback);
+                if (!value || !value.productId) continue;
+                /* Skip duplicates (skins are dual-keyed by URL and productId) */
+                if (seen[value.productId]) continue;
+                seen[value.productId] = true;
+                if (value.url) {
+                    this.getImg(value.url, value.productId, callback);
+                }
             }
         },
         displayActiveBoosts(items) {
