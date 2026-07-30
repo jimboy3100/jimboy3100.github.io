@@ -8199,7 +8199,6 @@ function thelegendmodproject() {
                 }
 
                 var isCorsBlocked = url.includes('imgur.com') ||
-                    url.includes('agario.miniclippt.com') ||
                     url.includes('legendmod.ml');
 
                 var fallbackToImageTag = function () {
@@ -16320,8 +16319,7 @@ function thelegendmodproject() {
         getImg(url, name, callback) {
             const app = this;
             var img = new Image();
-            var isCorsBlocked = url.includes('imgur.com') ||
-                (url.includes('agario.miniclippt') && url.includes('/custom_skins/'));
+            var isCorsBlocked = url.includes('imgur.com');
             if (isCorsBlocked) {
                 img.referrerPolicy = 'no-referrer';
             } else {
