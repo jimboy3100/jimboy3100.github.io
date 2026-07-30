@@ -170,6 +170,7 @@ function SpecialDeals() {
             '<div class="tab-pane" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
             '<h5 style="color: #4fc3f7; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
+            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: #ffd740; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(255,215,64,0.3);">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
             '<p style="color: #aaa; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
@@ -244,6 +245,12 @@ function SpecialDeals() {
             var hasUID = !!(window.agarioEncodedUID);
             var hasConnection = !!(window.core && window.core.proxyMobileData);
             var allReady = isLoggedIn && hasUID && hasConnection;
+
+            // Live DNA & Coins sync
+            var dna = (window.application && window.application.user && window.application.user.dna) || 0;
+            var coins = (window.application && window.application.user && window.application.user.coins) || 0;
+            $('#dnaCountModal').text(dna.toLocaleString());
+            $('#coinsCountModal').text(coins.toLocaleString());
 
             // Upload tab elements
             if (allReady) {
