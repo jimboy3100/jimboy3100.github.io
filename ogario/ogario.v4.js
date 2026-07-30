@@ -12772,8 +12772,9 @@ function thelegendmodproject() {
                 : t.includes('imsolo.pro') ? 'imsolo'
                     : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
-                            : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
-                                : 'private';
+                            : (t.includes('delt.io') || t.includes('deltav4') || t.includes('delta')) ? 'delta'
+                                : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
+                                    : 'private';
 
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
@@ -12990,6 +12991,29 @@ function thelegendmodproject() {
                 this.sendBuffer(gView);
                 this.connectionOpened = true;
                 console.log('%c[Garix]%c Handshake step 1: sent opcode 171 (proto=' + this.garixProtocol + ' time=' + this.garixClientTime + ')', 'color:#f8a', 'color:inherit');
+            } else if (this.serverType === 'delta' || (this.ws && (this.ws.includes('delt.io') || this.ws.includes('deltav4')))) {
+                // ===== Delta Protocol Handshake: Opcode 126 (0x7E) =====
+                var dView = this.createView(5);
+                dView.setUint8(0, 126); // 0x7E - Client Protocol
+                dView.setUint32(1, 123456, true);
+                this.sendBuffer(dView);
+                this.connectionOpened = true;
+                console.log('%c[DeltaProtocol]%c Handshake: sent opcode 126 (protocol=123456)', 'color:#01d9cc', 'color:inherit');
+
+                // Start Delta 9-byte Ping Loop (Opcode 226 every 4000ms)
+                if (this.deltaPingInterval) clearInterval(this.deltaPingInterval);
+                var self = this;
+                this.deltaPingInterval = setInterval(function () {
+                    if (self.socket && self.socket.readyState === WebSocket.OPEN) {
+                        var pView = self.createView(9);
+                        pView.setUint8(0, 226);
+                        pView.setUint32(1, Math.floor(Math.random() * 100000), true);
+                        pView.setUint32(5, Date.now() >>> 0, true);
+                        self.sendBuffer(pView);
+                    } else {
+                        clearInterval(self.deltaPingInterval);
+                    }
+                }, 4000);
             } else {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
                 var view = this.createView(5);
