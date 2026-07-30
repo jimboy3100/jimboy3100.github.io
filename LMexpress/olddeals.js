@@ -46,6 +46,14 @@ function SpecialDeals() {
         localStorage.setItem("agarioEncodedUID", window.agarioEncodedUID);
     }
 
+    // Require UID to open — user must be logged in and have played
+    if (!window.agarioEncodedUID) {
+        if (window.toastr) {
+            toastr.warning('<b>[SHOP]:</b> Log in with Google/Facebook and play a game first to access skins.');
+        }
+        return;
+    }
+
     // --- Inject skin shop CSS ---
         if (!document.getElementById('skinShopStyles')) {
             var styleEl = document.createElement('style');
@@ -411,8 +419,9 @@ function populateSkins() {
             }
 
             if (query !== '') {
-                var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
-                if (name.indexOf(query) === -1) return false;
+                var name = (s.displayName || s.productId.replace('skin_', '').replace(/_/g, ' ')).toLowerCase();
+                var pid = s.productId.toLowerCase();
+                if (name.indexOf(query) === -1 && pid.indexOf(query) === -1) return false;
             }
 
             return true;
