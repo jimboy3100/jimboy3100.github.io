@@ -59,10 +59,12 @@ function SpecialDeals() {
             var styleEl = document.createElement('style');
             styleEl.id = 'skinShopStyles';
             styleEl.textContent = [
-                '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid #444; margin: 0 -15px; padding: 0 15px; }',
-                '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: #aaa; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
-                '#specialShopModal .shop-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }',
-                '#specialShopModal .shop-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }',
+                '#specialShopModal .modal-content { background: #1a1d24 !important; color: #eee !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; }',
+                '#specialShopModal .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; }',
+                '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid #333; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
+                '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: #90a4ae !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
+                '#specialShopModal .shop-tab:hover { color: #4fc3f7 !important; background: rgba(79,195,247,0.12); }',
+                '#specialShopModal .shop-tab.active { color: #4fc3f7 !important; border-bottom-color: #4fc3f7 !important; background: rgba(79,195,247,0.08); }',
                 '#specialShopModal .tab-pane { display: none; }',
                 '#specialShopModal .tab-pane.active { display: block; }',
                 '.active-skin-banner { display: flex; align-items: center; background: rgba(79, 195, 247, 0.12); border: 1px solid rgba(79, 195, 247, 0.4); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }',
@@ -72,7 +74,7 @@ function SpecialDeals() {
                 '.active-skin-banner .info .name { font-size: 14px; font-weight: 700; color: #fff; font-family: "Roboto Condensed", sans-serif; }',
                 '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; }',
                 '.active-skin-banner .unequip-btn:hover { background: #ff5722; color: #fff; }',
-                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
+                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.4); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
                 '#skinSearchBar:focus { border-color: #4fc3f7; box-shadow: 0 0 5px rgba(79,195,247,0.3); }',
                 '#skinSearchBar::placeholder { color: #888; }',
                 '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px; }',
@@ -80,13 +82,14 @@ function SpecialDeals() {
                 '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
                 '.skin-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
                 '.skin-grid::-webkit-scrollbar-thumb:hover { background: #777; }',
-                '.skin-card { position: relative; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
+                '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
                 '.skin-card:hover { border-color: #4fc3f7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,195,247,0.2); }',
                 '.skin-card.equipped { border-color: #00e676 !important; background: rgba(0, 230, 118, 0.12) !important; box-shadow: 0 0 10px rgba(0,230,118,0.3) !important; }',
                 '.skin-card .equipped-badge { position: absolute; top: 3px; left: 3px; background: #00e676; color: #000; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; z-index: 2; }',
                 '.skin-card .owned-badge { position: absolute; top: 3px; right: 18px; background: #ffd740; color: #000; font-size: 8px; font-weight: 800; padding: 1px 3px; border-radius: 3px; text-transform: uppercase; z-index: 2; }',
                 '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; margin: 2px auto; }',
                 '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
+                '.skin-card:hover .skin-name { color: #fff; }',
                 '.skin-card .skin-color { width: 10px; height: 10px; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 1px solid rgba(255,255,255,0.3); }',
                 '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
                 '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
@@ -98,13 +101,18 @@ function SpecialDeals() {
                 '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #888; font-family: "Roboto Condensed", sans-serif; }',
                 '.skin-stats span { color: #4fc3f7; font-weight: 700; }',
                 '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.3); border-radius: 4px; color: #4fc3f7; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
-                '.skin-load-more:hover { background: rgba(79,195,247,0.25); }',
+                '.skin-load-more:hover { background: rgba(79,195,247,0.25); color: #81d4fa; }',
+                '#specialShopModal input.form-control, #specialShopModal select.form-control { background: #252830 !important; color: #eee !important; border: 1px solid #444 !important; }',
+                '#specialShopModal #buy_starterpack { background: rgba(0,0,0,0.3); border: 1px solid #444; border-left: 4px solid #4fc3f7; padding: 10px; border-radius: 4px; color: #eee; }',
+                '#specialShopModal #buy_starterpack:hover { background: rgba(79,195,247,0.15); border-color: #4fc3f7; }',
+                '#specialShopModal #buy_starterpack h4, #specialShopModal #buy_starterpack h5 { color: #4fc3f7; }',
+                '#specialShopModal #buy_starterpack:hover h4 { color: #81d4fa; }',
                 // Loading spinner
                 '.skin-grid-loading { grid-column: 1/-1; text-align: center; padding: 40px; color: #aaa; font-size: 13px; }',
                 '.skin-grid-loading .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(79,195,247,0.3); border-top-color: #4fc3f7; border-radius: 50%; animation: skinSpin 0.8s linear infinite; margin-bottom: 8px; }',
                 '@keyframes skinSpin { to { transform: rotate(360deg); } }',
                 // Drag-and-drop zone
-                '.upload-drop-zone { border: 2px dashed #555; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: all 0.2s; }',
+                '.upload-drop-zone { border: 2px dashed #555; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: all 0.2s; background: rgba(0,0,0,0.2); }',
                 '.upload-drop-zone.drag-over { border-color: #4fc3f7; background: rgba(79,195,247,0.08); }',
                 '.upload-clear-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 6px; }',
                 '.upload-clear-btn:hover { background: #ff5722; color: #fff; }',
@@ -892,13 +900,33 @@ function buySkin(productId) {
         toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
         return;
     }
-    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
-    if (!uid) {
-        toastr && toastr.warning('<b>[SHOP]:</b> No UID found. Log in again.');
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
         return;
     }
+
+    // Disable the clicked button temporarily (10s cooldown)
+    var btn = $('.skin-card[data-product-id="' + productId + '"] .skin-btn-buy');
+    if (btn.data('buying')) return; // already in progress
+    btn.data('buying', true).css({ opacity: 0.5, pointerEvents: 'none' });
+    setTimeout(function() {
+        btn.data('buying', false).css({ opacity: 1, pointerEvents: 'auto' });
+    }, 10000);
+
+    // Try protocol-based soft purchase first (DNA buy — opcode 70)
+    if (window.application && typeof window.application.softPurchase === 'function') {
+        var purchaseId = productId; // skin productId IS the purchaseId
+        var sent = window.application.softPurchase(purchaseId);
+        if (sent) {
+            console.log('[SHOP]: Sent soft purchase for ' + productId);
+            return;
+        }
+    }
+
+    // Fallback: Payment URL (real-money purchase)
+    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
     var currency = $('#BuyDealCurrency').val() || 'USD';
-    console.log('[SHOP]: Opening payment for ' + productId);
+    console.log('[SHOP]: Opening payment URL for ' + productId);
     $.ajax({
         type: "GET",
         url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,

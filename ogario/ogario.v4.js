@@ -10837,6 +10837,44 @@ function thelegendmodproject() {
             footerField.push(...xmlBytes);
             return footerField; // This is a standard Array
         },
+        /* ─── §4.20b Soft Purchase (DNA buy) ─── */
+        softPurchase(purchaseId) {
+            console.log("[LM] Soft Purchase — id: " + purchaseId);
+            if (!purchaseId) {
+                toastr.error("<b>[ERROR]:</b> No purchase ID specified.");
+                return false;
+            }
+            if (window.mesega) {
+                try {
+                    var buffer = window.mesega.encode({
+                        contentType: 1,
+                        uncompressedData: {
+                            type: 70,
+                            softPurchaseRequestField: {
+                                purchaseId: purchaseId
+                            }
+                        }
+                    }).finish();
+
+                    if (window.core && window.core.proxyMobileData) {
+                        window.core.proxyMobileData(buffer);
+                        console.log("%c[LM] SUCCESS: Sent soft purchase request (" + buffer.length + " bytes) for " + purchaseId, "color: #00FF00;");
+                        toastr.info("<b>[SERVER]:</b> Purchase request sent for " + purchaseId.replace('com.miniclip.agar.io.', '') + "...");
+                        return true;
+                    } else {
+                        toastr.error("<b>[ERROR]:</b> Not connected. Play a game first.");
+                        return false;
+                    }
+                } catch (e) {
+                    console.error("[LM] Protobuf encode error (soft purchase):", e);
+                    toastr.error("<b>[ERROR]:</b> Failed to encode purchase: " + e.message);
+                    return false;
+                }
+            } else {
+                toastr.error("<b>[ERROR]:</b> Protocol not ready. Refresh and try again.");
+                return false;
+            }
+        },
         /* ─── §4.21 Skin Upload ─── */
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
             console.log("[LM] Upload Started. Name: " + skinName + " Image Size: " + imageUint8Array.length + " bytes");
@@ -15566,16 +15604,74 @@ function thelegendmodproject() {
                     }
                     break;
                 case 71:
-                    console.log("returnMessage = r.get_softPurchaseResponseField();");
+                    // Soft purchase response (DNA-based buy)
+                    try {
+                        var sp = r.uncompressedData.softPurchaseResponseField;
+                        if (sp) {
+                            var spResult = sp.result || 0;
+                            var spId = sp.purchaseId || '';
+                            console.log("[LM] Soft Purchase Response — result: " + spResult + ", id: " + spId);
+                            if (spResult === 1 || spResult === 0) {
+                                toastr.success('<b>[SERVER]:</b> Purchase successful! &#x2714; ' + spId.replace('com.miniclip.agar.io.', ''));
+                                if (sp.productUpdates && sp.productUpdates.length) {
+                                    this.updateProducts(sp.productUpdates);
+                                }
+                            } else if (spResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> Purchase failed — not enough DNA/coins.');
+                            } else if (spResult === 3) {
+                                toastr.error('<b>[SERVER]:</b> Purchase failed — item not available.');
+                            } else {
+                                toastr.warning('<b>[SERVER]:</b> Purchase response: code ' + spResult);
+                            }
+                        }
+                    } catch(spErr) {
+                        console.warn("[LM] Error parsing soft purchase response:", spErr);
+                    }
                     break;
                 case 74:
-                    console.log("returnMessage = r.get_inappPurchaseResponseField();");
+                    // In-app purchase response
+                    try {
+                        var iap = r.uncompressedData.inappPurchaseResponseField;
+                        if (iap) {
+                            console.log("[LM] IAP Response — result: " + iap.result + ", txn: " + iap.transactionId);
+                            if (iap.result === 1 || iap.result === 0) {
+                                toastr.success('<b>[SERVER]:</b> In-app purchase confirmed! &#x2714;');
+                                if (iap.productUpdates && iap.productUpdates.length) {
+                                    this.updateProducts(iap.productUpdates);
+                                }
+                            } else {
+                                toastr.error('<b>[SERVER]:</b> In-app purchase failed (code ' + iap.result + ')');
+                            }
+                        }
+                    } catch(iapErr) {
+                        console.warn("[LM] Error parsing IAP response:", iapErr);
+                    }
                     break;
                 case 75:
-                    console.log("returnMessage = r.get_walletUpdatesField();");
+                    // Wallet updates (balance change notification)
+                    try {
+                        var wu = r.uncompressedData.walletUpdatesField;
+                        if (wu && wu.productUpdates && wu.productUpdates.length) {
+                            console.log("[LM] Wallet update — " + wu.productUpdates.length + " items changed");
+                            this.updateProducts(wu.productUpdates);
+                        }
+                    } catch(wuErr) {
+                        console.warn("[LM] Error parsing wallet updates:", wuErr);
+                    }
                     break;
                 case 76:
-                    console.log("returnMessage = r.get_purchaseWalletUpdatesField();");
+                    // Purchase wallet updates (post-buy wallet sync)
+                    try {
+                        var pwu = r.uncompressedData.purchaseWalletUpdatesField;
+                        if (pwu) {
+                            console.log("[LM] Purchase wallet update — id: " + (pwu.purchaseId || 'unknown'));
+                            if (pwu.walletUpdates && pwu.walletUpdates.productUpdates) {
+                                this.updateProducts(pwu.walletUpdates.productUpdates);
+                            }
+                        }
+                    } catch(pwuErr) {
+                        console.warn("[LM] Error parsing purchase wallet updates:", pwuErr);
+                    }
                     break;
                 case 78:
                     console.log("returnMessage = r.get_offerBundleResponseField();");
