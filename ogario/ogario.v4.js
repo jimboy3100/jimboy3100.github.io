@@ -2157,7 +2157,7 @@ setTimeout(function () {
          * Primary: legendmod.ml/vanillaskins/ (our mirror, no CORS issues)
          * The onerror fallback chain handles missing files via legendmod.ml → proxy → CDN */
         window.VanillaSkinUrlMap = {};
-        var mirrorBase = "https://jimboy3100.github.io/vanillaskins/";
+        var mirrorBase = "https://jimboy3000.github.io/vanillaskins/";
         for (var i = 0; i < window.EquippableSkins.length; i++) {
             var skin = window.EquippableSkins[i];
             var url = null;
@@ -8254,7 +8254,8 @@ function thelegendmodproject() {
                         var isCustomSkin = filename.startsWith('skin_custom_');
                         var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
                         var isMirror = url.includes('legendmod.ml') ||
-                            url.includes('jimboy3100.github.io');
+                            url.includes('jimboy3100.github.io') ||
+                            url.includes('jimboy3000.github.io');
 
                         if (isCustomSkin) {
                             if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
@@ -8263,20 +8264,20 @@ function thelegendmodproject() {
                             return;
                         }
 
-                        if (url.includes('jimboy3100.github.io/vanillaskins/')) {
+                        if (url.includes('jimboy3000.github.io/vanillaskins/')) {
                             app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('legendmod.ml/vanillaskins/')) {
                             app.loadSkin(img, PROXY + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins2/')) {
-                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins/')) {
                             app.loadSkin(img, PROXY + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/lowresskins/')) {
-                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('/lowresskins/')) {
                             var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
@@ -8286,10 +8287,10 @@ function thelegendmodproject() {
                             app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3100.github.io/lowresskins/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                         }
                     };
                     img[url].src = url;
@@ -9204,17 +9205,17 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             var app = this;
             if (!this.privateMode) {
-                /* Public server: ogario/LM handshake.
-                 * Opcode 5 triggers ProtocolLegacy detection on the server.
-                 * Opcode 0 with version 401 identifies us as Legend Mod. */
+                /* Public server: ogario handshake for /ws endpoint.
+                 * /ws serves the ogario-compat protocol (UInt32 playerID).
+                 * /delta7 requires WebSocketRTC + fingerprint (500 without it). */
                 this.socket.onopen = () => {
                     var buf = app.createView(3);
-                    buf.setUint8(0, 5);
-                    buf.setUint16(1, 20, true);
-                    app.sendBuffer(buf);
-
                     buf.setUint8(0, 0);
                     buf.setUint16(1, 401, true);
+                    app.sendBuffer(buf);
+
+                    buf.setUint8(0, 5);
+                    buf.setUint16(1, 20, true);
                     app.sendBuffer(buf);
 
                     app.comebackTimeout = 500;
@@ -9228,10 +9229,8 @@ function thelegendmodproject() {
                  * We wire handleMessage into ogarioWS relay instead. */
                 this.socket.onopen = () => { app.sendPartyData(); };
             }
-            this.socket.onclose = function (event) {
-                console.log('%c[LM]%c Chat socket closed (' + (event.code || '?') + ' ' + (event.reason || '') + ')', 'color:green', 'color:blue');
-                app.playerID = null;
-                app.reconnect();
+            this.socket.onclose = function (buf) {
+                //app.flushData();
             }
             this.socket.onerror = function (buf) {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
@@ -9369,10 +9368,6 @@ function thelegendmodproject() {
                     break;
                 case 45:
                     this.readWavePing(message);
-                    break;
-                case 15:
-                    /* Captcha request from chat server — log but cannot solve from LM */
-                    console.log('%c[LM]%c Chat server requested captcha (opcode 15)', 'color:green', 'color:orange');
                     break;
                 case 96:
                     break;
@@ -9741,50 +9736,31 @@ function thelegendmodproject() {
             var gamemode = this.gameMode || $('#gamemode').val() || '';
             var partyToken = this.partyToken || '';
 
-            /* Match DeltaClient clientTokenTag format:
-             * [opcode:u8][flags:u8][field1:UTF16Z]...[fieldN:UTF16Z]
-             * Flags: bit0=serverToken, bit1=clanTag, bit2=region, bit3=gamemode, bit4=partyToken */
-            function writeUTF16Zero(str, view, offset) {
+            function writeUTF16Len(str, view, offset) {
+                view.setUint8(offset++, str.length & 0xFF);
                 for (var i = 0; i < str.length; i++) {
                     view.setUint16(offset, str.charCodeAt(i), true);
                     offset += 2;
                 }
-                view.setUint16(offset, 0, true); // null terminator
-                offset += 2;
                 return offset;
             }
 
-            var flags = 0;
-            if (serverToken) flags |= 1;
-            if (clanTag) flags |= 2;
-            if (region) flags |= 4;
-            if (gamemode) flags |= 8;
-            if (partyToken) flags |= 16;
-
-            var size = 1 + 1; // opcode + flags
-            if (flags & 1) size += (serverToken.length + 1) * 2;
-            if (flags & 2) size += (clanTag.length + 1) * 2;
-            if (flags & 4) size += (region.length + 1) * 2;
-            if (flags & 8) size += (gamemode.length + 1) * 2;
-            if (flags & 16) size += (partyToken.length + 1) * 2;
-
+            var size = 1 + (1 + serverToken.length * 2) + (1 + clanTag.length * 2) + (1 + region.length * 2) + (1 + gamemode.length * 2) + (1 + partyToken.length * 2);
             var buffer = new ArrayBuffer(size);
             var view = new DataView(buffer);
             view.setUint8(0, 9); // Opcode 9: Delta room registration
-            view.setUint8(1, flags);
-            var off = 2;
-            if (flags & 1) off = writeUTF16Zero(serverToken, view, off);
-            if (flags & 2) off = writeUTF16Zero(clanTag, view, off);
-            if (flags & 4) off = writeUTF16Zero(region, view, off);
-            if (flags & 8) off = writeUTF16Zero(gamemode, view, off);
-            if (flags & 16) off = writeUTF16Zero(partyToken, view, off);
+            var off = 1;
+            off = writeUTF16Len(serverToken, view, off);
+            off = writeUTF16Len(clanTag, view, off);
+            off = writeUTF16Len(region, view, off);
+            off = writeUTF16Len(gamemode, view, off);
+            off = writeUTF16Len(partyToken, view, off);
             ws.send(buffer);
         },
         sendDeltaPlayerUpdate() {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1 || !this.playerID) return;
-            var nick = ogarcopythelb.nick;
-            if (!nick && nick !== '') return; // Guard: don't send update before nick is initialized
+            var nick = ogarcopythelb.nick || '';
             var skin = ogarcopythelb.skinURL || '';
             var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
             var px = this.getPlayerX() || 0;
@@ -12909,8 +12885,8 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            if (this.serverType === 'garix') {
-                // Generate fingerprint lazily on first Garix connection
+            if (this.serverType === 'garix' || this.serverType === 'delta' || this.serverType === 'expandingland') {
+                // Generate valid fingerprint lazily on connection
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
@@ -15794,11 +15770,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html(`💰` + this.user.coins);
+                                $("#coins").html('&#x1F4B0; ' + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html(`🧬` + this.user.dna);
+                                $("#dna").html('&#x1F9EC; ' + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -15863,7 +15839,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html(`🏅` + this.user.trophy);
+                        $("#trophy").html('&#x1F3C6; ' + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;
@@ -16159,7 +16135,7 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/vanillaskins')) {
+                } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
                     var newURL = "https://jimboy3100.github.io/lowresskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
@@ -16168,7 +16144,7 @@ function thelegendmodproject() {
                     app.getImg(newURL, name, callback);
                     return newURL;
 
-                } else if (url.includes('jimboy3100.github.io/lowresskins')) {
+                } else if (url.includes('jimboy3100.github.io/lowresskins') || url.includes('jimboy3000.github.io/lowresskins')) {
                     if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
                     }
@@ -17805,12 +17781,14 @@ Most cells eaten   : ${mostCellsEaten}
             var encoder = new TextEncoder();
             var data = encoder.encode(raw);
             var hashBuffer = await crypto.subtle.digest("SHA-256", data);
-            var hashArray = Array.from(new Uint8Array(hashBuffer));
-            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
-            LM.garixFingerprint = hex.slice(0, 32);
-            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
+            var hashArray = Array.from(new Uint8Array(hashBuffer)).slice(0, 16);
+            for (var fi = 0; fi < 16; fi += 5) {
+                hashArray[fi] = hashArray[fi + 2] ^ hashArray[fi + 3];
+            }
+            LM.garixFingerprint = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            console.log('[Garix/Delta] Valid fingerprint generated:', LM.garixFingerprint);
         } catch (e) {
-            console.warn('[Garix] Fingerprint generation failed:', e);
+            console.warn('[Garix/Delta] Fingerprint generation failed:', e);
         }
     };
     try {
@@ -23361,7 +23339,7 @@ function preUserLeaguesInfoRequest() {
 function openhelper() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/extras/legendhelper.js";
+    s.src = "https://www.legendmod.ml/legendhelper.js";
     $("body").append(s);
 }
 
@@ -23375,7 +23353,7 @@ function opennamechars() {
 function legendformIframe() {
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/extras/legendformIframe.js";
+    s.src = "https://www.legendmod.ml/legendformIframe.js";
     $("body").append(s);
 }
 
@@ -23807,7 +23785,7 @@ Array.prototype.stDev = function stDev() {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'www.legendmod.ml/vanillaskins' },
         { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'www.legendmod.ml/lowresskins' },
-        { match: /jimboy3000\.github\.io/g, replace: 'jimboy3100.github.io' },
+        { match: /jimboy3000\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /jimboy3100\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'www.legendmod.ml/agario/live/flags' },
         { match: /(?:www\.)?legendmod\.ml\/themes/g, replace: 'themes.expanding.land' },
