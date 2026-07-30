@@ -549,9 +549,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
     };
 
-    /* Reset ALL login state on logout so provider switching works */
+    /* Reset ALL login state on logout so provider switching works.
+     * BUT skip during game-socket reconnect — only user-initiated logout
+     * should clear auth (window._lwReconnecting is set by onDisconnect). */
     var _origLogout = window.logout;
     window.logout = function () {
+        if (window._lwReconnecting) {
+            console.log('[LW AUTH] Logout called during reconnect — skipping auth reset');
+            if (_origLogout) _origLogout.apply(this, arguments);
+            return;
+        }
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
         /* Reset UI */

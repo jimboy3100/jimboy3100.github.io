@@ -693,7 +693,22 @@ function legendmaster(self) {
         },
         onDisconnect() {
             console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " onDisconnect called, reconnecting");
+            /* Preserve login state during reconnect — the core's reconnect()
+             * may internally call logout(), but we don't want to lose the
+             * Google/Facebook session just because the game server disconnected. */
+            window._lwReconnecting = true;
+            var savedToken = this.accessToken;
+            var savedContext = this.context;
+            var savedLoggedIn = window.loggedIn;
             this.reconnect();
+            /* Restore in case reconnect() cleared them synchronously */
+            if (savedToken && savedContext) {
+                this.accessToken = savedToken;
+                this.context = savedContext;
+                window.loggedIn = savedLoggedIn;
+            }
+            /* Clear flag after a tick to catch async logout calls too */
+            setTimeout(function() { window._lwReconnecting = false; }, 500);
         },
         recaptchaRequested() {
             window.agarCaptcha.requestCaptcha(true);
