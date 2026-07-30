@@ -4951,7 +4951,7 @@ function thelegendmodproject() {
         version: 'v1',
         privateMode: false,
         protocolMode: true,
-        publicIP: 'wss://chat.delt.io/delta7?protocol=v1',
+        publicIP: 'wss://chat.delt.io/delta7?protocol=v1&m=2',
         comebackTimeout: 500,
         privateIP: null,
         updateInterval: 1000,
