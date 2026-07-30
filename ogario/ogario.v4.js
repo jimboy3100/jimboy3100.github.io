@@ -9479,8 +9479,8 @@ function thelegendmodproject() {
             var targetID = view.getUint16(offset, true); offset += 2;
 
             function readUTF16Len() {
-                if (offset + 1 >= view.byteLength) return '';
-                var len = view.getUint16(offset, true); offset += 2;
+                if (offset >= view.byteLength) return '';
+                var len = view.getUint8(offset++);
                 var str = '';
                 for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
                     str += String.fromCharCode(view.getUint16(offset, true));
@@ -9635,9 +9635,8 @@ function thelegendmodproject() {
             if (this[name] !== null && this[name] === str) {
                 return;
             }
-            var ws = window.ogarioWS;
-            if (ws && typeof ws.send === 'function') {
-                ws.send(this.strToBuff(offset, str).buffer);
+            if (this.isSocketOpen()) {
+                this.sendBuffer(this.strToBuff(offset, str));
                 this[name] = str;
             }
         },
@@ -9654,9 +9653,8 @@ function thelegendmodproject() {
             this.sendPlayerData(13, 'lastSentCustomColor', ogarcopythelb.color);
         },
         sendPlayerColor() {
-            var ws = window.ogarioWS;
-            if (ws && typeof ws.send === 'function' && ogario.playerColor) {
-                ws.send(this.strToBuff(14, ogario.playerColor).buffer);
+            if (this.isSocketOpen() && ogario.playerColor) {
+                this.sendBuffer(this.strToBuff(14, ogario.playerColor));
             }
         },
         sendPartyToken() {
@@ -9695,9 +9693,8 @@ function thelegendmodproject() {
         sendServerRegion() {
             if (this.region) {
                 var region = this.region.split('-');
-                var ws = window.ogarioWS;
-                if (ws && typeof ws.send === 'function') {
-                    ws.send(this.strToBuff(17, region[0]).buffer);
+                if (this.isSocketOpen()) {
+                    this.sendBuffer(this.strToBuff(17, region[0]));
                 }
             }
         },
@@ -9716,9 +9713,8 @@ function thelegendmodproject() {
                 case ':party':
                     gamemode = 'PTY';
             }
-            var ws = window.ogarioWS;
-            if (ws && typeof ws.send === 'function') {
-                ws.send(this.strToBuff(18, gamemode).buffer);
+            if (this.isSocketOpen()) {
+                this.sendBuffer(this.strToBuff(18, gamemode));
             }
         },
         sendServerData() {
@@ -15774,11 +15770,11 @@ function thelegendmodproject() {
                         switch (name) {
                             case "coin":
                                 this.user.coins = items[i].amount;
-                                $("#coins").html('&#x1F4B0; ' + this.user.coins);
+                                $("#coins").html(`💰` + this.user.coins);
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
-                                $("#dna").html('&#x1F9EC; ' + this.user.dna);
+                                $("#dna").html(`🧬` + this.user.dna);
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;
@@ -15843,7 +15839,7 @@ function thelegendmodproject() {
                         break;
                     case 7:
                         this.user.trophy = items[i].amount;
-                        $("#trophy").html('&#x1F3C6; ' + this.user.trophy);
+                        $("#trophy").html(`🏅` + this.user.trophy);
                         break;
                     case 8:
                         this.user.skinPieces[items[i].productId] = items[i].amount;

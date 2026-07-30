@@ -97,14 +97,14 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; width: 580px; max-width: 95vw; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">' +
-            '<div class="modal-content" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(79, 195, 247, 0.3);">' +
+            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 560px;">' +
+            '<div class="modal-content">' +
 
             // Header
-            '<div id="CloseSpecialDeals2" class="modal-header" style="position: relative; text-align: center; padding: 12px 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.1);">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 15px; top: 12px; opacity: 0.8; font-size: 22px; color: #fff;"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
-            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal" style="position: absolute; right: 40px; top: 12px; opacity: 0.8; font-size: 18px; color: #4fc3f7; margin-right: 8px;"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7; margin: 0; font-size: 18px; text-align: center; width: 100%; display: block;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
+            '<div id="CloseSpecialDeals2" class="modal-header">' +
+            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
+            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
             // Tab bar (Skins active by default)
@@ -405,25 +405,23 @@ function populateSkins() {
             return;
         }
 
-        var app = window.application || (typeof application !== 'undefined' ? application : null);
-        var userSkins = (app && app.user && app.user.skins) || {};
+        var query = $('#skinSearchBar').val().toLowerCase().trim();
+        var userSkins = (window.application && window.application.user && window.application.user.skins) || {};
 
         if (currentFilter === 'owned') {
             var ownedList = [];
             var seenIds = {};
 
-            // 1. Extract from application.user.skins
             for (var k in userSkins) {
                 if (!userSkins.hasOwnProperty(k)) continue;
                 var item = userSkins[k];
-                if (!item) continue;
                 var pid = item.productId || k;
                 if (seenIds[pid]) continue;
                 seenIds[pid] = true;
 
-                var imgUrl = item.url || k;
-                if (app && typeof app.getLink === 'function') {
-                    var linkRes = app.getLink(pid);
+                var imgUrl = item.url || '';
+                if (window.application && typeof window.application.getLink === 'function') {
+                    var linkRes = window.application.getLink(pid);
                     if (linkRes && linkRes[0]) imgUrl = linkRes[0];
                 }
 
@@ -436,35 +434,13 @@ function populateSkins() {
                 }
 
                 if (matchedCatalog) {
-                    ownedList.push({
-                        productId: matchedCatalog.productId,
-                        gameplayId: matchedCatalog.gameplayId,
-                        image: matchedCatalog.image,
-                        url: imgUrl || matchedCatalog.image,
-                        cellColor: matchedCatalog.cellColor
-                    });
+                    ownedList.push(matchedCatalog);
                 } else {
                     ownedList.push({
                         productId: pid,
                         gameplayId: pid,
                         image: '',
                         url: imgUrl,
-                        isCustom: true
-                    });
-                }
-            }
-
-            // 2. Include window.UserVanillaSkin if present and not seen yet
-            if (window.UserVanillaSkin) {
-                var uvUrl = window.UserVanillaSkin;
-                var uvPid = "skin_custom_" + uvUrl.split('custom_skins/').pop().replace('.png', '').replace(/\?.*/, '');
-                if (!seenIds[uvPid]) {
-                    seenIds[uvPid] = true;
-                    ownedList.push({
-                        productId: uvPid,
-                        gameplayId: uvPid,
-                        image: '',
-                        url: uvUrl,
                         isCustom: true
                     });
                 }
