@@ -91,24 +91,66 @@ function SpecialDeals() {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 540px;">' +
+            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 560px;">' +
             '<div class="modal-content">' +
 
             // Header
             '<div id="CloseSpecialDeals2" class="modal-header">' +
             '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
             '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
-            // Tab bar
+            // Tab bar (Skins active by default)
             '<div class="shop-tabs">' +
-            '<div class="shop-tab active" data-tab="deals"><i class="fa fa-briefcase"></i> Deals</div>' +
-            '<div class="shop-tab" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
+            '<div class="shop-tab active" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
+            '<div class="shop-tab" data-tab="upload"><i class="fa fa-upload"></i> Custom Skin Uploader</div>' +
+            '<div class="shop-tab" data-tab="deals"><i class="fa fa-briefcase"></i> Special Deals</div>' +
             '</div>' +
 
-            // === Deals tab (original content) ===
-            '<div class="tab-pane active" id="tab-deals">' +
+            // === 1. Skins tab (Default active) ===
+            '<div class="tab-pane active" id="tab-skins">' +
+            '<div class="modal-body">' +
+
+            // Active Skin Banner
+            '<div class="active-skin-banner" id="activeSkinBanner">' +
+            '<img id="activeSkinImg" src="" alt="Active Skin" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
+            '<div class="info">' +
+            '<div class="title">&#x2714; Currently Equipped Skin</div>' +
+            '<div class="name" id="activeSkinName">None (Default)</div>' +
+            '</div>' +
+            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">Unequip</button>' +
+            '</div>' +
+
+            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
+            '<div class="skin-grid" id="skinGrid"></div>' +
+            '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
+            '<button class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
+            '</div>' +
+            '</div>' +
+
+            // === 2. Custom Skin Uploader tab ===
+            '<div class="tab-pane" id="tab-upload">' +
+            '<div class="modal-body" style="text-align: center;">' +
+            '<h5 style="color: #4fc3f7; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
+            '<p style="color: #aaa; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
+            '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
+            '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">' +
+            '<input id="legendSkinColorModal" type="color" value="#FFFF00" style="width: 30%; height: 34px; padding: 2px; border: 1px solid #555; background: #222; border-radius: 4px; cursor: pointer;">' +
+            '</div>' +
+            '<div style="text-align: center; margin-bottom: 12px;">' +
+            '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid #01d9cc; background-color: #000; box-shadow: 0 0 12px rgba(1,217,204,0.3);"></canvas>' +
+            '</div>' +
+            '<label for="legendUploadInputModal" class="btn btn-primary" style="margin-bottom: 8px; width: 220px; font-weight: 700; background: #0288d1; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
+            '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
+            '<br>' +
+            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="width: 220px; font-weight: 700;">Upload & Buy (90 DNA)</button>' +
+            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: #888;">Select an image to process</div>' +
+            '</div>' +
+            '</div>' +
+
+            // === 3. Deals tab ===
+            '<div class="tab-pane" id="tab-deals">' +
             '<div class="modal-body">' +
             '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' +
             '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend Encoded uid <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
@@ -131,28 +173,6 @@ function SpecialDeals() {
             '</div>' +
             '</div>' +
 
-            // === Skins tab (new) ===
-            '<div class="tab-pane" id="tab-skins">' +
-            '<div class="modal-body">' +
-
-            // Active Skin Banner
-            '<div class="active-skin-banner" id="activeSkinBanner">' +
-            '<img id="activeSkinImg" src="" alt="Active Skin" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
-            '<div class="info">' +
-            '<div class="title">&#x2714; Currently Equipped Skin</div>' +
-            '<div class="name" id="activeSkinName">None (Default)</div>' +
-            '</div>' +
-            '<button class="btn btn-sm btn-primary" style="margin-right: 6px; font-weight: 700; background: #01d9cc; border: none; color: #000;" onclick="openCustomSkinUploader();">&#x1F3A8; Upload Custom Skin</button>' +
-            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">Unequip</button>' +
-            '</div>' +
-
-            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
-            '<div class="skin-grid" id="skinGrid"></div>' +
-            '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
-            '<button class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
-            '</div>' +
-            '</div>' +
-
             '</div></div></div>'
         );
 
@@ -165,6 +185,71 @@ function SpecialDeals() {
             populateLibConfig();
         }, 2500);
 
+        // --- Auto-populate Skins tab on open since it is default active ---
+        if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+            populateSkins();
+        } else {
+            setTimeout(populateSkins, 1500);
+        }
+
+        // --- Embedded Custom Skin Uploader Handlers ---
+        var processedBufferModal = null;
+        function processAndFormatModal(src) {
+            var img = new Image();
+            if (typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'))) {
+                img.crossOrigin = "Anonymous";
+            }
+            img.onload = function() {
+                var canvas = document.getElementById("legendCanvasModal");
+                if (!canvas) return;
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, 512, 512);
+                ctx.drawImage(img, 0, 0, 512, 512);
+
+                canvas.toBlob(function(blob) {
+                    if (!blob) return;
+                    var reader = new FileReader();
+                    reader.onload = function() {
+                        processedBufferModal = new Uint8Array(reader.result);
+                        var kb = (processedBufferModal.length / 1024).toFixed(1);
+                        if (processedBufferModal.length > 102400) {
+                            $('#legendStatusModal').text("Too Big: " + kb + "KB (Limit 100KB)").css('color', '#ff5252');
+                            $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
+                        } else {
+                            $('#legendStatusModal').text("PNG Ready: " + kb + "KB").css('color', '#00e676');
+                            $('#legendSaveBtnModal').prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                        }
+                    };
+                    reader.readAsArrayBuffer(blob);
+                }, 'image/png');
+            };
+            img.onerror = function() {
+                $('#legendStatusModal').text("Error loading image").css('color', '#ff5252');
+            };
+            img.src = src;
+        }
+
+        $('#legendUploadInputModal').off('change').on('change', function(e) {
+            var file = e.target.files && e.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    processAndFormatModal(evt.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $('#legendSaveBtnModal').off('click').on('click', function() {
+            var name = $('#legendSkinNameModal').val() || "test";
+            var color = $('#legendSkinColorModal').val() || "#FFFF00";
+            if (processedBufferModal && window.application && typeof window.application.uploadCustomSkin === 'function') {
+                window.application.uploadCustomSkin(processedBufferModal, name, color);
+            } else {
+                toastr.warning("<b>[SERVER]:</b> Skin processing not ready or play game first.");
+            }
+        });
+
         // --- Tab switching ---
         $('.shop-tab').on('click', function() {
             var tab = $(this).data('tab');
@@ -173,7 +258,6 @@ function SpecialDeals() {
             $('.tab-pane').removeClass('active');
             $('#tab-' + tab).addClass('active');
 
-            // Populate skins on first switch
             if (tab === 'skins' && $('#skinGrid').children().length === 0 && window.GameConfiguration && window.GameConfiguration.gameConfig) {
                 populateSkins();
             }
