@@ -549,6 +549,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
     };
 
+    if (!window.agarioUID) window.agarioUID = localStorage.getItem("agarioUID") || null;
+    if (!window.agarioEncodedUID) window.agarioEncodedUID = localStorage.getItem("agarioEncodedUID") || null;
+
     /* Reset ALL login state on logout so provider switching works.
      * BUT skip during game-socket reconnect — only user-initiated logout
      * should clear auth (window._lwReconnecting is set by onDisconnect). */
@@ -14657,6 +14660,16 @@ function thelegendmodproject() {
                                         localStorage.setItem("agarioUID", window.agarioUID);
                                         $("#UserProfileUUID1").val(window.agarioUID);
                                         console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                    }
+                                    if (window.testobjects2.split('"  ')[1]) {
+                                        window.agarioEncodedUID = window.testobjects2.split('"  ')[1].split('= ')[0] + "%3D";
+                                    }
+                                    else if (window.testobjects2.split('"\x01')[1]) { //6/8/2024 fix
+                                        //window.agarioEncodedUID = window.testobjects2.split('"?\x01')[1].split('= ')[0] + "%3D"; 
+                                        window.agarioEncodedUID = window.testobjects2.split('"\x01')[1].split('= ')[0] + "%3D"; //3/11/2024 TEST
+                                    }
+                                    if (window.agarioEncodedUID) {
+                                        localStorage.setItem("agarioEncodedUID", window.agarioEncodedUID);
                                     }
                                 } catch (lwErr) {
                                     console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
