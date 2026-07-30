@@ -9323,15 +9323,6 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
-            if (!value || !value.buffer) return;
-            var opcode = new DataView(value.buffer).getUint8(0);
-            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
-            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
-                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
-                    window.ogarioWS.send(value.buffer);
-                }
-                return;
-            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
@@ -9644,8 +9635,9 @@ function thelegendmodproject() {
             if (this[name] !== null && this[name] === str) {
                 return;
             }
-            if (this.isSocketOpen()) {
-                this.sendBuffer(this.strToBuff(offset, str));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function') {
+                ws.send(this.strToBuff(offset, str).buffer);
                 this[name] = str;
             }
         },
@@ -9662,8 +9654,9 @@ function thelegendmodproject() {
             this.sendPlayerData(13, 'lastSentCustomColor', ogarcopythelb.color);
         },
         sendPlayerColor() {
-            if (this.isSocketOpen() && ogario.playerColor) {
-                this.sendBuffer(this.strToBuff(14, ogario.playerColor));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function' && ogario.playerColor) {
+                ws.send(this.strToBuff(14, ogario.playerColor).buffer);
             }
         },
         sendPartyToken() {
@@ -9702,8 +9695,9 @@ function thelegendmodproject() {
         sendServerRegion() {
             if (this.region) {
                 var region = this.region.split('-');
-                if (this.isSocketOpen()) {
-                    this.sendBuffer(this.strToBuff(17, region[0]));
+                var ws = window.ogarioWS;
+                if (ws && typeof ws.send === 'function') {
+                    ws.send(this.strToBuff(17, region[0]).buffer);
                 }
             }
         },
@@ -9722,8 +9716,9 @@ function thelegendmodproject() {
                 case ':party':
                     gamemode = 'PTY';
             }
-            if (this.isSocketOpen()) {
-                this.sendBuffer(this.strToBuff(18, gamemode));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function') {
+                ws.send(this.strToBuff(18, gamemode).buffer);
             }
         },
         sendServerData() {
