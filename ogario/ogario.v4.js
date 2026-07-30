@@ -9368,6 +9368,10 @@ function thelegendmodproject() {
                 case 45:
                     this.readWavePing(message);
                     break;
+                case 15:
+                    /* Captcha request from chat server — log but cannot solve from LM */
+                    console.log('%c[LM]%c Chat server requested captcha (opcode 15)', 'color:green', 'color:orange');
+                    break;
                 case 96:
                     break;
                 case 100:
@@ -9759,7 +9763,8 @@ function thelegendmodproject() {
         sendDeltaPlayerUpdate() {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1 || !this.playerID) return;
-            var nick = ogarcopythelb.nick || '';
+            var nick = ogarcopythelb.nick;
+            if (!nick && nick !== '') return; // Guard: don't send update before nick is initialized
             var skin = ogarcopythelb.skinURL || '';
             var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
             var px = this.getPlayerX() || 0;
