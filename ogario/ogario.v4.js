@@ -4951,7 +4951,7 @@ function thelegendmodproject() {
         version: 'v1',
         privateMode: false,
         protocolMode: true,
-        publicIP: 'wss://chat.delt.io/delta7?protocol=v1&m=2',
+        publicIP: 'wss://chat.delt.io/ws?m=2',
         comebackTimeout: 500,
         privateIP: null,
         updateInterval: 1000,
@@ -9195,12 +9195,19 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             var app = this;
             if (!this.privateMode) {
-                /* Public server: Delta v7 handshake + wire handleMessage */
+                /* Public server: ogario handshake for /ws endpoint.
+                 * /ws serves the ogario-compat protocol (UInt32 playerID).
+                 * /delta7 requires WebSocketRTC + fingerprint (500 without it). */
                 this.socket.onopen = () => {
-                    /* Delta v7 handshake: 2 zero bytes */
-                    var handshake = new ArrayBuffer(2);
-                    new DataView(handshake).setUint16(0, 0, true);
-                    app.socket.send(handshake);
+                    var buf = app.createView(3);
+                    buf.setUint8(0, 0);
+                    buf.setUint16(1, 401, true);
+                    app.sendBuffer(buf);
+
+                    buf.setUint8(0, 5);
+                    buf.setUint16(1, 20, true);
+                    app.sendBuffer(buf);
+
                     app.comebackTimeout = 500;
                     app.sendPartyData();
                 }
@@ -9322,8 +9329,8 @@ function thelegendmodproject() {
             var opcode = message.getUint8(0);
             switch (opcode) {
                 case 0:
-                    /* Delta v7: connectionID is UInt16 */
-                    this.playerID = message.getUint16(1, true);
+                    /* /ws endpoint returns UInt32 playerID */
+                    this.playerID = message.getUint32(1, true);
                     break;
                 case 1:
                     this.sendPlayerUpdate();
