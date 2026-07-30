@@ -235,6 +235,7 @@ function SpecialDeals() {
         var $dlg = $("#specialShopModal .modal-dialog");
         $dlg.draggable({
             handle: ".modal-header",
+            cancel: ".close, button, a",
             containment: "window",
             start: function(event, ui) {
                 var el = $(this);
