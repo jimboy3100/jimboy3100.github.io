@@ -37,18 +37,119 @@ function SpecialDeals() {
 
     if (window.agarioEncodedUID != null) {
 
-       
-        $('#helloContainer').after('<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' + '<div class="modal-backdrop fade in"></div>' + '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' + '<div class="modal-content">' + '<div id="CloseSpecialDeals2" class="modal-header"><button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' + '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' + '</div>' + //'<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*Encoded UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
-        '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' + '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend Encoded uid <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' + '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' + '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' + '<h4 id="dealcost" class="text-right">99.99 $</h4>' + '<div class="xpmt-buy-content" style="font-size: 13px; margin-top: -30px; float: left;font-weight: 700; background-color: rgba(0, 0, 0, 0.2); background-image: url(https://jimboy3100.github.io/banners/icondeal2.png);padding: 3px; align: middle; border-radius: 4px;width: 100%;height: 150px;z-index: 15;margin: auto;">' + '<div class="xpmt-money-stack" style="display: inline-block; margin-left: 70px; margin-top: 115px;"><span class="coins" style=""><b>125000 C</b></span></div>' + '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' + '<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' + '</div>' + '</div><select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select><select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select><color="red" style="display:inline"> ' + Premadeletter112 + '</color>' + '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
-        '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' + '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' + '</div>' + '</div>' + '</div>' + '</div>');
+        // --- Inject skin shop CSS ---
+        if (!document.getElementById('skinShopStyles')) {
+            var styleEl = document.createElement('style');
+            styleEl.id = 'skinShopStyles';
+            styleEl.textContent = [
+                '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid #444; margin: 0 -15px; padding: 0 15px; }',
+                '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: #aaa; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
+                '#specialShopModal .shop-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }',
+                '#specialShopModal .shop-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }',
+                '#specialShopModal .tab-pane { display: none; }',
+                '#specialShopModal .tab-pane.active { display: block; }',
+                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 12px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.3); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
+                '#skinSearchBar:focus { border-color: #4fc3f7; box-shadow: 0 0 5px rgba(79,195,247,0.3); }',
+                '#skinSearchBar::placeholder { color: #888; }',
+                '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 350px; overflow-y: auto; padding: 4px; }',
+                '.skin-grid::-webkit-scrollbar { width: 6px; }',
+                '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
+                '.skin-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
+                '.skin-grid::-webkit-scrollbar-thumb:hover { background: #777; }',
+                '.skin-card { position: relative; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; }',
+                '.skin-card:hover { border-color: #4fc3f7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,195,247,0.2); }',
+                '.skin-card img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; display: block; margin: 4px auto; }',
+                '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }',
+                '.skin-card .skin-color { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 1px solid rgba(255,255,255,0.3); }',
+                '.skin-card .skin-buy-btn { display: none; position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(135deg, #4fc3f7, #0288d1); color: #fff; border: none; padding: 4px 0; font-size: 11px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }',
+                '.skin-card:hover .skin-buy-btn { display: block; }',
+                '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #888; font-family: "Roboto Condensed", sans-serif; }',
+                '.skin-stats span { color: #4fc3f7; font-weight: 700; }',
+                '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.3); border-radius: 4px; color: #4fc3f7; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
+                '.skin-load-more:hover { background: rgba(79,195,247,0.25); }',
+            ].join('\n');
+            document.head.appendChild(styleEl);
+        }
+
+        // --- Build modal HTML with tabs ---
+        $('#helloContainer').after(
+            '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
+            '<div class="modal-backdrop fade in"></div>' +
+            '<div class="modal-dialog" style="top: calc(50vh - 280px); width: 520px;">' +
+            '<div class="modal-content">' +
+
+            // Header
+            '<div id="CloseSpecialDeals2" class="modal-header">' +
+            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button> ' +
+            '<button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
+            '</div>' +
+
+            // Tab bar
+            '<div class="shop-tabs">' +
+            '<div class="shop-tab active" data-tab="deals"><i class="fa fa-briefcase"></i> Deals</div>' +
+            '<div class="shop-tab" data-tab="skins"><i class="fa fa-paint-brush"></i> Skins</div>' +
+            '</div>' +
+
+            // === Deals tab (original content) ===
+            '<div class="tab-pane active" id="tab-deals">' +
+            '<div class="modal-body">' +
+            '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' +
+            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend Encoded uid <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
+            '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' +
+            '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' +
+            '<h4 id="dealcost" class="text-right">99.99 $</h4>' +
+            '<div class="xpmt-buy-content" style="font-size: 13px; margin-top: -30px; float: left;font-weight: 700; background-color: rgba(0, 0, 0, 0.2); background-image: url(https://jimboy3100.github.io/banners/icondeal2.png);padding: 3px; align: middle; border-radius: 4px;width: 100%;height: 150px;z-index: 15;margin: auto;">' +
+            '<div class="xpmt-money-stack" style="display: inline-block; margin-left: 70px; margin-top: 115px;"><span class="coins" style=""><b>125000 C</b></span></div>' +
+            '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(\'\'); background-size: cover; border-color: #7c0001"></div>' +
+            '<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(\'\'); background-size: cover; border-color: #7c0001"></div>' +
+            '</div>' +
+            '</div>' +
+            '<select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select>' +
+            '<select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select>' +
+            '<color="red" style="display:inline"> ' + Premadeletter112 + '</color>' +
+            '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select>' +
+            '<color="red" style="display:inline">' + Premadeletter117 + '</color>' +
+            '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
+            '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' +
+            '</div>' +
+            '</div>' +
+
+            // === Skins tab (new) ===
+            '<div class="tab-pane" id="tab-skins">' +
+            '<div class="modal-body">' +
+            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
+            '<div class="skin-grid" id="skinGrid"></div>' +
+            '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
+            '<button class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
+            '</div>' +
+            '</div>' +
+
+            '</div></div></div>'
+        );
+
         $("#agario_uid_input").val(window.agarioEncodedUID);
-		LoadGameConfiguration();
-        
-		//populateSD();
-        $(".modal-dialog").draggable()		
-		setTimeout(function() {
-			populateLibConfig();
+        LoadGameConfiguration();
+
+        //populateSD();
+        $(".modal-dialog").draggable()
+        setTimeout(function() {
+            populateLibConfig();
         }, 2500);
+
+        // --- Tab switching ---
+        $('.shop-tab').on('click', function() {
+            var tab = $(this).data('tab');
+            $('.shop-tab').removeClass('active');
+            $(this).addClass('active');
+            $('.tab-pane').removeClass('active');
+            $('#tab-' + tab).addClass('active');
+
+            // Populate skins on first switch
+            if (tab === 'skins' && $('#skinGrid').children().length === 0 && window.GameConfiguration && window.GameConfiguration.gameConfig) {
+                populateSkins();
+            }
+        });
 
         $("#ss-select-agarVersionDestinations").change(function() {
 
@@ -158,6 +259,131 @@ function buydeals() {
         window.open(buytoken, "PopupWindow", "width=600,height=600,scrollbars=yes,resizable=no");
     }, 3000);
 }
+
+// --- Skin Shop Functions ---
+var skinShopPage = 0;
+var skinShopPerPage = 60;
+var skinShopFiltered = [];
+
+function populateSkins() {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig || !window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"]) {
+        // GameConfiguration not loaded yet, retry after LoadGameConfiguration
+        setTimeout(populateSkins, 1500);
+        return;
+    }
+
+    var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+    // Filter out the empty/default skin
+    skinShopFiltered = skins.filter(function(s) { return s.productId !== 'skin_empty'; });
+    skinShopPage = 0;
+
+    $('#skinTotal').text(skinShopFiltered.length);
+    $('#skinGrid').empty();
+    renderSkinPage();
+
+    // Search handler
+    $('#skinSearchBar').off('input').on('input', function() {
+        var query = $(this).val().toLowerCase().trim();
+        if (query === '') {
+            skinShopFiltered = skins.filter(function(s) { return s.productId !== 'skin_empty'; });
+        } else {
+            skinShopFiltered = skins.filter(function(s) {
+                if (s.productId === 'skin_empty') return false;
+                var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
+                return name.indexOf(query) > -1;
+            });
+        }
+        skinShopPage = 0;
+        $('#skinGrid').empty();
+        renderSkinPage();
+    });
+
+    // Load more handler
+    $('#skinLoadMore').off('click').on('click', function() {
+        renderSkinPage();
+    });
+}
+
+function renderSkinPage() {
+    var start = skinShopPage * skinShopPerPage;
+    var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+    var grid = document.getElementById('skinGrid');
+
+    for (var i = start; i < end; i++) {
+        var skin = skinShopFiltered[i];
+        var name = skin.productId.replace('skin_', '').replace(/_/g, ' ');
+        // Capitalize first letter of each word
+        var displayName = name.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        // Parse cell color (0xRRGGBBAA hex string)
+        var colorHex = skin.cellColor || '0x88888800';
+        var r = parseInt(colorHex.substring(2, 4), 16);
+        var g = parseInt(colorHex.substring(4, 6), 16);
+        var b = parseInt(colorHex.substring(6, 8), 16);
+        var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+        var card = document.createElement('div');
+        card.className = 'skin-card';
+        card.setAttribute('data-product-id', skin.productId);
+        card.setAttribute('data-gameplay-id', skin.gameplayId);
+        card.innerHTML =
+            '<div class="skin-color" style="background:' + cssColor + '"></div>' +
+            '<img src="' + cdnBase + skin.image + '" alt="' + displayName + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+            '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
+            '<button class="skin-buy-btn" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy</button>';
+
+        // Click card to equip skin locally (client-side)
+        card.addEventListener('click', (function(skinData) {
+            return function() {
+                if (window.ogario && window.ogario.customSkinUrl) {
+                    window.ogario.customSkinUrl = cdnBase + skinData.image;
+                    toastr && toastr.success('<b>Skin equipped:</b> ' + skinData.productId.replace('skin_', '').replace(/_/g, ' '));
+                } else {
+                    toastr && toastr.info('<b>Skin:</b> ' + skinData.productId + ' (ID: ' + skinData.gameplayId + ')');
+                }
+            };
+        })(skin));
+
+        grid.appendChild(card);
+    }
+
+    skinShopPage++;
+    var shown = Math.min(skinShopPage * skinShopPerPage, skinShopFiltered.length);
+    $('#skinCount').text(shown);
+    $('#skinTotal').text(skinShopFiltered.length);
+
+    if (shown < skinShopFiltered.length) {
+        $('#skinLoadMore').show().text('Load More (' + (skinShopFiltered.length - shown) + ' remaining)');
+    } else {
+        $('#skinLoadMore').hide();
+    }
+}
+
+function buySkin(productId) {
+    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
+    if (!uid) {
+        toastr && toastr.warning('<b>[SHOP]:</b> You must be logged in to buy skins');
+        return;
+    }
+    var currency = $('#BuyDealCurrency').val() || 'USD';
+    toastr && toastr.info('<b>[SHOP]:</b> Opening payment for ' + productId.replace('skin_', '').replace(/_/g, ' ') + '...');
+    $.ajax({
+        type: "GET",
+        url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,
+        datatype: "json",
+        success: function(info) {
+            if (info && info.iframe_url) {
+                window.open(info.iframe_url, "SkinPurchase", "width=600,height=600,scrollbars=yes,resizable=no");
+            } else {
+                toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this skin');
+            }
+        },
+        error: function() {
+            toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
+        }
+    });
+}
+
 function populateSDlines(select,i){
 	    
         if (GameConfiguration.gameConfig["Wallet - In-App Purchases"][i].priceTier == "2") {
@@ -320,3 +546,4 @@ function populateLibConfig() {
         //}
     }
 }
+
