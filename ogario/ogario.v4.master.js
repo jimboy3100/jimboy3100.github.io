@@ -55,7 +55,9 @@ function legendmaster(self) {
                 self.FB.getLoginStatus(function(res) {
                     if (res.status === "connected") {
                         init(res);
-                    } else {
+                    } else if (!window.loggedIn && !window._lwReconnecting) {
+                        /* Only logout if we're not already logged in via another provider
+                         * and not in the middle of a game server reconnect */
                         self.logout();
                     }
                 });
@@ -105,7 +107,7 @@ function legendmaster(self) {
 					window.loggedIn=true;
 				}
             } else {
-                if (f < 3) {
+                if (f < 3 && !window.loggedIn && !window._lwReconnecting) {
                     f++;
                     self.facebookRelogin();
                     self.logout();
@@ -708,7 +710,7 @@ function legendmaster(self) {
                 window.loggedIn = savedLoggedIn;
             }
             /* Clear flag after a tick to catch async logout calls too */
-            setTimeout(function() { window._lwReconnecting = false; }, 500);
+            setTimeout(function() { window._lwReconnecting = false; }, 3000);
         },
         recaptchaRequested() {
             window.agarCaptcha.requestCaptcha(true);
