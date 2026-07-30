@@ -9733,9 +9733,7 @@ function thelegendmodproject() {
             this.sendServerGameMode();
         },
         sendDeltaRoom() {
-            /* Use ogario's own socket (handshaked with opcodes 5/0), NOT the
-             * standby-server relay (window.ogarioWS) which has no handshake. */
-            var ws = this.isSocketOpen() ? this.socket : null;
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1) return;
             var serverToken = this.serverToken || $("#server-token").val() || '';
             var clanTag = ogarcopythelb.clanTag || '';
@@ -9783,7 +9781,7 @@ function thelegendmodproject() {
             ws.send(buffer);
         },
         sendDeltaPlayerUpdate() {
-            var ws = this.isSocketOpen() ? this.socket : null;
+            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1 || !this.playerID) return;
             var nick = ogarcopythelb.nick;
             if (!nick && nick !== '') return; // Guard: don't send update before nick is initialized
