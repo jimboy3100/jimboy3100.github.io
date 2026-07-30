@@ -15942,10 +15942,12 @@ function thelegendmodproject() {
                             case "coin":
                                 this.user.coins = items[i].amount;
                                 $("#coins").html(`💰` + this.user.coins);
+                                if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
                                 break;
                             case "dna":
                                 this.user.dna = items[i].amount;
                                 $("#dna").html(`🧬` + this.user.dna);
+                                if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
                                 break;
                             case "create_skin_token_for_vip_weekly":
                                 //this.user.skinCreateVIPTokens = items[i].amount;

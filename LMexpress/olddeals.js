@@ -85,8 +85,9 @@ function SpecialDeals() {
                 '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
                 '.skin-card:hover { border-color: #4fc3f7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,195,247,0.2); }',
                 '.skin-card.equipped { border-color: #00e676 !important; background: rgba(0, 230, 118, 0.12) !important; box-shadow: 0 0 10px rgba(0,230,118,0.3) !important; }',
-                '.skin-card .equipped-badge { position: absolute; top: 3px; left: 3px; background: #00e676; color: #000; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; text-transform: uppercase; z-index: 2; }',
-                '.skin-card .owned-badge { position: absolute; top: 3px; right: 18px; background: #ffd740; color: #000; font-size: 8px; font-weight: 800; padding: 1px 3px; border-radius: 3px; text-transform: uppercase; z-index: 2; }',
+                '.skin-card.owned-card { border-color: rgba(255, 215, 64, 0.4); background: rgba(255, 215, 64, 0.06); }',
+                '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: #00e676; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
+                '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: #ffd740; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
                 '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; margin: 2px auto; }',
                 '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
                 '.skin-card:hover .skin-name { color: #fff; }',
@@ -246,9 +247,24 @@ function SpecialDeals() {
             var hasConnection = !!(window.core && window.core.proxyMobileData);
             var allReady = isLoggedIn && hasUID && hasConnection;
 
-            // Live DNA & Coins sync
-            var dna = (window.application && window.application.user && window.application.user.dna) || 0;
-            var coins = (window.application && window.application.user && window.application.user.coins) || 0;
+            // Live DNA & Coins sync (check multiple sources for accuracy)
+            var dna = 0, coins = 0;
+            if (window.application && window.application.user) {
+                dna = window.application.user.dna || 0;
+                coins = window.application.user.coins || 0;
+            }
+            if (!dna && $('#dna').length) {
+                var dText = $('#dna').text().replace(/[^0-9]/g, '');
+                if (dText) dna = parseInt(dText, 10);
+            }
+            if (!coins && $('#coins').length) {
+                var cText = $('#coins').text().replace(/[^0-9]/g, '');
+                if (cText) coins = parseInt(cText, 10);
+            }
+            if (!dna && window.legendmod && window.legendmod.user) {
+                dna = window.legendmod.user.dna || 0;
+                coins = window.legendmod.user.coins || 0;
+            }
             $('#dnaCountModal').text(dna.toLocaleString());
             $('#coinsCountModal').text(coins.toLocaleString());
 
@@ -868,7 +884,7 @@ function renderSkinPage() {
             var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);
 
             var card = document.createElement('div');
-            card.className = 'skin-card' + (isEquipped ? ' equipped' : '');
+            card.className = 'skin-card' + (isEquipped ? ' equipped' : (isOwned ? ' owned-card' : ''));
             card.setAttribute('data-product-id', skin.productId);
             card.setAttribute('data-gameplay-id', skin.gameplayId);
             card.setAttribute('data-image', skin.image);
