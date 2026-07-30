@@ -229,8 +229,30 @@ function SpecialDeals() {
         $("#agario_uid_input").val(window.agarioEncodedUID);
         LoadGameConfiguration();
 
-        //populateSD();
-        $(".modal-dialog").draggable({ handle: ".modal-header", containment: "window" });
+        // Make modal draggable. The modal uses transform: translate(-50%,-50%) for centering.
+        // jQuery UI draggable sets top/left pixel values which conflicts with the transform.
+        // We remove the transform on first interaction and convert to pixel coordinates.
+        var $dlg = $("#specialShopModal .modal-dialog");
+        $dlg.draggable({
+            handle: ".modal-header",
+            containment: "window",
+            start: function(event, ui) {
+                var el = $(this);
+                // On first drag, the element is centered via transform.
+                // Convert its current visual position to pixel top/left and remove transform.
+                if (el.css('transform') && el.css('transform') !== 'none') {
+                    var rect = el[0].getBoundingClientRect();
+                    el.css({
+                        top: rect.top + 'px',
+                        left: rect.left + 'px',
+                        transform: 'none'
+                    });
+                    // Update jQuery UI's internal position so it doesn't jump
+                    ui.position.top = rect.top;
+                    ui.position.left = rect.left;
+                }
+            }
+        });
         setTimeout(function() {
             populateLibConfig();
         }, 2500);
