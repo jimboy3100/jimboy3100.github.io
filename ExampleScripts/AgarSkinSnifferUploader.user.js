@@ -85,72 +85,73 @@
         return str;
     }
 
-    // WebSocket proxy — patch send() on each new instance
-    // We override the constructor to return a real WebSocket with send() hooked.
-    var _origWS = window.WebSocket;
-    window.WebSocket = function (url, protocols) {
-        var ws;
-        if (protocols !== undefined) {
-            ws = new _origWS(url, protocols);
-        } else {
-            ws = new _origWS(url);
-        }
+    // WebSocket sniffer — just patch prototype.send, don't touch the constructor.
+    // This is the safest approach: no constructor override, no instanceof issues.
+    var _nativeSend = WebSocket.prototype.send;
+    WebSocket.prototype.send = function (data) {
+        try {
+            var buf = new Uint8Array(data);
+            window._snifferBufferCount++;
 
-        // Patch send to intercept outgoing packets
-        var _origSend = ws.send.bind(ws);
-        ws.send = function (data) {
-            try {
-                var buf = new Uint8Array(data);
-                window._snifferBufferCount++;
-
-                if (buf[0] === 255) {
-                    window.key255 = buf;
-                    logToPanel('🔑 Client key sent (op 255)', 'key');
-                } else if (buf[0] === 254) {
-                    logToPanel('📡 Protocol version: ' + buf[1], 'info');
-                } else if (buf.length > 3) {
-                    // Log raw bytes (don't decrypt — key sync is fragile)
-                    var pngOffset = containsPNG(buf);
-                    if (pngOffset !== -1) {
-                        window.SAVED_IMAGE = new Uint8Array(buf);
-                        window.SAVED_FOOTER = extractFooter(buf);
-                        logToPanel('🎨 SKIN UPLOAD DETECTED! (' + buf.length + ' bytes, PNG at offset ' + pngOffset + ')', 'skin');
-                        logToPanel('📋 Header bytes: [' + formatBytes(buf, 30) + ']', 'skin');
-                        if (window.SAVED_FOOTER && window.SAVED_FOOTER.length > 0) {
-                            logToPanel('📋 Footer (' + window.SAVED_FOOTER.length + ' bytes): [' + formatBytes(window.SAVED_FOOTER, 40) + ']', 'skin');
-                        }
-                        console.log('%c[SKIN SNIFFER] Full skin upload packet:', 'color: #00ff00; font-weight: bold;');
-                        console.log('Raw bytes:', Array.from(buf).join(', '));
-                        console.log('Header (before PNG):', Array.from(buf.slice(0, pngOffset)).join(', '));
-                        if (window.SAVED_FOOTER) {
-                            console.log('Footer (after IEND):', Array.from(window.SAVED_FOOTER).join(', '));
-                        }
-                    } else {
-                        logToPanel('#' + window._snifferBufferCount + ' SEND (' + buf.length + 'B): [' + formatBytes(buf, 20) + ']', 'send');
+            if (buf[0] === 255) {
+                window.key255 = buf;
+                logToPanel('🔑 Client key sent (op 255)', 'key');
+            } else if (buf[0] === 254) {
+                logToPanel('📡 Protocol version: ' + buf[1], 'info');
+            } else if (buf.length > 3) {
+                // Log raw bytes (don't decrypt — key sync is fragile)
+                var pngOffset = containsPNG(buf);
+                if (pngOffset !== -1) {
+                    window.SAVED_IMAGE = new Uint8Array(buf);
+                    window.SAVED_FOOTER = extractFooter(buf);
+                    logToPanel('🎨 SKIN UPLOAD DETECTED! (' + buf.length + ' bytes, PNG at offset ' + pngOffset + ')', 'skin');
+                    logToPanel('📋 Header bytes: [' + formatBytes(buf, 30) + ']', 'skin');
+                    if (window.SAVED_FOOTER && window.SAVED_FOOTER.length > 0) {
+                        logToPanel('📋 Footer (' + window.SAVED_FOOTER.length + ' bytes): [' + formatBytes(window.SAVED_FOOTER, 40) + ']', 'skin');
                     }
+                    console.log('%c[SKIN SNIFFER] Full skin upload packet:', 'color: #00ff00; font-weight: bold;');
+                    console.log('Raw bytes:', Array.from(buf).join(', '));
+                    console.log('Header (before PNG):', Array.from(buf.slice(0, pngOffset)).join(', '));
+                    if (window.SAVED_FOOTER) {
+                        console.log('Footer (after IEND):', Array.from(window.SAVED_FOOTER).join(', '));
+                    }
+                } else {
+                    logToPanel('#' + window._snifferBufferCount + ' SEND (' + buf.length + 'B): [' + formatBytes(buf, 20) + ']', 'send');
                 }
-            } catch (e) {
-                console.warn('[Sniffer] send hook error:', e);
             }
-            return _origSend(data);
-        };
-
-        // Log connection
-        ws.addEventListener('open', function () {
-            logToPanel('🟢 Connected: ' + url.substring(0, 60), 'info');
-        });
-        ws.addEventListener('close', function () {
-            logToPanel('🔴 Disconnected', 'info');
-        });
-
-        return ws;
+        } catch (e) {
+            console.warn('[Sniffer] send hook error:', e);
+        }
+        return _nativeSend.call(this, data);
     };
-    // Preserve static properties and prototype so instanceof checks work
-    window.WebSocket.prototype = _origWS.prototype;
-    window.WebSocket.CONNECTING = _origWS.CONNECTING;
-    window.WebSocket.OPEN = _origWS.OPEN;
-    window.WebSocket.CLOSING = _origWS.CLOSING;
-    window.WebSocket.CLOSED = _origWS.CLOSED;
+
+    // Also hook addEventListener to log connections (non-invasive)
+    var _nativeAddEventListener = WebSocket.prototype.addEventListener;
+    var _connectedUrls = new Set();
+    WebSocket.prototype.addEventListener = function (type, listener, options) {
+        if (type === 'open') {
+            var wsRef = this;
+            var wrappedListener = function (event) {
+                var wsUrl = '';
+                try { wsUrl = wsRef.url || ''; } catch (e) { }
+                if (!_connectedUrls.has(wsUrl)) {
+                    _connectedUrls.add(wsUrl);
+                    logToPanel('🟢 Connected: ' + wsUrl.substring(0, 60), 'info');
+                }
+                return listener.call(this, event);
+            };
+            return _nativeAddEventListener.call(this, type, wrappedListener, options);
+        }
+        if (type === 'close') {
+            var wrappedClose = function (event) {
+                logToPanel('🔴 Disconnected', 'info');
+                return listener.call(this, event);
+            };
+            return _nativeAddEventListener.call(this, type, wrappedClose, options);
+        }
+        return _nativeAddEventListener.call(this, type, listener, options);
+    };
+
 
     /* ══════════════════════════════════════════════════════════
      *  PART 2: MAKE CUSTOM SKINS CLICKABLE
