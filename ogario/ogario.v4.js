@@ -10847,55 +10847,55 @@ function thelegendmodproject() {
                 return;
             }
 
-            // 2. GENERATE XML COMPONENT
-            const xmlPart = this.generateStrictFooter(skinName, skinColorHex);
-
-            // 3. PREPARE IMAGE COMPONENT (Tag 10, Field 1)
-            const imageLenVarint = this.writeVarint(imageUint8Array.length);
-            const imagePart = [10];
-            imagePart.push(...imageLenVarint);
-            // We will push the actual image data later during assembly
-
-            // 4. CALCULATE SKIN OBJECT SIZE (Image Field + XML Field)
-            // Object = [Tag 10 + Len + Data] + [Tag 18 + Len + XML]
-            const skinObjContentSize = imagePart.length + imageUint8Array.length + xmlPart.length;
-            const skinObjLenVarint = this.writeVarint(skinObjContentSize);
-
-            // 5. CALCULATE TOTAL PAYLOAD SIZE (Request ID 150 + Skin Object)
-            // Payload = [Tag 8, 150, 1] + [Tag 178, 9] + [SkinObjLen] + [SkinObjContent]
-            const totalPayloadSize = 3 + 2 + skinObjLenVarint.length + skinObjContentSize;
-            const totalPayloadVarint = this.writeVarint(totalPayloadSize);
-
-            // 6. ASSEMBLE FULL PACKET (Plain Array for 102 proxy)
-            let packet = [];
-
-            // A. The Wrapper Header
-            packet.push(8, 1, 18);
-            packet.push(...totalPayloadVarint);
-
-            // B. The Request ID (Field 1 = 150)
-            packet.push(8, 150, 1);
-
-            // C. The Skin Object Field (Field 1202 -> 178, 9)
-            packet.push(178, 9);
-            packet.push(...skinObjLenVarint);
-
-            // D. Append Image Part [10][Len][Data]
-            packet.push(...imagePart);
-            for (let i = 0; i < imageUint8Array.length; i++) {
-                packet.push(imageUint8Array[i]);
+            // 2. Convert PNG to base64 string (proto field 1 is 'string content')
+            var binary = '';
+            for (var i = 0; i < imageUint8Array.length; i++) {
+                binary += String.fromCharCode(imageUint8Array[i]);
             }
+            var base64Content = btoa(binary);
 
-            // E. Append XML Part [18][Len][Data]
-            packet.push(...xmlPart);
+            // 3. Generate XML plist metadata string (proto field 2 is 'string meta')
+            var colorInt = parseInt((skinColorHex || "#FFFF00").replace('#', ''), 16) || 14703104;
+            var safeName = (skinName || "custom").replace(/[^\x20-\x7E]/g, "").substring(0, 15);
+            var xmlMeta = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+                '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
+                '<plist version="1.0">\n<dict>\n' +
+                '\t<key>name</key>\n\t<string>' + safeName + '</string>\n' +
+                '\t<key>color</key>\n\t<integer>' + colorInt + '</integer>\n' +
+                '\t<key>indexedSubscriptions</key>\n\t<array/>\n' +
+                '\t<key>creationDate</key>\n\t<integer>' + Math.floor(Date.now() / 1000) + '</integer>\n' +
+                '</dict>\n</plist>';
 
-            // 7. SEND TO CORE PROXY
-            if (window.core && window.core.proxyMobileData) {
-                window.core.proxyMobileData(packet);
-                console.log("%c[LM] SUCCESS: Sent " + packet.length + " bytes to 102 Proxy.", "color: #00FF00;");
-                toastr.success("<b>[SERVER]:</b> Skin Data Uploaded! Account Deduct: 90 DNA.");
+            // 4. ENCODE using protobuf (same pattern as other working calls)
+            if (window.mesega) {
+                try {
+                    var buffer = window.mesega.encode({
+                        contentType: 1,
+                        uncompressedData: {
+                            type: 150,
+                            userSkinsCreateRequestField: {
+                                content: base64Content,
+                                meta: xmlMeta
+                            }
+                        }
+                    }).finish();
+
+                    if (window.core && window.core.proxyMobileData) {
+                        window.core.proxyMobileData(buffer);
+                        console.log("%c[LM] SUCCESS: Sent " + buffer.length + " bytes via protobuf encode.", "color: #00FF00;");
+                        console.log("[LM] Base64 content length: " + base64Content.length + ", Meta length: " + xmlMeta.length);
+                        toastr.info("<b>[SERVER]:</b> Skin upload sent! Waiting for server response...");
+                    } else {
+                        console.error("[LM] proxyMobileData not available.");
+                        toastr.error("<b>[ERROR]:</b> Not connected. Play a game first.");
+                    }
+                } catch (e) {
+                    console.error("[LM] Protobuf encode error:", e);
+                    toastr.error("<b>[ERROR]:</b> Failed to encode skin data: " + e.message);
+                }
             } else {
-                console.error("Mod internal error: proxyMobileData missing.");
+                console.error("[LM] window.mesega (protobuf) not loaded.");
+                toastr.error("<b>[ERROR]:</b> Protocol not ready. Refresh and try again.");
             }
         },
         setupSkinUploadInterface() {
