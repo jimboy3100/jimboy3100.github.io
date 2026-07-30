@@ -111,11 +111,23 @@
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
 				'<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>' +
+				'<style>' +
+				'#LMShop #navbar { position: relative !important; width: 100% !important; height: auto !important; top: auto !important; left: auto !important; right: auto !important; margin: 0 !important; padding: 8px 12px !important; background: #f1f3f5 !important; border-bottom: 1px solid #dee2e6 !important; z-index: 1052 !important; }' +
+				'#LMShop #nav ul { margin: 0 !important; padding: 0 !important; float: none !important; display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px !important; }' +
+				'#LMShop #nav ul li { float: none !important; margin: 0 !important; list-style: none !important; }' +
+				'#LMShop #nav a { display: inline-block !important; margin-top: 0 !important; padding: 5px 12px !important; font-size: 13px !important; border-radius: 6px !important; font-weight: 600 !important; text-decoration: none !important; }' +
+				'#LMShop #skin-url { margin-top: 0 !important; height: 30px !important; font-size: 12px !important; padding: 4px 8px !important; width: 140px !important; border-radius: 6px !important; }' +
+				'#LMShop .modal-header { padding: 12px 16px !important; background: #1a1d24 !important; color: #fff !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; position: relative !important; z-index: 1060 !important; }' +
+				'#LMShop .modal-header .close { opacity: 0.85 !important; color: #fff !important; font-size: 22px !important; margin-left: 8px !important; float: right !important; cursor: pointer !important; position: relative !important; z-index: 1061 !important; background: transparent !important; border: none !important; outline: none !important; }' +
+				'#LMShop .modal-header .close:hover { opacity: 1 !important; color: #ff5252 !important; }' +
+				'</style>' +
 				'<div class="modal-backdrop fade in" style="z-index: 1040;"></div>' +
 				'<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 900px; max-height: 85vh; margin: 0; z-index: 1050;">' +
                 '<div class="modal-content" style="background: #fff; color: #333; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; z-index: 1051; max-height: 85vh; display: flex; flex-direction: column;">' +
-                '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" title="Help"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Shop' + '</h4>' +
+                '<div id="CloseLMShop2" class="modal-header">' +
+                '<button id="CloseLMShop" type="button" class="close" data-dismiss="modal" title="Close" onclick="jQuery(\'#LMShop\').remove(); jQuery(\'.modal-backdrop\').remove(); jQuery(\'body\').removeClass(\'modal-open\');"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+                '<button id="FAQLMShop" type="button" class="close" title="Help" onclick="window.open(\'https://jimboy3100.github.io/LMexpress/olddeals.html\', \'_blank\');"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
+                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; color: #4fc3f7; font-weight: 700; margin: 0;"><i class="fa fa-shopping-cart"></i> Shop</h4>' +
                 '</div>' +
 				
 				'<div id="LMShop3" style="overflow-y: auto; max-height: 70vh;">' +
