@@ -15631,7 +15631,27 @@ function thelegendmodproject() {
                     console.log("returnMessage = r.get_userLeaguesPassUpdateField();");
                     break;
                 case 151:
-                    console.log("returnMessage = r.get_userSkinsCreateResponseField();");
+                    // Skin create response
+                    try {
+                        var skinResp = r.uncompressedData.userSkinsCreateResponseField;
+                        if (skinResp) {
+                            var skinResult = skinResp.result || 0;
+                            console.log("[LM] Skin Create Response — result: " + skinResult);
+                            if (skinResult === 1 || skinResult === 0) {
+                                toastr.success('<b>[SERVER]:</b> Custom skin created successfully! &#x2714;');
+                            } else if (skinResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> Skin creation failed — not enough DNA.');
+                            } else if (skinResult === 3) {
+                                toastr.error('<b>[SERVER]:</b> Skin creation failed — limit reached.');
+                            } else {
+                                toastr.warning('<b>[SERVER]:</b> Skin create response: code ' + skinResult);
+                            }
+                        } else {
+                            console.log("returnMessage = r.get_userSkinsCreateResponseField(); (no data)");
+                        }
+                    } catch(skinErr) {
+                        console.warn("[LM] Error parsing skin create response:", skinErr);
+                    }
                     break;
                 case 170:
                     var u = r.uncompressedData.actionCountersUpdateField,

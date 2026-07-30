@@ -228,29 +228,33 @@ function SpecialDeals() {
         // --- Login & UID status checker (shared across tabs) ---
         function updateShopLoginState() {
             var uploadBtn = $('#legendSaveBtnModal');
-            var chooseBtn = $('#legendChooseFileBtn');
+            var chooseLabel = $('#legendChooseFileBtn');
+            var fileInput = $('#legendUploadInputModal');
+            var skinNameInput = $('#legendSkinNameModal');
+            var skinColorInput = $('#legendSkinColorModal');
             var isLoggedIn = !!(window.loggedIn);
             var hasUID = !!(window.agarioEncodedUID);
             var hasConnection = !!(window.core && window.core.proxyMobileData);
             var allReady = isLoggedIn && hasUID && hasConnection;
 
-            // Upload tab buttons
+            // Upload tab elements
             if (allReady) {
-                chooseBtn.prop('disabled', false).css('opacity', 1);
+                chooseLabel.css({ opacity: 1, pointerEvents: 'auto' });
+                fileInput.prop('disabled', false);
+                skinNameInput.prop('disabled', false).css('opacity', 1);
+                skinColorInput.prop('disabled', false).css('opacity', 1);
                 if (processedBufferModal) {
                     uploadBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
                 }
-                $('#legendStatusModal').each(function() {
-                    if ($(this).text() === 'Select an image or drag & drop') {
-                        // Don't override if there's already a processing status
-                    }
-                });
             } else {
                 uploadBtn.prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
-                chooseBtn.prop('disabled', true).css('opacity', 0.4);
+                chooseLabel.css({ opacity: 0.4, pointerEvents: 'none' });
+                fileInput.prop('disabled', true);
+                skinNameInput.prop('disabled', true).css('opacity', 0.4);
+                skinColorInput.prop('disabled', true).css('opacity', 0.4);
             }
 
-            // Skins tab equip/buy buttons
+            // Skins tab equip/buy/search
             if (!allReady) {
                 $('.skin-btn-equip, .skin-btn-buy').css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' });
                 $('#unequipSkinBtn').css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' });
@@ -259,11 +263,13 @@ function SpecialDeals() {
                 $('#unequipSkinBtn').css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' });
             }
 
-            // Deals tab buy button
+            // Deals tab buy button + inputs
             if (!allReady) {
                 $('.xpmt-buy-content').css({ opacity: 0.5, pointerEvents: 'none' });
+                $('#ss-select-purchases, #BuyDealCurrency, #ss-select-agarVersionDestinations').prop('disabled', true).css('opacity', 0.5);
             } else {
                 $('.xpmt-buy-content').css({ opacity: 1, pointerEvents: 'auto' });
+                $('#ss-select-purchases, #BuyDealCurrency, #ss-select-agarVersionDestinations').prop('disabled', false).css('opacity', 1);
             }
         }
 
