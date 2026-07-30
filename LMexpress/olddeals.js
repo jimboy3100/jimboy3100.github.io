@@ -297,13 +297,7 @@ function SpecialDeals() {
             window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
-            toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + 'This is a BETA function, it may not work and you may loose your money' + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "300px");
-            $(".btn.btn-sm.btn-primary").click(function() {
-                buydeals();
-            });
+            buydeals();
         });
         $('#agario_uid_input').blur(function() {
             //if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
@@ -397,6 +391,20 @@ function populateSkins() {
     var currentFilter = 'all';
 
     function applySkinFilters() {
+        var uid = window.agarioEncodedUID || window.agarioUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID");
+        if (!uid) {
+            skinShopFiltered = [];
+            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 40px 20px; color: #fff;">' +
+                '<div style="font-size: 36px; margin-bottom: 10px;">🔒</div>' +
+                '<div style="font-size: 16px; font-weight: 700; color: #ffca28; margin-bottom: 6px;">Login Required</div>' +
+                '<div style="font-size: 13px; color: #aaa;">Please log in with <b>Google</b> or <b>Facebook</b> to access Agar.io Skins & Deals.</div>' +
+                '</div>');
+            $('#skinCount').text(0);
+            $('#skinTotal').text(0);
+            $('#skinLoadMore').hide();
+            return;
+        }
+
         var query = $('#skinSearchBar').val().toLowerCase().trim();
         var userSkins = (window.application && window.application.user && window.application.user.skins) || {};
 
@@ -417,7 +425,6 @@ function populateSkins() {
                     if (linkRes && linkRes[0]) imgUrl = linkRes[0];
                 }
 
-                // Match with catalog skin if available
                 var matchedCatalog = null;
                 for (var ci = 0; ci < skins.length; ci++) {
                     if (skins[ci].productId === pid) {
@@ -450,6 +457,12 @@ function populateSkins() {
             skinShopFiltered = skins.filter(function(s) {
                 if (s.productId === 'skin_empty') return false;
 
+                // Exclude skins the user already owns from All Skins
+                var rawId = s.productId;
+                var modId = s.productId.replace('skin_', '%');
+                var isOwned = userSkins.hasOwnProperty(rawId) || userSkins.hasOwnProperty(modId);
+                if (isOwned) return false;
+
                 if (query !== '') {
                     var name = s.productId.replace('skin_', '').replace(/_/g, ' ');
                     if (name.indexOf(query) === -1) return false;
@@ -463,7 +476,7 @@ function populateSkins() {
         $('#skinGrid').empty();
 
         if (currentFilter === 'owned' && skinShopFiltered.length === 0) {
-            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #aaa; font-size: 13px;">No owned skins detected on this session.<br><span style="font-size: 11px; color: #666;">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>');
+            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #aaa; font-size: 13px;">No owned skins detected on this account.<br><span style="font-size: 11px; color: #666;">Log in with Google/Facebook or switch to <b>All Skins (955+)</b> to equip or buy any skin.</span></div>');
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
@@ -525,10 +538,6 @@ function equipSkin(productId, imageName) {
     }
 
     var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-    if (window.toastr) {
-        toastr.success('<b>[SKIN]:</b> Equipped ' + displayName);
-    }
-
     updateEquippedSkinUI();
 }
 
@@ -543,10 +552,6 @@ function unequipSkin() {
     }
     if (window.ogario) {
         window.ogario.customSkinUrl = '';
-    }
-
-    if (window.toastr) {
-        toastr.info('<b>[SKIN]:</b> Unequipped skin (Default skin active)');
     }
 
     updateEquippedSkinUI();
@@ -660,7 +665,6 @@ function buySkin(productId) {
         return;
     }
     var currency = $('#BuyDealCurrency').val() || 'USD';
-    toastr && toastr.info('<b>[SHOP]:</b> Opening payment for ' + productId.replace('skin_', '').replace(/_/g, ' ') + '...');
     $.ajax({
         type: "GET",
         url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,
