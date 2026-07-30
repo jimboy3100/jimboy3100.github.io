@@ -22,8 +22,8 @@ else{
 	window.agarioID=localStorage.getItem("agarioID");	
 }
 */
-window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v15/2230/GameConfiguration.json";
-window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/v15/2230/";
+window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v15/10913/GameConfiguration.json";
+window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/v15/10913/";
 
 if (window.agarversion != null) {
     window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json";
@@ -465,7 +465,7 @@ function openCustomSkinUploader() {
 }
 
 function equipSkin(productId, imageName) {
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
@@ -510,7 +510,7 @@ function unequipSkin() {
 function updateEquippedSkinUI() {
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
 
     var bannerName = $('#activeSkinName');
     var bannerImg = $('#activeSkinImg');
@@ -548,7 +548,7 @@ function updateEquippedSkinUI() {
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/2230/');
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
     var grid = document.getElementById('skinGrid');
     var currentEquippedId = localStorage.getItem('equippedSkinId');
 
