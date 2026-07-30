@@ -247,23 +247,25 @@ function SpecialDeals() {
             var hasConnection = !!(window.core && window.core.proxyMobileData);
             var allReady = isLoggedIn && hasUID && hasConnection;
 
-            // Live DNA & Coins sync (check multiple sources for accuracy)
+            // Live DNA & Coins sync (check multiple sources for accuracy when logged in)
             var dna = 0, coins = 0;
-            if (window.application && window.application.user) {
-                dna = window.application.user.dna || 0;
-                coins = window.application.user.coins || 0;
-            }
-            if (!dna && $('#dna').length) {
-                var dText = $('#dna').text().replace(/[^0-9]/g, '');
-                if (dText) dna = parseInt(dText, 10);
-            }
-            if (!coins && $('#coins').length) {
-                var cText = $('#coins').text().replace(/[^0-9]/g, '');
-                if (cText) coins = parseInt(cText, 10);
-            }
-            if (!dna && window.legendmod && window.legendmod.user) {
-                dna = window.legendmod.user.dna || 0;
-                coins = window.legendmod.user.coins || 0;
+            if (isLoggedIn) {
+                if (window.application && window.application.user) {
+                    dna = window.application.user.dna || 0;
+                    coins = window.application.user.coins || 0;
+                }
+                if (!dna && $('#dna').length) {
+                    var dText = $('#dna').text().replace(/[^0-9]/g, '');
+                    if (dText) dna = parseInt(dText, 10);
+                }
+                if (!coins && $('#coins').length) {
+                    var cText = $('#coins').text().replace(/[^0-9]/g, '');
+                    if (cText) coins = parseInt(cText, 10);
+                }
+                if (!dna && window.legendmod && window.legendmod.user) {
+                    dna = window.legendmod.user.dna || 0;
+                    coins = window.legendmod.user.coins || 0;
+                }
             }
             $('#dnaCountModal').text(dna.toLocaleString());
             $('#coinsCountModal').text(coins.toLocaleString());
