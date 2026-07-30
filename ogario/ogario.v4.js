@@ -16272,6 +16272,8 @@ function thelegendmodproject() {
                             url = this.urlReplaces.hasOwnProperty(skin[0]) ? this.urlReplaces[skin[0]] : skin[0];
                             $('.vanilla-skin-preview').attr('src', url);
                         }
+                        // Store server-confirmed equipped skinId for shop UI sync
+                        window.serverEquippedSkinId = s[i].valueString || '';
                         break;
                     case 2:
                         //stop moving on relise (1,0)

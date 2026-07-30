@@ -742,6 +742,16 @@ function populateSkins() {
     // Update filter button with actual skin count
     $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
 
+    // Update owned skin count
+    var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
+    var ownedCount = 0;
+    skins.forEach(function(s) {
+        if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;
+    });
+    if (ownedCount > 0) {
+        $('.skin-filter-btn[data-filter="owned"]').html('&#x2B50; My Owned Skins (' + ownedCount + ')');
+    }
+
     // Expose for external refresh (server wallet updates, purchases, etc.)
     window._skinShopRefresh = applySkinFilters;
 }
@@ -844,53 +854,20 @@ function equipSkin(productId, imageName) {
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
-    // ─── Official Protocol: Send opcode 80 (updateUserSettingsRequest) ───
-    // The official client (agario.js:9938-9941) does:
-    //   set_skinId(v) → saveSingleSetting(1, v)
-    //   saveSingleSetting(key, value) → sendMessage(80, updateSettingsMsg)
-    //
-    // User_setting proto (agario.js:37046-37168):
-    //   type = 1 (STRING) or 2 (INT32)  — field 1, enum
-    //   key  = 1 (skinId)               — field 2, enum
-    //   valueString = skinId            — field 3, string
-    //   valueInt32                      — field 4, int32
-    if (window.mesega) {
-        try {
-            var buffer = window.mesega.encode({
-                contentType: 1,
-                uncompressedData: {
-                    type: 80,
-                    updateUserSettingsRequestField: {
-                        userSettingsUpdates: [{
-                            type: 1,          // STRING type
-                            key: 1,           // key 1 = skinId
-                            valueString: productId
-                        }]
-                    }
-                }
-            }).finish();
-            window.core.proxyMobileData(buffer);
-            console.log('[SKIN] Sent equip settings update (opcode 80) for: ' + productId);
-        } catch (e) {
-            console.error('[SKIN] Equip encode error:', e);
-        }
-    }
+    // Update server tracking so updateEquippedSkinUI stays in sync
+    window.serverEquippedSkinId = productId;
 
-    // Tell the WASM renderer to load the skin texture
-    // Official client (agario.js:39541): window.core.loadSkin(skinName)
-    if (window.core && window.core.loadSkin) {
-        try {
-            // For standard skins, strip 'skin_' prefix. For custom skins, pass as-is.
-            var skinName = productId.startsWith('skin_custom_') ? productId : productId.replace('skin_', '');
-            window.core.loadSkin(skinName);
-        } catch (e) {
-            console.warn('[SKIN] loadSkin call exception:', e);
-        }
-    }
-
-    // Backup: also call legacy changeSkin if available
+    // ─── Send opcode 80 via window.changeSkin() ───
+    // changeSkin() in ogario.v4.js (line 1410) already:
+    //   1. Encodes User_setting { type:1, key:1, valueString: productId }
+    //   2. Sends opcode 80 via proxyMobileData
+    //   3. Loads the skin URL via application.loadSkin()
     if (typeof window.changeSkin === 'function') {
-        try { window.changeSkin(productId); } catch (e) {}
+        try {
+            window.changeSkin(productId);
+        } catch (e) {
+            console.warn('[SKIN] changeSkin call exception:', e);
+        }
     }
 
     // Update ogario custom skin URL
@@ -917,36 +894,11 @@ function unequipSkin() {
     localStorage.removeItem('equippedSkinId');
     localStorage.removeItem('equippedSkinImage');
 
-    // ─── Official Protocol: Send opcode 80 with empty skinId ───
-    // The official client (agario.js:39522-39524):
-    //   setDefaultSkin() → setSkin(defaultSkin)
-    //   set_skinId("") → saveSingleSetting(1, "")
-    if (window.mesega) {
-        try {
-            var buffer = window.mesega.encode({
-                contentType: 1,
-                uncompressedData: {
-                    type: 80,
-                    updateUserSettingsRequestField: {
-                        userSettingsUpdates: [{
-                            type: 1,          // STRING type
-                            key: 1,           // key 1 = skinId
-                            valueString: ''   // empty = unequip
-                        }]
-                    }
-                }
-            }).finish();
-            window.core.proxyMobileData(buffer);
-            console.log('[SKIN] Sent unequip settings update (opcode 80)');
-        } catch (e) {
-            console.error('[SKIN] Unequip encode error:', e);
-        }
-    }
+    // Update server tracking
+    window.serverEquippedSkinId = '';
 
-    // Tell WASM to unload skin
-    if (window.core && window.core.loadSkin) {
-        try { window.core.loadSkin(''); } catch (e) {}
-    }
+    // ─── Send opcode 80 via window.changeSkin('skin_empty') ───
+    // changeSkin() already encodes and sends User_setting { type:1, key:1, valueString: "skin_empty" }
     if (typeof window.changeSkin === 'function') {
         try { window.changeSkin('skin_empty'); } catch (e) {}
     }
@@ -960,6 +912,12 @@ function unequipSkin() {
 }
 
 function updateEquippedSkinUI() {
+    // ─── Sync equipped skin from the server's userSettings (key=1) ───
+    // On login (opcode 11), the server sends userSettings with key=1 = skinId.
+    // ogario.v4.js updateUserSettings (line 16269) captures this but doesn't
+    // sync to localStorage. We do it here so the banner stays in sync.
+    syncEquippedSkinFromServer();
+
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
     var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
@@ -968,18 +926,69 @@ function updateEquippedSkinUI() {
     var bannerImg = $('#activeSkinImg');
     var unequipBtn = $('#unequipSkinBtn');
 
-    if (equippedId && equippedId !== 'skin_empty') {
+    if (equippedId && equippedId !== 'skin_empty' && equippedId !== '') {
         var displayName = equippedId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
         bannerName.text(displayName);
-        if (equippedImg) {
-            bannerImg.attr('src', cdnBase + equippedImg);
-        } else {
-            bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
+
+        // Look up skin data from GameConfiguration for image and cell color
+        var skinData = findSkinInConfig(equippedId);
+        var imgSrc = '';
+        var cellColor = '';
+
+        if (skinData) {
+            // Standard skin from config
+            if (skinData.image) {
+                imgSrc = cdnBase + skinData.image;
+            }
+            if (skinData.cellColor) {
+                cellColor = skinData.cellColor;
+            }
+        } else if (equippedId.startsWith('skin_custom_')) {
+            // Custom skin — load from custom skins CDN
+            imgSrc = 'https://configs.agario.miniclippt.com/live/custom_skins/' + equippedId + '.png';
         }
+
+        // Fallback: use saved image name or placeholder
+        if (!imgSrc && equippedImg) {
+            imgSrc = cdnBase + equippedImg;
+        }
+        if (!imgSrc) {
+            imgSrc = 'https://jimboy3100.github.io/banners/icondeal2.png';
+        }
+
+        bannerImg.attr('src', imgSrc);
+
+        // Show cell color as a circular border around the skin preview
+        if (cellColor) {
+            var hex = cellColor.replace('0x', '');
+            // Pad to 6+ chars (sometimes 8 chars with alpha)
+            while (hex.length < 6) hex = '0' + hex;
+            var r = parseInt(hex.substring(0, 2), 16);
+            var g = parseInt(hex.substring(2, 4), 16);
+            var b = parseInt(hex.substring(4, 6), 16);
+            var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+            bannerImg.css({
+                'border-color': cssColor,
+                'background-color': cssColor,
+                'box-shadow': '0 0 8px ' + cssColor
+            });
+        } else {
+            bannerImg.css({
+                'border-color': '#4fc3f7',
+                'background-color': '#222',
+                'box-shadow': 'none'
+            });
+        }
+
         unequipBtn.show();
     } else {
         bannerName.text('None (Default Skin)');
         bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
+        bannerImg.css({
+            'border-color': '#4fc3f7',
+            'background-color': '#222',
+            'box-shadow': 'none'
+        });
         unequipBtn.hide();
     }
 
@@ -996,6 +1005,58 @@ function updateEquippedSkinUI() {
         });
     }
 }
+
+/**
+ * Sync the server-side equipped skin (from login response userSettings key=1)
+ * to localStorage so our shop UI stays in sync with what Miniclip knows.
+ */
+function syncEquippedSkinFromServer() {
+    if (!window.application || !window.application.user) return;
+
+    // window.serverEquippedSkinId is set by ogario.v4.js updateUserSettings
+    // when key=1 (skinId) arrives from the server (opcode 11 login or opcode 81 settings response)
+    var serverSkinId = window.serverEquippedSkinId;
+
+    if (serverSkinId === undefined || serverSkinId === null) return;
+
+    // Empty string means no skin equipped (default)
+    if (serverSkinId === '' || serverSkinId === 'skin_empty') {
+        if (localStorage.getItem('equippedSkinId')) {
+            localStorage.removeItem('equippedSkinId');
+            localStorage.removeItem('equippedSkinImage');
+            console.log('[SKIN] Server says no skin equipped, cleared localStorage');
+        }
+        return;
+    }
+
+    // If we found a server-side skin that differs from localStorage, sync it
+    if (serverSkinId !== localStorage.getItem('equippedSkinId')) {
+        localStorage.setItem('equippedSkinId', serverSkinId);
+        // Try to find the image name from config
+        var skinData = findSkinInConfig(serverSkinId);
+        if (skinData && skinData.image) {
+            localStorage.setItem('equippedSkinImage', skinData.image);
+        }
+        console.log('[SKIN] Synced server equipped skin to localStorage:', serverSkinId);
+    }
+}
+
+/**
+ * Find a skin's data (image, cellColor, etc.) from the GameConfiguration.
+ * Returns the skin object or null if not found.
+ */
+function findSkinInConfig(productId) {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+    var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+    if (!skins) return null;
+    for (var i = 0; i < skins.length; i++) {
+        if (skins[i].productId === productId) {
+            return skins[i];
+        }
+    }
+    return null;
+}
+window.findSkinInConfig = findSkinInConfig;
 
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
