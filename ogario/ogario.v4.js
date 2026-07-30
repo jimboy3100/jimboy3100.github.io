@@ -12885,8 +12885,8 @@ function thelegendmodproject() {
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
-            if (this.serverType === 'garix') {
-                // Generate fingerprint lazily on first Garix connection
+            if (this.serverType === 'garix' || this.serverType === 'delta' || this.serverType === 'expandingland') {
+                // Generate valid fingerprint lazily on connection
                 var self = this;
                 (async function () {
                     await LM._generateGarixFingerprint();
@@ -17781,12 +17781,14 @@ Most cells eaten   : ${mostCellsEaten}
             var encoder = new TextEncoder();
             var data = encoder.encode(raw);
             var hashBuffer = await crypto.subtle.digest("SHA-256", data);
-            var hashArray = Array.from(new Uint8Array(hashBuffer));
-            var hex = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
-            LM.garixFingerprint = hex.slice(0, 32);
-            console.log('[Garix] Fingerprint generated:', LM.garixFingerprint);
+            var hashArray = Array.from(new Uint8Array(hashBuffer)).slice(0, 16);
+            for (var fi = 0; fi < 16; fi += 5) {
+                hashArray[fi] = hashArray[fi + 2] ^ hashArray[fi + 3];
+            }
+            LM.garixFingerprint = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            console.log('[Garix/Delta] Valid fingerprint generated:', LM.garixFingerprint);
         } catch (e) {
-            console.warn('[Garix] Fingerprint generation failed:', e);
+            console.warn('[Garix/Delta] Fingerprint generation failed:', e);
         }
     };
     try {
