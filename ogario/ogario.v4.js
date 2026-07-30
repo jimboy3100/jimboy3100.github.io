@@ -582,7 +582,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * which sends it to the game server via opcode 102 — same path as Google. */
     (function () {
         /* Generate a one-time nonce for CSRF protection on OAuth state */
-        var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+        var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
         var _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
         sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce);
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
@@ -655,14 +655,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (window._lwDiscordBroadcastChannel) {
                     // Listener is already installed for this page lifecycle.
                 } else {
-                var bc = new BroadcastChannel('legendmod_discord');
-                bc.onmessage = function (event) {
-                    if (!event.data || event.data.type !== 'legendmod_discord_login') return;
-                    var discordUser = event.data.data;
-                    acceptDiscordUser(discordUser, 'BroadcastChannel');
-                };
-                window._lwDiscordBroadcastChannel = bc;
-                console.log('[LW Discord] BroadcastChannel listener registered');
+                    var bc = new BroadcastChannel('legendmod_discord');
+                    bc.onmessage = function (event) {
+                        if (!event.data || event.data.type !== 'legendmod_discord_login') return;
+                        var discordUser = event.data.data;
+                        acceptDiscordUser(discordUser, 'BroadcastChannel');
+                    };
+                    window._lwDiscordBroadcastChannel = bc;
+                    console.log('[LW Discord] BroadcastChannel listener registered');
                 }
             } catch (e) {
                 console.log('[LW Discord] BroadcastChannel not supported:', e.message);
@@ -9323,15 +9323,6 @@ function thelegendmodproject() {
             return view;
         },
         sendBuffer(value) {
-            if (!value || !value.buffer) return;
-            var opcode = new DataView(value.buffer).getUint8(0);
-            // Official Agar.io servers disconnect if sent custom LegendMod relay opcodes (9-18)
-            if ((this.serverType === 'agario' || !this.serverType) && (opcode >= 9 && opcode <= 18)) {
-                if (window.ogarioWS && typeof window.ogarioWS.send === 'function') {
-                    window.ogarioWS.send(value.buffer);
-                }
-                return;
-            }
             if (this.socket && this.socket.readyState === 1) {
                 this.socket.send(value.buffer);
             }
@@ -9644,8 +9635,9 @@ function thelegendmodproject() {
             if (this[name] !== null && this[name] === str) {
                 return;
             }
-            if (this.isSocketOpen()) {
-                this.sendBuffer(this.strToBuff(offset, str));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function') {
+                ws.send(this.strToBuff(offset, str).buffer);
                 this[name] = str;
             }
         },
@@ -9662,8 +9654,9 @@ function thelegendmodproject() {
             this.sendPlayerData(13, 'lastSentCustomColor', ogarcopythelb.color);
         },
         sendPlayerColor() {
-            if (this.isSocketOpen() && ogario.playerColor) {
-                this.sendBuffer(this.strToBuff(14, ogario.playerColor));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function' && ogario.playerColor) {
+                ws.send(this.strToBuff(14, ogario.playerColor).buffer);
             }
         },
         sendPartyToken() {
@@ -9702,8 +9695,9 @@ function thelegendmodproject() {
         sendServerRegion() {
             if (this.region) {
                 var region = this.region.split('-');
-                if (this.isSocketOpen()) {
-                    this.sendBuffer(this.strToBuff(17, region[0]));
+                var ws = window.ogarioWS;
+                if (ws && typeof ws.send === 'function') {
+                    ws.send(this.strToBuff(17, region[0]).buffer);
                 }
             }
         },
@@ -9722,8 +9716,9 @@ function thelegendmodproject() {
                 case ':party':
                     gamemode = 'PTY';
             }
-            if (this.isSocketOpen()) {
-                this.sendBuffer(this.strToBuff(18, gamemode));
+            var ws = window.ogarioWS;
+            if (ws && typeof ws.send === 'function') {
+                ws.send(this.strToBuff(18, gamemode).buffer);
             }
         },
         sendServerData() {
@@ -10398,12 +10393,12 @@ function thelegendmodproject() {
                     view.setUint16(offset, this.playerID, true); offset += 2; // userID
                     view.setUint16(offset, this.playerID, true); offset += 2; // playerID
                     view.setUint16(offset, 0, true); offset += 2; // targetID
-                    
+
                     view.setUint16(offset, currentNick.length, true); offset += 2;
                     for (var i = 0; i < currentNick.length; i++) {
                         view.setUint16(offset, currentNick.charCodeAt(i), true); offset += 2;
                     }
-                    
+
                     view.setUint16(offset, message.length, true); offset += 2;
                     for (var i = 0; i < message.length; i++) {
                         view.setUint16(offset, message.charCodeAt(i), true); offset += 2;
@@ -16897,8 +16892,8 @@ Most cells eaten   : ${mostCellsEaten}
                     var expiryDay = expiryDate.getDate();
                     var expiryMonth = expiryDate.toLocaleString('default', { month: 'long' });
                     var daySuffix = (expiryDay === 1 || expiryDay === 21 || expiryDay === 31) ? "st" :
-                                    (expiryDay === 2 || expiryDay === 22) ? "nd" :
-                                    (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
+                        (expiryDay === 2 || expiryDay === 22) ? "nd" :
+                            (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
                     var tempdateNow2 = expiryDay + daySuffix + " of " + expiryMonth;
                     toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b>. Thank you for using our mod!").css("width", "350px");
                 }
@@ -17942,14 +17937,14 @@ Most cells eaten   : ${mostCellsEaten}
             }
             console.group('%c ⚡ LegendMod Subsystem Performance Profiler ⚡ ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 14px; padding: 4px;');
             console.table({
-                '0. Main Thread CPU Load':    { 'Last': this.stats.cpuPct.toFixed(1) + '%', 'Avg': this.stats.cpuAvgPct + '%', 'Min': '-', 'Max': '-', '% Frame': 'Main Thread %' },
-                '1. Total Frame Draw':        { 'Last': this.stats.frameMs.toFixed(2) + 'ms', 'Avg': this.stats.frameAvgMs + 'ms', 'Min': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2) + 'ms', 'Max': this.stats.frameMaxMs.toFixed(2) + 'ms', '% Frame': '100%' },
-                '2. WebGL2 Batch Draw':      { 'Last': this.stats.webglMs.toFixed(2) + 'ms', 'Avg': this.stats.webglAvgMs + 'ms', 'Min': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2) + 'ms', 'Max': this.stats.webglMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.webglAvgMs) },
-                '3. Grid & Map Borders':      { 'Last': this.stats.gridMs.toFixed(2) + 'ms', 'Avg': this.stats.gridAvgMs + 'ms', 'Min': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2) + 'ms', 'Max': this.stats.gridMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.gridAvgMs) },
-                '4. Nick & Mass Text':        { 'Last': this.stats.textMs.toFixed(2) + 'ms', 'Avg': this.stats.textAvgMs + 'ms', 'Min': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2) + 'ms', 'Max': this.stats.textMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.textAvgMs) },
-                '5. Minimap & Radar':        { 'Last': this.stats.minimapMs.toFixed(2) + 'ms', 'Avg': this.stats.minimapAvgMs + 'ms', 'Min': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2) + 'ms', 'Max': this.stats.minimapMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.minimapAvgMs) },
-                '6. Leaderboard Processing':  { 'Last': this.stats.lbMs.toFixed(2) + 'ms', 'Avg': this.stats.lbAvgMs + 'ms', 'Min': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2) + 'ms', 'Max': this.stats.lbMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.lbAvgMs) },
-                '7. Packet 16 Decode (WS)':   { 'Last': this.stats.packetMs.toFixed(2) + 'ms', 'Avg': this.stats.packetAvgMs + 'ms', 'Min': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2) + 'ms', 'Max': this.stats.packetMaxMs.toFixed(2) + 'ms', '% Frame': 'Async' },
+                '0. Main Thread CPU Load': { 'Last': this.stats.cpuPct.toFixed(1) + '%', 'Avg': this.stats.cpuAvgPct + '%', 'Min': '-', 'Max': '-', '% Frame': 'Main Thread %' },
+                '1. Total Frame Draw': { 'Last': this.stats.frameMs.toFixed(2) + 'ms', 'Avg': this.stats.frameAvgMs + 'ms', 'Min': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2) + 'ms', 'Max': this.stats.frameMaxMs.toFixed(2) + 'ms', '% Frame': '100%' },
+                '2. WebGL2 Batch Draw': { 'Last': this.stats.webglMs.toFixed(2) + 'ms', 'Avg': this.stats.webglAvgMs + 'ms', 'Min': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2) + 'ms', 'Max': this.stats.webglMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.webglAvgMs) },
+                '3. Grid & Map Borders': { 'Last': this.stats.gridMs.toFixed(2) + 'ms', 'Avg': this.stats.gridAvgMs + 'ms', 'Min': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2) + 'ms', 'Max': this.stats.gridMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.gridAvgMs) },
+                '4. Nick & Mass Text': { 'Last': this.stats.textMs.toFixed(2) + 'ms', 'Avg': this.stats.textAvgMs + 'ms', 'Min': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2) + 'ms', 'Max': this.stats.textMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.textAvgMs) },
+                '5. Minimap & Radar': { 'Last': this.stats.minimapMs.toFixed(2) + 'ms', 'Avg': this.stats.minimapAvgMs + 'ms', 'Min': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2) + 'ms', 'Max': this.stats.minimapMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.minimapAvgMs) },
+                '6. Leaderboard Processing': { 'Last': this.stats.lbMs.toFixed(2) + 'ms', 'Avg': this.stats.lbAvgMs + 'ms', 'Min': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2) + 'ms', 'Max': this.stats.lbMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.lbAvgMs) },
+                '7. Packet 16 Decode (WS)': { 'Last': this.stats.packetMs.toFixed(2) + 'ms', 'Avg': this.stats.packetAvgMs + 'ms', 'Min': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2) + 'ms', 'Max': this.stats.packetMaxMs.toFixed(2) + 'ms', '% Frame': 'Async' },
                 '8. Physics & Jelly Motion': { 'Last': this.stats.physicsMs.toFixed(2) + 'ms', 'Avg': this.stats.physicsAvgMs + 'ms', 'Min': (this.stats.physicsMinMs === 999 ? 0 : this.stats.physicsMinMs).toFixed(2) + 'ms', 'Max': this.stats.physicsMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.physicsAvgMs) }
             });
             console.log('Total Frames Sampled:', this.stats.frameCount, '| Packets Processed:', this.stats.packetCount);
@@ -19364,7 +19359,7 @@ Most cells eaten   : ${mostCellsEaten}
          * then draws as a textured quad on the GL canvas with correct depth Z. */
         getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth) {
             if (!this.gl || !this.glTextProgram) return null;
-            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle||'') + '|' + (strokeWidth||0);
+            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
             if (cached) { cached.lastUsed = now; return cached; }
@@ -19414,7 +19409,7 @@ Most cells eaten   : ${mostCellsEaten}
             /* Evict oldest entries until cache is back within limits */
             while (this.glTextCache.size > this.glTextCacheMaxSize) {
                 var oldest = null, oldestKey = null;
-                this.glTextCache.forEach(function(v, k) {
+                this.glTextCache.forEach(function (v, k) {
                     if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
                 });
                 if (oldestKey) {
@@ -19649,21 +19644,21 @@ Most cells eaten   : ${mostCellsEaten}
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
                         var cleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
                         skinUrl = application.customSkinsMap[mode] ||
-                                  application.customSkinsMap[cell.targetNick] ||
-                                  application.customSkinsMap[cell.targetNick + '#000000'] ||
-                                  (cleanNick ? (
-                                      application.customSkinsMap[cleanNick] ||
-                                      application.customSkinsMap[cleanNick + '#000000'] ||
-                                      application.customSkinsMap[cleanNick + cell.color]
-                                  ) : null);
+                            application.customSkinsMap[cell.targetNick] ||
+                            application.customSkinsMap[cell.targetNick + '#000000'] ||
+                            (cleanNick ? (
+                                application.customSkinsMap[cleanNick] ||
+                                application.customSkinsMap[cleanNick + '#000000'] ||
+                                application.customSkinsMap[cleanNick + cell.color]
+                            ) : null);
                     }
                     if (!skinUrl && cell.skin) {
                         skinUrl = application.customSkinsMap[cell.skin] ||
-                                  (window.VanillaSkinUrlMap ? (
-                                      window.VanillaSkinUrlMap[cell.skin] ||
-                                      window.VanillaSkinUrlMap['%' + cell.skin] ||
-                                      window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
-                                  ) : null);
+                            (window.VanillaSkinUrlMap ? (
+                                window.VanillaSkinUrlMap[cell.skin] ||
+                                window.VanillaSkinUrlMap['%' + cell.skin] ||
+                                window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
+                            ) : null);
                     }
                     if (skinUrl) {
                         skinRequested = true;
@@ -20057,7 +20052,7 @@ Most cells eaten   : ${mostCellsEaten}
                         for (var ti = 0; ti < LM.cells.length; ti++) {
                             var tCell = LM.cells[ti];
                             if (tCell && tCell._webglRendered) {
-                                try { this.drawWebGLCellText(tCell); } catch(eText) {}
+                                try { this.drawWebGLCellText(tCell); } catch (eText) { }
                             }
                         }
                         gl.bindVertexArray(null);
