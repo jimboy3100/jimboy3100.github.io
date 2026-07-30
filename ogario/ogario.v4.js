@@ -1,5 +1,15 @@
 window.spects = window.spects || [];
 var spects = window.spects;
+/* Look up a multibox unit by its .number property.
+ * Unit numbers are max(existing)+1, NOT necessarily array index+1.
+ * After deleting a middle unit the indices drift. */
+function getActiveSpect(unitNumber) {
+    if (!unitNumber || typeof spects === 'undefined' || !spects) return null;
+    for (var i = 0; i < spects.length; i++) {
+        if (spects[i] && spects[i].number === unitNumber) return spects[i];
+    }
+    return null;
+}
 window.OgVer = 3.496;
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
@@ -134,16 +144,16 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     if (document.URL.includes('expanding.land')) {
         window.expandingLand = true;
     }
-    /* LW: Swap Google OAuth client ID for our domains.
+    /* LW: Swap Google OAuth client ID for our domains only.
      * Agar.io's Google app only allows agar.io as origin.
      * Our Google app (project: legend-mod) allows expanding.land, legendmod.ml, jimboy3100.github.io.
      * The server accepts Google tokens from BOTH apps — UIDs are the same regardless of client_id. */
-    if (window.EnvConfig) {
-        window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+    var _lwHostname = window.location.hostname || '';
+    if (_lwHostname.indexOf('legendmod') !== -1 || _lwHostname.indexOf('expanding.land') !== -1 || _lwHostname.indexOf('jimboy3100') !== -1) {
+        if (window.EnvConfig) {
+            window.EnvConfig.gplus_client_id = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
+        }
     }
-
-    /* The page uses Google Identity Services exclusively; legacy gapi.auth2 is not loaded. */
-    window.gapiAsyncInit = function () { };
 
     /* Suppress third-party iframe CSP report / sandbox errors from polluting console */
     window.addEventListener('error', function (e) {
@@ -262,191 +272,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* Initialize on page load */
     window._lwResetAuthState();
 
-    /* LW: Replace deprecated gapi.auth2 with Google Identity Services (GIS).
-     * The old gapi.auth2 library causes redirect_uri_mismatch on new OAuth clients.
-     * This loads GIS, intercepts the Google login button, and uses the new token flow.
-     * Only runs on our domains — agar.io uses its own old client and gapi.auth2 works fine there. */
-    (function () {
-        var LW_CLIENT_ID = "477064688096-0kjji8rrd64i0nla19c460mhhm8e7eh7.apps.googleusercontent.com";
-        var gisLoaded = false;
-        var tokenClient = null;
-
-        /* Load the GIS library */
-        var script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = function () {
-            gisLoaded = true;
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: LW_CLIENT_ID,
-                scope: 'email profile openid',
-                callback: onTokenResponse
-            });
-        };
-        script.onerror = function () {
-            gisLoaded = false;
-            console.error('[LW Google] Failed to load Google Identity Services');
-        };
-        document.head.appendChild(script);
-
-        function onTokenResponse(response) {
-            var attemptId = window._lwAuth && window._lwAuth.googleAttemptId;
-            if (response.error) {
-                if (window.MC) window.MC.onGoogleLoginComplete(false);
-                window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] Token error: ' + response.error);
-                return;
-            }
-            /* Atomic check+consume — only the first handler wins */
-            if (!window._lwTryConsume(attemptId, 'google')) {
-                console.log('[LW Google] Ignoring stale token response (attemptId/provider mismatch)');
-                return;
-            }
-            var accessToken = response.access_token;
-
-
-            /* Fetch user profile for picture and social ID */
-            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { 'Authorization': 'Bearer ' + accessToken }
-            })
-                .then(function (r) {
-                    if (!r.ok) throw new Error('userinfo HTTP ' + r.status);
-                    return r.json();
-                })
-                .then(function (profile) {
-                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
-
-
-                    /* Update storage info like the old flow does */
-                    var st = window.storageInfo || window.defaultSt;
-                    if (st) {
-                        st.context = 'google';
-                        st.loginIntent = '1';
-                        if (profile.picture) st.userInfo.picture = profile.picture;
-                        if (profile.sub) st.userInfo.socialId = profile.sub;
-                        if (window.updateStorage) window.updateStorage();
-                    }
-
-                    /* Set profile picture */
-                    if (profile.picture) {
-                        var pics = document.querySelectorAll('.agario-profile-picture');
-                        for (var i = 0; i < pics.length; i++) pics[i].src = profile.picture;
-                        window.googlePic = profile.picture;
-                    }
-
-                    /* Send token to game server */
-                    if (window.MC && window.MC.doLoginWithGPlus) {
-                        /* MC available (agar.io or domains with agario.core.js) */
-                        if (profile.sub) window.MC.setSocialId(profile.sub);
-                        if (profile.picture) window.MC.setProfilePicture(profile.picture);
-                        window.MC.doLoginWithGPlus(accessToken);
-                        window.MC.onGoogleLoginComplete(true);
-                        window.MC.showInstructionsPanel(true);
-                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                        /* MC unavailable (expanding.land / private server) */
-
-
-                        /* Store token in master so login() can resend on Play clicks */
-                        if (window.master && window.master.doLoginWithGPlus) {
-                            window.master.doLoginWithGPlus(accessToken);
-                        }
-
-                        /* Send opcode 102 directly to game server with social ID and name */
-                        _lw_sendLogin102(accessToken, profile.sub, profile.name, attemptId, 'google');
-                        /* Transition: OAuth done → waiting for server confirmation */
-                        if (window._lwAuth && window._lwAuth.provider === 'google') {
-                            window._lwAuth.state = 'waiting_server';
-                        }
-
-
-                        /* Update profile UI — TEMPORARY fallback only.
-                         * Once protobuf type-11 login response arrives from the
-                         * server (with refreshed profile from 204→102 resend),
-                         * updateUserInfo() becomes the single source of truth.
-                         * Do NOT set agarioUID here — it must come from server. */
-                        if (!window._lwAuth || window._lwAuth.state !== 'logged_in') {
-                            console.log('[LW Google FALLBACK] Setting temporary profile (protobuf not received yet)');
-                            if (profile.picture) {
-                                $('.agario-profile-picture').attr('src', profile.picture);
-                            }
-                            if (profile.name) {
-                                $('#UserProfileName1').text(profile.name);
-                                window.userfirstname = profile.name;
-                                localStorage.setItem('userfirstname', profile.name);
-                            }
-                            if (profile.sub) {
-                                $('#UserProfileUID1').val(profile.sub);
-                                $('#replayuid').val(profile.sub);
-                                window.userid = profile.sub;
-                                localStorage.setItem('userid', profile.sub);
-                            }
-                            /* Set logged-in state so Play/Logout buttons appear */
-                            $('#helloContainer').attr('data-logged-in', '1');
-                        }
-
-                    } else {
-                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
-                        return;
-                    }
-                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
-                })
-                .catch(function (err) {
-                    console.error('[LW Google] Profile fetch failed:', err);
-                    if (!window._lwIsCurrentAuthAttempt(attemptId, 'google')) return;
-                    /* Still try to log in with just the token */
-                    if (window.MC && window.MC.doLoginWithGPlus) {
-                        window.MC.doLoginWithGPlus(accessToken);
-                        window.MC.onGoogleLoginComplete(true);
-                    } else if (typeof legendmod !== 'undefined' && legendmod.sendMessage) {
-                        _lw_sendLogin102(accessToken, null, null, attemptId, 'google');
-                    } else {
-                        window._lwFailAuthAttempt(attemptId, 'google', '[LW Google] No login transport available');
-                        return;
-                    }
-                    if (window._lwIsCurrentAuthAttempt(attemptId, 'google')) window._lwAuth.state = 'waiting_server';
-                });
-        }
-
-        /* Intercept the Google login button click on our domains.
-         * Wait for DOM to be ready, then override the #gplusLogin handler. */
-        var setupAttempts = 0;
-        function setupLoginOverride() {
-            var btn = document.getElementById('gplusLogin');
-            if (!btn) {
-                if (++setupAttempts < 40) setTimeout(setupLoginOverride, 500);
-                return;
-            }
-
-            /* Clone and replace to remove ALL old event listeners */
-            var newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-
-            newBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!gisLoaded || !tokenClient) {
-                    console.error('[LW Google] Login service is not ready');
-                    return;
-                }
-
-                /* Start fresh login attempt */
-                var attemptId = window._lwBeginLogin('google');
-                window._lwArmLoginTimeout(attemptId);
-                window._lwAuth.googleAttemptId = attemptId;
-
-                /* Do NOT call MC.googleLogin() — that triggers old gapi.auth2 and causes redirect_uri_mismatch */
-                tokenClient.requestAccessToken();
-            }, true);
-
-
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function () { setTimeout(setupLoginOverride, 1000); });
-        } else {
-            setTimeout(setupLoginOverride, 1000);
-        }
-    })();
+    /* Google login is handled by gapi.auth2 loaded in play.html and
+     * master.js's gapiAsyncInit → setup() → api.attachClickHandler(). */
 
     /* LW: Send opcode 102 directly via legendmod's socket.
      * Used when MC (from agario.core.js) is unavailable (e.g. expanding.land).
@@ -774,6 +601,18 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
 
         function acceptDiscordUser(discordUser, channel) {
             if (!discordUser || !discordUser.id || !discordUser.token) return false;
+            /* CSRF nonce validation: reject if nonce is present but doesn't match */
+            var expectedNonce = sessionStorage.getItem('discord_oauth_nonce');
+            if (expectedNonce && discordUser.nonce) {
+                if (discordUser.nonce !== expectedNonce) {
+                    console.warn('[LW Discord] CSRF nonce mismatch via ' + channel + ' — rejecting');
+                    return false;
+                }
+                /* Consume nonce to prevent replay */
+                sessionStorage.removeItem('discord_oauth_nonce');
+            } else if (expectedNonce && !discordUser.nonce) {
+                console.warn('[LW Discord] Relay did not include nonce — accepting (backwards-compat)');
+            }
             var attemptId = window._lwAuth && window._lwAuth.discordAttemptId;
             if (!window._lwTryConsume(attemptId, 'discord')) {
                 console.log('[LW Discord] ' + channel + ' ignored (stale/consumed)');
@@ -2283,7 +2122,7 @@ window.lastejected = false;
 
 function calcTarget() { }
 
-function CellTimerTrigger() { }
+/* CellTimerTrigger is defined in anti.js — removed empty stub */
 
 //function historystate(){};
 
@@ -5938,35 +5777,35 @@ function thelegendmodproject() {
         displayStats() {
             if (defaultmapsettings.showStats) {
                 var t = '';
-                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                    if (defaultmapsettings.showStatsMass && spects[window.multiboxPlayerEnabled - 1].playerMass) {
+                if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                    if (defaultmapsettings.showStatsMass && getActiveSpect(window.multiboxPlayerEnabled).playerMass) {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
-                        t += Languageletter49 + ': ' + spects[window.multiboxPlayerEnabled - 1].playerMass + ' | '
+                        t += Languageletter49 + ': ' + getActiveSpect(window.multiboxPlayerEnabled).playerMass + ' | '
                     }
-                    if (spects[window.multiboxPlayerEnabled - 1].playerScore) {
+                    if (getActiveSpect(window.multiboxPlayerEnabled).playerScore) {
                         //t += textLanguage.score + ': ' + i.playerScore
-                        t += Languageletter366 + ': ' + spects[window.multiboxPlayerEnabled - 1].playerScore
+                        t += Languageletter366 + ': ' + getActiveSpect(window.multiboxPlayerEnabled).playerScore
                     }
-                    if (defaultmapsettings.showStatsN16 && spects[window.multiboxPlayerEnabled - 1].playerSplitCells) {
-                        t += ' | ' + spects[window.multiboxPlayerEnabled - 1].playerSplitCells + '/16'
+                    if (defaultmapsettings.showStatsN16 && getActiveSpect(window.multiboxPlayerEnabled).playerSplitCells) {
+                        t += ' | ' + getActiveSpect(window.multiboxPlayerEnabled).playerSplitCells + '/16'
                     }
-                    if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled - 1].BSTE) {
-                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BSTE //Sonia6
+                    if (defaultmapsettings.showStatsESTE && getActiveSpect(window.multiboxPlayerEnabled).BSTE) {
+                        t += ' | ◎◎➛◉: ' + getActiveSpect(window.multiboxPlayerEnabled).BSTE //Sonia6
                     }
-                    if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled - 1].BMTE) {
-                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled - 1].BMTE //Sonia6
+                    if (defaultmapsettings.showStatsEMTE && getActiveSpect(window.multiboxPlayerEnabled).BMTE) {
+                        t += ' | ◎➛◉: ' + getActiveSpect(window.multiboxPlayerEnabled).BMTE //Sonia6
                     }
-                    if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled - 1].MTE) {
-                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].MTE //Sonia6
+                    if (defaultmapsettings.showStatsMTE && getActiveSpect(window.multiboxPlayerEnabled).MTE) {
+                        t += ' | ◉➛◎: ' + getActiveSpect(window.multiboxPlayerEnabled).MTE //Sonia6
                     }
-                    if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled - 1].STE) {
-                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled - 1].STE //Sonia6
+                    if (defaultmapsettings.showStatsSTE && getActiveSpect(window.multiboxPlayerEnabled).STE) {
+                        t += ' | ◉◉➛◎: ' + getActiveSpect(window.multiboxPlayerEnabled).STE //Sonia6
                     }
-                    if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled - 1].TTE) {
-                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled - 1].TTE //Sonia6
+                    if (defaultmapsettings.showStatsTTE && getActiveSpect(window.multiboxPlayerEnabled).TTE) {
+                        t += ' | ◉➚◉: ' + getActiveSpect(window.multiboxPlayerEnabled).TTE //Sonia6
                     }
-                    if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled - 1].PTE) {
-                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled - 1].PTE //Sonia6
+                    if (defaultmapsettings.showStatsPTE && getActiveSpect(window.multiboxPlayerEnabled).PTE) {
+                        t += ' | ➚◎➘: ' + getActiveSpect(window.multiboxPlayerEnabled).PTE //Sonia6
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
@@ -6058,7 +5897,7 @@ function thelegendmodproject() {
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-                    var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects[window.multiboxPlayerEnabled - 1]) ? spects[window.multiboxPlayerEnabled - 1] : null;
+                    var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
                     if (window.multiboxPlayerEnabled) {
@@ -6076,21 +5915,37 @@ function thelegendmodproject() {
                 }	*/
                 this.statsHUD.innerHTML = t;
                 //this.statsHUD.textContent = t;
-                var app = this;
-                setTimeout(function () {
-                    app.displayStats();
-                }, 250);
-            } else $('#stats-hud').hide();
+                if (!this._displayStatsInterval) {
+                    var app = this;
+                    this._displayStatsInterval = setInterval(function () {
+                        app.displayStats();
+                    }, 250);
+                }
+            } else {
+                $('#stats-hud').hide();
+                if (this._displayStatsInterval) {
+                    clearInterval(this._displayStatsInterval);
+                    this._displayStatsInterval = null;
+                }
+            }
         },
         displayTime() {
             if (defaultmapsettings.showTime) {
                 var time = new Date().toLocaleString();
                 this.timeHUD.textContent = time;
-                var app = this;
-                setTimeout(function () {
-                    app.displayTime();
-                }, 1000);
-            } else $('#time-hud').hide();
+                if (!this._displayTimeInterval) {
+                    var app = this;
+                    this._displayTimeInterval = setInterval(function () {
+                        app.displayTime();
+                    }, 1000);
+                }
+            } else {
+                $('#time-hud').hide();
+                if (this._displayTimeInterval) {
+                    clearInterval(this._displayTimeInterval);
+                    this._displayTimeInterval = null;
+                }
+            }
         },
         displayParties() {
             let text = '';
@@ -8058,6 +7913,8 @@ function thelegendmodproject() {
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
             this.unlockButtons();
             resetonkeydown();
+            if (typeof celltimerstop === 'function') celltimerstop();
+            if (typeof stopMergeTimer === 'function') stopMergeTimer();
 
             // Auto-switch to surviving multibox spect if any
             if (typeof spects !== 'undefined' && spects && spects.length > 0) {
@@ -9481,9 +9338,7 @@ function thelegendmodproject() {
                 case 20:
                     this.updateTeamPlayer(message);
                     break;
-                case 25:
-                    this.readDeltaChatMessage(message);
-                    break;
+
                 case 30:
                     this.updateTeamPlayerPosition(message);
                     break;
@@ -9498,6 +9353,7 @@ function thelegendmodproject() {
                     break;
                 case 96:
                     break;
+
                 case 100:
                     this.readChatMessage(message);
                     break;
@@ -10432,6 +10288,40 @@ function thelegendmodproject() {
             }
         },
         /* ─── §4.18 Chat System ─── */
+        readDeltaChatMessage(t) {
+            if (!defaultmapsettings.disableChat) {
+                var offset = 1;
+                var type_num = t.getUint8(offset++);
+                var msgType = type_num === 1 ? 1 : type_num === 2 ? 102 : type_num;
+                var userID = t.getUint16(offset, true); offset += 2;
+                var playerID = t.getUint16(offset, true); offset += 2;
+                var targetID = t.getUint16(offset, true); offset += 2;
+                function readUTF16StringLength() {
+                    var len = t.getUint16(offset, true); offset += 2;
+                    var str = "";
+                    for (var i = 0; i < len; i++) {
+                        str += String.fromCharCode(t.getUint16(offset, true));
+                        offset += 2;
+                    }
+                    return str;
+                }
+                var nick = readUTF16StringLength();
+                var text = readUTF16StringLength();
+                var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+                if (!(this.isChatUserMuted(playerID) || 0 !== targetID && targetID !== this.playerID && playerID !== this.playerID)) {
+                    var msg = nick + ': ' + text;
+                    var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
+                    var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+                    if (!pattern.test(msg) && !pattern2.test(msg)) {
+                        if (legendmod.integrity || !LM.chatableServer) {
+                            this.displayChatMessage(time, msgType, playerID, msg);
+                        } else if (!legendmod.integrity && $("#clantag").val() !== "") {
+                            this.displayChatMessage(time, msgType, playerID, msg);
+                        }
+                    }
+                }
+            }
+        },
         readChatMessage(t) {
             if (!defaultmapsettings.disableChat) {
                 var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
@@ -13171,6 +13061,8 @@ function thelegendmodproject() {
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
             this.flushCellsData();
+            if (typeof celltimerstop === 'function') celltimerstop();
+            if (typeof stopMergeTimer === 'function') stopMergeTimer();
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
             //clearInterval(this.pingInterval);
@@ -16441,8 +16333,8 @@ Most cells eaten   : ${mostCellsEaten}
             /*if(LM.multiBoxPlayerExists && (window.multiboxPlayerEnabled || window.multiboxPlayerEnabledSaved)){
             	
                 if (window.multiboxPlayerEnabled){
-                    for (var i=0; i<spects[window.multiboxPlayerEnabled-1].leaderboard.length; i++){
-                        if (spects[window.multiboxPlayerEnabled-1].leaderboard[i].id == "isPlayer"){		
+                    for (var i=0; i<getActiveSpect(window.multiboxPlayerEnabled).leaderboard.length; i++){
+                        if (getActiveSpect(window.multiboxPlayerEnabled).leaderboard[i].id == "isPlayer"){		
                                 if (this.leaderboard[i]){ 
                                     this.leaderboard[i].id = 'isPlayer'
                                     this.playerPositionNickMulti  = this.leaderboard[i].nick
@@ -16452,8 +16344,8 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                     }                      
                 else if (window.multiboxPlayerEnabledSaved){
-                    for (var i=0; i<spects[window.multiboxPlayerEnabledSaved-1].leaderboard.length; i++){
-                        if (spects[window.multiboxPlayerEnabledSaved-1].leaderboard[i].id == "isPlayer"){	
+                    for (var i=0; i<getActiveSpect(window.multiboxPlayerEnabledSaved).leaderboard.length; i++){
+                        if (getActiveSpect(window.multiboxPlayerEnabledSaved).leaderboard[i].id == "isPlayer"){	
                             if (this.leaderboard[i]){
                                 this.leaderboard[i].id = 'isPlayer'	
                                 this.playerPositionNickMulti  = this.leaderboard[i].nick
@@ -17588,8 +17480,8 @@ Most cells eaten   : ${mostCellsEaten}
                 this.playerSplitCells = this.playerCells.length;
             }
             var mass
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                mass = this.selectBiggestCell ? getActiveSpect(window.multiboxPlayerEnabled).playerMaxMass : getActiveSpect(window.multiboxPlayerEnabled).playerMinMass;
             } else {
                 mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
             }
@@ -17653,8 +17545,8 @@ Most cells eaten   : ${mostCellsEaten}
                 var _integrity = LM.integrity;
                 var _sizeThreshold = _integrity ? 13 : 14;
                 var _mass;
-                if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                    _mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
+                if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                    _mass = this.selectBiggestCell ? getActiveSpect(window.multiboxPlayerEnabled).playerMaxMass : getActiveSpect(window.multiboxPlayerEnabled).playerMinMass;
                 } else {
                     _mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 }
@@ -19836,15 +19728,15 @@ Most cells eaten   : ${mostCellsEaten}
                     targetCamX = sumX / count;
                     targetCamY = sumY / count;
                 }
-            } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && spects[window.multiboxPlayerEnabled - 1]) {
-                var spect = spects[window.multiboxPlayerEnabled - 1];
+            } else if (window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled)) {
+                var spect = getActiveSpect(window.multiboxPlayerEnabled);
                 if (spect && spect.playerX != null && spect.playerX !== 0 && spect.playerCellIDs && spect.playerCellIDs.length) {
                     targetCamX = spect.playerX + (spect.fix3x || 0);
                     targetCamY = spect.playerY + (spect.fix3y || 0);
                 }
             }
 
-            var activeHasCells = LM.playerCells.length || (window.multiboxPlayerEnabled && spects && spects[window.multiboxPlayerEnabled - 1] && spects[window.multiboxPlayerEnabled - 1].playerCellIDs && spects[window.multiboxPlayerEnabled - 1].playerCellIDs.length);
+            var activeHasCells = LM.playerCells.length || (window.multiboxPlayerEnabled && spects && getActiveSpect(window.multiboxPlayerEnabled) && getActiveSpect(window.multiboxPlayerEnabled).playerCellIDs && getActiveSpect(window.multiboxPlayerEnabled).playerCellIDs.length);
             if (activeHasCells) {
                 if (!this.camX || !this.camY || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                     this.camX = targetCamX;
@@ -22527,65 +22419,65 @@ Most cells eaten   : ${mostCellsEaten}
             LM.sendSpectate();
         },
         Botseject() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendBotEject()
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendBotEject()
             } else {
                 LM.sendBotEject();
             }
         },
         /*Botsmacroeject() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendBotEject()
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendBotEject()
             } else {
                 LM.sendBotEject();
             }
         },	*/
         Botsplit() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendBotSplit()
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendBotSplit()
             } else {
                 LM.sendBotSplit();
             }
         },
         eject() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendEject()
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendEject()
             } else {
                 LM.sendEject();
             }
             window.lastejected = true;
         },
         split() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendSplit()
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendSplit()
             } else {
                 LM.sendSplit();
             }
         },
         doubleSplit() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendDoubleSplit();
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendDoubleSplit();
             } else {
                 LM.sendDoubleSplit();
             }
         },
         tripleSplit() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendTripleSplit();
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendTripleSplit();
             } else {
                 LM.sendTripleSplit();
             }
         },
         quadSplit() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendQuadSplit();
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendQuadSplit();
             } else {
                 LM.sendQuadSplit();
             }
         },
         playerFreeze() {
-            if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
-                spects[window.multiboxPlayerEnabled - 1].sendPlayerFreeze();
+            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
+                getActiveSpect(window.multiboxPlayerEnabled).sendPlayerFreeze();
             } else {
                 LM.sendPlayerFreeze();
             }
