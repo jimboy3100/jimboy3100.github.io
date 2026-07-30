@@ -15551,6 +15551,11 @@ function thelegendmodproject() {
 
                     try { this.updatePotions(u.userPotions); } catch (e) { console.error('[LW 102] updatePotions error:', e); }
 
+                    if (u.userUnapprovedSkinsIds && u.userUnapprovedSkinsIds.length) {
+                        this.user.unapprovedSkins = u.userUnapprovedSkinsIds;
+                        console.log('[LM] Pending/Unapproved Custom Skins:', u.userUnapprovedSkinsIds);
+                    }
+
                     /* LW: Show agar.io-style login notification after confirmed
                      * server login (protobuf type-11). Uses server-confirmed data. */
                     if (window.expandingLand || window.legendModFromWebsite) {
