@@ -10875,6 +10875,58 @@ function thelegendmodproject() {
                 return false;
             }
         },
+        /* ─── §4.20c Protocol Automation Helpers ─── */
+        claimGifts(giftIds) {
+            if (!giftIds || !giftIds.length) return false;
+            return this.sendProto(100, { claimGiftsRequestField: { giftIds: giftIds } });
+        },
+        brewPotion(slot) {
+            console.log("[LM] Brew Potion in slot " + slot);
+            return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
+        },
+        openPotion(slot) {
+            console.log("[LM] Open Potion in slot " + slot);
+            return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot) } });
+        },
+        activateQuest(productId) {
+            console.log("[LM] Activate Quest: " + productId);
+            return this.sendProto(114, { activateQuestRequestField: { productId: productId } });
+        },
+        activateBoost(productId) {
+            console.log("[LM] Activate Boost: " + productId);
+            return this.sendProto(112, { activateBoostRequestField: { productId: productId } });
+        },
+        requestAdRewardToken() {
+            console.log("[LM] Requesting Ad Reward Token...");
+            return this.sendProto(185, { genericVideoAdRewardTokenRequestField: {} });
+        },
+        inspectUserStats(userId) {
+            console.log("[LM] Inspect User Stats for: " + userId);
+            return this.sendProto(82, { userStatsRequestField: { userId: userId } });
+        },
+        sendProto(type, payload) {
+            if (!window.mesega) {
+                toastr.error("<b>[ERROR]:</b> Protocol not ready.");
+                return false;
+            }
+            if (!window.core || !window.core.proxyMobileData) {
+                toastr.error("<b>[ERROR]:</b> Not connected. Play a game first.");
+                return false;
+            }
+            try {
+                var buffer = window.mesega.encode({
+                    contentType: 1,
+                    uncompressedData: Object.assign({ type: type }, payload)
+                }).finish();
+                window.core.proxyMobileData(buffer);
+                console.log("%c[LM] SUCCESS: Sent opcode " + type + " (" + buffer.length + " bytes)", "color: #00FF00;");
+                return true;
+            } catch (e) {
+                console.error("[LM] Protobuf encode error (type " + type + "):", e);
+                toastr.error("<b>[ERROR]:</b> Encode error: " + e.message);
+                return false;
+            }
+        },
         /* ─── §4.21 Skin Upload ─── */
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
             console.log("[LM] Upload Started. Name: " + skinName + " Image Size: " + imageUint8Array.length + " bytes");
@@ -15686,10 +15738,24 @@ function thelegendmodproject() {
                     this.updateUserSettings(u.updatedUserSettings)
                     break;
                 case 83:
-                    console.log("returnMessage = r.get_userStatsResponseField();");
+                    // User stats response
+                    try {
+                        var st = r.uncompressedData.userStatsResponseField;
+                        if (st && st.userStats) {
+                            console.log("[LM] Inspected User Stats for " + st.userId + ":", st.userStats);
+                            toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + (st.userStats.massConsumed || 0).toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                        }
+                    } catch(stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
                     break;
                 case 101:
-                    console.log("returnMessage = r.get_claimGiftsResponseField();");
+                    // Claim gifts response
+                    try {
+                        var cg = r.uncompressedData.claimGiftsResponseField;
+                        if (cg && cg.productUpdates) {
+                            this.updateProducts([cg.productUpdates]);
+                            toastr.success('<b>[SERVER]:</b> Gift claimed successfully! &#x2714;');
+                        }
+                    } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
                     break;
                 case 105:
                     console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
