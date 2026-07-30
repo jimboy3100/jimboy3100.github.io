@@ -49,6 +49,23 @@
         try {
             var buf = new Uint8Array(data);
             bufferCount++;
+
+            // Console log ALL packets like original sniffer
+            if (buf[0] === 255) {
+                console.log('Buffer sent: ', buf);
+                console.log('Buffer count:', bufferCount, '(client key 255)');
+            } else if (buf[0] === 254) {
+                console.log('Buffer sent: ', buf);
+                console.log('Buffer count:', bufferCount, '(protocol version:', buf[1], ')');
+            } else {
+                console.log('Buffer sent: ', buf);
+                console.log('Buffer count:', bufferCount);
+                if (buf.length > 3) {
+                    try { console.log(String.fromCharCode.apply(String, buf)); } catch(e) {}
+                }
+            }
+
+            // Skin upload detection
             if (buf.length > 3 && buf[0] !== 255 && buf[0] !== 254) {
                 var png = findPNG(buf);
                 if (png !== -1) {
