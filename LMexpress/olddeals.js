@@ -276,8 +276,8 @@ function SpecialDeals() {
         // Check login state immediately and every 3 seconds
         updateShopLoginState();
         var loginCheckInterval = setInterval(updateShopLoginState, 3000);
-        // Clean up when modal closes
-        $('#legendShop').on('hidden.bs.modal', function() {
+        // Clean up when modal closes (bootstrap event)
+        $('#specialShopModal').on('hidden.bs.modal', function() {
             clearInterval(loginCheckInterval);
         });
 
@@ -477,6 +477,8 @@ function SpecialDeals() {
             if (tab === 'skins') {
                 updateEquippedSkinUI();
             }
+            // Re-apply login state when switching tabs
+            updateShopLoginState();
         });
 
         $("#ss-select-agarVersionDestinations").change(function() {
@@ -493,7 +495,7 @@ function SpecialDeals() {
             //}, 1500);
         });
         $("#CloseSpecialDeals").click(function() {
-
+            clearInterval(loginCheckInterval);
             $("#specialShopModal").remove();
         });
         $("#FAQSpecialDeals").click(function() {
@@ -674,6 +676,9 @@ function populateSkins() {
 
     applySkinFilters();
     updateEquippedSkinUI();
+
+    // Update filter button with actual skin count
+    $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
 }
 
 function openCustomSkinUploader() {
