@@ -586,7 +586,10 @@ function SpecialDeals() {
             //}, 1500);
         });
         $("#CloseSpecialDeals").click(function() {
-            clearInterval(loginCheckInterval);
+            if (window._shopLoginCheckInterval) {
+                clearInterval(window._shopLoginCheckInterval);
+                window._shopLoginCheckInterval = null;
+            }
             $("#specialShopModal").remove();
         });
         $("#FAQSpecialDeals").click(function() {
@@ -706,14 +709,28 @@ function buydeals() {
  */
 function updateDealsBalance() {
     var dna = 0, coins = 0;
-    if (window.application && window.application.userInfo) {
-        var items = window.application.userInfo.userWalletItems || [];
+    var userObj = (window.legendmod && window.legendmod.user) || (window.application && window.application.user);
+    if (userObj) {
+        dna = userObj.dna || 0;
+        coins = userObj.coins || 0;
+    }
+    var appObj = (window.legendmod && window.legendmod.userInfo) ? window.legendmod : window.application;
+    if (appObj && appObj.userInfo && appObj.userInfo.userWalletItems) {
+        var items = appObj.userInfo.userWalletItems || [];
         for (var i = 0; i < items.length; i++) {
             var prod = items[i].productId || '';
             var qty = items[i].quantity || 0;
-            if (prod.indexOf('dna') !== -1) dna += qty;
-            if (prod.indexOf('coins') !== -1) coins += qty;
+            if (prod.indexOf('dna') !== -1 && !dna) dna += qty;
+            if (prod.indexOf('coins') !== -1 && !coins) coins += qty;
         }
+    }
+    if (!dna && $('#dna').length) {
+        var dText = $('#dna').text().replace(/[^0-9]/g, '');
+        if (dText) dna = parseInt(dText, 10);
+    }
+    if (!coins && $('#coins').length) {
+        var cText = $('#coins').text().replace(/[^0-9]/g, '');
+        if (cText) coins = parseInt(cText, 10);
     }
     $('#dealsDnaCount').text(dna.toLocaleString());
     $('#dealsCoinsCount').text(coins.toLocaleString());
@@ -961,8 +978,18 @@ var skinShopPage = 0;
 var skinShopPerPage = 60;
 var skinShopFiltered = [];
 
+function getOwnedSkinsMap() {
+    if (window.legendmod && window.legendmod.user && window.legendmod.user.skins) {
+        return window.legendmod.user.skins;
+    }
+    if (window.application && window.application.user && window.application.user.skins) {
+        return window.application.user.skins;
+    }
+    return {};
+}
+
 function isSkinOwned(s, ownedSkinsObj) {
-    if (!ownedSkinsObj) return false;
+    if (!ownedSkinsObj) ownedSkinsObj = getOwnedSkinsMap();
     var rawId = s.productId;
     var modId = s.productId ? s.productId.replace('skin_', '%') : '';
     var cleanId = s.productId ? s.productId.replace('skin_', '') : '';
@@ -994,7 +1021,7 @@ function populateSkins() {
 
     function applySkinFilters() {
         var query = $('#skinSearchBar').val().toLowerCase().trim();
-        var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
+        var ownedSkinsObj = getOwnedSkinsMap();
 
         skinShopFiltered = skins.filter(function(s) {
             if (s.productId === 'skin_empty') return false;
@@ -1050,7 +1077,7 @@ function populateSkins() {
     $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
 
     // Update owned skin count
-    var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
+    var ownedSkinsObj = getOwnedSkinsMap();
     var ownedCount = 0;
     skins.forEach(function(s) {
         if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;

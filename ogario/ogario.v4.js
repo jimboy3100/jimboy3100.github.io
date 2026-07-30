@@ -4969,6 +4969,19 @@ function thelegendmodproject() {
         pi2: 2 * Math.PI,
         socket: null,
         cells: {},
+    };
+
+    Object.defineProperty(application, 'user', {
+        get: function() {
+            return (window.legendmod && window.legendmod.user) ? window.legendmod.user : (this._user || (this._user = { coins: 0, dna: 0, trophy: 0, boosts: {}, rushBoosts: {}, skins: {}, skinPieces: {}, potions: {}, potionsStatus: {}, skipBrew: {} }));
+        },
+        set: function(val) {
+            if (window.legendmod) window.legendmod.user = val;
+            this._user = val;
+        },
+        configurable: true,
+        enumerable: true
+    });
         teamPlayers: [],
         parties: [],
         chatHistory: [],
