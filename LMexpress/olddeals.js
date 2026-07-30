@@ -35,6 +35,9 @@ AgarVersionDestinations();
 
 function SpecialDeals() {
 
+    // Remove any existing modal + backdrop first (prevents duplicates from re-loading the script)
+    $('#specialShopModal').remove();
+
     if (window.agarioEncodedUID != null) {
 
         // --- Inject skin shop CSS ---
