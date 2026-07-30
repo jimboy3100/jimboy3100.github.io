@@ -9204,17 +9204,17 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             var app = this;
             if (!this.privateMode) {
-                /* Public server: ogario handshake for /ws endpoint.
-                 * /ws serves the ogario-compat protocol (UInt32 playerID).
-                 * /delta7 requires WebSocketRTC + fingerprint (500 without it). */
+                /* Public server: ogario/LM handshake.
+                 * Opcode 5 triggers ProtocolLegacy detection on the server.
+                 * Opcode 0 with version 401 identifies us as Legend Mod. */
                 this.socket.onopen = () => {
                     var buf = app.createView(3);
-                    buf.setUint8(0, 0);
-                    buf.setUint16(1, 401, true);
-                    app.sendBuffer(buf);
-
                     buf.setUint8(0, 5);
                     buf.setUint16(1, 20, true);
+                    app.sendBuffer(buf);
+
+                    buf.setUint8(0, 0);
+                    buf.setUint16(1, 401, true);
                     app.sendBuffer(buf);
 
                     app.comebackTimeout = 500;
@@ -9228,8 +9228,10 @@ function thelegendmodproject() {
                  * We wire handleMessage into ogarioWS relay instead. */
                 this.socket.onopen = () => { app.sendPartyData(); };
             }
-            this.socket.onclose = function (buf) {
-                //app.flushData();
+            this.socket.onclose = function (event) {
+                console.log('%c[LM]%c Chat socket closed (' + (event.code || '?') + ' ' + (event.reason || '') + ')', 'color:green', 'color:blue');
+                app.playerID = null;
+                app.reconnect();
             }
             this.socket.onerror = function (buf) {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
@@ -9367,6 +9369,10 @@ function thelegendmodproject() {
                     break;
                 case 45:
                     this.readWavePing(message);
+                    break;
+                case 15:
+                    /* Captcha request from chat server — log but cannot solve from LM */
+                    console.log('%c[LM]%c Chat server requested captcha (opcode 15)', 'color:green', 'color:orange');
                     break;
                 case 96:
                     break;
@@ -9735,31 +9741,50 @@ function thelegendmodproject() {
             var gamemode = this.gameMode || $('#gamemode').val() || '';
             var partyToken = this.partyToken || '';
 
-            function writeUTF16Len(str, view, offset) {
-                view.setUint8(offset++, str.length & 0xFF);
+            /* Match DeltaClient clientTokenTag format:
+             * [opcode:u8][flags:u8][field1:UTF16Z]...[fieldN:UTF16Z]
+             * Flags: bit0=serverToken, bit1=clanTag, bit2=region, bit3=gamemode, bit4=partyToken */
+            function writeUTF16Zero(str, view, offset) {
                 for (var i = 0; i < str.length; i++) {
                     view.setUint16(offset, str.charCodeAt(i), true);
                     offset += 2;
                 }
+                view.setUint16(offset, 0, true); // null terminator
+                offset += 2;
                 return offset;
             }
 
-            var size = 1 + (1 + serverToken.length * 2) + (1 + clanTag.length * 2) + (1 + region.length * 2) + (1 + gamemode.length * 2) + (1 + partyToken.length * 2);
+            var flags = 0;
+            if (serverToken) flags |= 1;
+            if (clanTag) flags |= 2;
+            if (region) flags |= 4;
+            if (gamemode) flags |= 8;
+            if (partyToken) flags |= 16;
+
+            var size = 1 + 1; // opcode + flags
+            if (flags & 1) size += (serverToken.length + 1) * 2;
+            if (flags & 2) size += (clanTag.length + 1) * 2;
+            if (flags & 4) size += (region.length + 1) * 2;
+            if (flags & 8) size += (gamemode.length + 1) * 2;
+            if (flags & 16) size += (partyToken.length + 1) * 2;
+
             var buffer = new ArrayBuffer(size);
             var view = new DataView(buffer);
             view.setUint8(0, 9); // Opcode 9: Delta room registration
-            var off = 1;
-            off = writeUTF16Len(serverToken, view, off);
-            off = writeUTF16Len(clanTag, view, off);
-            off = writeUTF16Len(region, view, off);
-            off = writeUTF16Len(gamemode, view, off);
-            off = writeUTF16Len(partyToken, view, off);
+            view.setUint8(1, flags);
+            var off = 2;
+            if (flags & 1) off = writeUTF16Zero(serverToken, view, off);
+            if (flags & 2) off = writeUTF16Zero(clanTag, view, off);
+            if (flags & 4) off = writeUTF16Zero(region, view, off);
+            if (flags & 8) off = writeUTF16Zero(gamemode, view, off);
+            if (flags & 16) off = writeUTF16Zero(partyToken, view, off);
             ws.send(buffer);
         },
         sendDeltaPlayerUpdate() {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1 || !this.playerID) return;
-            var nick = ogarcopythelb.nick || '';
+            var nick = ogarcopythelb.nick;
+            if (!nick && nick !== '') return; // Guard: don't send update before nick is initialized
             var skin = ogarcopythelb.skinURL || '';
             var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
             var px = this.getPlayerX() || 0;
