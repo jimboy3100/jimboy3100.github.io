@@ -1382,10 +1382,7 @@ function userLeaguesInfoRequest(slot) {
     window.core.proxyMobileData(bytes); //response 131	
 }
 
-function genericVideoAdRewardTokenRequest(slot) {
-    var bytes = [8, 1, 18, 6, 8, 185, 1, 202, 11, 0];
-    window.core.proxyMobileData(bytes); //response 186
-}
+// genericVideoAdRewardTokenRequest: removed (superseded by application.requestAdRewardToken)
 
 window.openPotion = function (slot) {
     if (window.application && typeof window.application.openPotion === 'function') {
@@ -1513,108 +1510,50 @@ function ReqPing() {
         })*/
     }
 }
-function openPotionForSlotRequest(slot) {
-    console.log('Trying to open potion for slot' + slot);
-    const buffer = mesega.encode({
-        contentType: 1,
-        uncompressedData: {
-            type: 124,
-            openPotionForSlotRequestField: {
-                slot: slot
-            }
-        }
-    }).finish()
-    setTimeout(() => {
-        window.core.proxyMobileData(buffer);
-    }, 1000);
-
-}
+// openPotionForSlotRequest: removed (superseded by application.openPotion)
 
 function buyBoost(req) {
-    console.log("buy boost", req)
-
-    var bytes = [],
-        type = "1_" + req;
-
+    console.log("buy boost", req);
+    var purchaseId = "1_" + req;
+    // Prefer sendProto-based method
+    if (window.application && typeof window.application.softPurchase === 'function') {
+        return window.application.softPurchase(purchaseId);
+    }
+    // Fallback: hardcoded bytes for known boosts
+    var bytes = [];
+    var type = "1_" + req;
     switch (type) {
-        case "1_mass_boost_2x_1h":
-            console.log('"1_mass_boost_2x_1h"');
-            bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104];
-            break;
-        case "1_mass_boost_2x_24h":
-            console.log('"1_mass_boost_2x_24h"');
-            bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104];
-            break;
-        case "1_mass_boost_3x_1h":
-            console.log('"1_mass_boost_3x_1h"');
-            bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104];
-            break;
-        case "1_mass_boost_3x_24h":
-            console.log('"1_mass_boost_3x_24h"');
-            bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104];
-            break;
-        case "1_xp_boost_2x_1h":
-            console.log('"1_xp_boost_2x_1h"');
-            bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104];
-            break;
-        case "1_xp_boost_2x_24h":
-            console.log('"1_xp_boost_2x_24h"');
-            bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104];
-            break;
-        case "1_xp_boost_3x_1h":
-            console.log('"1_xp_boost_3x_1h"');
-            bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104];
-            break;
-        case "1_xp_boost_3x_24h":
-            console.log('"1_xp_boost_3x_24h"');
-            bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104];
-            break;
-        default:
-            console.log('unknown');
+        case "1_mass_boost_2x_1h":  bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "1_mass_boost_2x_24h": bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "1_mass_boost_3x_1h":  bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "1_mass_boost_3x_24h": bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        case "1_xp_boost_2x_1h":    bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "1_xp_boost_2x_24h":   bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "1_xp_boost_3x_1h":    bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "1_xp_boost_3x_24h":   bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        default: console.log('unknown boost: ' + type); return;
     }
     window.core.proxyMobileData(bytes);
 }
 
 function useBoost(type) {
-    console.log("use boost", type)
-
-    var bytes = []
-
+    console.log("use boost", type);
+    // Prefer sendProto-based method
+    if (window.application && typeof window.application.activateBoost === 'function') {
+        return window.application.activateBoost(type);
+    }
+    // Fallback: hardcoded bytes for known boosts
+    var bytes = [];
     switch (type) {
-        case "mass_boost_2x_1h":
-            console.log('"mass_boost_2x_1h"');
-            bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104];
-            break;
-        case "mass_boost_2x_24h":
-            console.log('"mass_boost_2x_24h"');
-            bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104];
-            break;
-        case "mass_boost_3x_1h":
-            console.log('"mass_boost_3x_1h"');
-            bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104];
-            break;
-        case "mass_boost_3x_24h":
-            console.log('"mass_boost_3x_24h"');
-            bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104];
-            break;
-        case "xp_boost_2x_1h":
-            console.log('"xp_boost_2x_1h"');
-            bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104];
-            break;
-        case "xp_boost_2x_24h":
-            console.log('"xp_boost_2x_24h"');
-            bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104];
-            break;
-        case "xp_boost_3x_1h":
-            console.log('"xp_boost_3x_1h"');
-            bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104];
-            break;
-        case "xp_boost_3x_24h":
-            console.log('"xp_boost_3x_24h"');
-            bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104];
-            break;
-        default:
-            console.log('unknown');
+        case "mass_boost_2x_1h":  bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "mass_boost_2x_24h": bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "mass_boost_3x_1h":  bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "mass_boost_3x_24h": bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        case "xp_boost_2x_1h":    bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "xp_boost_2x_24h":   bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "xp_boost_3x_1h":    bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "xp_boost_3x_24h":   bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        default: console.log('unknown boost: ' + type); return;
     }
     window.core.proxyMobileData(bytes);
 }
