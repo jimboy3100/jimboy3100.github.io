@@ -15413,6 +15413,16 @@ function thelegendmodproject() {
                     window.testobjectsOpcode161 = data;
                     this.arrowFB[0].visible = false;
                     break;
+                case 131:
+                    window.testobjectsOpcode131 = data;
+                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 131 (User Leagues Info)');
+                    document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
+                        detail: {
+                            leagueName: 'Weekly League',
+                            leagueEntries: []
+                        }
+                    }));
+                    break;
                 case 128:
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' client outdated');
