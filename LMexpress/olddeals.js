@@ -60,85 +60,102 @@ function SpecialDeals() {
         return;
     }
 
-    // --- Inject skin shop CSS ---
-        if (!document.getElementById('skinShopStyles')) {
-            var styleEl = document.createElement('style');
-            styleEl.id = 'skinShopStyles';
-            styleEl.textContent = [
-                '#specialShopModal .modal-content { background: #1a1d24 !important; color: #eee !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; }',
-                '#specialShopModal .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; position: relative; }',
-                '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: #fff !important; font-size: 22px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
-                '#CloseSpecialDeals:hover { opacity: 1; color: #ff5252 !important; transform: scale(1.15); }',
-                '#FAQSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: #4fc3f7 !important; font-size: 18px; line-height: 1; margin-right: 6px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
-                '#FAQSpecialDeals:hover { opacity: 1; color: #81d4fa !important; transform: scale(1.15); }',
-                '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid #333; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
-                '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: #90a4ae !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
-                '#specialShopModal .shop-tab:hover { color: #4fc3f7 !important; background: rgba(79,195,247,0.12); }',
-                '#specialShopModal .shop-tab.active { color: #4fc3f7 !important; border-bottom-color: #4fc3f7 !important; background: rgba(79,195,247,0.08); }',
-                '#specialShopModal .tab-pane { display: none; }',
-                '#specialShopModal .tab-pane.active { display: block; }',
-                '.active-skin-banner { display: flex; align-items: center; background: rgba(79, 195, 247, 0.12); border: 1px solid rgba(79, 195, 247, 0.4); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }',
-                '.active-skin-banner img { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; border: 2px solid #4fc3f7; object-fit: cover; background: #222; }',
-                '.active-skin-banner .info { flex: 1; }',
-                '.active-skin-banner .info .title { font-size: 10px; color: #4fc3f7; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }',
-                '.active-skin-banner .info .name { font-size: 14px; font-weight: 700; color: #fff; font-family: "Roboto Condensed", sans-serif; }',
-                '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; }',
-                '.active-skin-banner .unequip-btn:hover { background: #ff5722; color: #fff; }',
-                '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid #555; border-radius: 4px; background: rgba(0,0,0,0.4); color: #fff; font-size: 14px; outline: none; box-sizing: border-box; }',
-                '#skinSearchBar:focus { border-color: #4fc3f7; box-shadow: 0 0 5px rgba(79,195,247,0.3); }',
-                '#skinSearchBar::placeholder { color: #888; }',
-                '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px; }',
-                '.skin-grid::-webkit-scrollbar { width: 6px; }',
-                '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
-                '.skin-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
-                '.skin-grid::-webkit-scrollbar-thumb:hover { background: #777; }',
-                '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
-                '.skin-card:hover { border-color: #4fc3f7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,195,247,0.2); }',
-                '.skin-card.equipped { border-color: #00e676 !important; background: rgba(0, 230, 118, 0.12) !important; box-shadow: 0 0 10px rgba(0,230,118,0.3) !important; }',
-                '.skin-card.owned-card { border-color: rgba(255, 215, 64, 0.4); background: rgba(255, 215, 64, 0.06); }',
-                '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: #00e676; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
-                '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: #ffd740; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
-                '.skin-card .skin-cell-wrap { position: relative; width: 64px; height: 64px; margin: 2px auto; }',
-                '.skin-card .skin-color { width: 64px; height: 64px; border-radius: 50%; position: absolute; top: 0; left: 0; border: 2px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }',
-                '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; position: absolute; top: 2px; left: 2px; z-index: 1; }',
-                '.skin-card .skin-name { font-size: 10px; color: #ccc; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
-                '.skin-card:hover .skin-name { color: #fff; }',
-                '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
-                '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
-                '.skin-btn-equip { flex: 1; background: #4fc3f7; color: #000; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
-                '.skin-card.equipped .skin-btn-equip { background: #00e676; color: #000; }',
-                '.skin-btn-buy { flex: 1; background: #ffb74d; color: #000; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
-                '.skin-btn-buy:hover { background: #ffa726; }',
-                '.skin-btn-owned { flex: 1; background: rgba(255,215,64,0.2); color: #ffd740; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: default; text-transform: uppercase; }',
-                '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; color: #888; font-family: "Roboto Condensed", sans-serif; }',
-                '.skin-stats span { color: #4fc3f7; font-weight: 700; }',
-                '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.3); border-radius: 4px; color: #4fc3f7; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
-                '.skin-load-more:hover { background: rgba(79,195,247,0.25); color: #81d4fa; }',
-                '#specialShopModal input.form-control, #specialShopModal select.form-control { background: #252830 !important; color: #eee !important; border: 1px solid #444 !important; }',
-                '#specialShopModal #buy_starterpack { background: rgba(0,0,0,0.3); border: 1px solid #444; border-left: 4px solid #4fc3f7; padding: 10px; border-radius: 4px; color: #eee; }',
-                '#specialShopModal #buy_starterpack:hover { background: rgba(79,195,247,0.15); border-color: #4fc3f7; }',
-                '#specialShopModal #buy_starterpack h4, #specialShopModal #buy_starterpack h5 { color: #4fc3f7; }',
-                '#specialShopModal #buy_starterpack:hover h4 { color: #81d4fa; }',
-                // Loading spinner
-                '.skin-grid-loading { grid-column: 1/-1; text-align: center; padding: 40px; color: #aaa; font-size: 13px; }',
-                '.skin-grid-loading .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(79,195,247,0.3); border-top-color: #4fc3f7; border-radius: 50%; animation: skinSpin 0.8s linear infinite; margin-bottom: 8px; }',
-                '@keyframes skinSpin { to { transform: rotate(360deg); } }',
-                // Drag-and-drop zone
-                '.upload-drop-zone { border: 2px dashed #555; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: all 0.2s; background: rgba(0,0,0,0.2); }',
-                '.upload-drop-zone.drag-over { border-color: #4fc3f7; background: rgba(79,195,247,0.08); }',
-                '.upload-clear-btn { background: rgba(255,87,34,0.2); border: 1px solid #ff5722; color: #ff5722; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 6px; }',
-                '.upload-clear-btn:hover { background: #ff5722; color: #fff; }',
-                // Deal cards
-                '.deal-card:hover { border-color: #4fc3f7 !important; background: rgba(79,195,247,0.08) !important; }',
-                '.deal-buy-btn:hover { background: #0277bd !important; transform: scale(1.05); }',
-                '#dealsGrid::-webkit-scrollbar { width: 6px; }',
-                '#dealsGrid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
-                '#dealsGrid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }',
-                '#dealsGrid::-webkit-scrollbar-thumb:hover { background: #777; }',
-                '#claimFreeCoinsBtn:hover { background: #00e676 !important; transform: scale(1.05); }',
-            ].join('\n');
-            document.head.appendChild(styleEl);
-        }
+    // --- Inject skin shop CSS (theme-aware) ---
+        // Read the user's current theme settings so the modal matches
+        var ds = window.defaultSettings || {};
+        var mc  = ds.menuMainColor   || '#01d9cc'; // accent color (title, active tabs, borders)
+        var pc  = ds.menuPanelColor  || '#00243e'; // panel background
+        var pc2 = ds.menuPanelColor2 || '#002f52'; // panel secondary (inputs, hover rows)
+        var tc  = ds.menuTextColor   || '#ffffff'; // main text
+        var tc2 = ds.menuTextColor2  || '#8096a7'; // muted / secondary text
+        var b1  = ds.btn1Color       || '#018cf6'; // primary button
+        var b1h = ds.btn1Color2      || '#0176ce'; // primary button hover
+        var b2  = ds.btn2Color       || '#00b9e8'; // success / secondary button
+        var b3  = ds.btn3Color       || '#8d5fe6'; // warning button
+        var b4  = ds.btn4Color       || '#bf00aa'; // danger button
+        var b4h = ds.btn4Color2      || '#a80096'; // danger button hover
+        var btc = ds.menuBtnTextColor|| '#ffffff'; // button text
+
+        // Remove any previous injection so theme changes take effect when re-opened
+        var prev = document.getElementById('skinShopStyles');
+        if (prev) prev.remove();
+
+        var styleEl = document.createElement('style');
+        styleEl.id = 'skinShopStyles';
+        styleEl.textContent = [
+            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; }',
+            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; padding: 12px 15px; position: relative; }',
+            '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + tc + ' !important; font-size: 22px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
+            '#CloseSpecialDeals:hover { opacity: 1; color: ' + b4 + ' !important; transform: scale(1.15); }',
+            '#FAQSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; margin-right: 6px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
+            '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }',
+            '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid ' + pc2 + '; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
+            '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: ' + tc2 + ' !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
+            '#specialShopModal .shop-tab:hover { color: ' + mc + ' !important; background: rgba(0,0,0,0.15); }',
+            '#specialShopModal .shop-tab.active { color: ' + mc + ' !important; border-bottom-color: ' + mc + ' !important; background: rgba(0,0,0,0.1); }',
+            '#specialShopModal .tab-pane { display: none; }',
+            '#specialShopModal .tab-pane.active { display: block; }',
+            '.active-skin-banner { display: flex; align-items: center; background: ' + pc2 + '; border: 1px solid ' + mc + '; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }',
+            '.active-skin-banner img { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; border: 2px solid ' + mc + '; object-fit: cover; background: ' + pc + '; }',
+            '.active-skin-banner .info { flex: 1; }',
+            '.active-skin-banner .info .title { font-size: 10px; color: ' + mc + '; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }',
+            '.active-skin-banner .info .name { font-size: 14px; font-weight: 700; color: ' + tc + '; font-family: "Roboto Condensed", sans-serif; }',
+            '.active-skin-banner .unequip-btn { background: rgba(255,87,34,0.2); border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; }',
+            '.active-skin-banner .unequip-btn:hover { background: ' + b4 + '; color: ' + btc + '; }',
+            '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid ' + pc2 + '; border-radius: 4px; background: rgba(0,0,0,0.4); color: ' + tc + '; font-size: 14px; outline: none; box-sizing: border-box; }',
+            '#skinSearchBar:focus { border-color: ' + mc + '; box-shadow: 0 0 5px ' + mc + '44; }',
+            '#skinSearchBar::placeholder { color: ' + tc2 + '; }',
+            '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px; }',
+            '.skin-grid::-webkit-scrollbar { width: 6px; }',
+            '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
+            '.skin-grid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
+            '.skin-grid::-webkit-scrollbar-thumb:hover { background: ' + tc2 + '; }',
+            '.skin-card { position: relative; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px; text-align: center; cursor: pointer; transition: all 0.2s; overflow: hidden; height: 115px; box-sizing: border-box; }',
+            '.skin-card:hover { border-color: ' + mc + '; transform: translateY(-2px); box-shadow: 0 4px 12px ' + mc + '33; }',
+            '.skin-card.equipped { border-color: ' + b2 + ' !important; background: ' + b2 + '1e !important; box-shadow: 0 0 10px ' + b2 + '4d !important; }',
+            '.skin-card.owned-card { border-color: ' + b3 + '66; background: ' + b3 + '0f; }',
+            '.skin-card .equipped-badge { position: absolute; top: 4px; left: 4px; background: ' + b2 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
+            '.skin-card .owned-badge { position: absolute; top: 4px; left: 4px; background: ' + b3 + '; color: #000; font-size: 8px; font-weight: 800; padding: 1px 5px; border-radius: 3px; text-transform: uppercase; z-index: 3; box-shadow: 0 1px 3px rgba(0,0,0,0.4); }',
+            '.skin-card .skin-cell-wrap { position: relative; width: 64px; height: 64px; margin: 2px auto; }',
+            '.skin-card .skin-color { width: 64px; height: 64px; border-radius: 50%; position: absolute; top: 0; left: 0; border: 2px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }',
+            '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; position: absolute; top: 2px; left: 2px; z-index: 1; }',
+            '.skin-card .skin-name { font-size: 10px; color: ' + tc2 + '; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
+            '.skin-card:hover .skin-name { color: ' + tc + '; }',
+            '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
+            '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
+            '.skin-btn-equip { flex: 1; background: ' + b1 + '; color: ' + btc + '; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
+            '.skin-card.equipped .skin-btn-equip { background: ' + b2 + '; color: #000; }',
+            '.skin-btn-buy { flex: 1; background: ' + b3 + '; color: ' + btc + '; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: pointer; text-transform: uppercase; }',
+            '.skin-btn-buy:hover { background: ' + b3 + '; filter: brightness(1.2); }',
+            '.skin-btn-owned { flex: 1; background: ' + b3 + '33; color: ' + b3 + '; border: none; padding: 4px 0; font-size: 10px; font-weight: 700; font-family: "Roboto Condensed", sans-serif; cursor: default; text-transform: uppercase; }',
+            '.skin-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 6px 0; border-top: 1px solid ' + pc2 + '; font-size: 12px; color: ' + tc2 + '; font-family: "Roboto Condensed", sans-serif; }',
+            '.skin-stats span { color: ' + mc + '; font-weight: 700; }',
+            '.skin-load-more { width: 100%; padding: 8px; margin-top: 8px; background: ' + b1 + '26; border: 1px solid ' + b1 + '4d; border-radius: 4px; color: ' + b1 + '; font-family: "Roboto Condensed", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }',
+            '.skin-load-more:hover { background: ' + b1 + '40; color: ' + mc + '; }',
+            '#specialShopModal input.form-control, #specialShopModal select.form-control { background: ' + pc2 + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; }',
+            '#specialShopModal #buy_starterpack { background: rgba(0,0,0,0.3); border: 1px solid ' + pc2 + '; border-left: 4px solid ' + mc + '; padding: 10px; border-radius: 4px; color: ' + tc + '; }',
+            '#specialShopModal #buy_starterpack:hover { background: ' + mc + '26; border-color: ' + mc + '; }',
+            '#specialShopModal #buy_starterpack h4, #specialShopModal #buy_starterpack h5 { color: ' + mc + '; }',
+            '#specialShopModal #buy_starterpack:hover h4 { color: ' + mc + '; filter: brightness(1.3); }',
+            // Loading spinner
+            '.skin-grid-loading { grid-column: 1/-1; text-align: center; padding: 40px; color: ' + tc2 + '; font-size: 13px; }',
+            '.skin-grid-loading .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid ' + mc + '4d; border-top-color: ' + mc + '; border-radius: 50%; animation: skinSpin 0.8s linear infinite; margin-bottom: 8px; }',
+            '@keyframes skinSpin { to { transform: rotate(360deg); } }',
+            // Drag-and-drop zone
+            '.upload-drop-zone { border: 2px dashed ' + pc2 + '; border-radius: 8px; padding: 8px; margin-bottom: 8px; transition: all 0.2s; background: rgba(0,0,0,0.2); }',
+            '.upload-drop-zone.drag-over { border-color: ' + mc + '; background: ' + mc + '14; }',
+            '.upload-clear-btn { background: ' + b4 + '33; border: 1px solid ' + b4 + '; color: ' + b4 + '; padding: 3px 12px; font-size: 10px; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 6px; }',
+            '.upload-clear-btn:hover { background: ' + b4 + '; color: ' + btc + '; }',
+            // Deal cards
+            '.deal-card:hover { border-color: ' + mc + ' !important; background: ' + mc + '14 !important; }',
+            '.deal-buy-btn:hover { background: ' + b1h + ' !important; transform: scale(1.05); }',
+            '#dealsGrid::-webkit-scrollbar { width: 6px; }',
+            '#dealsGrid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
+            '#dealsGrid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
+            '#dealsGrid::-webkit-scrollbar-thumb:hover { background: ' + tc2 + '; }',
+            '#claimFreeCoinsBtn:hover { background: ' + b2 + ' !important; transform: scale(1.05); }',
+        ].join('\n');
+        document.head.appendChild(styleEl);
 
         // --- Build modal HTML with tabs ---
         $('#helloContainer').after(
@@ -151,7 +168,7 @@ function SpecialDeals() {
             '<div id="CloseSpecialDeals2" class="modal-header">' +
             '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
             '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: #4fc3f7;"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
+            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
             // Tab bar (Skins active by default)
@@ -176,8 +193,8 @@ function SpecialDeals() {
             '</div>' +
 
             '<div class="skin-filter-bar" style="display: flex; gap: 6px; margin-bottom: 10px;">' +
-            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: #0288d1; color: #fff; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">All Skins (955+)</button>' +
-            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: #aaa; font-weight: 700; border: 1px solid #444; padding: 6px 0; border-radius: 4px;">&#x2B50; My Owned Skins</button>' +
+            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">All Skins (955+)</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; My Owned Skins</button>' +
             '</div>' +
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
@@ -189,24 +206,24 @@ function SpecialDeals() {
             // === 2. Custom Skin Uploader tab ===
             '<div class="tab-pane" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
-            '<h5 style="color: #4fc3f7; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
-            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: #ffd740; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(255,215,64,0.3);">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
+            '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
+            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
-            '<p style="color: #aaa; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
+            '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
             '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">' +
-            '<input id="legendSkinColorModal" type="color" value="#FFFF00" style="width: 30%; height: 34px; padding: 2px; border: 1px solid #555; background: #222; border-radius: 4px; cursor: pointer;">' +
+            '<input id="legendSkinColorModal" type="color" value="#FFFF00" style="width: 30%; height: 34px; padding: 2px; border: 1px solid ' + pc2 + '; background: ' + pc + '; border-radius: 4px; cursor: pointer;">' +
             '</div>' +
             '<div style="text-align: center; margin-bottom: 12px;">' +
-            '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid #01d9cc; background-color: #000; box-shadow: 0 0 12px rgba(1,217,204,0.3);"></canvas>' +
+            '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid ' + mc + '; background-color: #000; box-shadow: 0 0 12px ' + mc + '4d;"></canvas>' +
             '</div>' +
-            '<label for="legendUploadInputModal" class="btn btn-primary" id="legendChooseFileBtn" style="margin-bottom: 8px; width: 220px; font-weight: 700; background: #0288d1; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
+            '<label for="legendUploadInputModal" class="btn btn-primary" id="legendChooseFileBtn" style="background: ' + b1 + '; margin-bottom: 8px; width: 220px; font-weight: 700; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
             '<br>' +
-            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="width: 220px; font-weight: 700;">Upload & Buy (90 DNA)</button>' +
+            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="background: ' + b2 + '; width: 220px; font-weight: 700;">Upload & Buy (90 DNA)</button>' +
             '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; Clear Image</button>' +
-            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: #888;">Select an image or drag & drop</div>' +
+            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">Select an image or drag &amp; drop</div>' +
             '</div>' + // close drop zone
             '</div>' +
             '</div>' +
@@ -216,28 +233,28 @@ function SpecialDeals() {
             '<div class="modal-body">' +
 
             // Balance display
-            '<div id="dealsBalanceBar" style="font-size: 12px; color: #ffd740; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid rgba(255,215,64,0.3);">' +
+            '<div id="dealsBalanceBar" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid ' + mc + '4d;">' +
             '🧬 DNA: <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="dealsCoinsCount">0</span></div>' +
 
             // Free coins section
-            '<div id="freeCoinsSection" style="background: linear-gradient(135deg, rgba(0,150,136,0.2), rgba(0,200,83,0.15)); border: 1px solid rgba(0,200,83,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">' +
-            '<div><span style="font-size: 20px;">🎁</span> <b style="color: #69f0ae;">Free Coins</b><br><span id="freeCoinsTimer" style="font-size: 11px; color: #aaa;">Claim your hourly bonus</span></div>' +
-            '<button id="claimFreeCoinsBtn" class="btn btn-sm" style="background: #00c853; color: #fff; font-weight: 700; border: none; border-radius: 6px; padding: 6px 16px; cursor: pointer;" onclick="claimFreeCoins()">Claim!</button>' +
+            '<div id="freeCoinsSection" style="background: ' + pc2 + '; border: 1px solid ' + b2 + '4d; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">' +
+            '<div><span style="font-size: 20px;">🎁</span> <b style="color: ' + b2 + ';">Free Coins</b><br><span id="freeCoinsTimer" style="font-size: 11px; color: ' + tc2 + ';">Claim your hourly bonus</span></div>' +
+            '<button id="claimFreeCoinsBtn" class="btn btn-sm" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 6px 16px; cursor: pointer;" onclick="claimFreeCoins()">Claim!</button>' +
             '</div>' +
 
             // Deal cards container
             '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
 
             // Encoded UID & Config section (collapsible)
-            '<details style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">' +
-            '<summary style="cursor: pointer; color: #90a4ae; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID & Config</summary>' +
+            '<details style="margin-top: 8px; border-top: 1px solid ' + pc2 + '; padding-top: 8px;">' +
+            '<summary style="cursor: pointer; color: ' + tc2 + '; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID &amp; Config</summary>' +
             '<div style="margin-top: 8px;">' +
             '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block; margin-bottom: 6px;">' +
             '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend UID <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
             '<div style="display: flex; gap: 6px; margin-bottom: 6px;">' +
             '<select id="BuyDealCurrency" class="form-control" style="width: 25%;"><option value="USD">USD</option><option value="EU">EU</option></select>' +
             '<select id="ss-select-agarVersionDestinations" class="form-control" style="width: 35%;"></select>' +
-            '<span style="color: #90a4ae; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
+            '<span style="color: ' + tc2 + '; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
             '</div>' +
             '<input type="text" class="form-control" id="GameConfigurationUrl" value="' + window.MiniclipConfigDestination + '" placeholder="GameConfiguration.json URL" style="width: 100%; margin-bottom: 6px;">' +
             '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius: 4px;">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' +
@@ -1062,8 +1079,9 @@ function populateSkins() {
 
     // Filter button handler
     $('.skin-filter-btn').off('click').on('click', function() {
-        $('.skin-filter-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.1)', color: '#aaa', border: '1px solid #444' });
-        $(this).addClass('active').css({ background: '#0288d1', color: '#fff', border: 'none' });
+        var _ds = window.defaultSettings || {};
+        $('.skin-filter-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.1)', color: _ds.menuTextColor2 || '#8096a7', border: '1px solid ' + (_ds.menuPanelColor2 || '#002f52') });
+        $(this).addClass('active').css({ background: _ds.btn1Color || '#018cf6', color: _ds.menuBtnTextColor || '#ffffff', border: 'none' });
         currentFilter = $(this).data('filter');
         applySkinFilters();
     });
