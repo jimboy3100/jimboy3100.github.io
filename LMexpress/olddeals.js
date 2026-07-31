@@ -22,12 +22,14 @@ else{
 	window.agarioID=localStorage.getItem("agarioID");	
 }
 */
-window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v15/10913/GameConfiguration.json";
-window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/v15/10913/";
+window.MiniclipConfigDestination = "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
+window.MiniclipDestination = "https://configs-web.agar.io/live/v15/10913/";
 
 if (window.agarversion != null) {
-    window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json";
-    window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion;
+    var _av = window.agarversion;
+    if (!_av.endsWith('/')) _av += '/';
+    window.MiniclipConfigDestination = "https://configs-web.agar.io/live/" + _av + "GameConfiguration.json";
+    window.MiniclipDestination = "https://configs-web.agar.io/live/" + _av;
 }
 
 /**
@@ -629,24 +631,26 @@ function SpecialDeals() {
             }
         });
 
-        // --- Tab switching ---
-        $('.shop-tab').on('click', function() {
-            var tab = $(this).data('tab');
-            $('.shop-tab').removeClass('active');
+        // --- Tab switching (delegated event for instant reliable switching) ---
+        $(document).off('click', '#specialShopModal .shop-tab').on('click', '#specialShopModal .shop-tab', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var tab = $(this).attr('data-tab') || $(this).data('tab');
+            $('#specialShopModal .shop-tab').removeClass('active');
             $(this).addClass('active');
-            $('.tab-pane').removeClass('active');
-            $('#tab-' + tab).addClass('active');
+            $('#specialShopModal .tab-pane').removeClass('active');
+            $('#specialShopModal #tab-' + tab).addClass('active');
 
-            if (tab === 'skins' && $('#skinGrid').children().length === 0 && window.GameConfiguration && window.GameConfiguration.gameConfig) {
-                populateSkins();
-            }
             if (tab === 'skins') {
+                if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
+                    LoadGameConfiguration();
+                } else {
+                    populateSkins();
+                }
                 updateEquippedSkinUI();
             }
             if (tab === 'upload') {
-                // Update balance in the upload tab
                 updateUploadBalance();
-                // Pre-fill URL from the main skin URL input if available
                 var mainSkinUrl = $('#skin').val();
                 if (mainSkinUrl && mainSkinUrl.length > 5 && !$('#legendSkinUrlInput').val()) {
                     $('#legendSkinUrlInput').val(mainSkinUrl);
@@ -656,7 +660,6 @@ function SpecialDeals() {
                 populateDealsGrid();
                 updateDealsBalance();
             }
-            // Re-apply login state when switching tabs
             updateShopLoginState();
         });
 
@@ -2125,50 +2128,54 @@ function LoadGameConfiguration() {
         }
     }
     $(".xpmt-skins2").css('background-image', '');
-    $(".xpmt-skins").css('background-image', '');	
-    GameConfiguration = {};
-    /*     		$.ajax({
-			type: "GET",
-			url: window.MiniclipConfigDestination,
-			async: false,
-			datatype: "jsonp",
-			success: function(info) {
-				window.GameConfiguration = info;
-				populateSD();
-			}
-		}).responseJSON;	
-     */
+    $(".xpmt-skins").css('background-image', '');
+
+    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+        populateSD();
+        if (typeof populateDealsGrid === 'function') populateDealsGrid();
+        if (typeof populateSkins === 'function') populateSkins();
+        return;
+    }
+    if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
+        window.GameConfiguration = window.master.GameConfiguration;
+        populateSD();
+        if (typeof populateDealsGrid === 'function') populateDealsGrid();
+        if (typeof populateSkins === 'function') populateSkins();
+        return;
+    }
+
+    var targetUrl = window.MiniclipConfigDestination || "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
+    if (targetUrl.includes('miniclippt.com')) {
+        targetUrl = targetUrl.replace('configs-web.agario.miniclippt.com', 'configs-web.agar.io');
+    }
+
     $.ajax({
-        //url: 'https://configs-web.agario.miniclippt.com/live/v12/2204/GameConfiguration.json',
-        url: window.MiniclipConfigDestination,
+        url: targetUrl,
         type: 'GET',
-        beforeSend: ((req)=>{
-            req.setRequestHeader('Accept', 'text/plain');
-           req.setRequestHeader('Accept', '*/*');
-            req.setRequestHeader('Accept', 'q=0.01');
-            req.setRequestHeader('Content-Type', 'application/octet-stream');
-            req.setRequestHeader('x-support-proto-version', window.LMagarioheaders.proto_version);
-            req.setRequestHeader('x-client-version', '' + window.LMagarioheaders.client_version);
+        success: function(info) {
+            if (typeof info === 'string') {
+                try { window.GameConfiguration = JSON.parse(info); } catch(e) { window.GameConfiguration = info; }
+            } else {
+                window.GameConfiguration = info;
+            }
+            populateSD();
+            if (typeof populateDealsGrid === 'function') populateDealsGrid();
+            if (typeof populateSkins === 'function') populateSkins();
+        },
+        error: function(err) {
+            console.warn('[Shop] Primary config URL failed, trying fallback...', err);
+            $.ajax({
+                url: 'https://www.legendmod.ml/agario/live/v15/10913/GameConfiguration.json',
+                type: 'GET',
+                success: function(info) {
+                    window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;
+                    populateSD();
+                    if (typeof populateDealsGrid === 'function') populateDealsGrid();
+                    if (typeof populateSkins === 'function') populateSkins();
+                }
+            });
         }
-        ),
-        success: ((info)=>{
-            if (typeof info === 'string' || info instanceof String){
-				window.GameConfiguration = JSON.parse(info);
-			}
-			else{
-				window.GameConfiguration = info;
-			}
-			populateSD();
-			if (typeof populateDealsGrid === 'function') populateDealsGrid();
-			}
-         ),
-		error: ((info)=>{ 
-		console.log(info);
-		toastr.error('<b>[' + Premadeletter123 + ']:</b> There is no such library anymore');
-		})
-       
     });		
-	
 }
 
 function populateLibConfig() {
