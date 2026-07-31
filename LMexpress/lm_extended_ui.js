@@ -462,9 +462,89 @@
         document.body.appendChild(modal);
     };
 
-    // Auto-initialize menu buttons when DOM is ready
+    // ─── Component 6: 👤 Profile Tab Auto-Sync & Boost Handlers ───
+    window.syncProfileTabUI = function() {
+        var appUser = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || {};
+        
+        // 1. Balances (Coins, DNA, Trophies)
+        var coins = appUser.coins || 0;
+        var dna = appUser.dna || 0;
+        var trophies = appUser.trophies || 0;
+
+        $('#coins').html('💰 ' + coins.toLocaleString());
+        $('#dna').html('🧬 ' + dna.toLocaleString());
+        $('#trophy, #trophies').html('🏆 ' + trophies.toLocaleString());
+        $('#coinsCountModal').text(coins.toLocaleString());
+        $('#dnaCountModal').text(dna.toLocaleString());
+
+        // 2. Profile Name & Social ID / UID
+        var name = appUser.displayName || appUser.name || 'Guest';
+        $('#UserProfileName1').text(name);
+
+        var uid = appUser.socialId || appUser.id || window.agarioUID || '';
+        if (uid) {
+            $('#UserProfileUID1').val(uid).text(uid);
+            $('#UserProfileUUID1').val(uid);
+        }
+
+        // 3. XP Progress Bar & Level
+        var xp = appUser.xp || 0;
+        var nextXp = appUser.nextLevelXp || appUser.nextXp || 1000;
+        var level = appUser.level || 1;
+
+        var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
+        $('.agario-exp-bar .progress-bar').css('width', percent + '%');
+        $('.agario-exp-bar .progress-bar-text').text(xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP (' + percent + '%)');
+        $('.progress-bar-star').text(level);
+    };
+
+    window.initBoostDropdown = function() {
+        var sel = $('#s-boost');
+        if (!sel.length) return;
+        if (sel.children('option').length > 1) return; // Already populated
+
+        sel.empty();
+        sel.append('<option value="">-- Select Boost --</option>');
+        
+        var boosts = [
+            { id: 'mass_boost_2x_1h', label: '⚡ 2x Mass Boost (1 hr) [90 DNA]' },
+            { id: 'mass_boost_2x_24h', label: '⚡ 2x Mass Boost (24 hrs) [290 DNA]' },
+            { id: 'mass_boost_3x_1h', label: '⚡ 3x Mass Boost (1 hr) [180 DNA]' },
+            { id: 'mass_boost_3x_24h', label: '⚡ 3x Mass Boost (24 hrs) [490 DNA]' },
+            { id: 'xp_boost_2x_1h', label: '⭐ 2x XP Boost (1 hr) [60 DNA]' },
+            { id: 'xp_boost_2x_24h', label: '⭐ 2x XP Boost (24 hrs) [190 DNA]' },
+            { id: 'xp_boost_3x_1h', label: '⭐ 3x XP Boost (1 hr) [120 DNA]' },
+            { id: 'xp_boost_3x_24h', label: '⭐ 3x XP Boost (24 hrs) [390 DNA]' }
+        ];
+
+        boosts.forEach(function(b) {
+            sel.append('<option value="' + b.id + '">' + b.label + '</option>');
+        });
+
+        // Wire BUY / USE buttons
+        $(document).off('click', '#buy-boost').on('click', '#buy-boost', function(e) {
+            e.preventDefault();
+            var val = $('#s-boost').val();
+            if (!val) { toastr.warning('Please select a boost first.'); return; }
+            if (typeof window.softPurchase === 'function') window.softPurchase(val);
+        });
+
+        $(document).off('click', '#use-boost').on('click', '#use-boost', function(e) {
+            e.preventDefault();
+            var val = $('#s-boost').val();
+            if (!val) { toastr.warning('Please select a boost first.'); return; }
+            if (typeof window.activateBoost === 'function') window.activateBoost(val);
+        });
+    };
+
+    // Auto-initialize menu buttons and profile sync when DOM is ready
     $(document).ready(function() {
-        setTimeout(initMenuButtons, 1000);
+        setTimeout(function() {
+            initMenuButtons();
+            initBoostDropdown();
+            syncProfileTabUI();
+            setInterval(syncProfileTabUI, 2500);
+        }, 1000);
     });
 
 })();
