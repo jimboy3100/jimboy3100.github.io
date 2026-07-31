@@ -333,6 +333,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window.legendmod_discordUser = null;
         try { localStorage.removeItem('legendmod_discord'); } catch (e) { }
         try { localStorage.removeItem('legendmod_discord_profile'); } catch (e) { }
+        try { sessionStorage.removeItem('legendmod_discord_session'); } catch (e) { }
         console.log('[LW AUTH] State reset to idle');
     };
     window._lwBeginLogin = function (provider) {
@@ -583,15 +584,27 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
          * On agar.io the engine calls this; on expanding.land our hook calls it. */
         window.gplusRelogin = function (callback) {
             var user = window.legendmod_discordUser;
+            if (!user) {
+                try {
+                    var saved = sessionStorage.getItem('legendmod_discord_session');
+                    if (saved) {
+                        user = JSON.parse(saved);
+                        window.legendmod_discordUser = user;
+                    }
+                } catch(e) {}
+            }
             var auth = window._lwAuth;
-            if (user && user.token && auth && auth.provider === 'discord' && auth.state === 'logged_in') {
+            if (user && user.token && auth && (auth.provider === 'discord' || !auth.provider)) {
+                var newAttemptId = window._lwBeginLogin('discord');
+                window._lwAuth.discordAttemptId = newAttemptId;
                 if (window.MC) {
                     MC.doLoginWithGPlus({ access_token: user.token, expires_in: 604800 });
                 } else {
-                    _lw_sendLogin102(user.token, user.id, user.globalName || user.username, auth.attemptId, 'discord');
+                    _lw_sendLogin102(user.token, user.id, user.globalName || user.username, newAttemptId, 'discord');
                 }
-                _lw_sendDiscordProfile(user, auth.attemptId);
-                console.log('[LW Discord] gplusRelogin: re-authenticated with in-memory token');
+                _lw_sendDiscordProfile(user, newAttemptId);
+                window._lwAuth.state = 'waiting_server';
+                console.log('[LW Discord] gplusRelogin: re-authenticating attempt #' + newAttemptId);
             }
             if (callback) callback();
         };
@@ -732,7 +745,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 }
 
                 setTimeout(function() {
-                    var isLoggedInNow = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
+                    var isLoggedInNow = (window._lwAuth && (window._lwAuth.state === 'logged_in' || window._lwAuth.state === 'waiting_server')) ||
                         (window.master && (window.master.context === 'facebook' || window.master.context === 'google')) ||
                         !!(window.application && window.application.user && window.application.user.userId);
 
@@ -751,7 +764,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         window._isUserManualLogout = true;
                         window.logout();
                     }
-                }, 1500);
+                }, 2500);
             };
 
             setTimeout(tryRelogin, 1000 * window._loginRetryCount);
@@ -801,6 +814,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             try {
                 localStorage.removeItem('legendmod_discord');
                 localStorage.setItem('legendmod_discord_profile', JSON.stringify(safeProfile));
+                if (discordUser && discordUser.token) {
+                    sessionStorage.setItem('legendmod_discord_session', JSON.stringify(discordUser));
+                }
             } catch (e) { }
         }
 
