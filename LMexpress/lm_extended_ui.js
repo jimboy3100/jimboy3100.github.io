@@ -2188,8 +2188,12 @@
         }
 
         // Disable Skins, Deals, Leagues, Buy & Use Boost buttons if not logged in or missing UID
-        var isLoggedIn = !!(appUser.authenticated || window.loggedIn || appUser.socialId || appUser.id || window.agarioProfileName);
-        var hasUID = !!(uid || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID"));
+        var isLoggedIn = typeof window.checkUserLoggedIn === 'function'
+            ? window.checkUserLoggedIn()
+            : !!(appUser.authenticated || window.loggedIn || (appUser.socialId && appUser.socialId.length > 5));
+        var hasUID = typeof window.checkUserUID === 'function'
+            ? window.checkUserUID()
+            : !!(isLoggedIn && (window.agarioEncodedUID || appUser.socialId || appUser.id));
         var menuBtnEnabled = isLoggedIn && hasUID;
         var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
         menuBtns.prop('disabled', !menuBtnEnabled);

@@ -357,21 +357,41 @@ function SpecialDeals(defaultTab) {
         }
 
         // NOTE: populateSkins is called by LoadGameConfiguration on success.
-        // No separate setTimeout needed — that was causing double-rendering.
+        // No separate setTimeout needed
+        window.checkUserLoggedIn = function checkUserLoggedIn() {
+            if (window.loggedIn === true) return true;
+            var u = (window.application && window.application.user) || (window.legendmod && window.legendmod.user);
+            if (u && (u.authenticated === true || (u.userId && u.userId !== '0' && u.userId !== 0 && String(u.userId) !== '0'))) return true;
+            var pName = window.agarioProfileName || (u && (u.displayName || u.name)) || '';
+            if (pName && typeof pName === 'string') {
+                var lower = pName.toLowerCase().trim();
+                if (lower && lower !== 'guest' && lower !== 'name: guest' && lower.indexOf('guest') !== 0) return true;
+            }
+            return false;
+        };
+
+        window.checkUserUID = function checkUserUID() {
+            if (!window.checkUserLoggedIn()) return false;
+            var u = (window.application && window.application.user) || (window.legendmod && window.legendmod.user);
+            if (window.agarioEncodedUID && String(window.agarioEncodedUID).length > 5) return true;
+            if (u && u.socialId && String(u.socialId).length > 5) return true;
+            if (u && u.id && String(u.id).length > 5) return true;
+            return false;
+        };
 
         window.validateShopIntegrity = function validateShopIntegrity(actionName) {
             var label = actionName || 'this action';
 
             // 1. Logged In check
-            var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+            var isLoggedIn = window.checkUserLoggedIn();
             if (!isLoggedIn) {
                 if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be logged in with Google/Facebook to ' + label + '.');
                 return false;
             }
 
             // 2. Agar.io UID check
-            var uid = window.agarioEncodedUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID");
-            if (!uid) {
+            var hasUID = window.checkUserUID();
+            if (!hasUID) {
                 if (window.toastr) toastr.error('<b>[SHOP]:</b> No Agar.io UID found. Play a game session first to sync your account UID.');
                 return false;
             }
@@ -383,31 +403,9 @@ function SpecialDeals(defaultTab) {
                 window.integrityToken ||
                 (window.legendmod && window.legendmod.ws)
             );
-            if (!hasGameConnection) {
-                if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be connected to an active Agar.io game server for ' + label + '.');
-                return false;
-            }
+
             return true;
         };
-
-        // Parse awardToken from URL (matches original agar.io ?awardToken=xxx format)
-        window.parseRewardToken = function parseRewardToken(input) {
-            if (!input) return '';
-            var str = input.trim();
-            var matchAward = str.match(/[?&]awardToken=([a-zA-Z0-9_-]+)/i);
-            if (matchAward && matchAward[1]) return matchAward[1];
-            return '';
-        };
-
-        // Auto-detect awardToken from page URL (same as original agar.io checkForRewardLinks)
-        setTimeout(function() {
-            var urlToken = window.parseRewardToken(window.location.href);
-            if (urlToken && urlToken.length > 3) {
-                console.log('[LM] Auto-detected URL awardToken:', urlToken);
-                window.currentPromoToken = urlToken;
-                if (typeof window.renderPromoRewardBanner === 'function') window.renderPromoRewardBanner();
-            }
-        }, 1500);
 
         // --- Login & UID status checker (shared across tabs) ---
         window.updateShopLoginState = function updateShopLoginState() {
@@ -416,8 +414,8 @@ function SpecialDeals(defaultTab) {
             var fileInput = $('#legendUploadInputModal');
             var skinNameInput = $('#legendSkinNameModal');
             var skinColorInput = $('#legendSkinColorModal');
-            var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
-            var hasUID = !!(window.agarioEncodedUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID"));
+            var isLoggedIn = window.checkUserLoggedIn();
+            var hasUID = window.checkUserUID();
             var hasConnection = !!(
                 (window.core && window.core.proxyMobileData) ||
                 (window.application && typeof window.application.sendProto === 'function') ||
