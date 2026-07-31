@@ -1612,6 +1612,7 @@ function getOwnedSkinsMap() {
 }
 
 function isSkinOwned(s, ownedSkinsObj) {
+    if (!s || !s.productId) return false;
     if (!ownedSkinsObj) ownedSkinsObj = getOwnedSkinsMap();
     var rawId = s.productId;
     var modId = s.productId ? s.productId.replace('skin_', '%') : '';
