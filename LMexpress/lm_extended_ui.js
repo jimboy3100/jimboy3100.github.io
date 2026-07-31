@@ -480,7 +480,17 @@
 
     // Listen to leagues update event and render real player data matching Agar.io UI
     document.addEventListener('leaguesInfoUpdate', function(e) {
-        window.renderLeaguesContent(window.currentLeagueTab || 1, e.detail || {});
+        var detail = e.detail || {};
+        if (detail.isLastWeek) {
+            // Last week response — update last week modal if open
+            window.lastWeekLeaguesResponse = detail;
+            if (document.getElementById('lm-lastweek-modal')) {
+                window._renderLastWeekContent(detail);
+            }
+        } else {
+            // Current week — update leaderboard
+            window.renderLeaguesContent(window.currentLeagueTab || 1, detail);
+        }
     });
 
     window.showMorePrizesModal = function(tabType) {
@@ -488,50 +498,102 @@
         var t = getTheme();
         var currentTab = tabType || window.currentLeagueTab || 1;
         var myTier = window.getLeagueTierFromLevel(userLevel);
+        var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
 
-        var prizeData = {
-            1: {
-                title: (myTier && myTier.name ? myTier.name : 'Kraken League') + ' - Prizes Breakdown',
-                gradient: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
-                tiers: [
-                    { rank: '🥇 Rank 1', prize: '140 🎫 Potions & 2,500 Coins', bonus: 'Golden Box + 2x XP Boost' },
-                    { rank: '🥈 Rank 2', prize: '120 🎫 Potions & 1,800 Coins', bonus: 'Silver Box' },
-                    { rank: '🥉 Rank 3', prize: '110 🎫 Potions & 1,200 Coins', bonus: 'Bronze Box' },
-                    { rank: '🏅 Rank 4 - 10', prize: '80 🎫 Potions & 800 Coins', bonus: 'Mass Boost (1h)' },
-                    { rank: '🏅 Rank 11 - 20', prize: '50 🎫 Potions & 500 Coins', bonus: 'Mystery Potion' },
-                    { rank: '🏅 Rank 21 - 50', prize: '30 🎫 Potions & 300 Coins', bonus: '100 DNA' },
-                    { rank: '🏅 Rank 51 - 100', prize: '15 🎫 Potions & 150 Coins', bonus: '50 DNA' }
-                ]
-            },
-            2: {
-                title: 'Country League (' + userCountry.toUpperCase() + ') - Prizes Breakdown',
-                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
-                tiers: [
-                    { rank: '🥇 Rank 1', prize: '200 🎫 Potions & 5,000 Coins', bonus: 'Golden Country Box + Flag Skin' },
-                    { rank: '🥈 Rank 2', prize: '150 🎫 Potions & 3,500 Coins', bonus: 'Silver Box' },
-                    { rank: '🥉 Rank 3', prize: '100 🎫 Potions & 2,500 Coins', bonus: 'Bronze Box' },
-                    { rank: '🏅 Rank 4 - 10', prize: '75 🎫 Potions & 1,500 Coins', bonus: '2x XP Boost (24h)' },
-                    { rank: '🏅 Rank 11 - 20', prize: '50 🎫 Potions & 1,000 Coins', bonus: '200 DNA' },
-                    { rank: '🏅 Rank 21 - 50', prize: '30 🎫 Potions & 600 Coins', bonus: '100 DNA' },
-                    { rank: '🏅 Rank 51 - 100', prize: '20 🎫 Potions & 300 Coins', bonus: '50 DNA' }
-                ]
-            },
-            3: {
-                title: 'World League - Prizes Breakdown',
-                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
-                tiers: [
-                    { rank: '🥇 Rank 1', prize: '1,000 🎫 Potions & 15,000 Coins', bonus: 'Diamond World Box + Exclusive World Crown' },
-                    { rank: '🥈 Rank 2', prize: '800 🎫 Potions & 10,000 Coins', bonus: 'Platinum Box' },
-                    { rank: '🥉 Rank 3', prize: '500 🎫 Potions & 7,500 Coins', bonus: 'Gold Box' },
-                    { rank: '🏅 Rank 4 - 10', prize: '300 🎫 Potions & 5,000 Coins', bonus: '3x Mass Boost (24h)' },
-                    { rank: '🏅 Rank 11 - 20', prize: '200 🎫 Potions & 3,000 Coins', bonus: '500 DNA' },
-                    { rank: '🏅 Rank 21 - 50', prize: '100 🎫 Potions & 1,500 Coins', bonus: '250 DNA' },
-                    { rank: '🏅 Rank 51 - 100', prize: '50 🎫 Potions & 800 Coins', bonus: '100 DNA' }
-                ]
-            }
+        // Map tab to league name for filtering
+        var leagueFilterMap = {
+            1: myTier ? myTier.id : 'kraken',
+            2: 'country',
+            3: 'world'
+        };
+        var leagueFilter = leagueFilterMap[currentTab] || 'kraken';
+
+        var titleMap = {
+            1: (myTier && myTier.name ? myTier.name : 'Kraken League'),
+            2: 'Country League (' + userCountry.toUpperCase() + ')',
+            3: 'World League'
+        };
+        var gradientMap = {
+            1: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
+            2: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
+            3: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)'
         };
 
-        var cfg = prizeData[currentTab] || prizeData[1];
+        var title = titleMap[currentTab] || titleMap[1];
+        var gradient = gradientMap[currentTab] || gradientMap[1];
+
+        // Build prize rows from real config or fallback
+        var prizeRows = [];
+        var prizesConfig = window.LeaguesPrizesConfig;
+        if (prizesConfig && prizesConfig.length) {
+            // Filter by league name
+            var filtered = prizesConfig.filter(function(p) { return p.leagueName === leagueFilter; });
+            if (filtered.length === 0) {
+                // Try lowercase matching or partial
+                filtered = prizesConfig.filter(function(p) {
+                    return p.leagueName && p.leagueName.toLowerCase() === leagueFilter.toLowerCase();
+                });
+            }
+            if (filtered.length > 0) {
+                filtered.forEach(function(prize) {
+                    var place;
+                    if (prize.positionFrom === prize.positionTo) {
+                        if (prize.positionFrom === 1) place = '1st place';
+                        else if (prize.positionFrom === 2) place = '2nd place';
+                        else if (prize.positionFrom === 3) place = '3rd place';
+                        else place = prize.positionFrom + 'th place';
+                    } else {
+                        place = prize.positionFrom + 'th - ' + prize.positionTo + 'th';
+                    }
+                    // Try to resolve reward amount from Wallet - Bonuses and Rewards
+                    var amount = '?';
+                    var currency = '🏆';
+                    try {
+                        var bonuses = window.LMAgarGameConfiguration.gameConfig["Wallet - Bonuses and Rewards"];
+                        if (bonuses) {
+                            var bonus = bonuses.find(function(b) { return b.id === prize.rewardId; });
+                            if (bonus && bonus.bundleId) {
+                                var bundles = window.LMAgarGameConfiguration.gameConfig["Wallet - Product Bundles"];
+                                if (bundles) {
+                                    var bundle = bundles.find(function(bun) { return bun.bundleId === bonus.bundleId; });
+                                    if (bundle) {
+                                        amount = bundle.quantity || '?';
+                                        currency = bundle.productId === 'coin' ? '💰' : (bundle.productId === 'trophy' ? '🏆' : '🎫');
+                                    }
+                                }
+                            }
+                        }
+                    } catch(e) {}
+                    prizeRows.push({ rank: place, prize: amount + ' ' + currency });
+                });
+            }
+        }
+
+        // Fallback to hardcoded data
+        if (prizeRows.length === 0) {
+            var fallbackData = {
+                1: [
+                    { rank: '1st place', prize: '140 🏆' },
+                    { rank: '2nd place', prize: '120 🏆' },
+                    { rank: '3rd place', prize: '110 🏆' },
+                    { rank: '4th - 10th', prize: '100 🏆' }
+                ],
+                2: [
+                    { rank: '1st place', prize: '200 🏆' },
+                    { rank: '2nd place', prize: '150 🏆' },
+                    { rank: '3rd place', prize: '100 🏆' },
+                    { rank: '4th - 10th', prize: '80 🏆' }
+                ],
+                3: [
+                    { rank: '1st place', prize: '1000 🏆' },
+                    { rank: '2nd place', prize: '800 🏆' },
+                    { rank: '3rd place', prize: '500 🏆' },
+                    { rank: '4th - 10th', prize: '300 🏆' }
+                ]
+            };
+            prizeRows = fallbackData[currentTab] || fallbackData[1];
+        }
+
         var old = document.getElementById('lm-prizes-modal');
         if (old) old.remove();
 
@@ -541,28 +603,28 @@
         modal.style.zIndex = '100000';
 
         var rowsHtml = '';
-        cfg.tiers.forEach(function(row) {
+        prizeRows.forEach(function(row) {
             rowsHtml += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-                    <div style="font-weight: 800; font-size: 13px; color: ${t.mc}; min-width: 140px;">${row.rank}</div>
-                    <div style="flex: 1; font-weight: 700; font-size: 13px; color: ${t.tc}; text-align: center;">${row.prize}</div>
-                    <div style="font-size: 11px; font-weight: 700; color: #ffd700; background: rgba(255,215,0,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.2); min-width: 160px; text-align: right;">${row.bonus}</div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="font-weight: 800; font-size: 14px; color: ${t.tc}; min-width: 160px;">${row.rank}</div>
+                    <div style="font-weight: 800; font-size: 16px; color: #ffd700; display: flex; align-items: center; gap: 6px;">${row.prize}</div>
                 </div>
             `;
         });
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 620px;">
-                <div class="lm-modal-header" style="background: ${cfg.gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 480px;">
+                <div class="lm-modal-header" style="background: ${gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                     <div style="width: 100%; text-align: center; position: relative;">
-                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${cfg.title}</span>
+                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${title}</span>
                         <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-prizes-modal').remove();">&times;</button>
                     </div>
                 </div>
 
-                <div class="lm-modal-body" style="padding: 16px; max-height: 420px; overflow-y: auto;">
-                    <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 12px; text-align: center; font-weight: 600;">
-                        🎁 Finish in these rank positions at the end of the week to claim these rewards!
+                <div class="lm-modal-body" style="padding: 20px; max-height: 420px; overflow-y: auto;">
+                    <div style="text-align: center; margin-bottom: 16px;">
+                        <div style="font-size: 48px; margin-bottom: 8px;">⭐</div>
+                        <div style="font-size: 16px; font-weight: 800; color: ${t.tc};">Prizes</div>
                     </div>
                     ${rowsHtml}
                 </div>
@@ -572,54 +634,14 @@
                 </div>
             </div>
         `;
+        document.body.appendChild(modal);
     };
 
     window.showLastWeekResultsModal = function(tabType) {
         injectStyles();
         var t = getTheme();
-        var currentTab = tabType || window.currentLeagueTab || 1;
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
-        var lastWeekData = {
-            1: {
-                title: 'Last Week Results - ' + (myTier && myTier.name ? myTier.name : 'Kraken League'),
-                gradient: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
-                winners: [
-                    { rank: 1, name: '⚡ Apex Predator', score: '18,450', prize: '140 🎫 Potions + 2,500 💰', level: 100, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 2, name: '🔥 KrakenMaster', score: '15,200', prize: '120 🎫 Potions + 1,800 💰', level: 98, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 3, name: '☠️ Viper_Solo', score: '12,900', prize: '110 🎫 Potions + 1,200 💰', level: 96, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 4, name: '🛡️ ShadowHunter', score: '10,800', prize: '80 🎫 Potions', level: 95, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 5, name: '👑 LegendMod_Pro', score: '9,400', prize: '80 🎫 Potions', level: 94, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-                ],
-                userResult: { rank: '#94', name: window.agarioProfileName || 'Dimitrios', score: '3,850', prize: '15 🎫 Potions', level: userLevel, country: userCountry }
-            },
-            2: {
-                title: 'Last Week Results - Country League (' + userCountry.toUpperCase() + ')',
-                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
-                winners: [
-                    { rank: 1, name: '🦅 USA_Master', score: '34,200', prize: '200 🎫 Potions + 5,000 💰', level: 100, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 2, name: '🎯 EagleEye_US', score: '28,900', prize: '150 🎫 Potions + 3,500 💰', level: 99, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 3, name: '🗽 Liberty_King', score: '24,500', prize: '100 🎫 Potions + 2,500 💰', level: 97, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 4, name: '⭐️ Patriot_Solo', score: '21,100', prize: '75 🎫 Potions', level: 96, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 5, name: '🎆 StarsStripes', score: '18,600', prize: '75 🎫 Potions', level: 95, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-                ],
-                userResult: { rank: '#2,410', name: window.agarioProfileName || 'Dimitrios', score: '5,120', prize: '20 🎫 Potions', level: userLevel, country: userCountry }
-            },
-            3: {
-                title: 'Last Week Results - World League',
-                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
-                winners: [
-                    { rank: 1, name: '🇧🇷 SoloKing_BR', score: '89,400', prize: '1,000 🎫 Potions + 15,000 💰', level: 100, country: 'br', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 2, name: '🇯🇵 Sakura_JP', score: '76,100', prize: '800 🎫 Potions + 10,000 💰', level: 100, country: 'jp', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 3, name: '🇩🇪 Jaeger_DE', score: '68,500', prize: '500 🎫 Potions + 7,500 💰', level: 99, country: 'de', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 4, name: '🇫🇷 LePrince_FR', score: '59,200', prize: '300 🎫 Potions', level: 98, country: 'fr', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                    { rank: 5, name: '🇹🇷 Sultan_TR', score: '52,800', prize: '300 🎫 Potions', level: 97, country: 'tr', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-                ],
-                userResult: { rank: '#3,180', name: window.agarioProfileName || 'Dimitrios', score: '5,120', prize: '50 🎫 Potions', level: userLevel, country: userCountry }
-            }
-        };
-
-        var cfg = lastWeekData[currentTab] || lastWeekData[1];
         var old = document.getElementById('lm-lastweek-modal');
         if (old) old.remove();
 
@@ -628,72 +650,23 @@
         modal.className = 'lm-modal-overlay';
         modal.style.zIndex = '100000';
 
-        var rowsHtml = '';
-        cfg.winners.forEach(function(player) {
-            var rankBadge = '';
-            if (player.rank === 1) {
-                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8f00); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,215,0,0.4);">1</div>`;
-            } else if (player.rank === 2) {
-                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #e0e0e0, #757575); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">2</div>`;
-            } else if (player.rank === 3) {
-                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>`;
-            } else {
-                rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 12px;">#${player.rank}</div>`;
-            }
-
-            rowsHtml += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-                    <div style="width: 60px;">${rankBadge}</div>
-                    <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                        <img src="${player.icon}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
-                        <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">${player.level}</span>
-                        <span class="country-icon flag-icon flag-icon-${player.country.toLowerCase()}" style="border-radius: 2px;"></span>
-                        <span style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${player.name}</span>
-                    </div>
-                    <div style="width: 130px; text-align: right; font-weight: 800; color: #ffd700; font-size: 12px;">
-                        ${player.score} 🏆
-                    </div>
-                    <div style="width: 170px; text-align: right; font-weight: 700; color: ${t.mc}; font-size: 11px;">
-                        🎁 ${player.prize}
-                    </div>
-                </div>
-            `;
-        });
-
-        var userRow = `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
-                <div style="width: 60px;">
-                    <div style="padding: 3px 6px; border-radius: 6px; background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${cfg.userResult.rank}</div>
-                </div>
-                <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                    <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">${cfg.userResult.level}</span>
-                    <span class="country-icon flag-icon flag-icon-${cfg.userResult.country.toLowerCase()}" style="border-radius: 2px;"></span>
-                    <span style="font-weight: 800; color: #00e676; font-size: 13px;">${cfg.userResult.name} (Your Rank)</span>
-                </div>
-                <div style="width: 130px; text-align: right; font-weight: 800; color: #00e676; font-size: 12px;">
-                    ${cfg.userResult.score} 🏆
-                </div>
-                <div style="width: 170px; text-align: right; font-weight: 700; color: #00e676; font-size: 11px;">
-                    🎁 ${cfg.userResult.prize}
-                </div>
-            </div>
-        `;
+        var title = 'Weekly Results';
+        var gradient = myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)';
 
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b1}; width: 660px;">
-                <div class="lm-modal-header" style="background: ${cfg.gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b1}; width: 520px;">
+                <div class="lm-modal-header" style="background: ${gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
                     <div style="width: 100%; text-align: center; position: relative;">
-                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${cfg.title}</span>
+                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${title}</span>
                         <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-lastweek-modal').remove();">&times;</button>
                     </div>
                 </div>
 
-                <div class="lm-modal-body" style="padding: 16px; max-height: 420px; overflow-y: auto;">
-                    <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 12px; text-align: center; font-weight: 600;">
-                        🏆 Previous week final standings and awarded prizes
+                <div id="lm-lastweek-content" class="lm-modal-body" style="padding: 20px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <div data-loading="true" style="text-align: center; color: ${t.tc2}; font-size: 14px;">
+                        <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                        Loading last week results...
                     </div>
-                    ${rowsHtml}
-                    ${userRow}
                 </div>
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
@@ -702,6 +675,103 @@
             </div>
         `;
         document.body.appendChild(modal);
+
+        // Check if we already have cached last week data
+        if (window.lastWeekLeaguesResponse && window.lastWeekLeaguesResponse.leagueEntries) {
+            window._renderLastWeekContent(window.lastWeekLeaguesResponse);
+        } else {
+            // Request last week data from server (type=2)
+            if (typeof window.requestLeaguesInfo === 'function') {
+                window.requestLeaguesInfo(2);
+            } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
+                window.application.requestLeaguesInfo(2);
+            }
+            // Response will come via leaguesInfoUpdate event → _renderLastWeekContent
+            // Show timeout fallback after 5 seconds
+            setTimeout(function() {
+                var contentArea = document.getElementById('lm-lastweek-content');
+                if (contentArea && contentArea.querySelector('[data-loading]')) {
+                    window._renderLastWeekNoResults();
+                }
+            }, 5000);
+        }
+    };
+
+    // Helper: render "no results" message matching original agar.io
+    window._renderLastWeekNoResults = function() {
+        var t = getTheme();
+        var contentArea = document.getElementById('lm-lastweek-content');
+        if (!contentArea) return;
+        contentArea.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                There are no results available<br>since you didn't earn trophies<br>last week
+            </div>
+        `;
+    };
+
+    // Helper: render real last week data into the modal
+    window._renderLastWeekContent = function(data) {
+        var t = getTheme();
+        var contentArea = document.getElementById('lm-lastweek-content');
+        if (!contentArea) return;
+
+        var entries = data.leagueEntries || [];
+        if (entries.length === 0 && window.RecordPlayers && window.RecordPlayers.length) {
+            entries = window.RecordPlayers;
+        }
+
+        if (entries.length === 0) {
+            window._renderLastWeekNoResults();
+            return;
+        }
+
+        var currentUser = (window.application && window.application.user) || {};
+        var currentUserName = currentUser.displayName || window.agarioProfileName || 'You';
+
+        var html = '';
+        var validCount = 0;
+
+        entries.forEach(function(entry, idx) {
+            if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
+            validCount++;
+            var rankNum = entry.rank || validCount;
+            var isUser = entry.displayName === currentUserName || entry.isUser;
+
+            var name = entry.displayName || entry.id || ('Player ' + rankNum);
+            var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : (entry.trophies !== undefined ? entry.trophies.toLocaleString() : '0'));
+            var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+            var country = (entry.country || entry.countryCode || 'us').toLowerCase();
+            var level = entry.level || 100;
+
+            var rankBadge = '';
+            if (rankNum === 1) {
+                rankBadge = '<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8f00); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,215,0,0.4);">1</div>';
+            } else if (rankNum === 2) {
+                rankBadge = '<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #e0e0e0, #757575); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">2</div>';
+            } else if (rankNum === 3) {
+                rankBadge = '<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>';
+            } else {
+                rankBadge = '<div style="padding: 3px 8px; border-radius: 6px; background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; font-size: 12px;">#' + rankNum + '</div>';
+            }
+
+            var rowBg = isUser ? 'background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676;' : 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);';
+
+            html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ' + rowBg + '">';
+            html += '<div style="width: 60px;">' + rankBadge + '</div>';
+            html += '<div style="flex: 1; display: flex; align-items: center; gap: 10px;">';
+            html += '<img src="' + icon + '" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\'">';
+            html += '<span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">' + level + '</span>';
+            html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius: 2px;"></span>';
+            html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + name + '</span>';
+            html += '</div>';
+            html += '<div style="width: 100px; text-align: right; font-weight: 800; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">' + score + ' <i class="fa fa-trophy" style="color: ' + t.mc + ';"></i></div>';
+            html += '</div>';
+        });
+
+        contentArea.style.display = 'block';
+        contentArea.style.maxHeight = '420px';
+        contentArea.style.overflowY = 'auto';
+        contentArea.innerHTML = html;
     };
 
     window.showPotionsHelpModal = function(activeTabName) {

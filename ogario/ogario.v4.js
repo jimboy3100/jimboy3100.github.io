@@ -2236,6 +2236,15 @@ setTimeout(function () {
 
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
+
+        // Extract Leagues Prizes and Tiers from GameConfiguration
+        try {
+            window.LeaguesPrizesConfig = LMAgarGameConfiguration.gameConfig["Leagues - Prizes"] || null;
+            window.LeaguesTiersConfig = LMAgarGameConfiguration.gameConfig["Leagues - Tiers"] || null;
+            if (window.LeaguesPrizesConfig) console.log("[LM] Loaded Leagues Prizes config: " + window.LeaguesPrizesConfig.length + " entries");
+            if (window.LeaguesTiersConfig) console.log("[LM] Loaded Leagues Tiers config: " + window.LeaguesTiersConfig.length + " tiers");
+        } catch(e) { console.warn("[LM] Could not load Leagues config:", e); }
+
         for (var player = 0; player < window.FreeSkins.length; player++) {
             window.FreskinsMap[player] = window.FreeSkins[player].id
         }
@@ -11054,6 +11063,7 @@ function thelegendmodproject() {
         },
         requestLeaguesInfo(type) {
             var reqType = type || 1;
+            window._leaguesRequestType = reqType; // Track: 1=current, 2=last week
             console.log("[LM] Request Leagues Info — type: " + reqType);
             return this.sendProto(130, { userLeaguesInfoRequestField: { leagueRequestType: reqType } });
         },
@@ -15504,12 +15514,7 @@ function thelegendmodproject() {
                 case 131:
                     window.testobjectsOpcode131 = data;
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 131 (User Leagues Info)');
-                    document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
-                        detail: {
-                            leagueName: 'Weekly League',
-                            leagueEntries: []
-                        }
-                    }));
+                    // Raw handler dispatches basic event; real data comes from proto handler (case 131 below)
                     break;
                 case 128:
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
@@ -16267,8 +16272,13 @@ function thelegendmodproject() {
                     try {
                         var lr = r.uncompressedData.userLeaguesInfoResponseField;
                         if (lr) {
-                            console.log("[LM] Leagues Info Response received");
-                            window.lastLeaguesResponse = lr;
+                            var isLastWeek = (window._leaguesRequestType === 2);
+                            console.log("[LM] Leagues Info Response received (isLastWeek=" + isLastWeek + ")");
+                            if (isLastWeek) {
+                                window.lastWeekLeaguesResponse = lr;
+                            } else {
+                                window.lastLeaguesResponse = lr;
+                            }
                             // Store league entries for display
                             if (lr.leagueEntries && lr.leagueEntries.length) {
                                 this.user.leagueEntries = lr.leagueEntries;
@@ -16282,6 +16292,7 @@ function thelegendmodproject() {
                                 this.user.leagueName = lr.leagueName;
                             }
                             // Dispatch event for any UI that listens
+                            lr.isLastWeek = isLastWeek;
                             try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch(e) {}
                         }
                     } catch(lrErr) {
