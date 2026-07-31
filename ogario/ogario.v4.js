@@ -10916,6 +10916,32 @@ function thelegendmodproject() {
             console.log("[LM] Inspect User Stats for: " + userId);
             return this.sendProto(82, { userStatsRequestField: { userId: userId } });
         },
+        sendGifts(giftIds) {
+            if (!giftIds || !giftIds.length) return false;
+            console.log("[LM] Send Gifts: " + giftIds);
+            return this.sendProto(102, { sendGiftsField: { giftIds: giftIds } });
+        },
+        consumeGiftRequests(requestIds) {
+            if (!requestIds || !requestIds.length) return false;
+            console.log("[LM] Consume Gift Requests: " + requestIds);
+            return this.sendProto(103, { consumeRequestsField: { requestIds: requestIds } });
+        },
+        requestGifts(giftIds) {
+            if (!giftIds || !giftIds.length) return false;
+            console.log("[LM] Request Gifts: " + giftIds);
+            return this.sendProto(104, { requestGiftsField: { giftIds: giftIds } });
+        },
+        openPotionForProduct(productId) {
+            if (!productId) return false;
+            console.log("[LM] Open Potion for Product: " + productId);
+            return this.sendProto(120, { openPotionForProductRequestField: { productId: productId } });
+        },
+        activateRewardLink(token) {
+            if (!token) return false;
+            console.log("[LM] Activate Reward Link: " + token);
+            toastr.info('<b>[SERVER]:</b> Activating reward link...');
+            return this.sendProto(183, { activateRewardLinkRequestField: { token: token } });
+        },
         /* ─── §4.20k Parse Plist XML Metadata ─── */
         parseSkinMeta(metaXmlString) {
             if (!metaXmlString) return null;
@@ -15709,7 +15735,20 @@ function thelegendmodproject() {
                     break;
                 //ping 30 pong 31
                 case 33:
-                    console.log("returnMessage = r.get_configurationChangeField();");
+                    // Configuration change (live config update from server)
+                    try {
+                        var cc = r.uncompressedData.configurationChangeField;
+                        if (cc) {
+                            console.log("[LM] Configuration Change received");
+                            // Reload GameConfiguration if the server pushes a config change
+                            if (typeof window.LoadGameConfiguration === 'function') {
+                                console.log("[LM] Reloading GameConfiguration due to server config change...");
+                                setTimeout(window.LoadGameConfiguration, 1000);
+                            }
+                        }
+                    } catch(ccErr) {
+                        console.warn("[LM] Error parsing configuration change:", ccErr);
+                    }
                     break;
                 case 62:
                     var u = r.uncompressedData.gameOverField;
@@ -15856,7 +15895,19 @@ function thelegendmodproject() {
                     } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
                     break;
                 case 105:
-                    console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
+                    // Facebook invitation reward updates
+                    try {
+                        var fbr = r.uncompressedData.facebookInvitationRewardUpdatesField;
+                        if (fbr) {
+                            console.log("[LM] Facebook Invitation Reward Update received");
+                            if (fbr.productUpdates && fbr.productUpdates.length) {
+                                this.updateProducts(fbr.productUpdates);
+                                toastr.success('<b>[SERVER]:</b> Invitation reward received! &#x1F381;');
+                            }
+                        }
+                    } catch(fbrErr) {
+                        console.warn("[LM] Error parsing FB invitation reward:", fbrErr);
+                    }
                     break;
                 case 111:
                     // Timed event response (free coins, daily rewards)
@@ -15923,10 +15974,49 @@ function thelegendmodproject() {
                     }
                     break;
                 case 116:
-                    console.log("returnMessage = r.get_userTimedEventUpdatesField();");
+                    // Timed event updates (passive timer sync from server)
+                    try {
+                        var teu = r.uncompressedData.userTimedEventUpdatesField;
+                        if (teu && teu.userTimedEvents && teu.userTimedEvents.length) {
+                            this.updateEvents(teu.userTimedEvents);
+                            console.log("[LM] Timed Event Updates — " + teu.userTimedEvents.length + " events synced");
+                            // Update free coins timer display if visible
+                            for (var tei = 0; tei < teu.userTimedEvents.length; tei++) {
+                                var evt = teu.userTimedEvents[tei];
+                                if (evt.eventId === 'hourlyBonus' && evt.nextAvailableInSeconds > 0) {
+                                    var mins = Math.floor(evt.nextAvailableInSeconds / 60);
+                                    var secs = evt.nextAvailableInSeconds % 60;
+                                    var timerEl = document.getElementById('freeCoinsTimer');
+                                    if (timerEl) timerEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+                                }
+                            }
+                        } else {
+                            console.log("[LM] Timed Event Updates — no events in payload");
+                        }
+                    } catch(teuErr) {
+                        console.warn("[LM] Error parsing timed event updates:", teuErr);
+                    }
                     break;
                 case 121:
-                    console.log("returnMessage = r.get_openPotionForProductResponseField();");
+                    // Open potion for product response
+                    try {
+                        var oppr = r.uncompressedData.openPotionForProductResponseField;
+                        if (oppr) {
+                            console.log("[LM] Open Potion (Product) Response");
+                            if (oppr.productUpdates && oppr.productUpdates.length) {
+                                this.updateProducts(oppr.productUpdates);
+                            }
+                            if (oppr.userPotions && oppr.userPotions.length) {
+                                this.updatePotions(oppr.userPotions);
+                            }
+                            if (oppr.newUserPotion) {
+                                this.newPotion(oppr.newUserPotion);
+                                toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
+                            }
+                        }
+                    } catch(opprErr) {
+                        console.warn("[LM] Error parsing open potion (product) response:", opprErr);
+                    }
                     break;
                 case 123:
                     var u = r.uncompressedData.brewPotionForSlotResponseField;
@@ -15938,11 +16028,52 @@ function thelegendmodproject() {
                     this.updatePotions(u.userPotions)
                     break;
                 case 131:
-                    console.log("returnMessage = r.get_userLeaguesInfoResponseField();");
-                    //window.returnMessage = r.get_userLeaguesInfoResponseField()
+                    // Leagues info response — store league standings
+                    try {
+                        var lr = r.uncompressedData.userLeaguesInfoResponseField;
+                        if (lr) {
+                            console.log("[LM] Leagues Info Response received");
+                            window.lastLeaguesResponse = lr;
+                            // Store league entries for display
+                            if (lr.leagueEntries && lr.leagueEntries.length) {
+                                this.user.leagueEntries = lr.leagueEntries;
+                                console.log("[LM] League entries: " + lr.leagueEntries.length);
+                            }
+                            if (lr.userPosition !== undefined) {
+                                this.user.leaguePosition = lr.userPosition;
+                                console.log("[LM] Your league position: " + lr.userPosition);
+                            }
+                            if (lr.leagueName) {
+                                this.user.leagueName = lr.leagueName;
+                            }
+                            // Dispatch event for any UI that listens
+                            try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch(e) {}
+                        }
+                    } catch(lrErr) {
+                        console.warn("[LM] Error parsing leagues info response:", lrErr);
+                    }
                     break;
                 case 132:
-                    console.log("returnMessage = r.get_userLeaguesPassUpdateField();");
+                    // Leagues pass update — someone passed you or you passed someone
+                    try {
+                        var lpu = r.uncompressedData.userLeaguesPassUpdateField;
+                        if (lpu) {
+                            console.log("[LM] Leagues Pass Update received");
+                            window.lastLeaguesPassUpdate = lpu;
+                            var passedBy = lpu.playerThatPassed;
+                            if (passedBy && passedBy.displayName) {
+                                toastr.info('<b>[LEAGUE]:</b> ' + passedBy.displayName + ' passed you in the league!');
+                            }
+                            // Refresh league data
+                            if (lpu.newPosition !== undefined) {
+                                this.user.leaguePosition = lpu.newPosition;
+                                console.log("[LM] New league position: " + lpu.newPosition);
+                            }
+                            try { document.dispatchEvent(new CustomEvent('leaguesPassUpdate', { detail: lpu })); } catch(e) {}
+                        }
+                    } catch(lpuErr) {
+                        console.warn("[LM] Error parsing leagues pass update:", lpuErr);
+                    }
                     break;
                 case 151:
                     // Skin create response
@@ -15993,10 +16124,38 @@ function thelegendmodproject() {
                     if (u.skinsCreated > prev.skinsCreated) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
                     break;
                 case 184:
-                    console.log("returnMessage = r.get_activateRewardLinkResponseField();");
+                    // Reward link activation response
+                    try {
+                        var rlr = r.uncompressedData.activateRewardLinkResponseField;
+                        if (rlr) {
+                            console.log("[LM] Reward Link Response received");
+                            if (rlr.productUpdates && rlr.productUpdates.length) {
+                                this.updateProducts(rlr.productUpdates);
+                                toastr.success('<b>[SERVER]:</b> Reward link activated! &#x2714; ' + rlr.productUpdates.length + ' item(s) claimed');
+                                try { this.createSkinsHTML(); } catch(e) {}
+                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                                if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                            } else {
+                                toastr.info('<b>[SERVER]:</b> Reward link processed (no items)');
+                            }
+                        }
+                    } catch(rlrErr) {
+                        console.warn("[LM] Error parsing reward link response:", rlrErr);
+                    }
                     break;
                 case 186:
-                    console.log("returnMessage = r.get_genericVideoAdRewardTokenResponseField();");
+                    // Video ad reward token response — store token for ad reward claims
+                    try {
+                        var vatr = r.uncompressedData.genericVideoAdRewardTokenResponseField;
+                        if (vatr && vatr.token) {
+                            window.videoAdRewardToken = vatr.token;
+                            console.log("[LM] Video Ad Reward Token received: " + vatr.token.substring(0, 20) + "...");
+                        } else {
+                            console.log("[LM] Video Ad Token Response — no token in payload");
+                        }
+                    } catch(vatrErr) {
+                        console.warn("[LM] Error parsing video ad token response:", vatrErr);
+                    }
                     break;
 
                 default:
