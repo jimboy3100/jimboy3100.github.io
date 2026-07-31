@@ -15413,6 +15413,16 @@ function thelegendmodproject() {
                     window.testobjectsOpcode161 = data;
                     this.arrowFB[0].visible = false;
                     break;
+                case 101:
+                    window.testobjectsOpcode101 = data;
+                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 101 (Claim Gifts Response)');
+                    if (typeof window.syncProfileTabUI === 'function') window.syncProfileTabUI();
+                    break;
+                case 118:
+                    window.testobjectsOpcode118 = data;
+                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 118 (Activate Rewards Response)');
+                    if (typeof window.syncProfileTabUI === 'function') window.syncProfileTabUI();
+                    break;
                 case 131:
                     window.testobjectsOpcode131 = data;
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Opcode 131 (User Leagues Info)');
