@@ -311,6 +311,7 @@ function SpecialDeals(defaultTab) {
             $('#legendCanvasModal').css('border-color', e.color.toHex());
         });
 
+        // Use the already-loaded config from master.js if available, otherwise load it
         LoadGameConfiguration();
 
         // Make modal draggable. The modal uses transform: translate(-50%,-50%) for centering.
@@ -338,16 +339,15 @@ function SpecialDeals(defaultTab) {
                 }
             }
         });
-        setTimeout(function() {
-            populateLibConfig();
-        }, 2500);
-
-        // --- Auto-populate Skins tab on open since it is default active ---
+        // populateLibConfig runs immediately if config is ready, or waits for it
         if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
-            populateSkins();
+            populateLibConfig();
         } else {
-            setTimeout(populateSkins, 1500);
+            setTimeout(populateLibConfig, 800);
         }
+
+        // NOTE: populateSkins is called by LoadGameConfiguration on success.
+        // No separate setTimeout needed — that was causing double-rendering.
 
         window.validateShopIntegrity = function validateShopIntegrity(actionName) {
             var label = actionName || 'this action';
@@ -1570,11 +1570,17 @@ function isSkinOwned(s, ownedSkinsObj) {
     return false;
 }
 
+var _populateSkinsRetries = 0;
 function populateSkins() {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig || !window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"]) {
-        setTimeout(populateSkins, 1500);
+        if (_populateSkinsRetries++ < 6) {
+            setTimeout(populateSkins, 500);
+        } else {
+            console.warn('[Shop] populateSkins gave up after 6 retries — config never arrived');
+        }
         return;
     }
+    _populateSkinsRetries = 0; // reset for next open
 
     var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
     var currentFilter = 'all';
@@ -2283,50 +2289,64 @@ function LoadGameConfiguration() {
     $(".xpmt-skins2").css('background-image', '');
     $(".xpmt-skins").css('background-image', '');
 
-    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+    function _onConfigReady() {
         populateSD();
         if (typeof populateDealsGrid === 'function') populateDealsGrid();
         if (typeof populateSkins === 'function') populateSkins();
+    }
+
+    // 1. Already loaded in this session
+    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+        _onConfigReady();
         return;
     }
+    // 2. Loaded by master.js (window.master.GameConfiguration)
     if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
         window.GameConfiguration = window.master.GameConfiguration;
-        populateSD();
-        if (typeof populateDealsGrid === 'function') populateDealsGrid();
-        if (typeof populateSkins === 'function') populateSkins();
+        _onConfigReady();
         return;
     }
+    // 3. Loaded by master.js async (LMGameConfiguration)
+    if (window.LMGameConfiguration && window.LMGameConfiguration.gameConfig) {
+        window.GameConfiguration = window.LMGameConfiguration;
+        _onConfigReady();
+        return;
+    }
+    // 4. Wait for master.js promise if available (avoids duplicate AJAX)
+    if (window.LMGameConfigurationReady && typeof window.LMGameConfigurationReady.then === 'function') {
+        window.LMGameConfigurationReady.then(function(config) {
+            if (config && config.gameConfig) {
+                window.GameConfiguration = config;
+                _onConfigReady();
+            } else {
+                // Promise resolved with null — fetch manually
+                _fetchConfigFallback(_onConfigReady);
+            }
+        });
+        return;
+    }
+    // 5. Manual fetch as last resort
+    _fetchConfigFallback(_onConfigReady);
+}
 
+function _fetchConfigFallback(callback) {
     var targetUrl = window.MiniclipConfigDestination || window.LM_CONFIG_URL();
-    // No domain replacement needed — centralized URL is always correct
-
     $.ajax({
         url: targetUrl,
         type: 'GET',
+        timeout: 8000,
         success: function(info) {
             if (typeof info === 'string') {
                 try { window.GameConfiguration = JSON.parse(info); } catch(e) { window.GameConfiguration = info; }
             } else {
                 window.GameConfiguration = info;
             }
-            populateSD();
-            if (typeof populateDealsGrid === 'function') populateDealsGrid();
-            if (typeof populateSkins === 'function') populateSkins();
+            callback();
         },
         error: function(err) {
-            console.warn('[Shop] Primary config URL failed, trying fallback...', err);
-            $.ajax({
-                url: window.LM_CONFIG_URL(),
-                type: 'GET',
-                success: function(info) {
-                    window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;
-                    populateSD();
-                    if (typeof populateDealsGrid === 'function') populateDealsGrid();
-                    if (typeof populateSkins === 'function') populateSkins();
-                }
-            });
+            console.warn('[Shop] Config fetch failed:', err);
         }
-    });		
+    });
 }
 
 function populateLibConfig() {
