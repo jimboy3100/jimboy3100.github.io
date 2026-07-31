@@ -13527,6 +13527,10 @@ function thelegendmodproject() {
             LM.decayInfo.active = false;
             this.mapEvent.active = false;
             this.mapEvent.phase = 0;
+            this.elPlayerCount = null;
+            this.elBotCount = null;
+            ogario.elPlayerCount = null;
+            ogario.elBotCount = null;
             this.leaderboard = [];
             // Garix state reset
             this.garixTabID1 = 0;
@@ -13771,6 +13775,10 @@ function thelegendmodproject() {
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (typeof stopMergeTimer === 'function') stopMergeTimer();
+            this.isLegendWorld = false;
+            LM.isLegendWorld = false;
+            this.elPlayerCount = null;
+            this.elBotCount = null;
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
             //clearInterval(this.pingInterval);
@@ -17810,44 +17818,44 @@ Most cells eaten   : ${mostCellsEaten}
 
 
             // Expanding Land: Use server-sent player/bot counts (opcode 203)
-            // This works independently of LM.integrity since the server provides the data directly
-            if (typeof ogario.elPlayerCount !== 'undefined' && ogario.elPlayerCount !== null) {
+            // Only active when currently connected to Expanding Land
+            if (LM.isLegendWorld && typeof ogario.elPlayerCount !== 'undefined' && ogario.elPlayerCount !== null) {
                 teamText += '<span class="me">' + Languageletter313 + ': ' + ogario.elPlayerCount + ' Bots: ' + ogario.elBotCount + '</span>';
             }
-            //if (legendmod.gameMode != ":battleroyale" && LM.ws && !LM.ws.includes("imsolo.pro")) {
-            else if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
-                //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
-                let counter = 0;
-                let key = "nick";
-                let counterNicks = 0;
-                var botcounter = 0;
-                var howmanytypesofbots = 0;
-                var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
-                ArrayLeaderboardCount.forEach((element) => {
+            // Standard Agar.io or non-Expanding Land servers
+            else if (legendmod.gameMode != ":battleroyale" && LM.ws) {
+                if (LM.integrity) {
+                    let counter = 0;
+                    let key = "nick";
+                    let counterNicks = 0;
+                    var botcounter = 0;
+                    var howmanytypesofbots = 0;
+                    var ArrayLeaderboardCount = findOcc(legendmod.leaderboard, key);
+                    ArrayLeaderboardCount.forEach((element) => {
 
-                    botcounter = element.occurrence;
-                    if (botcounter > 2) {
-                        counterNicks += botcounter;
-                        howmanytypesofbots++;
-                        //window.botNicks[counter]={element.nick:botcounter}
-                        legendmod.botNicks[counter] = element;
-                        counter++;
+                        botcounter = element.occurrence;
+                        if (botcounter > 2) {
+                            counterNicks += botcounter;
+                            howmanytypesofbots++;
+                            legendmod.botNicks[counter] = element;
+                            counter++;
+                        }
+                    });
+                    if (botcounter === 0) legendmod.botNicks = [];
+                    var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
+                    if (counterNicks > 0) {
+                        teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
                     }
-                });
-                if (botcounter === 0) legendmod.botNicks = [];
-                var totalRealPlayers = ArrayLeaderboardCount.length - howmanytypesofbots;
-                if (counterNicks > 0) {
-                    teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
-                }
-                else {
+                    else {
+                        teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                    }
+
+                    if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
+                        teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+                    }
+                } else {
                     teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                 }
-                //teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-
-                if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
-                    teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
-                }
-                //t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
             } else if (legendmod.gameMode === ":battleroyale") {
                 teamText = '<span>';
                 if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
