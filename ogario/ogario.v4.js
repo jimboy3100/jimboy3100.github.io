@@ -6876,7 +6876,7 @@ function thelegendmodproject() {
                 //'<a href="https://www.youtube.com/watch?v=CnIfNSpCf70" class="quick-yt ogicon-youtube2" id="legendid" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Legend Promo Video"></a>' +
                 '<a id= "themesBtn" target="_blank" href="https://themes.expanding.land/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
-                '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
+                '<a id="ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
                 '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>' +
                 (window.legendModFromWebsite ? '<a id="PrivacyLink" href="https://help.expanding.land/" target="_blank" class="fa fa-question-circle" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Help"></a>' : ''));
             //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
@@ -24049,9 +24049,14 @@ function preUserLeaguesInfoRequest() {
 }
 
 function openhelper() {
+    if ($('#legendhelper').length) {
+        $('#legendhelper').show();
+        $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide();
+        return;
+    }
     var s = document.createElement("script");
     s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/legendhelper.js";
+    s.src = "https://www.legendmod.ml/extras/legendhelper.js";
     $("body").append(s);
 }
 
