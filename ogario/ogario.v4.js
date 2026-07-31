@@ -1445,9 +1445,9 @@ function autoRandomPotionDigger() {
         if (window.autoRandomPotion === 1) brewPotion(1)
         if (window.autoRandomPotion === 2) brewPotion(2)
         if (window.autoRandomPotion === 3) brewPotion(3)
-        if (window.autoRandomPotion === 4) openPotion(1)
-        if (window.autoRandomPotion === 5) openPotion(2)
-        if (window.autoRandomPotion === 6) openPotion(3)
+        if (window.autoRandomPotion === 4) openPotion(1, false)
+        if (window.autoRandomPotion === 5) openPotion(2, false)
+        if (window.autoRandomPotion === 6) openPotion(3, false)
         if (window.autoRandomPotion <= 6) {
             autoRandomPotionDigger()
         }
@@ -1468,10 +1468,14 @@ function userLeaguesInfoRequest(slot) {
 
 // genericVideoAdRewardTokenRequest: removed (superseded by application.requestAdRewardToken)
 
-window.openPotion = function (slot) {
-    window._userInitiatedPotionOpen = true;
+window.openPotion = function (slot, isUserAction) {
+    if (isUserAction === false) {
+        window._userInitiatedPotionOpen = false;
+    } else {
+        window._userInitiatedPotionOpen = true;
+    }
     if (window.application && typeof window.application.openPotion === 'function') {
-        return window.application.openPotion(slot);
+        return window.application.openPotion(slot, isUserAction);
     }
     // Fallback: raw bytes if application not ready
     if (!window.core || !window.core.proxyMobileData) return;
@@ -11055,9 +11059,13 @@ function thelegendmodproject() {
             console.log("[LM] Brew Potion in slot " + slot);
             return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
-        openPotion(slot) {
+        openPotion(slot, isUserAction) {
             console.log("[LM] Open Potion in slot " + slot);
-            window._userInitiatedPotionOpen = true;
+            if (isUserAction === false) {
+                window._userInitiatedPotionOpen = false;
+            } else {
+                window._userInitiatedPotionOpen = true;
+            }
             return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
         activateTimedEvent(eventId) {
@@ -16943,7 +16951,7 @@ function thelegendmodproject() {
             if (window.master && (window.master.context === "facebook" || window.master.context === "google")) {
                 for (var potion of Object.values(LM.user.potionsStatus)) {
                     if (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now())) {
-                        window.openPotion(potion.slot);
+                        window.openPotion(potion.slot, false);
                         break;
                     }
                 };

@@ -11335,6 +11335,7 @@ form {
 	position: absolute;
 	top: -13px;
 	right: -16px;
+	margin-left: -20px;
 	width: 50px;
 	height: 50px;
 	background-image: url(https://www.legendmod.ml/img/star.png);

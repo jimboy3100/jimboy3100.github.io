@@ -1129,6 +1129,7 @@
                                       ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
                                        (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
                 
+                var rowsHtml = '';
                 if (potionHelpItems && potionHelpItems.length) {
                     var tierColors = { "potion_common": "#4caf50", "potion_rare": "#2196f3", "potion_exotic": "#e91e63", "potion_mystical": "#ffb300", "potion_superior": "#4caf50", "potion_epic": "#00bcd4", "potion_legendary": "#e91e63", "potion_mythical": "#ffb300", "Common": "#4caf50", "Rare": "#2196f3", "Exotic": "#e91e63", "Mystical": "#ffb300" };
                     for (var p = 0; p < potionHelpItems.length; p++) {
