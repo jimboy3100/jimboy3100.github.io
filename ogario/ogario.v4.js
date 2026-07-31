@@ -7307,6 +7307,9 @@ function thelegendmodproject() {
                 }, 500);
             });
             $(document).on(`click`, `#potions`, event => {
+                if (event.target.id === 'lm-potions-help-btn' || $(event.target).closest('#lm-potions-help-btn').length) {
+                    return;
+                }
                 event.preventDefault();
                 var id = event.target.parentNode.id;
                 if (id && LM.user && LM.user.potionsStatus && LM.user.potionsStatus.hasOwnProperty(id)) {
