@@ -464,11 +464,13 @@ message walletUpdates {
 ///
 }
 message offerBundleRequestField {
-///
+    string bundleId = 1;
 }
 
 message offerBundleResponseField {
-///
+    int32 result = 1;
+    string bundleId = 2;
+    repeated productUpdates productUpdates = 3;
 }
 
 message subscriptionWalletUpdatesField {
@@ -719,19 +721,19 @@ message userRewardsUpdatesField {
 }
 
 message activateRewardLinkRequestField {
-///
+    string token = 1;
 }
 
 message activateRewardLinkResponseField {
-///
+    int32 result = 1;
+    repeated productUpdates productUpdates = 2;
 }
 
 message genericVideoAdRewardTokenRequestField {
-///
 }
 
 message genericVideoAdRewardTokenResponseField {
-///
+    string token = 1;
 }
 
 message tokens{

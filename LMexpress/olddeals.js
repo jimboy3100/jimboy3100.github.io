@@ -1218,35 +1218,22 @@ function buyDealBundle(bundleId, dealDesc) {
         allBtns[bi].style.pointerEvents = 'none';
     }
 
-    // Encode Offer_bundle_request { bundleId: string } and send via opcode 77
-    // Proto: field 1 (bundleId) wire type 2 (length-delimited string)
-    try {
-        var idBytes = [];
-        for (var i = 0; i < bundleId.length; i++) idBytes.push(bundleId.charCodeAt(i));
-        // Inner message: tag 10 (field 1, wire 2), varint length, string bytes
-        var innerMsg = [10, idBytes.length].concat(idBytes);
-        // Outer wrapper: opcode 77 → field number in protobuf
-        // Field 77 wire type 2 → (77 << 3 | 2) = 618 → varint [234, 4]
-        var outerTag = [234, 4];
-        var outerLen = innerMsg.length;
-        var payload = outerTag.concat([outerLen]).concat(innerMsg);
-        // Wrap in contentType=1 uncompressed envelope
-        var typeField = [8, 77]; // field 1 varint = 77 (opcode)
-        var envelope = typeField.concat(payload);
-        var bytes = [8, 1, 18, envelope.length].concat(envelope);
-        window.core.proxyMobileData(new Uint8Array(bytes));
+    // Use sendProto to encode Offer_bundle_request { bundleId } via opcode 77
+    if (!window.application || !window.application.sendProto) {
+        toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
+        // Re-enable buttons
+        var btns2 = document.querySelectorAll('#dealsGrid .btn');
+        for (var j = 0; j < btns2.length; j++) { btns2[j].disabled = false; btns2[j].style.opacity = '1'; btns2[j].style.pointerEvents = 'auto'; }
+        return;
+    }
+    var sent = window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
+    if (sent) {
         toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
         console.log('[SHOP] Sent offer bundle request for ' + bundleId);
-    } catch (e) {
-        console.error('[SHOP] Offer bundle encode error:', e);
+    } else {
         toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
-        // Re-enable buttons on encode failure
-        var btns2 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j = 0; j < btns2.length; j++) {
-            btns2[j].disabled = false;
-            btns2[j].style.opacity = '1';
-            btns2[j].style.pointerEvents = 'auto';
-        }
+        var btns3 = document.querySelectorAll('#dealsGrid .btn');
+        for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
         return;
     }
     // ogario.v4.js case 78 handles response → refreshDealsTab repopulates grid.
@@ -1287,32 +1274,18 @@ function activateBoost(productId) {
         allBtns[bi].style.pointerEvents = 'none';
     }
 
-    // Encode Activate_boost_request { productId: string } and send via opcode 112
-    // Proto: field 1 (productId) wire type 2 (length-delimited string)
-    try {
-        var idBytes = [];
-        for (var i = 0; i < productId.length; i++) idBytes.push(productId.charCodeAt(i));
-        var innerMsg = [10, idBytes.length].concat(idBytes);
-        // Field 112 wire type 2 → (112 << 3 | 2) = 898 → varint [130, 7]
-        var outerTag = [130, 7];
-        var outerLen = innerMsg.length;
-        var payload = outerTag.concat([outerLen]).concat(innerMsg);
-        var typeField = [8, 112]; // opcode 112
-        var envelope = typeField.concat(payload);
-        var bytes = [8, 1, 18, envelope.length].concat(envelope);
-        window.core.proxyMobileData(new Uint8Array(bytes));
-        toastr.info('<b>[SHOP]:</b> Boost activation request sent...');
-        console.log('[SHOP] Sent boost activation for ' + productId);
-    } catch (e) {
-        console.error('[SHOP] Boost encode error:', e);
-        toastr.error('<b>[SHOP]:</b> Failed to activate boost');
-        // Re-enable on failure
+    // Use sendProto via application object
+    if (!window.application || !window.application.activateBoost) {
+        toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
         var btns2 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j = 0; j < btns2.length; j++) {
-            btns2[j].disabled = false;
-            btns2[j].style.opacity = '1';
-            btns2[j].style.pointerEvents = 'auto';
-        }
+        for (var j = 0; j < btns2.length; j++) { btns2[j].disabled = false; btns2[j].style.opacity = '1'; btns2[j].style.pointerEvents = 'auto'; }
+        return;
+    }
+    var sent = window.application.activateBoost(productId);
+    if (!sent) {
+        toastr.error('<b>[SHOP]:</b> Failed to activate boost');
+        var btns3 = document.querySelectorAll('#dealsGrid .btn');
+        for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
         return;
     }
     // ogario.v4.js case 113 handles response → refreshDealsTab repopulates grid.
