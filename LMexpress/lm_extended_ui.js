@@ -1614,9 +1614,9 @@
         var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
 
         var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
-        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 12;
-        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 5;
-        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 8;
+        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 38;
+        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 16;
+        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 10;
         var count_3x_24h = userBoosts.mass_3x_24h || userBoosts['mass_boost_3x_24h'] || 3;
 
         var modal = document.createElement('div');
@@ -1629,7 +1629,7 @@
                 <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <button onclick="document.getElementById('lm-mass-boost-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
-                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Mass Boost</div>
+                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Starting Mass Boost</div>
                     </div>
 
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -1647,14 +1647,14 @@
 
                 <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f7f9fa;">
                     <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Double Mass Boost', 'Starts every match with double starting mass (e.g. 50 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+                        <button onclick="window.showBoostInfoPopover('Double Starting Mass', 'Starts every match with double starting mass (e.g. 50 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
 
                         <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double Mass Boost</div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double Starting Mass</div>
                             
-                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">Ⓜ️</div>
-                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #0288d1; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">2X</div>
+                            <div style="position: relative; margin: 10px auto; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #00b0ff 0%, #0091ea 100%); border-radius: 50%; box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 12px rgba(0,145,234,0.4); border: 3px solid #fff;">
+                                <div style="font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">M</div>
+                                <div style="position: absolute; bottom: -4px; right: -4px; font-size: 20px; font-weight: 900; color: #fff; background: #0288d1; border: 2px solid #fff; border-radius: 12px; padding: 2px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">2X</div>
                             </div>
                         </div>
 
@@ -1678,14 +1678,14 @@
                     </div>
 
                     <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Triple Mass Boost', 'Starts every match with triple starting mass (e.g. 75 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+                        <button onclick="window.showBoostInfoPopover('Triple Starting Mass', 'Starts every match with triple starting mass (e.g. 75 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
 
                         <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple Mass Boost</div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple Starting Mass</div>
                             
-                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">Ⓜ️</div>
-                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #0288d1; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">3X</div>
+                            <div style="position: relative; margin: 10px auto; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #00b0ff 0%, #0091ea 100%); border-radius: 50%; box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 12px rgba(0,145,234,0.4); border: 3px solid #fff;">
+                                <div style="font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">M</div>
+                                <div style="position: absolute; bottom: -4px; right: -4px; font-size: 20px; font-weight: 900; color: #fff; background: #0288d1; border: 2px solid #fff; border-radius: 12px; padding: 2px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">3X</div>
                             </div>
                         </div>
 
