@@ -619,6 +619,21 @@
                 syncProfileTabUI();
             }, 2500);
         }, 1000);
+
+        $(document).off('click', '#lm-claim-all-btn').on('click', '#lm-claim-all-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts();
+        });
+
+        $(document).off('click', '#lm-leagues-btn').on('click', '#lm-leagues-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
+        });
+
+        $(document).off('click', '#lm-friends-btn').on('click', '#lm-friends-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.showFriendsModal === 'function') window.showFriendsModal();
+        });
     });
 
 })();
