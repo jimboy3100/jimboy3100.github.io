@@ -259,12 +259,6 @@ function SpecialDeals() {
             '<div id="dealsBalanceBar" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid ' + mc + '4d;">' +
             '🧬 DNA: <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="dealsCoinsCount">0</span></div>' +
 
-            // Free coins section
-            '<div id="freeCoinsSection" style="background: ' + pc2 + '; border: 1px solid ' + b2 + '4d; border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">' +
-            '<div><span style="font-size: 20px;">🎁</span> <b style="color: ' + b2 + ';">Free Coins</b><br><span id="freeCoinsTimer" style="font-size: 11px; color: ' + tc2 + ';">Claim your hourly bonus</span></div>' +
-            '<button id="claimFreeCoinsBtn" class="btn btn-sm" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 6px 16px; cursor: pointer;" onclick="claimFreeCoins()">Claim!</button>' +
-            '</div>' +
-
             // Deal cards container
             '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
 
@@ -875,27 +869,39 @@ function populateDealsGrid() {
             var label = pid.replace(/_/g, ' ');
             if (pid.indexOf('coins') !== -1) label = '💰 ' + qty.toLocaleString() + ' Coins';
             else if (pid.indexOf('dna') !== -1) label = '🧬 ' + qty.toLocaleString() + ' DNA';
-            else if (pid.indexOf('skin') !== -1) label = '🎨 Skin: ' + pid.replace('skin_', '');
-            else if (pid.indexOf('boost') !== -1) label = '🚀 Boost: ' + pid;
+            else if (pid.indexOf('skin') !== -1) label = '🎨 ' + pid.replace('skin_', '').replace(/_/g, ' ');
+            else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
             contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
         }
-        if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle contents</span>';
+        if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
-        // Resolve skin image if available
-        var skinImg = getDealSkinImage(deal.bundleId);
+        // Resolve up to 2 skin images for preview
+        var skinImgs = getDealSkinImages(deal.bundleId);
+
+        // Build the icon area — 0, 1, or 2 stacked skin previews
+        var iconHtml = '';
+        if (skinImgs.length >= 2) {
+            // Two skins stacked/overlapping
+            iconHtml += '<div style="position: relative; min-width: 56px; width: 56px; height: 56px;">';
+            iconHtml += '<img src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 2;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img src="' + skinImgs[1] + '" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
+            iconHtml += '</div>';
+        } else if (skinImgs.length === 1) {
+            // One skin centered
+            iconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid ' + t.mc + ';">';
+            iconHtml += '<img src="' + skinImgs[0] + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
+            iconHtml += '</div>';
+        } else {
+            // No skin — show default gem icon
+            iconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">💎</div>';
+        }
 
         html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
-        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">';
-        if (skinImg) {
-            html += '<img src="' + skinImg + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
-        } else {
-            html += '💎';
-        }
-        html += '</div>';
+        html += iconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
-        html += '<div>' + contentText + '</div>';
+        html += '<div style="line-height: 1.4; margin-top: 2px;">' + contentText + '</div>';
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
         html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
@@ -978,26 +984,36 @@ function populateDealsGrid() {
             var bcLabel = bcPid.replace(/_/g, ' ');
             if (bcPid.indexOf('coins') !== -1) bcLabel = '💰 ' + bcQty.toLocaleString() + ' Coins';
             else if (bcPid.indexOf('dna') !== -1) bcLabel = '🧬 ' + bcQty.toLocaleString() + ' DNA';
-            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 Skin: ' + bcPid.replace('skin_', '');
-            else if (bcPid.indexOf('boost') !== -1) bcLabel = '🚀 Boost: ' + bcPid;
+            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 ' + bcPid.replace('skin_', '').replace(/_/g, ' ');
+            else if (bcPid.indexOf('boost') !== -1) bcLabel = '🚀 ' + bcPid.replace(/_/g, ' ');
             else bcLabel = bcQty + 'x ' + bcLabel;
             bContentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + bcLabel + '</span> ';
         }
         if (!bContentText) bContentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
-        var bSkinImg = getDealSkinImage(bundle.bundleId);
+        // Resolve up to 2 skin images
+        var bSkinImgs = getDealSkinImages(bundle.bundleId);
+
+        // Build icon area — same stacked skin logic
+        var bIconHtml = '';
+        if (bSkinImgs.length >= 2) {
+            bIconHtml += '<div style="position: relative; min-width: 56px; width: 56px; height: 56px;">';
+            bIconHtml += '<img src="' + bSkinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b1 + '; z-index: 2;" onerror="this.style.display=\'none\'">';
+            bIconHtml += '<img src="' + bSkinImgs[1] + '" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
+            bIconHtml += '</div>';
+        } else if (bSkinImgs.length === 1) {
+            bIconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid ' + t.b1 + ';">';
+            bIconHtml += '<img src="' + bSkinImgs[0] + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'📦\'">';
+            bIconHtml += '</div>';
+        } else {
+            bIconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.b1 + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b1 + ';">📦</div>';
+        }
 
         html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.b1 + '66; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
-        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.b1 + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b1 + ';">';
-        if (bSkinImg) {
-            html += '<img src="' + bSkinImg + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'📦\'">';
-        } else {
-            html += '📦';
-        }
-        html += '</div>';
+        html += bIconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + bDesc + '</div>';
-        html += '<div>' + bContentText + '</div>';
+        html += '<div style="line-height: 1.4; margin-top: 2px;">' + bContentText + '</div>';
         html += '</div>';
         html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + bundle.bundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
@@ -1013,18 +1029,7 @@ window.populateDealsGrid = populateDealsGrid;
 window.refreshDealsTab = function() {
     populateDealsGrid();
     updateDealsBalance();
-    // Reset free coins button (called by ogario.v4.js case 111 on server response)
-    var btn = document.getElementById('claimFreeCoinsBtn');
-    if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Claim!';
-        btn.style.opacity = '1';
-    }
-    // Clear safety timeout if server responded before it
-    if (window._freeCoinsTimeout) {
-        clearTimeout(window._freeCoinsTimeout);
-        window._freeCoinsTimeout = null;
-    }
+    // Clear safety timeouts if server responded before they fired
     if (window._dealSoftTimeout) {
         clearTimeout(window._dealSoftTimeout);
         window._dealSoftTimeout = null;
@@ -1046,10 +1051,12 @@ window.refreshDealsTab = function() {
 /**
  * Get skin image URL for a deal bundle
  */
-function getDealSkinImage(bundleId) {
-    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+function getDealSkinImages(bundleId) {
+    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
     var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
+    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
+    var images = [];
 
     for (var bp = 0; bp < bundleProducts.length; bp++) {
         if (bundleProducts[bp].bundleId === bundleId) {
@@ -1057,13 +1064,20 @@ function getDealSkinImage(bundleId) {
             if (prodId && prodId.indexOf('skin') !== -1) {
                 for (var s = 0; s < skins.length; s++) {
                     if (skins[s].productId === prodId && skins[s].image) {
-                        return 'https://configs-web.agario.miniclippt.com/live/' + window.agarversion + skins[s].image;
+                        images.push(cdnBase + skins[s].image);
+                        if (images.length >= 2) return images; // max 2
+                        break;
                     }
                 }
             }
         }
     }
-    return null;
+    return images;
+}
+// Backwards compat wrapper
+function getDealSkinImage(bundleId) {
+    var imgs = getDealSkinImages(bundleId);
+    return imgs.length > 0 ? imgs[0] : null;
 }
 
 /**
