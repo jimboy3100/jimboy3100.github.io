@@ -1654,7 +1654,7 @@ function populateSkins() {
         var ownedSkinsObj = getOwnedSkinsMap();
 
         skinShopFiltered = skins.filter(function(s) {
-            if (s.productId === 'skin_empty') return false;
+            if (!s || !s.productId || s.productId === 'skin_empty') return false;
 
             if (currentFilter === 'owned') {
                 if (!isSkinOwned(s, ownedSkinsObj)) return false;
@@ -2100,6 +2100,7 @@ function renderSkinPage() {
     function doRender() {
         for (var i = start; i < end; i++) {
             var skin = skinShopFiltered[i];
+            if (!skin || !skin.productId) continue;
             var name = skin.productId.indexOf('skin_custom_') === 0
                 ? 'custom skin'
                 : skin.productId.replace('skin_', '').replace(/_/g, ' ');
