@@ -1252,249 +1252,15 @@
         $('#lm-tab-mystery').on('click', function() { updateTabs('mystery'); });
     };
 
-    window.showDailyDealsCarouselModal = function(initialSlide) {
-        injectStyles();
-        var t = getTheme();
-        var currentSlide = initialSlide || 0;
-
-        var slidesData = [];
-        var rawBundles = (window.OfferableBundlesConfig && window.OfferableBundlesConfig.length) ? window.OfferableBundlesConfig : 
-                         ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Wallet - Offerable Bundles"]) ||
-                          (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Wallet - Offerable Bundles"]));
-        var visualBundles = (window.VisualBundlesConfig && window.VisualBundlesConfig.length) ? window.VisualBundlesConfig :
-                            ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Bundles"]) ||
-                             (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Bundles"])) || [];
-
-        // Build O(1) visual map
-        var visualMap = {};
-        for (var v = 0; v < visualBundles.length; v++) {
-            var vb = visualBundles[v];
-            if (!vb) continue;
-            if (vb.productId) visualMap[vb.productId] = vb;
-            if (vb.bundleId) visualMap[vb.bundleId] = vb;
-            if (vb.id) visualMap[vb.id] = vb;
-        }
-
-        if (rawBundles && rawBundles.length) {
-            var now = Date.now();
-            var dealsOffers = [];
-            var collectorsOffers = [];
-            
-            for (var b = 0; b < rawBundles.length; b++) {
-                var bundle = rawBundles[b];
-                if (!bundle) continue;
-                if (bundle.availableTo) {
-                    var availTime = new Date(bundle.availableTo).getTime();
-                    if (availTime && availTime < now) continue;
-                }
-                
-                var visual = visualMap[bundle.productId] || visualMap[bundle.bundleId] || visualMap[bundle.id];
-                
-                var skinUrl = '';
-                if (bundle.skinId && window.VanillaSkinUrlMap) {
-                    skinUrl = window.VanillaSkinUrlMap[bundle.skinId] || '';
-                } else if (visual && visual.image) {
-                    skinUrl = visual.image;
-                }
-                
-                var priceStr = bundle.price ? ('$' + (bundle.price / 100).toFixed(2)) : (bundle.cost ? '$' + bundle.cost : (bundle.amount ? '$' + bundle.amount : 'Special Offer'));
-                
-                var itemObj = {
-                    tag: (bundle.isBestDeal || bundle.bestDeal) ? 'BEST DEAL!' : '',
-                    coins: bundle.coins ? Number(bundle.coins).toLocaleString() : (bundle.amount ? Number(bundle.amount).toLocaleString() : ''),
-                    oldCoins: bundle.baseCoins ? Number(bundle.baseCoins).toLocaleString() : '',
-                    multiplier: bundle.multiplier ? (bundle.multiplier + 'X') : '',
-                    bonusText: bundle.bonusText || 'FREE!',
-                    skinImg: skinUrl,
-                    skinName: (visual && visual.name) || bundle.skinId || bundle.name || 'Special Item',
-                    price: priceStr,
-                    purchaseId: bundle.productId || bundle.bundleId || ''
-                };
-                
-                if (b % 2 === 0) dealsOffers.push(itemObj);
-                else collectorsOffers.push(itemObj);
-            }
-            
-            if (dealsOffers.length > 0) {
-                slidesData.push({
-                    id: 'daily-deal',
-                    title: 'DAILY DEAL!',
-                    subtitle: 'GET IT WHILE IT LASTS!',
-                    badge: '+FREE SKIN!',
-                    timer: 'Active Server Deals',
-                    bannerGradient: 'radial-gradient(circle at center, #00b4db 0%, #0083b0 100%)',
-                    posterIcon: '🎁',
-                    offers: dealsOffers
-                });
-            }
-            if (collectorsOffers.length > 0) {
-                slidesData.push({
-                    id: 'collectors-items',
-                    title: "THE COLLECTOR'S",
-                    subtitle: 'SPECIAL ITEMS AND SKINS FOR SALE!',
-                    badge: 'RARE SKINS AND ITEMS',
-                    timer: 'Active Server Offers',
-                    bannerGradient: 'radial-gradient(circle at center, #56ab2f 0%, #a8e063 100%)',
-                    posterIcon: '🏛️',
-                    offers: collectorsOffers
-                });
-            }
-        }
-        
-        if (!slidesData.length) {
-            slidesData.push({
-                id: 'daily-deal',
-                title: 'DAILY DEAL!',
-                subtitle: 'SERVER OFFERS',
-                badge: 'OFFERS',
-                timer: 'Fetching from GameConfiguration...',
-                bannerGradient: 'radial-gradient(circle at center, #00b4db 0%, #0083b0 100%)',
-                posterIcon: '⏳',
-                offers: []
-            });
-        }
-
-        var old = document.getElementById('lm-daily-deals-carousel-modal');
-        if (old) old.remove();
-
-        var modal = document.createElement('div');
-        modal.id = 'lm-daily-deals-carousel-modal';
-        modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
-
-        var renderSlide = function(idx) {
-            var totalSlides = slidesData.length;
-            if (!totalSlides) return;
-            idx = Math.max(0, Math.min(Number(idx) || 0, totalSlides - 1));
-            var slide = slidesData[idx];
-            if (!slide) return;
-
-            var offersHtml = '';
-            if (slide.offers && slide.offers.length) {
-                slide.offers.forEach(function(offer) {
-                    var ribbonBadge = offer.tag ? `<div style="position: absolute; top: 0; left: 0; background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 10px 0 10px 0; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 2;">${offer.tag}</div>` : '';
-                    var skinPreviewHtml = offer.skinImg ? `
-                        <div style="text-align: center;">
-                            <div style="background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 2px; text-transform: uppercase;">${offer.bonusText}</div>
-                            <img src="${offer.skinImg}" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';" style="width: 46px; height: 46px; border-radius: 50%; border: 2px solid #e53935; display: block; margin: 0 auto; box-shadow: 0 2px 6px rgba(0,0,0,0.25);" />
-                        </div>
-                    ` : `
-                        <div style="text-align: center;">
-                            <div style="background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 2px; text-transform: uppercase;">${offer.bonusText}</div>
-                            <div style="font-size: 11px; font-weight: 800; color: #333;">${offer.skinName}</div>
-                        </div>
-                    `;
-
-                    offersHtml += `
-                        <div style="position: relative; background: #ffffff; border: 2px solid #e0e6ed; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 3px 10px rgba(0,0,0,0.06); overflow: hidden;">
-                            ${ribbonBadge}
-                            
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-                                    <span style="font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));">🪙</span>
-                                    ${offer.multiplier ? `<div style="position: absolute; top: -4px; right: -6px; background: #e53935; color: #fff; font-weight: 900; font-size: 11px; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${offer.multiplier}</div>` : ''}
-                                </div>
-                                <div>
-                                    ${offer.oldCoins ? `<div style="font-size: 12px; text-decoration: line-through; color: #888; font-weight: 700;">${offer.oldCoins}</div>` : ''}
-                                    <div style="font-size: 20px; font-weight: 900; color: #222; letter-spacing: -0.5px;">${offer.coins}</div>
-                                </div>
-                            </div>
-
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                ${skinPreviewHtml}
-                                <button class="btn" onclick="window.buyDealProduct('${offer.purchaseId}', '${offer.price}');" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 16px; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 3px 8px rgba(104,159,56,0.4); min-width: 90px;">
-                                    ${offer.price}
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                offersHtml = '<div style="text-align: center; color: #666; font-size: 13px; font-weight: 700; padding: 20px;">No special bundle deals available at this time.</div>';
-            }
-
-            var dotsHtml = '';
-            for (var i = 0; i < totalSlides; i++) {
-                var isActive = (i === idx);
-                dotsHtml += `<span class="carousel-dot" onclick="window.switchDailyDealSlide(${i});" style="display: inline-block; width: ${isActive ? '12px' : '9px'}; height: ${isActive ? '12px' : '9px'}; border-radius: 50%; background: ${isActive ? '#fff' : 'rgba(255,255,255,0.4)'}; margin: 0 4px; cursor: pointer; transition: all 0.2s; vertical-align: middle;"></span>`;
-            }
-
-            var prevIdx = totalSlides > 1 ? (idx - 1 + totalSlides) % totalSlides : 0;
-            var nextIdx = totalSlides > 1 ? (idx + 1) % totalSlides : 0;
-            var showArrows = totalSlides > 1 ? 'flex' : 'none';
-
-            modal.innerHTML = `
-                <div class="lm-modal-container" style="background: #ffffff; border: 3px solid #fff; width: 720px; position: relative; border-radius: 16px; box-shadow: 0 12px 48px rgba(0,0,0,0.8); overflow: visible; display: flex; flex-direction: column;">
-                    
-                    <!-- Left Carousel Arrow -->
-                    <button class="btn carousel-arrow-left" onclick="window.switchDailyDealSlide(${prevIdx});" style="position: absolute; left: -22px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #1a1a2e; font-weight: 900; font-size: 22px; border: 2px solid #00d2ff; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.5); z-index: 20; display: ${showArrows}; align-items: center; justify-content: center; outline: none;">
-                        ‹
-                    </button>
-
-                    <!-- Right Carousel Arrow -->
-                    <button class="btn carousel-arrow-right" onclick="window.switchDailyDealSlide(${nextIdx});" style="position: absolute; right: -22px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #1a1a2e; font-weight: 900; font-size: 22px; border: 2px solid #00d2ff; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.5); z-index: 20; display: ${showArrows}; align-items: center; justify-content: center; outline: none;">
-                        ›
-                    </button>
-
-                    <!-- Main Content Grid: Left Poster, Right Offers -->
-                    <div style="display: flex; flex-direction: row; height: 380px; border-radius: 13px 13px 0 0; overflow: hidden; position: relative;">
-                        <button class="lm-modal-close" onclick="document.getElementById('lm-daily-deals-carousel-modal').remove();" style="position: absolute; right: 14px; top: 10px; color: #fff; font-size: 24px; z-index: 10; cursor: pointer; background: none; border: none;">&times;</button>
-                        
-                        <!-- Left Poster Column -->
-                        <div style="flex: 0 0 42%; background: ${slide.bannerGradient}; padding: 24px 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; text-align: center; color: #fff;">
-                            <div style="position: absolute; top: 12px; right: 12px; background: #e53935; color: #fff; font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transform: rotate(4deg); border: 2px solid #fff;">
-                                ${slide.badge}
-                            </div>
-                            
-                            <div>
-                                <div style="font-size: 28px; font-weight: 900; color: #ffeb3b; text-transform: uppercase; letter-spacing: 1px; text-shadow: -2px -2px 0 #d84315, 2px -2px 0 #d84315, -2px 2px 0 #d84315, 2px 2px 0 #d84315, 0 4px 8px rgba(0,0,0,0.5); font-style: italic;">
-                                    ${slide.title}
-                                </div>
-                            </div>
-
-                            <div style="font-size: 76px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3)); margin: 10px 0;">
-                                ${slide.posterIcon}
-                            </div>
-
-                            <div>
-                                <div style="font-size: 13px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${slide.subtitle}</div>
-                                <div style="font-size: 12px; font-weight: 800; color: #ffeb3b; margin-top: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">⏱️ ${slide.timer}</div>
-                            </div>
-                        </div>
-
-                        <!-- Right Offers Column -->
-                        <div style="flex: 1; background: #f0f3f6; padding: 20px 16px; display: flex; flex-direction: column; justify-content: center;">
-                            ${offersHtml}
-                        </div>
-                    </div>
-
-                    <!-- Carousel Dots Footer -->
-                    <div style="padding: 10px 0 14px 0; text-align: center; background: #1a1a2e; border-radius: 0 0 13px 13px;">
-                        ${dotsHtml}
-                    </div>
-                </div>
-            `;
-        };
-
-        window.switchDailyDealSlide = function(slideIdx) {
-            renderSlide(slideIdx);
-        };
-
-        window.buyDealProduct = function(purchaseId, priceStr) {
-            if (typeof window.buydeals === 'function') {
-                $('#ss-select-purchases').val(purchaseId);
-                window.buydeals();
-            } else {
-                if (window.toastr) window.toastr.success('<b>[SHOP]:</b> Initiating checkout for ' + purchaseId + ' (' + priceStr + ')');
-            }
-        };
-
-        renderSlide(currentSlide);
-        document.body.appendChild(modal);
-    };
-
     window.openDailyDealsModal = function() {
-        window.showDailyDealsCarouselModal(0);
+        if (typeof window.SpecialDeals === 'function') {
+            window.SpecialDeals('deals');
+        } else if (typeof window.BeforeSpecialDeals === 'function') {
+            window.BeforeSpecialDeals();
+        }
+    };
+    window.showDailyDealsCarouselModal = function() {
+        window.openDailyDealsModal();
     };
 
     window.showShopModal = function() {
@@ -1523,8 +1289,8 @@
                 badge: '',
                 action: function() {
                     document.getElementById('lm-main-shop-modal').remove();
-                    if (typeof window.showDailyDealsCarouselModal === 'function') window.showDailyDealsCarouselModal(0);
-                    else if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
+                    if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
+                    else if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
                 }
             },
             {
@@ -2128,7 +1894,8 @@
             if (typeof window.showPremiumPotionsModal === 'function') window.showPremiumPotionsModal();
             else if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
         } else if (cat === 'coins' || cat === 'deals') {
-            if (typeof window.showDailyDealsCarouselModal === 'function') window.showDailyDealsCarouselModal(0);
+            if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
+            else if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
         } else if (cat === 'skins') {
             if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
         } else {
