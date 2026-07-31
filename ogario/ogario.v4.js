@@ -6459,10 +6459,17 @@ function thelegendmodproject() {
                         var view = application.createView(4 + 2 * value.length);
                         view.setUint8(0, 99);
                         view.setUint8(1, 0);
-                        var length = 0
-                        for (; length <= value.length + 1; length++) view.setUint16(2 + length, value.charCodeAt(length), true);
-                        view.setUint8(length, 0);
-                        legendmod.sendMessage(view)
+
+                        for (var length = 0; length < value.length; length++) {
+                            view.setUint16(
+                                2 + length * 2,
+                                value.charCodeAt(length),
+                                true
+                            );
+                        }
+
+                        view.setUint16(2 + value.length * 2, 0, true);
+                        legendmod.sendMessage(view);
                     }
                     //
 
@@ -8833,33 +8840,23 @@ function thelegendmodproject() {
         },
         /* ─── §4.10 Minimap & HUD ─── */
         calculateMapSector(t, xgh2, closeExpr = false) {
-            if (!ogario.mapOffsetFixed) {
+            var mapFixed = (typeof ogario !== 'undefined' && ogario.mapOffsetFixed) || this.mapOffsetFixed || (typeof LM !== 'undefined' && LM.mapOffsetFixed) || (typeof LM !== 'undefined' && LM.isLegendWorld);
+            var currentMapSize = (typeof LM !== 'undefined' && LM.mapSize) || this.mapSize || 14142;
+            if (!mapFixed && !currentMapSize) {
                 return "";
             }
-            /*
-            if (closeExpr){
-                if (window.legendmod.vector[window.legendmod.vnr][0] || window.legendmod.vector[window.legendmod.vnr][1]){
-                    closeExpr= closeExpr + legendmod.mapOffsetX
-                    xgh2 = xgh2 + legendmod.mapOffsetY
-                    //t = legendmod.untranslateX(t)
-                    //t = legendmod.translateX(t - i.mapOffsetX)
-                    //xgh2 = legendmod.untranslateY(xgh2)		
-                    //xgh2 = legendmod.translateY(xgh2 - i.mapOffsetY)							
-                }
-            }*/
-            //var GearType = i.mapOffsetX + i.mapOffset;
-            //var closingExpr = i.mapOffsetY + i.mapOffset;				
-            const _effOffset = (LM.isLegendWorld ? 0 : LM.mapOffset);
-            const GearType = closeExpr ? ogario.mapOffsetX + _effOffset : _effOffset;
-            const closingExpr = closeExpr ? ogario.mapOffsetY + _effOffset : _effOffset;
-            //var n = Math.floor((xgh2 + closingExpr) / (ogario.mapSize / defaultSettings.sectorsY));
-            let n = Math.floor((xgh2 + closingExpr) / (LM.mapSize / defaultSettings.sectorsY));
-            let r = Math.floor((t + GearType) / (LM.mapSize / defaultSettings.sectorsX));
-            //var r = Math.floor((t + GearType) / (ogario.mapSize / defaultSettings.sectorsX));
-            window.calculateMapSector = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n;
-            r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r;
-            String.fromCharCode(n + 65) + (r + 1);
-            return n = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n, r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
+            const _effOffset = (typeof LM !== 'undefined' && LM.isLegendWorld) ? 0 : ((typeof LM !== 'undefined' && LM.mapOffset) || this.mapOffset || 0);
+            const mapOffsetXVal = this.mapOffsetX != null ? this.mapOffsetX : ((typeof LM !== 'undefined' && LM.mapOffsetX) || 0);
+            const mapOffsetYVal = this.mapOffsetY != null ? this.mapOffsetY : ((typeof LM !== 'undefined' && LM.mapOffsetY) || 0);
+            const GearType = closeExpr ? mapOffsetXVal + _effOffset : _effOffset;
+            const closingExpr = closeExpr ? mapOffsetYVal + _effOffset : _effOffset;
+            var sectorsY = (defaultSettings && defaultSettings.sectorsY) ? defaultSettings.sectorsY : 5;
+            var sectorsX = (defaultSettings && defaultSettings.sectorsX) ? defaultSettings.sectorsX : 5;
+            let n = Math.floor((xgh2 + closingExpr) / (currentMapSize / sectorsY));
+            let r = Math.floor((t + GearType) / (currentMapSize / sectorsX));
+            n = n < 0 ? 0 : n >= sectorsY ? sectorsY - 1 : n;
+            r = r < 0 ? 0 : r >= sectorsX ? sectorsX - 1 : r;
+            return String.fromCharCode(n + 65) + (r + 1);
         },
         shortMassFormat(value) {
             return value < 1000 ? value : Math.round(value / 100) / 10 + 'k';
@@ -9717,31 +9714,6 @@ function thelegendmodproject() {
             }
         },
         /* ─── §4.15 Delta/SLG Protocol ─── */
-        readDeltaChatMessage(view) {
-            if (view.byteLength < 8) return;
-            var offset = 1;
-            var type = view.getUint8(offset++);
-            var userID = view.getUint16(offset, true); offset += 2;
-            var playerID = view.getUint16(offset, true); offset += 2;
-            var targetID = view.getUint16(offset, true); offset += 2;
-
-            function readUTF16Len() {
-                if (offset >= view.byteLength) return '';
-                var len = view.getUint8(offset++);
-                var str = '';
-                for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
-                    str += String.fromCharCode(view.getUint16(offset, true));
-                    offset += 2;
-                }
-                return str;
-            }
-
-            var nick = readUTF16Len();
-            var text = readUTF16Len();
-            if (window.LM && LM.addChatMessage) {
-                LM.addChatMessage(nick || 'DeltaPlayer', text);
-            }
-        },
         requestQuadrant(targetPlayerID) {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (ws && ws.readyState === 1 && this.playerID) {
@@ -9977,11 +9949,11 @@ function thelegendmodproject() {
         sendDeltaRoom() {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1) return;
-            var serverToken = this.serverToken || $("#server-token").val() || '';
-            var clanTag = ogarcopythelb.clanTag || '';
-            var region = this.region || $('#region').val() || '';
-            var gamemode = this.gameMode || $('#gamemode').val() || '';
-            var partyToken = this.partyToken || '';
+            var serverToken = (this.serverToken || $("#server-token").val() || '').substring(0, 255);
+            var clanTag = (ogarcopythelb.clanTag || '').substring(0, 255);
+            var region = (this.region || $('#region').val() || '').substring(0, 255);
+            var gamemode = (this.gameMode || $('#gamemode').val() || '').substring(0, 255);
+            var partyToken = (this.partyToken || '').substring(0, 255);
 
             function writeUTF16Len(str, view, offset) {
                 view.setUint8(offset++, str.length & 0xFF);
@@ -10007,8 +9979,8 @@ function thelegendmodproject() {
         sendDeltaPlayerUpdate() {
             var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
             if (!ws || ws.readyState !== 1 || !this.playerID) return;
-            var nick = ogarcopythelb.nick || '';
-            var skin = ogarcopythelb.skinURL || '';
+            var nick = (ogarcopythelb.nick || '').substring(0, 255);
+            var skin = (ogarcopythelb.skinURL || '').substring(0, 255);
             var color = parseInt((ogarcopythelb.color || '#000000').replace('#', ''), 16) || 0;
             var px = this.getPlayerX() || 0;
             var py = this.getPlayerY() || 0;
@@ -10287,11 +10259,16 @@ function thelegendmodproject() {
                 var view = application.createView(4 + 2 * encodedText.length);
                 view.setUint8(0, 99);
                 view.setUint8(1, 0);
-                var length = 0;
-                for (; length <= encodedText.length + 1; length++) {
-                    view.setUint16(2 + length, encodedText.charCodeAt(length), true);
+
+                for (var length = 0; length < encodedText.length; length++) {
+                    view.setUint16(
+                        2 + length * 2,
+                        encodedText.charCodeAt(length),
+                        true
+                    );
                 }
-                view.setUint8(length, 0);
+
+                view.setUint16(2 + encodedText.length * 2, 0, true);
                 window.legendmod.sendMessage(view);
             } catch (err) { }
         },
@@ -10553,37 +10530,80 @@ function thelegendmodproject() {
         },
         /* ─── §4.18 Chat System ─── */
         readDeltaChatMessage(t) {
-            if (!defaultmapsettings.disableChat) {
-                var offset = 1;
-                var type_num = t.getUint8(offset++);
-                var msgType = type_num === 1 ? 1 : type_num === 2 ? 102 : type_num;
-                var userID = t.getUint16(offset, true); offset += 2;
-                var playerID = t.getUint16(offset, true); offset += 2;
-                var targetID = t.getUint16(offset, true); offset += 2;
-                function readUTF16StringLength() {
-                    var len = t.getUint16(offset, true); offset += 2;
-                    var str = "";
-                    for (var i = 0; i < len; i++) {
-                        str += String.fromCharCode(t.getUint16(offset, true));
-                        offset += 2;
-                    }
-                    return str;
+            if (defaultmapsettings.disableChat) {
+                return;
+            }
+
+            if (!t || t.byteLength < 8) {
+                return;
+            }
+
+            var offset = 1;
+            var typeNum = t.getUint8(offset++);
+            var msgType = typeNum === 1 ? 1 : typeNum === 2 ? 102 : typeNum;
+            var userID = t.getUint16(offset, true);
+            offset += 2;
+            var playerID = t.getUint16(offset, true);
+            offset += 2;
+            var targetID = t.getUint16(offset, true);
+            offset += 2;
+
+            function readUTF16StringLength() {
+                if (offset >= t.byteLength) {
+                    return null;
                 }
-                var nick = readUTF16StringLength();
-                var text = readUTF16StringLength();
-                var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-                if (!(this.isChatUserMuted(playerID) || 0 !== targetID && targetID !== this.playerID && playerID !== this.playerID)) {
-                    var msg = nick + ': ' + text;
-                    var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
-                    var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
-                    if (!pattern.test(msg) && !pattern2.test(msg)) {
-                        if (legendmod.integrity || !LM.chatableServer) {
-                            this.displayChatMessage(time, msgType, playerID, msg);
-                        } else if (!legendmod.integrity && $("#clantag").val() !== "") {
-                            this.displayChatMessage(time, msgType, playerID, msg);
-                        }
-                    }
+
+                var len = t.getUint8(offset++);
+                var requiredBytes = len * 2;
+
+                if (offset + requiredBytes > t.byteLength) {
+                    return null;
                 }
+
+                var str = "";
+                for (var i = 0; i < len; i++) {
+                    str += String.fromCharCode(t.getUint16(offset, true));
+                    offset += 2;
+                }
+
+                return str;
+            }
+
+            var nick = readUTF16StringLength();
+            var text = readUTF16StringLength();
+
+            if (nick === null || text === null) {
+                console.warn("[Delta] Rejected malformed chat packet");
+                return;
+            }
+
+            var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+
+            if (
+                this.isChatUserMuted(playerID) ||
+                (
+                    targetID !== 0 &&
+                    targetID !== this.playerID &&
+                    playerID !== this.playerID
+                )
+            ) {
+                return;
+            }
+
+            var msg = nick + ': ' + text;
+            var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
+            var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+
+            if (pattern.test(msg) || pattern2.test(msg)) {
+                return;
+            }
+
+            if (
+                legendmod.integrity ||
+                !LM.chatableServer ||
+                (!legendmod.integrity && $("#clantag").val() !== "")
+            ) {
+                this.displayChatMessage(time, msgType, playerID, msg);
             }
         },
         readChatMessage(t) {
@@ -10690,10 +10710,17 @@ function thelegendmodproject() {
                 var view = application.createView(4 + 2 * prepareCommand.length);
                 view.setUint8(0, 99);
                 view.setUint8(1, 0);
-                var length = 0
-                for (; length <= prepareCommand.length + 1; length++) view.setUint16(2 + length, prepareCommand.charCodeAt(length), true);
-                view.setUint8(length, 0);
-                legendmod.sendMessage(view)
+
+                for (var length = 0; length < prepareCommand.length; length++) {
+                    view.setUint16(
+                        2 + length * 2,
+                        prepareCommand.charCodeAt(length),
+                        true
+                    );
+                }
+
+                view.setUint16(2 + prepareCommand.length * 2, 0, true);
+                legendmod.sendMessage(view);
             }
             //
         },
@@ -17686,8 +17713,11 @@ Most cells eaten   : ${mostCellsEaten}
         },
         flushCellsData() {
             this.time = Date.now(); // prevent stale timestamp on first frame after switch
-            this.mapOffsetFixed = false;
-            LM.mapOffsetFixed = false;
+            if (!LM.isLegendWorld) {
+                this.mapOffsetFixed = false;
+                LM.mapOffsetFixed = false;
+                if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = false;
+            }
             window.multiboxPlayerEnabled = null;
             /* Reset camera so the render view doesn't stay at the old server's position.
              * Without this, the camera drifts slowly (1/30 per frame) to the new view
@@ -17843,6 +17873,7 @@ Most cells eaten   : ${mostCellsEaten}
             LM.mapMidX = this.mapMidX;
             LM.mapMidY = this.mapMidY;
             LM.mapOffsetFixed = this.mapOffsetFixed;
+            if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = this.mapOffsetFixed;
             this.addSpect();
         },
         addSpect() {

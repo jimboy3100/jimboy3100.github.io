@@ -196,12 +196,6 @@ function SpecialDeals(defaultTab) {
         document.head.appendChild(styleEl);
 
         // --- Build modal HTML with tabs ---
-        $('#helloContainer').after(
-            '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
-            '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; margin: 0;">' +
-            '<div class="modal-content">' +
-
         var isDeals = (defaultTab === 'deals');
         var isUpload = (defaultTab === 'upload');
         var isSkins = (!isDeals && !isUpload);
@@ -217,6 +211,12 @@ function SpecialDeals(defaultTab) {
         var skinsPaneClass = isSkins ? 'tab-pane active' : 'tab-pane';
         var uploadPaneClass = isUpload ? 'tab-pane active' : 'tab-pane';
         var dealsPaneClass = isDeals ? 'tab-pane active' : 'tab-pane';
+
+        $('#helloContainer').after(
+            '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
+            '<div class="modal-backdrop fade in"></div>' +
+            '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; margin: 0;">' +
+            '<div class="modal-content">' +
 
         // Header
         '<div id="CloseSpecialDeals2" class="modal-header">' +
@@ -415,13 +415,19 @@ function SpecialDeals(defaultTab) {
                 return false;
             }
 
-            // 3. Actual game server connection / integrity state
+            // 3. Actual game server connection state.
+            // Function existence does not prove that a socket is connected.
             var hasGameConnection = !!(
-                (window.core && window.core.proxyMobileData) ||
-                (window.application && typeof window.application.sendProto === 'function') ||
-                window.integrityToken ||
-                (window.legendmod && window.legendmod.ws)
+                window.legendmod &&
+                window.legendmod.connectionOpened === true
             );
+
+            if (!hasGameConnection) {
+                if (window.toastr) {
+                    toastr.error('<b>[SHOP]:</b> No active Agar.io server connection. Join a server before attempting to ' + label + '.');
+                }
+                return false;
+            }
 
             return true;
         };
@@ -436,10 +442,8 @@ function SpecialDeals(defaultTab) {
             var isLoggedIn = window.checkUserLoggedIn();
             var hasUID = window.checkUserUID();
             var hasConnection = !!(
-                (window.core && window.core.proxyMobileData) ||
-                (window.application && typeof window.application.sendProto === 'function') ||
-                window.integrityToken ||
-                (window.legendmod && window.legendmod.ws)
+                window.legendmod &&
+                window.legendmod.connectionOpened === true
             );
             var allReady = isLoggedIn && hasUID && hasConnection;
 
@@ -641,10 +645,10 @@ function SpecialDeals(defaultTab) {
         }
 
         $('#legendChooseFileBtn').off('click').on('click', function(e) {
-            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
-            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
-            if (!isLoggedIn || !hasUID) {
-                toastr && toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+            if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
+                if (window.toastr) {
+                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+                }
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
@@ -657,10 +661,11 @@ function SpecialDeals(defaultTab) {
         });
 
         $('#legendUploadInputModal').off('change').on('change', function(e) {
-            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
-            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
-            if (!isLoggedIn || !hasUID) {
+            if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
                 $(this).val('');
+                if (window.toastr) {
+                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+                }
                 return;
             }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('choose image file')) {
@@ -728,10 +733,10 @@ function SpecialDeals(defaultTab) {
 
         // --- Load from URL ---
         $('#legendLoadUrlBtn').off('click').on('click', function() {
-            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
-            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
-            if (!isLoggedIn || !hasUID) {
-                toastr && toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to load skins.');
+            if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
+                if (window.toastr) {
+                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to load skins.');
+                }
                 return;
             }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('load custom skin URL')) {

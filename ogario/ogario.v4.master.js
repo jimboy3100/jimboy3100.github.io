@@ -269,6 +269,9 @@ function legendmaster(self) {
         curValidFindServer: 0,
         backoffPeriod: 500,
         intentionalDisconnect: false,
+        connectionActive: false,
+        pendingConnection: null,
+        findServerTimer: null,
         connectionGeneration: 0,
         regionNames: {},
         context: "",
@@ -350,10 +353,9 @@ function legendmaster(self) {
         getRegionCode() {
             var nextNodeLoc = window.localStorage.getItem('location');
             if (nextNodeLoc) {
-                this.setRegion(nextNodeLoc, ![]);
+                this.setRegion(nextNodeLoc, false);
                 if (!this.checkPartyHash()) {
-                    //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " getRegionCode called, reconnecting");
-                    this.reconnect();
+                    this.reconnect(false, "saved-region");
                 }
                 return;
             }
@@ -363,14 +365,23 @@ function legendmaster(self) {
                     return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", "application/octet-stream"), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error() {
-                    /*if (timeout_callback) {
-                        timeout_callback();
-                    }*/
+                    canvasLayersManager.checkRegion();
+
+                    var selectedRegion = $("#region").val();
+                    if (selectedRegion) {
+                        canvasLayersManager.setRegion(selectedRegion, false);
+
+                        if (!canvasLayersManager.checkPartyHash()) {
+                            canvasLayersManager.reconnect(false, "country-request-fallback");
+                        }
+                    } else if (window.toastr) {
+                        toastr.warning('<b>[Master]:</b> Could not determine your region. Select a region manually.');
+                    }
                 },
                 success(playlistCopy) {
                 $("#response").html(JSON.stringify(playlistCopy, null, 4));
-                if (userData != null) {
-                    localStorage.setItem("userData", JSON.stringify(userData));
+                if (playlistCopy != null) {
+                    localStorage.setItem("userData", JSON.stringify(playlistCopy));
                 }
 				//if (userData && userData.responseJSON){		
 				if (playlistCopy){			
@@ -382,6 +393,7 @@ function legendmaster(self) {
 					canvasLayersManager.setRegionCode(userData.responseJSON.country);
 				}
                 },
+                timeout: 10000,
                 dataType: "json",
                 method: "POST",
                 processData: false,
@@ -436,7 +448,6 @@ function legendmaster(self) {
             }
 
             if (left) {
-                this.intentionalDisconnect = true;
                 this.reconnect(false, "region-change");
             }
         },
@@ -525,11 +536,6 @@ function legendmaster(self) {
             this.gameMode = val;
 
             if (opt_validate) {
-                /*
-                 * The current socket is expected to close while moving to the newly
-                 * selected mode. Its onclose event must not start another reconnect.
-                 */
-                this.intentionalDisconnect = true;
                 this.reconnect(false, "mode-change");
             }
         },
@@ -546,95 +552,107 @@ function legendmaster(self) {
         },
         findServer(id, params, generation) {
             if (generation == null) {
-                generation =
-                    this.connectionGeneration;
+                generation = this.connectionGeneration;
             }
 
-            if (
-                generation !==
-                this.connectionGeneration
-            ) {
+            if (generation !== this.connectionGeneration) {
                 return;
             }
-            if (window.legendModFromWebsite) return; // Never contact Agar.io master server on private servers
-            var e = Date.now();
-            if (!(e - this.findingServer < 500)) {
-                if (self.core) {
-                    self.core.disconnect();
-                }
-                var picKey = "findServer";
-				//
-                if (null == id) {
-                    id = "";
-                }
-                if (null == params) {
-                    /** @type {string} */
-                    params = ":ffa";					
-                } else {
-                    //if (params === ":battleroyale") {
-                    //picKey = "findBattleRoyaleServer";
-                    //}
-                }
-				var source2;
-				/*if (master && master.context && master.context == "facebook" && params === ":ffa" && window.friends){
-					picKey = "findServerWithFriends";	
-					params = params;
-					source2 = window.friends;
-				}*/				
-                var options = this;
-				//console.log("id", id, "params", params);
-                var container;
-				container= this.setRequestMsg(id, params, null, source2);
-                var defaultWarningTime =
-                    ++this.curValidFindServer;
 
-                var requestGeneration =
-                    generation;
-                this.findingServer = e;
-                this.makeMasterRequest(headers.endpoint_version + "/" + picKey, container, function(response) {
-                    if (
-                        defaultWarningTime ===
-                            options.curValidFindServer &&
-                        requestGeneration ===
-                            options.connectionGeneration
-                    ) {
-                        var key = response.endpoints;
-                        if (null !== key && "0.0.0.0:0" !== key.https) {
-                            options.serverIP = key.https;
-                            if (null !== response.token) {
-                                options.partyToken = response.token;
-                            }
-                            options.backoffPeriod = 500;
-                            options.connect(
-                                options.serverIP,
-                                requestGeneration
-                            );
-                        } else {
-                            options.findServer(
-                                id,
-                                params,
-                                requestGeneration
-                            );
-                        }
+            if (window.legendModFromWebsite) {
+                return;
+            }
+
+            if (id == null) {
+                id = "";
+            }
+
+            if (params == null) {
+                params = ":ffa";
+            }
+
+            var now = Date.now();
+            var elapsed = now - this.findingServer;
+
+            if (elapsed < 500) {
+                var options = this;
+                var delay = Math.max(1, 500 - elapsed);
+
+                clearTimeout(this.findServerTimer);
+                this.findServerTimer = setTimeout(function() {
+                    if (generation === options.connectionGeneration) {
+                        options.findServer(id, params, generation);
                     }
-                }, 
-				function() {
+                }, delay);
+
+                return;
+            }
+
+            clearTimeout(this.findServerTimer);
+            this.findServerTimer = null;
+            this.findingServer = now;
+
+            var picKey = "findServer";
+            var source2;
+            var container = this.setRequestMsg(id, params, null, source2);
+            var options = this;
+            var requestNumber = ++this.curValidFindServer;
+            var requestGeneration = generation;
+
+            this.makeMasterRequest(
+                headers.endpoint_version + "/" + picKey,
+                container,
+                function(response) {
                     if (
-                        requestGeneration !==
-                        options.connectionGeneration
+                        requestNumber !== options.curValidFindServer ||
+                        requestGeneration !== options.connectionGeneration
                     ) {
                         return;
                     }
-                    options.backoffPeriod = Math.min(options.backoffPeriod * 2, 30000);
-                    setTimeout(function() {
-                        options.findServer(
-                            id,
-                            params,
-                            requestGeneration
-                        );
+
+                    var endpoint =
+                        response &&
+                        response.endpoints &&
+                        response.endpoints.https;
+
+                    if (endpoint && endpoint !== "0.0.0.0:0") {
+                        options.serverIP = endpoint;
+
+                        if (response.token != null) {
+                            options.partyToken = response.token;
+                        }
+
+                        options.backoffPeriod = 500;
+                        options.connect(options.serverIP, requestGeneration);
+                        return;
+                    }
+
+                    options.backoffPeriod = Math.min(
+                        Math.max(options.backoffPeriod, 500) * 2,
+                        30000
+                    );
+
+                    clearTimeout(options.findServerTimer);
+                    options.findServerTimer = setTimeout(function() {
+                        options.findServer(id, params, requestGeneration);
                     }, options.backoffPeriod);
-                });
-            }
+                },
+                function() {
+                    if (requestGeneration !== options.connectionGeneration) {
+                        return;
+                    }
+
+                    options.backoffPeriod = Math.min(
+                        Math.max(options.backoffPeriod, 500) * 2,
+                        30000
+                    );
+
+                    clearTimeout(options.findServerTimer);
+                    options.findServerTimer = setTimeout(function() {
+                        options.findServer(id, params, requestGeneration);
+                    }, options.backoffPeriod);
+                }
+            );
         },
         setRequestMsg(args, object, source, source2) {
             var encodeVarint = function(target, value) {
@@ -683,24 +701,29 @@ function legendmaster(self) {
             return new Uint8Array(output);
         },
         makeMasterRequest(_wid_attr, data, callback, timeout_callback, type) {
-            var header = this;
-            if (null == type) {
+            if (type == null) {
                 type = "application/octet-stream";
             }
+
             $.ajax("https://" + headers.master_url + "/" + _wid_attr, {
                 beforeSend(xhr) {
-                    //return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
-                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "text/plain, */*, q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
-
+                    xhr.setRequestHeader("Accept", "text/plain, */*;q=0.01");
+                    xhr.setRequestHeader("Content-Type", type);
+                    xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion);
+                    xhr.setRequestHeader("x-client-version", master.clientVersion);
+                    return true;
                 },
-                error() {
+                error(xhr, status, errorThrown) {
                     if (timeout_callback) {
-                        timeout_callback();
+                        timeout_callback(xhr, status, errorThrown);
                     }
                 },
                 success(playlistCopy) {
-                    callback(playlistCopy);
+                    if (callback) {
+                        callback(playlistCopy);
+                    }
                 },
+                timeout: 10000,
                 dataType: "json",
                 method: "POST",
                 data: data,
@@ -764,34 +787,74 @@ function legendmaster(self) {
         },
         connect(body, generation) {
             if (generation == null) {
-                generation =
-                    this.connectionGeneration;
+                generation = this.connectionGeneration;
             }
 
-            if (
-                generation !==
-                this.connectionGeneration
-            ) {
-                console.log(
-                    "[Master] Ignoring stale connection:",
-                    body
-                );
+            if (generation !== this.connectionGeneration) {
+                console.log("[Master] Ignoring stale connection:", body);
                 return;
             }
-            //            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Connect to:", body);
+
+            if (!body || typeof body !== "string") {
+                console.error("[Master] Invalid server endpoint:", body);
+                return;
+            }
+
+            var nextWs;
+
             if (body.indexOf("ws://") === 0 || body.indexOf("wss://") === 0) {
-                this.ws = body;
-            } else if (body.indexOf("localhost") === 0 || body.indexOf("127.0.0.1") === 0) {
-                this.ws = "ws://" + body;
+                nextWs = body;
+            } else if (
+                body.indexOf("localhost") === 0 ||
+                body.indexOf("127.0.0.1") === 0
+            ) {
+                nextWs = "ws://" + body;
             } else {
-                this.ws = "wss://" + body;
+                nextWs = "wss://" + body;
             }
+
             if (":party" === this.gameMode && this.partyToken) {
-                this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
+                nextWs += "?party_id=" + self.encodeURIComponent(this.partyToken);
             }
-            if (self.core) {
+
+            if (!self.core) {
+                this.ws = nextWs;
+                return;
+            }
+
+            var pending = {
+                ws: nextWs,
+                generation: generation
+            };
+
+            if (this.connectionActive) {
+                this.pendingConnection = pending;
                 this.intentionalDisconnect = true;
+
+                try {
+                    self.core.disconnect();
+                } catch (disconnectError) {
+                    console.error("[Master] Failed to close previous connection:", disconnectError);
+                    this.connectionActive = false;
+                    this.intentionalDisconnect = false;
+                    this.pendingConnection = null;
+                }
+
+                if (this.pendingConnection) {
+                    return;
+                }
+            }
+
+            this.ws = nextWs;
+            this.pendingConnection = null;
+            this.intentionalDisconnect = false;
+            this.connectionActive = true;
+
+            try {
                 self.core.connect(this.ws);
+            } catch (connectError) {
+                this.connectionActive = false;
+                console.error("[Master] Failed to connect:", connectError);
             }
         },
         reconnect(table, reason) {
@@ -834,68 +897,68 @@ function legendmaster(self) {
             }
         },
         onConnect() {
+            this.connectionActive = true;
+            this.intentionalDisconnect = false;
+            this.pendingConnection = null;
+
             if (this.gameMode === ":party") {
                 this.updatePartyToken();
             }
         },
         onDisconnect() {
-            /*
-             * Mode changes, region changes and explicit server replacements close the
-             * previous socket deliberately. Do not start another reconnect from the
-             * old socket's onclose callback.
-             */
-            if (this.intentionalDisconnect) {
-                console.log(
-                    "[Master] Intended disconnect ignored:",
-                    this.reconnectReason ||
-                        "connection replacement"
-                );
+            var wasIntentional = this.intentionalDisconnect;
+            var pending = this.pendingConnection;
 
-                this.intentionalDisconnect = false;
+            this.connectionActive = false;
+            this.intentionalDisconnect = false;
+            this.pendingConnection = null;
+
+            if (
+                wasIntentional &&
+                pending &&
+                pending.generation === this.connectionGeneration &&
+                self.core
+            ) {
+                this.ws = pending.ws;
+                this.connectionActive = true;
+
+                try {
+                    self.core.connect(this.ws);
+                } catch (connectError) {
+                    this.connectionActive = false;
+                    console.error("[Master] Failed to open replacement connection:", connectError);
+                }
+
                 return;
             }
 
-            console.log(
-                "[Master] Unexpected disconnect; reconnecting"
-            );
+            if (wasIntentional) {
+                console.log(
+                    "[Master] Intended disconnect ignored:",
+                    this.reconnectReason || "connection replacement"
+                );
+                return;
+            }
+
+            console.log("[Master] Unexpected disconnect; reconnecting");
 
             window._lwReconnecting = true;
 
-            var savedToken =
-                this.accessToken;
+            var savedToken = this.accessToken;
+            var savedContext = this.context;
+            var savedLoggedIn = window.loggedIn;
 
-            var savedContext =
-                this.context;
+            this.reconnect(false, "unexpected-disconnect");
 
-            var savedLoggedIn =
-                window.loggedIn;
-
-            this.reconnect(
-                false,
-                "unexpected-disconnect"
-            );
-
-            if (
-                savedToken &&
-                savedContext
-            ) {
-                this.accessToken =
-                    savedToken;
-
-                this.context =
-                    savedContext;
-
-                window.loggedIn =
-                    savedLoggedIn;
+            if (savedToken && savedContext) {
+                this.accessToken = savedToken;
+                this.context = savedContext;
+                window.loggedIn = savedLoggedIn;
             }
 
-            setTimeout(
-                function () {
-                    window._lwReconnecting =
-                        false;
-                },
-                3000
-            );
+            setTimeout(function() {
+                window._lwReconnecting = false;
+            }, 3000);
         },
         recaptchaRequested() {
             window.agarCaptcha.requestCaptcha(true);

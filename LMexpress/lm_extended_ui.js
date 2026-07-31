@@ -8,6 +8,12 @@
 (function() {
     'use strict';
 
+    if (window._lmExtendedUiInitDone) {
+        return;
+    }
+
+    window._lmExtendedUiInitDone = true;
+
     // ─── Theme Resolver Helper ───
     function getTheme() {
         if (typeof window.getShopTheme === 'function') {
@@ -1932,6 +1938,12 @@
         );
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
 
+        var token = window.legendmod ? window.legendmod.accessToken : null;
+        if (!token && !isLoggedIn) {
+            alert('Please log in with Facebook or Google to access Friends.');
+            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in to view friends.');
+            return;
+        }
         if (!isLoggedIn) {
             if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in to view friends.');
             return;
@@ -1986,15 +1998,15 @@
     };
 
     document.addEventListener('friendListUpdate', function(e) {
-        var data = e.detail;
+        var data = e && e.detail;
         var body = document.getElementById('lm-friends-body');
-        if (!body || !data) return;
+        if (!body) return;
 
         var t = getTheme();
-        var friends = data.friends || window.agarioFriends || (window.application && window.application.user && window.application.user.friends) || [];
-        var html = '';
+        var friends = (data && data.friends) || window.agarioFriends || (window.application && window.application.user && window.application.user.friends) || [];
+        var container = document.createElement('div');
 
-        if (Array.isArray(friends) && friends.length) {
+        if (Array.isArray(friends) && friends.length > 0) {
             friends.forEach(function(friend) {
                 var isOnline = friend.online || friend.isOnline;
                 var statusClass = isOnline ? 'lm-status-online' : 'lm-status-offline';
@@ -2002,27 +2014,82 @@
                 var partyToken = friend.partyToken || friend.partyCode || '';
                 var avatar = friend.avatar || friend.icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
 
-                html += `
-                    <div class="lm-friend-card">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span class="lm-status-dot ${statusClass}"></span>
-                            <img src="${avatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
-                            <span style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${name}</span>
-                        </div>
-                        <div>
-                            ${partyToken ? `<button class="btn" style="background: ${t.b1}; color: ${t.btc}; padding: 4px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer;" onclick="$('#party-token, #joinPartyToken').val('${partyToken}'); if(window.app && typeof window.app.joinParty === 'function') { window.app.joinParty(); } else { $('#join-party-btn').click(); } var m=document.getElementById('lm-friends-modal'); if(m) m.remove();">🎮 Join Party</button>` : `<span style="font-size: 12px; color: ${t.tc2};">${isOnline ? 'In Lobby' : 'Offline'}</span>`}
-                        </div>
-                    </div>
-                `;
+                var card = document.createElement('div');
+                card.className = 'lm-friend-card';
+
+                var leftBox = document.createElement('div');
+                leftBox.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+
+                var dot = document.createElement('span');
+                dot.className = 'lm-status-dot ' + statusClass;
+
+                var img = document.createElement('img');
+                img.src = avatar;
+                img.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; object-fit: cover;';
+                img.onerror = function() {
+                    this.src = 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                };
+
+                var nameSpan = document.createElement('span');
+                nameSpan.style.cssText = 'font-weight: 600; color: ' + t.tc + '; font-size: 13px;';
+                nameSpan.textContent = name;
+
+                leftBox.appendChild(dot);
+                leftBox.appendChild(img);
+                leftBox.appendChild(nameSpan);
+
+                var rightBox = document.createElement('div');
+
+                if (partyToken) {
+                    var btn = document.createElement('button');
+                    btn.className = 'btn';
+                    btn.style.cssText = 'background: ' + t.b1 + '; color: ' + t.btc + '; padding: 4px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer;';
+                    btn.textContent = '🎮 Join Party';
+                    btn.onclick = function() {
+                        $('#party-token, #joinPartyToken').val(partyToken);
+                        if (window.app && typeof window.app.joinParty === 'function') {
+                            window.app.joinParty();
+                        } else {
+                            $('#join-party-btn').click();
+                        }
+                        var m = document.getElementById('lm-friends-modal');
+                        if (m) m.remove();
+                    };
+                    rightBox.appendChild(btn);
+                } else {
+                    var statusSpan = document.createElement('span');
+                    statusSpan.style.cssText = 'font-size: 12px; color: ' + t.tc2 + ';';
+                    statusSpan.textContent = isOnline ? 'In Lobby' : 'Offline';
+                    rightBox.appendChild(statusSpan);
+                }
+
+                card.appendChild(leftBox);
+                card.appendChild(rightBox);
+                container.appendChild(card);
             });
         } else {
-            html += `<div style="text-align: center; padding: 25px; color: ${t.tc2}; font-size: 13px;">
-                <i class="fa fa-users fa-2x" style="color: ${t.b1}; margin-bottom: 8px;"></i><br>
-                No online friends connected right now.<br>Sign in with Facebook/Miniclip to see your friends list &amp; party rooms!
-            </div>`;
+            var emptyBox = document.createElement('div');
+            emptyBox.style.cssText = 'text-align: center; padding: 25px; color: ' + t.tc2 + '; font-size: 13px;';
+
+            var icon = document.createElement('i');
+            icon.className = 'fa fa-users fa-2x';
+            icon.style.cssText = 'color: ' + t.b1 + '; margin-bottom: 8px;';
+
+            var br1 = document.createElement('br');
+            var text1 = document.createTextNode('No online friends connected right now.');
+            var br2 = document.createElement('br');
+            var text2 = document.createTextNode('Sign in with Facebook/Miniclip to see your friends list & party rooms!');
+
+            emptyBox.appendChild(icon);
+            emptyBox.appendChild(br1);
+            emptyBox.appendChild(text1);
+            emptyBox.appendChild(br2);
+            emptyBox.appendChild(text2);
+            container.appendChild(emptyBox);
         }
 
-        body.innerHTML = html;
+        body.innerHTML = '';
+        body.appendChild(container);
     });
 
     // Delegated backdrop & ESC key close handlers for LM modals

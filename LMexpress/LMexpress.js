@@ -7603,22 +7603,67 @@ function ytFrame() {
 
 function BeforeSpecialDeals(tab) {
     var targetTab = tab || 'skins';
+
     if ($('#specialShopModal').length) {
-        /* Script already loaded — just show the existing modal and switch tab */
         $('#specialShopModal').modal('show');
-        if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
+
+        if (typeof window.updateShopLoginState === 'function') {
+            window.updateShopLoginState();
+        }
+
         if (typeof window.SpecialDeals === 'function') {
             window.SpecialDeals(targetTab);
         } else {
             $('.shop-tab[data-tab="' + targetTab + '"]').trigger('click');
         }
+
         return;
     }
+
     window._pendingShopTab = targetTab;
+
+    if (window._specialDealsScriptLoading) {
+        return;
+    }
+
+    var existingScript = document.getElementById('lm-special-deals-script');
+    if (existingScript) {
+        window._specialDealsScriptLoading = true;
+        return;
+    }
+
+    window._specialDealsScriptLoading = true;
+
     var SpecialDealsJS = document.createElement("script");
+    SpecialDealsJS.id = "lm-special-deals-script";
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/skinsAndDeals.js";
-    $("body").append(SpecialDealsJS);
+
+    SpecialDealsJS.onload = function() {
+        window._specialDealsScriptLoading = false;
+
+        var pendingTab = window._pendingShopTab || targetTab;
+
+        if (typeof window.SpecialDeals === 'function' && !$('#specialShopModal').length) {
+            window.SpecialDeals(pendingTab);
+        }
+    };
+
+    SpecialDealsJS.onerror = function() {
+        window._specialDealsScriptLoading = false;
+
+        if (SpecialDealsJS.parentNode) {
+            SpecialDealsJS.parentNode.removeChild(SpecialDealsJS);
+        }
+
+        if (window.toastr) {
+            toastr.error('<b>[SHOP]:</b> Failed to load the shop script.');
+        } else {
+            console.error('[SHOP] Failed to load skinsAndDeals.js');
+        }
+    };
+
+    document.body.appendChild(SpecialDealsJS);
 }
 function BeforeLegendmodShop() {
     var SpecialDealsJS = document.createElement("script");

@@ -9,7 +9,6 @@
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://agar.io/
-// @match        https://play.google.com/*
 // @downloadURL  https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @updateURL    https://jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @run-at       document-start
@@ -122,6 +121,12 @@ function Htmlscript(modwebsite) {
                 }
             }, 2000);
             document.close();
+        },
+        onerror: function(err) {
+            console.error("[LMexpress] Failed to fetch target HTML script from " + modwebsite, err);
+        },
+        ontimeout: function() {
+            console.error("[LMexpress] Request timed out while fetching target HTML script from " + modwebsite);
         }
     });
 }
@@ -131,13 +136,19 @@ function Userscript(modwebsite) {
         method: "GET",
         url: modwebsite,
         onload: function(e) {
-            new Function(['GM_info, GM_xmlhttpRequest'], e.responseText)(GM_info, GM_xmlhttpRequest);
+            try {
+                new Function(['GM_info', 'GM_xmlhttpRequest'], e.responseText)(GM_info, GM_xmlhttpRequest);
+            } catch (evalErr) {
+                console.error("[LMexpress] Error executing loaded userscript from " + modwebsite, evalErr);
+            }
+        },
+        onerror: function(err) {
+            console.error("[LMexpress] Failed to fetch userscript from " + modwebsite, err);
+        },
+        ontimeout: function() {
+            console.error("[LMexpress] Request timed out while fetching userscript from " + modwebsite);
         }
     });
-}
-
-if (location.host == "play.google.com") {
-    window.close();
 }
 
 function getParameterByName(name, url) {
