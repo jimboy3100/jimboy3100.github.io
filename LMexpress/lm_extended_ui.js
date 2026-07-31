@@ -704,6 +704,208 @@
         document.body.appendChild(modal);
     };
 
+    window.showPotionsHelpModal = function(activeTabName) {
+        injectStyles();
+        var t = getTheme();
+        var currentTab = activeTabName || 'rewards';
+
+        var old = document.getElementById('lm-potions-help-modal');
+        if (old) old.remove();
+
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-potions-help-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var buildBodyContent = function(tab) {
+            if (tab === 'howto') {
+                return `
+                    <div style="display: flex; gap: 16px; padding: 10px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                            <div style="font-weight: 800; font-size: 14px; color: ${t.mc}; margin-bottom: 12px;">🏆 Get on the leaderboard to win Mystery Potions</div>
+                            <div style="font-size: 12px; color: ${t.tc}; line-height: 1.8;">
+                                <div><b>Classic / FFA:</b> Stay in top 10 for 100 seconds</div>
+                                <div><b>Teams:</b> Survive 4 minutes</div>
+                                <div><b>Battle Royale / Rush:</b> Finish in top half</div>
+                            </div>
+                            <div style="margin-top: 14px; font-size: 11px; color: #ffd700; font-weight: 700; background: rgba(255,215,0,0.1); padding: 8px; border-radius: 6px;">
+                                💡 Rank higher to win rarer potions with better rewards!
+                            </div>
+                        </div>
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 800; font-size: 14px; color: ${t.mc}; margin-bottom: 12px;">🛍️ Buy Premium Potions</div>
+                                <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 16px;">
+                                    Premium Potions open immediately without brewing! Get them directly in the shop.
+                                </div>
+                            </div>
+                            <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove(); if(window.openShop) window.openShop('potions');" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer;">
+                                Open Shop
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (tab === 'mystery') {
+                return `
+                    <div style="display: flex; gap: 16px; padding: 10px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                            <div style="font-weight: 800; font-size: 14px; color: #00e676; margin-bottom: 8px;">🔓 Unlock Skins</div>
+                            <div style="font-size: 12px; color: ${t.tc}; line-height: 1.6;">
+                                Collect skin pieces from potions to unlock exclusive Mystery Skins!
+                            </div>
+                        </div>
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                            <div style="font-weight: 800; font-size: 14px; color: #ffd700; margin-bottom: 8px;">⭐ Upgrade Skins</div>
+                            <div style="font-size: 12px; color: ${t.tc}; line-height: 1.6;">
+                                Keep collecting skin pieces to level up your skin and make it look even cooler!
+                            </div>
+                            <div style="margin-top: 10px; font-size: 11px; color: #00d3ff; font-weight: 700;">
+                                ✨ Upgraded skins have special animations!
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div style="text-align: center; font-size: 13px; font-weight: 700; color: ${t.tc2}; margin-bottom: 14px;">
+                        Each potion has amazing rewards inside! Brew the potions to open them!
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; font-size: 11px; font-weight: 800; color: ${t.tc2}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        <div style="width: 110px;">POTIONS</div>
+                        <div style="width: 170px; text-align: center;">SKIN PIECES</div>
+                        <div style="width: 90px; text-align: center;">COINS</div>
+                        <div style="width: 90px; text-align: center;">TROPHIES</div>
+                        <div style="width: 80px; text-align: right;"></div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #4caf50; font-size: 13px;">
+                                🧪 Common
+                            </div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
+                                <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #00d3ff; vertical-align: middle; margin-right: 4px;"></span> x1
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                💰 +Coins
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                🏆 x1
+                            </div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                and more!
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #2196f3; font-size: 13px;">
+                                🧪 Rare
+                            </div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
+                                <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #2196f3; vertical-align: middle; margin-right: 4px;"></span> x3
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                💰 ++Coins
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                🏆 x2
+                            </div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                and more!
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #e91e63; font-size: 13px;">
+                                🧪 Exotic
+                            </div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">
+                                x4 <span style="font-size: 10px; color: #ff4081;">(At least x1 Special)</span>
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                💰 +++Coins
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                🏆 x3
+                            </div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                and more!
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #ffb300; font-size: 13px;">
+                                🧪 Mystical
+                            </div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">
+                                x6 <span style="font-size: 10px; color: #ffd700;">(At least x3 Special)</span>
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                💰 ++++Coins
+                            </div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                🏆 x3
+                            </div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                and more!
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 640px;">
+                <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 18px; font-weight: 900; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Help</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: rgba(0,211,255,0.15); border: 1px solid #00d3ff; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #00d3ff;">
+                            🧬 ${dnaBalance.toLocaleString()}
+                        </div>
+                        <div style="background: rgba(255,215,0,0.15); border: 1px solid #ffd700; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; color: #ffd700;">
+                            💰 ${coinsBalance.toLocaleString()}
+                        </div>
+                        <button class="lm-modal-close" onclick="document.getElementById('lm-potions-help-modal').remove();">&times;</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; padding: 12px 20px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); justify-content: center;">
+                    <button id="lm-tab-howto" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='howto'?t.b2:'transparent'}; color: ${currentTab==='howto'?t.btc:t.tc};">How to get potions</button>
+                    <button id="lm-tab-rewards" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='rewards'?t.b2:'transparent'}; color: ${currentTab==='rewards'?t.btc:t.tc};">Rewards</button>
+                    <button id="lm-tab-mystery" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; border: 2px solid ${t.b2}; background: ${currentTab==='mystery'?t.b2:'transparent'}; color: ${currentTab==='mystery'?t.btc:t.tc};">Mystery Skins</button>
+                </div>
+
+                <div id="lm-potions-help-body" class="lm-modal-body" style="padding: 16px;">
+                    ${buildBodyContent(currentTab)}
+                </div>
+
+                <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button class="btn" onclick="document.getElementById('lm-potions-help-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        var updateTabs = function(newTab) {
+            $('#lm-potions-help-body').html(buildBodyContent(newTab));
+            $('#lm-tab-howto').css({ background: newTab==='howto'?t.b2:'transparent', color: newTab==='howto'?t.btc:t.tc });
+            $('#lm-tab-rewards').css({ background: newTab==='rewards'?t.b2:'transparent', color: newTab==='rewards'?t.btc:t.tc });
+            $('#lm-tab-mystery').css({ background: newTab==='mystery'?t.b2:'transparent', color: newTab==='mystery'?t.btc:t.tc });
+        };
+
+        $('#lm-tab-howto').on('click', function() { updateTabs('howto'); });
+        $('#lm-tab-rewards').on('click', function() { updateTabs('rewards'); });
+        $('#lm-tab-mystery').on('click', function() { updateTabs('mystery'); });
+    };
+
     window.showFriendsModal = function() {
         // Authenticated & Connected check
         var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
@@ -978,6 +1180,13 @@
         if (!window.LM) window.LM = {};
         if (!window.LM.user) window.LM.user = {};
         if (!window.LM.user.potionsStatus) window.LM.user.potionsStatus = {};
+
+        var potionsContainer = $('#potions, .potions-container');
+        if (potionsContainer.length && !document.getElementById('lm-potions-help-btn')) {
+            var helpBtn = $('<button id="lm-potions-help-btn" style="position: absolute; right: 5px; bottom: 5px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: 2px solid #fff; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10; line-height: 1; text-align: center; padding: 0;" title="Potions Help">?</button>');
+            helpBtn.on('click', function(e) { e.preventDefault(); window.showPotionsHelpModal('rewards'); });
+            potionsContainer.css('position', 'relative').append(helpBtn);
+        }
 
         for (var s = 1; s <= 3; s++) {
             var pData = potions[s - 1] || null;
