@@ -1046,8 +1046,8 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var primaryUrl = "https://configs-web.agar.io/live/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
-    var fallbackUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + "GameConfiguration.json";
+    var primaryUrl = "https://agario-configurations-web.s3.amazonaws.com/live/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
+    var fallbackUrl = "https://agario-configurations-web.s3.amazonaws.com/live/" + (window.agarversion || "") + "GameConfiguration.json";
     var settled = false;
 
     function finish(configuration) {

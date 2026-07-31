@@ -22,14 +22,14 @@ else{
 	window.agarioID=localStorage.getItem("agarioID");	
 }
 */
-window.MiniclipConfigDestination = "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
-window.MiniclipDestination = "https://configs-web.agar.io/live/v15/10913/";
+window.MiniclipConfigDestination = "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json";
+window.MiniclipDestination = "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/";
 
 if (window.agarversion != null) {
     var _av = window.agarversion;
     if (!_av.endsWith('/')) _av += '/';
-    window.MiniclipConfigDestination = "https://configs-web.agar.io/live/" + _av + "GameConfiguration.json";
-    window.MiniclipDestination = "https://configs-web.agar.io/live/" + _av;
+    window.MiniclipConfigDestination = "https://agario-configurations-web.s3.amazonaws.com/live/" + _av + "GameConfiguration.json";
+    window.MiniclipDestination = "https://agario-configurations-web.s3.amazonaws.com/live/" + _av;
 }
 
 /**
@@ -728,7 +728,7 @@ function SpecialDeals(defaultTab) {
 
         $("#ss-select-agarVersionDestinations").change(function() {
 
-            $("#GameConfigurationUrl").val("https://configs-web.agar.io/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
+            $("#GameConfigurationUrl").val("https://agario-configurations-web.s3.amazonaws.com/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
             $("#GameConfigurationUrl").blur();
         });
         $("#GameConfigurationUrl").blur(function() {
@@ -829,15 +829,15 @@ function SpecialDeals(defaultTab) {
                     //textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
                 }
             }
-            //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agar.io/live/v15/2230/' + textcropped1 + '.png")');
+            //$(".xpmt-skins").css('background-image', 'url("https://agario-configurations-web.s3.amazonaws.com/live/v15/2230/' + textcropped1 + '.png")');
             setTimeout(function() {
                 /*
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
                  } 
 				 */
-                $(".xpmt-skins").css('background-image', 'url("https://configs-web.agar.io/live/' + window.agarversion + textcropped2 + '")');
-                $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agar.io/live/' + window.agarversion + textcropped1 + '")');
+                $(".xpmt-skins").css('background-image', 'url("https://agario-configurations-web.s3.amazonaws.com/live/' + window.agarversion + textcropped2 + '")');
+                $(".xpmt-skins2").css('background-image', 'url("https://agario-configurations-web.s3.amazonaws.com/live/' + window.agarversion + textcropped1 + '")');
             }, 500);
         });
 }
@@ -1317,7 +1317,7 @@ function getDealSkinImages(bundleId) {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
     var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
-    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
     var images = [];
 
     for (var bp = 0; bp < bundleProducts.length; bp++) {
@@ -1741,7 +1741,7 @@ function equipSkin(productId, imageName) {
         return;
     }
 
-    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
@@ -1803,7 +1803,7 @@ function updateEquippedSkinUI() {
 
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
-    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
 
     var bannerName = $('#activeSkinName');
     var bannerImg = $('#activeSkinImg');
@@ -1989,7 +1989,7 @@ window.getSkinPrice = getSkinPrice;
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
     var grid = document.getElementById('skinGrid');
     var currentEquippedId = localStorage.getItem('equippedSkinId');
     var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
@@ -2297,9 +2297,9 @@ function LoadGameConfiguration() {
         return;
     }
 
-    var targetUrl = window.MiniclipConfigDestination || "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
+    var targetUrl = window.MiniclipConfigDestination || "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json";
     if (targetUrl.includes('miniclippt.com')) {
-        targetUrl = targetUrl.replace('configs-web.agar.io', 'configs-web.agar.io');
+        targetUrl = targetUrl.replace('agario-configurations-web.s3.amazonaws.com', 'agario-configurations-web.s3.amazonaws.com');
     }
 
     $.ajax({
@@ -2318,7 +2318,7 @@ function LoadGameConfiguration() {
         error: function(err) {
             console.warn('[Shop] Primary config URL failed, trying fallback...', err);
             $.ajax({
-                url: 'https://configs-web.agar.io/live/v15/10913/GameConfiguration.json',
+                url: 'https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json',
                 type: 'GET',
                 success: function(info) {
                     window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;

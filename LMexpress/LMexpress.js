@@ -5843,7 +5843,7 @@ function initializeLM(modVersion) {
             if (window.FreskinsMap && window.FreskinsMap.includes($("#nick").val())) {
                 for (var player = 0; player < window.FreeSkins.length; player++) {
                     if ($("#nick").val() == window.FreeSkins[player].id) {
-                        core.registerSkin($("#nick").val(), null, "https://configs-web.agar.io/live/" + window.agarversion + window.FreeSkins[player].image, null);
+                        core.registerSkin($("#nick").val(), null, "https://agario-configurations-web.s3.amazonaws.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
                     }
                 }
             }
