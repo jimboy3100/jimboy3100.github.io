@@ -20494,8 +20494,9 @@ Most cells eaten   : ${mostCellsEaten}
                 } else {
                     var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
                     if (!this.mapOffsetFixed || pWidth >= currentWidth) {
-                        this.mapOffsetX = this.mapSize / 2;
-                        this.mapOffsetY = this.mapSize / 2;
+                        var isLW = (typeof LM !== 'undefined' && LM.isLegendWorld) || window.legendModFromWebsite;
+                        this.mapOffsetX = isLW ? 0 : this.mapSize / 2;
+                        this.mapOffsetY = isLW ? 0 : this.mapSize / 2;
                         this.mapMinX = left;
                         this.mapMinY = top;
                         this.mapMaxX = right;
