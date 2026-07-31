@@ -2371,6 +2371,18 @@ function _executeSkinPurchase(productId, purchaseId, displayName) {
     // Store pending purchase so opcode 71 handler can auto-equip
     window._pendingSkinPurchaseId = productId;
 
+    // Resolve valid purchaseId (e.g. "1_skin_pig" / "1_pig") required by opcode 70
+    var validPurchaseId = purchaseId || getSkinPurchaseId(productId);
+    if (!validPurchaseId) {
+        if (productId.startsWith('1_')) {
+            validPurchaseId = productId;
+        } else if (productId.startsWith('skin_')) {
+            validPurchaseId = '1_' + productId;
+        } else {
+            validPurchaseId = '1_skin_' + productId;
+        }
+    }
+
     // Disable the clicked button temporarily (10s cooldown)
     var btn = $('.skin-card[data-product-id="' + productId + '"] .skin-btn-buy');
     if (btn.data('buying')) return; // already in progress
@@ -2382,7 +2394,7 @@ function _executeSkinPurchase(productId, purchaseId, displayName) {
             var pi = getSkinPrice(productId);
             var label = 'Buy';
             if (pi && pi.amount > 0) {
-                var ci = pi.currency === 'dna' ? '&#x1F9EC;' : '&#x1FA99;';
+                var ci = pi.currency === 'dna' ? '🧬' : '💰';
                 label = pi.amount.toLocaleString() + ' ' + ci;
             }
             btn.html(label);
@@ -2390,15 +2402,11 @@ function _executeSkinPurchase(productId, purchaseId, displayName) {
         window._pendingSkinPurchaseId = null;
     }, 10000);
 
-    // Try protocol-based soft purchase first (DNA/coin buy — opcode 70)
-    // The official client uses referenceValue from "Shop - Skins" as the purchaseId
+    // Try protocol-based soft purchase (DNA/coin buy — opcode 70) with verified purchaseId
     if (window.application && typeof window.application.softPurchase === 'function') {
-        var pid = purchaseId || productId;
-        var sent = window.application.softPurchase(pid);
-        if (sent) {
-            console.log('[SHOP]: Sent soft purchase for ' + pid + ' (skin: ' + productId + ')');
-            return;
-        }
+        console.log('[SHOP]: Sending soft purchase for ' + validPurchaseId + ' (skin: ' + productId + ')');
+        var sent = window.application.softPurchase(validPurchaseId);
+        if (sent) return;
     }
 
     // Fallback: Payment URL (real-money purchase)
@@ -2424,18 +2432,33 @@ function _executeSkinPurchase(productId, purchaseId, displayName) {
 
 /**
  * Get the correct purchaseId for a skin from the "Shop - Skins" config.
- * The official client uses referenceValue as the purchaseId for soft purchases.
+ * The official client uses referenceValue as the purchaseId for soft purchases (e.g. 1_skin_pig).
  */
 function getSkinPurchaseId(productId) {
-    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
-    var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"];
-    if (!shopSkins) return null;
-    for (var i = 0; i < shopSkins.length; i++) {
-        if (shopSkins[i].productId === productId) {
-            return shopSkins[i].referenceValue || null;
+    if (!productId) return null;
+    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"] || [];
+        var cleanId = productId.replace(/^(shop_skin_|skin_)/, '');
+
+        for (var i = 0; i < shopSkins.length; i++) {
+            var item = shopSkins[i];
+            if (!item) continue;
+            var pId = item.productId || '';
+            var pQuantify = item.productIdToQuantify || '';
+            var refVal = item.referenceValue || '';
+
+            if (pId === productId || pQuantify === productId ||
+                pId.replace(/^(shop_skin_|skin_)/, '') === cleanId ||
+                pQuantify.replace(/^(shop_skin_|skin_)/, '') === cleanId) {
+                if (refVal) return refVal;
+            }
         }
     }
-    return null;
+
+    // Fallback heuristic matching official Agar.io naming: "1_skin_" + cleanId or "1_" + productId
+    if (productId.startsWith('1_')) return productId;
+    if (productId.startsWith('skin_')) return '1_' + productId;
+    return '1_skin_' + productId;
 }
 window.getSkinPurchaseId = getSkinPurchaseId;
 
