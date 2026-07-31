@@ -10,7 +10,7 @@
 
 **Outdated clients:** HSLO / Agartool / Cigar2
 
-**Last updated:** 2026-03-18
+**Last updated:** 2026-07-31
 
 ---
 
@@ -501,6 +501,16 @@ Offset  Type      Description
 
 **Total: 1 byte.** Toggles whether the player always respawns at random locations.
 
+### 0x26 — Fast Kill (Self-Kill)
+
+```
+Offset  Type      Description
+─────   ────      ───────────
+0       uint8     0x26 (38)
+```
+
+**Total: 1 byte.** Kills the player's own cells and transfers them to a ghost player, allowing immediate respawn. Has a 60-second cooldown per connection. The server responds with a chat message if the cooldown is active.
+
 ### 0x2D — TAB Press (Multibox Toggle)
 
 ```
@@ -944,6 +954,8 @@ uint8     Flags
     string    Party code (UTF-8, null-terminated)
 ```
 
+> **⚠️ CRITICAL IMPLEMENTATION NOTE:** The server **always** sets flags 0x40 and 0x80 for protocol 6–10 cell data. Flag 0x80 (extended flags) is set whenever `cell.type` is defined (which is always). Flag 0x40 (hasPlayerID) is set whenever the cell has an owner (all player cells, ejected cells, etc.). A client that does not handle these flags will misparse every cell entry and crash with a buffer overread. These are **not optional** — they are mandatory extensions.
+
 #### Protocol 11+ (writeCellData11):
 
 ```
@@ -969,7 +981,9 @@ uint8     Flags
 | 4 | 0x10 | isAgitated | isAgitated | isAgitated |
 | 5 | 0x20 | isEjected | isEjected | isEjected |
 | 6 | 0x40 | — | hasPlayerID | isEjectedByOther (eject owner ≠ self) |
-| 7 | 0x80 | — | hasExtendedFlags | isFood (type === 1) sub-type byte follows |
+| 7 | 0x80 | — | hasExtendedFlags (always set) | isFood (type === 1) sub-type byte follows |
+
+> **Note:** The UUID flag `0x16` documented in some older forks has been **removed** from the server implementation. It was a multi-bit collision (`0x02 | 0x04 | 0x10`) that incorrectly set the color, skin, and agitated flags simultaneously.
 
 ### Remove Section
 
@@ -1088,6 +1102,7 @@ The server supports protocols 4–24, grouped into functional tiers:
 | 35 | 0x23 | Booster: Speed Instant | 1 | ✦ NEW |
 | 36 | 0x24 | Booster: Virus | 1 | ✦ NEW |
 | 37 | 0x25 | Booster: Shield | 1 | ✦ NEW |
+| 38 | 0x26 | Fast Kill (Self-Kill) | 1 | ✦ NEW |
 | 40 | 0x28 | Random Spawn | 1 | ✦ NEW |
 | 41 | 0x29 | Toggle Random Respawn | 1 | ✦ NEW |
 | 45 | 0x2D | TAB (Multibox Toggle) | 1 | ✦ NEW |
