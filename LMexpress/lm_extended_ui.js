@@ -293,6 +293,21 @@
         window.switchLeagueTab(window.currentLeagueTab || 1);
     };
 
+    // Official Agar.io Level-to-League Tier calculator (from agario.js lines 3074 & 19794)
+    window.getLeagueTierFromLevel = function(level) {
+        level = parseInt(level, 10) || 1;
+        if (level >= 90) return { id: 'kraken', name: 'Kraken League', color: '#029070', gradient: 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)' };
+        if (level >= 80) return { id: 'mammoth', name: 'Mammoth League', color: '#7b6750', gradient: 'linear-gradient(135deg, #7b6750 0%, #4e3629 100%)' };
+        if (level >= 70) return { id: 'crocodile', name: 'Crocodile League', color: '#1b8b05', gradient: 'linear-gradient(135deg, #1b8b05 0%, #0d4702 100%)' };
+        if (level >= 60) return { id: 'panther', name: 'Panther League', color: '#4d4643', gradient: 'linear-gradient(135deg, #4d4643 0%, #212121 100%)' };
+        if (level >= 50) return { id: 'bear', name: 'Bear League', color: '#8b4a1f', gradient: 'linear-gradient(135deg, #8b4a1f 0%, #4e270d 100%)' };
+        if (level >= 40) return { id: 'hunter', name: 'Hunter League', color: '#f62000', gradient: 'linear-gradient(135deg, #f62000 0%, #b71c1c 100%)' };
+        if (level >= 30) return { id: 'fox', name: 'Fox League', color: '#f36101', gradient: 'linear-gradient(135deg, #f36101 0%, #e65100 100%)' };
+        if (level >= 20) return { id: 'bat', name: 'Bat League', color: '#a822c7', gradient: 'linear-gradient(135deg, #a822c7 0%, #4a148c 100%)' };
+        if (level >= 10) return { id: 'wasp', name: 'Wasp League', color: '#ca8f01', gradient: 'linear-gradient(135deg, #ca8f01 0%, #f57f17 100%)' };
+        return { id: 'fly', name: 'Fly League', color: '#8f7e3a', gradient: 'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)' };
+    };
+
     // Listen to leagues update event and render real player data matching Agar.io UI
     document.addEventListener('leaguesInfoUpdate', function(e) {
         var data = e.detail || {};
@@ -301,12 +316,14 @@
 
         var tabType = window.currentLeagueTab || data.leagueRequestType || 1;
         var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
-        
+        var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
+        var myTier = window.getLeagueTierFromLevel(userLevel);
+
         // Header Card Data configuration
         var headerConfig = {
             1: {
-                title: data.leagueName || 'Kraken League',
-                gradient: 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
+                title: data.leagueName || myTier.name,
+                gradient: myTier.gradient,
                 icon: '⭐',
                 prizes: '1. 140 &nbsp; 2. 120 &nbsp; 3. 110'
             },
