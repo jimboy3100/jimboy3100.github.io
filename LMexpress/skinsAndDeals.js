@@ -1670,6 +1670,14 @@ function populateSkins() {
             return true;
         });
 
+        // Owned skins go first in the grid list!
+        skinShopFiltered.sort(function(a, b) {
+            var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
+            var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
+            if (bOwned !== aOwned) return bOwned - aOwned;
+            return 0;
+        });
+
         skinShopPage = 0;
         $('#skinGrid').empty();
 
@@ -2128,23 +2136,22 @@ function renderSkinPage() {
             card.setAttribute('data-gameplay-id', skin.gameplayId);
             card.setAttribute('data-image', imgFile);
 
-            var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
-            var ownedBadgeHtml = (isOwned && !isEquipped) ? '<div class="owned-badge">&#x2B50; Owned</div>' : '';
-
-            // Determine price info for display
+            // Top-left badge: show "Equipped", "Owned", or the real price tag (Coins/DNA/Free)
             var priceInfo = getSkinPrice(skin.productId);
             var skinType = skin.type || '';
-            var priceTagHtml = '';
+            var topBadgeHtml = '';
 
-            if (isOwned) {
-                priceTagHtml = ''; // badge at top-left already shows "Owned"
+            if (isEquipped) {
+                topBadgeHtml = '<div class="equipped-badge">&#x2714; Equipped</div>';
+            } else if (isOwned) {
+                topBadgeHtml = '<div class="owned-badge">&#x2B50; Owned</div>';
             } else if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
-                priceTagHtml = '<div class="skin-price-tag" style="color: #4caf50;">Free</div>';
+                topBadgeHtml = '<div class="owned-badge" style="background: rgba(46,125,50,0.9); color: #fff;">Free</div>';
             } else if (priceInfo && priceInfo.amount > 0) {
                 if (priceInfo.currency === 'dna') {
-                    priceTagHtml = '<div class="skin-price-tag"><span style="color:#aa00ff;">&#x1F9EC; ' + priceInfo.amount.toLocaleString() + '</span></div>';
+                    topBadgeHtml = '<div class="owned-badge" style="background: rgba(150,0,220,0.9); color: #fff;">&#x1F9EC; ' + priceInfo.amount.toLocaleString() + '</div>';
                 } else {
-                    priceTagHtml = '<div class="skin-price-tag"><span style="color:#ffc107;">&#x1FA99; ' + priceInfo.amount.toLocaleString() + '</span></div>';
+                    topBadgeHtml = '<div class="owned-badge" style="background: rgba(210,140,0,0.9); color: #fff;">&#x1FA99; ' + priceInfo.amount.toLocaleString() + '</div>';
                 }
             }
 
@@ -2172,13 +2179,12 @@ function renderSkinPage() {
                 ? '<img src="' + imgUrl + '" alt="' + displayName + '" loading="lazy" onerror="this.style.opacity=\'0\';">'
                 : '';
 
-            card.innerHTML = badgeHtml + ownedBadgeHtml +
+            card.innerHTML = topBadgeHtml +
                 '<div class="skin-cell-wrap">' +
                     '<div class="skin-color" style="background:' + cssColor + '"></div>' +
                     imgHtml +
                 '</div>' +
                 '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
-                priceTagHtml +
                 '<div class="skin-card-actions">' +
                 actionBtnHtml +
                 '</div>';
