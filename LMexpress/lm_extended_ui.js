@@ -2389,6 +2389,9 @@
 
         $(document).off('click', '#lm-leagues-btn').on('click', '#lm-leagues-btn', function(e) {
             e.preventDefault();
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('access Weekly Leagues')) {
+                return false;
+            }
             if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
         });
 
@@ -2399,6 +2402,9 @@
 
         $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
             e.preventDefault();
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('access Special Deals')) {
+                return false;
+            }
             if (typeof window.openDailyDealsModal === 'function') {
                 window.openDailyDealsModal();
             } else if (typeof window.BeforeSpecialDeals === 'function') {

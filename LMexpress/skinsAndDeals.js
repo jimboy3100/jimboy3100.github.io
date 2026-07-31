@@ -537,14 +537,16 @@ function SpecialDeals(defaultTab) {
                 $('#ss-select-purchases, #BuyDealCurrency, #ss-select-agarVersionDestinations').prop('disabled', false).css('opacity', 1);
             }
 
-            // Main menu Agar.io Skins buttons state (#SpecialDealsBtn, #SpecialDealsQuickBtn, etc.)
-            var skinBtnEnabled = isLoggedIn && hasUID;
-            var skinBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn');
-            skinBtns.prop('disabled', !skinBtnEnabled);
-            if (!skinBtnEnabled) {
-                skinBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game first to access Agar.io Skins');
+            // Main menu buttons state (Skins, Daily Deals, Leagues)
+            var menuBtnsEnabled = isLoggedIn && hasUID;
+            var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn');
+            menuBtns.prop('disabled', !menuBtnsEnabled);
+            if (!menuBtnsEnabled) {
+                menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
+                        .attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals & Leagues');
             } else {
-                skinBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+                menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
+                        .removeAttr('title');
             }
         }
 
