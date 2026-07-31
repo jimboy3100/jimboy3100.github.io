@@ -589,7 +589,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-prizes-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var rowsHtml = '';
         prizeRows.forEach(function(row) {
@@ -638,7 +639,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-lastweek-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var title = 'Weekly Results';
         var gradient = myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)';
@@ -775,7 +777,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-leaguesinfo-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100001';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML = `
             <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 480px;">
