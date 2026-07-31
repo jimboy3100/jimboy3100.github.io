@@ -2119,14 +2119,17 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
                 🔥 Daily Deal
+                <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
-            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.showLeaguesModal();">
+            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;" onclick="window.showLeaguesModal();">
                 <i class="fa fa-trophy"></i> Leagues
+                <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
-            <button id="lm-friends-btn" class="btn btn-info btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.showFriendsModal();">
+            <button id="lm-friends-btn" class="btn btn-info btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;" onclick="window.showFriendsModal();">
                 <i class="fa fa-users"></i> Friends
+                <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
         `;
 
