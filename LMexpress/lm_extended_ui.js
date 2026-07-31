@@ -2108,6 +2108,10 @@
         } else {
             targetContainer.prepend(btnGroup);
         }
+
+        if (typeof window.syncProfileTabUI === 'function') {
+            window.syncProfileTabUI();
+        }
     }
 
     // ─── Component 5: 👤 Player Profile Stats Modal ───
@@ -2183,16 +2187,16 @@
             $('#UserProfileUUID1').val(uid);
         }
 
-        // Disable Agar.io Skins buttons if not logged in or missing UID
-        var isLoggedIn = !!(appUser.authenticated || window.loggedIn || appUser.socialId || appUser.id);
+        // Disable Skins, Deals, Leagues, Buy & Use Boost buttons if not logged in or missing UID
+        var isLoggedIn = !!(appUser.authenticated || window.loggedIn || appUser.socialId || appUser.id || window.agarioProfileName);
         var hasUID = !!(uid || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID"));
-        var skinBtnEnabled = isLoggedIn && hasUID;
-        var skinBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn');
-        skinBtns.prop('disabled', !skinBtnEnabled);
-        if (!skinBtnEnabled) {
-            skinBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game first to access Agar.io Skins');
+        var menuBtnEnabled = isLoggedIn && hasUID;
+        var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
+        menuBtns.prop('disabled', !menuBtnEnabled);
+        if (!menuBtnEnabled) {
+            menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals, Boosts & Leagues');
         } else {
-            skinBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+            menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
         }
 
         // 3. XP Progress Bar & Level
