@@ -1264,7 +1264,7 @@
         if (typeof window.SpecialDeals === 'function') {
             window.SpecialDeals('deals');
         } else if (typeof window.BeforeSpecialDeals === 'function') {
-            window.BeforeSpecialDeals();
+            window.BeforeSpecialDeals('deals');
         }
     };
     window.showDailyDealsCarouselModal = function() {
@@ -2473,7 +2473,7 @@
             if (typeof window.openDailyDealsModal === 'function') {
                 window.openDailyDealsModal();
             } else if (typeof window.BeforeSpecialDeals === 'function') {
-                window.BeforeSpecialDeals();
+                window.BeforeSpecialDeals('deals');
             } else if (typeof window.SpecialDeals === 'function') {
                 window.SpecialDeals('deals');
             }

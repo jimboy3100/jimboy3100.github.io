@@ -62,12 +62,15 @@ function getShopTheme() {
         btc: ds.menuBtnTextColor|| '#ffffff'
     };
 }
-window.getShopTheme = getShopTheme;
-
-SpecialDeals();
+SpecialDeals(window._pendingShopTab || 'skins');
 AgarVersionDestinations();
 
 function SpecialDeals(defaultTab) {
+    if (!defaultTab && window._pendingShopTab) {
+        defaultTab = window._pendingShopTab;
+    }
+    window._pendingShopTab = null;
+    defaultTab = defaultTab || 'skins';
 
     // Clear any leaked interval from a previous SpecialDeals() run
     if (window._shopLoginCheckInterval) {
@@ -199,22 +202,38 @@ function SpecialDeals(defaultTab) {
             '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; margin: 0;">' +
             '<div class="modal-content">' +
 
-            // Header
-            '<div id="CloseSpecialDeals2" class="modal-header">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
-            '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
-            '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
-            '</div>' +
+        var isDeals = (defaultTab === 'deals');
+        var isUpload = (defaultTab === 'upload');
+        var isSkins = (!isDeals && !isUpload);
 
-            // Tab bar (Skins active by default)
-            '<div class="shop-tabs">' +
-            '<div class="shop-tab active" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
-            '<div class="shop-tab" data-tab="upload"><i class="fa fa-upload"></i> Custom Skin Uploader</div>' +
-            '<div class="shop-tab" data-tab="deals"><i class="fa fa-briefcase"></i> Special Deals</div>' +
-            '</div>' +
+        var initialTabTitle = isDeals
+            ? '<i class="fa fa-briefcase"></i> Special & Daily Deals'
+            : (isUpload ? '<i class="fa fa-upload"></i> Custom Skin Uploader' : '<i class="fa fa-paint-brush"></i> Agar.io Skins');
 
-            // === 1. Skins tab (Default active) ===
-            '<div class="tab-pane active" id="tab-skins">' +
+        var skinsTabClass = isSkins ? 'shop-tab active' : 'shop-tab';
+        var uploadTabClass = isUpload ? 'shop-tab active' : 'shop-tab';
+        var dealsTabClass = isDeals ? 'shop-tab active' : 'shop-tab';
+
+        var skinsPaneClass = isSkins ? 'tab-pane active' : 'tab-pane';
+        var uploadPaneClass = isUpload ? 'tab-pane active' : 'tab-pane';
+        var dealsPaneClass = isDeals ? 'tab-pane active' : 'tab-pane';
+
+        // Header
+        '<div id="CloseSpecialDeals2" class="modal-header">' +
+        '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+        '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';">' + initialTabTitle + '</h4>' +
+        '</div>' +
+
+        // Tab bar
+        '<div class="shop-tabs">' +
+        '<div class="' + skinsTabClass + '" data-tab="skins"><i class="fa fa-paint-brush"></i> Agar.io Skins</div>' +
+        '<div class="' + uploadTabClass + '" data-tab="upload"><i class="fa fa-upload"></i> Custom Skin Uploader</div>' +
+        '<div class="' + dealsTabClass + '" data-tab="deals"><i class="fa fa-briefcase"></i> Special Deals</div>' +
+        '</div>' +
+
+        // === 1. Skins tab ===
+        '<div class="' + skinsPaneClass + '" id="tab-skins">' +
             '<div class="modal-body">' +
 
             // Active Skin Banner
@@ -239,7 +258,7 @@ function SpecialDeals(defaultTab) {
             '</div>' +
 
             // === 2. Custom Skin Uploader tab ===
-            '<div class="tab-pane" id="tab-upload">' +
+            '<div class="' + uploadPaneClass + '" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
             '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">Upload Custom Skin (90 DNA)</h5>' +
             '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
@@ -270,7 +289,7 @@ function SpecialDeals(defaultTab) {
             '</div>' +
 
             // === 3. Deals tab ===
-            '<div class="tab-pane" id="tab-deals">' +
+            '<div class="' + dealsPaneClass + '" id="tab-deals">' +
             '<div class="modal-body">' +
 
             // Balance display
@@ -786,6 +805,15 @@ function SpecialDeals(defaultTab) {
             $('#specialShopModal .tab-pane').removeClass('active');
             $('#specialShopModal #tab-' + tab).addClass('active');
 
+            var headerTitle = $('#specialShopModal .modal-title');
+            if (tab === 'deals') {
+                headerTitle.html('<i class="fa fa-briefcase"></i> Special & Daily Deals');
+            } else if (tab === 'upload') {
+                headerTitle.html('<i class="fa fa-upload"></i> Custom Skin Uploader');
+            } else {
+                headerTitle.html('<i class="fa fa-paint-brush"></i> Agar.io Skins');
+            }
+
             if (tab === 'skins') {
                 if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
                     LoadGameConfiguration();
@@ -809,7 +837,7 @@ function SpecialDeals(defaultTab) {
         });
 
         if (defaultTab) {
-            $('.shop-tab[data-tab="' + defaultTab + '"]').click();
+            $('#specialShopModal .shop-tab[data-tab="' + defaultTab + '"]').trigger('click');
         }
 
         $("#ss-select-agarVersionDestinations").change(function() {

@@ -6398,13 +6398,20 @@ function ytFrame() {
 }
 
 
-function BeforeSpecialDeals() {
+function BeforeSpecialDeals(tab) {
+    var targetTab = tab || 'skins';
     if ($('#specialShopModal').length) {
-        /* Script already loaded — just show the existing modal */
+        /* Script already loaded — just show the existing modal and switch tab */
         $('#specialShopModal').modal('show');
         if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
+        if (typeof window.SpecialDeals === 'function') {
+            window.SpecialDeals(targetTab);
+        } else {
+            $('.shop-tab[data-tab="' + targetTab + '"]').trigger('click');
+        }
         return;
     }
+    window._pendingShopTab = targetTab;
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/skinsAndDeals.js";
