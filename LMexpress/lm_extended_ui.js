@@ -203,10 +203,10 @@
                 font-size: 12px;
                 opacity: 0.7;
                 text-transform: uppercase;
-            /* XP Bar Alignment on Profile Panel */
-            #profile .agario-exp-bar,
-            .agario-profile-panel .agario-exp-bar,
-            .clearfix .agario-exp-bar {
+                letter-spacing: 0.5px;
+            }
+            /* XP Bar Alignment on Profile Panel ONLY */
+            #profile .agario-profile-panel .agario-exp-bar {
                 margin-left: 0 !important;
                 transform: none !important;
             }
