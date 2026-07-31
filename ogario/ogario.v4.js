@@ -4114,7 +4114,7 @@ var defaultmapsettings = {
     jellyPhisycs: false,
     virusSound: false,
     onlineStatus: true,
-    potionsDrinker: true,
+    potionsDrinker: false,
     //massBooster: false,
     quickResp: true,
     autoResp: false,
