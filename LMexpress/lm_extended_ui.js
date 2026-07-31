@@ -860,7 +860,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-friends-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML =
             '<div class="lm-modal-container" style="background: ' + t.pc + '; border-color: ' + t.b2 + '; width: 420px;">' +
@@ -1088,7 +1089,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-potions-help-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var buildBodyContent = function(tab) {
             if (tab === 'howto') {
@@ -1780,7 +1782,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-premium-potions-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var potionsData = [
             {
@@ -1913,7 +1916,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-xp-boost-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         window.useBoostItem = function(boostId, count) {
             if (count <= 0) {
@@ -2056,7 +2060,8 @@
         var modal = document.createElement('div');
         modal.id = 'lm-mass-boost-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100000';
+        modal.style.zIndex = '100010';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML = `
             <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 680px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
