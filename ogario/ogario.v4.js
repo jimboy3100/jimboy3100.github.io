@@ -7949,7 +7949,7 @@ function thelegendmodproject() {
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
-                        core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image + "?", null);
+                        core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3000.github.io/vanillaskins/" + window.FreeSkins[player].image, null);
                     }
                 }
             } else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
@@ -8193,7 +8193,8 @@ function thelegendmodproject() {
                 }
 
                 var isCorsBlocked = url.includes('imgur.com') ||
-                    url.includes('legendmod.ml');
+                    url.includes('legendmod.ml') ||
+                    url.includes('agario.miniclippt.com');
 
                 var fallbackToImageTag = function () {
                     if (isResolved || (img && img[url])) { onDone(); return; }
@@ -8282,7 +8283,7 @@ function thelegendmodproject() {
                             app.loadSkin(img, fallbackUrl, animated, isPriority);
                         }
                         else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
-                            app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/v15/10912/' + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://configs-web.agar.io/live/v15/10912/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
@@ -14782,7 +14783,7 @@ function thelegendmodproject() {
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
-                                window.UserVanillaSkin = "https://configs.agario.miniclippt.com/live/custom_skins/" + temp.substring(1) + '.png?';
+                                window.UserVanillaSkin = "https://configs-web.agar.io/live/custom_skins/" + temp.substring(1) + '.png?';
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
@@ -15664,14 +15665,14 @@ function thelegendmodproject() {
                         /* Rebuild VanillaSkinUrlMap with correct CDN version */
                         if (window.EquippableSkins) {
                             window.VanillaSkinUrlMap = {};
-                            var cdnBase = "https://configs-web.agario.miniclippt.com/live/" + freshVersion;
+                            var cdnBase = "https://jimboy3000.github.io/vanillaskins/";
                             for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
                                 var skn = window.EquippableSkins[sk];
                                 var skUrl = null;
                                 if (skn.image && skn.image !== "uses_spine") {
-                                    skUrl = cdnBase + skn.image + "?";
+                                    skUrl = cdnBase + skn.image;
                                 } else if (skn.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skn.productId]) {
-                                    skUrl = cdnBase + window.SpineSkinMap[skn.productId] + ".png?";
+                                    skUrl = cdnBase + window.SpineSkinMap[skn.productId] + ".png";
                                 }
                                 if (skUrl) {
                                     var skPid = skn.productId;
@@ -16739,14 +16740,14 @@ function thelegendmodproject() {
 
                 if (link.includes && link.includes("custom_")) {
                     type = "custom";
-                    return ["https://configs.agario.miniclippt.com/live/custom_skins/" + link + ".png", type];
+                    return ["https://configs-web.agar.io/live/custom_skins/" + link + ".png", type];
                 } else if (link.includes && link.includes("_level_")) {
                     type = "potion";
                     var link1 = link.replace('skin_', '')
                     link1 = link1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
                     link1 = link1.charAt(0).toUpperCase() + link1.slice(1);
                     link1 = makeUpperCaseAfterUnderline(link1);
-                    return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + link1 + ".png", type];
+                    return ["https://jimboy3000.github.io/vanillaskins/" + link1 + ".png", type];
                 } else if (window.VanillaSkinUrlMap) {
                     var mapKey = link.replace('skin_', '%');
                     var mapUrl = window.VanillaSkinUrlMap[mapKey]
@@ -17353,7 +17354,7 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var p = 0; p < window.FreeSkins.length; p++) {
                         if (LowerCase(y) === window.FreeSkins[p].id) {
-                            skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + window.FreeSkins[p].image + "?";
+                            skinUrl = "https://jimboy3000.github.io/vanillaskins/" + window.FreeSkins[p].image;
                             break;
                         }
                     }
@@ -17362,13 +17363,13 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
                     var digits = g.replace(/[^0-9]/g, '');
                     if (digits) {
-                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                        skinUrl = "https://configs-web.agar.io/live/custom_skins/skin_custom_" + digits + ".png?";
                     } else {
                         var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
                         if (!g1.startsWith('skin_custom')) {
                             g1 = 'skin_custom_' + g1.replace(/^_+/, '');
                         }
-                        skinUrl = "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png?";
+                        skinUrl = "https://configs-web.agar.io/live/custom_skins/" + g1 + ".png?";
                     }
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */
@@ -17378,7 +17379,7 @@ Most cells eaten   : ${mostCellsEaten}
                     g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
                     g1 = makeUpperCaseAfterUnderline(g1);
                     isAnimated = true;
-                    skinUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + g1 + ".png?";
+                    skinUrl = "https://jimboy3000.github.io/vanillaskins/" + g1 + ".png";
                 }
                 /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
                 else if (g && typeof g === 'string' && g !== '%empty') {
