@@ -238,7 +238,10 @@ function SpecialDeals(defaultTab) {
             '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
             '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">' +
-            '<input id="legendSkinColorModal" type="color" value="#FFFF00" style="width: 30%; height: 34px; padding: 2px; border: 1px solid ' + pc2 + '; background: ' + pc + '; border-radius: 4px; cursor: pointer;">' +
+            '<div class="input-group legendSkinColor-picker" style="width: 30%;">' +
+            '<input id="legendSkinColorModal" type="hidden" value="#FFFF00">' +
+            '<span class="input-group-addon" style="cursor:pointer; background: ' + pc + '; border: 1px solid ' + pc2 + '; border-radius: 4px;"><i style="background-color: #FFFF00;"></i></span>' +
+            '</div>' +
             '</div>' +
             '<div style="text-align: center; margin-bottom: 12px;">' +
             '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid ' + mc + '; background-color: #000; box-shadow: 0 0 12px ' + mc + '4d;"></canvas>' +
@@ -307,6 +310,13 @@ function SpecialDeals(defaultTab) {
         );
 
         $("#agario_uid_input").val(window.agarioEncodedUID);
+
+        // Initialize Bootstrap Colorpicker for skin color (same library as bordersColor picker)
+        $('.legendSkinColor-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function(e) {
+            $('#legendSkinColorModal').val(e.color.toHex());
+            $('#legendCanvasModal').css('border-color', e.color.toHex());
+        });
+
         LoadGameConfiguration();
 
         // Make modal draggable. The modal uses transform: translate(-50%,-50%) for centering.
