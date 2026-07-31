@@ -10,7 +10,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.498;
+window.OgVer = 3.499;
 console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */

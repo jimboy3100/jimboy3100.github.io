@@ -641,6 +641,14 @@ function SpecialDeals(defaultTab) {
         }
 
         $('#legendChooseFileBtn').off('click').on('click', function(e) {
+            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
+            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
+            if (!isLoggedIn || !hasUID) {
+                toastr && toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('choose image file')) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -649,6 +657,12 @@ function SpecialDeals(defaultTab) {
         });
 
         $('#legendUploadInputModal').off('change').on('change', function(e) {
+            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
+            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
+            if (!isLoggedIn || !hasUID) {
+                $(this).val('');
+                return;
+            }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('choose image file')) {
                 $(this).val('');
                 return;
@@ -714,6 +728,12 @@ function SpecialDeals(defaultTab) {
 
         // --- Load from URL ---
         $('#legendLoadUrlBtn').off('click').on('click', function() {
+            var isLoggedIn = (window.application && window.application.user && window.application.user.loggedIn) || (window.core && window.core.player && window.core.player.loggedIn) || false;
+            var hasUID = (window.application && window.application.user && window.application.user.uid) || (window.core && window.core.player && window.core.player.uid) || null;
+            if (!isLoggedIn || !hasUID) {
+                toastr && toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to load skins.');
+                return;
+            }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('load custom skin URL')) {
                 return;
             }

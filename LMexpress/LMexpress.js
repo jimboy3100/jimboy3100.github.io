@@ -520,16 +520,98 @@ function enableshortcuts() {
 
 }
 
-/* Helper: call back with server token, immediately if already set.
- * Uses namespaced event to prevent handler accumulation from repeated calls. */
-function whenServerTokenReady(callback) {
-    var token = $('#server-token').val();
-    if (token) { callback(token); return; }
-    $(document)
-        .off('lm:serverTokenReady.lmState')
-        .one('lm:serverTokenReady.lmState', function(_, t) {
-            callback(t || $('#server-token').val());
-        });
+/* Wait for a valid server token without cancelling unrelated listeners.
+ * Returns a cancellation function for this registration only. */
+var serverTokenWaitId = 0;
+
+function whenServerTokenReady(callback, options) {
+    if (typeof callback !== "function") {
+        return function () {};
+    }
+
+    options = options || {};
+
+    var expectedPreviousToken =
+        options.previousToken == null
+            ? null
+            : String(options.previousToken).trim();
+
+    var allowCurrentToken =
+        options.allowCurrentToken !== false;
+
+    var currentValue =
+        String($("#server-token").val() || "").trim();
+
+    /*
+     * Use the current token only when the caller explicitly permits it and it
+     * is not the token from the connection being replaced.
+     */
+    if (
+        allowCurrentToken &&
+        currentValue &&
+        (
+            expectedPreviousToken === null ||
+            currentValue !== expectedPreviousToken
+        )
+    ) {
+        callback(currentValue);
+        return function () {};
+    }
+
+    var active = true;
+    var namespace =
+        ".lmState" + (++serverTokenWaitId);
+
+    function handler(event, emittedToken) {
+        if (!active) {
+            return;
+        }
+
+        var readyToken =
+            String(
+                emittedToken ||
+                $("#server-token").val() ||
+                ""
+            ).trim();
+
+        if (!readyToken) {
+            return;
+        }
+
+        if (
+            expectedPreviousToken !== null &&
+            readyToken === expectedPreviousToken
+        ) {
+            return;
+        }
+
+        active = false;
+
+        $(document).off(
+            "lm:serverTokenReady" + namespace,
+            handler
+        );
+
+        callback(readyToken);
+    }
+
+    $(document).on(
+        "lm:serverTokenReady" + namespace,
+        handler
+    );
+
+    return function cancelServerTokenWait() {
+        if (!active) {
+            return;
+        }
+
+        active = false;
+
+        $(document).off(
+            "lm:serverTokenReady" + namespace,
+            handler
+        );
+    };
 }
 
 function adres(info, thismode, thisregion) {
@@ -537,10 +619,18 @@ function adres(info, thismode, thisregion) {
         joinSERVERfindinfo();
     }
     if ($("#gamemode").val() != ":party") {
-        /* Wait for server-token to be set instead of blind 1.8s delay */
-        whenServerTokenReady(function () {
-            currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
-            if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
+        var previousServerToken =
+            String($("#server-token").val() || "").trim();
+
+        whenServerTokenReady(function (readyToken) {
+            currentIP =
+                "live-arena-" +
+                readyToken +
+                ".agar.io";
+
+            if (!legendmod.integrity) {
+                currentIP = readyToken;
+            }
             if (realmode != ":party") {
                 if (!thismode) {
                     realmode = $("#gamemode").val();
@@ -571,10 +661,13 @@ function adres(info, thismode, thisregion) {
                 window.history.pushState(null, null, window.location.pathname);
                 window.location.href = "https://agar.io/#" + $('#party-token').val()
             }
+        }, {
+            previousToken: previousServerToken,
+            allowCurrentToken: true
         });
     } else { //if party
         /* Party mode: wait for token then redirect */
-        whenServerTokenReady(function () {
+        whenServerTokenReady(function (readyToken) {
             window.history.pushState(null, null, window.location.pathname);
             window.location.href = "https://agar.io/#" + $('#party-token').val()
         });
@@ -602,9 +695,15 @@ function LMserverbox() {
 
 function urlIpWhenOpened() {
     /* React to server-token being set instead of waiting 6 seconds */
-    whenServerTokenReady(function() {
-        currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
-        if (!legendmod.integrity) { currentIP = $("#server-token").val(); }
+    whenServerTokenReady(function (readyToken) {
+        currentIP =
+            "live-arena-" +
+            readyToken +
+            ".agar.io";
+
+        if (!legendmod.integrity) {
+            currentIP = readyToken;
+        }
         if (searchSip != null) {
             if (region == null) {
                 if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + searchSip);
@@ -1246,7 +1345,8 @@ function prevnamereturner() {
 }
 
 function ogarioplayfalse() {
-    return ogario.play = "false";
+    ogario.play = false;
+    return false;
 }
 
 function Leader11() {
@@ -2001,52 +2101,167 @@ function MsgServCommandsreturner2(MSGCOMMANDS2a) {
 
 
 function MsgServCommandsreturner() {
-    MSGCOMMANDS2 = MSGCOMMANDS;
-    MSGCOMMANDS3 = MSGCOMMANDS;
-    MSGCOMMANDS2 = MSGCOMMANDS2.split("[srv]").pop();
-    MSGCOMMANDS2 = MSGCOMMANDS2.split('[/srv]')[0];
-    if (MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("http://") == false && MSGCOMMANDS2.includes("HTTP://") == false && MSGCOMMANDS2.includes("HTTPS://") == false) {
-        MSGCOMMANDS2 = "https://" + MSGCOMMANDS2;
-    }
-    if (MSGCOMMANDS2.includes("agar.io/#")) { //if sent server is Party mode
-        MSGCOMMANDS2a = MSGCOMMANDS2;
-        MsgServCommandsreturner2(MSGCOMMANDS2a);
-        MSGCOMMANDSA = "#" + MSGCOMMANDS2a.split("#").pop();
-        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server (Party mode): ' + MSGCOMMANDSA + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-            timeOut: 10000,
-            extendedTimeOut: 10000
-        }).css("width", "300px");
-    } else if (getParameterByName("r", MSGCOMMANDS2a) != null) {
-        var modetosend, passtosend;
+    MSGCOMMANDS2 = String(MSGCOMMANDS || "");
+    MSGCOMMANDS3 = MSGCOMMANDS2;
 
-        if (getParameterByName("pass", MSGCOMMANDS) == null) {
-            passtosend = "No Password Loaded";
-        } else {
-            passtosend = getParameterByName("pass", MSGCOMMANDS);
-        }
-        if (getParameterByName("mode", MSGCOMMANDS) == null) {
-            modetosend = "Unknown";
-        } else {
-            modetosend = getParameterByName("mode", MSGCOMMANDS);
-        }
-        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br>Mode: ' + modetosend + '</br> Region: ' + getParameterByName("r", MSGCOMMANDS) + '</br> Password: ' + passtosend + '</br> <button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-            timeOut: 10000,
-            extendedTimeOut: 10000
-        }).css("width", "300px");
-    } else {
-        var passtosend;
+    MSGCOMMANDS2 =
+        MSGCOMMANDS2
+            .split("[srv]")
+            .pop()
+            .split("[/srv]")[0]
+            .trim();
 
-        if (getParameterByName("pass", MSGCOMMANDS) == null) {
-            passtosend = "No Password Loaded";
-        } else {
-            passtosend = getParameterByName("pass", MSGCOMMANDS);
-        }
-        toastr.warning('<div><img src="https://www.legendmod.ml/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br> Password: ' + passtosend + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
+    if (!MSGCOMMANDS2) {
+        return MSGCOMMANDS3;
+    }
+
+    if (!/^https?:\/\//i.test(MSGCOMMANDS2)) {
+        MSGCOMMANDS2 =
+            "https://" + MSGCOMMANDS2;
+    }
+
+    /*
+     * Keep the existing global for compatibility, but always update it from
+     * the current command. Never reuse an earlier party URL.
+     */
+    MSGCOMMANDS2a = MSGCOMMANDS2;
+
+    var messageNick =
+        typeof escapeHtml === "function"
+            ? escapeHtml(String(MSGNICK || ""))
+            : String(MSGNICK || "");
+
+    var serverSip =
+        getParameterByName(
+            "sip",
+            MSGCOMMANDS2
+        );
+
+    var serverRegion =
+        getParameterByName(
+            "r",
+            MSGCOMMANDS2
+        );
+
+    var serverMode =
+        getParameterByName(
+            "mode",
+            MSGCOMMANDS2
+        );
+
+    var serverPass =
+        getParameterByName(
+            "pass",
+            MSGCOMMANDS2
+        );
+
+    if (MSGCOMMANDS2.includes("agar.io/#")) {
+        MsgServCommandsreturner2(
+            MSGCOMMANDS2a
+        );
+
+        MSGCOMMANDSA =
+            "#" +
+            MSGCOMMANDS2a
+                .split("#")
+                .pop();
+
+        toastr.warning(
+            '<div>' +
+            '<img src="https://www.legendmod.ml/banners/iconagario.png" ' +
+            'style="float:left;width:100px;height:100px;">' +
+            Premadeletter22 +
+            " " +
+            messageNick +
+            " " +
+            Premadeletter67 +
+            "<br>Server (Party mode): " +
+            escapeHtml(String(MSGCOMMANDSA)) +
+            '<button id="acceptServer" class="btn btn-block btn-info" ' +
+            'style="margin-top:10px;border-color:darkblue;">' +
+            Premadeletter24 +
+            "</button><br>" +
+            '<button class="btn btn-sm btn-warning btn-spectate ' +
+            'btn-nodo-hideall" style="width:100%;margin-top:-10px;">' +
+            Premadeletter25 +
+            "</button></div>",
+            "",
+            {
+                timeOut: 10000,
+                extendedTimeOut: 10000
+            }
+        ).css("width", "300px");
+
+        return MSGCOMMANDS3;
+    }
+
+    if (!serverSip) {
+        console.warn(
+            "[LM] Rejected server command without sip:",
+            MSGCOMMANDS2
+        );
+
+        return MSGCOMMANDS3;
+    }
+
+    var displayServer =
+        String(serverSip)
+            .replace("live-arena-", "")
+            .replace(".agar.io", "");
+
+    var displayMode =
+        serverMode || "Unknown";
+
+    var displayPass =
+        serverPass ||
+        "No Password Loaded";
+
+    var detailsHtml =
+        '<div>' +
+        '<img src="https://www.legendmod.ml/banners/iconagario.png" ' +
+        'style="float:left;width:100px;height:100px;">' +
+        Premadeletter22 +
+        " " +
+        messageNick +
+        " " +
+        Premadeletter67 +
+        "<br>Server: " +
+        escapeHtml(displayServer);
+
+    if (serverRegion) {
+        detailsHtml +=
+            "<br>Mode: " +
+            escapeHtml(displayMode) +
+            "<br>Region: " +
+            escapeHtml(String(serverRegion));
+    }
+
+    detailsHtml +=
+        "<br>Password: " +
+        escapeHtml(String(displayPass)) +
+        '<button id="acceptServer" class="btn btn-block btn-info" ' +
+        'style="margin-top:10px;border-color:darkblue;">' +
+        Premadeletter24 +
+        "</button><br>" +
+        '<button class="btn btn-sm btn-warning btn-spectate ' +
+        'btn-nodo-hideall" style="width:100%;margin-top:-10px;">' +
+        Premadeletter25 +
+        "</button></div>";
+
+    toastr.warning(
+        detailsHtml,
+        "",
+        {
             timeOut: 10000,
             extendedTimeOut: 10000
-        }).css("width", "300px");
-    }
-    return MSGCOMMANDS, MSGCOMMANDS2, MSGCOMMANDS2a, MSGCOMMANDSA, MSGCOMMANDS3;
+        }
+    ).css("width", "300px");
+
+    /*
+     * Preserve the old effective return contract. The previous comma return
+     * returned only MSGCOMMANDS3.
+     */
+    return MSGCOMMANDS3;
 }
 
 
@@ -2066,6 +2281,10 @@ function universalchat() {
         //        "log": function(msg){ console.log(this.name + ":"+ msg); },
         //		"log": function(msg){ toastr["success"](this.name + ":"+ msg); },		
         "log": function (msg) {
+            msg = escapeHtml(
+                String(msg == null ? "" : msg)
+            );
+
             if (($('#chat-box').is(":visible") == false)) {
                 //console.log(".....");
                 /*
@@ -3056,66 +3275,178 @@ function appendLog(message) {
 
 
 function appendLog2(message, message2) {
-    const p = document.createElement("p");
-    p.style.display = "none";
-    p.style.whiteSpace = "nowrap";
-    p.style.marginBottom = "10px";
+    var paragraph =
+        document.createElement("p");
 
-    const a = document.createElement("a");
-    a.href = "#";
-    a.className = "logEntry";
-    a.dataset.token = currentToken;
-    a.style.color = "lightgrey";
-    a.style.fontSize = "14px";
-    a.onclick = function(e) {
-        e.preventDefault();
-        connectto(message2);
-    };
-    
-    // Mitigate DOM XSS
-    a.textContent = message;
+    paragraph.style.display = "none";
+    paragraph.style.whiteSpace = "nowrap";
+    paragraph.style.marginBottom = "10px";
 
-    p.appendChild(a);
-    $("#log").prepend(p);
-    $(p).show(100);
+    var link =
+        document.createElement("a");
+
+    link.href = "#";
+    link.className = "logEntry";
+    link.setAttribute(
+        "data-token",
+        currentToken || ""
+    );
+
+    link.style.color = "lightgrey";
+    link.style.fontSize = "14px";
+
+    /*
+     * appendLog2 historically accepts formatted trusted internal markup.
+     * Never pass remote SNEZ/chat data to this function after Fix 9.
+     */
+    link.innerHTML =
+        String(message == null ? "" : message);
+
+    link.addEventListener(
+        "click",
+        function (event) {
+            event.preventDefault();
+            connectto(String(message2 || ""));
+        }
+    );
+
+    paragraph.appendChild(link);
+
+    var log =
+        document.getElementById("log");
+
+    if (!log) {
+        return;
+    }
+
+    log.insertBefore(
+        paragraph,
+        log.firstChild
+    );
+
+    $(paragraph).show(100);
     bumpLog();
 }
 
-function appendLog3(message, message2, message3, message4) {
-    const p = document.createElement("p");
-    p.style.display = "none";
-    p.style.whiteSpace = "nowrap";
-    p.style.marginBottom = "10px";
+function appendLog3(
+    message,
+    message2,
+    message3,
+    message4
+) {
+    var paragraph =
+        document.createElement("p");
 
-    const a = document.createElement("a");
-    a.href = "#";
-    a.className = "logEntry";
-    a.dataset.token = currentToken;
-    a.style.color = "lightgrey";
-    a.style.fontSize = "14px";
-    a.onclick = function(e) {
-        e.preventDefault();
-        connectto(message2);
-        connectto2(message3);
-        connectto3(message4);
-    };
+    paragraph.style.display = "none";
+    paragraph.style.whiteSpace = "nowrap";
+    paragraph.style.marginBottom = "10px";
 
-    // Mitigate DOM XSS
-    a.textContent = message;
+    var link =
+        document.createElement("a");
 
-    p.appendChild(a);
-    $("#log").prepend(p);
-    $(p).show(100);
+    link.href = "#";
+    link.className = "logEntry";
+    link.setAttribute(
+        "data-token",
+        currentToken || ""
+    );
+
+    link.style.color = "lightgrey";
+    link.style.fontSize = "14px";
+
+    /*
+     * appendLog3 historically accepts formatted trusted internal markup.
+     * Never pass remote SNEZ/chat data to this function after Fix 9.
+     */
+    link.innerHTML =
+        String(message == null ? "" : message);
+
+    link.addEventListener(
+        "click",
+        function (event) {
+            event.preventDefault();
+
+            connectto(
+                String(message2 || "")
+            );
+
+            connectto2(
+                String(message3 || "")
+            );
+
+            connectto3(
+                String(message4 || "")
+            );
+        }
+    );
+
+    paragraph.appendChild(link);
+
+    var log =
+        document.getElementById("log");
+
+    if (!log) {
+        return;
+    }
+
+    log.insertBefore(
+        paragraph,
+        log.firstChild
+    );
+
+    $(paragraph).show(100);
     bumpLog();
 }
 
 function appendLog4(message, message2) {
-    //$("#logTitle").text("Alive Servers");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto1a(\`' + message2 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
+    var paragraph =
+        document.createElement("p");
 
-    $("#log p").first().show(100);
+    paragraph.style.display = "none";
+    paragraph.style.whiteSpace = "nowrap";
+    paragraph.style.marginBottom = "10px";
+
+    var link =
+        document.createElement("a");
+
+    link.href = "#";
+    link.className = "logEntry";
+    link.setAttribute(
+        "data-token",
+        currentToken || ""
+    );
+
+    link.style.color = "lightgrey";
+    link.style.fontSize = "14px";
+    link.innerHTML =
+        String(message == null ? "" : message);
+
+    link.addEventListener(
+        "click",
+        function (event) {
+            event.preventDefault();
+
+            connectto1a(
+                String(message2 || "")
+            );
+        }
+    );
+
+    paragraph.appendChild(link);
+
+    var log =
+        document.getElementById("log");
+
+    if (!log) {
+        return;
+    }
+
+    log.insertBefore(
+        paragraph,
+        log.firstChild
+    );
+
+    $(paragraph).show(100);
     bumpLog();
 }
 
@@ -3727,11 +4058,71 @@ function StartEditGameNames() {
                         return '<div id="tcm" style="display:block;"><div id="tcm-header"><span>Copy Tools</span><p>Copy cell names (press x to show/hide)</p></div><div id="tcm-main"><div><span style="display: none;">leaderboard names</span><div id="tcm-leaderboard" style="display: none;"></div></div><div><span>cell names</span><div id="tcm-names"></div></div><div></div></div></div>'
                     },
                     span: function (e, o) {
-                        return "<span onclick=\"javascript:prompt('" + e + "', '" + o + "')\">" + o + "</span>"
+                        var safeLabel =
+                            String(
+                                e == null ? "" : e
+                            );
+
+                        var safeValue =
+                            String(
+                                o == null ? "" : o
+                            );
+
+                        return (
+                            '<span class="tcm-copy-name" ' +
+                            'data-copy-label="' +
+                            safeLabel
+                                .replace(/&/g, "&amp;")
+                                .replace(/"/g, "&quot;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;") +
+                            '" data-copy-value="' +
+                            safeValue
+                                .replace(/&/g, "&amp;")
+                                .replace(/"/g, "&quot;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;") +
+                            '">' +
+                            safeValue
+                                .replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;") +
+                            "</span>"
+                        );
                     }
                 }
             };
-            document.getElementsByTagName("head")[0].insertAdjacentHTML("beforeend", t.u.fonts()), document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", t.u.html()), o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
+            document.getElementsByTagName("head")[0].insertAdjacentHTML("beforeend", t.u.fonts()), document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", t.u.html());
+            
+            document
+                .getElementById("tcm")
+                .addEventListener(
+                    "click",
+                    function (event) {
+                        var target =
+                            event.target.closest(
+                                ".tcm-copy-name"
+                            );
+
+                        if (
+                            !target ||
+                            !this.contains(target)
+                        ) {
+                            return;
+                        }
+
+                        prompt(
+                            target.getAttribute(
+                                "data-copy-label"
+                            ) || "cell name",
+                            target.getAttribute(
+                                "data-copy-value"
+                            ) || ""
+                        );
+                    }
+                );
+                
+            o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
         } else o.setTimeout(function () {
             e(o)
         }, 100)
@@ -4066,26 +4457,56 @@ function newsubmit() {
 function triggerLMbtns() {
 
     PanelImageSrc = $("#menuBg").val();
-    if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
+    if (
+        PanelImageSrc !== "" &&
+        PanelImageSrc !==
+            "https://cdn.ogario.ovh/static/img/pattern.png" &&
+        PanelImageSrc !==
+            "https://www.legendmod.ml/banners/static/img/pattern.png"
+    ) {
         $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
     }
     $("#copyLBBtn").blur(function () {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
+        if (
+            PanelImageSrc !== "" &&
+            PanelImageSrc !==
+                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            PanelImageSrc !==
+                "https://www.legendmod.ml/banners/static/img/pattern.png"
+        ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#dropDown>#copyLBBtn").blur(function () {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
+        if (
+            PanelImageSrc !== "" &&
+            PanelImageSrc !==
+                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            PanelImageSrc !==
+                "https://www.legendmod.ml/banners/static/img/pattern.png"
+        ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#copySIPandPass").blur(function () {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
+        if (
+            PanelImageSrc !== "" &&
+            PanelImageSrc !==
+                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            PanelImageSrc !==
+                "https://www.legendmod.ml/banners/static/img/pattern.png"
+        ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
     $("#copySIPPassLB").blur(function () {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://www.legendmod.ml/banners/static/img/pattern.png") {
+        if (
+            PanelImageSrc !== "" &&
+            PanelImageSrc !==
+                "https://cdn.ogario.ovh/static/img/pattern.png" &&
+            PanelImageSrc !==
+                "https://www.legendmod.ml/banners/static/img/pattern.png"
+        ) {
             $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
         }
     });
@@ -4921,196 +5342,778 @@ function SNEZServers() {
 
 }
 
-function getSNEZServers(ifcalled) {
-    client2 = {
+var activeSnezClient = null;
+var snezClientGeneration = 0;
 
-        // Properties
-        //server: "wss://agar.snez.org:3051/",
-        server: "wss://agar.snez.org:63051/",
+function normalizeSnezText(
+    value,
+    maxLength
+) {
+    value =
+        String(
+            value == null
+                ? ""
+                : value
+        )
+            .replace(
+                /[\u0000-\u001F\u007F]/g,
+                ""
+            )
+            .trim();
+
+    if (value.length > maxLength) {
+        value =
+            value.substring(
+                0,
+                maxLength
+            );
+    }
+
+    return value;
+}
+
+function parseSnezServer(serverValue) {
+    var server =
+        normalizeSnezText(
+            serverValue,
+            500
+        );
+
+    var result = {
+        token: "",
+        region: "",
+        mode: ""
+    };
+
+    if (!server) {
+        return null;
+    }
+
+    try {
+        var parsedUrl =
+            new URL(
+                server.indexOf("://") === -1
+                    ? "wss://" + server
+                    : server
+            );
+
+        var host =
+            parsedUrl.hostname;
+
+        var arenaMatch =
+            host.match(
+                /^live-arena-([A-Za-z0-9._-]+)\.agar\.io$/i
+            );
+
+        if (arenaMatch) {
+            result.token =
+                arenaMatch[1];
+        } else {
+            result.token =
+                host;
+        }
+
+        result.region =
+            normalizeSnezText(
+                parsedUrl.searchParams.get("r"),
+                50
+            );
+
+        result.mode =
+            normalizeSnezText(
+                parsedUrl.searchParams.get("m"),
+                50
+            );
+    } catch (error) {
+        var fallbackMatch =
+            server.match(
+                /live-arena-([A-Za-z0-9._-]+)\.agar\.io/i
+            );
+
+        if (!fallbackMatch) {
+            return null;
+        }
+
+        result.token =
+            fallbackMatch[1];
+
+        result.region =
+            normalizeSnezText(
+                getParameterByName("r", server),
+                50
+            );
+
+        result.mode =
+            normalizeSnezText(
+                getParameterByName("m", server),
+                50
+            );
+    }
+
+    if (
+        !result.token ||
+        result.token.length > 200 ||
+        !/^[A-Za-z0-9._:-]+$/.test(
+            result.token
+        )
+    ) {
+        return null;
+    }
+
+    return result;
+}
+
+function parseSnezPlayerRecord(player) {
+    if (
+        !player ||
+        typeof player !== "object"
+    ) {
+        return null;
+    }
+
+    var serverInfo =
+        parseSnezServer(
+            player.server
+        );
+
+    if (!serverInfo) {
+        return null;
+    }
+
+    var country = "un";
+
+    if (
+        player.hidecountry !== true &&
+        player.extra &&
+        player.extra.ip_info &&
+        typeof player.extra.ip_info.country ===
+            "string" &&
+        /^[A-Za-z]{2}$/.test(
+            player.extra.ip_info.country
+        )
+    ) {
+        country =
+            player.extra.ip_info.country
+                .toLowerCase();
+    }
+
+    return {
+        nickname:
+            normalizeSnezText(
+                player.nickname,
+                100
+            ),
+
+        token:
+            serverInfo.token,
+
+        region:
+            serverInfo.region,
+
+        mode:
+            serverInfo.mode,
+
+        country:
+            country
+    };
+}
+
+function appendSafeSnezLog(record) {
+    var log =
+        document.getElementById("log");
+
+    if (!log || !record) {
+        return;
+    }
+
+    var paragraph =
+        document.createElement("p");
+
+    paragraph.style.display = "none";
+    paragraph.style.whiteSpace = "nowrap";
+    paragraph.style.marginBottom = "10px";
+
+    var link =
+        document.createElement("a");
+
+    link.href = "#";
+    link.className = "logEntry";
+    link.style.color = "lightgrey";
+    link.style.fontSize = "14px";
+
+    link.dataset.token =
+        record.token;
+
+    link.dataset.player =
+        record.nickname;
+
+    link.dataset.region =
+        record.region;
+
+    link.dataset.mode =
+        record.mode;
+
+    if (
+        record.region ||
+        record.mode
+    ) {
+        link.appendChild(
+            document.createTextNode(
+                "Region: "
+            )
+        );
+
+        var regionSpan =
+            document.createElement("span");
+
+        regionSpan.className =
+            "regioninfo";
+
+        regionSpan.textContent =
+            record.region;
+
+        link.appendChild(regionSpan);
+
+        link.appendChild(
+            document.createTextNode(
+                ", Mode: "
+            )
+        );
+
+        var modeSpan =
+            document.createElement("span");
+
+        modeSpan.className =
+            "modeinfo";
+
+        modeSpan.textContent =
+            record.mode;
+
+        link.appendChild(modeSpan);
+
+        link.appendChild(
+            document.createTextNode(
+                ". "
+            )
+        );
+    }
+
+    var playerSpan =
+        document.createElement("span");
+
+    playerSpan.className =
+        "playerinfo main-color";
+
+    playerSpan.textContent =
+        record.nickname;
+
+    link.appendChild(playerSpan);
+
+    link.appendChild(
+        document.createTextNode(" ")
+    );
+
+    var countrySpan =
+        document.createElement("span");
+
+    countrySpan.className =
+        "country-icon flag-icon flag-icon-" +
+        record.country;
+
+    link.appendChild(countrySpan);
+
+    link.appendChild(
+        document.createTextNode(" (")
+    );
+
+    var tokenSpan =
+        document.createElement("span");
+
+    tokenSpan.className =
+        "tokeninfo";
+
+    tokenSpan.textContent =
+        record.token;
+
+    link.appendChild(tokenSpan);
+
+    link.appendChild(
+        document.createTextNode(")")
+    );
+
+    link.addEventListener(
+        "click",
+        function (event) {
+            event.preventDefault();
+
+            connectto(record.token);
+
+            if (record.region) {
+                connectto2(
+                    record.region
+                );
+            }
+
+            if (record.mode) {
+                connectto3(
+                    record.mode
+                );
+            }
+        }
+    );
+
+    paragraph.appendChild(link);
+
+    log.insertBefore(
+        paragraph,
+        log.firstChild
+    );
+
+    $(paragraph).show(100);
+    bumpLog();
+}
+
+function getSNEZServers(ifcalled) {
+    var generation =
+        ++snezClientGeneration;
+
+    if (activeSnezClient) {
+        activeSnezClient.disconnect();
+    }
+
+    var client = {
+        server:
+            "wss://agar.snez.org:63051/",
+
         ws: null,
         isOpen: false,
+        generation: generation,
+        ifcalled: ifcalled,
         onOpenCallback: null,
         onCloseCallback: null,
         onMessageCallback: null,
-        onDataReady: null, /* Callback invoked when updatePlayers finishes */
+        onDataReady: null,
 
-        // Methods
+        isCurrent: function () {
+            return (
+                activeSnezClient === client &&
+                client.generation ===
+                    snezClientGeneration
+            );
+        },
+
         connect: function () {
-            let snezSocket = new WebSocket(client2.server);
-            snezSocket.onopen = client2.onOpen;
-            snezSocket.onclose = client2.onClose;
-            snezSocket.onmessage = client2.onMessage;
-            client2.ws = snezSocket;
-        },
-        disconnect: function () {
-            // Close the connection, if open.
-            if (client2.ws) {
-                client2.ws.close();
-            }
-        },
-        onOpen: function () {
-            //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Snez socket open");
-            //       app.state = "Connected.";
-        },
-
-        onClose: function () {
-            //       console.log("Reconnecting in 5 seconds...");
-            //        setTimeout(client2.connect, 5000);
-        },
-
-        onMessage: function (evt) {
-            if (client2.isEmpty(evt))
+            if (!client.isCurrent()) {
                 return;
+            }
+
+            var socket;
 
             try {
-                var data = JSON.parse(evt.data);
-
-                if (client2.isEmpty(data) || client2.isEmpty(data.type))
-                    return;
-            } catch (e) {
-                console.log(e);
+                socket =
+                    new WebSocket(
+                        client.server
+                    );
+            } catch (error) {
+                console.warn(
+                    "[SNEZ] WebSocket creation failed:",
+                    error
+                );
                 return;
             }
 
-            switch (data.type) {
-                case "ping":
-                    client2.send({
-                        type: "pong"
-                    });
-                    break;
-                case "players_list":
-                    client2.updatePlayers(data.data);
-                    break;
+            client.ws = socket;
+
+            socket.onopen =
+                function () {
+                    if (
+                        !client.isCurrent() ||
+                        client.ws !== socket
+                    ) {
+                        return;
+                    }
+
+                    client.isOpen = true;
+
+                    if (
+                        typeof client.onOpenCallback ===
+                        "function"
+                    ) {
+                        client.onOpenCallback();
+                    }
+                };
+
+            socket.onclose =
+                function () {
+                    if (
+                        client.ws === socket
+                    ) {
+                        client.ws = null;
+                        client.isOpen = false;
+                    }
+
+                    if (
+                        client.isCurrent() &&
+                        typeof client.onCloseCallback ===
+                            "function"
+                    ) {
+                        client.onCloseCallback();
+                    }
+                };
+
+            socket.onerror =
+                function (error) {
+                    if (!client.isCurrent()) {
+                        return;
+                    }
+
+                    console.warn(
+                        "[SNEZ] WebSocket error:",
+                        error
+                    );
+                };
+
+            socket.onmessage =
+                function (event) {
+                    if (
+                        !client.isCurrent() ||
+                        client.ws !== socket
+                    ) {
+                        return;
+                    }
+
+                    client.onMessage(event);
+                };
+        },
+
+        disconnect: function () {
+            var socket =
+                client.ws;
+
+            client.ws = null;
+            client.isOpen = false;
+
+            if (!socket) {
+                return;
+            }
+
+            socket.onopen = null;
+            socket.onclose = null;
+            socket.onerror = null;
+            socket.onmessage = null;
+
+            try {
+                socket.close();
+            } catch (error) {
+                console.warn(
+                    "[SNEZ] WebSocket close failed:",
+                    error
+                );
+            }
+        },
+
+        onMessage: function (event) {
+            if (
+                !client.isCurrent() ||
+                !event ||
+                typeof event.data !==
+                    "string"
+            ) {
+                return;
+            }
+
+            var packet;
+
+            try {
+                packet =
+                    JSON.parse(
+                        event.data
+                    );
+            } catch (error) {
+                console.warn(
+                    "[SNEZ] Invalid packet JSON:",
+                    error
+                );
+                return;
+            }
+
+            if (
+                !packet ||
+                typeof packet.type !==
+                    "string"
+            ) {
+                return;
+            }
+
+            if (packet.type === "ping") {
+                client.send({
+                    type: "pong"
+                });
+                return;
+            }
+
+            if (
+                packet.type ===
+                "players_list"
+            ) {
+                client.updatePlayers(
+                    packet.data
+                );
             }
         },
 
         isEmpty: function (obj) {
-            if (typeof obj == 'undefined')
+            if (
+                obj === undefined ||
+                obj === null
+            ) {
                 return true;
+            }
 
-            // For arrays or empty strings
-            if (obj.length == 0)
-                return true;
+            if (
+                typeof obj === "string" ||
+                Array.isArray(obj)
+            ) {
+                return obj.length === 0;
+            }
 
-            // For objects
-            for (var key in obj)
-                if (obj.hasOwnProperty(key))
-                    return false;
+            if (
+                typeof obj === "object"
+            ) {
+                return (
+                    Object.keys(obj)
+                        .length === 0
+                );
+            }
 
-            return true;
+            return false;
         },
 
-        updatePlayers: function (data) {
-            var showonceusers = 0;
-            var showonceusers2 = 0;
-            showonceusers3 = 0;
-            var showonceusers4 = 0;
-            data = JSON.parse(data); //...
-            //		for (var player in data) {
-            // 			if (data.hasOwnProperty(player)) {
-            for (var player = 0; player < data.length; player++) {
-                if (data[player].nickname) {
-                    if (data[player].nickname.indexOf($("#searchInput").val()) >= 0) {
-                        if (showonceusers == 0) {
-                            showonceusers++;
-                            if (ifcalled == null) {
-                                toastr.info("User Found. Revealing server...");
-                            }
-                        }
-                        var temporaryserver = JSON.stringify(data[player]);
-                        //window.temporaryserverA = temporaryserver;
-                        var temporaryserver2;
-                        var temporaryserver3;
-                        var temporaryserver1 = getParameterByName("r", temporaryserver);
-                        var temporaryserver1a = getParameterByName("m", temporaryserver);
+        updatePlayers: function (rawData) {
+            if (!client.isCurrent()) {
+                return client;
+            }
 
-                        temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-                        temporaryserver2 = temporaryserver.split('live-arena-').pop();
-                        temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                        temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
-                        if (data[player].hidecountry == true && data[player].extra && data[player].extra.ip_info) {
-                            data[player].extra.ip_info.country = "UN";
-                        }
-                        if (temporaryserver1a && data[player].extra && data[player].extra.ip_info) {
-                            //temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0];
-                            temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0].split('\"\,\"AID')[0].split('\"\,\"hidecountry')[0];
-                            appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span class='main-color'><span id='playerinfo'>" + temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2, temporaryserver1, temporaryserver1a);
-                        }
-                        else if (data[player].extra && data[player].extra.ip_info) {
-                            appendLog2("<span class='main-color'><span id='playerinfo'>" + temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2);
-                        }
-                        showonceusers3++;
-                        showonceusers3returner(showonceusers3);
-                    }
-                    else if (data[player].server.indexOf($("#searchInput").val()) >= 0) {
-                        if ($("#searchInput").val().length >= 4) {
-                            if (showonceusers2 == 0) {
-                                showonceusers2++;
-                                if (ifcalled == null) {
-                                    toastr.info("Server Found. Revealing users...");
-                                }
-                            }
-                            var temporaryserver = JSON.stringify(data[player]);
-                            var temporaryserver2;
-                            var temporaryserver3;
-                            var temporaryserver1 = getParameterByName("r", temporaryserver);
-                            var temporaryserver1a = getParameterByName("m", temporaryserver);
-                            temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-                            temporaryserver2 = temporaryserver.split('live-arena-').pop();
-                            temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                            temporaryserver3 = temporaryserver3.substring(0, temporaryserver3.indexOf('\"\,\"server'));
-                            if (data[player].hidecountry == true && data[player].extra && data[player].extra.ip_info) {
-                                data[player].extra.ip_info.country = "UN";
-                            }
-                            if (temporaryserver1a && data[player].extra && data[player].extra.ip_info) {
-                                //temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0];
-                                temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0].split('\"\,\"AID')[0].split('\"\,\"hidecountry')[0];
-                                appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2, temporaryserver1, temporaryserver1a);
-                            }
-                            else if (data[player].extra && data[player].extra.ip_info) {
-                                appendLog2("<span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2);
-                            }
-                            showonceusers3++;
-                            showonceusers3returner(showonceusers3);
-                            //console.log(data[player]);	
-                        }
-                    }
+            var data = rawData;
+
+            if (typeof data === "string") {
+                try {
+                    data =
+                        JSON.parse(data);
+                } catch (error) {
+                    console.warn(
+                        "[SNEZ] Invalid players_list JSON:",
+                        error
+                    );
+
+                    client.finish([]);
+                    return client;
                 }
             }
-            if (client2.ws) {
-                client2.ws.close();
+
+            if (!Array.isArray(data)) {
+                client.finish([]);
+                return client;
             }
-            if (showonceusers3 == 0) {
-                showonceusers4++;
-                if (showonceusers4 == 1) {
-                    if (ifcalled == null) {
-                        toastr.warning('Server / Leaderboard, not found. Do you want the 1-by-1 manual search leaderboards of <font color="yellow">' + $("#region").val() + ' / ' + $("#gamemode").val() + '</font> ?' + '</br> <button id= "manualsearch" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-exit" style="width: 100%;margin-top: -20px;">' + Premadeletter25 + '</button>', "", {
-                            timeOut: 20000,
-                            extendedTimeOut: 20000
-                        }).css("width", "350px");
-                    }
-                    $("#manualsearch").click(function () {
-                        $("#searchSpan>i").removeClass("fa fa-search").addClass("fa fa-times");
-                        var searchString = $("#searchInput").val();
-                        searchHandler(searchString);
-                    });
+
+            var searchValue =
+                String(
+                    $("#searchInput").val() ||
+                    ""
+                );
+
+            var results = [];
+
+            for (
+                var playerIndex = 0;
+                playerIndex < data.length;
+                playerIndex++
+            ) {
+                var player =
+                    data[playerIndex];
+
+                if (
+                    !player ||
+                    typeof player !==
+                        "object"
+                ) {
+                    continue;
                 }
+
+                var nickname =
+                    String(
+                        player.nickname || ""
+                    );
+
+                var server =
+                    String(
+                        player.server || ""
+                    );
+
+                var matchesNickname =
+                    nickname.indexOf(
+                        searchValue
+                    ) !== -1;
+
+                var matchesServer =
+                    searchValue.length >= 4 &&
+                    server.indexOf(
+                        searchValue
+                    ) !== -1;
+
+                if (
+                    !matchesNickname &&
+                    !matchesServer
+                ) {
+                    continue;
+                }
+
+                var record =
+                    parseSnezPlayerRecord(
+                        player
+                    );
+
+                if (!record) {
+                    continue;
+                }
+
+                results.push(record);
+                appendSafeSnezLog(record);
             }
-            /* Invoke onDataReady callback if set — replaces setTimeout polling */
-            if (typeof client2.onDataReady === 'function') {
-                var _cb = client2.onDataReady;
-                client2.onDataReady = null;
-                _cb(showonceusers3);
+
+            showonceusers3 =
+                results.length;
+
+            showonceusers3returner(
+                showonceusers3
+            );
+
+            if (
+                results.length > 0 &&
+                ifcalled == null
+            ) {
+                toastr.info(
+                    "Result found. Revealing server information..."
+                );
             }
-            return client2;
+
+            if (
+                results.length === 0 &&
+                ifcalled == null
+            ) {
+                toastr.warning(
+                    "Server / Leaderboard not found. " +
+                    "Do you want the 1-by-1 manual search leaderboards of " +
+                    "<font color=\"yellow\">" +
+                    escapeHtml(
+                        String(
+                            $("#region").val() ||
+                            ""
+                        )
+                    ) +
+                    " / " +
+                    escapeHtml(
+                        String(
+                            $("#gamemode").val() ||
+                            ""
+                        )
+                    ) +
+                    "</font>?" +
+                    '<br><button id="manualsearch" ' +
+                    'class="btn btn-block btn-info" ' +
+                    'style="margin-top:10px;border-color:darkblue;">' +
+                    Premadeletter24 +
+                    "</button>" +
+                    '<br><button class="btn btn-sm btn-warning btn-exit" ' +
+                    'style="width:100%;margin-top:-20px;">' +
+                    Premadeletter25 +
+                    "</button>",
+                    "",
+                    {
+                        timeOut: 20000,
+                        extendedTimeOut: 20000
+                    }
+                ).css("width", "350px");
+
+                $("#manualsearch")
+                    .off("click.snezManual")
+                    .on(
+                        "click.snezManual",
+                        function () {
+                            $("#searchSpan>i")
+                                .removeClass(
+                                    "fa fa-search"
+                                )
+                                .addClass(
+                                    "fa fa-times"
+                                );
+
+                            searchHandler(
+                                $("#searchInput").val()
+                            );
+                        }
+                    );
+            }
+
+            client.finish(results);
+            return client;
         },
+
+        finish: function (results) {
+            if (!client.isCurrent()) {
+                return;
+            }
+
+            var callback =
+                client.onDataReady;
+
+            client.onDataReady = null;
+
+            client.disconnect();
+
+            if (
+                typeof callback ===
+                "function"
+            ) {
+                callback(
+                    results.length,
+                    results
+                );
+            }
+        },
+
         send: function (data) {
-            if (client2.ws && client2.ws.readyState === 1) {
-                client2.ws.send(JSON.stringify(data));
+            if (
+                !client.isCurrent() ||
+                !client.ws ||
+                client.ws.readyState !==
+                    WebSocket.OPEN
+            ) {
+                return;
+            }
+
+            try {
+                client.ws.send(
+                    JSON.stringify(data)
+                );
+            } catch (error) {
+                console.warn(
+                    "[SNEZ] Send failed:",
+                    error
+                );
             }
         }
     };
 
+    activeSnezClient = client;
+
+    /*
+     * Preserve the legacy global name because other functions depend on it.
+     */
+    client2 = client;
+    window.client2 = client;
+
+    return client;
 }
 
 function showonceusers3returner(showonceusers3) {
@@ -5629,11 +6632,8 @@ function initializeLM(modVersion) {
 
     $("#searchBtn").click(function () {
         if (!searching) {
-
-            getSNEZServers();
-        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
-            client2.connect();
-        }
+            var client = getSNEZServers();
+            client.connect();
         } else {
             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
             clearInterval(timerId);
@@ -6209,7 +7209,12 @@ function joinSIPonstart() {
 
 function joinSIPonstart1() {
     realmodereturnfromStart();
-    $("#server-token").val(getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", ""));
+    var sipValue = getParameterByName("sip", url);
+    if (sipValue) {
+        $("#server-token").val(sipValue.replace("live-arena-", "").replace(".agar.io", ""));
+    } else {
+        $("#server-token").val("");
+    }
     if (region != null && realmode != null) {
         currentIPopened = true;
         legendmod.gameMode = realmode;
@@ -6220,17 +7225,49 @@ function joinSIPonstart1() {
 function joinPLAYERonstart() {
     if (searchedplayer != null) {
         $("#searchInput").val(searchedplayer);
-        getSNEZServers("NoText");
-        /* Use onDataReady callback instead of setTimeout polling */
-        client2.onDataReady = function() {
-            if ($('.logEntry').html() != undefined) {
-                toastr.info("Player <font color='yellow'>" + $('.logEntry>#playerinfo').html() + "</font> contains <font color='yellow'>" + searchedplayer + "!</font>. Connected into Server");
-                $('.logEntry').click();
+        var client = getSNEZServers("NoText");
+
+        client.onDataReady = function (
+            count,
+            results
+        ) {
+            if (
+                !results ||
+                results.length === 0
+            ) {
+                return;
+            }
+
+            var record = results[0];
+
+            toastr.info(
+                "Player <font color='yellow'>" +
+                escapeHtml(
+                    record.nickname
+                ) +
+                "</font> contains <font color='yellow'>" +
+                escapeHtml(
+                    searchedplayer
+                ) +
+                "!</font>. Connected into Server"
+            );
+
+            connectto(record.token);
+
+            if (record.region) {
+                connectto2(
+                    record.region
+                );
+            }
+
+            if (record.mode) {
+                connectto3(
+                    record.mode
+                );
             }
         };
-        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
-            client2.connect();
-        }
+
+        client.connect();
     }
     if (autoplayplayer == "yes") {
         autoplayplaying();
@@ -6281,117 +7318,182 @@ function autoplayplaying() {
 }
 
 function joinSERVERfindinfo() {
-    $('#log').html('');
-    var searchedtoken = $("#server-token").val();
-    if (searchedtoken != null) {
-        $("#searchInput").val(searchedtoken);
-        getSNEZServers("NoText");
-        /* Use onDataReady callback instead of 1.5s setTimeout */
-        client2.onDataReady = function() {
-                if ($('.logEntry').html() != undefined && $('.logEntry').html() != "") {
-                    for (var i = 0; i < $('.logEntry').length; i++) {
-                        if ($('.logEntry>#playerinfo').eq(i).html() == $('#nick').val()) {
-                            $('.logEntry').eq(i).remove();
-                        }
-                        if ($('.logEntry>#regioninfo').eq(i).html() == null || $('.logEntry>#regioninfo').eq(i).html() == "null") {
-                            $('.logEntry').eq(i).remove();
-                        }
-                        if ($('.logEntry>#modeinfo').eq(i).html() == null || $('.logEntry>#modeinfo').eq(i).html() == "null") {
-                            $('.logEntry').eq(i).remove();
-                        }
-                    }
-                    if ($('.logEntry').html() != undefined && $('.logEntry').html() != "") {
-                        Regions = {}
-                        var count2 = 0;
-                        $('#region').find('option').each(function () {
-                            Regions[count2] = $(this).val();
-                            count2++;
-                        });
-                        Modes = {}
-                        var count = 0;
-                        $('#gamemode').find('option').each(function () {
-                            if ($(this).val() == ":ffa" || $(this).val() == ":battleroyale" || $(this).val() == ":teams" || $(this).val() == ":experimental" || $(this).val() == ":party") {
-                                Modes[count] = $(this).val();
-                                count++;
-                            }
-                        });
+    $("#log").html("");
+    var searchedtoken =
+        $("#server-token").val();
 
-                        countRegions = new Array(8).fill(0);
-                        for (var i = 0; i < $('.logEntry').length; i++) {
-                            if ($('.logEntry>#regioninfo').eq(i).html() != null && $('.logEntry>#regioninfo').eq(i).html() != null) {
-                                for (var n = 0; n <= 8; n++) {
-                                    if ($('.logEntry>#regioninfo').eq(i).html() == Regions[n]) {
-                                        countRegions[n]++
-                                    }
-                                }
-                            }
-                        }
-                        countModes = new Array(5).fill(0);
-                        for (var i = 0; i < $('.logEntry').length; i++) {
-                            if ($('.logEntry>#modeinfo').eq(i).html() != null && $('.logEntry>#regioninfo').eq(i).html() != null) {
-                                for (var n = 0; n < 5; n++) {
-                                    if ($('.logEntry>#modeinfo').eq(i).html() == Modes[n]) {
-                                        countModes[n]++
-                                    }
-                                }
-                            }
-                        }
-                        var countRegionsMax = 0;
-                        var countModesMax = 0;
-                        var MaxRegion = 0;
-                        var MaxMode = 0;
-                        var FinalText = "";
-                        for (var i = 0; i < countRegions.length; i++) {
-                            if (countRegions[i] > 0) {
-                                if (i != 0) {
-                                    FinalText = FinalText + countRegions[i] + " player(s) wispered it is:" + Regions[i] + "<br>";
-                                    if (countRegions[i] > countRegionsMax) {
-                                        countRegionsMax = countRegions[i];
-                                        MaxRegion = Regions[i];
-                                    }
-                                }
-                            }
-                        }
-                        for (var i = -1; i < countModes.length; i++) {
-                            if (countModes[i] > 0) {
-                                if (i != -1) {
-                                    FinalText = FinalText + countModes[i] + " player(s) wispered it is" + Modes[i] + "<br>";
-                                    if (countModes[i] > countModesMax) {
-                                        countModesMax = countModes[i];
-                                        MaxMode = Modes[i];
-                                    }
-                                }
-                            }
-                        }
-                        realmode = MaxMode;
-                        region = MaxRegion;
-                        /* URL update — data is already processed, no need to wait */
-                        if (MaxRegion != 0 && MaxRegion != null && MaxMode != 0 && MaxMode != null) {
-                            if (document.URL.includes("jimboy3100.github.io")) history.pushState(stateObj, "page 2", "/play?sip=" + currentIP);
-                            else if (legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&r=" + MaxRegion + "&m=" + MaxMode); }
-                            else if (!legendmod.integrity) { history.pushState(stateObj, "page 2", "?sip=" + currentIP); }
-                        }
-                        ModeRegionregion();
-                        if ($("#region").val() != MaxRegion || $("#gamemode").val() != MaxMode) {
-                            FinalText = FinalText + "<font color='yellow'>Best choice: Region:" + MaxRegion + ", Mode" + MaxMode + "</font><br>";
-                            FinalText = FinalText + "Information changed!";
-                            toastr.info(FinalText).css("width", "350px");
-                            if (MaxRegion != 0 && MaxRegion != null) {
-                                $("#region").val(MaxRegion);
-                                master.region = $("#region").val();
-                            }
-                            if (MaxMode != 0 && MaxMode != null) {
-                                $("#gamemode").val(MaxMode);
-                                master.gameMode = $("#gamemode").val();
-                                legendmod.gameMode = master.gameMode;
-                            }
-                        }
-                    }
+    if (searchedtoken != null) {
+        $("#searchInput").val(
+            searchedtoken
+        );
+
+        var client =
+            getSNEZServers("NoText");
+
+        client.onDataReady = function (
+            count,
+            results
+        ) {
+            if (
+                !results ||
+                results.length === 0
+            ) {
+                return;
+            }
+
+            var regionCounts = {};
+            var modeCounts = {};
+            var nicknameToIgnore =
+                $("#nick").val() || "";
+
+            for (
+                var i = 0;
+                i < results.length;
+                i++
+            ) {
+                var record = results[i];
+
+                if (
+                    record.nickname ===
+                    nicknameToIgnore
+                ) {
+                    continue;
                 }
+
+                if (
+                    record.region &&
+                    record.region !== "null"
+                ) {
+                    regionCounts[
+                        record.region
+                    ] =
+                        (regionCounts[
+                            record.region
+                        ] || 0) + 1;
+                }
+
+                if (
+                    record.mode &&
+                    record.mode !== "null"
+                ) {
+                    modeCounts[
+                        record.mode
+                    ] =
+                        (modeCounts[
+                            record.mode
+                        ] || 0) + 1;
+                }
+            }
+
+            var maxRegion = null;
+            var maxRegionCount = 0;
+
+            for (var r in regionCounts) {
+                if (
+                    regionCounts[r] >
+                    maxRegionCount
+                ) {
+                    maxRegionCount =
+                        regionCounts[r];
+                    maxRegion = r;
+                }
+            }
+
+            var maxMode = null;
+            var maxModeCount = 0;
+
+            for (var m in modeCounts) {
+                if (
+                    modeCounts[m] >
+                    maxModeCount
+                ) {
+                    maxModeCount =
+                        modeCounts[m];
+                    maxMode = m;
+                }
+            }
+
+            if (!maxRegion || !maxMode) {
+                return;
+            }
+
+            realmode = maxMode;
+            region = maxRegion;
+
+            if (
+                document.URL.includes(
+                    "jimboy3100.github.io"
+                )
+            ) {
+                history.pushState(
+                    stateObj,
+                    "page 2",
+                    "/play?sip=" + currentIP
+                );
+            } else if (
+                legendmod.integrity
+            ) {
+                history.pushState(
+                    stateObj,
+                    "page 2",
+                    "?sip=" +
+                        currentIP +
+                        "&r=" +
+                        maxRegion +
+                        "&m=" +
+                        maxMode
+                );
+            } else {
+                history.pushState(
+                    stateObj,
+                    "page 2",
+                    "?sip=" + currentIP
+                );
+            }
+
+            ModeRegionregion();
+
+            if (
+                $("#region").val() !==
+                    maxRegion ||
+                $("#gamemode").val() !==
+                    maxMode
+            ) {
+                var finalText =
+                    "<font color='yellow'>Best choice: Region:" +
+                    escapeHtml(
+                        maxRegion
+                    ) +
+                    ", Mode" +
+                    escapeHtml(
+                        maxMode
+                    ) +
+                    "</font><br>Information changed!";
+
+                toastr
+                    .info(finalText)
+                    .css(
+                        "width",
+                        "350px"
+                    );
+
+                $("#region").val(
+                    maxRegion
+                );
+                master.region =
+                    maxRegion;
+
+                $("#gamemode").val(
+                    maxMode
+                );
+                master.gameMode =
+                    maxMode;
+                legendmod.gameMode =
+                    maxMode;
+            }
         };
-        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
-            client2.connect();
-        }
+
+        client.connect();
     }
 }
 

@@ -1078,12 +1078,22 @@
 
         var buildBodyContent = function(tab) {
             if (tab === 'howto') {
+                var helpSettings = (window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Help Settings"]) ||
+                                   (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Help Settings"]) || [];
+                var getHelp = function(k, def) {
+                    if (!helpSettings || !helpSettings.length) return def;
+                    var s = helpSettings.find(function(x) { return x.key === k; });
+                    return s ? s.value : def;
+                };
+                var minPosFFA = getHelp("potionsMinPositionFreeForAll", "10");
+                var minTimeFFA = getHelp("potionsMinTimeFreeForAll", "100");
+
                 return `
                     <div style="display: flex; gap: 16px; padding: 10px;">
                         <div style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
                             <div style="font-weight: 800; font-size: 14px; color: ${t.mc}; margin-bottom: 12px;">🏆 Get on the leaderboard to win Mystery Potions</div>
                             <div style="font-size: 12px; color: ${t.tc}; line-height: 1.8;">
-                                <div><b>Classic / FFA:</b> Stay in top 10 for 100 seconds</div>
+                                <div><b>Classic / FFA:</b> Stay in top ${minPosFFA} for ${minTimeFFA} seconds</div>
                                 <div><b>Teams:</b> Survive 4 minutes</div>
                                 <div><b>Battle Royale / Rush:</b> Finish in top half</div>
                             </div>
