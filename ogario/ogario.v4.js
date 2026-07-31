@@ -10900,7 +10900,6 @@ function thelegendmodproject() {
         },
         activateTimedEvent(eventId) {
             console.log("[LM] Activate Timed Event: " + eventId);
-            toastr.info('<b>[SERVER]:</b> Claiming ' + eventId.replace(/([A-Z])/g, ' $1').trim() + '...');
             return this.sendProto(110, { activateTimedEventRequestField: { eventId: eventId } });
         },
         activateQuest(productId) {
@@ -15961,9 +15960,9 @@ function thelegendmodproject() {
                                 this.updateEvents([te.userTimedEvent]);
                                 var nextIn = te.userTimedEvent.nextAvailableInSeconds || 0;
                                 var mins = Math.floor(nextIn / 60);
-                                toastr.success('<b>[SERVER]:</b> Reward claimed! &#x2714; Next available in ' + mins + ' min');
+                                console.log('[LM] Reward claimed! Next available in ' + mins + ' min');
                             } else {
-                                toastr.success('<b>[SERVER]:</b> Timed event reward claimed! &#x2714;');
+                                console.log('[LM] Timed event reward claimed!');
                             }
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
@@ -16065,7 +16064,7 @@ function thelegendmodproject() {
                             if (u.userPotions && u.userPotions.length) {
                                 this.updatePotions(u.userPotions);
                             }
-                            toastr.success('<b>[SERVER]:</b> Potion brewing started! &#x1F9EA;');
+                            console.log('[LM] Potion brewing started!');
                         }
                     } catch(brewErr) {
                         console.warn("[LM] Error parsing brew potion response:", brewErr);
