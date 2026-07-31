@@ -7263,7 +7263,7 @@ function thelegendmodproject() {
             $(document).on(`click`, `#potions`, event => {
                 event.preventDefault();
                 var id = event.target.parentNode.id;
-                if (id && LM.user.potionsStatus.hasOwnProperty(id)) {
+                if (id && LM.user && LM.user.potionsStatus && LM.user.potionsStatus.hasOwnProperty(id)) {
                     var potion = LM.user.potionsStatus[id];
                     if (potion.status === 1) {
                         window.brewPotion(potion.slot);

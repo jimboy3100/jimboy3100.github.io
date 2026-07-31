@@ -22,19 +22,17 @@ else{
 	window.agarioID=localStorage.getItem("agarioID");	
 }
 */
+// Early fallback so onclick="window.closeSpecialShopModal()" never throws before the modal opens
+window.closeSpecialShopModal = window.closeSpecialShopModal || function() {
+    var modal = document.getElementById('specialShopModal');
+    if (modal) modal.remove();
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+    document.body.classList.remove('modal-open');
+};
+
 window.MiniclipConfigDestination = window.LM_CONFIG_URL();
 window.MiniclipDestination = window.LM_CDN_BASE();
-
-// Early fallback so onclick="window.closeSpecialShopModal()" never throws before the modal opens
-if (typeof window.closeSpecialShopModal !== 'function') {
-    window.closeSpecialShopModal = function() {
-        var modal = document.getElementById('specialShopModal');
-        if (modal) modal.remove();
-        var backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) backdrop.remove();
-        document.body.classList.remove('modal-open');
-    };
-}
 
 if (window.agarversion != null) {
     var _av = window.agarversion;
@@ -156,6 +154,7 @@ function SpecialDeals(defaultTab) {
             '.skin-card .skin-color { width: 64px; height: 64px; border-radius: 50%; position: absolute; top: 0; left: 0; border: 2px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }',
             '.skin-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: block; position: absolute; top: 2px; left: 2px; z-index: 1; }',
             '.skin-card .skin-name { font-size: 10px; color: ' + tc2 + '; font-family: "Roboto Condensed", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }',
+            '.skin-card .skin-price-tag { font-size: 10px; font-weight: 800; font-family: "Roboto Condensed", sans-serif; margin-top: 1px; text-align: center; }',
             '.skin-card:hover .skin-name { color: ' + tc + '; }',
             '.skin-card-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; opacity: 0; transition: opacity 0.2s; }',
             '.skin-card:hover .skin-card-actions, .skin-card.equipped .skin-card-actions { opacity: 1; }',
@@ -1592,6 +1591,7 @@ function populateSkins() {
         return;
     }
     _populateSkinsRetries = 0; // reset for next open
+    window._skinPriceCache = null; // force price cache rebuild from fresh config
 
     var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
     var currentFilter = 'all';
@@ -1977,26 +1977,45 @@ function getSkinPrice(productId) {
         var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"];
         var softPurchases = window.GameConfiguration.gameConfig["Wallet - Soft Purchases"];
 
-        if (!shopSkins || !softPurchases) return null;
+        if (!shopSkins) return null;
 
         // Index soft purchases by purchaseId
         var purchaseMap = {};
-        for (var p = 0; p < softPurchases.length; p++) {
-            var sp = softPurchases[p];
-            if (sp.purchaseId) purchaseMap[sp.purchaseId] = sp;
+        if (softPurchases) {
+            for (var p = 0; p < softPurchases.length; p++) {
+                var sp = softPurchases[p];
+                if (sp.purchaseId) purchaseMap[sp.purchaseId] = sp;
+            }
         }
 
-        // Map skin productId → price info
+        // Map skin productId AND productIdToQuantify → price info
         for (var s = 0; s < shopSkins.length; s++) {
             var shopSkin = shopSkins[s];
             var pid = shopSkin.productId;
+            var gameplayPid = shopSkin.productIdToQuantify;
             var refVal = shopSkin.referenceValue;
-            if (pid && refVal && purchaseMap[refVal]) {
+            var skinType = shopSkin.type || '';
+
+            var priceEntry = null;
+
+            if (skinType === 'REWARD') {
+                // Reward skins are free (earned via level-up)
+                priceEntry = { amount: 0, currency: 'free', type: 'REWARD' };
+            } else if (skinType === 'SOFT' && refVal && purchaseMap[refVal]) {
                 var purchase = purchaseMap[refVal];
-                window._skinPriceCache[pid] = {
+                priceEntry = {
                     amount: purchase.currencyAmount || 0,
-                    currency: (purchase.currencyProductId === 'dna') ? 'dna' : 'coin'
+                    currency: (purchase.currencyProductId === 'dna') ? 'dna' : 'coin',
+                    type: 'SOFT'
                 };
+            } else if (skinType === 'INAPP') {
+                priceEntry = { amount: 0, currency: 'real', type: 'INAPP' };
+            }
+
+            if (priceEntry) {
+                // Index by both shop productId and gameplay productId
+                if (pid) window._skinPriceCache[pid] = priceEntry;
+                if (gameplayPid) window._skinPriceCache[gameplayPid] = priceEntry;
             }
         }
     }
@@ -2057,6 +2076,23 @@ function renderSkinPage() {
             var badgeHtml = isEquipped ? '<div class="equipped-badge">&#x2714; Equipped</div>' : '';
             var ownedBadgeHtml = (isOwned && !isEquipped) ? '<div class="owned-badge">&#x2B50; Owned</div>' : '';
 
+            // Determine price info for display
+            var priceInfo = getSkinPrice(skin.productId);
+            var skinType = skin.type || '';
+            var priceTagHtml = '';
+
+            if (isOwned) {
+                priceTagHtml = '<div class="skin-price-tag" style="color: #4caf50;">&#x2714; Owned</div>';
+            } else if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
+                priceTagHtml = '<div class="skin-price-tag" style="color: #4caf50;">Free</div>';
+            } else if (priceInfo && priceInfo.amount > 0) {
+                if (priceInfo.currency === 'dna') {
+                    priceTagHtml = '<div class="skin-price-tag"><span style="color:#aa00ff;">&#x1F9EC; ' + priceInfo.amount.toLocaleString() + '</span></div>';
+                } else {
+                    priceTagHtml = '<div class="skin-price-tag"><span style="color:#ffc107;">&#x1FA99; ' + priceInfo.amount.toLocaleString() + '</span></div>';
+                }
+            }
+
             var actionBtnHtml;
             if (isOwned) {
                 actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + imgFile + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
@@ -2065,14 +2101,15 @@ function renderSkinPage() {
                     actionBtnHtml += '<button class="skin-btn-buy" onclick="deleteCustomSkin(\'' + skin.productId + '\');event.stopPropagation();" style="flex: 0.6; background: ' + getShopTheme().b4 + ' !important; font-size: 9px;">Delete</button>';
                 }
             } else {
-                // Look up price for unowned skins
-                var priceInfo = getSkinPrice(skin.productId);
-                var priceLabel = '';
-                if (priceInfo && priceInfo.amount > 0) {
-                    var icon = priceInfo.currency === 'dna' ? '🧬' : '💰';
-                    priceLabel = ' ' + icon + ' ' + priceInfo.amount;
+                // Buy button with price label
+                var btnLabel = 'Buy';
+                if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
+                    btnLabel = 'Get Free';
+                } else if (priceInfo && priceInfo.amount > 0) {
+                    var coinIcon = priceInfo.currency === 'dna' ? '&#x1F9EC;' : '&#x1FA99;';
+                    btnLabel = priceInfo.amount.toLocaleString() + ' ' + coinIcon;
                 }
-                actionBtnHtml = '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">Buy' + priceLabel + '</button>';
+                actionBtnHtml = '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">' + btnLabel + '</button>';
             }
 
             // Build image HTML with cell color circle behind it (like agar.io)
@@ -2086,6 +2123,7 @@ function renderSkinPage() {
                     imgHtml +
                 '</div>' +
                 '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
+                priceTagHtml +
                 '<div class="skin-card-actions">' +
                 actionBtnHtml +
                 '</div>';
@@ -2167,9 +2205,10 @@ function buySkin(productId) {
             var pi = getSkinPrice(productId);
             var label = 'Buy';
             if (pi && pi.amount > 0) {
-                label += ' ' + (pi.currency === 'dna' ? '🧬' : '💰') + ' ' + pi.amount;
+                var ci = pi.currency === 'dna' ? '&#x1F9EC;' : '&#x1FA99;';
+                label = pi.amount.toLocaleString() + ' ' + ci;
             }
-            btn.text(label);
+            btn.html(label);
         }
     }, 10000);
 
