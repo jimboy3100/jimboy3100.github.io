@@ -11269,6 +11269,7 @@ form {
 	height: 30px;
 	position: relative;
 	border: 2px solid #01612B;
+	transform-origin: left !important;
 }
 
 .agario-exp-bar .progress-bar {
