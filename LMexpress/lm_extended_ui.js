@@ -1924,10 +1924,10 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.claimAllRewardsAndGifts();">
+            <button id="lm-claim-all-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.claimAllRewardsAndGifts();">
                 <i class="fa fa-gift"></i> Claim All
             </button>
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; background: linear-gradient(135deg, #ff9800, #e65100); border: none;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
                 🔥 Daily Deal
             </button>
             <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.showLeaguesModal();">
