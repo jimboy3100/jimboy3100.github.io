@@ -1046,7 +1046,7 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var primaryUrl = "https://www.legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json";
+    var primaryUrl = "https://configs-web.agar.io/live/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
     var fallbackUrl = "https://configs-web.agario.miniclippt.com/live/" + (window.agarversion || "") + "GameConfiguration.json";
     var settled = false;
 
