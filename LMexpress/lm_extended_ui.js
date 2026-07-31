@@ -537,7 +537,7 @@
                     var amount = '?';
                     var currency = '🏆';
                     try {
-                        var gcfg = (window.LMAgarGameConfiguration || window.GameConfiguration || {}).gameConfig || {};
+                        var gcfg = (window.GameConfiguration || window.LMAgarGameConfiguration || {}).gameConfig || {};
                         var bonuses = gcfg["Wallet - Bonuses and Rewards"];
                         if (bonuses) {
                             var bonus = bonuses.find(function(b) { return b.id === prize.rewardId; });
