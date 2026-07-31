@@ -2105,7 +2105,7 @@ function renderSkinPage() {
             var priceTagHtml = '';
 
             if (isOwned) {
-                priceTagHtml = '<div class="skin-price-tag" style="color: #4caf50;">&#x2714; Owned</div>';
+                priceTagHtml = ''; // badge at top-left already shows "Owned"
             } else if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
                 priceTagHtml = '<div class="skin-price-tag" style="color: #4caf50;">Free</div>';
             } else if (priceInfo && priceInfo.amount > 0) {
@@ -2200,22 +2200,91 @@ function buySkin(productId) {
     var purchaseId = getSkinPurchaseId(productId);
     var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
 
-    // Show confirmation with price
-    var confirmMsg = 'Buy "' + displayName + '"?';
+    // Resolve skin image for the confirmation modal
+    var cdnBase = window.LM_CDN_BASE ? window.LM_CDN_BASE() : 'https://jimboy3000.github.io/vanillaskins/';
+    var skinData = findSkinInConfig(productId);
+    var skinImgUrl = '';
+    if (skinData) {
+        var imgF = skinData.image;
+        if (imgF === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[productId]) {
+            imgF = window.SpineSkinMap[productId] + '.png';
+        }
+        if (imgF && imgF !== 'uses_spine') skinImgUrl = cdnBase + imgF;
+    }
+    if (!skinImgUrl) skinImgUrl = 'https://jimboy3100.github.io/banners/icondeal2.png';
+
+    // Cell color for visual ring
+    var cellColor = (skinData && skinData.cellColor) || '0x88888800';
+    var hexC = cellColor.replace('0x', '');
+    while (hexC.length < 6) hexC = '0' + hexC;
+    var rC = parseInt(hexC.substring(0, 2), 16);
+    var gC = parseInt(hexC.substring(2, 4), 16);
+    var bC = parseInt(hexC.substring(4, 6), 16);
+    var ringColor = 'rgb(' + rC + ',' + gC + ',' + bC + ')';
+
+    // Price info
+    var costHtml = '<div style="color: #4caf50; font-weight: 800; font-size: 16px;">Free</div>';
+    var balanceWarning = '';
     if (priceInfo && priceInfo.amount > 0) {
-        var currencyName = priceInfo.currency === 'dna' ? 'DNA 🧬' : 'Coins 💰';
+        var currencyIcon = priceInfo.currency === 'dna' ? '🧬' : '💰';
+        var currencyLabel = priceInfo.currency === 'dna' ? 'DNA' : 'Coins';
         var currentBalance = 0;
         if (window.application && window.application.user) {
             currentBalance = priceInfo.currency === 'dna' ? (window.application.user.dna || 0) : (window.application.user.coins || 0);
         }
-        confirmMsg += '\n\nCost: ' + priceInfo.amount + ' ' + currencyName;
-        confirmMsg += '\nYour balance: ' + currentBalance + ' ' + currencyName;
+        costHtml = '<div style="font-size: 22px; font-weight: 900; color: #fff;">' + priceInfo.amount.toLocaleString() + ' <span style="font-size: 18px;">' + currencyIcon + '</span></div>' +
+            '<div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">Your ' + currencyLabel + ': ' + currentBalance.toLocaleString() + '</div>';
         if (currentBalance < priceInfo.amount) {
-            confirmMsg += '\n\n⚠️ You may not have enough ' + currencyName + '!';
+            balanceWarning = '<div style="color: #ff9800; font-size: 12px; font-weight: 700; margin-top: 8px; padding: 6px 12px; border-radius: 6px; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.3);">⚠️ You may not have enough ' + currencyLabel + '!</div>';
         }
     }
 
-    if (!confirm(confirmMsg)) return;
+    // Remove old confirm modal if any
+    var old = document.getElementById('skin-confirm-modal');
+    if (old) old.remove();
+
+    var t = getShopTheme();
+    var modal = document.createElement('div');
+    modal.id = 'skin-confirm-modal';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index: 100010; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease;';
+    modal.innerHTML =
+        '<div style="background: ' + t.pc + '; border: 2px solid ' + t.mc + '; border-radius: 14px; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); overflow: hidden; font-family: \'Roboto Condensed\', sans-serif;">' +
+            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
+                '<div style="font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 1px;">Confirm Purchase</div>' +
+            '</div>' +
+            '<div style="padding: 20px; text-align: center;">' +
+                '<div style="width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 12px; background: ' + ringColor + '; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px ' + ringColor + '40; border: 3px solid rgba(255,255,255,0.15);">' +
+                    '<img src="' + skinImgUrl + '" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover;" onerror="this.style.opacity=\'0\';">' +
+                '</div>' +
+                '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 14px;">' + displayName + '</div>' +
+                '<div style="padding: 10px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;">' +
+                    costHtml +
+                '</div>' +
+                balanceWarning +
+            '</div>' +
+            '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
+                '<button id="skin-confirm-cancel" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15); transition: all 0.15s;">Cancel</button>' +
+                '<button id="skin-confirm-buy" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none; transition: all 0.15s;">Buy Now</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(modal);
+
+    // Backdrop click to dismiss
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+    document.getElementById('skin-confirm-cancel').addEventListener('click', function() { modal.remove(); });
+    document.getElementById('skin-confirm-buy').addEventListener('click', function() {
+        modal.remove();
+        _executeSkinPurchase(productId, purchaseId, displayName);
+    });
+}
+
+/**
+ * Execute the actual skin purchase after confirmation.
+ * Separated from buySkin() so the confirmation modal can call it async.
+ */
+function _executeSkinPurchase(productId, purchaseId, displayName) {
+    // Store pending purchase so opcode 71 handler can auto-equip
+    window._pendingSkinPurchaseId = productId;
 
     // Disable the clicked button temporarily (10s cooldown)
     var btn = $('.skin-card[data-product-id="' + productId + '"] .skin-btn-buy');
@@ -2233,6 +2302,7 @@ function buySkin(productId) {
             }
             btn.html(label);
         }
+        window._pendingSkinPurchaseId = null;
     }, 10000);
 
     // Try protocol-based soft purchase first (DNA/coin buy — opcode 70)

@@ -15993,6 +15993,21 @@ function thelegendmodproject() {
                                 if (sp.productUpdates && sp.productUpdates.length) {
                                     this.updateProducts(sp.productUpdates);
                                 }
+                                // Auto-equip the purchased skin (like the original client)
+                                var pendingSkin = window._pendingSkinPurchaseId;
+                                if (pendingSkin) {
+                                    console.log("[LM] Auto-equipping purchased skin: " + pendingSkin);
+                                    // Set as equipped in localStorage and send opcode 80
+                                    if (typeof window.equipSkin === 'function') {
+                                        try { window.equipSkin(pendingSkin); } catch(eqe) {}
+                                    } else {
+                                        localStorage.setItem('equippedSkinId', pendingSkin);
+                                        if (typeof window.changeSkin === 'function') {
+                                            try { window.changeSkin(pendingSkin); } catch(cse) {}
+                                        }
+                                    }
+                                    window._pendingSkinPurchaseId = null;
+                                }
                                 try { this.createSkinsHTML(); } catch(e) {}
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
