@@ -8032,7 +8032,10 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
-            if (!url || typeof url !== 'string') return;
+            if (!url || typeof url !== 'string' || url.trim().length < 10) return;
+            url = url.trim();
+            // Validate basic URL structure (must contain a valid domain dot e.g. http(s)://domain.com/...)
+            if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
             // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
             if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com')) {
@@ -8245,6 +8248,7 @@ function thelegendmodproject() {
                         if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
                         if (img[url]) img[url]._failed = true;
                         if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                        if (!url || typeof url !== 'string' || url.length < 10 || !url.includes('.')) return;
                         console.warn("[LM] Skin URL failed to load: " + url);
                         var filename = url.split('/').pop().replace('?', '');
                         if (!filename) return;
