@@ -233,8 +233,10 @@
         `;
         document.body.appendChild(modal);
 
-        // Fetch data with safety fallback so modal never gets stuck
-        if (typeof window.requestLeaguesInfo === 'function') {
+        // Fetch data via official protocol request
+        if (typeof window.userLeaguesInfoRequest === 'function') {
+            window.userLeaguesInfoRequest();
+        } else if (typeof window.requestLeaguesInfo === 'function') {
             window.requestLeaguesInfo(1);
         }
 
@@ -244,52 +246,62 @@
                 document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
                     detail: {
                         leagueName: 'Weekly League',
-                        leagueEntries: [
-                            { displayName: 'Leader Player 1', score: 24500 },
-                            { displayName: 'Pro Player 2', score: 18200 },
-                            { displayName: 'Challenger 3', score: 14100 },
-                            { displayName: (window.agarioProfileName || 'You (Guest)'), score: 8500 }
-                        ]
+                        leagueEntries: window.RecordPlayers || []
                     }
                 }));
             }
         }, 3000);
     };
 
-    // Listen to leagues update event
+    // Listen to leagues update event and render real player data
     document.addEventListener('leaguesInfoUpdate', function(e) {
         var data = e.detail;
         var body = document.getElementById('lm-leagues-body');
-        if (!body || !data) return;
+        if (!body) return;
 
         var t = getTheme();
         var html = '';
 
-        if (data.leagueName) {
+        if (data && data.leagueName) {
             html += `<div style="text-align: center; margin-bottom: 16px; font-weight: 700; color: ${t.mc}; font-size: 16px;">
                 Current Tier: ${data.leagueName.toUpperCase()}
             </div>`;
         }
 
-        if (data.leagueEntries && data.leagueEntries.length) {
-            data.leagueEntries.forEach(function(entry, idx) {
-                var rank = idx + 1;
+        // Use real server RecordPlayers data or parsed league entries
+        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers || []);
+        var validCount = 0;
+
+        if (entries && entries.length) {
+            entries.forEach(function(entry, idx) {
+                if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
+                validCount++;
+                var rank = validCount;
                 var badgeClass = rank === 1 ? 'lm-rank-1' : (rank === 2 ? 'lm-rank-2' : (rank === 3 ? 'lm-rank-3' : 'lm-rank-other'));
-                var name = entry.displayName || ('Player ' + (entry.userId || rank));
-                var score = entry.score !== undefined ? entry.score.toLocaleString() : '0';
+                var name = entry.displayName || entry.id || ('Player ' + (entry.uid || rank));
+                var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.xp ? entry.xp.toLocaleString() : '0');
+                var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                var country = (entry.country || 'UN').toLowerCase();
 
                 html += `
                     <div class="lm-league-card">
-                        <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="lm-rank-badge ${badgeClass}">${rank}</div>
-                            <div style="font-weight: 600; color: ${t.tc};">${name}</div>
+                            <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid ${t.mc};" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                            <div style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${name}</div>
+                            <span class="country-icon flag-icon flag-icon-${country}" style="margin-left: 4px;"></span>
                         </div>
-                        <div style="font-weight: 700; color: ${t.mc};">${score} XP</div>
+                        <div style="font-weight: 700; color: ${t.mc}; font-size: 13px;">${score} XP</div>
                     </div>
                 `;
             });
-        } else {
-            html += `<div style="text-align: center; padding: 20px; color: ${t.tc2};">No league participants recorded yet this week.</div>`;
+        }
+
+        if (validCount === 0) {
+            html += `<div style="text-align: center; padding: 25px; color: ${t.tc2}; font-size: 13px;">
+                <i class="fa fa-trophy fa-2x" style="color: ${t.mc}; margin-bottom: 8px;"></i><br>
+                No live weekly league participants recorded yet for your current server tier.<br>Play a match to earn XP and join this week's standings!
+            </div>`;
         }
 
         body.innerHTML = html;
