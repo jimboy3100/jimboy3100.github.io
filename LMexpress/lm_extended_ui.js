@@ -1141,29 +1141,31 @@
                     </div>
                 `;
             } else {
-                var rowsHtml = '';
                 var potionHelpItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
-                                      (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]);
+                                      ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
+                                       (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
                 
                 if (potionHelpItems && potionHelpItems.length) {
-                    var tierColors = { "Common": "#4caf50", "Rare": "#2196f3", "Exotic": "#e91e63", "Mystical": "#ffb300" };
+                    var tierColors = { "potion_common": "#4caf50", "potion_rare": "#2196f3", "potion_exotic": "#e91e63", "potion_mystical": "#ffb300", "potion_superior": "#4caf50", "potion_epic": "#00bcd4", "potion_legendary": "#e91e63", "potion_mythical": "#ffb300", "Common": "#4caf50", "Rare": "#2196f3", "Exotic": "#e91e63", "Mystical": "#ffb300" };
                     for (var p = 0; p < potionHelpItems.length; p++) {
                         var ph = potionHelpItems[p];
                         var pColor = tierColors[ph.potionId] || t.mc;
-                        var specText = ph.minSpecialPieces ? ` <span style="font-size: 10px; color: ${pColor};">(${ph.minSpecialPieces})</span>` : '';
+                        var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${pColor};">(${ph.minSpecialPieces})</span>` : '';
+                        var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + ph.coinText) : '<span style="opacity: 0.5;">—</span>';
+                        var nameLabel = (ph.potionId || 'Potion').replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();});
                         rowsHtml += `
                             <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                                <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${pColor}; font-size: 13px;">
-                                    🧪 ${ph.potionId || 'Potion'}
+                                <div style="width: 130px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${pColor}; font-size: 13px;">
+                                    🧪 ${nameLabel}
                                 </div>
-                                <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
+                                <div style="width: 150px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
                                     ${ph.skinPieces || 'x1'}${specText}
                                 </div>
-                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                    💰 ${ph.coinText || '+Coins'}
+                                <div style="width: 100px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                    ${coinVal}
                                 </div>
                                 <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                    🏆 ${ph.trophies || 'x1'}
+                                    🏆 x1
                                 </div>
                                 <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
                                     and more!
