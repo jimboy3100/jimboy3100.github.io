@@ -16014,7 +16014,7 @@ function thelegendmodproject() {
 
                         $('.progress-bar-striped').width(exp + '%');
                         $('.agario-exp-bar .progress-bar').css('width', exp + '%');
-                        $('.agario-exp-bar .progress-bar-text').text(gXp.toLocaleString() + ' / ' + gNextXp.toLocaleString() + ' XP (' + exp + '%)');
+                        $('.agario-exp-bar .progress-bar-text').text(gXp.toLocaleString() + ' / ' + gNextXp.toLocaleString() + ' XP');
                         $('.progress-bar-star3').text(gLevel);
                         $('.progress-bar-star').text(gLevel);
                     }
@@ -17184,7 +17184,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             $('.progress-bar-striped').width(exp + '%');
             $('.agario-exp-bar .progress-bar').css('width', exp + '%');
-            var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP (' + exp + '%)';
+            var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
             $('.agario-exp-bar .progress-bar-text').text(xpText);
 
             $('.progress-bar-star3').text(level);

@@ -2185,7 +2185,8 @@
 
         var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
         $('.agario-exp-bar .progress-bar').css('width', percent + '%');
-        $('.agario-exp-bar .progress-bar-text').text(xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP (' + percent + '%)');
+        var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
+        $('.agario-exp-bar .progress-bar-text').text(xpText);
         $('.progress-bar-star').text(level);
 
         // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
