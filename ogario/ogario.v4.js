@@ -8708,6 +8708,21 @@ function thelegendmodproject() {
                         mmCtx.strokeRect(tMinX, tMinY, tW, tH);
                         mmCtx.restore();
                     }
+                    if (window.LM && window.LM.safeAreaRing && window.LM.safeAreaRing.radius > 0) {
+                        var sr = window.LM.safeAreaRing;
+                        var srx = Math.round((sr.x + r) * n);
+                        var sry = Math.round((sr.y + l) * n);
+                        var srr = Math.round(sr.radius * n);
+                        this.miniMapCtx.save();
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.arc(srx, sry, srr, 0, this.pi2, false);
+                        this.miniMapCtx.strokeStyle = '#ff2244';
+                        this.miniMapCtx.lineWidth = 2;
+                        this.miniMapCtx.fillStyle = 'rgba(255, 34, 68, 0.15)';
+                        this.miniMapCtx.fill();
+                        this.miniMapCtx.stroke();
+                        this.miniMapCtx.restore();
+                    }
                     if (defaultmapsettings.showMiniMapGhostCells) {
                         var h = ogario.ghostCells;
                         this.miniMapCtx.beginPath();
@@ -24508,5 +24523,15 @@ Array.prototype.stDev = function stDev() {
                 });
             });
         }).observe(document.documentElement, { childList: true, subtree: true });
+    }
+
+    /* Auto-load Extended UI Features Module */
+    try {
+        var extUiScript = document.createElement('script');
+        extUiScript.type = 'text/javascript';
+        extUiScript.src = 'https://www.legendmod.ml/LMexpress/lm_extended_ui.js';
+        document.body.appendChild(extUiScript);
+    } catch(e) {
+        console.warn('[LM] Error auto-loading extended UI script:', e);
     }
 })();
