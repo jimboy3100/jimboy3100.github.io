@@ -281,7 +281,7 @@ function SpecialDeals() {
             // Potion buttons
             '<button class="btn btn-sm" onclick="window.brewPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧪 Brew</button>' +
             '<button class="btn btn-sm" onclick="window.openPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧫 Open</button>' +
-            '<button class="btn btn-sm" onclick="if(window.application)window.application.openPotionForProduct(prompt(\'Product ID:\'))" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;" title="Open potion for a specific product ID">🧬 Potion→Prod</button>' +
+            '<button class="btn btn-sm" onclick="window.showPotionProductSelector()" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;" title="Select and open specific potion types">🧬 Potion Selector</button>' +
             '</div>' +
 
             // Encoded UID & Config section (collapsible)
@@ -936,6 +936,90 @@ function claimFreeCoins() {
     }, 10000);
 }
 window.claimFreeCoins = claimFreeCoins;
+
+/**
+ * Visual Potion Selector Modal — replaces raw prompt('Product ID:')
+ */
+function showPotionProductSelector() {
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('open potions')) return;
+
+    var t = getShopTheme();
+    var old = document.getElementById('lm-potion-selector-modal');
+    if (old) old.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'lm-potion-selector-modal';
+    modal.className = 'lm-modal-overlay';
+    modal.style.zIndex = '999999';
+
+    // Build options from active user potions or standard potion types
+    var activePotions = [];
+    if (window.application && window.application.user && window.application.user.potionsStatus) {
+        var ps = window.application.user.potionsStatus;
+        for (var pKey in ps) {
+            if (ps[pKey] && ps[pKey].type) {
+                activePotions.push({
+                    slot: ps[pKey].slot,
+                    type: ps[pKey].type,
+                    status: ps[pKey].status === 3 ? 'Ready to Open' : (ps[pKey].status === 2 ? 'Brewing' : 'Ready to Brew')
+                });
+            }
+        }
+    }
+
+    var defaultPotions = [
+        { type: 'potion_common_1', name: 'Common Potion' },
+        { type: 'potion_rare_1', name: 'Rare Potion' },
+        { type: 'potion_epic_1', name: 'Epic Potion' },
+        { type: 'potion_exotic_1', name: 'Exotic Potion' }
+    ];
+
+    var html = `
+        <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 440px;">
+            <div class="lm-modal-header" style="background: ${t.pc2};">
+                <div class="lm-modal-title" style="color: ${t.mc}; font-size: 16px;">
+                    🧪 Select Potion to Open
+                </div>
+                <button class="lm-modal-close" onclick="document.getElementById('lm-potion-selector-modal').remove();">&times;</button>
+            </div>
+            <div class="lm-modal-body" style="padding: 16px;">
+    `;
+
+    if (activePotions.length) {
+        html += `<div style="font-weight: 700; margin-bottom: 8px; color: ${t.tc}; font-size: 12px;">Active Account Potions:</div>`;
+        activePotions.forEach(function(p) {
+            var name = p.type.replace(/_/g, ' ').toUpperCase();
+            html += `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+                    <div>
+                        <div style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${name} (Slot ${p.slot})</div>
+                        <div style="font-size: 11px; color: ${t.tc2};">${p.status}</div>
+                    </div>
+                    <button class="btn btn-sm btn-success" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.openPotion) window.openPotion(${p.slot}); document.getElementById('lm-potion-selector-modal').remove();">Open</button>
+                </div>
+            `;
+        });
+    }
+
+    html += `<div style="font-weight: 700; margin: 12px 0 8px 0; color: ${t.tc}; font-size: 12px;">Standard Potion Types:</div>`;
+    defaultPotions.forEach(function(p) {
+        html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${p.name}</div>
+                <button class="btn btn-sm btn-primary" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct('${p.type}'); document.getElementById('lm-potion-selector-modal').remove();">Open</button>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    modal.innerHTML = html;
+    document.body.appendChild(modal);
+}
+window.showPotionProductSelector = showPotionProductSelector;
 
 /**
  * Populate the deals grid with cards from GameConfiguration
