@@ -19,31 +19,37 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
         db: null,
         ready: false,
         queue: [],
+        evictingSkins: false,
+        evictingAudio: false,
         init: function () {
             var self = this;
             try {
-                var req = indexedDB.open("LegendModSkinCache", 2);
+                // Version 3: Object format changes to { data: Blob, timestamp: number }
+                var req = indexedDB.open("LegendModSkinCache", 3);
                 req.onupgradeneeded = function (e) {
                     var db = e.target.result;
+                    if (e.oldVersion < 3) {
+                        if (db.objectStoreNames.contains("skins")) db.deleteObjectStore("skins");
+                        if (db.objectStoreNames.contains("audio")) db.deleteObjectStore("audio");
+                    }
                     if (!db.objectStoreNames.contains("skins")) {
-                        db.createObjectStore("skins");
+                        var skinsStore = db.createObjectStore("skins");
+                        skinsStore.createIndex("timestamp", "timestamp", { unique: false });
                     }
                     if (!db.objectStoreNames.contains("audio")) {
-                        db.createObjectStore("audio");
+                        var audioStore = db.createObjectStore("audio");
+                        audioStore.createIndex("timestamp", "timestamp", { unique: false });
                     }
                 };
                 req.onsuccess = function (e) {
                     self.db = e.target.result;
                     self.ready = true;
-                    /* Request persistent storage so Chrome never evicts the skin cache
-                     * under storage pressure.  persist() returns a Promise and only
-                     * prompts on first call — subsequent calls are silent no-ops. */
                     if (navigator.storage && navigator.storage.persist) {
                         navigator.storage.persist().then(function (granted) {
                             if (granted) {
-                                console.log('[LM Skin Storage] Persistent storage granted — cache will survive browser restarts.');
+                                console.log('[LM Skin Storage] Persistent storage granted \u2014 cache will survive browser restarts.');
                             } else {
-                                console.warn('[LM Skin Storage] Persistent storage denied — cache may be evicted by Chrome.');
+                                console.warn('[LM Skin Storage] Persistent storage denied \u2014 cache may be evicted by Chrome.');
                             }
                         });
                     }
@@ -67,6 +73,64 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 self.ready = true;
             }
         },
+        _touch: function (storeName, url) {
+            if (!this.db) return;
+            try {
+                var tx = this.db.transaction(storeName, "readwrite");
+                var store = tx.objectStore(storeName);
+                var req = store.get(url);
+                req.onsuccess = function () {
+                    var record = req.result;
+                    if (record && record.data) {
+                        record.timestamp = Date.now();
+                        store.put(record, url);
+                    }
+                };
+            } catch (e) { }
+        },
+        evictIfNeeded: function (storeName, limit) {
+            if (!this.db) return;
+            var self = this;
+            var flagName = storeName === 'skins' ? 'evictingSkins' : 'evictingAudio';
+            if (this[flagName]) return;
+            this[flagName] = true;
+            try {
+                var tx = this.db.transaction(storeName, "readonly");
+                var store = tx.objectStore(storeName);
+                var countReq = store.count();
+                countReq.onsuccess = function () {
+                    var count = countReq.result;
+                    if (count > limit) {
+                        var toDelete = count - limit;
+                        var deleteTx = self.db.transaction(storeName, "readwrite");
+                        var deleteStore = deleteTx.objectStore(storeName);
+                        var index = deleteStore.index("timestamp");
+                        var cursorReq = index.openCursor();
+                        cursorReq.onsuccess = function (e) {
+                            var cursor = e.target.result;
+                            if (cursor && toDelete > 0) {
+                                cursor.delete();
+                                toDelete--;
+                                cursor.continue();
+                            }
+                        };
+                        deleteTx.oncomplete = function () {
+                            self[flagName] = false;
+                        };
+                        deleteTx.onerror = function () {
+                            self[flagName] = false;
+                        };
+                    } else {
+                        self[flagName] = false;
+                    }
+                };
+                countReq.onerror = function () {
+                    self[flagName] = false;
+                };
+            } catch (e) {
+                this[flagName] = false;
+            }
+        },
         get: function (url, cb) {
             if (!this.ready) {
                 this.queue.push({ type: "skin", url: url, cb: cb });
@@ -77,7 +141,15 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 var tx = this.db.transaction("skins", "readonly");
                 var store = tx.objectStore("skins");
                 var req = store.get(url);
-                req.onsuccess = function () { cb(req.result || null); };
+                var self = this;
+                req.onsuccess = function () { 
+                    if (req.result && req.result.data) {
+                        cb(req.result.data);
+                        setTimeout(function() { self._touch("skins", url); }, 0);
+                    } else {
+                        cb(null);
+                    }
+                };
                 req.onerror = function () { cb(null); };
             } catch (e) { cb(null); }
         },
@@ -86,7 +158,11 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             try {
                 var tx = this.db.transaction("skins", "readwrite");
                 var store = tx.objectStore("skins");
-                store.put(data, url);
+                store.put({ data: data, timestamp: Date.now() }, url);
+                var self = this;
+                tx.oncomplete = function() {
+                    setTimeout(function() { self.evictIfNeeded("skins", 1000); }, 0);
+                };
             } catch (e) { }
         },
         getAudio: function (url, cb) {
@@ -99,7 +175,15 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 var tx = this.db.transaction("audio", "readonly");
                 var store = tx.objectStore("audio");
                 var req = store.get(url);
-                req.onsuccess = function () { cb(req.result || null); };
+                var self = this;
+                req.onsuccess = function () { 
+                    if (req.result && req.result.data) {
+                        cb(req.result.data);
+                        setTimeout(function() { self._touch("audio", url); }, 0);
+                    } else {
+                        cb(null);
+                    }
+                };
                 req.onerror = function () { cb(null); };
             } catch (e) { cb(null); }
         },
@@ -108,7 +192,11 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             try {
                 var tx = this.db.transaction("audio", "readwrite");
                 var store = tx.objectStore("audio");
-                store.put(data, url);
+                store.put({ data: data, timestamp: Date.now() }, url);
+                var self = this;
+                tx.oncomplete = function() {
+                    setTimeout(function() { self.evictIfNeeded("audio", 100); }, 0);
+                };
             } catch (e) { }
         },
         clear: function (cb) {
