@@ -21686,6 +21686,32 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
         },
+        parseWebGLOverlayColor(colorHex, fallbackHex) {
+            var hexStr = colorHex;
+            if (typeof hexStr === "number") {
+                hexStr = hexStr.toString(16);
+            }
+            if (typeof hexStr !== "string" || !hexStr) {
+                hexStr = fallbackHex || "#ffffff";
+            }
+            hexStr = String(hexStr).replace(/^#/, "");
+            if (hexStr.length === 3) {
+                hexStr = hexStr[0] + hexStr[0] + hexStr[1] + hexStr[1] + hexStr[2] + hexStr[2];
+            }
+            var cInt = parseInt(hexStr, 16);
+            if (isNaN(cInt)) {
+                var fallbackStr = String(fallbackHex || "#ffffff").replace(/^#/, "");
+                cInt = parseInt(fallbackStr, 16);
+                if (isNaN(cInt)) {
+                    cInt = 0xffffff;
+                }
+            }
+            return [
+                ((cInt >> 16) & 255) / 255,
+                ((cInt >> 8) & 255) / 255,
+                (cInt & 255) / 255
+            ];
+        },
         drawWebGLGridShader() {
             /* customBackground: grid is drawn BEFORE the background in render order.
              * On Canvas2D the background paints over the grid (correct). On WebGL (z-index:2)
