@@ -4,7 +4,7 @@ var consoleMsgLMMaster = "[Master] ";
 
 // ── Centralized URL constants (single source of truth) ──
 // All other files must use these instead of hardcoding domains.
-window.LM_CONFIG_CDN = "https://agario-configurations-web.s3.amazonaws.com/live";
+window.LM_CONFIG_CDN = "https://configs-web.agario.miniclippt.com/live";
 window.LM_CUSTOM_SKINS_CDN = window.LM_CONFIG_CDN + "/custom_skins";
 // Computed after agarversion is known:
 window.LM_CDN_BASE = function() {
