@@ -3056,23 +3056,56 @@ function appendLog(message) {
 
 
 function appendLog2(message, message2) {
-    //$("#logTitle").text("Legend mod users (click and join)");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`' + message2 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
+    const p = document.createElement("p");
+    p.style.display = "none";
+    p.style.whiteSpace = "nowrap";
+    p.style.marginBottom = "10px";
 
-    $("#log p").first().show(100);
+    const a = document.createElement("a");
+    a.href = "#";
+    a.className = "logEntry";
+    a.dataset.token = currentToken;
+    a.style.color = "lightgrey";
+    a.style.fontSize = "14px";
+    a.onclick = function(e) {
+        e.preventDefault();
+        connectto(message2);
+    };
+    
+    // Mitigate DOM XSS
+    a.textContent = message;
+
+    p.appendChild(a);
+    $("#log").prepend(p);
+    $(p).show(100);
     bumpLog();
 }
 
 function appendLog3(message, message2, message3, message4) {
-    //$("#logTitle").text("Legend mod users (click and join)");
-    //	console.log(message3);
-    //	console.log(message4);
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`' + message2 + '\`);connectto2(\`' + message3 + '\`);connectto3(\`' + message4 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-    $("#log p").first().show(100);
+    const p = document.createElement("p");
+    p.style.display = "none";
+    p.style.whiteSpace = "nowrap";
+    p.style.marginBottom = "10px";
+
+    const a = document.createElement("a");
+    a.href = "#";
+    a.className = "logEntry";
+    a.dataset.token = currentToken;
+    a.style.color = "lightgrey";
+    a.style.fontSize = "14px";
+    a.onclick = function(e) {
+        e.preventDefault();
+        connectto(message2);
+        connectto2(message3);
+        connectto3(message4);
+    };
+
+    // Mitigate DOM XSS
+    a.textContent = message;
+
+    p.appendChild(a);
+    $("#log").prepend(p);
+    $(p).show(100);
     bumpLog();
 }
 
@@ -4903,11 +4936,11 @@ function getSNEZServers(ifcalled) {
 
         // Methods
         connect: function () {
-            client2.ws = new WebSocket(client2.server);
-            client2.ws.onopen = client2.onOpen;
-            client2.ws.onclose = client2.onClose;
-            client2.ws.onmessage = client2.onMessage;
-
+            let snezSocket = new WebSocket(client2.server);
+            snezSocket.onopen = client2.onOpen;
+            snezSocket.onclose = client2.onClose;
+            snezSocket.onmessage = client2.onMessage;
+            client2.ws = snezSocket;
         },
         disconnect: function () {
             // Close the connection, if open.
@@ -5598,7 +5631,9 @@ function initializeLM(modVersion) {
         if (!searching) {
 
             getSNEZServers();
+        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
             client2.connect();
+        }
         } else {
             $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
             clearInterval(timerId);
@@ -6193,7 +6228,9 @@ function joinPLAYERonstart() {
                 $('.logEntry').click();
             }
         };
-        client2.connect();
+        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
+            client2.connect();
+        }
     }
     if (autoplayplayer == "yes") {
         autoplayplaying();
@@ -6352,7 +6389,9 @@ function joinSERVERfindinfo() {
                     }
                 }
         };
-        client2.connect();
+        if (window.client2 && (!window.client2.ws || window.client2.ws.readyState !== WebSocket.OPEN)) {
+            client2.connect();
+        }
     }
 }
 

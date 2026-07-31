@@ -51,22 +51,53 @@ var Userscripttexture2;
 var Userscripttexture3;
 var Userscripttexture4;
 var Userscripttexture5;
-/* Initialize userscript UI — wait for #menu-footer to exist (sniff2 creates #Userscripttexture1 inside _setupUserscripts) */
+/* Initialize User Scripts UI after its actual parent exists.
+ * #Userscripttexture1 is created by _setupUserscripts(), so waiting for it
+ * creates a circular dependency and prevents initialization forever. */
 (function _initUserscripts() {
-  if (!document.getElementById('menu-footer')) {
-    var _obs = new MutationObserver(function(m, obs) {
-      if (document.getElementById('menu-footer')) {
-        obs.disconnect();
+    var initialized = false;
+
+    function initializeOnce() {
+        if (initialized || document.getElementById("userscripts")) {
+            return;
+        }
+
+        var menuFooter = document.getElementById("menu-footer");
+
+        if (!menuFooter) {
+            return;
+        }
+
+        initialized = true;
         _setupUserscripts();
-      }
+    }
+
+    if (document.getElementById("menu-footer")) {
+        initializeOnce();
+        return;
+    }
+
+    var observer = new MutationObserver(function () {
+        if (document.getElementById("menu-footer")) {
+            observer.disconnect();
+            initializeOnce();
+        }
     });
-    _obs.observe(document.body, { childList: true, subtree: true });
-    return;
-  }
-  _setupUserscripts();
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 })();
 
 function _setupUserscripts() {
+    if (document.getElementById("userscripts")) {
+        return;
+    }
+
+    if (!document.getElementById("menu-footer")) {
+        return;
+    }
 	
 
 /*

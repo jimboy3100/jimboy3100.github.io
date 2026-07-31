@@ -57,12 +57,14 @@
                 if (hashMatch && !/cloud/.test(url) && typeof P2PWebSocket !== 'undefined') {
                     console.log('[P2P] Intercepting hash connection:', url);
                     var socket = new P2PWebSocket('http://' + hashMatch[1], protocols);
-                    socket._lwIntegrity = true;
-                    if (typeof legendmod !== 'undefined') legendmod.integrity = true;
-                    socket.addEventListener('open', function() {
-                        socket._lwIntegrity = false;
-                        if (typeof legendmod !== 'undefined') legendmod.integrity = false;
-                    });
+
+                    /*
+                     * Protocol state belongs to this specific socket.
+                     * Never mutate global legendmod.integrity from asynchronous socket events.
+                     */
+                    socket._lwIntegrity = false;
+                    socket._lwTransportType = "p2p";
+
                     return socket;
                 }
                 return Reflect.construct(target, args, newTarget);

@@ -1,80 +1,191 @@
-//Time Merger v3.0 — edge-triggered deadlines, persistent countdowns
+// Time Merger v3.1 — persistent edge-triggered deadline state machine
 window.ExternalScripts = true;
-var _mergeTimerInterval = null;
 
-function startMergeTimer() {
-    if (_mergeTimerInterval) return; // already running
-    _mergeTimerInterval = setInterval(CellTimer, 1000);
-}
+(function () {
+    "use strict";
 
-function stopMergeTimer() {
-    if (_mergeTimerInterval) {
-        clearInterval(_mergeTimerInterval);
-        _mergeTimerInterval = null;
-    }
-}
+    var intervalId = null;
 
-// Start on load (matches original behavior)
-startMergeTimer();
-
-function CellTimer() {
-    if (!window.legendmod5 || window.legendmod5.optimizedMass || !window.ExternalScripts) {
-        return;
-    }
-    if (!window.playerCellsId || !window.legendmod || !window.legendmod.playerCells) {
-        return;
-    }
-
-    var now = performance.now();
-    var playerCells = window.legendmod.playerCells;
-
-    // Track which cell IDs are currently alive for cleanup
-    var aliveCellIds = {};
-
-    for (var i = 0; i < playerCells.length; i++) {
-        var cell = playerCells[i];
-        if (!cell || !cell.id) continue;
-
-        var cellData = window.playerCellsId[cell.id];
-        if (!cellData) continue;
-
-        aliveCellIds[cell.id] = true;
-
-        if (!cellData.historyMass) continue;
-
-        var currentMass = cellData.historyMass[0];
-        var oldMass = cellData.historyMass[window.legendmod2.fps];
-
-        // Edge detection: set deadline only when mass gain is first detected
-        // and no deadline is already active
-        if (oldMass > currentMass * 1.4 && !cellData._mergeDeadline) {
-            var mergeDurationSec = 29 + (8 / 300) * currentMass;
-            cellData._mergeDeadline = now + mergeDurationSec * 1000;
+    function clearCellMergeState(cellData) {
+        if (!cellData) {
+            return;
         }
 
-        // If a deadline is active, count it down regardless of current mass ratio.
-        // The deadline persists through normal mass fluctuations (eating, decay).
-        if (cellData._mergeDeadline) {
-            var remainingSec = Math.max(0, Math.ceil((cellData._mergeDeadline - now) / 1000));
-            if (remainingSec > 0) {
-                cellData.mergeTime = remainingSec;
-            } else {
-                // Deadline expired — merge complete
+        cellData.mergeTime = null;
+        cellData._mergeDeadline = null;
+        cellData._mergeState = "idle";
+        cellData._mergeTriggerActive = false;
+    }
+
+    function updateCellMergeTimer(cellData, now) {
+        if (!cellData ||
+            !cellData.historyMass ||
+            !cellData.historyMass.length) {
+            return;
+        }
+
+        var fpsIndex =
+            window.legendmod2 &&
+            Number.isFinite(window.legendmod2.fps)
+                ? window.legendmod2.fps
+                : 0;
+
+        if (fpsIndex < 0) {
+            fpsIndex = 0;
+        }
+
+        if (fpsIndex >= cellData.historyMass.length) {
+            fpsIndex = cellData.historyMass.length - 1;
+        }
+
+        var baseMass = Number(cellData.historyMass[0]);
+        var currentMass = Number(cellData.historyMass[fpsIndex]);
+
+        if (!Number.isFinite(baseMass) ||
+            baseMass <= 0 ||
+            !Number.isFinite(currentMass) ||
+            currentMass < 0) {
+            clearCellMergeState(cellData);
+            return;
+        }
+
+        if (!cellData._mergeState) {
+            cellData._mergeState = "idle";
+        }
+
+        var triggerActive =
+            currentMass > baseMass * 1.4;
+
+        /*
+         * Create a deadline only on a rising edge:
+         * false -> true.
+         *
+         * Once counting has started, temporary mass/history fluctuations must
+         * not erase the deadline.
+         */
+        if (triggerActive &&
+            !cellData._mergeTriggerActive &&
+            cellData._mergeState === "idle") {
+
+            var mergeDurationSec =
+                29 + (8 / 300) * baseMass;
+
+            cellData._mergeDeadline =
+                now + mergeDurationSec * 1000;
+
+            cellData._mergeState = "counting";
+        }
+
+        cellData._mergeTriggerActive =
+            triggerActive;
+
+        if (cellData._mergeState === "counting" &&
+            Number.isFinite(cellData._mergeDeadline)) {
+
+            var remainingMs =
+                cellData._mergeDeadline - now;
+
+            var remainingSec =
+                Math.max(
+                    0,
+                    Math.ceil(remainingMs / 1000)
+                );
+
+            cellData.mergeTime =
+                remainingSec;
+
+            if (remainingMs <= 0) {
                 cellData.mergeTime = null;
+                cellData._mergeState = "completed";
+            }
+
+            return;
+        }
+
+        if (cellData._mergeState === "completed") {
+            cellData.mergeTime = null;
+
+            /*
+             * Rearm only after the triggering condition returns to false.
+             * A future false -> true transition may then represent a new
+             * merge event.
+             */
+            if (!triggerActive) {
+                cellData._mergeState = "idle";
                 cellData._mergeDeadline = null;
             }
-        } else {
-            cellData.mergeTime = null;
+
+            return;
+        }
+
+        cellData.mergeTime = null;
+    }
+
+    function CellTimer() {
+        if (!window.ExternalScripts ||
+            !window.legendmod ||
+            !window.legendmod5 ||
+            window.legendmod5.optimizedMass) {
+            return;
+        }
+
+        var now = performance.now();
+        var playerCells =
+            window.legendmod.playerCells || [];
+
+        var playerCellsId =
+            window.playerCellsId || {};
+
+        for (var i = 0;
+            i < playerCells.length;
+            i++) {
+
+            var cell = playerCells[i];
+
+            if (!cell ||
+                cell.id === undefined ||
+                cell.id === null) {
+                continue;
+            }
+
+            var cellData =
+                playerCellsId[cell.id];
+
+            if (!cellData) {
+                continue;
+            }
+
+            updateCellMergeTimer(
+                cellData,
+                now
+            );
         }
     }
 
-    // Clean up deadlines for cells that no longer exist (eaten, popped, died)
-    if (window.playerCellsId) {
-        for (var id in window.playerCellsId) {
-            if (!aliveCellIds[id] && window.playerCellsId[id]) {
-                window.playerCellsId[id].mergeTime = null;
-                window.playerCellsId[id]._mergeDeadline = null;
-            }
+    function start() {
+        if (intervalId !== null) {
+            return;
         }
+
+        intervalId =
+            setInterval(CellTimer, 1000);
     }
-}
+
+    function stop() {
+        if (intervalId === null) {
+            return;
+        }
+
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
+    window.MergeTimerController = {
+        start: start,
+        stop: stop,
+        clearCellState: clearCellMergeState,
+        updateCell: updateCellMergeTimer
+    };
+
+    start();
+})();

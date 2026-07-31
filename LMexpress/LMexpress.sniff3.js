@@ -113,27 +113,24 @@ var textspeach="";
 				textspeach="";
             });*/
 			
-            window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
-            var recognition = new window.SpeechRecognition();
-            if (cfg.lang !== "default") {
-                recognition.lang = cfg.lang;
-            }
-//            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
-            recognition.addEventListener('result', function(event) {
-                var text_to = event.results.item(0).item(0).transcript;
-/*                var text_pre = $("#message").val();
-                if (text_pre === "") {
-                    text_to = cfg.prefix + text_to;
-                } else {
-                    text_to = text_pre + " " + text_to;
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            var recognition;
+            if (typeof window.SpeechRecognition !== "undefined") {
+                recognition = new window.SpeechRecognition();
+                if (cfg.lang !== "default") {
+                    recognition.lang = cfg.lang;
                 }
-                $("#message").val(text_to); */
-				textspeach=text_to;
-				application.sendChatMessage(101,"🎤 " +text_to);
-            }, false);
-            recognition.addEventListener('end', function(event) {
-                fn_recognition_end();
-            }, false);
+                recognition.addEventListener('result', function(event) {
+                    var text_to = event.results.item(0).item(0).transcript;
+                    textspeach = text_to;
+                    application.sendChatMessage(101, "🎤 " + text_to);
+                }, false);
+                recognition.addEventListener('end', function(event) {
+                    fn_recognition_end();
+                }, false);
+            } else {
+                console.warn("SpeechRecognition API is not supported in this browser.");
+            }
             $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
             $(".voice-start").click(function() {
 				if (!window.voiceStarted){
@@ -156,7 +153,11 @@ var textspeach="";
                 //$("#voice-config").css("display", "none");
                 $(".voice-start").css("background-color", "green");
 				$("#VoiceBtn1").css("background-color", "green");
-                recognition.start();
+                if (recognition) {
+                    recognition.start();
+                } else {
+                    toastr.warning("Speech recognition is not supported in this browser.");
+                }
             }
 
             function fn_recognition_end() {

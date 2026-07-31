@@ -100,6 +100,7 @@ class Spect {
         this.fixY = 1
         this.closedByUser = false
         if (!legendmod.playerCellsMulti) legendmod.playerCellsMulti = []
+        this.integrity = null;
         this.resetConnectionState();
         this.connect()
     }
@@ -163,6 +164,10 @@ class Spect {
         const createSocket = window.createLegendWebSocket || function (url) { return new WebSocket(url); };
         const socket = createSocket(legendmod.ws);
         this.socket = socket;
+        this.integrity =
+            typeof socket._lwIntegrity === "boolean"
+                ? socket._lwIntegrity
+                : Boolean(legendmod.integrity);
         socket.binaryType = 'arraybuffer'
         socket.onopen = () => {
             if (this.socket === socket && this.connectionGeneration === generation) this.onopen();
@@ -187,7 +192,7 @@ class Spect {
 
         let view = this.createView(5);
         view.setUint8(0, 254);
-        if (!legendmod.integrity) {
+        if (!this.integrity) {
             view.setUint32(1, 6, true);
         } else {
             view.setUint32(1, this.protocolVersion, true);
@@ -195,7 +200,7 @@ class Spect {
         this.sendMessage(view);
         view = this.createView(5);
         view.setUint8(0, 255);
-        if (!legendmod.integrity) {
+        if (!this.integrity) {
             view.setUint32(1, 1, true);
         } else {
             view.setUint32(1, this.clientVersion, true);
@@ -307,7 +312,7 @@ class Spect {
     }
 
     sendMessage(message) {
-        if (this.connectionOpened && legendmod.integrity) {
+        if (this.connectionOpened && this.integrity) {
             if (!this.clientKey) {
                 return;
             }
@@ -367,7 +372,7 @@ class Spect {
     }
 
     sendAccessToken(shapes, options, oW) {
-        if (!legendmod.integrity) {
+        if (!this.integrity) {
             return
         }
         if (this.accessTokenSent) {
@@ -481,16 +486,29 @@ class Spect {
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 self.sendMessage(view);
             };
-            legendmod.integrity && agarCaptcha.requestCaptchaV3("play", function (token) {
-                sendSpawn('0'); // 25/7/2021
-                //sendSpawn(token)
-            });
-            !legendmod.integrity && sendSpawn('0')
+            if (self.integrity) {
+                agarCaptcha.requestCaptchaV3(
+                    "play",
+                    function (token) {
+                        if (typeof token !== "string" ||
+                            token.length === 0) {
+                            console.warn(
+                                "[SPECT] CAPTCHA returned no usable token"
+                            );
+                            return;
+                        }
+
+                        sendSpawn(token);
+                    }
+                );
+            } else {
+                sendSpawn("0");
+            }
         }
     }
 
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {
             return;
         }
         let sendX = x;
@@ -589,9 +607,85 @@ class Spect {
 
     decompressMessage(message) {
         const buffer = window.buffer.Buffer;
-        const messageBuffer = new buffer(message.buffer);
-        const readMessage = new buffer(messageBuffer.readUInt32LE(1));
-        LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
+
+        if (!message ||
+            !message.buffer ||
+            typeof message.byteLength !== "number") {
+            throw new TypeError(
+                "Invalid compressed spectator packet object"
+            );
+        }
+
+        const messageBuffer =
+            new buffer(
+                message.buffer,
+                message.byteOffset || 0,
+                message.byteLength
+            );
+
+        const MAX_COMPRESSED_PACKET_SIZE =
+            8 * 1024 * 1024;
+
+        const MAX_DECOMPRESSED_PACKET_SIZE =
+            32 * 1024 * 1024;
+
+        const MAX_COMPRESSION_RATIO =
+            256;
+
+        if (messageBuffer.length < 6) {
+            throw new RangeError(
+                "Compressed spectator packet is too short"
+            );
+        }
+
+        if (messageBuffer.length >
+            MAX_COMPRESSED_PACKET_SIZE) {
+            throw new RangeError(
+                "Compressed spectator packet exceeds size limit"
+            );
+        }
+
+        const outputSize =
+            messageBuffer.readUInt32LE(1);
+
+        const compressedSize =
+            messageBuffer.length - 5;
+
+        if (!Number.isSafeInteger(outputSize) ||
+            outputSize <= 0 ||
+            outputSize >
+                MAX_DECOMPRESSED_PACKET_SIZE) {
+            throw new RangeError(
+                "Invalid spectator decompressed size"
+            );
+        }
+
+        if (compressedSize <= 0 ||
+            outputSize >
+                compressedSize *
+                MAX_COMPRESSION_RATIO) {
+            throw new RangeError(
+                "Invalid spectator compression ratio"
+            );
+        }
+
+        const readMessage =
+            new buffer(outputSize);
+
+        const decodedSize =
+            LZ4.decodeBlock(
+                messageBuffer.slice(5),
+                readMessage
+            );
+
+        if (!Number.isFinite(decodedSize) ||
+            decodedSize < 0 ||
+            decodedSize > outputSize) {
+            throw new RangeError(
+                "Spectator LZ4 decompression failed"
+            );
+        }
+
         return readMessage;
     }
 
@@ -685,10 +779,11 @@ class Spect {
                         isMe = 'isPlayer'
                     }
                     let nick;
+                    const rawNick = encode();
                     try {
-                        nick = window.decodeURIComponent(window.escape(encode()));
+                        nick = window.decodeURIComponent(window.escape(rawNick));
                     } catch (e) {
-                        nick = encode();
+                        nick = rawNick || '';
                     }
                     temp = null;
 
@@ -974,7 +1069,7 @@ class Spect {
     }
 
     getX(x) {
-        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+        if ((this.ghostFixed || !this.integrity) && this.mapOffsetFixed) {
             var res = ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
                 res = legendmod.mapMaxX - (res - legendmod.mapMinX);
@@ -985,7 +1080,7 @@ class Spect {
     }
 
     getY(y) {
-        if ((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+        if ((this.ghostFixed || !this.integrity) && this.mapOffsetFixed) {
             var res = ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
                 res = legendmod.mapMaxY - (res - legendmod.mapMinY);
@@ -1136,7 +1231,7 @@ class Spect {
             this.mapMaxX = legendmod.mapMaxX;
             this.mapMaxY = legendmod.mapMaxY;
         } else {
-            this.mapSize = (legendmod.integrity || temp2) ? 14142 : (pWidth || 14142);
+            this.mapSize = (this.integrity || temp2) ? 14142 : (pWidth || 14142);
             this.mapOffset = this.mapSize / 2;
             this.mapOffsetX = this.mapOffset - right;
             this.mapOffsetY = this.mapOffset - bottom;
@@ -1153,7 +1248,7 @@ class Spect {
         this.mapOffsetFixed = true;
         console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
 
-        if (!legendmod.integrity) {
+        if (!this.integrity) {
             if (this.player) {
                 this.handleSendNick();
             } else if (!this.player) {
@@ -1214,7 +1309,24 @@ class Spect {
     }
 
     handleSubmessage(message) {
-        message = this.decompressMessage(message);
+        try {
+            message =
+                this.decompressMessage(message);
+        } catch (error) {
+            console.warn(
+                "[SPECT] Rejected invalid compressed packet:",
+                error
+            );
+            return;
+        }
+
+        if (!message || message.length < 1) {
+            console.warn(
+                "[SPECT] Rejected empty decompressed packet"
+            );
+            return;
+        }
+
         let offset = 0;
         switch (message.readUInt8(offset++)) {
             case 16:
@@ -1308,7 +1420,7 @@ class Spect {
             let invisible;
 
 
-            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
+            if (!this.player && (this.ghostFixed || !this.integrity)) {
                 invisible = this.staticX != null ? this.isInView(x, y) : false;
             }
 
@@ -1327,7 +1439,7 @@ class Spect {
                 console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
             }*/
             let remove = false;
-            if (!this.player && (this.ghostFixed || !legendmod.integrity)) {
+            if (!this.player && (this.ghostFixed || !this.integrity)) {
                 const a = x - legendmod.playerX;
                 const b = y - legendmod.playerY;
                 const distanceX = Math.round(Math.sqrt(a * a));
@@ -1359,10 +1471,11 @@ class Spect {
                 skin = encode();
             }
             if (flags & 8) {
+                const rawName = encode();
                 try {
-                    name = window.decodeURIComponent(escape(encode()));
+                    name = window.decodeURIComponent(escape(rawName));
                 } catch (e) {
-                    name = encode();
+                    name = rawName;
                 }
                 if (legendmod && legendmod.gameMode && legendmod.gameMode !== ":teams") {
                     legendmod.vanillaskins(name, skin);
@@ -1374,7 +1487,7 @@ class Spect {
             let isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
-            if (!legendmod.integrity) { //fix of food for private servers
+            if (!this.integrity) { //fix of food for private servers
                 if (size < 21) isFood = 1
             }
             /*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){

@@ -10,7 +10,7 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.497;
+window.OgVer = 3.498;
 console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
@@ -13302,6 +13302,7 @@ function thelegendmodproject() {
             } else {
                 this.socket = new WebSocket(t);
             }
+            this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : Boolean(this.integrity);
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
                 app.onOpen();
@@ -13379,7 +13380,7 @@ function thelegendmodproject() {
                 // ===== Standard Handshake: 0xFE + 0xFF =====
                 var view = this.createView(5);
                 view.setUint8(0, 254);
-                if (!this.integrity) {
+                if (!this.connectionIntegrity) {
                     view.setUint32(1, window.customProtol, true);
                     window.gameBots.protocolVersion = window.customProtol
                 } else {
@@ -13394,7 +13395,7 @@ function thelegendmodproject() {
                 this.sendMessage(view);
                 view = this.createView(5);
                 view.setUint8(0, 255);
-                if (!this.integrity) {
+                if (!this.connectionIntegrity) {
                     view.setUint32(1, window.customClient, true);
                     window.gameBots.clientVersion = window.customClient
 
@@ -13564,7 +13565,7 @@ function thelegendmodproject() {
             }
         },
         sendMessage(message) {
-            if (this.connectionOpened && this.integrity) {
+            if (this.connectionOpened && this.connectionIntegrity) {
                 if (!this.clientKey) {
                     return;
                 }
@@ -14315,9 +14316,90 @@ function thelegendmodproject() {
         },
         decompressMessage(message) {
             const buffer = window.buffer.Buffer;
-            const messageBuffer = new buffer(message.buffer);
-            const readMessage = new buffer(messageBuffer.readUInt32LE(1));
-            LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
+
+            if (!message ||
+                !message.buffer ||
+                typeof message.byteLength !== "number") {
+                throw new TypeError(
+                    "Invalid compressed packet object"
+                );
+            }
+
+            const messageBuffer =
+                new buffer(
+                    message.buffer,
+                    message.byteOffset || 0,
+                    message.byteLength
+                );
+
+            const MAX_COMPRESSED_PACKET_SIZE =
+                8 * 1024 * 1024;
+
+            const MAX_DECOMPRESSED_PACKET_SIZE =
+                32 * 1024 * 1024;
+
+            const MAX_COMPRESSION_RATIO =
+                256;
+
+            if (messageBuffer.length < 6) {
+                throw new RangeError(
+                    "Compressed packet is too short"
+                );
+            }
+
+            if (messageBuffer.length >
+                MAX_COMPRESSED_PACKET_SIZE) {
+                throw new RangeError(
+                    "Compressed packet exceeds size limit"
+                );
+            }
+
+            const outputSize =
+                messageBuffer.readUInt32LE(1);
+
+            const compressedSize =
+                messageBuffer.length - 5;
+
+            if (!Number.isSafeInteger(outputSize) ||
+                outputSize <= 0 ||
+                outputSize >
+                    MAX_DECOMPRESSED_PACKET_SIZE) {
+                throw new RangeError(
+                    "Invalid decompressed packet size"
+                );
+            }
+
+            if (compressedSize <= 0 ||
+                outputSize >
+                    compressedSize *
+                    MAX_COMPRESSION_RATIO) {
+                throw new RangeError(
+                    "Invalid compressed packet ratio"
+                );
+            }
+
+            const readMessage =
+                new buffer(outputSize);
+
+            const decodedSize =
+                LZ4.decodeBlock(
+                    messageBuffer.slice(5),
+                    readMessage
+                );
+
+            if (!Number.isFinite(decodedSize) ||
+                decodedSize < 0 ||
+                decodedSize > outputSize) {
+                throw new RangeError(
+                    "LZ4 decompression failed"
+                );
+            }
+
+            /*
+             * Some LZ4 implementations return zero or undefined on success.
+             * Do not require decodedSize === outputSize unless this repository's
+             * exact LZ4 implementation documents that contract.
+             */
             return readMessage;
         },
         /* ── Expanding Land: Handle map resize events (opcode 200) ── */
@@ -17278,7 +17360,26 @@ Most cells eaten   : ${mostCellsEaten}
         },
         handleSubmessage(message) {
             var e = 0;
-            switch ((message = this.decompressMessage(message)).readUInt8(e++)) {
+
+            try {
+                message =
+                    this.decompressMessage(message);
+            } catch (error) {
+                console.warn(
+                    "[LM] Rejected invalid compressed packet:",
+                    error
+                );
+                return;
+            }
+
+            if (!message || message.length < 1) {
+                console.warn(
+                    "[LM] Rejected empty decompressed packet"
+                );
+                return;
+            }
+
+            switch (message.readUInt8(e++)) {
                 case 16:
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
@@ -17530,7 +17631,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
             /* Reset map bounds to defaults so stale borders don't persist */
-            if (this.integrity) {
+            if (this.connectionIntegrity) {
                 this.mapMinX = 0;
                 this.mapMinY = 0;
                 this.mapMaxX = 14142;
@@ -17595,7 +17696,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (newMapSize >= tierSizes[ti] - 2) { derivedTier = ti; break; }
                 }
                 LM.mapTier = derivedTier;
-            } else if (this.integrity || temp2) {
+            } else if (this.connectionIntegrity || temp2) {
                 /* agar.io standard server: hardcoded 14142 */
                 this.mapSize = 14142;
                 this.mapOffset = this.mapSize / 2;
@@ -17612,7 +17713,7 @@ Most cells eaten   : ${mostCellsEaten}
             var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
 
             if (!this.mapOffsetFixed || isFullPacket) {
-                if (this.integrity || temp2) {
+                if (this.connectionIntegrity || temp2) {
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
 
@@ -17815,7 +17916,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         //https://github.com/NuclearC/agar.io-protocol
         megaFFAscore() {
-            if (this.integrity) {
+            if (this.connectionIntegrity) {
                 this.totalPlayerMass += this.playerMass
             }
             if (this.ws && this.ws.includes("imsolo.pro:2102")) {
@@ -18273,15 +18374,11 @@ Most cells eaten   : ${mostCellsEaten}
                             var _pIndex = this.playerCellIDs.indexOf(id);
                             if (_pIndex !== -1) this.playerCellIDs.splice(_pIndex, 1);
                         }
-                        if (!isOwnPlayerCell && !isVirus && !isEjected && this.play && this.playerCells.length > 0 && rawServerColor) {
-                            /* Check if new nameless cell matches raw server color of an existing player cell */
-                            if (this.playerCells[0].rawServerColor === rawServerColor || (this.playerColor && rawServerColor === this.playerRawServerColor)) {
-                                isOwnPlayerCell = true;
-                                if (this._playerCellIDSet) this._playerCellIDSet.add(id);
-                                if (this.playerCellIDs.indexOf(id) === -1) this.playerCellIDs.push(id);
-                            }
-                        }
 
+                        /*
+                         * Player ownership must come exclusively from authoritative protocol IDs.
+                         * Never infer ownership from colour, nickname, position, size or skin.
+                         */
                         if (!isEjected && isOwnPlayerCell && this.playerCells.indexOf(cellUpdateCells) === -1) {
                             cellUpdateCells.isPlayerCell = true;
                             cellUpdateCells.rawServerColor = rawServerColor;
