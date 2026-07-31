@@ -1816,7 +1816,9 @@ function updateEquippedSkinUI() {
     var unequipBtn = $('#unequipSkinBtn');
 
     if (equippedId && equippedId !== 'skin_empty' && equippedId !== '') {
-        var displayName = equippedId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+        var displayName = equippedId.indexOf('skin_custom_') === 0
+            ? 'Custom Skin'
+            : equippedId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
         bannerName.text(displayName);
 
         // Look up skin data from GameConfiguration for image and cell color
@@ -2015,7 +2017,9 @@ function renderSkinPage() {
     function doRender() {
         for (var i = start; i < end; i++) {
             var skin = skinShopFiltered[i];
-            var name = skin.productId.replace('skin_', '').replace(/_/g, ' ');
+            var name = skin.productId.indexOf('skin_custom_') === 0
+                ? 'custom skin'
+                : skin.productId.replace('skin_', '').replace(/_/g, ' ');
             var displayName = name.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
             var colorHex = skin.cellColor || '0x88888800';
             var r = parseInt(colorHex.substring(2, 4), 16);
