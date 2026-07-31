@@ -8337,25 +8337,17 @@ function thelegendmodproject() {
                         var filename = url.split('/').pop().replace('?', '');
                         if (!filename) return;
                         var isCustomSkin = filename.startsWith('skin_custom_');
-                        var PROXY = 'https://ffa.legendmod.ml/skin-proxy/vanilla/';
                         var isMirror = url.includes('legendmod.ml') ||
                             url.includes('jimboy3100.github.io') ||
                             url.includes('jimboy3000.github.io');
 
                         if (isCustomSkin) {
-                            /* Custom skin CDN fallback chain:
-                             * 1. configs.agario.miniclippt.com → configs-web.agario.miniclippt.com
-                             * 2. configs-web.agario.miniclippt.com → configs-web.agar.io
-                             * 3. configs-web.agar.io → skin-proxy (CORS proxy)
-                             * 4. skin-proxy failed → give up */
+                            /* Custom skin direct loading from official Agar.io CDN */
                             if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
                                 app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
                             } else if (url.includes('configs-web.agario.miniclippt.com')) {
                                 app.loadSkin(img, 'https://configs-web.agar.io/live/custom_skins/' + filename + '?', animated, isPriority);
-                            } else if (url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) {
-                                app.loadSkin(img, 'https://ffa.legendmod.ml/skin-proxy/vanilla/' + filename, animated, isPriority);
                             }
-                            /* else: all CDNs failed, give up silently */
                             return;
                         }
 
@@ -8363,13 +8355,13 @@ function thelegendmodproject() {
                             app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (url.includes('legendmod.ml/vanillaskins/')) {
-                            app.loadSkin(img, PROXY + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins2/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/vanillaskins/')) {
-                            app.loadSkin(img, PROXY + filename, animated, isPriority);
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
                         }
                         else if (isMirror && url.includes('/lowresskins/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
@@ -8377,9 +8369,6 @@ function thelegendmodproject() {
                         else if (url.includes('/lowresskins/')) {
                             var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
                             app.loadSkin(img, fallbackUrl, animated, isPriority);
-                        }
-                        else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
-                            app.loadSkin(img, 'https://configs-web.agar.io/live/v15/10912/' + filename, animated, isPriority);
                         }
                         else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
                             app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
@@ -16908,21 +16897,11 @@ function thelegendmodproject() {
                 if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
                     var newURL;
                     if (url.includes('/custom_skins/')) {
-                        /* Custom skin CDN fallback: miniclippt → agar.io → skin-proxy */
+                        /* Custom skin CDN fallback: miniclippt → configs-web.agar.io */
                         newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
                     } else {
                         newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     }
-                    app.urlReplaces[url] = newURL;
-                    if (app.user && app.user.skins && app.user.skins[url]) {
-                        app.user.skins[url].url = newURL;
-                    }
-                    app.getImg(newURL, name, callback);
-                    return newURL;
-
-                } else if ((url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) && url.includes('/custom_skins/')) {
-                    /* agar.io CDN also failed → last resort: CORS skin-proxy */
-                    var newURL = "https://ffa.legendmod.ml/skin-proxy/vanilla/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;
