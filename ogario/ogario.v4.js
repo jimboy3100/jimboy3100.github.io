@@ -1384,27 +1384,24 @@ function genericVideoAdRewardTokenRequest(slot) {
 }
 
 window.openPotion = function (slot) {
-    //console.log("open pot", slot)
-    //8, 1, 18, 7, 8, 124, 226, 7, 2, 8, 1
+    if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
     window.core.proxyMobileData(bytes);
 }
 
 window.brewPotion = function (slot) {
-    //console.log("drew pot", slot)
+    if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot]
-    window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
+    window.core.proxyMobileData(bytes);
 }
 window.questActivationReq = function () {
-    //console.log("quest req")
+    if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116]; //agario_proto_Activate_$timed_$event_$request {eventId: "dailyQuest"}
-    //8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116
     window.core.proxyMobileData(bytes);
 }
 window.activateQuest = function () {
-    //console.log("quest act")
+    if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]; //agario_proto_Activate_$quest_$request {productId: "quest_activation_24h"}
-    //8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104
     window.core.proxyMobileData(bytes);
 }
 window.changeSkin = function (productID) {
@@ -10925,6 +10922,7 @@ function thelegendmodproject() {
             return this.sendProto(185, { genericVideoAdRewardTokenRequestField: {} });
         },
         inspectUserStats(userId) {
+            if (!userId) return false;
             console.log("[LM] Inspect User Stats for: " + userId);
             return this.sendProto(82, { userStatsRequestField: { userId: userId } });
         },
@@ -15906,7 +15904,7 @@ function thelegendmodproject() {
                     try {
                         var cg = r.uncompressedData.claimGiftsResponseField;
                         if (cg && cg.productUpdates) {
-                            this.updateProducts([cg.productUpdates]);
+                            this.updateProducts(cg.productUpdates);
                             toastr.success('<b>[SERVER]:</b> Gift claimed successfully! &#x2714;');
                         }
                     } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
@@ -16001,11 +15999,10 @@ function thelegendmodproject() {
                             for (var tei = 0; tei < teu.userTimedEvents.length; tei++) {
                                 var evt = teu.userTimedEvents[tei];
                                 if (evt.eventId === 'hourlyBonus' && evt.nextAvailableInSeconds > 0) {
-                                    var mins = Math.floor(evt.nextAvailableInSeconds / 60);
-                                    var secs = evt.nextAvailableInSeconds % 60;
-                                    var timerEl = document.getElementById('freeCoinsTimer');
-                                    if (timerEl) timerEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-                                }
+                                var mins = Math.floor(evt.nextAvailableInSeconds / 60);
+                                var secs = evt.nextAvailableInSeconds % 60;
+                                console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
+                            }
                             }
                         } else {
                             console.log("[LM] Timed Event Updates — no events in payload");
@@ -16125,8 +16122,15 @@ function thelegendmodproject() {
                 case 152:
                     // Skin delete response/notification
                     try {
-                        console.log("[LM] Skin Delete — opcode 152 received");
-                        toastr.info('<b>[SERVER]:</b> Custom skin deleted');
+                        var sdr = r.uncompressedData.userSkinsDeleteField;
+                        if (sdr) {
+                            var deletedId = sdr.skinId || '';
+                            console.log("[LM] Skin Delete Response — skinId: " + deletedId);
+                            toastr.info('<b>[SERVER]:</b> Custom skin deleted' + (deletedId ? ' (' + deletedId.substring(0, 20) + '...)' : ''));
+                        } else {
+                            console.log("[LM] Skin Delete — opcode 152 received (no response data)");
+                            toastr.info('<b>[SERVER]:</b> Custom skin deleted');
+                        }
                         try { this.createSkinsHTML(); } catch(e) {}
                         if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                     } catch(sdErr) {
