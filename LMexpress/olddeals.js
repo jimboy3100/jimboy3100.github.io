@@ -908,8 +908,13 @@ function populateDealsGrid() {
     if (!grid) return;
 
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
-        grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">Loading deals... Configuration not ready.</div>';
-        return;
+        if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
+            window.GameConfiguration = window.master.GameConfiguration;
+        } else {
+            LoadGameConfiguration();
+            grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals...</div>';
+            return;
+        }
     }
 
     var iaps = window.GameConfiguration.gameConfig['Wallet - In-App Purchases'] || [];
