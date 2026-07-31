@@ -18831,23 +18831,52 @@ Most cells eaten   : ${mostCellsEaten}
 
                 var skinUrl = null;
                 var isAnimated = false;
+                var lowerName = y && typeof y === 'string' ? LowerCase(y) : '';
+
+                /* Build O(1) flag/free-skin indexes only when their source arrays change. */
+                var resolverCache = window._lmVanillaSkinResolverCache;
+                var flagSource = window.legendflags || (typeof legendflags !== 'undefined' ? legendflags : []);
+                var freeSource = window.FreeSkins || [];
+                var flagsLength = flagSource.length;
+                var freeLength = freeSource.length;
+                if (!resolverCache ||
+                    resolverCache.flagSource !== flagSource ||
+                    resolverCache.freeSource !== freeSource ||
+                    resolverCache.flagsLength !== flagsLength ||
+                    resolverCache.freeLength !== freeLength) {
+                    resolverCache = {
+                        flagSource: flagSource,
+                        freeSource: freeSource,
+                        flagsLength: flagsLength,
+                        freeLength: freeLength,
+                        flags: Object.create(null),
+                        free: Object.create(null)
+                    };
+
+                    for (var fi = 0; fi < flagSource.length; fi++) {
+                        resolverCache.flags[String(flagSource[fi]).toLowerCase()] = true;
+                    }
+
+                    for (var fs = 0; fs < freeSource.length; fs++) {
+                        var freeSkin = freeSource[fs];
+                        if (freeSkin && freeSkin.id && freeSkin.image) {
+                            resolverCache.free[String(freeSkin.id).toLowerCase()] = freeSkin.image;
+                        }
+                    }
+                    window._lmVanillaSkinResolverCache = resolverCache;
+                }
 
                 /* 1. Direct HTTP/HTTPS skin URL */
                 if (g && typeof g === 'string' && (g.startsWith('http://') || g.startsWith('https://'))) {
                     skinUrl = g;
                 }
                 /* 2. Flag skins */
-                else if (y && legendflags.includes(LowerCase(y))) {
-                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png";
+                else if (lowerName && resolverCache.flags[lowerName]) {
+                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + lowerName + ".png";
                 }
                 /* 3. Free skins map */
-                else if (y && window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
-                    for (var p = 0; p < window.FreeSkins.length; p++) {
-                        if (LowerCase(y) === window.FreeSkins[p].id) {
-                            skinUrl = "https://jimboy3000.github.io/vanillaskins/" + window.FreeSkins[p].image;
-                            break;
-                        }
-                    }
+                else if (lowerName && resolverCache.free[lowerName]) {
+                    skinUrl = "https://jimboy3000.github.io/vanillaskins/" + resolverCache.free[lowerName];
                 }
                 /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
@@ -18883,7 +18912,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 /* 7. Fallback lookup by player nick (y) if g did not produce skinUrl */
                 if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
-                    var cleanY = y.toLowerCase().trim();
+                    var cleanY = lowerName || y.toLowerCase().trim();
                     skinUrl = window.VanillaSkinUrlMap[cleanY] || window.VanillaSkinUrlMap['%' + cleanY];
                 }
 
