@@ -2253,7 +2253,7 @@ function buySkin(productId) {
     var ringColor = 'rgb(' + rC + ',' + gC + ',' + bC + ')';
 
     // Price info
-    var costHtml = '<div style="color: #4caf50; font-weight: 800; font-size: 16px;">Free</div>';
+    var costHtml = '<div style="color: ' + (getShopTheme().mc) + '; font-weight: 800; font-size: 16px;">Free</div>';
     var balanceWarning = '';
     if (priceInfo && priceInfo.amount > 0) {
         var currencyIcon = priceInfo.currency === 'dna' ? '🧬' : '💰';
@@ -2262,8 +2262,8 @@ function buySkin(productId) {
         if (window.application && window.application.user) {
             currentBalance = priceInfo.currency === 'dna' ? (window.application.user.dna || 0) : (window.application.user.coins || 0);
         }
-        costHtml = '<div style="font-size: 22px; font-weight: 900; color: #fff;">' + priceInfo.amount.toLocaleString() + ' <span style="font-size: 18px;">' + currencyIcon + '</span></div>' +
-            '<div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;">Your ' + currencyLabel + ': ' + currentBalance.toLocaleString() + '</div>';
+        costHtml = '<div style="font-size: 22px; font-weight: 900; color: ' + (getShopTheme().tc) + ';">' + priceInfo.amount.toLocaleString() + ' <span style="font-size: 18px;">' + currencyIcon + '</span></div>' +
+            '<div style="font-size: 11px; color: ' + (getShopTheme().tc2) + '; margin-top: 2px;">Your ' + currencyLabel + ': ' + currentBalance.toLocaleString() + '</div>';
         if (currentBalance < priceInfo.amount) {
             balanceWarning = '<div style="color: #ff9800; font-size: 12px; font-weight: 700; margin-top: 8px; padding: 6px 12px; border-radius: 6px; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.3);">⚠️ You may not have enough ' + currencyLabel + '!</div>';
         }

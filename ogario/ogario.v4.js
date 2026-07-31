@@ -2237,13 +2237,21 @@ setTimeout(function () {
         window.FreskinsMap = [];
         window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
 
-        // Extract Leagues Prizes and Tiers from GameConfiguration
+        // Extract Leagues Prizes, Tiers, and Offerable Bundles from GameConfiguration
         try {
             window.LeaguesPrizesConfig = LMAgarGameConfiguration.gameConfig["Leagues - Prizes"] || null;
             window.LeaguesTiersConfig = LMAgarGameConfiguration.gameConfig["Leagues - Tiers"] || null;
+            window.OfferableBundlesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Offerable Bundles"] || null;
+            window.VisualBundlesConfig = LMAgarGameConfiguration.gameConfig["Visual - Bundles"] || null;
+            window.WalletProductBundlesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Product Bundles"] || null;
+            window.PricesMatrixConfig = LMAgarGameConfiguration.gameConfig["Prices - Matrix"] || null;
+            window.PotionHelpConfig = LMAgarGameConfiguration.gameConfig["Visual - Potion Help"] || null;
+            window.MysterySkinTypesConfig = LMAgarGameConfiguration.gameConfig["Mystery Skins - Types"] || null;
             if (window.LeaguesPrizesConfig) console.log("[LM] Loaded Leagues Prizes config: " + window.LeaguesPrizesConfig.length + " entries");
             if (window.LeaguesTiersConfig) console.log("[LM] Loaded Leagues Tiers config: " + window.LeaguesTiersConfig.length + " tiers");
-        } catch(e) { console.warn("[LM] Could not load Leagues config:", e); }
+            if (window.OfferableBundlesConfig) console.log("[LM] Loaded Offerable Bundles config: " + window.OfferableBundlesConfig.length + " bundles");
+            if (window.PotionHelpConfig) console.log("[LM] Loaded Potion Help config: " + window.PotionHelpConfig.length + " entries");
+        } catch(e) { console.warn("[LM] Could not load Leagues/Deals config:", e); }
 
         for (var player = 0; player < window.FreeSkins.length; player++) {
             window.FreskinsMap[player] = window.FreeSkins[player].id
@@ -6197,21 +6205,19 @@ function thelegendmodproject() {
                         if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             var p = this.top5[o];
                             var skinUrl = p.skinURL || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
-                            if (skinUrl) {
+                            var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl));
+                            if (isValidSkinUrl) {
                                 if (!p.skinURL) p.skinURL = skinUrl;
                                 if (!this.customSkinsCache[skinUrl]) {
                                     application.loadSkin(this.customSkinsCache, skinUrl);
                                 }
                             }
-                            var teamboardskin = skinUrl ? (this.customSkinsCache[skinUrl + "_cached2"] || this.customSkinsCache[skinUrl + "_cached"] || this.customSkinsCache[skinUrl]) : null;
-                            /* Stable image source: use cached .src only when fully loaded,
-                             * otherwise use the raw skinUrl (browser caches it). This avoids
-                             * flip-flopping between data-URL and raw URL each frame. */
+                            var teamboardskin = isValidSkinUrl ? (this.customSkinsCache[skinUrl + "_cached2"] || this.customSkinsCache[skinUrl + "_cached"] || this.customSkinsCache[skinUrl]) : null;
                             var teamboardImgSrc;
                             if (teamboardskin && teamboardskin.complete && teamboardskin.width) {
                                 teamboardImgSrc = teamboardskin.src;
                             } else {
-                                teamboardImgSrc = skinUrl || "https://www.legendmod.ml/banners/icon32croped.ico.gif";
+                                teamboardImgSrc = isValidSkinUrl ? skinUrl : "https://www.legendmod.ml/banners/icon32croped.ico.gif";
                             }
                             t = t + ('<li><a href="#" id="pos-skin" class="set-target" data-user-id="' + p.id + '" style="background-color: ' + p.color +
                                 '; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt=""><img src="' + teamboardImgSrc + '" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover;" alt=""/></span></a><div style="margin-top: -30px; margin-left: 32px;">');
@@ -8165,8 +8171,10 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
-            if (!url || typeof url !== 'string' || url.trim().length < 10) return;
             url = url.trim();
+            if (url.includes(' ')) {
+                url = url.replace(/ /g, '_');
+            }
             // Validate basic URL structure (must contain a valid domain dot e.g. http(s)://domain.com/...)
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
@@ -11332,8 +11340,15 @@ function thelegendmodproject() {
             $('.quick-custom-skin').on('click', (e) => {
                 e.preventDefault();
                 panel.fadeIn(200);
-                const currentUrl = $('#skin').val();
-                if (currentUrl && currentUrl.length > 5) processAndFormat(currentUrl);
+                if (!window.agarioUID) {
+                    status.text("Must be logged in to Agar.io to upload custom skins").css('color', '#ff5252');
+                    saveBtn.prop('disabled', true).css('opacity', 0.5);
+                    $('label[for="legendUploadInput"]').css({ opacity: 0.5, 'pointer-events': 'none' });
+                } else {
+                    $('label[for="legendUploadInput"]').css({ opacity: 1, 'pointer-events': 'auto' });
+                    const currentUrl = $('#skin').val();
+                    if (currentUrl && currentUrl.length > 5) processAndFormat(currentUrl);
+                }
             });
 
             $('#close-custom-skin').on('click', () => panel.fadeOut(200));
@@ -11453,7 +11468,11 @@ function thelegendmodproject() {
                     this.redraw = true);
             },
             this.setFont = function () {
-                this.font = this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily;
+                var family = this.fontFamily || 'Ubuntu';
+                if (!family.includes('sans-serif')) {
+                    family += ', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+                }
+                this.font = this.fontWeight + ' ' + this.fontSize + 'px ' + family;
             },
             this.setFontFamily = function (ogariofontfamilysetter) {
                 if (this.fontFamily !== ogariofontfamilysetter) {
@@ -11479,6 +11498,12 @@ function thelegendmodproject() {
                     this.redraw = true;
                 }
             },
+            this.setMargin = function (ogariomarginsetter) {
+                if (this.margin !== ogariomarginsetter) {
+                    this.margin = ogariomarginsetter;
+                    this.redraw = true;
+                }
+            },
             this.setScale = function (ogarioscalesetter) {
                 if (this.scale !== ogarioscalesetter) {
                     this.scale = ogarioscalesetter;
@@ -11499,14 +11524,18 @@ function thelegendmodproject() {
                 this.setStrokeColor(ogarsetDrawinglabel6);
             },
             this.measureWidth = function () {
-                return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                var family = this.fontFamily || 'Ubuntu';
+                if (!family.includes('sans-serif')) family += ', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+                return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + family,
                     this.measuredWidth = this.txtCtx.measureText(this.txt).width,
                     this.remeasure = false),
                     ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
             },
             //
             this.measureWidthCustom = function (customTxt) {
-                return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                var family = this.fontFamily || 'Ubuntu';
+                if (!family.includes('sans-serif')) family += ', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+                return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + family,
                     this.measuredWidth = this.txtCtx.measureText(customTxt).width,
                     this.remeasure = false),
                     ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
@@ -11518,8 +11547,7 @@ function thelegendmodproject() {
                     this.redraw && (this.redraw = false,
 
 
-                        this.txtCanvas.width = this.measureWidthCustom(customTxt) * _dpr,
-                        this.txtCanvas.width = this.measureWidth() * _dpr,
+                        this.txtCanvas.width = (customTxt ? this.measureWidthCustom(customTxt) : this.measureWidth()) * _dpr,
                         this.txtCanvas.height = (this.fontSize + this.margin * 2) * _dpr,
                         this.txtCtx.scale(_dpr, _dpr),
                         this.txtCtx.font = this.font,
@@ -15834,10 +15862,16 @@ function thelegendmodproject() {
                     var prevDna = (this.user && this.user.dna) || 0;
                     var prevTrophy = (this.user && this.user.trophy) || 0;
                     var prevSkins = (this.user && this.user.skins) || {};
+                    var prevLevel = (this.user && this.user.level) || window.agarioLEVEL || 1;
+                    var prevXp = (this.user && this.user.xp) || 0;
+                    var prevNextXp = (this.user && this.user.nextLevelXp) || 1000;
                     this.user = {
                         coins: prevCoins,
                         dna: prevDna,
                         trophy: prevTrophy,
+                        level: prevLevel,
+                        xp: prevXp,
+                        nextLevelXp: prevNextXp,
                         boosts: {},
                         rushBoosts: {},
                         skins: prevSkins,
@@ -15964,13 +15998,26 @@ function thelegendmodproject() {
                 case 62:
                     var u = r.uncompressedData.gameOverField;
                     this.displayStats(u.userStats);
-                    var exp = 100,
-                        i = u.xpLevelUpdates[0];
-                    if (i.finalLevel != 100) exp = ~~(i.finalXpForLevel * 100 / this.agarExp(i.finalLevel));
-                    $('.progress-bar-striped').width(exp + '%');
-                    //$('.progress-bar-striped2').width(exp + '%');
-                    $('.progress-bar-star3').text(i.finalLevel); $('.progress-bar-star').text(i.finalLevel);
-                    //$('.progress-bar-star2').text(i.finalLevel);
+                    if (u.xpLevelUpdates && u.xpLevelUpdates.length) {
+                        var iXp = u.xpLevelUpdates[0];
+                        var gLevel = iXp.finalLevel || 1;
+                        var gXp = iXp.finalXpForLevel || 0;
+                        var gNextXp = this.agarExp(gLevel);
+                        var exp = gLevel >= 100 ? 100 : ~~(gXp * 100 / gNextXp);
+
+                        if (this.user) {
+                            this.user.level = gLevel;
+                            this.user.xp = gXp;
+                            this.user.nextLevelXp = gNextXp;
+                        }
+                        window.agarioLEVEL = gLevel;
+
+                        $('.progress-bar-striped').width(exp + '%');
+                        $('.agario-exp-bar .progress-bar').css('width', exp + '%');
+                        $('.agario-exp-bar .progress-bar-text').text(gXp.toLocaleString() + ' / ' + gNextXp.toLocaleString() + ' XP (' + exp + '%)');
+                        $('.progress-bar-star3').text(gLevel);
+                        $('.progress-bar-star').text(gLevel);
+                    }
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
@@ -16776,6 +16823,7 @@ function thelegendmodproject() {
                         }, timer);
                         break;
                     case "hourlyBonus":
+                        window.hourlyBonusFinalTimer = Date.now() + timer;
                         if (window.coinsTimer) clearTimeout(window.coinsTimer);
                         window.coinsTimer = setTimeout(() => {
                             window.autocoins()
@@ -16783,13 +16831,18 @@ function thelegendmodproject() {
                         break;
                     case "potionSkipBrew": //maybe it help to autobrewing
                         console.log("can open after", timer / 60000)
-                        //if(window.coinsTimer) clearTimeout(window.coinsTimer);
-                        //window.coinsTimer = setTimeout(()=>{window.activateQuest()},timer);
                         break;
                     default:
                         console.log("unknown event", e)
                 }
             }
+        },
+        freeCoinTimeLeft() {
+            if (window.hourlyBonusFinalTimer) {
+                var delta = window.hourlyBonusFinalTimer - Date.now();
+                return delta > 0 ? delta : 0;
+            }
+            return 0;
         },
         newPotion(s) {
             if (window.autobrewTimer) clearTimeout(window.autobrewTimer);
@@ -17115,15 +17168,27 @@ Most cells eaten   : ${mostCellsEaten}
         },
         updateUserInfo(i) {
             if (!i) i = {}; /* guard: protobuf may not decode userInfo */
-            var exp = 100;
-            var level = Number(i.level) || 1;
-            var xp = Number(i.xp) || 0;
-            if (level != 100) exp = ~~(xp * 100 / this.agarExp(level));
-            $('.progress-bar-striped').width(exp + '%');
-            //$('.progress-bar-striped2').width(exp + '%');
+            var level = Number(i.level) || (this.user && this.user.level) || window.agarioLEVEL || 1;
+            var xp = (i.xp !== undefined && i.xp !== null) ? Number(i.xp) : ((this.user && this.user.xp) || window.agarioXP || 0);
+            var nextLevelXp = (this.user && this.user.nextLevelXp) || this.agarExp(level);
+            var exp = level >= 100 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
 
-            $('.progress-bar-star3').text(level); $('.progress-bar-star').text(level);
-            //$('.progress-bar-star2').text(i.finalLevel);
+            if (this.user) {
+                this.user.level = level;
+                this.user.xp = xp;
+                this.user.nextLevelXp = nextLevelXp;
+            }
+            window.agarioLEVEL = level;
+            window.agarioXP = xp;
+            window.agarioNextXP = nextLevelXp;
+
+            $('.progress-bar-striped').width(exp + '%');
+            $('.agario-exp-bar .progress-bar').css('width', exp + '%');
+            var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP (' + exp + '%)';
+            $('.agario-exp-bar .progress-bar-text').text(xpText);
+
+            $('.progress-bar-star3').text(level);
+            $('.progress-bar-star').text(level);
             this.user.actionCounters = i.actionCounters;
 
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
@@ -17977,7 +18042,11 @@ Most cells eaten   : ${mostCellsEaten}
                     if (0 === string) break;
                     text += String.fromCharCode(string);
                 }
-                return text;
+                try {
+                    return decodeURIComponent(escape(text));
+                } catch (e) {
+                    return text;
+                }
             };
             this.time = Date.now();
             this.removePlayerCell = false;

@@ -1079,8 +1079,8 @@
         var old = document.getElementById('lm-potions-help-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
 
         var modal = document.createElement('div');
         modal.id = 'lm-potions-help-modal';
@@ -1136,6 +1136,69 @@
                     </div>
                 `;
             } else {
+                var rowsHtml = '';
+                var potionHelpItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
+                                      (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]);
+                
+                if (potionHelpItems && potionHelpItems.length) {
+                    var tierColors = { "Common": "#4caf50", "Rare": "#2196f3", "Exotic": "#e91e63", "Mystical": "#ffb300" };
+                    for (var p = 0; p < potionHelpItems.length; p++) {
+                        var ph = potionHelpItems[p];
+                        var pColor = tierColors[ph.potionId] || t.mc;
+                        var specText = ph.minSpecialPieces ? ` <span style="font-size: 10px; color: ${pColor};">(${ph.minSpecialPieces})</span>` : '';
+                        rowsHtml += `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                                <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${pColor}; font-size: 13px;">
+                                    🧪 ${ph.potionId || 'Potion'}
+                                </div>
+                                <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
+                                    ${ph.skinPieces || 'x1'}${specText}
+                                </div>
+                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                    💰 ${ph.coinText || '+Coins'}
+                                </div>
+                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                    🏆 ${ph.trophies || 'x1'}
+                                </div>
+                                <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                    and more!
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    rowsHtml = `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #4caf50; font-size: 13px;">🧪 Common</div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">x1</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 +Coins</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x1</div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #2196f3; font-size: 13px;">🧪 Rare</div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">x3</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 ++Coins</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x2</div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #e91e63; font-size: 13px;">🧪 Exotic</div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">x4 <span style="font-size: 10px; color: #ff4081;">(At least x1 Special)</span></div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 +++Coins</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x3</div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #ffb300; font-size: 13px;">🧪 Mystical</div>
+                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">x6 <span style="font-size: 10px; color: #ffd700;">(At least x3 Special)</span></div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 ++++Coins</div>
+                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x3</div>
+                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
+                        </div>
+                    `;
+                }
+
                 return `
                     <div style="text-align: center; font-size: 13px; font-weight: 700; color: ${t.tc2}; margin-bottom: 14px;">
                         Each potion has amazing rewards inside! Brew the potions to open them!
@@ -1150,77 +1213,7 @@
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #4caf50; font-size: 13px;">
-                                🧪 Common
-                            </div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
-                                <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #00d3ff; vertical-align: middle; margin-right: 4px;"></span> x1
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                💰 +Coins
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                🏆 x1
-                            </div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
-                                and more!
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #2196f3; font-size: 13px;">
-                                🧪 Rare
-                            </div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
-                                <span style="display: inline-block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #2196f3; vertical-align: middle; margin-right: 4px;"></span> x3
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                💰 ++Coins
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                🏆 x2
-                            </div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
-                                and more!
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #e91e63; font-size: 13px;">
-                                🧪 Exotic
-                            </div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">
-                                x4 <span style="font-size: 10px; color: #ff4081;">(At least x1 Special)</span>
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                💰 +++Coins
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                🏆 x3
-                            </div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
-                                and more!
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #ffb300; font-size: 13px;">
-                                🧪 Mystical
-                            </div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">
-                                x6 <span style="font-size: 10px; color: #ffd700;">(At least x3 Special)</span>
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                💰 ++++Coins
-                            </div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                🏆 x3
-                            </div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
-                                and more!
-                            </div>
-                        </div>
+                        ${rowsHtml}
                     </div>
                 `;
             }
@@ -1278,74 +1271,86 @@
         var t = getTheme();
         var currentSlide = initialSlide || 0;
 
-        var slidesData = [
-            {
+        var slidesData = [];
+        var rawBundles = (window.OfferableBundlesConfig && window.OfferableBundlesConfig.length) ? window.OfferableBundlesConfig : 
+                         (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Wallet - Offerable Bundles"]);
+        
+        if (rawBundles && rawBundles.length) {
+            var now = new Date();
+            var dealsOffers = [];
+            var collectorsOffers = [];
+            
+            for (var b = 0; b < rawBundles.length; b++) {
+                var bundle = rawBundles[b];
+                if (bundle.availableTo && new Date(bundle.availableTo) < now) continue;
+                
+                var visual = (window.VisualBundlesConfig || []).find(function(v) { 
+                    return v.productId === bundle.productId || v.bundleId === bundle.bundleId || v.id === bundle.id; 
+                });
+                
+                var skinUrl = '';
+                if (bundle.skinId && window.VanillaSkinUrlMap) {
+                    skinUrl = window.VanillaSkinUrlMap[bundle.skinId] || '';
+                } else if (visual && visual.image) {
+                    skinUrl = visual.image;
+                }
+                
+                var priceStr = bundle.price ? ('$' + (bundle.price / 100).toFixed(2)) : (bundle.cost ? '$' + bundle.cost : '$' + (bundle.amount || ''));
+                
+                var itemObj = {
+                    tag: bundle.isBestDeal || bundle.bestDeal ? 'BEST DEAL!' : '',
+                    coins: bundle.coins ? bundle.coins.toLocaleString() : (bundle.amount ? Number(bundle.amount).toLocaleString() : ''),
+                    oldCoins: bundle.baseCoins ? bundle.baseCoins.toLocaleString() : '',
+                    multiplier: bundle.multiplier ? (bundle.multiplier + 'X') : '',
+                    bonusText: bundle.bonusText || 'FREE!',
+                    skinImg: skinUrl,
+                    skinName: (visual && visual.name) || bundle.skinId || bundle.name || 'Special Item',
+                    price: priceStr,
+                    purchaseId: bundle.productId || bundle.bundleId || ''
+                };
+                
+                if (b % 2 === 0) dealsOffers.push(itemObj);
+                else collectorsOffers.push(itemObj);
+            }
+            
+            if (dealsOffers.length > 0) {
+                slidesData.push({
+                    id: 'daily-deal',
+                    title: 'DAILY DEAL!',
+                    subtitle: 'GET IT WHILE IT LASTS!',
+                    badge: '+FREE SKIN!',
+                    timer: 'Active Server Deals',
+                    bannerGradient: 'radial-gradient(circle at center, #00b4db 0%, #0083b0 100%)',
+                    posterIcon: '🎁',
+                    offers: dealsOffers
+                });
+            }
+            if (collectorsOffers.length > 0) {
+                slidesData.push({
+                    id: 'collectors-items',
+                    title: "THE COLLECTOR'S",
+                    subtitle: 'SPECIAL ITEMS AND SKINS FOR SALE!',
+                    badge: 'RARE SKINS AND ITEMS',
+                    timer: 'Active Server Offers',
+                    bannerGradient: 'radial-gradient(circle at center, #56ab2f 0%, #a8e063 100%)',
+                    posterIcon: '🏛️',
+                    offers: collectorsOffers
+                });
+            }
+        }
+        
+        if (!slidesData.length) {
+            slidesData.push({
                 id: 'daily-deal',
                 title: 'DAILY DEAL!',
-                subtitle: 'GET IT WHILE IT LASTS!',
-                badge: '+FREE SKIN!',
-                timer: 'Offer Ends: 01h 39m 35s',
+                subtitle: 'SERVER OFFERS',
+                badge: 'OFFERS',
+                timer: 'Fetching from GameConfiguration...',
                 bannerGradient: 'radial-gradient(circle at center, #00b4db 0%, #0083b0 100%)',
-                posterIcon: '🎁',
-                offers: [
-                    {
-                        tag: '',
-                        coins: '14000',
-                        oldCoins: '7000',
-                        multiplier: '2X',
-                        bonusText: 'FREE!',
-                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal7.png',
-                        skinName: 'Star Skin',
-                        price: '$9.99',
-                        purchaseId: 'com.miniclip.agar.io.dailydeal7'
-                    },
-                    {
-                        tag: 'BEST DEAL!',
-                        coins: '32000',
-                        oldCoins: '16000',
-                        multiplier: '2X',
-                        bonusText: 'FREE!',
-                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal15.png',
-                        skinName: 'Candy Swirl Skin',
-                        price: '$19.99',
-                        purchaseId: 'com.miniclip.agar.io.dailydeal15'
-                    }
-                ]
-            },
-            {
-                id: 'collectors-items',
-                title: "THE COLLECTOR'S",
-                subtitle: 'LEGACY ITEMS AND SKINS FOR SALE!',
-                badge: 'RARE SKINS AND ITEMS',
-                timer: 'Offer Ends: 64h 04m 16s',
-                bannerGradient: 'radial-gradient(circle at center, #56ab2f 0%, #a8e063 100%)',
-                posterIcon: '🏛️',
-                offers: [
-                    {
-                        tag: '',
-                        coins: '3,250',
-                        oldCoins: '',
-                        multiplier: '',
-                        bonusText: 'FREE!',
-                        skinImg: '',
-                        skinName: '⚡ 3X Mass Boost',
-                        price: '$1.99',
-                        purchaseId: 'com.miniclip.agar.io.dailydeal17'
-                    },
-                    {
-                        tag: 'Best Deal!',
-                        coins: '16,000',
-                        oldCoins: '',
-                        multiplier: '',
-                        bonusText: 'FREE!',
-                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal21.png',
-                        skinName: 'Burger Skin',
-                        price: '$9.99',
-                        purchaseId: 'com.miniclip.agar.io.dailydeal21'
-                    }
-                ]
-            }
-        ];
+                posterIcon: '⏳',
+                offers: []
+            });
+        }
 
         var old = document.getElementById('lm-daily-deals-carousel-modal');
         if (old) old.remove();
@@ -1486,8 +1491,8 @@
         var old = document.getElementById('lm-main-shop-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
 
         var modal = document.createElement('div');
         modal.id = 'lm-main-shop-modal';
@@ -1739,8 +1744,8 @@
         var old = document.getElementById('lm-premium-potions-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
 
         var modal = document.createElement('div');
         modal.id = 'lm-premium-potions-modal';
@@ -1866,14 +1871,14 @@
         var old = document.getElementById('lm-xp-boost-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
 
         var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
-        var count_2x_1h = userBoosts.xp_2x_1h || userBoosts['xp_boost_2x_1h'] || 46;
-        var count_2x_24h = userBoosts.xp_2x_24h || userBoosts['xp_boost_2x_24h'] || 17;
-        var count_3x_1h = userBoosts.xp_3x_1h || userBoosts['xp_boost_3x_1h'] || 33;
-        var count_3x_24h = userBoosts.xp_3x_24h || userBoosts['xp_boost_3x_24h'] || 6;
+        var count_2x_1h = userBoosts.xp_2x_1h || userBoosts['xp_boost_2x_1h'] || 0;
+        var count_2x_24h = userBoosts.xp_2x_24h || userBoosts['xp_boost_2x_24h'] || 0;
+        var count_3x_1h = userBoosts.xp_3x_1h || userBoosts['xp_boost_3x_1h'] || 0;
+        var count_3x_24h = userBoosts.xp_3x_24h || userBoosts['xp_boost_3x_24h'] || 0;
 
         var modal = document.createElement('div');
         modal.id = 'lm-xp-boost-modal';
@@ -2009,14 +2014,14 @@
         var old = document.getElementById('lm-mass-boost-modal');
         if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
 
         var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
-        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 38;
-        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 16;
-        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 10;
-        var count_3x_24h = userBoosts.mass_3x_24h || userBoosts['mass_boost_3x_24h'] || 3;
+        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 0;
+        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 0;
+        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 0;
+        var count_3x_24h = userBoosts.mass_3x_24h || userBoosts['mass_boost_3x_24h'] || 0;
 
         var modal = document.createElement('div');
         modal.id = 'lm-mass-boost-modal';
@@ -2255,11 +2260,19 @@
             btn.innerHTML = '⏳ Claiming...';
         }
 
-        // Trigger bulk claims
+        if (window.application) {
+            if (typeof window.application.activateTimedEvent === 'function') {
+                window.application.activateTimedEvent("hourlyBonus");
+                window.application.activateTimedEvent("dailyQuest");
+            }
+            if (typeof window.application.claimGifts === 'function') {
+                window.application.claimGifts(["all"]);
+            }
+        }
         if (typeof window.activateUserRewards === 'function') {
             window.activateUserRewards(['hourlyBonus', 'dailyQuest', 'freeCoins']);
         }
-        if (typeof window.claimGifts === 'function') {
+        if (typeof window.claimGifts === 'function' && (!window.application || !window.application.claimGifts)) {
             window.claimGifts(['all']);
         }
 
@@ -2270,6 +2283,17 @@
                 setTimeout(function() { btn.innerHTML = '🎁 Claim All'; }, 3000);
             }
         }, 1200);
+    };
+
+    window.getHourlyBonusTimeLeftString = function() {
+        var ms = (window.application && typeof window.application.freeCoinTimeLeft === 'function') 
+            ? window.application.freeCoinTimeLeft() 
+            : (window.hourlyBonusFinalTimer ? Math.max(0, window.hourlyBonusFinalTimer - Date.now()) : 0);
+        if (ms <= 0) return 'READY!';
+        var totalSec = Math.floor(ms / 1000);
+        var mins = Math.floor(totalSec / 60);
+        var secs = totalSec % 60;
+        return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
     };
 
     // Inject "Claim All", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
