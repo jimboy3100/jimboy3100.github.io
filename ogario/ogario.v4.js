@@ -1469,6 +1469,7 @@ function userLeaguesInfoRequest(slot) {
 // genericVideoAdRewardTokenRequest: removed (superseded by application.requestAdRewardToken)
 
 window.openPotion = function (slot) {
+    window._userInitiatedPotionOpen = true;
     if (window.application && typeof window.application.openPotion === 'function') {
         return window.application.openPotion(slot);
     }
@@ -11056,6 +11057,7 @@ function thelegendmodproject() {
         },
         openPotion(slot) {
             console.log("[LM] Open Potion in slot " + slot);
+            window._userInitiatedPotionOpen = true;
             return this.sendProto(124, { openPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
         activateTimedEvent(eventId) {
@@ -16294,7 +16296,6 @@ function thelegendmodproject() {
                                 console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
                             }
                             }
-                        } else {
                             console.log("[LM] Timed Event Updates — no events in payload");
                         }
                     } catch(teuErr) {
@@ -16347,7 +16348,10 @@ function thelegendmodproject() {
                             if (u.userPotions && u.userPotions.length) {
                                 this.updatePotions(u.userPotions);
                             }
-                            toastr.success('<b>[SERVER]:</b> Potion consumed! &#x1F9EA;');
+                            if (window._userInitiatedPotionOpen) {
+                                window._userInitiatedPotionOpen = false;
+                                toastr.success('<b>[SERVER]:</b> Potion consumed! &#x1F9EA;');
+                            }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
                     } catch(openPErr) {
