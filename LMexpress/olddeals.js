@@ -270,8 +270,8 @@ function SpecialDeals() {
             // Reward Link section
             '<div style="display: flex; gap: 6px; align-items: center; margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid ' + b3 + '44;">' +
             '<span style="font-size: 18px;">🎟️</span>' +
-            '<input type="text" id="rewardLinkInput" class="form-control" placeholder="Paste reward link token..." style="flex: 1; height: 30px; font-size: 12px; border: 1px solid ' + b3 + '44; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
-            '<button id="activateRewardLinkBtn" class="btn btn-sm" onclick="(function(){ if(typeof window.validateShopIntegrity === \'function\' && !window.validateShopIntegrity(\'activate reward tokens\')) return; var inp=document.getElementById(\'rewardLinkInput\'); var token=inp.value.trim(); if(!token){toastr.error(\'<b>[SHOP]:</b> Enter a reward token\');return;} var btn=document.getElementById(\'activateRewardLinkBtn\'); btn.disabled=true; btn.textContent=\'...\'; btn.style.opacity=\'0.4\'; btn.style.pointerEvents=\'none\'; window.activateRewardLink(token); window._rewardLinkTimeout=setTimeout(function(){btn.disabled=false;btn.textContent=\'Activate\';btn.style.opacity=\'1\';btn.style.pointerEvents=\'auto\';toastr.warning(\'<b>[SHOP]:</b> Reward link timed out\');},10000); })()" style="background: ' + b3 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 4px 14px; font-size: 12px; cursor: pointer; white-space: nowrap;">Activate</button>' +
+            '<input type="text" id="rewardLinkInput" class="form-control" placeholder="Paste reward link or token (e.g. agar.io/#reward-123)..." style="flex: 1; height: 30px; font-size: 11px; border: 1px solid ' + b3 + '44; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
+            '<button id="activateRewardLinkBtn" class="btn btn-sm" onclick="(function(){ if(typeof window.validateShopIntegrity === \'function\' && !window.validateShopIntegrity(\'activate reward tokens\')) return; var inp=document.getElementById(\'rewardLinkInput\'); var rawVal=inp.value.trim(); var token=window.parseRewardToken(rawVal); if(!token){toastr.error(\'<b>[SHOP]:</b> Enter a valid reward link or token\');return;} inp.value=token; var btn=document.getElementById(\'activateRewardLinkBtn\'); btn.disabled=true; btn.textContent=\'...\'; btn.style.opacity=\'0.4\'; btn.style.pointerEvents=\'none\'; window.activateRewardLink(token); window._rewardLinkTimeout=setTimeout(function(){btn.disabled=false;btn.textContent=\'Activate\';btn.style.opacity=\'1\';btn.style.pointerEvents=\'auto\';toastr.warning(\'<b>[SHOP]:</b> Reward link timed out\');},10000); })()" style="background: ' + b3 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 4px 14px; font-size: 12px; cursor: pointer; white-space: nowrap;">Activate</button>' +
             '</div>' +
 
             // Ad Reward + Potions row
@@ -373,9 +373,28 @@ function SpecialDeals() {
                 if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be connected to an active Agar.io game server for ' + label + '.');
                 return false;
             }
-
             return true;
         };
+
+        window.parseRewardToken = function parseRewardToken(input) {
+            if (!input) return '';
+            var str = input.trim();
+            var matchHash = str.match(/#reward-([a-zA-Z0-9_-]+)/i);
+            if (matchHash && matchHash[1]) return matchHash[1];
+            var matchQuery = str.match(/[?&](?:token|reward)=([a-zA-Z0-9_-]+)/i);
+            if (matchQuery && matchQuery[1]) return matchQuery[1];
+            return str.replace(/.*(?:#reward-|\?token=|\?reward=)/i, '').split(/[?#&]/)[0].trim();
+        };
+
+        // Auto-detect reward link from page URL hash or query params
+        setTimeout(function() {
+            var urlToken = window.parseRewardToken(window.location.href);
+            if (urlToken && urlToken.length > 3) {
+                console.log('[LM] Auto-detected URL reward token:', urlToken);
+                $('#rewardLinkInput').val(urlToken);
+                if (window.toastr) toastr.info('<b>[REWARD LINK]:</b> Detected promo token from URL: <code>' + urlToken + '</code>. Open Deals to claim!');
+            }
+        }, 1500);
 
         // --- Login & UID status checker (shared across tabs) ---
         window.updateShopLoginState = function updateShopLoginState() {
