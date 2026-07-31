@@ -309,6 +309,15 @@
 
     // ─── Component 2: 👥 Friends & Party Joiner Panel ───
     window.showFriendsModal = function() {
+        // Authenticated & Connected check
+        var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+        var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
+
+        if (!isLoggedIn || !hasServerConnection) {
+            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in with Facebook/Miniclip and connected to Agar.io servers to view friends.');
+            return;
+        }
+
         injectStyles();
         var t = getTheme();
         var old = document.getElementById('lm-friends-modal');
@@ -341,11 +350,12 @@
         setTimeout(function() {
             var body = document.getElementById('lm-friends-body');
             if (body && body.innerHTML.includes('Syncing Friends List')) {
+                var friendsList = window.agarioFriends || (window.application && window.application.user && window.application.user.friends) || [];
                 document.dispatchEvent(new CustomEvent('friendListUpdate', {
-                    detail: { friends: [] }
+                    detail: { friends: friendsList }
                 }));
             }
-        }, 3000);
+        }, 1500);
     };
 
     document.addEventListener('friendListUpdate', function(e) {
@@ -354,7 +364,7 @@
         if (!body || !data) return;
 
         var t = getTheme();
-        var friends = data.friends || data || [];
+        var friends = data.friends || window.agarioFriends || (window.application && window.application.user && window.application.user.friends) || [];
         var html = '';
 
         if (Array.isArray(friends) && friends.length) {
@@ -363,12 +373,14 @@
                 var statusClass = isOnline ? 'lm-status-online' : 'lm-status-offline';
                 var name = friend.displayName || friend.name || 'Friend';
                 var partyToken = friend.partyToken || friend.partyCode || '';
+                var avatar = friend.avatar || friend.icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
 
                 html += `
                     <div class="lm-friend-card">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <span class="lm-status-dot ${statusClass}"></span>
-                            <span style="font-weight: 600; color: ${t.tc};">${name}</span>
+                            <img src="${avatar}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                            <span style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${name}</span>
                         </div>
                         <div>
                             ${partyToken ? `<button class="btn" style="background: ${t.b1}; color: ${t.btc}; padding: 4px 12px; border-radius: 6px; font-weight: 700; border: none; cursor: pointer;" onclick="$('#party-token, #joinPartyToken').val('${partyToken}'); if(window.app && typeof window.app.joinParty === 'function') { window.app.joinParty(); } else { $('#join-party-btn').click(); } var m=document.getElementById('lm-friends-modal'); if(m) m.remove();">🎮 Join Party</button>` : `<span style="font-size: 12px; color: ${t.tc2};">${isOnline ? 'In Lobby' : 'Offline'}</span>`}
@@ -377,7 +389,10 @@
                 `;
             });
         } else {
-            html += `<div style="text-align: center; padding: 20px; color: ${t.tc2};">No friends currently connected or logged in with Facebook/Miniclip.</div>`;
+            html += `<div style="text-align: center; padding: 25px; color: ${t.tc2}; font-size: 13px;">
+                <i class="fa fa-users fa-2x" style="color: ${t.b1}; margin-bottom: 8px;"></i><br>
+                No online friends connected right now.<br>Sign in with Facebook/Miniclip to see your friends list &amp; party rooms!
+            </div>`;
         }
 
         body.innerHTML = html;
@@ -584,6 +599,18 @@
                         slotEl.html('<div style="color: #01d9cc; font-weight: 700; font-size: 11px; cursor: pointer;" onclick="if(window.brewPotion) window.brewPotion(' + s + ');">🧪 BREW</div>');
                     }
                 }
+            }
+        }
+
+        // 5. Friends Button Disabled state when unauthenticated or disconnected
+        var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+        var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
+        var friendsBtn = $('#lm-friends-btn');
+        if (friendsBtn.length) {
+            if (!isLoggedIn || !hasServerConnection) {
+                friendsBtn.css({ opacity: 0.5, cursor: 'not-allowed' }).prop('disabled', true);
+            } else {
+                friendsBtn.css({ opacity: 1, cursor: 'pointer' }).prop('disabled', false);
             }
         }
     };
