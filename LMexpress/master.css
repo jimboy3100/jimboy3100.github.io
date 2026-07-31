@@ -11273,7 +11273,6 @@ form {
 #profile .agario-exp-bar,
 .clearfix .agario-exp-bar {
 	transform-origin: left !important;
-	margin-left: 10px;
 }
 
 .agario-exp-bar .progress-bar {
