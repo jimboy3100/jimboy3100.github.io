@@ -1672,53 +1672,42 @@
         var t = getTheme();
         var pType = potionType || 'potion_epic';
 
-        var detailsMap = {
-            'potion_superior': {
-                name: 'Superior Potion',
-                icon: '🧪',
-                iconColor: '#4caf50',
-                coins: '150 - 300',
-                skinPieces: 'x2',
-                specialPieces: '0',
-                specialText: ''
-            },
-            'potion_epic': {
-                name: 'Epic Potion',
-                icon: '🧪',
-                iconColor: '#00bcd4',
-                coins: '420 - 650',
-                skinPieces: 'x6',
-                specialPieces: '1',
-                specialText: 'x1 Special'
-            },
-            'potion_legendary': {
-                name: 'Legendary Potion',
-                icon: '🧪',
-                iconColor: '#e91e63',
-                coins: '1,200 - 2,000',
-                skinPieces: 'x12',
-                specialPieces: '3',
-                specialText: 'x3 Special'
-            },
-            'potion_mystical': {
-                name: 'Mystical Potion',
-                icon: '🧪',
-                iconColor: '#ffb300',
-                coins: '3,000 - 5,500',
-                skinPieces: 'x24',
-                specialPieces: '6',
-                specialText: 'x6 Special'
-            }
+        var potionHelpItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
+                              ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
+                               (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
+
+        var ph = (potionHelpItems || []).find(function(item) {
+            if (!item || !item.potionId) return false;
+            var id = String(item.potionId).toLowerCase();
+            var target = String(pType).toLowerCase();
+            return id === target || id === ('potion_' + target) || id.replace('potion_', '') === target.replace('potion_', '');
+        });
+
+        var tierColors = { "potion_superior": "#4caf50", "potion_epic": "#00bcd4", "potion_legendary": "#e91e63", "potion_mystical": "#ffb300" };
+        var pColor = tierColors[pType] || tierColors['potion_' + pType] || '#00bcd4';
+        
+        var nameStr = (ph && ph.potionId) ? ph.potionId.replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();}) + ' Potion' : (pType.replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();}) + ' Potion');
+        var coinsStr = (ph && ph.coinText && ph.coinText !== 'na') ? ph.coinText : ((pType.indexOf('superior') !== -1) ? '150 - 300' : ((pType.indexOf('epic') !== -1) ? '420 - 650' : ((pType.indexOf('legendary') !== -1) ? '720 - 900' : '950 - 1500')));
+        var piecesStr = (ph && ph.skinPieces) ? ('x' + ph.skinPieces) : 'x2';
+        var specialPiecesStr = (ph && ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ('x' + ph.minSpecialPieces + ' Special') : '';
+
+        var p = {
+            name: nameStr,
+            icon: '🧪',
+            iconColor: pColor,
+            coins: coinsStr,
+            skinPieces: piecesStr,
+            specialText: specialPiecesStr
         };
 
-        var p = detailsMap[pType] || detailsMap['potion_epic'];
         var old = document.getElementById('lm-potion-detail-modal');
         if (old) old.remove();
 
         var modal = document.createElement('div');
         modal.id = 'lm-potion-detail-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100005';
+        modal.style.zIndex = '100020';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var specialItemHtml = p.specialText ? `
             <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); text-align: center;">
