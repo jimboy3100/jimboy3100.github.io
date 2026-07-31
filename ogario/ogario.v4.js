@@ -1393,6 +1393,19 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 9005) {
             legendmod.gameMode = ':ffa';
             core.connect('wss://garix.io:8090');
+        } else {
+            if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
+            if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
+            var rawVal = $('#gamemode').val();
+            var agar2ModeMap = {
+                '8001': ':ffa', '8002': ':experimental', '8003': ':teams',
+                '8004': ':party', '8005': ':ffa', '8006': ':experimental',
+                '8007': ':teams', '8008': ':party'
+            };
+            var modeVal = agar2ModeMap[rawVal] || rawVal;
+            if (window.master && typeof window.master.setGameMode === 'function') {
+                window.master.setGameMode(modeVal);
+            }
         }
 
         //wss://eatcells.com/api/~ EatCells FFA 1
@@ -7585,22 +7598,30 @@ function thelegendmodproject() {
             });	*/
             $(document).on("change", "#region", function () {
                 app.region = this.value;
+                if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
+                if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
+                if (window.master && typeof window.master.setRegion === 'function') {
+                    window.master.setRegion(this.value);
+                }
             });
             $(document).on("change", "#gamemode", function () {
                 var dummy = this.value;
                 if (":party" !== dummy) {
                     app.leaveParty();
                 }
-                /* Map Agar2 dropdown values to actual game mode strings.
-                 * Without this, gameMode gets set to raw values like "8003"
-                 * instead of ":teams", breaking mode-dependent logic. */
                 var agar2ModeMap = {
                     '8001': ':ffa', '8002': ':experimental', '8003': ':teams',
                     '8004': ':party', '8005': ':ffa', '8006': ':experimental',
                     '8007': ':teams', '8008': ':party'
                 };
-                app.gameMode = ogario.gameMode = agar2ModeMap[dummy] || dummy;
+                var modeVal = agar2ModeMap[dummy] || dummy;
+                app.gameMode = ogario.gameMode = modeVal;
                 app.setQuest();
+                if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
+                if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
+                if (window.master && typeof window.master.setGameMode === 'function') {
+                    window.master.setGameMode(modeVal);
+                }
             });
             $(document).on("change", "#quality", function () {
                 app.getQuality(this.value);

@@ -412,7 +412,6 @@ function legendmaster(self) {
         },
         setRegion(items, left) {
             if (null == left) {
-                /** @type {boolean} */
                 left = true;
             }
 
@@ -420,21 +419,8 @@ function legendmaster(self) {
                 return;
             }
 
-            /*
-             * Ignore duplicate change events for the currently selected region.
-             */
-            if (this.region === items) {
-                self.localStorage.setItem(
-                    "location",
-                    items
-                );
-
-                if ($("#region").val() !== items) {
-                    $("#region").val(items);
-                }
-
-                return;
-            }
+            if (typeof LM !== "undefined" && LM) LM.isLegendWorld = false;
+            if (typeof ogario !== "undefined" && ogario) ogario.isLegendWorld = false;
 
             this.region = items;
 
@@ -523,14 +509,8 @@ function legendmaster(self) {
                 opt_validate = true;
             }
 
-            /*
-             * Do nothing when the selected mode has not actually changed.
-             * This prevents duplicate DOM change events from reconnecting again.
-             */
-            if (this.gameMode === val) {
-                this.applyGameMode(val);
-                return;
-            }
+            if (typeof LM !== "undefined" && LM) LM.isLegendWorld = false;
+            if (typeof ogario !== "undefined" && ogario) ogario.isLegendWorld = false;
 
             this.applyGameMode(val);
             this.gameMode = val;
@@ -859,13 +839,6 @@ function legendmaster(self) {
         },
         reconnect(table, reason) {
             if (window.legendModFromWebsite) {
-                return;
-            }
-
-            if (
-                typeof LM !== "undefined" &&
-                LM.isLegendWorld
-            ) {
                 return;
             }
 
