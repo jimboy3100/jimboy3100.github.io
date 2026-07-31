@@ -16145,6 +16145,18 @@ function thelegendmodproject() {
                         if (sdr) {
                             var deletedId = sdr.skinId || '';
                             console.log("[LM] Skin Delete Response — skinId: " + deletedId);
+                            // Remove from user.skins so isSkinOwned stops matching
+                            if (deletedId && this.user && this.user.skins) {
+                                delete this.user.skins[deletedId];
+                                // Also try removing the getLink-mapped key
+                                var skinLink = this.getLink(deletedId);
+                                if (skinLink && skinLink[0]) delete this.user.skins[skinLink[0]];
+                            }
+                            // Unequip if this skin was currently equipped
+                            if (localStorage.getItem('equippedSkinId') === deletedId) {
+                                localStorage.removeItem('equippedSkinId');
+                                localStorage.removeItem('equippedSkinImage');
+                            }
                             toastr.info('<b>[SERVER]:</b> Custom skin deleted' + (deletedId ? ' (' + deletedId.substring(0, 20) + '...)' : ''));
                         } else {
                             console.log("[LM] Skin Delete — opcode 152 received (no response data)");
@@ -16152,6 +16164,8 @@ function thelegendmodproject() {
                         }
                         try { this.createSkinsHTML(); } catch(e) {}
                         if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                        // Clear delete timeout
+                        if (window._deleteTimeout) { clearTimeout(window._deleteTimeout); window._deleteTimeout = null; }
                     } catch(sdErr) {
                         console.warn("[LM] Error handling skin delete:", sdErr);
                     }

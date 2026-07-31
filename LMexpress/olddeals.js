@@ -1487,19 +1487,9 @@ function deleteCustomSkin(skinId) {
             toastr && toastr.info('<b>[SERVER]:</b> Delete request sent for custom skin...');
         } catch (e) {
             console.error('[SKIN] Delete encode error:', e);
-            // Fallback: manual protobuf bytes — field 1 (skinId), wire type 2 (string)
-            // Tag = (1 << 3) | 2 = 10, then varint length, then bytes
-            var skinIdBytes = [];
-            for (var i = 0; i < skinId.length; i++) skinIdBytes.push(skinId.charCodeAt(i));
-            var innerMsg = [10, skinId.length].concat(skinIdBytes); // field 1, wire type 2
-            var outerField = [194, 9]; // field 152, wire type 2 = (152 << 3 | 2) encoded as varint
-            application.writeUint32(outerField, innerMsg.length);
-            var wrapper = [8, 1, 18];
-            var innerPayload = [8, 152, 1].concat(outerField).concat(innerMsg);
-            application.writeUint32(wrapper, innerPayload.length);
-            var bytes = wrapper.concat(innerPayload);
-            window.core.proxyMobileData(new Uint8Array(bytes));
-            toastr && toastr.info('<b>[SERVER]:</b> Delete request sent (fallback)...');
+            toastr && toastr.error('<b>[ERROR]:</b> Failed to encode delete request');
+            cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+            return;
         }
     } else {
         toastr && toastr.error('<b>[ERROR]:</b> Protobuf not loaded');
