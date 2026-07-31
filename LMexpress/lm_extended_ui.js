@@ -564,7 +564,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-prizes-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var rowsHtml = '';
@@ -618,7 +618,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-lastweek-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var title = 'Weekly Results';
@@ -756,7 +756,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-leaguesinfo-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML = `
@@ -839,7 +839,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-friends-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML =
@@ -1068,7 +1068,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-potions-help-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var buildBodyContent = function(tab) {
@@ -1451,7 +1451,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-potion-detail-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100020';
+        modal.style.zIndex = '1000010';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var specialItemHtml = p.specialText ? `
@@ -1518,7 +1518,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-premium-potions-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var potionsData = [
@@ -1652,7 +1652,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-xp-boost-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         window.useBoostItem = function(boostId, count) {
@@ -1676,7 +1676,7 @@
             var pop = document.createElement('div');
             pop.id = 'lm-boost-info-popover';
             pop.className = 'lm-modal-overlay';
-            pop.style.zIndex = '100010';
+            pop.style.zIndex = '1000020';
             pop.innerHTML = `
                 <div class="lm-modal-container" style="background: #fff; border-radius: 14px; width: 380px; padding: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;">
                     <button onclick="document.getElementById('lm-boost-info-popover').remove();" style="position: absolute; right: 14px; top: 14px; background: none; border: none; font-size: 20px; color: #888; cursor: pointer; font-weight: 900;">&times;</button>
@@ -1796,7 +1796,7 @@
         var modal = document.createElement('div');
         modal.id = 'lm-mass-boost-modal';
         modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '100010';
+        modal.style.zIndex = '1000000';
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         modal.innerHTML = `
