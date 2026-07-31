@@ -1336,18 +1336,22 @@ window.changeOnline = function (option) {
 
 function autocoins(slot) {
     if (legendmod.integrity && window.loggedIn) {
-        //var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
-        var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-        let massBoostName = "hourlyBonus";
-        for (let i = 0; i < massBoostName.length; i++) {
-            bytes.push(massBoostName.charCodeAt(i));
+        // Prefer sendProto-based method if available
+        if (window.application && typeof window.application.activateTimedEvent === 'function') {
+            window.application.activateTimedEvent("hourlyBonus");
+        } else {
+            // Fallback: raw bytes
+            var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
+            let massBoostName = "hourlyBonus";
+            for (let i = 0; i < massBoostName.length; i++) {
+                bytes.push(massBoostName.charCodeAt(i));
+            }
+            window.core.proxyMobileData(bytes);
         }
-        window.core.proxyMobileData(bytes);
         if (defaultmapsettings.potionsDrinker) {
             autoRandomPotionDigger();
         }
     }
-    //console.log(String.fromCharCode.apply(String, bytes));
 }
 
 window.autoRandomPotion = 0;
@@ -1384,24 +1388,40 @@ function genericVideoAdRewardTokenRequest(slot) {
 }
 
 window.openPotion = function (slot) {
+    if (window.application && typeof window.application.openPotion === 'function') {
+        return window.application.openPotion(slot);
+    }
+    // Fallback: raw bytes if application not ready
     if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
     window.core.proxyMobileData(bytes);
 }
 
 window.brewPotion = function (slot) {
+    if (window.application && typeof window.application.brewPotion === 'function') {
+        return window.application.brewPotion(slot);
+    }
+    // Fallback: raw bytes if application not ready
     if (!window.core || !window.core.proxyMobileData) return;
     var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot]
     window.core.proxyMobileData(bytes);
 }
 window.questActivationReq = function () {
+    if (window.application && typeof window.application.activateTimedEvent === 'function') {
+        return window.application.activateTimedEvent("dailyQuest");
+    }
+    // Fallback: raw bytes
     if (!window.core || !window.core.proxyMobileData) return;
-    var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116]; //agario_proto_Activate_$timed_$event_$request {eventId: "dailyQuest"}
+    var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116];
     window.core.proxyMobileData(bytes);
 }
 window.activateQuest = function () {
+    if (window.application && typeof window.application.activateQuest === 'function') {
+        return window.application.activateQuest("quest_activation_24h");
+    }
+    // Fallback: raw bytes
     if (!window.core || !window.core.proxyMobileData) return;
-    var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]; //agario_proto_Activate_$quest_$request {productId: "quest_activation_24h"}
+    var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104];
     window.core.proxyMobileData(bytes);
 }
 window.changeSkin = function (productID) {
@@ -16052,13 +16072,36 @@ function thelegendmodproject() {
                     }
                     break;
                 case 123:
-                    var u = r.uncompressedData.brewPotionForSlotResponseField;
-                    this.updatePotions(u.userPotions)
+                    // Brew potion response
+                    try {
+                        var u = r.uncompressedData.brewPotionForSlotResponseField;
+                        if (u) {
+                            if (u.userPotions && u.userPotions.length) {
+                                this.updatePotions(u.userPotions);
+                            }
+                            toastr.success('<b>[SERVER]:</b> Potion brewing started! &#x1F9EA;');
+                        }
+                    } catch(brewErr) {
+                        console.warn("[LM] Error parsing brew potion response:", brewErr);
+                    }
                     break;
                 case 125:
-                    var u = r.uncompressedData.openPotionForSlotResponseField;
-                    this.updateProducts(u.productUpdates);
-                    this.updatePotions(u.userPotions)
+                    // Open potion response
+                    try {
+                        var u = r.uncompressedData.openPotionForSlotResponseField;
+                        if (u) {
+                            if (u.productUpdates && u.productUpdates.length) {
+                                this.updateProducts(u.productUpdates);
+                            }
+                            if (u.userPotions && u.userPotions.length) {
+                                this.updatePotions(u.userPotions);
+                            }
+                            toastr.success('<b>[SERVER]:</b> Potion consumed! &#x1F9EA;');
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                        }
+                    } catch(openPErr) {
+                        console.warn("[LM] Error parsing open potion response:", openPErr);
+                    }
                     break;
                 case 131:
                     // Leagues info response — store league standings

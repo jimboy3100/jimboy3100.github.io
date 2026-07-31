@@ -1125,12 +1125,19 @@ window.refreshDealsTab = function() {
         clearTimeout(window._adRewardTimeout);
         window._adRewardTimeout = null;
     }
+    if (window._freeCoinsTimeout) {
+        clearTimeout(window._freeCoinsTimeout);
+        window._freeCoinsTimeout = null;
+    }
     // Reset reward link button
     var rlBtn = document.getElementById('activateRewardLinkBtn');
     if (rlBtn) { rlBtn.disabled = false; rlBtn.textContent = 'Activate'; rlBtn.style.opacity = '1'; rlBtn.style.pointerEvents = 'auto'; }
     // Reset ad reward button
     var arBtn = document.getElementById('adRewardBtn');
     if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
+    // Reset free coins button
+    var fcBtn = document.getElementById('claimFreeCoinsBtn');
+    if (fcBtn) { fcBtn.disabled = false; fcBtn.textContent = 'Claim!'; fcBtn.style.opacity = '1'; }
 };
 
 /**
