@@ -243,10 +243,13 @@ function SpecialDeals() {
             '</div>' +
             '<label for="legendUploadInputModal" class="btn btn-primary" id="legendChooseFileBtn" style="background: ' + b1 + '; margin-bottom: 8px; width: 220px; font-weight: 700; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
-            '<br>' +
-            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="background: ' + b2 + '; width: 220px; font-weight: 700;">Upload & Buy (90 DNA)</button>' +
+            '<div style="display: flex; gap: 4px; max-width: 320px; margin: 0 auto 8px; align-items: center;">' +
+            '<input type="text" id="legendSkinUrlInput" class="form-control" placeholder="...or paste image URL" style="flex: 1; height: 30px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
+            '<button id="legendLoadUrlBtn" class="btn btn-xs" style="background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 10px; font-size: 11px; white-space: nowrap; cursor: pointer;">Load</button>' +
+            '</div>' +
+            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="background: ' + b2 + '; width: 220px; font-weight: 700;">Upload &amp; Buy (90 DNA)</button>' +
             '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; Clear Image</button>' +
-            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">Select an image or drag &amp; drop</div>' +
+            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">Select an image, drag &amp; drop, or paste a URL</div>' +
             '</div>' + // close drop zone
             '</div>' +
             '</div>' +
@@ -537,8 +540,29 @@ function SpecialDeals() {
             }
             $('#legendUploadInputModal').val('');
             $('#legendSaveBtnModal').prop('disabled', true).css({ opacity: 0.5, cursor: 'not-allowed' });
-            $('#legendStatusModal').text('Select an image or drag & drop').css('color', getShopTheme().tc2);
+            $('#legendStatusModal').text('Select an image, drag & drop, or paste a URL').css('color', getShopTheme().tc2);
             $(this).hide();
+        });
+
+        // --- Load from URL ---
+        $('#legendLoadUrlBtn').off('click').on('click', function() {
+            var url = $('#legendSkinUrlInput').val().trim();
+            if (!url) {
+                toastr && toastr.warning('<b>[UPLOAD]:</b> Paste an image URL first.');
+                return;
+            }
+            // Also accept skin URL field (#skin) if no explicit URL
+            $('#legendStatusModal').text('Loading from URL...').css('color', getShopTheme().mc);
+            processAndFormatModal(url);
+            $('#legendClearBtn').show();
+        });
+
+        // Also support pressing Enter in the URL field
+        $('#legendSkinUrlInput').off('keypress').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                $('#legendLoadUrlBtn').trigger('click');
+            }
         });
 
         $('#legendSaveBtnModal').off('click').on('click', function() {
@@ -618,6 +642,15 @@ function SpecialDeals() {
             }
             if (tab === 'skins') {
                 updateEquippedSkinUI();
+            }
+            if (tab === 'upload') {
+                // Update balance in the upload tab
+                updateUploadBalance();
+                // Pre-fill URL from the main skin URL input if available
+                var mainSkinUrl = $('#skin').val();
+                if (mainSkinUrl && mainSkinUrl.length > 5 && !$('#legendSkinUrlInput').val()) {
+                    $('#legendSkinUrlInput').val(mainSkinUrl);
+                }
             }
             if (tab === 'deals') {
                 populateDealsGrid();
@@ -793,6 +826,28 @@ function updateDealsBalance() {
     }
     $('#dealsDnaCount').text(dna.toLocaleString());
     $('#dealsCoinsCount').text(coins.toLocaleString());
+    // Also update upload tab balance
+    $('#dnaCountModal').text(dna.toLocaleString());
+    $('#coinsCountModal').text(coins.toLocaleString());
+}
+
+function updateUploadBalance() {
+    var dna = 0, coins = 0;
+    var userObj = (window.legendmod && window.legendmod.user) || (window.application && window.application.user);
+    if (userObj) {
+        dna = userObj.dna || 0;
+        coins = userObj.coins || 0;
+    }
+    if (!dna && $('#dna').length) {
+        var dText = $('#dna').text().replace(/[^0-9]/g, '');
+        if (dText) dna = parseInt(dText, 10);
+    }
+    if (!coins && $('#coins').length) {
+        var cText = $('#coins').text().replace(/[^0-9]/g, '');
+        if (cText) coins = parseInt(cText, 10);
+    }
+    $('#dnaCountModal').text(dna.toLocaleString());
+    $('#coinsCountModal').text(coins.toLocaleString());
 }
 
 /**
