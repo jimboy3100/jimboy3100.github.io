@@ -466,7 +466,30 @@ function SpecialDeals(defaultTab) {
                 skinColorInput.prop('disabled', true).css('opacity', 0.4);
             }
 
-            // Skins tab equip/buy/search
+            // Skins tab equip/buy/search — show/hide login warning
+            var loginBanner = document.getElementById('shopLoginBanner');
+            if (!loginBanner) {
+                var grid = document.getElementById('skinGrid');
+                if (grid) {
+                    loginBanner = document.createElement('div');
+                    loginBanner.id = 'shopLoginBanner';
+                    loginBanner.style.cssText = 'display:none; grid-column: 1/-1; text-align: center; padding: 10px 16px; margin-bottom: 8px; border-radius: 8px; background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 12px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
+                    grid.parentNode.insertBefore(loginBanner, grid);
+                }
+            }
+            if (loginBanner) {
+                if (!allReady) {
+                    var reasons = [];
+                    if (!isLoggedIn) reasons.push('Log in with Google/Facebook');
+                    if (!hasUID) reasons.push('Play a game to get your UID');
+                    if (!hasConnection) reasons.push('Join a server first');
+                    loginBanner.innerHTML = '⚠️ ' + reasons.join(' &bull; ') + ' — to buy/equip skins';
+                    loginBanner.style.display = 'block';
+                } else {
+                    loginBanner.style.display = 'none';
+                }
+            }
+
             if (!allReady) {
                 $('.skin-btn-equip, .skin-btn-buy').css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' });
                 $('#unequipSkinBtn').css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' });

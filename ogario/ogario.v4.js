@@ -2251,7 +2251,47 @@ setTimeout(function () {
     }
 }, 5000);
 
-function userLeaguesInfoResponse() { }
+function userLeaguesInfoResponse() {
+    // Bridge between the raw-byte RecordPlayers parser (case 131 in onMobileData)
+    // and the UI event listener in lm_extended_ui.js
+    try {
+        var players = window.RecordPlayers || [];
+        // Clean up: RecordPlayers is 1-indexed from the parser, filter out empty/null slots
+        var entries = [];
+        for (var i = 0; i < players.length; i++) {
+            if (players[i] && (players[i].id || players[i].uid)) {
+                entries.push({
+                    displayName: players[i].id || players[i].uid || ('Player ' + (entries.length + 1)),
+                    uid: players[i].uid || '',
+                    level: players[i].level ? parseInt(players[i].level) || 1 : 1,
+                    country: (players[i].country || 'us').toLowerCase().replace(/[^a-z]/g, ''),
+                    icon: players[i].icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png',
+                    socialid: players[i].socialid || '',
+                    rank: entries.length + 1,
+                    score: players[i].score || players[i].winnings || 0
+                });
+            }
+        }
+
+        var isLastWeek = (window._leaguesRequestType === 2);
+        var detail = {
+            leagueEntries: entries,
+            isLastWeek: isLastWeek
+        };
+
+        // Store for later use
+        if (isLastWeek) {
+            window.lastWeekLeaguesResponse = detail;
+        } else {
+            window.lastLeaguesResponse = detail;
+        }
+
+        console.log('[LM] Leagues data dispatched (' + entries.length + ' entries, isLastWeek=' + isLastWeek + ')');
+        document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: detail }));
+    } catch(e) {
+        console.warn('[LM] userLeaguesInfoResponse error:', e);
+    }
+}
 window.predictedGhostCells = [];
 //set values outside ogario
 window.playerCellsId = [];

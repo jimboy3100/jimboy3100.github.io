@@ -407,11 +407,13 @@
         // Immediately render content area with current tab configuration & cached response
         window.renderLeaguesContent(tabType, window.lastLeaguesResponse || {});
 
-        // Dispatch Opcode 130 request in background
+        // Dispatch Opcode 130 request for current week standings
+        // NOTE: leagueRequestType 1=current week, 2=last week (NOT the tab number!)
+        // Tabs (1=My League, 2=Country, 3=World) are UI-level only
         if (typeof window.requestLeaguesInfo === 'function') {
-            window.requestLeaguesInfo(tabType);
+            window.requestLeaguesInfo(1);
         } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
-            window.application.requestLeaguesInfo(tabType);
+            window.application.requestLeaguesInfo(1);
         } else if (typeof window.userLeaguesInfoRequest === 'function') {
             window.userLeaguesInfoRequest();
         }
@@ -479,6 +481,7 @@
         injectStyles();
         var t = getTheme();
         var currentTab = tabType || window.currentLeagueTab || 1;
+        var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
         var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
 
@@ -531,11 +534,12 @@
                     var amount = '?';
                     var currency = '🏆';
                     try {
-                        var bonuses = window.LMAgarGameConfiguration.gameConfig["Wallet - Bonuses and Rewards"];
+                        var gcfg = (window.LMAgarGameConfiguration || window.GameConfiguration || {}).gameConfig || {};
+                        var bonuses = gcfg["Wallet - Bonuses and Rewards"];
                         if (bonuses) {
                             var bonus = bonuses.find(function(b) { return b.id === prize.rewardId; });
                             if (bonus && bonus.bundleId) {
-                                var bundles = window.LMAgarGameConfiguration.gameConfig["Wallet - Product Bundles"];
+                                var bundles = gcfg["Wallet - Product Bundles"];
                                 if (bundles) {
                                     var bundle = bundles.find(function(bun) { return bun.bundleId === bonus.bundleId; });
                                     if (bundle) {
@@ -622,6 +626,7 @@
     window.showLastWeekResultsModal = function(tabType) {
         injectStyles();
         var t = getTheme();
+        var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
         var old = document.getElementById('lm-lastweek-modal');
