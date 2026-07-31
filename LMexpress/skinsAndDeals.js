@@ -455,6 +455,9 @@ function SpecialDeals(defaultTab) {
                 fileInput.prop('disabled', false);
                 skinNameInput.prop('disabled', false).css('opacity', 1);
                 skinColorInput.prop('disabled', false).css('opacity', 1);
+                $('#legendSkinUrlInput').prop('disabled', false).css('opacity', 1);
+                $('#legendLoadUrlBtn').prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' });
+                $('#legendClearBtn').css({ opacity: 1, pointerEvents: 'auto' });
                 if (processedBufferModal) {
                     uploadBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
                 }
@@ -464,6 +467,33 @@ function SpecialDeals(defaultTab) {
                 fileInput.prop('disabled', true);
                 skinNameInput.prop('disabled', true).css('opacity', 0.4);
                 skinColorInput.prop('disabled', true).css('opacity', 0.4);
+                $('#legendSkinUrlInput').prop('disabled', true).css('opacity', 0.4);
+                $('#legendLoadUrlBtn').prop('disabled', true).css({ opacity: 0.4, pointerEvents: 'none' });
+                $('#legendClearBtn').css({ opacity: 0.4, pointerEvents: 'none' });
+            }
+
+            // Upload tab login warning banner
+            var uploadBanner = document.getElementById('uploadLoginBanner');
+            if (!uploadBanner) {
+                var dropZone = document.getElementById('uploadDropZone');
+                if (dropZone) {
+                    uploadBanner = document.createElement('div');
+                    uploadBanner.id = 'uploadLoginBanner';
+                    uploadBanner.style.cssText = 'display:none; text-align: center; padding: 8px 14px; margin-bottom: 10px; border-radius: 8px; background: rgba(255,152,0,0.15); border: 1px solid rgba(255,152,0,0.4); font-size: 11px; font-weight: 600; color: #ffb74d; font-family: "Roboto Condensed", sans-serif;';
+                    dropZone.insertBefore(uploadBanner, dropZone.firstChild);
+                }
+            }
+            if (uploadBanner) {
+                if (!allReady) {
+                    var ureasons = [];
+                    if (!isLoggedIn) ureasons.push('Log in');
+                    if (!hasUID) ureasons.push('Play a game to get your UID');
+                    if (!hasConnection) ureasons.push('Join a server');
+                    uploadBanner.innerHTML = '⚠️ ' + ureasons.join(' &bull; ') + ' — to upload custom skins';
+                    uploadBanner.style.display = 'block';
+                } else {
+                    uploadBanner.style.display = 'none';
+                }
             }
 
             // Skins tab equip/buy/search — show/hide login warning
