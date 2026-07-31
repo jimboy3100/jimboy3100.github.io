@@ -2290,38 +2290,55 @@ function LoadGameConfiguration() {
         return;
     }
 
-    var targetUrl = window.MiniclipConfigDestination || "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
-    if (targetUrl.includes('miniclippt.com')) {
-        targetUrl = targetUrl.replace('configs-web.agar.io', 'configs-web.agar.io');
+    var _av = window.agarversion || "v15/10913/";
+    if (!_av.endsWith('/')) _av += '/';
+
+    var urlsToTry = [
+        window.MiniclipConfigDestination,
+        "https://configs-web.agar.io/live/" + _av + "GameConfiguration.json",
+        "https://configs-web.agar.io/live/GameConfiguration.json",
+        "https://jimboy3100.github.io/agario/live/GameConfiguration.json",
+        "https://jimboy3100.github.io/agario/live/" + _av + "GameConfiguration.json"
+    ];
+
+    var uniqueUrls = [];
+    urlsToTry.forEach(function(u) {
+        if (u && typeof u === 'string' && uniqueUrls.indexOf(u) === -1) {
+            uniqueUrls.push(u);
+        }
+    });
+
+    function tryFetchConfig(idx) {
+        if (idx >= uniqueUrls.length) {
+            console.warn('[Shop] All GameConfiguration endpoints failed.');
+            return;
+        }
+        var targetUrl = uniqueUrls[idx];
+        console.log('[Shop] Trying GameConfiguration endpoint (' + (idx + 1) + '/' + uniqueUrls.length + '): ' + targetUrl);
+
+        $.ajax({
+            url: targetUrl,
+            type: 'GET',
+            timeout: 6000,
+            success: function(info) {
+                if (typeof info === 'string') {
+                    try { window.GameConfiguration = JSON.parse(info); } catch(e) { window.GameConfiguration = info; }
+                } else {
+                    window.GameConfiguration = info;
+                }
+                console.log('[Shop] Successfully loaded GameConfiguration from: ' + targetUrl);
+                populateSD();
+                if (typeof populateDealsGrid === 'function') populateDealsGrid();
+                if (typeof populateSkins === 'function') populateSkins();
+            },
+            error: function(err) {
+                console.warn('[Shop] Config endpoint failed: ' + targetUrl + ', trying next fallback...', err);
+                tryFetchConfig(idx + 1);
+            }
+        });
     }
 
-    $.ajax({
-        url: targetUrl,
-        type: 'GET',
-        success: function(info) {
-            if (typeof info === 'string') {
-                try { window.GameConfiguration = JSON.parse(info); } catch(e) { window.GameConfiguration = info; }
-            } else {
-                window.GameConfiguration = info;
-            }
-            populateSD();
-            if (typeof populateDealsGrid === 'function') populateDealsGrid();
-            if (typeof populateSkins === 'function') populateSkins();
-        },
-        error: function(err) {
-            console.warn('[Shop] Primary config URL failed, trying fallback...', err);
-            $.ajax({
-                url: 'https://www.legendmod.ml/agario/live/v15/10913/GameConfiguration.json',
-                type: 'GET',
-                success: function(info) {
-                    window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;
-                    populateSD();
-                    if (typeof populateDealsGrid === 'function') populateDealsGrid();
-                    if (typeof populateSkins === 'function') populateSkins();
-                }
-            });
-        }
-    });		
+    tryFetchConfig(0);
 }
 
 function populateLibConfig() {
