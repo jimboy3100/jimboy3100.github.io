@@ -1674,7 +1674,8 @@ function populateSkins() {
     var currentFilter = 'all';
 
     function applySkinFilters() {
-        var query = $('#skinSearchBar').val().toLowerCase().trim();
+        var searchEl = $('#skinSearchBar');
+        var query = (searchEl.length && searchEl.val()) ? String(searchEl.val()).toLowerCase().trim() : '';
         var ownedSkinsObj = getOwnedSkinsMap();
 
         skinShopFiltered = skins.filter(function(s) {
@@ -2136,19 +2137,10 @@ function renderSkinPage() {
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
     var cdnBase = window.LM_CDN_BASE();
     var grid = document.getElementById('skinGrid');
+    if (!grid) return;
     var currentEquippedId = localStorage.getItem('equippedSkinId');
     var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
 
-    // Show loading spinner on first page if grid is empty
-    if (skinShopPage === 0 && grid.children.length === 0 && skinShopFiltered.length > 0) {
-        grid.innerHTML = '<div class="skin-grid-loading"><div class="spinner"></div><br>Loading skins...</div>';
-        setTimeout(function() {
-            var loader = grid.querySelector('.skin-grid-loading');
-            if (loader) loader.remove();
-            doRender();
-        }, 100);
-        return;
-    }
     doRender();
 
     function doRender() {
