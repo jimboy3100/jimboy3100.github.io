@@ -352,9 +352,9 @@ function SpecialDeals(defaultTab) {
         });
         // populateLibConfig runs immediately if config is ready, or waits for it
         if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
-            populateLibConfig();
+            try { populateLibConfig(); } catch(e) { console.warn('[Shop] populateLibConfig error:', e); }
         } else {
-            setTimeout(populateLibConfig, 800);
+            setTimeout(function() { try { populateLibConfig(); } catch(e) { console.warn('[Shop] populateLibConfig error:', e); } }, 800);
         }
 
         // NOTE: populateSkins is called by LoadGameConfiguration on success.
