@@ -6915,12 +6915,36 @@ function thelegendmodproject() {
             $(".agario-party .btn").addClass("btn-sm");
             $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://jimboy3100.github.io/vanillaskins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
             $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
-            $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none");
-            $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
-                "z-index": "1",
-                "opacity": "0",
-                "bottom": "-100px"
+            /* ── Persistent Agario Ad Suppression ──
+             * One-time hide is not enough — agario's code re-shows ads dynamically.
+             * This uses multiple layers: DOM removal + function nooping + MutationObserver + CSS. */
+            $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom, .agario-promo-container, #adContainer, #preroll-container").remove();
+            /* Noop ad display functions if they exist on the Core/UI objects */
+            try {
+                if (window.Core && window.Core.ui && window.Core.ui.mainUI) {
+                    window.Core.ui.mainUI.showAds = function() {};
+                    if (window.Core.ui.mainUI.showInterstitial) window.Core.ui.mainUI.showInterstitial = function() {};
+                }
+            } catch(e) {}
+            /* MutationObserver: catch dynamically injected ad containers */
+            var _adSelectors = ['advertisement', 'adbg', 'a320x250', 'g320x250', 's320x250', 'adsBottom', 'adContainer', 'preroll-container', 'agario-promo-container'];
+            var _adObserver = new MutationObserver(function(mutations) {
+                for (var m = 0; m < mutations.length; m++) {
+                    var added = mutations[m].addedNodes;
+                    for (var n = 0; n < added.length; n++) {
+                        var node = added[n];
+                        if (node.nodeType !== 1) continue;
+                        if (_adSelectors.indexOf(node.id) !== -1 || (node.className && typeof node.className === 'string' && (node.className.includes('agario-promo') || node.className.includes('ad-container')))) {
+                            node.remove();
+                        }
+                    }
+                }
             });
+            _adObserver.observe(document.body, { childList: true, subtree: true });
+            /* CSS safety net: hide any surviving ad elements */
+            var _adStyle = document.createElement('style');
+            _adStyle.textContent = '#advertisement,#adbg,#a320x250,#g320x250,#s320x250,#adsBottom,#adContainer,#preroll-container,.agario-promo-container,.agario-promo{display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important;pointer-events:none!important}';
+            document.head.appendChild(_adStyle);
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             //this.addOptions(["unlockedFPS"], "animationGroup");
@@ -8222,9 +8246,19 @@ function thelegendmodproject() {
                             url.includes('jimboy3000.github.io');
 
                         if (isCustomSkin) {
+                            /* Custom skin CDN fallback chain:
+                             * 1. configs.agario.miniclippt.com → configs-web.agario.miniclippt.com
+                             * 2. configs-web.agario.miniclippt.com → configs-web.agar.io
+                             * 3. configs-web.agar.io → skin-proxy (CORS proxy)
+                             * 4. skin-proxy failed → give up */
                             if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
                                 app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
+                            } else if (url.includes('configs-web.agario.miniclippt.com')) {
+                                app.loadSkin(img, 'https://configs-web.agar.io/live/custom_skins/' + filename + '?', animated, isPriority);
+                            } else if (url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) {
+                                app.loadSkin(img, 'https://ffa.legendmod.ml/skin-proxy/vanilla/' + filename, animated, isPriority);
                             }
+                            /* else: all CDNs failed, give up silently */
                             return;
                         }
 
@@ -16650,11 +16684,8 @@ function thelegendmodproject() {
                 if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
                     var newURL;
                     if (url.includes('/custom_skins/')) {
-                        if (url.includes('configs-web.agario.miniclippt')) {
-                            newURL = "https://configs.agario.miniclippt.com/live/custom_skins/" + rawFileName + "?";
-                        } else {
-                            newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
-                        }
+                        /* Custom skin CDN fallback: miniclippt → agar.io → skin-proxy */
+                        newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
                     } else {
                         newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     }
@@ -16666,7 +16697,8 @@ function thelegendmodproject() {
                     return newURL;
 
                 } else if ((url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) && url.includes('/custom_skins/')) {
-                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    /* agar.io CDN also failed → last resort: CORS skin-proxy */
+                    var newURL = "https://ffa.legendmod.ml/skin-proxy/vanilla/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;
