@@ -6407,7 +6407,7 @@ function BeforeSpecialDeals() {
     }
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/olddeals.js";
+    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/skinsAndDeals.js";
     $("body").append(SpecialDealsJS);
 }
 function BeforeLegendmodShop() {
