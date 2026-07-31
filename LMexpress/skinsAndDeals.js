@@ -1125,8 +1125,11 @@ function populateDealsGrid() {
         if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
             window.GameConfiguration = window.master.GameConfiguration;
         } else {
-            LoadGameConfiguration();
             grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals...</div>';
+            if (!window._isLoadingGameConfig) {
+                window._isLoadingGameConfig = true;
+                LoadGameConfiguration();
+            }
             return;
         }
     }
@@ -2441,18 +2444,15 @@ function populateSD() {
     if (agarVersionSelect.options && agarVersionSelect.options[0] && agarVersionSelect.value !== agarVersionSelect.options[0].value) {
         // Check if an option with the same text already exists
         
+		var existingIds = {};
+		for (var j = 0; j < window.selectVariable.length; j++) { 
+			existingIds[window.selectVariable[j].value] = true;
+		}
 		for (var ik = 0; ik < GameConfiguration.gameConfig["Wallet - In-App Purchases"].length; ik++) {
-			var optionExists = false;
-			for (var j = 0; j < window.selectVariable.length; j++) { 
-				if (window.selectVariable[j].value == GameConfiguration.gameConfig["Wallet - In-App Purchases"][ik].id) {
-					optionExists = true;
-				}
+			var iapItem = GameConfiguration.gameConfig["Wallet - In-App Purchases"][ik];
+			if (!existingIds[iapItem.id]) {
+				populateSDlines(select, ik);
 			}
-			if (optionExists == false) {
-				populateSDlines(select,ik);
-			}
-			//else console.log("no " + GameConfiguration.gameConfig["Wallet - In-App Purchases"][ik].bundleId)
-			
 		}
     }
 	else{ //if selected value of #ss-select-agarVersionDestinations is the latest
@@ -2509,6 +2509,7 @@ function LoadGameConfiguration() {
     $(".xpmt-skins").css('background-image', '');
 
     function _onConfigReady() {
+        window._isLoadingGameConfig = false;
         populateSD();
         if (typeof populateDealsGrid === 'function') populateDealsGrid();
         if (typeof populateSkins === 'function') populateSkins();
@@ -2563,6 +2564,7 @@ function _fetchConfigFallback(callback) {
             callback();
         },
         error: function(err) {
+            window._isLoadingGameConfig = false;
             console.warn('[Shop] Config fetch failed:', err);
         }
     });
