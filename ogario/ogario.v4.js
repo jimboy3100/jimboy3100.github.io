@@ -1436,6 +1436,18 @@ window.changeSkin = function (productID) {
     window.core.proxyMobileData(bytes);
 }
 
+// ─── Expose application protocol functions on window for UI use ───
+window.sendGifts = function(giftIds) { if (window.application) return window.application.sendGifts(giftIds); };
+window.consumeGiftRequests = function(ids) { if (window.application) return window.application.consumeGiftRequests(ids); };
+window.requestGifts = function(giftIds) { if (window.application) return window.application.requestGifts(giftIds); };
+window.openPotionForProduct = function(productId) { if (window.application) return window.application.openPotionForProduct(productId); };
+window.activateRewardLink = function(token) { if (window.application) return window.application.activateRewardLink(token); };
+window.requestAdRewardToken = function() { if (window.application) return window.application.requestAdRewardToken(); };
+window.inspectUserStats = function(userId) { if (window.application) return window.application.inspectUserStats(userId); };
+window.claimGifts = function(giftIds) { if (window.application) return window.application.claimGifts(giftIds); };
+window.softPurchase = function(purchaseId) { if (window.application) return window.application.softPurchase(purchaseId); };
+window.activateTimedEvent = function(eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
+
 var root = protobuf.parse(proto, { keepCase: true }).root;
 window.mesega = root.lookupType("Data");
 var compressed = root.lookupType("uncompressedData");

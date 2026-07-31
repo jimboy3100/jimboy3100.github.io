@@ -913,16 +913,93 @@ function populateDealsGrid() {
         var currIcon = currType.indexOf('dna') !== -1 ? '🧬' : '💰';
         var currAmount = sp.currencyAmount || 0;
 
-        // Only show relevant soft purchases (skip internal ones)
-        if (sp.purchaseId.indexOf('skin_') !== -1 || sp.purchaseId.indexOf('boost') !== -1 || sp.purchaseId.indexOf('potion') !== -1) continue;
+        // Skip skin and potion purchases (shown in skins tab)
+        if (sp.purchaseId.indexOf('skin_') !== -1 || sp.purchaseId.indexOf('potion') !== -1) continue;
+
+        // Boost soft purchases get a special icon and label
+        var isBoostPurchase = sp.purchaseId.indexOf('boost') !== -1;
+        var dealIcon = isBoostPurchase ? '🚀' : '🛒';
+        var dealBorder = isBoostPurchase ? t.mc : t.b3;
 
         html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
-        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b3 + ';">🛒</div>';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + dealBorder + ';">' + dealIcon + '</div>';
         html += '<div style="flex: 1; min-width: 0;">';
-        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.b3 + ';">' + spDesc + '</div>';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + dealBorder + ';">' + spDesc + '</div>';
         html += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
         html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + t.b3 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + dealBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '</div>';
+    }
+
+    // --- Owned Boosts (Activate) ---
+    if (window.application && window.application.user && window.application.user.products) {
+        var prods = window.application.user.products;
+        var boostHtml = '';
+        for (var pid in prods) {
+            if (pid.indexOf('boost') !== -1 && prods[pid] && prods[pid].quantity > 0) {
+                var bName = pid.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+                boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
+                boostHtml += '<div style="flex: 1; min-width: 0;">';
+                boostHtml += '<div style="font-weight: 700; font-size: 13px; color: ' + t.mc + ';">' + bName + '</div>';
+                boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">Owned: ' + prods[pid].quantity + 'x</div>';
+                boostHtml += '</div>';
+                boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Activate</button>';
+                boostHtml += '</div>';
+            }
+        }
+        if (boostHtml) {
+            html += '<div style="font-weight: 700; font-size: 12px; color: ' + t.mc + '; margin: 12px 0 6px; padding-top: 8px; border-top: 1px solid ' + t.pc2 + ';">🚀 Your Boosts</div>';
+            html += boostHtml;
+        }
+    }
+
+    // --- Offer Bundles ---
+    for (var ob = 0; ob < bundles.length; ob++) {
+        var bundle = bundles[ob];
+        if (!bundle.bundleId) continue;
+        // Skip bundles already shown as IAP deals
+        var alreadyShown = false;
+        for (var ai = 0; ai < iaps.length; ai++) {
+            if (iaps[ai].bundleId === bundle.bundleId) { alreadyShown = true; break; }
+        }
+        if (alreadyShown) continue;
+
+        var bDesc = (bundle.description && bundle.description !== 'na')
+            ? bundle.description.replace(/_/g, ' ').replace(' name', '')
+            : bundle.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+
+        // Build contents list
+        var bContents = productLookup[bundle.bundleId] || [];
+        var bContentText = '';
+        for (var bc = 0; bc < bContents.length; bc++) {
+            var bcPid = bContents[bc].productId || '';
+            var bcQty = bContents[bc].quantity || 1;
+            var bcLabel = bcPid.replace(/_/g, ' ');
+            if (bcPid.indexOf('coins') !== -1) bcLabel = '💰 ' + bcQty.toLocaleString() + ' Coins';
+            else if (bcPid.indexOf('dna') !== -1) bcLabel = '🧬 ' + bcQty.toLocaleString() + ' DNA';
+            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 Skin: ' + bcPid.replace('skin_', '');
+            else if (bcPid.indexOf('boost') !== -1) bcLabel = '🚀 Boost: ' + bcPid;
+            else bcLabel = bcQty + 'x ' + bcLabel;
+            bContentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + bcLabel + '</span> ';
+        }
+        if (!bContentText) bContentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
+
+        var bSkinImg = getDealSkinImage(bundle.bundleId);
+
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.b1 + '66; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.b1 + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b1 + ';">';
+        if (bSkinImg) {
+            html += '<img src="' + bSkinImg + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'📦\'">';
+        } else {
+            html += '📦';
+        }
+        html += '</div>';
+        html += '<div style="flex: 1; min-width: 0;">';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + bDesc + '</div>';
+        html += '<div>' + bContentText + '</div>';
+        html += '</div>';
+        html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + bundle.bundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
     }
 
@@ -1737,6 +1814,10 @@ function renderSkinPage() {
             var actionBtnHtml;
             if (isOwned) {
                 actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + imgFile + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
+                // Add Delete button for custom skins
+                if (skin.productId && skin.productId.indexOf('skin_custom_') === 0) {
+                    actionBtnHtml += '<button class="skin-btn-buy" onclick="deleteCustomSkin(\'' + skin.productId + '\');event.stopPropagation();" style="flex: 0.6; background: ' + getShopTheme().b4 + ' !important; font-size: 9px;">Delete</button>';
+                }
             } else {
                 // Look up price for unowned skins
                 var priceInfo = getSkinPrice(skin.productId);
