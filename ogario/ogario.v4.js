@@ -8122,7 +8122,7 @@ function thelegendmodproject() {
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
             // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
-            if (url.includes('agario.miniclip.com') || url.includes('agario-configurations-web.s3.amazonaws.com.miniclip.com')) {
+            if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com')) {
                 url = url.replace(/(?:configs-web|configs)\.agar\.io\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
                 url = url.replace(/(?:configs-web|configs)\.agario\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
             }
@@ -8346,7 +8346,7 @@ function thelegendmodproject() {
                             if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
                                 app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
                             } else if (url.includes('configs-web.agario.miniclippt.com')) {
-                                app.loadSkin(img, 'https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/' + filename + '?', animated, isPriority);
+                                app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename + '?', animated, isPriority);
                             }
                             return;
                         }
@@ -14918,7 +14918,7 @@ function thelegendmodproject() {
                             if (temp && temp.includes("Uskin_custom")) {
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
                                 //window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png'; // OLD — may point to wrong domain
-                                window.UserVanillaSkin = "https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/" + temp.substring(1) + '.png?';
+                                window.UserVanillaSkin = window.LM_CUSTOM_SKINS_CDN + "/" + temp.substring(1) + '.png?';
                             } else if (temp) {
                                 temp = temp.replace('skin_', "").replace(/\W+/g, "")
                                 window.UserVanillaSkin = temp;
@@ -16897,8 +16897,8 @@ function thelegendmodproject() {
                 if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
                     var newURL;
                     if (url.includes('/custom_skins/')) {
-                        /* Custom skin CDN fallback: miniclippt → agario-configurations-web.s3.amazonaws.com */
-                        newURL = "https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/" + rawFileName + "?";
+                        /* Custom skin CDN fallback: miniclippt → LM_CUSTOM_SKINS_CDN */
+                        newURL = window.LM_CUSTOM_SKINS_CDN + "/" + rawFileName + "?";
                     } else {
                         newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     }
@@ -16942,7 +16942,7 @@ function thelegendmodproject() {
 
                 if (link.includes && link.includes("custom_")) {
                     type = "custom";
-                    return ["https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/" + link + ".png", type];
+                    return [window.LM_CUSTOM_SKINS_CDN + "/" + link + ".png", type];
                 } else if (link.includes && link.includes("_level_")) {
                     type = "potion";
                     var link1 = link.replace('skin_', '')
@@ -17565,13 +17565,13 @@ Most cells eaten   : ${mostCellsEaten}
                 else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
                     var digits = g.replace(/[^0-9]/g, '');
                     if (digits) {
-                        skinUrl = "https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/skin_custom_" + digits + ".png?";
+                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/skin_custom_" + digits + ".png?";
                     } else {
                         var g1 = g.replace('%custom_', 'skin_custom_').replace('%custom', 'skin_custom');
                         if (!g1.startsWith('skin_custom')) {
                             g1 = 'skin_custom_' + g1.replace(/^_+/, '');
                         }
-                        skinUrl = "https://agario-configurations-web.s3.amazonaws.com/live/custom_skins/" + g1 + ".png?";
+                        skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
                     }
                 }
                 /* 5. Level skins (_level_1, _level_2, etc.) */

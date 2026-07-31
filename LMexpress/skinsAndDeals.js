@@ -22,14 +22,14 @@ else{
 	window.agarioID=localStorage.getItem("agarioID");	
 }
 */
-window.MiniclipConfigDestination = "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json";
-window.MiniclipDestination = "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/";
+window.MiniclipConfigDestination = window.LM_CONFIG_URL();
+window.MiniclipDestination = window.LM_CDN_BASE();
 
 if (window.agarversion != null) {
     var _av = window.agarversion;
     if (!_av.endsWith('/')) _av += '/';
-    window.MiniclipConfigDestination = "https://agario-configurations-web.s3.amazonaws.com/live/" + _av + "GameConfiguration.json";
-    window.MiniclipDestination = "https://agario-configurations-web.s3.amazonaws.com/live/" + _av;
+    window.MiniclipConfigDestination = window.LM_CONFIG_CDN + "/" + _av + "GameConfiguration.json";
+    window.MiniclipDestination = window.LM_CONFIG_CDN + "/" + _av;
 }
 
 /**
@@ -728,7 +728,7 @@ function SpecialDeals(defaultTab) {
 
         $("#ss-select-agarVersionDestinations").change(function() {
 
-            $("#GameConfigurationUrl").val("https://agario-configurations-web.s3.amazonaws.com/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
+            $("#GameConfigurationUrl").val(window.LM_CONFIG_CDN + "/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
             $("#GameConfigurationUrl").blur();
         });
         $("#GameConfigurationUrl").blur(function() {
@@ -836,8 +836,8 @@ function SpecialDeals(defaultTab) {
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
                  } 
 				 */
-                $(".xpmt-skins").css('background-image', 'url("https://agario-configurations-web.s3.amazonaws.com/live/' + window.agarversion + textcropped2 + '")');
-                $(".xpmt-skins2").css('background-image', 'url("https://agario-configurations-web.s3.amazonaws.com/live/' + window.agarversion + textcropped1 + '")');
+                $(".xpmt-skins").css('background-image', 'url("' + window.LM_CONFIG_CDN + '/' + window.agarversion + textcropped2 + '")');
+                $(".xpmt-skins2").css('background-image', 'url("' + window.LM_CONFIG_CDN + '/' + window.agarversion + textcropped1 + '")');
             }, 500);
         });
 }
@@ -1317,7 +1317,7 @@ function getDealSkinImages(bundleId) {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
     var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
-    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = window.LM_CDN_BASE();
     var images = [];
 
     for (var bp = 0; bp < bundleProducts.length; bp++) {
@@ -1741,7 +1741,7 @@ function equipSkin(productId, imageName) {
         return;
     }
 
-    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = window.LM_CDN_BASE();
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
@@ -1803,7 +1803,7 @@ function updateEquippedSkinUI() {
 
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
-    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = window.LM_CDN_BASE();
 
     var bannerName = $('#activeSkinName');
     var bannerImg = $('#activeSkinImg');
@@ -1989,7 +1989,7 @@ window.getSkinPrice = getSkinPrice;
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-    var cdnBase = 'https://agario-configurations-web.s3.amazonaws.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = window.LM_CDN_BASE();
     var grid = document.getElementById('skinGrid');
     var currentEquippedId = localStorage.getItem('equippedSkinId');
     var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
@@ -2297,10 +2297,8 @@ function LoadGameConfiguration() {
         return;
     }
 
-    var targetUrl = window.MiniclipConfigDestination || "https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json";
-    if (targetUrl.includes('miniclippt.com')) {
-        targetUrl = targetUrl.replace('agario-configurations-web.s3.amazonaws.com', 'agario-configurations-web.s3.amazonaws.com');
-    }
+    var targetUrl = window.MiniclipConfigDestination || window.LM_CONFIG_URL();
+    // No domain replacement needed — centralized URL is always correct
 
     $.ajax({
         url: targetUrl,
@@ -2318,7 +2316,7 @@ function LoadGameConfiguration() {
         error: function(err) {
             console.warn('[Shop] Primary config URL failed, trying fallback...', err);
             $.ajax({
-                url: 'https://agario-configurations-web.s3.amazonaws.com/live/v15/10913/GameConfiguration.json',
+                url: window.LM_CONFIG_URL(),
                 type: 'GET',
                 success: function(info) {
                     window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;

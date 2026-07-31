@@ -2,6 +2,18 @@
 
 var consoleMsgLMMaster = "[Master] ";
 
+// ── Centralized URL constants (single source of truth) ──
+// All other files must use these instead of hardcoding domains.
+window.LM_CONFIG_CDN = "https://agario-configurations-web.s3.amazonaws.com/live";
+window.LM_CUSTOM_SKINS_CDN = window.LM_CONFIG_CDN + "/custom_skins";
+// Computed after agarversion is known:
+window.LM_CDN_BASE = function() {
+    return window.LM_CONFIG_CDN + "/" + (window.agarversion || "v15/10913/");
+};
+window.LM_CONFIG_URL = function() {
+    return window.LM_CDN_BASE() + "GameConfiguration.json";
+};
+
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -1046,8 +1058,8 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var primaryUrl = "https://agario-configurations-web.s3.amazonaws.com/live/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
-    var fallbackUrl = "https://agario-configurations-web.s3.amazonaws.com/live/" + (window.agarversion || "") + "GameConfiguration.json";
+    var primaryUrl = window.LM_CONFIG_CDN + "/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
+    var fallbackUrl = window.LM_CONFIG_URL();
     var settled = false;
 
     function finish(configuration) {
