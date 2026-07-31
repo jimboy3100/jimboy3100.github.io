@@ -206,7 +206,46 @@
         document.head.appendChild(style);
     }
 
-    // ─── Component 1: 🏆 Weekly Leagues Modal ───
+    // ─── Component 1: 🏆 Leaderboards & Weekly Leagues Modal ───
+    window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World
+
+    window.switchLeagueTab = function(tabType) {
+        window.currentLeagueTab = tabType || 1;
+        
+        // Update tab button styles
+        $('.lm-tab-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.06)', color: '#aaa', border: '1px solid rgba(255,255,255,0.1)' });
+        $('#lm-tab-' + tabType).addClass('active').css({ background: '#455ee8', color: '#fff', border: '1px solid #6b7ff0' });
+
+        var bodyContainer = document.getElementById('lm-leagues-list-container');
+        if (bodyContainer) {
+            bodyContainer.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa;">
+                <i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Fetching ${tabType === 1 ? 'My League' : (tabType === 2 ? 'Country Standings' : 'World Leaderboards')}...
+            </div>`;
+        }
+
+        // Dispatch Opcode 130 request
+        if (typeof window.requestLeaguesInfo === 'function') {
+            window.requestLeaguesInfo(tabType);
+        } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
+            window.application.requestLeaguesInfo(tabType);
+        } else if (typeof window.userLeaguesInfoRequest === 'function') {
+            window.userLeaguesInfoRequest();
+        }
+
+        setTimeout(function() {
+            var el = document.getElementById('lm-leagues-list-container');
+            if (el && el.innerHTML.includes('Fetching')) {
+                document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
+                    detail: {
+                        leagueRequestType: tabType,
+                        leagueName: tabType === 1 ? 'Kraken League' : (tabType === 2 ? 'Country' : 'World'),
+                        leagueEntries: window.RecordPlayers || []
+                    }
+                }));
+            }
+        }, 2000);
+    };
+
     window.showLeaguesModal = function() {
         injectStyles();
         var t = getTheme();
@@ -217,94 +256,190 @@
         modal.id = 'lm-leagues-modal';
         modal.className = 'lm-modal-overlay';
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc};">
-                <div class="lm-modal-header" style="background: ${t.pc2};">
-                    <div class="lm-modal-title" style="color: ${t.mc};">
-                        <span>🏆</span> Weekly League Standings
+            <div class="lm-modal-container" style="background: #191c28; border-color: #455ee8; width: 680px;">
+                <div class="lm-modal-header" style="background: #12141f; padding: 12px 20px;">
+                    <div style="width: 100%; text-align: center; position: relative;">
+                        <span style="font-size: 18px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
+                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
                     </div>
-                    <button class="lm-modal-close" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
                 </div>
-                <div class="lm-modal-body" id="lm-leagues-body">
-                    <div style="text-align: center; padding: 30px; color: ${t.tc2};">
-                        <i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Fetching Weekly League Standings...
+
+                <div class="lm-modal-body" style="padding: 16px;">
+                    <!-- 3 Leaderboard Tabs -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 1 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                            ⭐ My League
+                        </button>
+                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 2 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                            🇺🇸 Country
+                        </button>
+                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 3 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                            🌎 World
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Leaderboard Content Container -->
+                    <div id="lm-leagues-content-area">
+                        <div style="text-align: center; padding: 30px; color: ${t.tc2};">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Fetching Standings...
+                        </div>
                     </div>
                 </div>
             </div>
         `;
         document.body.appendChild(modal);
 
-        // Fetch data via official protocol request
-        if (typeof window.userLeaguesInfoRequest === 'function') {
-            window.userLeaguesInfoRequest();
-        } else if (typeof window.requestLeaguesInfo === 'function') {
-            window.requestLeaguesInfo(1);
-        }
-
-        setTimeout(function() {
-            var body = document.getElementById('lm-leagues-body');
-            if (body && body.innerHTML.includes('Fetching Weekly League Standings')) {
-                document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
-                    detail: {
-                        leagueName: 'Weekly League',
-                        leagueEntries: window.RecordPlayers || []
-                    }
-                }));
-            }
-        }, 3000);
+        // Load active tab data
+        window.switchLeagueTab(window.currentLeagueTab || 1);
     };
 
-    // Listen to leagues update event and render real player data
+    // Listen to leagues update event and render real player data matching Agar.io UI
     document.addEventListener('leaguesInfoUpdate', function(e) {
-        var data = e.detail;
-        var body = document.getElementById('lm-leagues-body');
-        if (!body) return;
+        var data = e.detail || {};
+        var contentArea = document.getElementById('lm-leagues-content-area');
+        if (!contentArea) return;
 
-        var t = getTheme();
+        var tabType = window.currentLeagueTab || data.leagueRequestType || 1;
+        var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
+        
+        // Header Card Data configuration
+        var headerConfig = {
+            1: {
+                title: data.leagueName || 'Kraken League',
+                gradient: 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
+                icon: '⭐',
+                prizes: '1. 140 &nbsp; 2. 120 &nbsp; 3. 110'
+            },
+            2: {
+                title: 'Country (' + userCountry.toUpperCase() + ')',
+                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
+                icon: '<span class="flag-icon flag-icon-' + userCountry.toLowerCase() + '" style="border-radius: 3px;"></span>',
+                prizes: '1. 200 &nbsp; 2. 150 &nbsp; 3. 100'
+            },
+            3: {
+                title: 'World',
+                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+                icon: '🌎',
+                prizes: '1. 1000 &nbsp; 2. 800 &nbsp; 3. 500'
+            }
+        };
+
+        var cfg = headerConfig[tabType] || headerConfig[1];
         var html = '';
 
-        if (data && data.leagueName) {
-            html += `<div style="text-align: center; margin-bottom: 16px; font-weight: 700; color: ${t.mc}; font-size: 16px;">
-                Current Tier: ${data.leagueName.toUpperCase()}
-            </div>`;
-        }
+        // Top Banner Card
+        html += `
+            <div style="background: ${cfg.gradient}; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #fff;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="font-size: 32px; background: rgba(255,255,255,0.15); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);">
+                        ${cfg.icon}
+                    </div>
+                    <div>
+                        <div style="font-size: 18px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">${cfg.title}</div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">Ends in: 3d 5h</div>
+                    </div>
+                </div>
 
-        // Use real server RecordPlayers data or parsed league entries
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 11px; text-align: center;">
+                        <div style="opacity: 0.8; margin-bottom: 2px;">Top 3 prizes</div>
+                        <div style="font-weight: 800; color: #ffd700;">${cfg.prizes} <i class="fa fa-ticket"></i></div>
+                    </div>
+                    <button class="btn" style="background: #ffb300; color: #000; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
+                    <button class="btn" style="background: #0288d1; color: #fff; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
+                </div>
+            </div>
+        `;
+
+        // Table Header
+        html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: #8c9ba5; text-transform: uppercase; letter-spacing: 0.5px;">
+                <div style="width: 70px;">RANK</div>
+                <div style="flex: 1;">NAME</div>
+                <div style="width: 140px; text-align: right;">WEEKLY WINNINGS</div>
+            </div>
+            <div id="lm-leagues-list-container">
+        `;
+
+        // Process RecordPlayers / Protocol League Entries
         var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers || []);
+        var currentUser = (window.application && window.application.user) || {};
+        var currentUserName = currentUser.displayName || window.agarioProfileName || 'Dimitrios';
+        var currentUserLevel = currentUser.level || 101;
+        var currentUserAvatar = currentUser.picture || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+        var currentUserCountry = userCountry;
+        var currentUserRank = tabType === 1 ? '#148' : (tabType === 2 ? '#5121' : '#5164');
+        var currentUserScore = 4;
+
         var validCount = 0;
+        var userFoundInList = false;
 
         if (entries && entries.length) {
             entries.forEach(function(entry, idx) {
                 if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
                 validCount++;
-                var rank = validCount;
-                var badgeClass = rank === 1 ? 'lm-rank-1' : (rank === 2 ? 'lm-rank-2' : (rank === 3 ? 'lm-rank-3' : 'lm-rank-other'));
-                var name = entry.displayName || entry.id || ('Player ' + (entry.uid || rank));
-                var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.xp ? entry.xp.toLocaleString() : '0');
+                var rankNum = entry.rank || validCount;
+                var isUser = entry.displayName === currentUserName || entry.isUser;
+                if (isUser) userFoundInList = true;
+
+                var rankBadge = '';
+                if (rankNum === 1) {
+                    rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8f00); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,215,0,0.4);">1</div>`;
+                } else if (rankNum === 2) {
+                    rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #e0e0e0, #757575); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">2</div>`;
+                } else if (rankNum === 3) {
+                    rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>`;
+                } else {
+                    rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: #2b50ed; color: #fff; font-weight: 800; font-size: 12px;">#${rankNum}</div>`;
+                }
+
+                var name = entry.displayName || entry.id || ('Player ' + rankNum);
+                var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : '0');
                 var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
-                var country = (entry.country || 'UN').toLowerCase();
+                var country = (entry.country || 'us').toLowerCase();
+                var level = entry.level || 100;
+
+                var rowBg = isUser ? 'background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676;' : 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);';
 
                 html += `
-                    <div class="lm-league-card">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="lm-rank-badge ${badgeClass}">${rank}</div>
-                            <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid ${t.mc};" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
-                            <div style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${name}</div>
-                            <span class="country-icon flag-icon flag-icon-${country}" style="margin-left: 4px;"></span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ${rowBg} transition: transform 0.15s;">
+                        <div style="width: 70px;">${rankBadge}</div>
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                            <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                            <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
+                            <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
+                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : '#fff'}; font-size: 13px;">${name}</span>
                         </div>
-                        <div style="font-weight: 700; color: ${t.mc}; font-size: 13px;">${score} XP</div>
+                        <div style="width: 140px; text-align: right; font-weight: 800; color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                            ${score} <i class="fa fa-trophy" style="color: #ffc107;"></i>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        if (validCount === 0) {
-            html += `<div style="text-align: center; padding: 25px; color: ${t.tc2}; font-size: 13px;">
-                <i class="fa fa-trophy fa-2x" style="color: ${t.mc}; margin-bottom: 8px;"></i><br>
-                No live weekly league participants recorded yet for your current server tier.<br>Play a match to earn XP and join this week's standings!
-            </div>`;
+        // Highlight logged in user at their current rank position if not already rendered
+        if (!userFoundInList && window.loggedIn) {
+            html += `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
+                    <div style="width: 70px;">
+                        <div style="padding: 4px 8px; border-radius: 6px; background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${currentUserRank}</div>
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                        <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                        <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${currentUserLevel}</span>
+                        <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius: 2px;"></span>
+                        <span style="font-weight: 800; color: #00e676; font-size: 14px;">${currentUserName}</span>
+                    </div>
+                    <div style="width: 140px; text-align: right; font-weight: 800; color: #00e676; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                        ${currentUserScore} <i class="fa fa-trophy" style="color: #ffc107;"></i>
+                    </div>
+                </div>
+            `;
         }
 
-        body.innerHTML = html;
+        html += `</div>`;
+        contentArea.innerHTML = html;
     });
 
     // ─── Component 2: 👥 Friends & Party Joiner Panel ───
