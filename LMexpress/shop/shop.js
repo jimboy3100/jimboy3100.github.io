@@ -108,6 +108,8 @@
 		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="Flag4July" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
 	}		
 		
+            $('#LMShop').remove();
+            $('.modal-backdrop').remove();
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
 				'<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>' +
