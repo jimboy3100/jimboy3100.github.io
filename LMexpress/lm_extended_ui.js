@@ -917,26 +917,29 @@
                 title: 'DAILY DEAL!',
                 subtitle: 'GET IT WHILE IT LASTS!',
                 badge: '+FREE SKIN!',
-                timer: 'Offer Ends: 01h 55m 11s',
-                bannerGradient: 'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)',
+                timer: 'Offer Ends: 01h 39m 35s',
+                bannerGradient: 'radial-gradient(circle at center, #00b4db 0%, #0083b0 100%)',
+                posterIcon: '🎁',
                 offers: [
                     {
                         tag: '',
-                        coins: '14,000',
-                        oldCoins: '7,000',
+                        coins: '14000',
+                        oldCoins: '7000',
                         multiplier: '2X',
                         bonusText: 'FREE!',
-                        bonusItem: '⭐ Star Skin',
+                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal7.png',
+                        skinName: 'Star Skin',
                         price: '$9.99',
                         purchaseId: 'com.miniclip.agar.io.dailydeal7'
                     },
                     {
                         tag: 'BEST DEAL!',
-                        coins: '32,000',
-                        oldCoins: '16,000',
+                        coins: '32000',
+                        oldCoins: '16000',
                         multiplier: '2X',
                         bonusText: 'FREE!',
-                        bonusItem: '🍬 Candy Swirl Skin',
+                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal15.png',
+                        skinName: 'Candy Swirl Skin',
                         price: '$19.99',
                         purchaseId: 'com.miniclip.agar.io.dailydeal15'
                     }
@@ -948,15 +951,17 @@
                 subtitle: 'LEGACY ITEMS AND SKINS FOR SALE!',
                 badge: 'RARE SKINS AND ITEMS',
                 timer: 'Offer Ends: 64h 04m 16s',
-                bannerGradient: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
+                bannerGradient: 'radial-gradient(circle at center, #56ab2f 0%, #a8e063 100%)',
+                posterIcon: '🏛️',
                 offers: [
                     {
                         tag: '',
                         coins: '3,250',
                         oldCoins: '',
                         multiplier: '',
-                        bonusText: '+ 3X MASS',
-                        bonusItem: '⚡ 3X Mass Boost (24h)',
+                        bonusText: 'FREE!',
+                        skinImg: '',
+                        skinName: '⚡ 3X Mass Boost',
                         price: '$1.99',
                         purchaseId: 'com.miniclip.agar.io.dailydeal17'
                     },
@@ -965,8 +970,9 @@
                         coins: '16,000',
                         oldCoins: '',
                         multiplier: '',
-                        bonusText: '+ RARE SKINS',
-                        bonusItem: '🍔 Burger & 🏀 Basketball Skins',
+                        bonusText: 'FREE!',
+                        skinImg: 'https://jimboy3100.github.io/skins/dailydeal21.png',
+                        skinName: 'Burger Skin',
                         price: '$9.99',
                         purchaseId: 'com.miniclip.agar.io.dailydeal21'
                     }
@@ -988,23 +994,37 @@
 
             var offersHtml = '';
             slide.offers.forEach(function(offer) {
-                var tagBadge = offer.tag ? `<div style="position: absolute; top: -10px; left: -10px; background: linear-gradient(135deg, #ff0055, #ff5000); color: #fff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); text-transform: uppercase;">${offer.tag}</div>` : '';
+                var ribbonBadge = offer.tag ? `<div style="position: absolute; top: 0; left: 0; background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 10px 0 10px 0; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.3); z-index: 2;">${offer.tag}</div>` : '';
+                var skinPreviewHtml = offer.skinImg ? `
+                    <div style="text-align: center;">
+                        <div style="background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 2px; text-transform: uppercase;">${offer.bonusText}</div>
+                        <img src="${offer.skinImg}" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';" style="width: 46px; height: 46px; border-radius: 50%; border: 2px solid #e53935; display: block; margin: 0 auto; box-shadow: 0 2px 6px rgba(0,0,0,0.25);" />
+                    </div>
+                ` : `
+                    <div style="text-align: center;">
+                        <div style="background: #e53935; color: #fff; font-size: 10px; font-weight: 900; padding: 1px 6px; border-radius: 4px; display: inline-block; margin-bottom: 2px; text-transform: uppercase;">${offer.bonusText}</div>
+                        <div style="font-size: 11px; font-weight: 800; color: #333;">${offer.skinName}</div>
+                    </div>
+                `;
+
                 offersHtml += `
-                    <div style="position: relative; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                        ${tagBadge}
+                    <div style="position: relative; background: #ffffff; border: 2px solid #e0e6ed; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 3px 10px rgba(0,0,0,0.06); overflow: hidden;">
+                        ${ribbonBadge}
+                        
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 20px; font-weight: 900; color: #ffd700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">💰 ${offer.coins}</div>
-                                ${offer.oldCoins ? `<div style="font-size: 11px; text-decoration: line-through; color: #ff5252; font-weight: 700;">${offer.oldCoins}</div>` : ''}
+                            <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));">🪙</span>
+                                ${offer.multiplier ? `<div style="position: absolute; top: -4px; right: -6px; background: #e53935; color: #fff; font-weight: 900; font-size: 11px; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">${offer.multiplier}</div>` : ''}
                             </div>
-                            ${offer.multiplier ? `<div style="background: #ff0055; color: #fff; font-weight: 900; font-size: 11px; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,0,85,0.4);">${offer.multiplier}</div>` : ''}
+                            <div>
+                                ${offer.oldCoins ? `<div style="font-size: 12px; text-decoration: line-through; color: #888; font-weight: 700;">${offer.oldCoins}</div>` : ''}
+                                <div style="font-size: 20px; font-weight: 900; color: #222; letter-spacing: -0.5px;">${offer.coins}</div>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="text-align: right;">
-                                <div style="font-size: 11px; font-weight: 900; color: #00e676; text-transform: uppercase;">${offer.bonusText}</div>
-                                <div style="font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 700;">${offer.bonusItem}</div>
-                            </div>
-                            <button class="btn" onclick="window.buyDealProduct('${offer.purchaseId}', '${offer.price}');" style="background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; font-weight: 900; font-size: 15px; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(0,230,118,0.4); min-width: 90px;">
+
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            ${skinPreviewHtml}
+                            <button class="btn" onclick="window.buyDealProduct('${offer.purchaseId}', '${offer.price}');" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 16px; padding: 10px 18px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 3px 8px rgba(104,159,56,0.4); min-width: 90px;">
                                 ${offer.price}
                             </button>
                         </div>
@@ -1019,7 +1039,7 @@
             }
 
             modal.innerHTML = `
-                <div class="lm-modal-container" style="background: #1a1a2e; border: 3px solid #00d2ff; width: 660px; position: relative; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: visible;">
+                <div class="lm-modal-container" style="background: #ffffff; border: 3px solid #fff; width: 720px; position: relative; border-radius: 16px; box-shadow: 0 12px 48px rgba(0,0,0,0.8); overflow: visible; display: flex; flex-direction: column;">
                     
                     <!-- Left Carousel Arrow -->
                     <button class="btn carousel-arrow-left" onclick="window.switchDailyDealSlide(${(idx - 1 + totalSlides) % totalSlides});" style="position: absolute; left: -22px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #1a1a2e; font-weight: 900; font-size: 22px; border: 2px solid #00d2ff; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.5); z-index: 20; display: flex; align-items: center; justify-content: center; outline: none;">
@@ -1031,28 +1051,40 @@
                         ›
                     </button>
 
-                    <!-- Header Banner -->
-                    <div style="background: ${slide.bannerGradient}; padding: 18px 24px; border-radius: 13px 13px 0 0; position: relative; border-bottom: 2px solid rgba(255,255,255,0.2);">
-                        <button class="lm-modal-close" onclick="document.getElementById('lm-daily-deals-carousel-modal').remove();" style="position: absolute; right: 14px; top: 10px; color: #fff; font-size: 24px; opacity: 0.9;">&times;</button>
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <div style="font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">${slide.title}</div>
-                                <div style="font-size: 12px; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">${slide.subtitle}</div>
-                                <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); margin-top: 6px;">⏱️ ${slide.timer}</div>
-                            </div>
-                            <div style="background: rgba(255,255,255,0.2); border: 2px dashed #fff; padding: 6px 14px; border-radius: 20px; font-weight: 900; font-size: 13px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                    <!-- Main Content Grid: Left Poster, Right Offers -->
+                    <div style="display: flex; flex-direction: row; height: 380px; border-radius: 13px 13px 0 0; overflow: hidden; position: relative;">
+                        <button class="lm-modal-close" onclick="document.getElementById('lm-daily-deals-carousel-modal').remove();" style="position: absolute; right: 14px; top: 10px; color: #fff; font-size: 24px; z-index: 10; cursor: pointer; background: none; border: none;">&times;</button>
+                        
+                        <!-- Left Poster Column -->
+                        <div style="flex: 0 0 42%; background: ${slide.bannerGradient}; padding: 24px 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; text-align: center; color: #fff;">
+                            <div style="position: absolute; top: 12px; right: 12px; background: #e53935; color: #fff; font-weight: 900; font-size: 11px; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transform: rotate(4deg); border: 2px solid #fff;">
                                 ${slide.badge}
                             </div>
+                            
+                            <div>
+                                <div style="font-size: 28px; font-weight: 900; color: #ffeb3b; text-transform: uppercase; letter-spacing: 1px; text-shadow: -2px -2px 0 #d84315, 2px -2px 0 #d84315, -2px 2px 0 #d84315, 2px 2px 0 #d84315, 0 4px 8px rgba(0,0,0,0.5); font-style: italic;">
+                                    ${slide.title}
+                                </div>
+                            </div>
+
+                            <div style="font-size: 76px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3)); margin: 10px 0;">
+                                ${slide.posterIcon}
+                            </div>
+
+                            <div>
+                                <div style="font-size: 13px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${slide.subtitle}</div>
+                                <div style="font-size: 12px; font-weight: 800; color: #ffeb3b; margin-top: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.6);">⏱️ ${slide.timer}</div>
+                            </div>
+                        </div>
+
+                        <!-- Right Offers Column -->
+                        <div style="flex: 1; background: #f0f3f6; padding: 20px 16px; display: flex; flex-direction: column; justify-content: center;">
+                            ${offersHtml}
                         </div>
                     </div>
 
-                    <!-- Modal Body -->
-                    <div style="padding: 20px; max-height: 380px; overflow-y: auto;">
-                        ${offersHtml}
-                    </div>
-
                     <!-- Carousel Dots Footer -->
-                    <div style="padding: 10px 0 14px 0; text-align: center; background: rgba(0,0,0,0.3); border-radius: 0 0 13px 13px;">
+                    <div style="padding: 10px 0 14px 0; text-align: center; background: #1a1a2e; border-radius: 0 0 13px 13px;">
                         ${dotsHtml}
                     </div>
                 </div>
