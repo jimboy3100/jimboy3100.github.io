@@ -955,26 +955,25 @@ function populateDealsGrid() {
     }
 
     // --- Owned Boosts (Activate) ---
-    if (window.application && window.application.user && window.application.user.products) {
-        var prods = window.application.user.products;
-        var boostHtml = '';
-        for (var pid in prods) {
-            if (pid.indexOf('boost') !== -1 && prods[pid] && prods[pid].quantity > 0) {
-                var bName = pid.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-                boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
-                boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
-                boostHtml += '<div style="flex: 1; min-width: 0;">';
-                boostHtml += '<div style="font-weight: 700; font-size: 13px; color: ' + t.mc + ';">' + bName + '</div>';
-                boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">Owned: ' + prods[pid].quantity + 'x</div>';
-                boostHtml += '</div>';
-                boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Activate</button>';
-                boostHtml += '</div>';
-            }
+    var boostSrc = (window.application && window.application.user && window.application.user.boosts) || {};
+    var boostHtml = '';
+    for (var pid in boostSrc) {
+        if (pid.indexOf('boost') !== -1 && boostSrc[pid] > 0) {
+            var bQty = boostSrc[pid];
+            var bName = pid.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+            boostHtml += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.mc + '44; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+            boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
+            boostHtml += '<div style="flex: 1; min-width: 0;">';
+            boostHtml += '<div style="font-weight: 700; font-size: 13px; color: ' + t.mc + ';">' + bName + '</div>';
+            boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">Owned: ' + bQty + 'x</div>';
+            boostHtml += '</div>';
+            boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Activate</button>';
+            boostHtml += '</div>';
         }
-        if (boostHtml) {
-            html += '<div style="font-weight: 700; font-size: 12px; color: ' + t.mc + '; margin: 12px 0 6px; padding-top: 8px; border-top: 1px solid ' + t.pc2 + ';">🚀 Your Boosts</div>';
-            html += boostHtml;
-        }
+    }
+    if (boostHtml) {
+        html += '<div style="font-weight: 700; font-size: 12px; color: ' + t.mc + '; margin: 12px 0 6px; padding-top: 8px; border-top: 1px solid ' + t.pc2 + ';">🚀 Your Boosts</div>';
+        html += boostHtml;
     }
 
     // --- Offer Bundles ---

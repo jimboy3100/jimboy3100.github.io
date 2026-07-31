@@ -15904,7 +15904,9 @@ function thelegendmodproject() {
                     try {
                         var cg = r.uncompressedData.claimGiftsResponseField;
                         if (cg && cg.productUpdates) {
-                            this.updateProducts(cg.productUpdates);
+                            // productUpdates is singular in this response (not repeated)
+                            var puArr = Array.isArray(cg.productUpdates) ? cg.productUpdates : [cg.productUpdates];
+                            this.updateProducts(puArr);
                             toastr.success('<b>[SERVER]:</b> Gift claimed successfully! &#x2714;');
                         }
                     } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
@@ -15931,8 +15933,9 @@ function thelegendmodproject() {
                         var fbr = r.uncompressedData.facebookInvitationRewardUpdatesField;
                         if (fbr) {
                             console.log("[LM] Facebook Invitation Reward Update received");
-                            if (fbr.productUpdates && fbr.productUpdates.length) {
-                                this.updateProducts(fbr.productUpdates);
+                            if (fbr.productUpdates) {
+                                var puArr = Array.isArray(fbr.productUpdates) ? fbr.productUpdates : [fbr.productUpdates];
+                                this.updateProducts(puArr);
                                 toastr.success('<b>[SERVER]:</b> Invitation reward received! &#x1F381;');
                             }
                         }
@@ -15969,7 +15972,7 @@ function thelegendmodproject() {
                         var ba = r.uncompressedData.activateBoostResponseField;
                         if (ba) {
                             if (ba.productUpdates && ba.productUpdates.length) {
-                                this.updateWalletInfo([ba.productUpdates[0].userWalletItem]);
+                                this.updateProducts(ba.productUpdates);
                             }
                             if (ba.userBoostItem) {
                                 this.displayActiveBoosts([ba.userBoostItem]);
