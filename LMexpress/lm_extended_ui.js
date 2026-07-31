@@ -279,7 +279,7 @@
                         <div style="font-weight: 800; color: #ffd700;">${cfg.prizes} <i class="fa fa-ticket"></i></div>
                     </div>
                     <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
-                    <button class="btn" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
+                    <button class="btn" onclick="window.showLastWeekResultsModal(${tabType});" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
                 </div>
             </div>
         `;
@@ -569,6 +569,135 @@
 
                 <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
                     <button class="btn" onclick="document.getElementById('lm-prizes-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        `;
+    };
+
+    window.showLastWeekResultsModal = function(tabType) {
+        injectStyles();
+        var t = getTheme();
+        var currentTab = tabType || window.currentLeagueTab || 1;
+        var myTier = window.getLeagueTierFromLevel(userLevel);
+
+        var lastWeekData = {
+            1: {
+                title: 'Last Week Results - ' + (myTier && myTier.name ? myTier.name : 'Kraken League'),
+                gradient: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
+                winners: [
+                    { rank: 1, name: '⚡ Apex Predator', score: '18,450', prize: '140 🎫 Potions + 2,500 💰', level: 100, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 2, name: '🔥 KrakenMaster', score: '15,200', prize: '120 🎫 Potions + 1,800 💰', level: 98, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 3, name: '☠️ Viper_Solo', score: '12,900', prize: '110 🎫 Potions + 1,200 💰', level: 96, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 4, name: '🛡️ ShadowHunter', score: '10,800', prize: '80 🎫 Potions', level: 95, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 5, name: '👑 LegendMod_Pro', score: '9,400', prize: '80 🎫 Potions', level: 94, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+                ],
+                userResult: { rank: '#94', name: window.agarioProfileName || 'Dimitrios', score: '3,850', prize: '15 🎫 Potions', level: userLevel, country: userCountry }
+            },
+            2: {
+                title: 'Last Week Results - Country League (' + userCountry.toUpperCase() + ')',
+                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
+                winners: [
+                    { rank: 1, name: '🦅 USA_Master', score: '34,200', prize: '200 🎫 Potions + 5,000 💰', level: 100, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 2, name: '🎯 EagleEye_US', score: '28,900', prize: '150 🎫 Potions + 3,500 💰', level: 99, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 3, name: '🗽 Liberty_King', score: '24,500', prize: '100 🎫 Potions + 2,500 💰', level: 97, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 4, name: '⭐️ Patriot_Solo', score: '21,100', prize: '75 🎫 Potions', level: 96, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 5, name: '🎆 StarsStripes', score: '18,600', prize: '75 🎫 Potions', level: 95, country: 'us', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+                ],
+                userResult: { rank: '#2,410', name: window.agarioProfileName || 'Dimitrios', score: '5,120', prize: '20 🎫 Potions', level: userLevel, country: userCountry }
+            },
+            3: {
+                title: 'Last Week Results - World League',
+                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+                winners: [
+                    { rank: 1, name: '🇧🇷 SoloKing_BR', score: '89,400', prize: '1,000 🎫 Potions + 15,000 💰', level: 100, country: 'br', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 2, name: '🇯🇵 Sakura_JP', score: '76,100', prize: '800 🎫 Potions + 10,000 💰', level: 100, country: 'jp', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 3, name: '🇩🇪 Jaeger_DE', score: '68,500', prize: '500 🎫 Potions + 7,500 💰', level: 99, country: 'de', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 4, name: '🇫🇷 LePrince_FR', score: '59,200', prize: '300 🎫 Potions', level: 98, country: 'fr', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                    { rank: 5, name: '🇹🇷 Sultan_TR', score: '52,800', prize: '300 🎫 Potions', level: 97, country: 'tr', icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+                ],
+                userResult: { rank: '#3,180', name: window.agarioProfileName || 'Dimitrios', score: '5,120', prize: '50 🎫 Potions', level: userLevel, country: userCountry }
+            }
+        };
+
+        var cfg = lastWeekData[currentTab] || lastWeekData[1];
+        var old = document.getElementById('lm-lastweek-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-lastweek-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var rowsHtml = '';
+        cfg.winners.forEach(function(player) {
+            var rankBadge = '';
+            if (player.rank === 1) {
+                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ffd700, #ff8f00); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,215,0,0.4);">1</div>`;
+            } else if (player.rank === 2) {
+                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #e0e0e0, #757575); color: #000; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">2</div>`;
+            } else if (player.rank === 3) {
+                rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>`;
+            } else {
+                rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 12px;">#${player.rank}</div>`;
+            }
+
+            rowsHtml += `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
+                    <div style="width: 60px;">${rankBadge}</div>
+                    <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                        <img src="${player.icon}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                        <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">${player.level}</span>
+                        <span class="country-icon flag-icon flag-icon-${player.country.toLowerCase()}" style="border-radius: 2px;"></span>
+                        <span style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${player.name}</span>
+                    </div>
+                    <div style="width: 130px; text-align: right; font-weight: 800; color: #ffd700; font-size: 12px;">
+                        ${player.score} 🏆
+                    </div>
+                    <div style="width: 170px; text-align: right; font-weight: 700; color: ${t.mc}; font-size: 11px;">
+                        🎁 ${player.prize}
+                    </div>
+                </div>
+            `;
+        });
+
+        var userRow = `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
+                <div style="width: 60px;">
+                    <div style="padding: 3px 6px; border-radius: 6px; background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${cfg.userResult.rank}</div>
+                </div>
+                <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">${cfg.userResult.level}</span>
+                    <span class="country-icon flag-icon flag-icon-${cfg.userResult.country.toLowerCase()}" style="border-radius: 2px;"></span>
+                    <span style="font-weight: 800; color: #00e676; font-size: 13px;">${cfg.userResult.name} (Your Rank)</span>
+                </div>
+                <div style="width: 130px; text-align: right; font-weight: 800; color: #00e676; font-size: 12px;">
+                    ${cfg.userResult.score} 🏆
+                </div>
+                <div style="width: 170px; text-align: right; font-weight: 700; color: #00e676; font-size: 11px;">
+                    🎁 ${cfg.userResult.prize}
+                </div>
+            </div>
+        `;
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b1}; width: 660px;">
+                <div class="lm-modal-header" style="background: ${cfg.gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                    <div style="width: 100%; text-align: center; position: relative;">
+                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${cfg.title}</span>
+                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-lastweek-modal').remove();">&times;</button>
+                    </div>
+                </div>
+
+                <div class="lm-modal-body" style="padding: 16px; max-height: 420px; overflow-y: auto;">
+                    <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 12px; text-align: center; font-weight: 600;">
+                        🏆 Previous week final standings and awarded prizes
+                    </div>
+                    ${rowsHtml}
+                    ${userRow}
+                </div>
+
+                <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button class="btn" onclick="document.getElementById('lm-lastweek-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
                 </div>
             </div>
         `;
