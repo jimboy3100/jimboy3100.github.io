@@ -2227,7 +2227,7 @@
 
         var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
         $('.agario-exp-bar .progress-bar').css('width', percent + '%');
-        var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
+        var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
         $('.agario-exp-bar .progress-bar-text').text(xpText);
         $('.progress-bar-star').text(level);
 

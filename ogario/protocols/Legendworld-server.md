@@ -316,7 +316,7 @@ Full Agar.io economy replication via protobuf opcode 102:
 | Feature | Description |
 |---------|-------------|
 | **Google/Facebook/Discord Auth** | OAuth token login, persistent player identity via hashed UID |
-| **XP & Leveling** | Exact Agar.io XP thresholds (max level 100), starting mass bonus per level |
+| **XP & Leveling** | Exact Agar.io XP thresholds (max level 150), starting mass bonus per level |
 | **Potions** | Award on death (rarity based on performance), brew timer, open for coins/DNA/XP |
 | **Potion Drop Cells** | Periodic loot cells that spawn on the map and award potions when eaten |
 | **Boosts** | Mass boost (multiplies eaten mass) and XP boost, inventory persistence |

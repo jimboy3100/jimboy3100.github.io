@@ -16016,7 +16016,7 @@ function thelegendmodproject() {
                         var gLevel = iXp.finalLevel || 1;
                         var gXp = iXp.finalXpForLevel || 0;
                         var gNextXp = this.agarExp(gLevel);
-                        var exp = gLevel >= 100 ? 100 : ~~(gXp * 100 / gNextXp);
+                        var exp = gLevel >= 150 ? 100 : ~~(gXp * 100 / gNextXp);
 
                         if (this.user) {
                             this.user.level = gLevel;
@@ -17190,7 +17190,7 @@ Most cells eaten   : ${mostCellsEaten}
             var level = Number(i.level) || (this.user && this.user.level) || window.agarioLEVEL || 1;
             var xp = (i.xp !== undefined && i.xp !== null) ? Number(i.xp) : ((this.user && this.user.xp) || window.agarioXP || 0);
             var nextLevelXp = (this.user && this.user.nextLevelXp) || this.agarExp(level);
-            var exp = level >= 100 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
+            var exp = level >= 150 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
 
             if (this.user) {
                 this.user.level = level;
@@ -17203,7 +17203,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             $('.progress-bar-striped').width(exp + '%');
             $('.agario-exp-bar .progress-bar').css('width', exp + '%');
-            var xpText = level >= 100 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
+            var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
             $('.agario-exp-bar .progress-bar-text').text(xpText);
 
             $('.progress-bar-star3').text(level);
