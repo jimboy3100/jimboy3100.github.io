@@ -5198,7 +5198,7 @@ function initializeLM(modVersion) {
         '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
 
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>User Scripts</button>' +
-        '<button id="SpecialDealsBtn" class="btn btn-primary btn" type="submit" onclick="BeforeSpecialDeals(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-paint-brush"></i>Agar.io Skins</button>' +
+        '<button id="SpecialDealsBtn" class="btn btn-primary btn" type="submit" onclick="BeforeSpecialDeals(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; color: red;" data-itr="page_shop"><i class="fa-regular fa-rectangle-beta" style="color: red; transform: rotate(-45deg); display: inline-block;"></i> Agar.io Skins</button>' +
         '<button id="LegendmodShop" class="btn btn-primary btn" type="submit" onclick="BeforeLegendmodShop(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>Shop</button>' +
         //'<button id="UserLeaguesInfo" class="btn btn-primary btn" type="submit" onclick="preUserLeaguesInfoRequest(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-star"></i>User Leagues Info (BETA)</button>' +
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">Manual background:  </span>' +
@@ -6414,19 +6414,19 @@ function BeforeSpecialDeals(tab) {
     window._pendingShopTab = targetTab;
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/skinsAndDeals.js";
+    SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/skinsAndDeals.js";
     $("body").append(SpecialDealsJS);
 }
 function BeforeLegendmodShop() {
     var SpecialDealsJS = document.createElement("script");
     SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/shop/shop.js";
+    SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/shop/shop.js";
     $("body").append(SpecialDealsJS);
 }
 function BeforeReplay() {
     var ReplayJS = document.createElement("script");
     ReplayJS.type = "text/javascript";
-    ReplayJS.src = "https://www.legendmod.ml/LMexpress/replay.js";
+    ReplayJS.src = "https://jimboy3100.github.io/LMexpress/replay.js";
     $("body").append(ReplayJS);
 }
 

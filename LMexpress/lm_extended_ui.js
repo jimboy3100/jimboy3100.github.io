@@ -2220,6 +2220,17 @@
             menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
         }
 
+        // Friends button requires Facebook login specifically
+        var isFacebook = (typeof appUser !== 'undefined' && (appUser.provider === 'facebook' || (appUser.socialId && appUser.socialId.indexOf('facebook') > -1))) || (window._lwAuth && window._lwAuth.provider === 'facebook') || window.loginProvider === 'facebook';
+        var friendsBtnEnabled = isLoggedIn && hasUID && isFacebook;
+        var friendsBtn = $('#lm-friends-btn');
+        friendsBtn.prop('disabled', !friendsBtnEnabled);
+        if (!friendsBtnEnabled) {
+            friendsBtn.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Facebook and play a game session first to access Friends');
+        } else {
+            friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+        }
+
         // 3. XP Progress Bar & Level
         var xp = appUser.xp || 0;
         var nextXp = appUser.nextLevelXp || appUser.nextXp || 1000;
