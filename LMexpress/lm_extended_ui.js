@@ -872,6 +872,9 @@
             <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.claimAllRewardsAndGifts();">
                 <i class="fa fa-gift"></i> Claim All
             </button>
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; background: linear-gradient(135deg, #ff9800, #e65100); border: none;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
+                🔥 Daily Deal
+            </button>
             <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.showLeaguesModal();">
                 <i class="fa fa-trophy"></i> Leagues
             </button>
@@ -1159,6 +1162,17 @@
         $(document).off('click', '#lm-friends-btn').on('click', '#lm-friends-btn', function(e) {
             e.preventDefault();
             if (typeof window.showFriendsModal === 'function') window.showFriendsModal();
+        });
+
+        $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
+            e.preventDefault();
+            if (typeof window.openDailyDealsModal === 'function') {
+                window.openDailyDealsModal();
+            } else if (typeof window.BeforeSpecialDeals === 'function') {
+                window.BeforeSpecialDeals();
+            } else if (typeof window.SpecialDeals === 'function') {
+                window.SpecialDeals('deals');
+            }
         });
     });
 

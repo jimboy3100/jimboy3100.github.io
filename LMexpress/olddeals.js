@@ -58,7 +58,7 @@ window.getShopTheme = getShopTheme;
 SpecialDeals();
 AgarVersionDestinations();
 
-function SpecialDeals() {
+function SpecialDeals(defaultTab) {
 
     // Clear any leaked interval from a previous SpecialDeals() run
     if (window._shopLoginCheckInterval) {
@@ -720,6 +720,10 @@ function SpecialDeals() {
             updateShopLoginState();
         });
 
+        if (defaultTab) {
+            $('.shop-tab[data-tab="' + defaultTab + '"]').click();
+        }
+
         $("#ss-select-agarVersionDestinations").change(function() {
 
             $("#GameConfigurationUrl").val("https://configs-web.agar.io/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
@@ -733,6 +737,10 @@ function SpecialDeals() {
                 //populateSD();
             //}, 1500);
         });
+        window.openDailyDealsModal = function() {
+            SpecialDeals('deals');
+        };
+
         window.closeSpecialShopModal = function() {
             if (window._shopLoginCheckInterval) {
                 clearInterval(window._shopLoginCheckInterval);
