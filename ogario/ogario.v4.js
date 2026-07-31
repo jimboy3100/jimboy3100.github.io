@@ -1463,6 +1463,14 @@ window.inspectUserStats = function(userId) { if (window.application) return wind
 window.claimGifts = function(giftIds) { if (window.application) return window.application.claimGifts(giftIds); };
 window.softPurchase = function(purchaseId) { if (window.application) return window.application.softPurchase(purchaseId); };
 window.activateTimedEvent = function(eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
+window.activateUserRewards = function(rewardIds) { if (window.application) return window.application.activateUserRewards(rewardIds); };
+window.requestLeaguesInfo = function(type) { if (window.application) return window.application.requestLeaguesInfo(type); };
+window.updateLeaguesPass = function(data) { if (window.application) return window.application.updateLeaguesPass(data); };
+window.sendFacebookInvite = function(friendIds) { if (window.application) return window.application.sendFacebookInvite(friendIds); };
+window.requestFriendListUpdate = function() { if (window.application) return window.application.requestFriendListUpdate(); };
+window.sendAutomationUpdate = function(eventFinished) { if (window.application) return window.application.sendAutomationUpdate(eventFinished); };
+window.sendActionCountersUpdate = function(counters) { if (window.application) return window.application.sendActionCountersUpdate(counters); };
+window.sendAbTestGroupsUpdate = function(groups) { if (window.application) return window.application.sendAbTestGroupsUpdate(groups); };
 
 var root = protobuf.parse(proto, { keepCase: true }).root;
 window.mesega = root.lookupType("Data");
