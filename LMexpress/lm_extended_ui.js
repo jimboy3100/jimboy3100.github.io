@@ -256,10 +256,10 @@
         modal.id = 'lm-leagues-modal';
         modal.className = 'lm-modal-overlay';
         modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #191c28; border-color: #455ee8; width: 680px;">
-                <div class="lm-modal-header" style="background: #12141f; padding: 12px 20px;">
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 680px;">
+                <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <div style="width: 100%; text-align: center; position: relative;">
-                        <span style="font-size: 18px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
+                        <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
                         <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
                     </div>
                 </div>
@@ -267,13 +267,13 @@
                 <div class="lm-modal-body" style="padding: 16px;">
                     <!-- 3 Leaderboard Tabs -->
                     <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 1 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             ⭐ My League
                         </button>
-                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 2 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🇺🇸 Country
                         </button>
-                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? '#455ee8' : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? '#fff' : '#aaa'}; border: 1px solid ${window.currentLeagueTab === 3 ? '#6b7ff0' : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🌎 World
                         </button>
                     </div>
@@ -281,7 +281,7 @@
                     <!-- Dynamic Leaderboard Content Container -->
                     <div id="lm-leagues-content-area">
                         <div style="text-align: center; padding: 30px; color: ${t.tc2};">
-                            <i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Fetching Standings...
+                            <i class="fa fa-spinner fa-spin fa-2x" style="color: ${t.mc};"></i><br><br>Fetching Standings...
                         </div>
                     </div>
                 </div>
@@ -314,6 +314,7 @@
         var contentArea = document.getElementById('lm-leagues-content-area');
         if (!contentArea) return;
 
+        var t = getTheme();
         var tabType = window.currentLeagueTab || data.leagueRequestType || 1;
         var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
         var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
@@ -362,15 +363,15 @@
                         <div style="opacity: 0.8; margin-bottom: 2px;">Top 3 prizes</div>
                         <div style="font-weight: 800; color: #ffd700;">${cfg.prizes} <i class="fa fa-ticket"></i></div>
                     </div>
-                    <button class="btn" style="background: #ffb300; color: #000; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
-                    <button class="btn" style="background: #0288d1; color: #fff; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
+                    <button class="btn" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
+                    <button class="btn" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
                 </div>
             </div>
         `;
 
         // Table Header
         html += `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: #8c9ba5; text-transform: uppercase; letter-spacing: 0.5px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; margin-bottom: 6px; font-size: 11px; font-weight: 800; color: ${t.tc2}; text-transform: uppercase; letter-spacing: 0.5px;">
                 <div style="width: 70px;">RANK</div>
                 <div style="flex: 1;">NAME</div>
                 <div style="width: 140px; text-align: right;">WEEKLY WINNINGS</div>
@@ -407,7 +408,7 @@
                 } else if (rankNum === 3) {
                     rankBadge = `<div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff8a65, #d84315); color: #fff; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center;">3</div>`;
                 } else {
-                    rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: #2b50ed; color: #fff; font-weight: 800; font-size: 12px;">#${rankNum}</div>`;
+                    rankBadge = `<div style="padding: 3px 8px; border-radius: 6px; background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 12px;">#${rankNum}</div>`;
                 }
 
                 var name = entry.displayName || entry.id || ('Player ' + rankNum);
@@ -425,10 +426,10 @@
                             <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
                             <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
-                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : '#fff'}; font-size: 13px;">${name}</span>
+                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${name}</span>
                         </div>
-                        <div style="width: 140px; text-align: right; font-weight: 800; color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
-                            ${score} <i class="fa fa-trophy" style="color: #ffc107;"></i>
+                        <div style="width: 140px; text-align: right; font-weight: 800; color: ${t.tc}; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+                            ${score} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
                         </div>
                     </div>
                 `;
@@ -449,7 +450,7 @@
                         <span style="font-weight: 800; color: #00e676; font-size: 14px;">${currentUserName}</span>
                     </div>
                     <div style="width: 140px; text-align: right; font-weight: 800; color: #00e676; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
-                        ${currentUserScore} <i class="fa fa-trophy" style="color: #ffc107;"></i>
+                        ${currentUserScore} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
                     </div>
                 </div>
             `;
