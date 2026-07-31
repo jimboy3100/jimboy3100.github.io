@@ -536,6 +536,16 @@ function SpecialDeals(defaultTab) {
                 $('.xpmt-buy-content').css({ opacity: 1, pointerEvents: 'auto' });
                 $('#ss-select-purchases, #BuyDealCurrency, #ss-select-agarVersionDestinations').prop('disabled', false).css('opacity', 1);
             }
+
+            // Main menu Agar.io Skins buttons state (#SpecialDealsBtn, #SpecialDealsQuickBtn, etc.)
+            var skinBtnEnabled = isLoggedIn && hasUID;
+            var skinBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn');
+            skinBtns.prop('disabled', !skinBtnEnabled);
+            if (!skinBtnEnabled) {
+                skinBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game first to access Agar.io Skins');
+            } else {
+                skinBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+            }
         }
 
         // Check login state immediately and every 3 seconds

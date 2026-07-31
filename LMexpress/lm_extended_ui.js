@@ -2172,10 +2172,22 @@
         var name = appUser.displayName || appUser.name || 'Guest';
         $('#UserProfileName1').text(name);
 
-        var uid = appUser.socialId || appUser.id || window.agarioUID || '';
+        var uid = appUser.socialId || appUser.id || window.agarioUID || window.agarioEncodedUID || '';
         if (uid) {
             $('#UserProfileUID1').val(uid).text(uid);
             $('#UserProfileUUID1').val(uid);
+        }
+
+        // Disable Agar.io Skins buttons if not logged in or missing UID
+        var isLoggedIn = !!(appUser.authenticated || window.loggedIn || appUser.socialId || appUser.id);
+        var hasUID = !!(uid || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID"));
+        var skinBtnEnabled = isLoggedIn && hasUID;
+        var skinBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn');
+        skinBtns.prop('disabled', !skinBtnEnabled);
+        if (!skinBtnEnabled) {
+            skinBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game first to access Agar.io Skins');
+        } else {
+            skinBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
         }
 
         // 3. XP Progress Bar & Level
