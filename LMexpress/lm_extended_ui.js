@@ -906,6 +906,180 @@
         $('#lm-tab-mystery').on('click', function() { updateTabs('mystery'); });
     };
 
+    window.showDailyDealsCarouselModal = function(initialSlide) {
+        injectStyles();
+        var t = getTheme();
+        var currentSlide = initialSlide || 0;
+
+        var slidesData = [
+            {
+                id: 'daily-deal',
+                title: 'DAILY DEAL!',
+                subtitle: 'GET IT WHILE IT LASTS!',
+                badge: '+FREE SKIN!',
+                timer: 'Offer Ends: 01h 55m 11s',
+                bannerGradient: 'linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%)',
+                offers: [
+                    {
+                        tag: '',
+                        coins: '14,000',
+                        oldCoins: '7,000',
+                        multiplier: '2X',
+                        bonusText: 'FREE!',
+                        bonusItem: '⭐ Star Skin',
+                        price: '$9.99',
+                        purchaseId: 'com.miniclip.agar.io.dailydeal7'
+                    },
+                    {
+                        tag: 'BEST DEAL!',
+                        coins: '32,000',
+                        oldCoins: '16,000',
+                        multiplier: '2X',
+                        bonusText: 'FREE!',
+                        bonusItem: '🍬 Candy Swirl Skin',
+                        price: '$19.99',
+                        purchaseId: 'com.miniclip.agar.io.dailydeal15'
+                    }
+                ]
+            },
+            {
+                id: 'collectors-items',
+                title: "THE COLLECTOR'S",
+                subtitle: 'LEGACY ITEMS AND SKINS FOR SALE!',
+                badge: 'RARE SKINS AND ITEMS',
+                timer: 'Offer Ends: 64h 04m 16s',
+                bannerGradient: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)',
+                offers: [
+                    {
+                        tag: '',
+                        coins: '3,250',
+                        oldCoins: '',
+                        multiplier: '',
+                        bonusText: '+ 3X MASS',
+                        bonusItem: '⚡ 3X Mass Boost (24h)',
+                        price: '$1.99',
+                        purchaseId: 'com.miniclip.agar.io.dailydeal17'
+                    },
+                    {
+                        tag: 'Best Deal!',
+                        coins: '16,000',
+                        oldCoins: '',
+                        multiplier: '',
+                        bonusText: '+ RARE SKINS',
+                        bonusItem: '🍔 Burger & 🏀 Basketball Skins',
+                        price: '$9.99',
+                        purchaseId: 'com.miniclip.agar.io.dailydeal21'
+                    }
+                ]
+            }
+        ];
+
+        var old = document.getElementById('lm-daily-deals-carousel-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-daily-deals-carousel-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var renderSlide = function(idx) {
+            var slide = slidesData[idx];
+            var totalSlides = slidesData.length;
+
+            var offersHtml = '';
+            slide.offers.forEach(function(offer) {
+                var tagBadge = offer.tag ? `<div style="position: absolute; top: -10px; left: -10px; background: linear-gradient(135deg, #ff0055, #ff5000); color: #fff; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); text-transform: uppercase;">${offer.tag}</div>` : '';
+                offersHtml += `
+                    <div style="position: relative; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                        ${tagBadge}
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 20px; font-weight: 900; color: #ffd700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">💰 ${offer.coins}</div>
+                                ${offer.oldCoins ? `<div style="font-size: 11px; text-decoration: line-through; color: #ff5252; font-weight: 700;">${offer.oldCoins}</div>` : ''}
+                            </div>
+                            ${offer.multiplier ? `<div style="background: #ff0055; color: #fff; font-weight: 900; font-size: 11px; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(255,0,85,0.4);">${offer.multiplier}</div>` : ''}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; font-weight: 900; color: #00e676; text-transform: uppercase;">${offer.bonusText}</div>
+                                <div style="font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 700;">${offer.bonusItem}</div>
+                            </div>
+                            <button class="btn" onclick="window.buyDealProduct('${offer.purchaseId}', '${offer.price}');" style="background: linear-gradient(135deg, #00e676, #00b0ff); color: #000; font-weight: 900; font-size: 15px; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(0,230,118,0.4); min-width: 90px;">
+                                ${offer.price}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            var dotsHtml = '';
+            for (var i = 0; i < totalSlides; i++) {
+                var isActive = (i === idx);
+                dotsHtml += `<span class="carousel-dot" onclick="window.switchDailyDealSlide(${i});" style="display: inline-block; width: ${isActive ? '12px' : '9px'}; height: ${isActive ? '12px' : '9px'}; border-radius: 50%; background: ${isActive ? '#fff' : 'rgba(255,255,255,0.4)'}; margin: 0 4px; cursor: pointer; transition: all 0.2s; vertical-align: middle;"></span>`;
+            }
+
+            modal.innerHTML = `
+                <div class="lm-modal-container" style="background: #1a1a2e; border: 3px solid #00d2ff; width: 660px; position: relative; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); overflow: visible;">
+                    
+                    <!-- Left Carousel Arrow -->
+                    <button class="btn carousel-arrow-left" onclick="window.switchDailyDealSlide(${(idx - 1 + totalSlides) % totalSlides});" style="position: absolute; left: -22px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #1a1a2e; font-weight: 900; font-size: 22px; border: 2px solid #00d2ff; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.5); z-index: 20; display: flex; align-items: center; justify-content: center; outline: none;">
+                        ‹
+                    </button>
+
+                    <!-- Right Carousel Arrow -->
+                    <button class="btn carousel-arrow-right" onclick="window.switchDailyDealSlide(${(idx + 1) % totalSlides});" style="position: absolute; right: -22px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.95); color: #1a1a2e; font-weight: 900; font-size: 22px; border: 2px solid #00d2ff; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.5); z-index: 20; display: flex; align-items: center; justify-content: center; outline: none;">
+                        ›
+                    </button>
+
+                    <!-- Header Banner -->
+                    <div style="background: ${slide.bannerGradient}; padding: 18px 24px; border-radius: 13px 13px 0 0; position: relative; border-bottom: 2px solid rgba(255,255,255,0.2);">
+                        <button class="lm-modal-close" onclick="document.getElementById('lm-daily-deals-carousel-modal').remove();" style="position: absolute; right: 14px; top: 10px; color: #fff; font-size: 24px; opacity: 0.9;">&times;</button>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 22px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">${slide.title}</div>
+                                <div style="font-size: 12px; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">${slide.subtitle}</div>
+                                <div style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); margin-top: 6px;">⏱️ ${slide.timer}</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.2); border: 2px dashed #fff; padding: 6px 14px; border-radius: 20px; font-weight: 900; font-size: 13px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                                ${slide.badge}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div style="padding: 20px; max-height: 380px; overflow-y: auto;">
+                        ${offersHtml}
+                    </div>
+
+                    <!-- Carousel Dots Footer -->
+                    <div style="padding: 10px 0 14px 0; text-align: center; background: rgba(0,0,0,0.3); border-radius: 0 0 13px 13px;">
+                        ${dotsHtml}
+                    </div>
+                </div>
+            `;
+        };
+
+        window.switchDailyDealSlide = function(slideIdx) {
+            renderSlide(slideIdx);
+        };
+
+        window.buyDealProduct = function(purchaseId, priceStr) {
+            if (typeof window.buydeals === 'function') {
+                $('#ss-select-purchases').val(purchaseId);
+                window.buydeals();
+            } else {
+                if (window.toastr) window.toastr.success('<b>[SHOP]:</b> Initiating checkout for ' + purchaseId + ' (' + priceStr + ')');
+            }
+        };
+
+        renderSlide(currentSlide);
+        document.body.appendChild(modal);
+    };
+
+    window.openDailyDealsModal = function() {
+        window.showDailyDealsCarouselModal(0);
+    };
+
     window.showFriendsModal = function() {
         // Authenticated & Connected check
         var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
