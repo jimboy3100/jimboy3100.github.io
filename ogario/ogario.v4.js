@@ -10947,6 +10947,41 @@ function thelegendmodproject() {
             toastr.info('<b>[SERVER]:</b> Activating reward link...');
             return this.sendProto(183, { activateRewardLinkRequestField: { token: token } });
         },
+        activateUserRewards(rewardIds) {
+            if (!rewardIds || !rewardIds.length) return false;
+            console.log("[LM] Activate User Rewards (bulk):", rewardIds);
+            return this.sendProto(117, { activateUserRewardsRequestField: { rewardIds: rewardIds } });
+        },
+        requestLeaguesInfo(type) {
+            var reqType = type || 1;
+            console.log("[LM] Request Leagues Info — type: " + reqType);
+            return this.sendProto(130, { userLeaguesInfoRequestField: { leagueRequestType: reqType } });
+        },
+        updateLeaguesPass(data) {
+            console.log("[LM] Update Leagues Pass:", data);
+            return this.sendProto(132, { userLeaguesPassUpdateField: data || {} });
+        },
+        sendFacebookInvite(friendIds) {
+            if (!friendIds || !friendIds.length) return false;
+            console.log("[LM] Send Facebook Invite to:", friendIds);
+            return this.sendProto(146, { userPartyFacebookInviteField: { friendIds: friendIds } });
+        },
+        requestFriendListUpdate() {
+            console.log("[LM] Request Friend List Update");
+            return this.sendProto(147, { userFriendListUpdateField: {} });
+        },
+        sendAutomationUpdate(eventFinished) {
+            console.log("[LM] Send Automation Update — eventFinished: " + eventFinished);
+            return this.sendProto(160, { automationRequestUpdateField: { eventFinished: eventFinished || "" } });
+        },
+        sendActionCountersUpdate(counters) {
+            console.log("[LM] Send Action Counters Update:", counters);
+            return this.sendProto(170, { actionCountersUpdateField: counters || {} });
+        },
+        sendAbTestGroupsUpdate(groups) {
+            console.log("[LM] Send A/B Test Groups Update:", groups);
+            return this.sendProto(171, { userAbTestGroupsUpdateField: groups || {} });
+        },
         /* ─── §4.20k Parse Plist XML Metadata ─── */
         parseSkinMeta(metaXmlString) {
             if (!metaXmlString) return null;
@@ -16088,6 +16123,24 @@ function thelegendmodproject() {
                         console.warn("[LM] Error parsing open potion response:", openPErr);
                     }
                     break;
+                case 118:
+                    // Bulk user rewards activation response
+                    try {
+                        var urr = r.uncompressedData.activateUserRewardsResponseField;
+                        if (urr) {
+                            console.log("[LM] Bulk User Rewards Response received");
+                            if (urr.productUpdates && urr.productUpdates.length) {
+                                this.updateProducts(urr.productUpdates);
+                            }
+                            if (urr.userTimedEvents && urr.userTimedEvents.length) {
+                                this.updateEvents(urr.userTimedEvents);
+                            }
+                            try { document.dispatchEvent(new CustomEvent('userRewardsActivated', { detail: urr })); } catch(e) {}
+                        }
+                    } catch(urrErr) {
+                        console.warn("[LM] Error parsing bulk user rewards response:", urrErr);
+                    }
+                    break;
                 case 131:
                     // Leagues info response — store league standings
                     try {
@@ -16134,6 +16187,45 @@ function thelegendmodproject() {
                         }
                     } catch(lpuErr) {
                         console.warn("[LM] Error parsing leagues pass update:", lpuErr);
+                    }
+                    break;
+                case 147:
+                    // Friend list update response
+                    try {
+                        var flu = r.uncompressedData.userFriendListUpdateField;
+                        if (flu) {
+                            console.log("[LM] Friend List Update received:", flu);
+                            this.user.friendList = flu.friends || flu;
+                            try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: flu })); } catch(e) {}
+                        }
+                    } catch(fluErr) {
+                        console.warn("[LM] Error parsing friend list update:", fluErr);
+                    }
+                    break;
+                case 24:
+                    // Battle Royale safe area current ring
+                    try {
+                        var sa = r.uncompressedData.gameArenaCurrentSafeAreaField;
+                        if (sa) {
+                            LM.safeAreaRing = { x: sa.x || 0, y: sa.y || 0, radius: sa.radius || 0 };
+                            console.log("[LM] Battle Royale Safe Area Ring updated:", LM.safeAreaRing);
+                            try { document.dispatchEvent(new CustomEvent('battleRoyaleSafeAreaUpdate', { detail: sa })); } catch(e) {}
+                        }
+                    } catch(saErr) {
+                        console.warn("[LM] Error parsing Battle Royale safe area:", saErr);
+                    }
+                    break;
+                case 68:
+                    // Battle Royale arena phase update
+                    try {
+                        var brp = r.uncompressedData.gameBattleRoyaleArenaPhaseField;
+                        if (brp) {
+                            LM.battleRoyalePhase = brp;
+                            console.log("[LM] Battle Royale Arena Phase updated:", brp);
+                            try { document.dispatchEvent(new CustomEvent('battleRoyalePhaseUpdate', { detail: brp })); } catch(e) {}
+                        }
+                    } catch(brpErr) {
+                        console.warn("[LM] Error parsing Battle Royale arena phase:", brpErr);
                     }
                     break;
                 case 151:
