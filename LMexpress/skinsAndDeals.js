@@ -537,13 +537,13 @@ function SpecialDeals(defaultTab) {
                 $('#ss-select-purchases, #BuyDealCurrency, #ss-select-agarVersionDestinations').prop('disabled', false).css('opacity', 1);
             }
 
-            // Main menu buttons state (Skins, Daily Deals, Leagues)
+            // Main menu & profile buttons state (Skins, Daily Deals, Leagues, Buy/Use Boosts, Rewards)
             var menuBtnsEnabled = isLoggedIn && hasUID;
-            var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn');
+            var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
             menuBtns.prop('disabled', !menuBtnsEnabled);
             if (!menuBtnsEnabled) {
                 menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
-                        .attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals & Leagues');
+                        .attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals, Boosts & Leagues');
             } else {
                 menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
                         .removeAttr('title');

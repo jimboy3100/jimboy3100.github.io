@@ -2360,6 +2360,7 @@
         // Wire BUY / USE buttons
         $(document).off('click', '#buy-boost').on('click', '#buy-boost', function(e) {
             e.preventDefault();
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy boost')) return false;
             var val = $('#s-boost').val();
             if (!val) { toastr.warning('Please select a boost first.'); return; }
             if (typeof window.softPurchase === 'function') window.softPurchase(val);
@@ -2367,6 +2368,7 @@
 
         $(document).off('click', '#use-boost').on('click', '#use-boost', function(e) {
             e.preventDefault();
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('use boost')) return false;
             var val = $('#s-boost').val();
             if (!val) { toastr.warning('Please select a boost first.'); return; }
             if (typeof window.activateBoost === 'function') window.activateBoost(val);
