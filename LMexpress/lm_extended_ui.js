@@ -2331,14 +2331,14 @@
         return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
     };
 
-    // Inject "Claim All", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
+    // Inject "Daily Deal", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
     function initMenuButtons() {
         var profileTab = $('#profile');
         if (!profileTab.length) return;
 
-        if (document.getElementById('lm-claim-all-btn')) {
+        if (document.getElementById('lm-daily-deal-btn')) {
             // Ensure button group is inside #profile
-            if (!$.contains(profileTab[0], document.getElementById('lm-claim-all-btn'))) {
+            if (!$.contains(profileTab[0], document.getElementById('lm-daily-deal-btn'))) {
                 $('#lm-extended-menu-btns').appendTo(profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab);
             }
             return;
@@ -2350,9 +2350,6 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-claim-all-btn" class="btn btn-success btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="window.claimAllRewardsAndGifts();">
-                <i class="fa fa-gift"></i> Claim All
-            </button>
             <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px;" onclick="if(typeof window.openDailyDealsModal==='function'){window.openDailyDealsModal();}else if(typeof window.SpecialDeals==='function'){window.SpecialDeals('deals');}">
                 🔥 Daily Deal
             </button>
