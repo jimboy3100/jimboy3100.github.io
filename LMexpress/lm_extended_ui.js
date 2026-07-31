@@ -1080,6 +1080,166 @@
         window.showDailyDealsCarouselModal(0);
     };
 
+    window.showShopModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-main-shop-modal');
+        if (old) old.remove();
+
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-main-shop-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var categories = [
+            {
+                id: 'coins',
+                name: 'Coins',
+                bannerColor: '#7cb342',
+                gradient: 'linear-gradient(180deg, #8bc34a 0%, #689f38 100%)',
+                icon: '🪙',
+                bgGraphic: 'linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,160,0,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.showDailyDealsCarouselModal === 'function') window.showDailyDealsCarouselModal(0);
+                    else if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
+                }
+            },
+            {
+                id: 'dna',
+                name: 'DNA',
+                bannerColor: '#8bc34a',
+                gradient: 'linear-gradient(180deg, #9ccc65 0%, #7cb342 100%)',
+                icon: '🧬',
+                bgGraphic: 'linear-gradient(135deg, rgba(0,229,255,0.2) 0%, rgba(0,230,118,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.SpecialDeals === 'function') window.SpecialDeals('deals');
+                    else if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
+                }
+            },
+            {
+                id: 'flasks',
+                name: 'Premium Potions',
+                bannerColor: '#e91e63',
+                gradient: 'linear-gradient(180deg, #ec407a 0%, #c2185b 100%)',
+                icon: '🧪',
+                bgGraphic: 'linear-gradient(135deg, rgba(233,30,99,0.2) 0%, rgba(156,39,176,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
+                }
+            },
+            {
+                id: 'skins',
+                name: 'Skins',
+                bannerColor: '#fbc02d',
+                gradient: 'linear-gradient(180deg, #fdd835 0%, #f57f17 100%)',
+                icon: '🎭',
+                bgGraphic: 'linear-gradient(135deg, rgba(255,193,7,0.2) 0%, rgba(255,87,34,0.4) 100%)',
+                badge: '1',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
+                    else if (typeof window.SpecialDeals === 'function') window.SpecialDeals('skins');
+                }
+            },
+            {
+                id: 'mass',
+                name: 'Mass Boost',
+                bannerColor: '#f57c00',
+                gradient: 'linear-gradient(180deg, #ff9800 0%, #e65100 100%)',
+                icon: 'Ⓜ️',
+                bgGraphic: 'linear-gradient(135deg, rgba(0,176,255,0.2) 0%, rgba(41,121,255,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
+                    if (window.toastr) window.toastr.info('<b>[SHOP]:</b> Select Mass Boost from header boost menu');
+                }
+            },
+            {
+                id: 'xp',
+                name: 'XP Boost',
+                bannerColor: '#00bcd4',
+                gradient: 'linear-gradient(180deg, #26c6da 0%, #00838f 100%)',
+                icon: '⭐',
+                bgGraphic: 'linear-gradient(135deg, rgba(255,235,59,0.2) 0%, rgba(255,152,0,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
+                    if (window.toastr) window.toastr.info('<b>[SHOP]:</b> Select XP Boost from header boost menu');
+                }
+            }
+        ];
+
+        var gridHtml = '';
+        categories.forEach(function(cat) {
+            var badgeEl = cat.badge ? `<div style="position: absolute; bottom: 8px; right: 12px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${cat.badge}</div>` : '';
+            gridHtml += `
+                <div id="shop-card-${cat.id}" onclick="window.onShopCategoryClick('${cat.id}');" style="position: relative; height: 135px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); background: ${cat.bgGraphic}; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="flex: 1; display: flex; align-items: center; justify-content: center; font-size: 48px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                        ${cat.icon}
+                    </div>
+                    <div style="background: ${cat.gradient}; padding: 8px 10px; text-align: center; font-weight: 900; font-size: 15px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.6); text-transform: uppercase; letter-spacing: 0.5px;">
+                        ${cat.name}
+                    </div>
+                    ${badgeEl}
+                </div>
+            `;
+        });
+
+        window.onShopCategoryClick = function(catId) {
+            var target = categories.find(function(c) { return c.id === catId; });
+            if (target && typeof target.action === 'function') target.action();
+        };
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 660px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
+                    <div style="font-size: 24px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Shop</div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
+                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
+                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
+                            <span>💰 ${coinsBalance.toLocaleString()}</span>
+                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <button onclick="document.getElementById('lm-main-shop-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
+                    </div>
+                </div>
+
+                <div style="padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; background: #f7f9fa;">
+                    ${gridHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    };
+
+    window.openShop = function(cat) {
+        if (cat === 'potions' || cat === 'flasks') {
+            if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
+        } else if (cat === 'coins' || cat === 'deals') {
+            if (typeof window.showDailyDealsCarouselModal === 'function') window.showDailyDealsCarouselModal(0);
+        } else if (cat === 'skins') {
+            if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
+        } else {
+            window.showShopModal();
+        }
+    };
+
     window.showFriendsModal = function() {
         // Authenticated & Connected check
         var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
@@ -1568,6 +1728,12 @@
             } else if (typeof window.openDailyDealsModal === 'function') {
                 window.openDailyDealsModal();
             }
+        });
+
+        $(document).off('click', '#openShopBtn, .quick-shop').on('click', '#openShopBtn, .quick-shop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.showShopModal === 'function') window.showShopModal();
         });
     });
 
