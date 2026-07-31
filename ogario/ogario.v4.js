@@ -15805,7 +15805,31 @@ function thelegendmodproject() {
                     }
                     break;
                 case 78:
-                    console.log("returnMessage = r.get_offerBundleResponseField();");
+                    // Offer bundle response (opcode 78)
+                    try {
+                        var ob = r.uncompressedData.offerBundleResponseField;
+                        if (ob) {
+                            var obResult = ob.result || 0;
+                            console.log("[LM] Offer Bundle Response — result: " + obResult);
+                            if (obResult === 1 || obResult === 0) {
+                                toastr.success('<b>[SERVER]:</b> Bundle purchased successfully! &#x2714;');
+                                if (ob.productUpdates && ob.productUpdates.length) {
+                                    this.updateProducts(ob.productUpdates);
+                                }
+                                try { this.createSkinsHTML(); } catch(e) {}
+                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                                if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
+                            } else if (obResult === 2) {
+                                toastr.error('<b>[SERVER]:</b> Bundle purchase failed — not enough currency.');
+                            } else {
+                                toastr.warning('<b>[SERVER]:</b> Bundle purchase response: code ' + obResult);
+                            }
+                        } else {
+                            console.log("returnMessage = r.get_offerBundleResponseField(); (no data)");
+                        }
+                    } catch(obErr) {
+                        console.warn("[LM] Error parsing offer bundle response:", obErr);
+                    }
                     break;
                 case 81:
                     var u = r.uncompressedData.updateUserSettingsResponseField;

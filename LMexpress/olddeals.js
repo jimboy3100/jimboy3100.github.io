@@ -30,6 +30,29 @@ if (window.agarversion != null) {
     window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion;
 }
 
+/**
+ * Theme helper — reads defaultSettings at call time so it picks up theme changes.
+ * Used by functions outside the SpecialDeals() scope (populateDealsGrid, updateEquippedSkinUI, etc.)
+ */
+function getShopTheme() {
+    var ds = window.defaultSettings || {};
+    return {
+        mc:  ds.menuMainColor   || '#01d9cc',
+        pc:  ds.menuPanelColor  || '#00243e',
+        pc2: ds.menuPanelColor2 || '#002f52',
+        tc:  ds.menuTextColor   || '#ffffff',
+        tc2: ds.menuTextColor2  || '#8096a7',
+        b1:  ds.btn1Color       || '#018cf6',
+        b1h: ds.btn1Color2      || '#0176ce',
+        b2:  ds.btn2Color       || '#00b9e8',
+        b3:  ds.btn3Color       || '#8d5fe6',
+        b4:  ds.btn4Color       || '#bf00aa',
+        b4h: ds.btn4Color2      || '#a80096',
+        btc: ds.menuBtnTextColor|| '#ffffff'
+    };
+}
+window.getShopTheme = getShopTheme;
+
 SpecialDeals();
 AgarVersionDestinations();
 
@@ -428,13 +451,13 @@ function SpecialDeals() {
                             var kb = (processedBufferModal.length / 1024).toFixed(1);
                             if (processedBufferModal.length > 102400 && attempt < sizes.length - 1) {
                                 attempt++;
-                                $('#legendStatusModal').text("Compressing... " + kb + "KB → trying " + sizes[attempt] + "px").css('color', '#ffd740');
+                                $('#legendStatusModal').text("Compressing... " + kb + "KB → trying " + sizes[attempt] + "px").css('color', getShopTheme().b3);
                                 trySize();
                             } else if (processedBufferModal.length > 102400) {
-                                $('#legendStatusModal').text("Too Big: " + kb + "KB even at " + size + "px").css('color', '#ff5252');
+                                $('#legendStatusModal').text("Too Big: " + kb + "KB even at " + size + "px").css('color', getShopTheme().b4);
                                 $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
                             } else {
-                                $('#legendStatusModal').text("PNG Ready: " + kb + "KB (" + size + "x" + size + ")").css('color', '#00e676');
+                                $('#legendStatusModal').text("PNG Ready: " + kb + "KB (" + size + "x" + size + ")").css('color', getShopTheme().b2);
                                 // Only enable if logged in
                                 updateShopLoginState();
                             }
@@ -445,7 +468,7 @@ function SpecialDeals() {
                 trySize();
             };
             img.onerror = function() {
-                $('#legendStatusModal').text("Error loading image").css('color', '#ff5252');
+                $('#legendStatusModal').text("Error loading image").css('color', getShopTheme().b4);
             };
             img.src = src;
         }
@@ -503,7 +526,7 @@ function SpecialDeals() {
             }
             $('#legendUploadInputModal').val('');
             $('#legendSaveBtnModal').prop('disabled', true).css({ opacity: 0.5, cursor: 'not-allowed' });
-            $('#legendStatusModal').text('Select an image or drag & drop').css('color', '#888');
+            $('#legendStatusModal').text('Select an image or drag & drop').css('color', getShopTheme().tc2);
             $(this).hide();
         });
 
@@ -763,6 +786,7 @@ function updateDealsBalance() {
 
 /**
  * Claim free coins via opcode 110 (activateTimedEvent)
+ * Response comes back on opcode 111 — ogario.v4.js case 111 calls refreshDealsTab().
  */
 function claimFreeCoins() {
     if (!window.loggedIn) {
@@ -780,15 +804,16 @@ function claimFreeCoins() {
         btn.style.opacity = '0.6';
     }
     window.application.activateTimedEvent('hourlyBonus');
-    // Re-enable after response timeout
-    setTimeout(function() {
-        if (btn) {
+    // ogario.v4.js case 111 will call refreshDealsTab() on server response.
+    // Safety fallback in case response is delayed or lost:
+    window._freeCoinsTimeout = setTimeout(function() {
+        if (btn && btn.disabled) {
             btn.disabled = false;
             btn.textContent = 'Claim!';
             btn.style.opacity = '1';
         }
         updateDealsBalance();
-    }, 5000);
+    }, 10000);
 }
 window.claimFreeCoins = claimFreeCoins;
 
@@ -800,7 +825,7 @@ function populateDealsGrid() {
     if (!grid) return;
 
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
-        grid.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">Loading deals... Configuration not ready.</div>';
+        grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">Loading deals... Configuration not ready.</div>';
         return;
     }
 
@@ -810,12 +835,13 @@ function populateDealsGrid() {
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
 
     if (iaps.length === 0 && softPurchases.length === 0) {
-        grid.innerHTML = '<div style="text-align: center; color: #888; padding: 20px;">No deals available.</div>';
+        grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">No deals available.</div>';
         return;
     }
 
     var html = '';
     var priceMap = { '2': '$1.99', '5': '$4.99', '10': '$9.99', '20': '$19.99', '50': '$49.99', '60': '$99.99' };
+    var t = getShopTheme(); // theme-aware colors
 
     // Build bundle lookup
     var bundleLookup = {};
@@ -854,13 +880,13 @@ function populateDealsGrid() {
             else label = qty + 'x ' + label;
             contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
         }
-        if (!contentText) contentText = '<span style="font-size: 10px; color: #666;">Bundle contents</span>';
+        if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle contents</span>';
 
         // Resolve skin image if available
         var skinImg = getDealSkinImage(deal.bundleId);
 
-        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
-        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: rgba(33,150,243,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid rgba(33,150,243,0.4);">';
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; transition: border-color 0.2s;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">';
         if (skinImg) {
             html += '<img src="' + skinImg + '" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'💎\'">';
         } else {
@@ -868,12 +894,12 @@ function populateDealsGrid() {
         }
         html += '</div>';
         html += '<div style="flex: 1; min-width: 0;">';
-        html += '<div style="font-weight: 700; font-size: 13px; color: #e0e0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
         html += '<div>' + contentText + '</div>';
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
-        html += '<div style="font-size: 14px; font-weight: 700; color: #4fc3f7;">' + price + '</div>';
-        html += '<button class="btn btn-xs deal-buy-btn" onclick="buyDealIAP(\'' + deal.id + '\', \'' + desc.replace(/'/g, "\\'") + '\')" style="background: #0288d1; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
+        html += '<button class="btn btn-xs deal-buy-btn" onclick="buyDealIAP(\'' + deal.id + '\', \'' + desc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
         html += '</div>';
     }
@@ -890,18 +916,18 @@ function populateDealsGrid() {
         // Only show relevant soft purchases (skip internal ones)
         if (sp.purchaseId.indexOf('skin_') !== -1 || sp.purchaseId.indexOf('boost') !== -1 || sp.purchaseId.indexOf('potion') !== -1) continue;
 
-        html += '<div class="deal-card" style="background: rgba(255,215,64,0.05); border: 1px solid rgba(255,215,64,0.15); border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
-        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,215,64,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid rgba(255,215,64,0.3);">🛒</div>';
+        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
+        html += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.pc2 + '; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b3 + ';">🛒</div>';
         html += '<div style="flex: 1; min-width: 0;">';
-        html += '<div style="font-weight: 700; font-size: 13px; color: #ffd740;">' + spDesc + '</div>';
-        html += '<div style="font-size: 11px; color: #aaa;">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
+        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.b3 + ';">' + spDesc + '</div>';
+        html += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
         html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: #f57f17; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + t.b3 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
     }
 
     if (!html) {
-        html = '<div style="text-align: center; color: #888; padding: 20px;">No deals found in configuration.</div>';
+        html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">No deals found in configuration.</div>';
     }
 
     grid.innerHTML = html;
@@ -910,6 +936,22 @@ window.populateDealsGrid = populateDealsGrid;
 window.refreshDealsTab = function() {
     populateDealsGrid();
     updateDealsBalance();
+    // Reset free coins button (called by ogario.v4.js case 111 on server response)
+    var btn = document.getElementById('claimFreeCoinsBtn');
+    if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Claim!';
+        btn.style.opacity = '1';
+    }
+    // Clear safety timeout if server responded before it
+    if (window._freeCoinsTimeout) {
+        clearTimeout(window._freeCoinsTimeout);
+        window._freeCoinsTimeout = null;
+    }
+    if (window._dealSoftTimeout) {
+        clearTimeout(window._dealSoftTimeout);
+        window._dealSoftTimeout = null;
+    }
 };
 
 /**
@@ -976,6 +1018,7 @@ window.buyDealIAP = buyDealIAP;
 
 /**
  * Buy a deal via soft purchase (DNA/Coins) — opcode 70
+ * Response comes on opcode 71 — ogario.v4.js case 71 calls refreshSkinGrid() & shows toastr.
  */
 function buyDealSoft(purchaseId, cost, currencyType) {
     if (!window.loggedIn) {
@@ -994,9 +1037,94 @@ function buyDealSoft(purchaseId, cost, currencyType) {
 
     toastr.info('<b>[SHOP]:</b> Sending purchase request...');
     window.application.softPurchase(purchaseId);
-    setTimeout(updateDealsBalance, 3000);
+    // ogario.v4.js case 71 handles the response (toastr + refreshSkinGrid + updateProducts).
+    // Safety fallback to refresh balance if response is delayed:
+    window._dealSoftTimeout = setTimeout(function() {
+        updateDealsBalance();
+    }, 8000);
 }
 window.buyDealSoft = buyDealSoft;
+
+/**
+ * Buy a deal via offer bundle — opcode 77 (Offer_bundle_request)
+ * Used for bundles with type "OFFER" in the official client.
+ * Response comes on opcode 78 — ogario.v4.js case 78.
+ */
+function buyDealBundle(bundleId, dealDesc) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+        return;
+    }
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        return;
+    }
+    if (!confirm('Purchase bundle "' + dealDesc + '"?')) return;
+
+    // Encode Offer_bundle_request { bundleId: string } and send via opcode 77
+    // Proto: field 1 (bundleId) wire type 2 (length-delimited string)
+    try {
+        var idBytes = [];
+        for (var i = 0; i < bundleId.length; i++) idBytes.push(bundleId.charCodeAt(i));
+        // Inner message: tag 10 (field 1, wire 2), varint length, string bytes
+        var innerMsg = [10, idBytes.length].concat(idBytes);
+        // Outer wrapper: opcode 77 → field number in protobuf
+        // Field 77 wire type 2 → (77 << 3 | 2) = 618 → varint [234, 4]
+        var outerTag = [234, 4];
+        var outerLen = innerMsg.length;
+        var payload = outerTag.concat([outerLen]).concat(innerMsg);
+        // Wrap in contentType=1 uncompressed envelope
+        var typeField = [8, 77]; // field 1 varint = 77 (opcode)
+        var envelope = typeField.concat(payload);
+        var bytes = [8, 1, 18, envelope.length].concat(envelope);
+        window.core.proxyMobileData(new Uint8Array(bytes));
+        toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
+        console.log('[SHOP] Sent offer bundle request for ' + bundleId);
+    } catch (e) {
+        console.error('[SHOP] Offer bundle encode error:', e);
+        toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
+    }
+}
+window.buyDealBundle = buyDealBundle;
+
+/**
+ * Activate a boost — opcode 112 (Activate_boost_request)
+ * Response comes on opcode 113 — ogario.v4.js case 113.
+ */
+function activateBoost(productId) {
+    if (!window.loggedIn) {
+        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+        return;
+    }
+    if (!(window.core && window.core.proxyMobileData)) {
+        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        return;
+    }
+    var displayName = productId.replace(/_/g, ' ');
+    if (!confirm('Activate boost "' + displayName + '"?')) return;
+
+    // Encode Activate_boost_request { productId: string } and send via opcode 112
+    // Proto: field 1 (productId) wire type 2 (length-delimited string)
+    try {
+        var idBytes = [];
+        for (var i = 0; i < productId.length; i++) idBytes.push(productId.charCodeAt(i));
+        var innerMsg = [10, idBytes.length].concat(idBytes);
+        // Field 112 wire type 2 → (112 << 3 | 2) = 898 → varint [130, 7]
+        var outerTag = [130, 7];
+        var outerLen = innerMsg.length;
+        var payload = outerTag.concat([outerLen]).concat(innerMsg);
+        var typeField = [8, 112]; // opcode 112
+        var envelope = typeField.concat(payload);
+        var bytes = [8, 1, 18, envelope.length].concat(envelope);
+        window.core.proxyMobileData(new Uint8Array(bytes));
+        toastr.info('<b>[SHOP]:</b> Boost activation request sent...');
+        console.log('[SHOP] Sent boost activation for ' + productId);
+    } catch (e) {
+        console.error('[SHOP] Boost encode error:', e);
+        toastr.error('<b>[SHOP]:</b> Failed to activate boost');
+    }
+}
+window.activateBoost = activateBoost;
 
 
 var skinShopPage = 0;
@@ -1068,7 +1196,7 @@ function populateSkins() {
         $('#skinGrid').empty();
 
         if (currentFilter === 'owned' && skinShopFiltered.length === 0) {
-            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #aaa; font-size: 13px;">No owned skins detected on this session.<br><span style="font-size: 11px; color: #666;">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>');
+            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: ' + getShopTheme().tc2 + '; font-size: 13px;">No owned skins detected on this session.<br><span style="font-size: 11px; color: ' + getShopTheme().tc2 + ';">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>');
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
@@ -1277,6 +1405,7 @@ function updateEquippedSkinUI() {
     // ogario.v4.js updateUserSettings (line 16269) captures this but doesn't
     // sync to localStorage. We do it here so the banner stays in sync.
     syncEquippedSkinFromServer();
+    var t = getShopTheme();
 
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
@@ -1334,8 +1463,8 @@ function updateEquippedSkinUI() {
             });
         } else {
             bannerImg.css({
-                'border-color': '#4fc3f7',
-                'background-color': '#222',
+                'border-color': t.mc,
+                'background-color': t.pc,
                 'box-shadow': 'none'
             });
         }
@@ -1345,8 +1474,8 @@ function updateEquippedSkinUI() {
         bannerName.text('None (Default Skin)');
         bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
         bannerImg.css({
-            'border-color': '#4fc3f7',
-            'background-color': '#222',
+            'border-color': t.mc,
+            'background-color': t.pc,
             'box-shadow': 'none'
         });
         unequipBtn.hide();
