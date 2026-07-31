@@ -20564,11 +20564,21 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* Ensure cells are rendered in size-ascending order (smaller cells first, larger on top) */
+                /* Ensure cells are rendered in size-ascending order (smaller first, larger on top).
+                 * Use the SAME stable insertion sort as sortCells() with id tiebreaker.
+                 * Array.sort is unstable for equal-size cells and caused z-fighting. */
                 if (LM.cells && LM.cells.length > 1) {
-                    LM.cells.sort(function (a, b) {
-                        return (a && a.size ? a.size : 0) - (b && b.size ? b.size : 0);
-                    });
+                    var _a = LM.cells;
+                    for (var _si = 1, _slen = _a.length; _si < _slen; _si++) {
+                        var _tmp = _a[_si];
+                        if (!_tmp) continue;
+                        var _tSize = _tmp.size || 0, _tId = _tmp.id || 0;
+                        var _sj = _si - 1;
+                        while (_sj >= 0 && _a[_sj] && ((_a[_sj].size || 0) > _tSize || ((_a[_sj].size || 0) === _tSize && (_a[_sj].id || 0) > _tId))) {
+                            _a[_sj + 1] = _a[_sj]; _sj--;
+                        }
+                        _a[_sj + 1] = _tmp;
+                    }
                 }
 
                 /* WebGL2 cell body+skin batch — draws all eligible cell bodies on GPU in 1 draw call.
