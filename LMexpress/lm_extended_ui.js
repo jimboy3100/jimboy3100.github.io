@@ -1229,6 +1229,110 @@
         document.body.appendChild(modal);
     };
 
+    window.showPotionDetailModal = function(potionType) {
+        injectStyles();
+        var t = getTheme();
+        var pType = potionType || 'potion_epic';
+
+        var detailsMap = {
+            'potion_superior': {
+                name: 'Superior Potion',
+                icon: '🧪',
+                iconColor: '#4caf50',
+                coins: '150 - 300',
+                skinPieces: 'x2',
+                specialPieces: '0',
+                specialText: ''
+            },
+            'potion_epic': {
+                name: 'Epic Potion',
+                icon: '🧪',
+                iconColor: '#00bcd4',
+                coins: '420 - 650',
+                skinPieces: 'x6',
+                specialPieces: '1',
+                specialText: 'x1 Special'
+            },
+            'potion_legendary': {
+                name: 'Legendary Potion',
+                icon: '🧪',
+                iconColor: '#e91e63',
+                coins: '1,200 - 2,000',
+                skinPieces: 'x12',
+                specialPieces: '3',
+                specialText: 'x3 Special'
+            },
+            'potion_mystical': {
+                name: 'Mystical Potion',
+                icon: '🧪',
+                iconColor: '#ffb300',
+                coins: '3,000 - 5,500',
+                skinPieces: 'x24',
+                specialPieces: '6',
+                specialText: 'x6 Special'
+            }
+        };
+
+        var p = detailsMap[pType] || detailsMap['potion_epic'];
+        var old = document.getElementById('lm-potion-detail-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-potion-detail-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100005';
+
+        var specialItemHtml = p.specialText ? `
+            <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06); text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">At least:</div>
+                <div style="font-size: 16px; font-weight: 900; color: #f57f17; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #ffb300; background: #fff8e1;"></span>
+                    <span>${p.specialText}</span>
+                </div>
+            </div>
+        ` : '';
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 440px; padding: 24px; position: relative; box-shadow: 0 12px 48px rgba(0,0,0,0.5); text-align: center;">
+                <button onclick="document.getElementById('lm-potion-detail-modal').remove();" style="position: absolute; right: 16px; top: 16px; background: none; border: none; font-size: 22px; color: #aaa; cursor: pointer; font-weight: 900;">&times;</button>
+                
+                <div style="font-size: 22px; font-weight: 900; color: #333; margin-bottom: 16px;">${p.name}</div>
+
+                <div style="background: #f0f3f6; border-radius: 14px; padding: 20px; display: flex; align-items: center; gap: 20px; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="font-size: 80px; text-shadow: 0 6px 16px rgba(0,0,0,0.15); flex: 1;">
+                        ${p.icon}
+                    </div>
+
+                    <div style="flex: 1.2; text-align: center;">
+                        <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06);">
+                            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">Coins</div>
+                            <div style="font-size: 15px; font-weight: 900; color: #f57f17; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <span>💰</span>
+                                <span>${p.coins}</span>
+                            </div>
+                        </div>
+
+                        <div style="background: #ffffff; border-radius: 12px; padding: 10px 16px; margin-bottom: 12px; border: 1px solid rgba(0,0,0,0.06);">
+                            <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px;">Skin Pieces</div>
+                            <div style="font-size: 15px; font-weight: 900; color: #0288d1; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #00bcd4;"></span>
+                                <span>${p.skinPieces}</span>
+                            </div>
+                        </div>
+
+                        ${specialItemHtml}
+
+                        <div style="font-size: 11px; font-weight: 600; color: #999; margin-top: 4px;">and more!</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 15px; font-weight: 800; color: #555;">Opens immediately</div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    };
+
     window.showPremiumPotionsModal = function() {
         injectStyles();
         var t = getTheme();
@@ -1291,7 +1395,7 @@
         potionsData.forEach(function(p) {
             cardsHtml += `
                 <div style="flex: 1; background: #f5f7fa; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                    <button onclick="if(window.showPotionsHelpModal) window.showPotionsHelpModal('rewards');" style="position: absolute; right: 10px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Potion Info">?</button>
+                    <button onclick="if(window.showPotionDetailModal) window.showPotionDetailModal('${p.id}'); else if(window.showPotionsHelpModal) window.showPotionsHelpModal('rewards');" style="position: absolute; right: 10px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Potion Info">?</button>
                     
                     <div>
                         <div style="font-size: 16px; font-weight: 900; color: #444; margin-bottom: 14px; letter-spacing: 0.3px;">${p.name}</div>
