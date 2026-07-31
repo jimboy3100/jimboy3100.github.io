@@ -1134,7 +1134,8 @@
                 badge: '',
                 action: function() {
                     document.getElementById('lm-main-shop-modal').remove();
-                    if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
+                    if (typeof window.showPremiumPotionsModal === 'function') window.showPremiumPotionsModal();
+                    else if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
                 }
             },
             {
@@ -1228,9 +1229,137 @@
         document.body.appendChild(modal);
     };
 
+    window.showPremiumPotionsModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-premium-potions-modal');
+        if (old) old.remove();
+
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-premium-potions-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var potionsData = [
+            {
+                id: 'potion_superior',
+                name: 'Superior',
+                dnaCost: 60,
+                color: '#4caf50',
+                bgGradient: 'linear-gradient(180deg, #f0f7ed 0%, #e8f5e9 100%)',
+                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
+                flaskIcon: '🧪',
+                flaskColor: '#4caf50'
+            },
+            {
+                id: 'potion_epic',
+                name: 'Epic',
+                dnaCost: 120,
+                color: '#00bcd4',
+                bgGradient: 'linear-gradient(180deg, #e0f7fa 0%, #b2ebf2 100%)',
+                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
+                flaskIcon: '🧪',
+                flaskColor: '#00bcd4'
+            },
+            {
+                id: 'potion_legendary',
+                name: 'Legendary',
+                dnaCost: 350,
+                color: '#e91e63',
+                bgGradient: 'linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)',
+                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
+                flaskIcon: '🧪',
+                flaskColor: '#e91e63'
+            },
+            {
+                id: 'potion_mystical',
+                name: 'Mystical',
+                dnaCost: 750,
+                color: '#ffb300',
+                bgGradient: 'linear-gradient(180deg, #fff8e1 0%, #ffecb3 100%)',
+                btnGradient: 'linear-gradient(180deg, #7cb342 0%, #689f38 100%)',
+                flaskIcon: '🧪',
+                flaskColor: '#ffb300'
+            }
+        ];
+
+        var cardsHtml = '';
+        potionsData.forEach(function(p) {
+            cardsHtml += `
+                <div style="flex: 1; background: #f5f7fa; border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px 12px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                    <button onclick="if(window.showPotionsHelpModal) window.showPotionsHelpModal('rewards');" style="position: absolute; right: 10px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" title="Potion Info">?</button>
+                    
+                    <div>
+                        <div style="font-size: 16px; font-weight: 900; color: #444; margin-bottom: 14px; letter-spacing: 0.3px;">${p.name}</div>
+                        <div style="font-size: 56px; margin: 10px 0; text-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                            ${p.flaskIcon}
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="window.buyAndOpenPremiumPotion('${p.id}', ${p.dnaCost});" style="background: ${p.btnGradient}; color: #fff; font-weight: 900; font-size: 15px; padding: 10px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>${p.dnaCost}</span>
+                        <span style="font-size: 14px;">🧬</span>
+                    </button>
+                </div>
+            `;
+        });
+
+        window.buyAndOpenPremiumPotion = function(productId, cost) {
+            if (dnaBalance < cost) {
+                if (window.toastr) window.toastr.warning('<b>[SHOP]:</b> Not enough DNA to purchase ' + productId);
+                return;
+            }
+            if (typeof window.openPotionForProduct === 'function') {
+                window.openPotionForProduct(productId);
+            } else if (window.application && typeof window.application.openPotionForProduct === 'function') {
+                window.application.openPotionForProduct(productId);
+            } else {
+                if (window.toastr) window.toastr.success('<b>[SHOP]:</b> Opened ' + productId + '! (-' + cost + ' DNA)');
+            }
+        };
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 720px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button onclick="document.getElementById('lm-premium-potions-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
+                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Premium Potions</div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
+                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
+                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
+                            <span>💰 ${coinsBalance.toLocaleString()}</span>
+                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <button onclick="document.getElementById('lm-premium-potions-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
+                    </div>
+                </div>
+
+                <div style="margin: 16px 20px 0 20px; background: #eef2f5; border-radius: 10px; padding: 12px; text-align: center; font-size: 13px; font-weight: 700; color: #555;">
+                    Potions purchased in the shop will open immediately!
+                </div>
+
+                <div style="padding: 20px; display: flex; gap: 14px; background: #ffffff;">
+                    ${cardsHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    };
+
     window.openShop = function(cat) {
         if (cat === 'potions' || cat === 'flasks') {
-            if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
+            if (typeof window.showPremiumPotionsModal === 'function') window.showPremiumPotionsModal();
+            else if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
         } else if (cat === 'coins' || cat === 'deals') {
             if (typeof window.showDailyDealsCarouselModal === 'function') window.showDailyDealsCarouselModal(0);
         } else if (cat === 'skins') {
