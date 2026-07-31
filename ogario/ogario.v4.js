@@ -15354,7 +15354,7 @@ function thelegendmodproject() {
                     window.testobjectsOpcode103 = data;
                     //LM["accessTokenSent"] = !![];
                     this.accessTokenSent = true;
-                    if (window.master.context === 'facebook') { //Yahnych
+                    if (window.master && window.master.context === 'facebook') { //Yahnych
                         this.sendFBIDS(window.master.fbUsers);
                     }
                     break;
@@ -16703,7 +16703,7 @@ function thelegendmodproject() {
             })
         },
         autobrew() {
-            if (defaultmapsettings.autobrewing && (window.master.context === "facebook" || window.master.context === "google")) {
+            if (defaultmapsettings.autobrewing && window.master && (window.master.context === "facebook" || window.master.context === "google")) {
                 for (var potion of Object.values(LM.user.potionsStatus)) {
                     if (potion.status === 1) {
                         window.brewPotion(potion.slot);
@@ -16713,7 +16713,7 @@ function thelegendmodproject() {
             }
         },
         getPotionForOpen() {
-            if ((window.master.context === "facebook" || window.master.context === "google")) {
+            if (window.master && (window.master.context === "facebook" || window.master.context === "google")) {
                 for (var potion of Object.values(LM.user.potionsStatus)) {
                     if (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now())) {
                         window.openPotion(potion.slot);
@@ -16781,7 +16781,7 @@ function thelegendmodproject() {
         getImg(url, name, callback) {
             const app = this;
             var img = new Image();
-            var isCorsBlocked = url.includes('imgur.com');
+            var isCorsBlocked = url.includes('imgur.com') || url.includes('legendmod.ml') || url.includes('agario.miniclippt.com');
             if (isCorsBlocked) {
                 img.referrerPolicy = 'no-referrer';
             } else {
@@ -23339,7 +23339,7 @@ Most cells eaten   : ${mostCellsEaten}
             LM.sendBuffer(new DataView(data.buffer));
         }
     };
-    window.master.getClientVersion();
+    if (window.master && window.master.getClientVersion) window.master.getClientVersion();
     Settings.init();
     application.init();
     application.getDefaultSettings();
@@ -23347,7 +23347,7 @@ Most cells eaten   : ${mostCellsEaten}
     hotkeysSetup.init();
     LM.init();
     drawRender.init();
-    window.master.init();
+    if (window.master && window.master.init) window.master.init();
     ogarhusettings();
     ogarhusettingsImportExportMobile();
     setGUIEvents();
