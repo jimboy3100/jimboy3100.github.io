@@ -549,6 +549,17 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         console.log('[LW] Login notification: ' + provider + ' / ' + displayName);
     };
 
+    /* User-initiated manual logout tracking */
+    window._isUserManualLogout = false;
+    window._isChangingToPrivateServer = false;
+    window._loginRetryCount = 0;
+    var MAX_LOGIN_RETRIES = 3;
+
+    $(document).on('click', '#logoutbtn, .btn-logout, [data-itr="page_logout"]', function() {
+        console.log('[LW AUTH] User manually clicked Logout button');
+        window._isUserManualLogout = true;
+    });
+
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
@@ -556,14 +567,85 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             console.log('[LW AUTH] logout() blocked — reconnecting');
             return;
         }
+
+        // 1. If logout is manual by user or due to switching to a private server, perform clean logout immediately
+        if (window._isUserManualLogout || window._isChangingToPrivateServer) {
+            console.log('[LW AUTH] Intended logout (user manual or private server switch)');
+            window._isUserManualLogout = false;
+            window._isChangingToPrivateServer = false;
+            window._loginRetryCount = 0;
+            window._lw_loginNotifShown = false;
+            window._lwResetAuthState();
+            var hello = document.getElementById('helloContainer');
+            if (hello) hello.removeAttribute('data-logged-in');
+            var slc = document.getElementById('socialLoginContainer');
+            if (slc) slc.style.display = '';
+            console.log('[LW AUTH] Logout — all login state cleared');
+            if (_origLogout) _origLogout.apply(this, arguments);
+            return;
+        }
+
+        // 2. Unexpected logout! Try auto-login retries up to MAX_LOGIN_RETRIES times
+        if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
+            window._loginRetryCount++;
+            window._lwReconnecting = true;
+            console.warn('[LW AUTH] Unexpected logout detected! Attempting auto-login retry ' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + '...');
+
+            if (window.toastr) {
+                toastr.warning('<b>[AUTH]:</b> Unexpected disconnect detected. Attempting auto-login (' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + ')...');
+            }
+
+            var tryRelogin = function() {
+                var reloginAttempted = false;
+
+                if (typeof window.gplusRelogin === 'function') {
+                    try {
+                        window.gplusRelogin(function() { reloginAttempted = true; });
+                    } catch(e) {}
+                }
+                if (!reloginAttempted && typeof window.facebookRelogin === 'function') {
+                    try {
+                        window.facebookRelogin(function() { reloginAttempted = true; });
+                    } catch(e) {}
+                }
+                if (!reloginAttempted && window.master && typeof window.master.reconnect === 'function') {
+                    try { window.master.reconnect(); reloginAttempted = true; } catch(e) {}
+                }
+
+                setTimeout(function() {
+                    var isLoggedInNow = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
+                        (window.master && (window.master.context === 'facebook' || window.master.context === 'google')) ||
+                        !!(window.application && window.application.user && window.application.user.userId);
+
+                    if (isLoggedInNow) {
+                        console.log('[LW AUTH] Auto-login retry ' + window._loginRetryCount + ' succeeded!');
+                        if (window.toastr) toastr.success('<b>[AUTH]:</b> Re-authenticated successfully!');
+                        window._lwReconnecting = false;
+                        window._loginRetryCount = 0;
+                    } else if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
+                        window._lwReconnecting = false;
+                        window.logout(); // trigger next retry iteration
+                    } else {
+                        console.error('[LW AUTH] All ' + MAX_LOGIN_RETRIES + ' auto-login retries failed. Proceeding with full logout.');
+                        window._lwReconnecting = false;
+                        window._loginRetryCount = 0;
+                        window._isUserManualLogout = true;
+                        window.logout();
+                    }
+                }, 1500);
+            };
+
+            setTimeout(tryRelogin, 1000 * window._loginRetryCount);
+            return;
+        }
+
+        window._loginRetryCount = 0;
         window._lw_loginNotifShown = false;
         window._lwResetAuthState();
-        /* Reset UI */
-        var hello = document.getElementById('helloContainer');
-        if (hello) hello.removeAttribute('data-logged-in');
-        var slc = document.getElementById('socialLoginContainer');
-        if (slc) slc.style.display = '';
-        console.log('[LW AUTH] Logout — all login state cleared');
+        var hello2 = document.getElementById('helloContainer');
+        if (hello2) hello2.removeAttribute('data-logged-in');
+        var slc2 = document.getElementById('socialLoginContainer');
+        if (slc2) slc2.style.display = '';
         if (_origLogout) _origLogout.apply(this, arguments);
     };
 
@@ -13004,6 +13086,7 @@ function thelegendmodproject() {
                     (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
                 if (_isLoggedIn && typeof window.logout === 'function') {
                     console.log('[LW] Auto-logout before joining non-EL server, will reconnect in 500ms');
+                    window._isChangingToPrivateServer = true;
                     window.logout();
                     var self = this;
                     setTimeout(function () {
