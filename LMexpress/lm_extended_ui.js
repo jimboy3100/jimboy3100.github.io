@@ -236,24 +236,36 @@
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
         // Header Card Data configuration
+        // Try to read top 3 prizes from GameConfiguration
+        var _getPrizeSummary = function(leagueId) {
+            var cfg = window.LeaguesPrizesConfig;
+            if (!cfg || !cfg.length) return null;
+            var filtered = cfg.filter(function(p) { return p.leagueName === leagueId; });
+            if (!filtered.length) return null;
+            // Sort by positionFrom, take top 3
+            filtered.sort(function(a, b) { return a.positionFrom - b.positionFrom; });
+            var top3 = filtered.slice(0, 3);
+            return top3.map(function(p, i) { return (i+1) + '. ' + (p.rewardAmount || '?'); }).join(' &nbsp; ');
+        };
+
         var headerConfig = {
             1: {
                 title: data.leagueName || myTier.name,
                 gradient: myTier.gradient,
                 icon: '⭐',
-                prizes: '1. 140 &nbsp; 2. 120 &nbsp; 3. 110'
+                prizes: _getPrizeSummary(myTier.id) || '🏆 🏆 🏆'
             },
             2: {
                 title: 'Country (' + userCountry.toUpperCase() + ')',
                 gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
                 icon: '<span class="flag-icon flag-icon-' + userCountry.toLowerCase() + '" style="border-radius: 3px;"></span>',
-                prizes: '1. 200 &nbsp; 2. 150 &nbsp; 3. 100'
+                prizes: _getPrizeSummary('country') || '🏆 🏆 🏆'
             },
             3: {
                 title: 'World',
                 gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
                 icon: '🌎',
-                prizes: '1. 1000 &nbsp; 2. 800 &nbsp; 3. 500'
+                prizes: _getPrizeSummary('world') || '🏆 🏆 🏆'
             }
         };
 
@@ -269,7 +281,7 @@
                     </div>
                     <div>
                         <div style="font-size: 18px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">${cfg.title}</div>
-                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">Ends in: 3d 5h</div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">Weekly League</div>
                     </div>
                 </div>
 
@@ -295,54 +307,15 @@
             <div id="lm-leagues-list-container">
         `;
 
-        // Process RecordPlayers / Protocol League Entries or Default Category Standings
-        var defaultTabEntries = {
-            1: [ // My League (Kraken League Top 10)
-                { rank: 1, displayName: '⚡ Apex Predator', level: 100, country: 'us', score: 1420, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 2, displayName: '🔥 KrakenMaster', level: 98, country: 'us', score: 1180, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 3, displayName: '☠️ Viper_Solo', level: 96, country: 'us', score: 950, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 4, displayName: '🛡️ ShadowHunter', level: 95, country: 'us', score: 820, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 5, displayName: '👑 LegendMod_Pro', level: 94, country: 'us', score: 710, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 6, displayName: '👻 Ghost_Rider', level: 93, country: 'us', score: 650, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 7, displayName: '❄️ FrostBite', level: 92, country: 'us', score: 580, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 8, displayName: '⚡ Storm_Rage', level: 91, country: 'us', score: 510, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 9, displayName: '🔮 Phantom_X', level: 90, country: 'us', score: 440, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 10, displayName: '💥 Blaze_It', level: 90, country: 'us', score: 390, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-            ],
-            2: [ // Country League (US Standings Top 10)
-                { rank: 1, displayName: '🦅 USA_Master', level: 100, country: 'us', score: 2450, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 2, displayName: '🎯 EagleEye_US', level: 99, country: 'us', score: 2100, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 3, displayName: '🗽 Liberty_King', level: 97, country: 'us', score: 1890, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 4, displayName: '⭐️ Patriot_Solo', level: 96, country: 'us', score: 1650, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 5, displayName: '🎆 StarsStripes', level: 95, country: 'us', score: 1400, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 6, displayName: '🛩️ Maverick_99', level: 93, country: 'us', score: 1220, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 7, displayName: '🤠 Ranger_Danger', level: 92, country: 'us', score: 1050, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 8, displayName: '⚖️ Justice_US', level: 91, country: 'us', score: 910, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 9, displayName: '🏆 Victory_Wave', level: 90, country: 'us', score: 820, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 10, displayName: '🗽 Freedom_Fighter', level: 90, country: 'us', score: 730, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-            ],
-            3: [ // World League (Global Top 10)
-                { rank: 1, displayName: '🇧🇷 SoloKing_BR', level: 100, country: 'br', score: 5800, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 2, displayName: '🇯🇵 Sakura_JP', level: 100, country: 'jp', score: 5100, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 3, displayName: '🇩🇪 Jaeger_DE', level: 99, country: 'de', score: 4600, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 4, displayName: '🇫🇷 LePrince_FR', level: 98, country: 'fr', score: 4150, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 5, displayName: '🇹🇷 Sultan_TR', level: 97, country: 'tr', score: 3800, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 6, displayName: '🇰🇷 Alpha_KR', level: 96, country: 'kr', score: 3500, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 7, displayName: '🇪🇸 Matador_ES', level: 95, country: 'es', score: 3200, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 8, displayName: '🇬🇧 Crown_UK', level: 94, country: 'gb', score: 2950, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 9, displayName: '🇷🇺 Legend_RU', level: 93, country: 'ru', score: 2700, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
-                { rank: 10, displayName: '🇨🇦 Polaris_CA', level: 92, country: 'ca', score: 2480, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
-            ]
-        };
-
-        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers && window.RecordPlayers.length ? window.RecordPlayers : (defaultTabEntries[tabType] || defaultTabEntries[1]));
+        // Use real server data instead of hardcoded fake entries
+        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers && window.RecordPlayers.length ? window.RecordPlayers : null);
         var currentUser = (window.application && window.application.user) || {};
-        var currentUserName = currentUser.displayName || window.agarioProfileName || 'Dimitrios';
+        var currentUserName = currentUser.displayName || window.agarioProfileName || 'You';
         var currentUserLevel = currentUser.level || userLevel;
         var currentUserAvatar = currentUser.picture || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
         var currentUserCountry = userCountry;
-        var currentUserRank = tabType === 1 ? '#148' : (tabType === 2 ? '#5121' : '#5164');
-        var currentUserScore = 4;
+        var currentUserRank = (data && data.userPosition !== undefined) ? ('#' + data.userPosition) : '?';
+        var currentUserScore = (data && data.userScore !== undefined) ? data.userScore : ((data && data.userWinnings !== undefined) ? data.userWinnings : 0);
 
         var validCount = 0;
         var userFoundInList = false;
@@ -389,6 +362,14 @@
                     </div>
                 `;
             });
+        } else {
+            // No server data yet — show loading message matching original agar.io
+            html += `
+                <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                    Please wait...
+                </div>
+            `;
         }
 
         // Highlight logged in user at their current rank position
