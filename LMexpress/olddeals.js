@@ -190,7 +190,7 @@ function SpecialDeals() {
             // Header
             '<div id="CloseSpecialDeals2" class="modal-header">' +
             '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-            '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true">&#x2753;</span><span class="sr-only">Help</span></button>' +
+            '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
 
