@@ -2197,8 +2197,13 @@
 
         var potionsContainer = $('#potions, .potions-container');
         if (potionsContainer.length && !document.getElementById('lm-potions-help-btn')) {
-            var helpBtn = $('<button id="lm-potions-help-btn" style="position: absolute; right: -28px; bottom: 8px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: 2px solid #fff; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10; line-height: 1; text-align: center; padding: 0;" title="Potions Help">?</button>');
-            helpBtn.on('click', function(e) { e.preventDefault(); window.showPotionsHelpModal('rewards'); });
+            var helpBtn = $('<button id="lm-potions-help-btn" onclick="if(typeof window.showPotionsHelpModal===\'function\'){window.showPotionsHelpModal(\'rewards\');}else if(typeof window.showPremiumPotionsModal===\'function\'){window.showPremiumPotionsModal();} return false;" style="position: absolute; right: 4px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: 2px solid #fff; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); z-index: 999; line-height: 1; text-align: center; padding: 0; pointer-events: auto;" title="Potions Help">?</button>');
+            helpBtn.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal('rewards');
+                else if (typeof window.showPremiumPotionsModal === 'function') window.showPremiumPotionsModal();
+            });
             potionsContainer.css('position', 'relative').append(helpBtn);
         }
 
