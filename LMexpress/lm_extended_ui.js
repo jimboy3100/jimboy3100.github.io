@@ -388,30 +388,30 @@
         }, 1200);
     };
 
-    // Inject "Claim All" and "Leagues" and "Friends" buttons into menu header
+    // Inject "Claim All", "Leagues", and "Friends" buttons into Profile Tab panel
     function initMenuButtons() {
         if (document.getElementById('lm-claim-all-btn')) return;
 
-        var targetContainer = $('#main-menu #play-outer, .side-buttons, #top-nav-buttons').first();
-        if (!targetContainer.length) targetContainer = $('body');
+        var targetContainer = $('.agario-profile-panel, #leftPanel .agario-panel, #profile').first();
+        if (!targetContainer.length) return;
 
         var t = getTheme();
         var btnGroup = document.createElement('div');
         btnGroup.id = 'lm-extended-menu-btns';
-        btnGroup.style.cssText = 'display: flex; gap: 8px; margin: 10px 0; justify-content: center; flex-wrap: wrap; z-index: 999;';
+        btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0 6px 0; justify-content: space-between; width: 100%; box-sizing: border-box;';
         btnGroup.innerHTML = `
-            <button id="lm-claim-all-btn" class="btn" style="background: linear-gradient(135deg, ${t.b1}, ${t.b2}); color: ${t.btc}; font-weight: 700; border-radius: 8px; border: none; padding: 8px 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" onclick="window.claimAllRewardsAndGifts();">
+            <button id="lm-claim-all-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b2}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.claimAllRewardsAndGifts();">
                 🎁 Claim All
             </button>
-            <button id="lm-leagues-btn" class="btn" style="background: linear-gradient(135deg, ${t.b3}, ${t.b4}); color: ${t.btc}; font-weight: 700; border-radius: 8px; border: none; padding: 8px 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" onclick="window.showLeaguesModal();">
+            <button id="lm-leagues-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b3}, ${t.b4}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showLeaguesModal();">
                 🏆 Leagues
             </button>
-            <button id="lm-friends-btn" class="btn" style="background: linear-gradient(135deg, ${t.b1}, ${t.b3}); color: ${t.btc}; font-weight: 700; border-radius: 8px; border: none; padding: 8px 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" onclick="window.showFriendsModal();">
+            <button id="lm-friends-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b3}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showFriendsModal();">
                 👥 Friends
             </button>
         `;
 
-        targetContainer.prepend(btnGroup);
+        targetContainer.append(btnGroup);
     }
 
     // ─── Component 5: 👤 Player Profile Stats Modal ───
