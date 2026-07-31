@@ -558,31 +558,6 @@
             }
         }
 
-        // Fallback to hardcoded data
-        if (prizeRows.length === 0) {
-            var fallbackData = {
-                1: [
-                    { rank: '1st place', prize: '140 🏆' },
-                    { rank: '2nd place', prize: '120 🏆' },
-                    { rank: '3rd place', prize: '110 🏆' },
-                    { rank: '4th - 10th', prize: '100 🏆' }
-                ],
-                2: [
-                    { rank: '1st place', prize: '200 🏆' },
-                    { rank: '2nd place', prize: '150 🏆' },
-                    { rank: '3rd place', prize: '100 🏆' },
-                    { rank: '4th - 10th', prize: '80 🏆' }
-                ],
-                3: [
-                    { rank: '1st place', prize: '1000 🏆' },
-                    { rank: '2nd place', prize: '800 🏆' },
-                    { rank: '3rd place', prize: '500 🏆' },
-                    { rank: '4th - 10th', prize: '300 🏆' }
-                ]
-            };
-            prizeRows = fallbackData[currentTab] || fallbackData[1];
-        }
-
         var old = document.getElementById('lm-prizes-modal');
         if (old) old.remove();
 
@@ -593,14 +568,18 @@
         modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
 
         var rowsHtml = '';
-        prizeRows.forEach(function(row) {
-            rowsHtml += `
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
-                    <div style="font-weight: 800; font-size: 14px; color: ${t.tc}; min-width: 160px;">${row.rank}</div>
-                    <div style="font-weight: 800; font-size: 16px; color: #ffd700; display: flex; align-items: center; gap: 6px;">${row.prize}</div>
-                </div>
-            `;
-        });
+        if (prizeRows.length > 0) {
+            prizeRows.forEach(function(row) {
+                rowsHtml += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-weight: 800; font-size: 14px; color: ${t.tc}; min-width: 160px;">${row.rank}</div>
+                        <div style="font-weight: 800; font-size: 16px; color: #ffd700; display: flex; align-items: center; gap: 6px;">${row.prize}</div>
+                    </div>
+                `;
+            });
+        } else {
+            rowsHtml = `<div style="text-align: center; color: ${t.tc2}; padding: 30px; font-weight: 600; font-size: 13px;">Fetching league prize configuration from server...</div>`;
+        }
 
         modal.innerHTML = `
             <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 480px;">
