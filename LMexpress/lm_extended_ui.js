@@ -496,6 +496,34 @@
         $('.agario-exp-bar .progress-bar').css('width', percent + '%');
         $('.agario-exp-bar .progress-bar-text').text(xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP (' + percent + '%)');
         $('.progress-bar-star').text(level);
+
+        // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
+        var potions = appUser.potions || window.lastPotionsData || [];
+        if (!window.LM) window.LM = {};
+        if (!window.LM.user) window.LM.user = {};
+        if (!window.LM.user.potionsStatus) window.LM.user.potionsStatus = {};
+
+        for (var s = 1; s <= 3; s++) {
+            var pData = potions[s - 1] || null;
+            var slotEl = $('#slot-' + s + ', #potion-slot-' + s + ', .potion-slot:nth-child(' + s + ')');
+            if (slotEl.length) {
+                if (pData) {
+                    var status = pData.status || 1; // 1 = unbrewed, 2 = brewing, 3 = ready
+                    window.LM.user.potionsStatus['slot-' + s] = { slot: s, status: status, expires: pData.expiresInSeconds ? Date.now() + (pData.expiresInSeconds * 1000) : 0 };
+
+                    if (status === 3 || (status === 2 && (pData.expiresInSeconds || 0) <= 0)) {
+                        slotEl.html('<div style="color: #00ff88; font-weight: 800; font-size: 11px; cursor: pointer;" onclick="if(window.openPotion) window.openPotion(' + s + ');">✨ OPEN</div>');
+                    } else if (status === 2) {
+                        var mins = Math.floor((pData.expiresInSeconds || 0) / 60);
+                        var secs = (pData.expiresInSeconds || 0) % 60;
+                        var timeStr = mins + ':' + (secs < 10 ? '0' : '') + secs;
+                        slotEl.html('<div style="color: #ffaa00; font-weight: 700; font-size: 10px; cursor: pointer;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct(\'' + (pData.productId || '') + '\');">⏱️ ' + timeStr + '</div>');
+                    } else {
+                        slotEl.html('<div style="color: #01d9cc; font-weight: 700; font-size: 11px; cursor: pointer;" onclick="if(window.brewPotion) window.brewPotion(' + s + ');">🧪 BREW</div>');
+                    }
+                }
+            }
+        }
     };
 
     window.initBoostDropdown = function() {
