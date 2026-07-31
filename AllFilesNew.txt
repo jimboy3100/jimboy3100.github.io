@@ -22346,73 +22346,241 @@ Most cells eaten   : ${mostCellsEaten}
                 this._textCanvas = document.createElement('canvas');
                 this._textCtx = this._textCanvas.getContext('2d');
 
-                // ===== WebGL2 Solid Ring Shader (stroke outlines matching Canvas2D ctx.stroke) =====
+                // ===== WebGL2 Solid Ring Shader (per-instance Canvas2D-equivalent stroke width) =====
                 var solidRingVs = `#version 300 es
                 in vec2 a_unitPos;
                 in vec2 a_cellPos;
                 in float a_radius;
                 in vec4 a_color;
+                in float a_thickness;
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
                 out vec4 v_color;
                 out vec2 v_unitPos;
+                out float v_thickness;
                 void main() {
                     v_color = a_color;
                     v_unitPos = a_unitPos;
+                    v_thickness = a_thickness;
                     vec2 worldPos = a_cellPos + a_unitPos * a_radius;
                     vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
                     gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
                 }`;
+
                 var solidRingFs = `#version 300 es
                 precision highp float;
                 in vec4 v_color;
                 in vec2 v_unitPos;
-                uniform float u_ringThickness; // 0..1 fraction of radius
+                in float v_thickness;
                 out vec4 fragColor;
                 void main() {
-                    float distSq = dot(v_unitPos, v_unitPos);
-                    if (distSq > 1.0) discard;
-                    float dist = sqrt(distSq);
-                    float inner = 1.0 - u_ringThickness;
-                    // Smooth ring band between inner and 1.0
-                    float halfPx = 0.015; // smoothing width
-                    float ringAlpha = smoothstep(inner - halfPx, inner + halfPx, dist)
-                                    * smoothstep(1.0 + halfPx, 1.0 - halfPx, dist);
-                    if (ringAlpha < 0.01) discard;
-                    fragColor = vec4(v_color.rgb, v_color.a * ringAlpha);
+                    float dist = length(v_unitPos);
+                    float aa = max(fwidth(dist), 0.0005);
+                    float inner = max(0.0, 1.0 - v_thickness);
+
+                    float outerAlpha =
+                        1.0 -
+                        smoothstep(
+                            1.0 - aa,
+                            1.0 + aa,
+                            dist
+                        );
+
+                    float innerAlpha =
+                        smoothstep(
+                            inner - aa,
+                            inner + aa,
+                            dist
+                        );
+
+                    float ringAlpha =
+                        outerAlpha *
+                        innerAlpha;
+
+                    if (ringAlpha < 0.001) {
+                        discard;
+                    }
+
+                    fragColor =
+                        vec4(
+                            v_color.rgb,
+                            v_color.a * ringAlpha
+                        );
                 }`;
-                var solidRingProg = createAndLinkProgram(gl, solidRingVs, solidRingFs);
+
+                var solidRingProg =
+                    createAndLinkProgram(
+                        gl,
+                        solidRingVs,
+                        solidRingFs
+                    );
+
                 if (solidRingProg) {
-                    this.glSolidRingProgram = solidRingProg;
-                    this.u_solidRing_viewCenter = gl.getUniformLocation(solidRingProg, 'u_viewCenter');
-                    this.u_solidRing_viewScale = gl.getUniformLocation(solidRingProg, 'u_viewScale');
-                    this.u_solidRing_thickness = gl.getUniformLocation(solidRingProg, 'u_ringThickness');
+                    this.glSolidRingProgram =
+                        solidRingProg;
 
-                    this.glSolidRingVAO = gl.createVertexArray();
-                    gl.bindVertexArray(this.glSolidRingVAO);
-                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
-                    var a_sr_unit = gl.getAttribLocation(solidRingProg, 'a_unitPos');
-                    gl.enableVertexAttribArray(a_sr_unit);
-                    gl.vertexAttribPointer(a_sr_unit, 2, gl.FLOAT, false, 0, 0);
+                    this.u_solidRing_viewCenter =
+                        gl.getUniformLocation(
+                            solidRingProg,
+                            "u_viewCenter"
+                        );
 
-                    this.glSolidRingInstanceVBO = gl.createBuffer();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glSolidRingInstanceVBO);
-                    gl.bufferData(gl.ARRAY_BUFFER, 5000 * 7 * 4, gl.DYNAMIC_DRAW);
-                    var srStride = 7 * 4;
-                    var a_sr_pos = gl.getAttribLocation(solidRingProg, 'a_cellPos');
-                    gl.enableVertexAttribArray(a_sr_pos);
-                    gl.vertexAttribPointer(a_sr_pos, 2, gl.FLOAT, false, srStride, 0);
-                    gl.vertexAttribDivisor(a_sr_pos, 1);
-                    var a_sr_r = gl.getAttribLocation(solidRingProg, 'a_radius');
-                    gl.enableVertexAttribArray(a_sr_r);
-                    gl.vertexAttribPointer(a_sr_r, 1, gl.FLOAT, false, srStride, 2 * 4);
-                    gl.vertexAttribDivisor(a_sr_r, 1);
-                    var a_sr_col = gl.getAttribLocation(solidRingProg, 'a_color');
-                    gl.enableVertexAttribArray(a_sr_col);
-                    gl.vertexAttribPointer(a_sr_col, 4, gl.FLOAT, false, srStride, 3 * 4);
-                    gl.vertexAttribDivisor(a_sr_col, 1);
+                    this.u_solidRing_viewScale =
+                        gl.getUniformLocation(
+                            solidRingProg,
+                            "u_viewScale"
+                        );
+
+                    this.glSolidRingVAO =
+                        gl.createVertexArray();
+
+                    gl.bindVertexArray(
+                        this.glSolidRingVAO
+                    );
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        quadVBO
+                    );
+
+                    var a_sr_unit =
+                        gl.getAttribLocation(
+                            solidRingProg,
+                            "a_unitPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_sr_unit
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_sr_unit,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        0,
+                        0
+                    );
+
+                    this.glSolidRingInstanceVBO =
+                        gl.createBuffer();
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this.glSolidRingInstanceVBO
+                    );
+
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        5000 * 8 * 4,
+                        gl.DYNAMIC_DRAW
+                    );
+
+                    var srStride =
+                        8 * 4;
+
+                    var a_sr_pos =
+                        gl.getAttribLocation(
+                            solidRingProg,
+                            "a_cellPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_sr_pos
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_sr_pos,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        srStride,
+                        0
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_sr_pos,
+                        1
+                    );
+
+                    var a_sr_r =
+                        gl.getAttribLocation(
+                            solidRingProg,
+                            "a_radius"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_sr_r
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_sr_r,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        srStride,
+                        2 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_sr_r,
+                        1
+                    );
+
+                    var a_sr_col =
+                        gl.getAttribLocation(
+                            solidRingProg,
+                            "a_color"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_sr_col
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_sr_col,
+                        4,
+                        gl.FLOAT,
+                        false,
+                        srStride,
+                        3 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_sr_col,
+                        1
+                    );
+
+                    var a_sr_thickness =
+                        gl.getAttribLocation(
+                            solidRingProg,
+                            "a_thickness"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_sr_thickness
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_sr_thickness,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        srStride,
+                        7 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_sr_thickness,
+                        1
+                    );
+
                     gl.bindVertexArray(null);
-                    this.glSolidRingData = new Float32Array(5000 * 7);
+
+                    this.glSolidRingData =
+                        new Float32Array(
+                            5000 * 8
+                        );
                 }
 
                 // ===== WebGL2 Dashed Ring Shader (for sdsplitRange) =====
@@ -22515,7 +22683,7 @@ Most cells eaten   : ${mostCellsEaten}
                     float edgeAlpha = smoothstep(1.0, 0.85, distSq);
                     // Linear gradient: dot product with gradient direction
                     float gradT = dot(v_unitPos, v_gradDir) * 0.5 + 0.5;
-                    float gradAlpha = 1.0 - gradT;
+                    float gradAlpha = gradT;
                     fragColor = vec4(v_color.rgb, v_color.a * edgeAlpha * gradAlpha);
                 }`;
                 var bubbleProg = createAndLinkProgram(gl, bubbleVs, bubbleFs);
@@ -22556,69 +22724,710 @@ Most cells eaten   : ${mostCellsEaten}
                     this.glBubbleData = new Float32Array(2000 * 9);
                 }
 
-                // ===== WebGL2 Line Shader (for drawCursorTracking) =====
+                // ===== WebGL2 Line Shader (solid and Canvas2D-compatible dashed lines) =====
                 var lineVs = `#version 300 es
                 in vec2 a_unitPos;
                 in vec2 a_startPos;
                 in vec2 a_endPos;
                 in vec4 a_color;
+
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
-                uniform float u_lineWidth;
+                uniform float u_halfLineWidth;
+
                 out vec4 v_color;
+                out float v_lineDistance;
+                out float v_across;
+
                 void main() {
                     v_color = a_color;
-                    vec2 dir = a_endPos - a_startPos;
-                    float len = length(dir);
-                    vec2 fwd = len > 0.001 ? dir / len : vec2(1.0, 0.0);
-                    vec2 right = vec2(-fwd.y, fwd.x);
-                    // a_unitPos.x: 0..1 along line, a_unitPos.y: -1..1 perpendicular
-                    float t = a_unitPos.x * 0.5 + 0.5;
-                    vec2 worldPos = mix(a_startPos, a_endPos, t) + right * a_unitPos.y * u_lineWidth;
-                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
-                    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
+
+                    vec2 dir =
+                        a_endPos -
+                        a_startPos;
+
+                    float len =
+                        length(dir);
+
+                    vec2 fwd =
+                        len > 0.001
+                            ? dir / len
+                            : vec2(1.0, 0.0);
+
+                    vec2 right =
+                        vec2(
+                            -fwd.y,
+                            fwd.x
+                        );
+
+                    float t =
+                        a_unitPos.x *
+                            0.5 +
+                        0.5;
+
+                    v_lineDistance =
+                        t * len;
+
+                    v_across =
+                        a_unitPos.y;
+
+                    vec2 worldPos =
+                        mix(
+                            a_startPos,
+                            a_endPos,
+                            t
+                        ) +
+                        right *
+                            a_unitPos.y *
+                            u_halfLineWidth;
+
+                    vec2 clipPos =
+                        (
+                            worldPos -
+                            u_viewCenter
+                        ) *
+                        u_viewScale;
+
+                    gl_Position =
+                        vec4(
+                            clipPos.x,
+                            -clipPos.y,
+                            0.0,
+                            1.0
+                        );
                 }`;
+
                 var lineFs = `#version 300 es
                 precision highp float;
+
                 in vec4 v_color;
+                in float v_lineDistance;
+                in float v_across;
+
+                uniform bool u_dashed;
+                uniform float u_dashLength;
+                uniform float u_gapLength;
+
                 out vec4 fragColor;
+
                 void main() {
-                    fragColor = v_color;
+                    if (u_dashed) {
+                        float period =
+                            max(
+                                0.0001,
+                                u_dashLength +
+                                    u_gapLength
+                            );
+
+                        if (
+                            mod(
+                                v_lineDistance,
+                                period
+                            ) >
+                            u_dashLength
+                        ) {
+                            discard;
+                        }
+                    }
+
+                    float edge =
+                        abs(v_across);
+
+                    float aa =
+                        max(
+                            fwidth(edge),
+                            0.0005
+                        );
+
+                    float alpha =
+                        1.0 -
+                        smoothstep(
+                            1.0 - aa,
+                            1.0 + aa,
+                            edge
+                        );
+
+                    if (alpha < 0.001) {
+                        discard;
+                    }
+
+                    fragColor =
+                        vec4(
+                            v_color.rgb,
+                            v_color.a * alpha
+                        );
                 }`;
-                var lineProg = createAndLinkProgram(gl, lineVs, lineFs);
+
+                var lineProg =
+                    createAndLinkProgram(
+                        gl,
+                        lineVs,
+                        lineFs
+                    );
+
                 if (lineProg) {
-                    this.glLineProgram = lineProg;
-                    this.u_line_viewCenter = gl.getUniformLocation(lineProg, 'u_viewCenter');
-                    this.u_line_viewScale = gl.getUniformLocation(lineProg, 'u_viewScale');
-                    this.u_line_lineWidth = gl.getUniformLocation(lineProg, 'u_lineWidth');
+                    this.glLineProgram =
+                        lineProg;
 
-                    // Line quad: 4 vertices forming a quad [-1,-1], [1,-1], [-1,1], [1,1]
-                    this.glLineVAO = gl.createVertexArray();
-                    gl.bindVertexArray(this.glLineVAO);
-                    gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
-                    var a_ln_unit = gl.getAttribLocation(lineProg, 'a_unitPos');
-                    gl.enableVertexAttribArray(a_ln_unit);
-                    gl.vertexAttribPointer(a_ln_unit, 2, gl.FLOAT, false, 0, 0);
+                    this.u_line_viewCenter =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_viewCenter"
+                        );
 
-                    // Instance data: [x1, y1, x2, y2, r, g, b, a] = 8 floats
-                    this.glLineInstanceVBO = gl.createBuffer();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, this.glLineInstanceVBO);
-                    gl.bufferData(gl.ARRAY_BUFFER, 200 * 8 * 4, gl.DYNAMIC_DRAW);
-                    var lnStride = 8 * 4;
-                    var a_ln_start = gl.getAttribLocation(lineProg, 'a_startPos');
-                    gl.enableVertexAttribArray(a_ln_start);
-                    gl.vertexAttribPointer(a_ln_start, 2, gl.FLOAT, false, lnStride, 0);
-                    gl.vertexAttribDivisor(a_ln_start, 1);
-                    var a_ln_end = gl.getAttribLocation(lineProg, 'a_endPos');
-                    gl.enableVertexAttribArray(a_ln_end);
-                    gl.vertexAttribPointer(a_ln_end, 2, gl.FLOAT, false, lnStride, 2 * 4);
-                    gl.vertexAttribDivisor(a_ln_end, 1);
-                    var a_ln_col = gl.getAttribLocation(lineProg, 'a_color');
-                    gl.enableVertexAttribArray(a_ln_col);
-                    gl.vertexAttribPointer(a_ln_col, 4, gl.FLOAT, false, lnStride, 4 * 4);
-                    gl.vertexAttribDivisor(a_ln_col, 1);
+                    this.u_line_viewScale =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_viewScale"
+                        );
+
+                    this.u_line_halfLineWidth =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_halfLineWidth"
+                        );
+
+                    this.u_line_dashed =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_dashed"
+                        );
+
+                    this.u_line_dashLength =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_dashLength"
+                        );
+
+                    this.u_line_gapLength =
+                        gl.getUniformLocation(
+                            lineProg,
+                            "u_gapLength"
+                        );
+
+                    this.glLineVAO =
+                        gl.createVertexArray();
+
+                    gl.bindVertexArray(
+                        this.glLineVAO
+                    );
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        quadVBO
+                    );
+
+                    var a_ln_unit =
+                        gl.getAttribLocation(
+                            lineProg,
+                            "a_unitPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ln_unit
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ln_unit,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        0,
+                        0
+                    );
+
+                    this.glLineInstanceVBO =
+                        gl.createBuffer();
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this.glLineInstanceVBO
+                    );
+
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        200 * 8 * 4,
+                        gl.DYNAMIC_DRAW
+                    );
+
+                    var lnStride =
+                        8 * 4;
+
+                    var a_ln_start =
+                        gl.getAttribLocation(
+                            lineProg,
+                            "a_startPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ln_start
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ln_start,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        lnStride,
+                        0
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ln_start,
+                        1
+                    );
+
+                    var a_ln_end =
+                        gl.getAttribLocation(
+                            lineProg,
+                            "a_endPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ln_end
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ln_end,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        lnStride,
+                        2 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ln_end,
+                        1
+                    );
+
+                    var a_ln_col =
+                        gl.getAttribLocation(
+                            lineProg,
+                            "a_color"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ln_col
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ln_col,
+                        4,
+                        gl.FLOAT,
+                        false,
+                        lnStride,
+                        4 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ln_col,
+                        1
+                    );
+
                     gl.bindVertexArray(null);
-                    this.glLineData = new Float32Array(200 * 8);
+
+                    this.glLineData =
+                        new Float32Array(
+                            200 * 8
+                        );
+                }
+
+                // ===== WebGL2 Arc Ring Shader (merge-progress arcs) =====
+                var arcRingVs = `#version 300 es
+                in vec2 a_unitPos;
+                in vec2 a_cellPos;
+                in float a_radius;
+                in float a_thickness;
+                in float a_startAngle;
+                in float a_endAngle;
+                in vec4 a_color;
+
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+
+                out vec2 v_unitPos;
+                out float v_thickness;
+                out float v_startAngle;
+                out float v_endAngle;
+                out vec4 v_color;
+
+                void main() {
+                    v_unitPos =
+                        a_unitPos;
+
+                    v_thickness =
+                        a_thickness;
+
+                    v_startAngle =
+                        a_startAngle;
+
+                    v_endAngle =
+                        a_endAngle;
+
+                    v_color =
+                        a_color;
+
+                    vec2 worldPos =
+                        a_cellPos +
+                        a_unitPos *
+                            a_radius;
+
+                    vec2 clipPos =
+                        (
+                            worldPos -
+                            u_viewCenter
+                        ) *
+                        u_viewScale;
+
+                    gl_Position =
+                        vec4(
+                            clipPos.x,
+                            -clipPos.y,
+                            0.0,
+                            1.0
+                        );
+                }`;
+
+                var arcRingFs = `#version 300 es
+                precision highp float;
+
+                in vec2 v_unitPos;
+                in float v_thickness;
+                in float v_startAngle;
+                in float v_endAngle;
+                in vec4 v_color;
+
+                out vec4 fragColor;
+
+                const float TWO_PI =
+                    6.28318530717958647692;
+
+                void main() {
+                    float dist =
+                        length(v_unitPos);
+
+                    float aa =
+                        max(
+                            fwidth(dist),
+                            0.0005
+                        );
+
+                    float inner =
+                        max(
+                            0.0,
+                            1.0 -
+                                v_thickness
+                        );
+
+                    float outerAlpha =
+                        1.0 -
+                        smoothstep(
+                            1.0 - aa,
+                            1.0 + aa,
+                            dist
+                        );
+
+                    float innerAlpha =
+                        smoothstep(
+                            inner - aa,
+                            inner + aa,
+                            dist
+                        );
+
+                    float ringAlpha =
+                        outerAlpha *
+                        innerAlpha;
+
+                    if (ringAlpha < 0.001) {
+                        discard;
+                    }
+
+                    float angle =
+                        mod(
+                            atan(
+                                v_unitPos.y,
+                                v_unitPos.x
+                            ) +
+                                TWO_PI,
+                            TWO_PI
+                        );
+
+                    float start =
+                        mod(
+                            v_startAngle +
+                                TWO_PI,
+                            TWO_PI
+                        );
+
+                    float span =
+                        clamp(
+                            v_endAngle -
+                                v_startAngle,
+                            0.0,
+                            TWO_PI
+                        );
+
+                    float relativeAngle =
+                        mod(
+                            angle -
+                                start +
+                                TWO_PI,
+                            TWO_PI
+                        );
+
+                    float angleAA =
+                        max(
+                            fwidth(
+                                relativeAngle
+                            ),
+                            0.0005
+                        );
+
+                    float arcAlpha =
+                        1.0 -
+                        smoothstep(
+                            span -
+                                angleAA,
+                            span +
+                                angleAA,
+                            relativeAngle
+                        );
+
+                    if (arcAlpha < 0.001) {
+                        discard;
+                    }
+
+                    fragColor =
+                        vec4(
+                            v_color.rgb,
+                            v_color.a *
+                                ringAlpha *
+                                arcAlpha
+                        );
+                }`;
+
+                var arcRingProgram =
+                    createAndLinkProgram(
+                        gl,
+                        arcRingVs,
+                        arcRingFs
+                    );
+
+                if (arcRingProgram) {
+                    this.glArcRingProgram =
+                        arcRingProgram;
+
+                    this.u_arcRing_viewCenter =
+                        gl.getUniformLocation(
+                            arcRingProgram,
+                            "u_viewCenter"
+                        );
+
+                    this.u_arcRing_viewScale =
+                        gl.getUniformLocation(
+                            arcRingProgram,
+                            "u_viewScale"
+                        );
+
+                    this.glArcRingVAO =
+                        gl.createVertexArray();
+
+                    gl.bindVertexArray(
+                        this.glArcRingVAO
+                    );
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        quadVBO
+                    );
+
+                    var a_ar_unit =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_unitPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_unit
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_unit,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        0,
+                        0
+                    );
+
+                    this.glArcRingInstanceVBO =
+                        gl.createBuffer();
+
+                    gl.bindBuffer(
+                        gl.ARRAY_BUFFER,
+                        this.glArcRingInstanceVBO
+                    );
+
+                    gl.bufferData(
+                        gl.ARRAY_BUFFER,
+                        128 * 10 * 4,
+                        gl.DYNAMIC_DRAW
+                    );
+
+                    var arStride =
+                        10 * 4;
+
+                    var a_ar_pos =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_cellPos"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_pos
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_pos,
+                        2,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        0
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_pos,
+                        1
+                    );
+
+                    var a_ar_radius =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_radius"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_radius
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_radius,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        2 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_radius,
+                        1
+                    );
+
+                    var a_ar_thickness =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_thickness"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_thickness
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_thickness,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        3 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_thickness,
+                        1
+                    );
+
+                    var a_ar_start =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_startAngle"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_start
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_start,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        4 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_start,
+                        1
+                    );
+
+                    var a_ar_end =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_endAngle"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_end
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_end,
+                        1,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        5 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_end,
+                        1
+                    );
+
+                    var a_ar_color =
+                        gl.getAttribLocation(
+                            arcRingProgram,
+                            "a_color"
+                        );
+
+                    gl.enableVertexAttribArray(
+                        a_ar_color
+                    );
+
+                    gl.vertexAttribPointer(
+                        a_ar_color,
+                        4,
+                        gl.FLOAT,
+                        false,
+                        arStride,
+                        6 * 4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        a_ar_color,
+                        1
+                    );
+
+                    gl.bindVertexArray(null);
+
+                    this.glArcRingData =
+                        new Float32Array(
+                            128 * 10
+                        );
                 }
 
                 gl.enable(gl.BLEND);
@@ -22750,64 +23559,259 @@ Most cells eaten   : ${mostCellsEaten}
 
             return true;
         },
-        drawWebGLRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier, canvasLineWidth) {
-            if (!this.gl || !this.glSolidRingProgram || !players || !players.length) return false;
-            var gl = this.gl;
-            var data = this.glSolidRingData;
+        drawWebGLRingsBatch(
+            players,
+            scaleOffset,
+            colorHex,
+            alphaVal,
+            sizeMultiplier,
+            canvasLineWidth
+        ) {
+            if (
+                !this.gl ||
+                !this.glSolidRingProgram ||
+                !players ||
+                !players.length
+            ) {
+                return false;
+            }
+
+            var gl =
+                this.gl;
+
+            var data =
+                this.glSolidRingData;
+
             var count = 0;
             var max = 5000;
-            var _sizeMul = sizeMultiplier || 1.0;
 
-            var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 500;
-            var halfH = (this.canvasHeight / viewScale / 2) + 500;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
+            var sizeMultiplierValue =
+                sizeMultiplier == null
+                    ? 1
+                    : Number(
+                        sizeMultiplier
+                    );
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
-            var rR = ((cInt >> 16) & 255) / 255;
-            var rG = ((cInt >> 8) & 255) / 255;
-            var rB = (cInt & 255) / 255;
-            var rA = alphaVal || 0.75;
+            var lineWidth =
+                canvasLineWidth == null
+                    ? 4
+                    : Number(
+                        canvasLineWidth
+                    );
 
-            /* Use the caller's Canvas2D lineWidth for matching visual thickness */
-            var _lineWidth = canvasLineWidth || 4;
+            if (
+                !isFinite(
+                    sizeMultiplierValue
+                )
+            ) {
+                sizeMultiplierValue = 1;
+            }
 
-            for (var i = 0; i < players.length && count < max; i++) {
-                var p = players[i];
-                if (!p) continue;
-                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
-                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+            if (
+                !isFinite(lineWidth) ||
+                lineWidth <= 0
+            ) {
+                lineWidth = 4;
+            }
 
-                var idx = count * 7;
-                data[idx] = x;
-                data[idx + 1] = y;
-                data[idx + 2] = r;
-                data[idx + 3] = rR;
-                data[idx + 4] = rG;
-                data[idx + 5] = rB;
-                data[idx + 6] = rA;
+            var alpha =
+                alphaVal == null
+                    ? 0.75
+                    : Number(alphaVal);
+
+            if (!isFinite(alpha)) {
+                alpha = 0.75;
+            }
+
+            alpha =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        alpha
+                    )
+                );
+
+            var color =
+                this.parseWebGLOverlayColor(
+                    colorHex,
+                    "#ffffff"
+                );
+
+            var viewScale =
+                this.scale || 1;
+
+            var halfW =
+                this.canvasWidth /
+                    viewScale /
+                    2 +
+                500;
+
+            var halfH =
+                this.canvasHeight /
+                    viewScale /
+                    2 +
+                500;
+
+            var minX =
+                this.camX -
+                halfW;
+
+            var maxX =
+                this.camX +
+                halfW;
+
+            var minY =
+                this.camY -
+                halfH;
+
+            var maxY =
+                this.camY +
+                halfH;
+
+            for (
+                var i = 0;
+                i < players.length;
+                i++
+            ) {
+                var player =
+                    players[i];
+
+                if (!player) {
+                    continue;
+                }
+
+                var pathRadius =
+                    (
+                        player.size ||
+                        10
+                    ) *
+                        sizeMultiplierValue +
+                    (
+                        scaleOffset ||
+                        0
+                    );
+
+                if (
+                    !isFinite(pathRadius) ||
+                    pathRadius <= 0
+                ) {
+                    continue;
+                }
+
+                var outerRadius =
+                    pathRadius +
+                    lineWidth * 0.5;
+
+                var x =
+                    player.x;
+
+                var y =
+                    player.y;
+
+                if (
+                    x + outerRadius <
+                        minX ||
+                    x - outerRadius >
+                        maxX ||
+                    y + outerRadius <
+                        minY ||
+                    y - outerRadius >
+                        maxY
+                ) {
+                    continue;
+                }
+
+                if (count >= max) {
+                    return false;
+                }
+
+                var index =
+                    count * 8;
+
+                data[index] =
+                    x;
+
+                data[index + 1] =
+                    y;
+
+                data[index + 2] =
+                    outerRadius;
+
+                data[index + 3] =
+                    color[0];
+
+                data[index + 4] =
+                    color[1];
+
+                data[index + 5] =
+                    color[2];
+
+                data[index + 6] =
+                    color[3] *
+                    alpha;
+
+                data[index + 7] =
+                    Math.max(
+                        0.0001,
+                        Math.min(
+                            0.95,
+                            lineWidth /
+                                outerRadius
+                        )
+                    );
+
                 count++;
             }
 
-            if (count === 0) return true;
+            if (count === 0) {
+                return true;
+            }
 
-            /* Ring thickness: Canvas2D lineWidth in world units → fraction of ring radius.
-             * Uses first ring's radius as representative — acceptable since opp ring groups
-             * contain cells of similar sizes. Exact per-ring thickness would require an attribute. */
-            var avgRadius = data[2]; // Use first ring's radius as representative
-            var thickness = Math.min(0.15, Math.max(0.01, _lineWidth / avgRadius));
+            gl.useProgram(
+                this.glSolidRingProgram
+            );
 
-            gl.useProgram(this.glSolidRingProgram);
-            gl.uniform2f(this.u_solidRing_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_solidRing_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-            gl.uniform1f(this.u_solidRing_thickness, thickness);
+            gl.uniform2f(
+                this.u_solidRing_viewCenter,
+                this.camX,
+                this.camY
+            );
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glSolidRingInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+            gl.uniform2f(
+                this.u_solidRing_viewScale,
+                2 *
+                    viewScale /
+                    this.canvasWidth,
+                2 *
+                    viewScale /
+                    this.canvasHeight
+            );
 
-            gl.bindVertexArray(this.glSolidRingVAO);
-            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.glSolidRingInstanceVBO
+            );
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                data,
+                0,
+                count * 8
+            );
+
+            gl.bindVertexArray(
+                this.glSolidRingVAO
+            );
+
+            gl.drawArraysInstanced(
+                gl.TRIANGLE_STRIP,
+                0,
+                4,
+                count
+            );
+
             gl.bindVertexArray(null);
 
             return true;
@@ -22990,48 +23994,186 @@ Most cells eaten   : ${mostCellsEaten}
 
             return true;
         },
-        /* WebGL2 line batch — used by drawCursorTracking */
-        drawWebGLLineBatch(players, cursorX, cursorY, colorHex, alphaVal, lineWidth) {
-            if (!this.gl || !this.glLineProgram || !players || !players.length) return false;
-            var gl = this.gl;
-            var data = this.glLineData;
+        drawWebGLLineBatch(
+            players,
+            cursorX,
+            cursorY,
+            colorHex,
+            alphaVal,
+            lineWidth
+        ) {
+            if (
+                !this.gl ||
+                !this.glLineProgram ||
+                !players ||
+                !players.length
+            ) {
+                return false;
+            }
+
+            var gl =
+                this.gl;
+
+            var data =
+                this.glLineData;
+
             var count = 0;
             var max = 200;
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
-            var rR = ((cInt >> 16) & 255) / 255;
-            var rG = ((cInt >> 8) & 255) / 255;
-            var rB = (cInt & 255) / 255;
-            var rA = alphaVal || 0.75;
+            var color =
+                this.parseWebGLOverlayColor(
+                    colorHex,
+                    "#ffffff"
+                );
 
-            for (var i = 0; i < players.length && count < max; i++) {
-                var p = players[i];
-                if (!p) continue;
-                var idx = count * 8;
-                data[idx] = p.x;
-                data[idx + 1] = p.y;
-                data[idx + 2] = cursorX;
-                data[idx + 3] = cursorY;
-                data[idx + 4] = rR;
-                data[idx + 5] = rG;
-                data[idx + 6] = rB;
-                data[idx + 7] = rA;
+            var alpha =
+                alphaVal == null
+                    ? 0.75
+                    : Number(alphaVal);
+
+            var width =
+                lineWidth == null
+                    ? 4
+                    : Number(lineWidth);
+
+            if (!isFinite(alpha)) {
+                alpha = 0.75;
+            }
+
+            if (
+                !isFinite(width) ||
+                width <= 0
+            ) {
+                width = 4;
+            }
+
+            alpha =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        alpha
+                    )
+                );
+
+            for (
+                var i = 0;
+                i < players.length;
+                i++
+            ) {
+                var player =
+                    players[i];
+
+                if (!player) {
+                    continue;
+                }
+
+                if (count >= max) {
+                    return false;
+                }
+
+                var index =
+                    count * 8;
+
+                data[index] =
+                    player.x;
+
+                data[index + 1] =
+                    player.y;
+
+                data[index + 2] =
+                    cursorX;
+
+                data[index + 3] =
+                    cursorY;
+
+                data[index + 4] =
+                    color[0];
+
+                data[index + 5] =
+                    color[1];
+
+                data[index + 6] =
+                    color[2];
+
+                data[index + 7] =
+                    color[3] *
+                    alpha;
+
                 count++;
             }
 
-            if (count === 0) return true;
+            if (count === 0) {
+                return true;
+            }
 
-            var viewScale = this.scale || 1;
-            gl.useProgram(this.glLineProgram);
-            gl.uniform2f(this.u_line_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_line_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-            gl.uniform1f(this.u_line_lineWidth, (lineWidth || 4) / viewScale);
+            var viewScale =
+                this.scale || 1;
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glLineInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 8));
+            gl.useProgram(
+                this.glLineProgram
+            );
 
-            gl.bindVertexArray(this.glLineVAO);
-            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
+            gl.uniform2f(
+                this.u_line_viewCenter,
+                this.camX,
+                this.camY
+            );
+
+            gl.uniform2f(
+                this.u_line_viewScale,
+                2 *
+                    viewScale /
+                    this.canvasWidth,
+                2 *
+                    viewScale /
+                    this.canvasHeight
+            );
+
+            gl.uniform1f(
+                this.u_line_halfLineWidth,
+                width * 0.5
+            );
+
+            gl.uniform1i(
+                this.u_line_dashed,
+                0
+            );
+
+            gl.uniform1f(
+                this.u_line_dashLength,
+                1
+            );
+
+            gl.uniform1f(
+                this.u_line_gapLength,
+                0
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.glLineInstanceVBO
+            );
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                data,
+                0,
+                count * 8
+            );
+
+            gl.bindVertexArray(
+                this.glLineVAO
+            );
+
+            gl.drawArraysInstanced(
+                gl.TRIANGLE_STRIP,
+                0,
+                4,
+                count
+            );
+
             gl.bindVertexArray(null);
 
             return true;

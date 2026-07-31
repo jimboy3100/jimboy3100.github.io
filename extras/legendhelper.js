@@ -27,19 +27,32 @@ $("#menu-footer").after('<div id="legendhelper" style="background-image: url('+l
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
-											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">' + Premadeletter113 + '</button>'+
+											    '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" style="margin-left: 10px;" class="btn btn-danger" data-original-title="" title="">' + Premadeletter113 + '</button>'+
 												'<button id= "Infobtn11" onclick="Infobtn11(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter1 + '</button>'+
 												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter2 + '</button>'+
 												'<button id= "ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter3 + '</button>'+
 												'<button id= "LanguagesTempBtn" onclick="LanguagesTempIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter0a + '</button></div>');
 
 									
-function closecustomskinsIframe(){
-$("#main-menu").show();	
-$("#skins-panel").show();
-$("#quick-menu").show();
-$("#exp-bar").show();
-$("#legendhelper").remove();
+function closeLegendHelper(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof event.stopImmediatePropagation === "function") {
+            event.stopImmediatePropagation();
+        }
+    }
+
+    $("#legendhelper")
+        .stop(true, true)
+        .remove();
+
+    $("#main-menu, #skins-panel, #quick-menu, #exp-bar")
+        .stop(true, true)
+        .show();
+
+    return false;
 }
 function templatesIframe(){
 
