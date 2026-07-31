@@ -721,7 +721,7 @@ function SpecialDeals() {
 
         $("#ss-select-agarVersionDestinations").change(function() {
 
-            $("#GameConfigurationUrl").val("https://configs-web.agario.miniclippt.com/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
+            $("#GameConfigurationUrl").val("https://configs-web.agar.io/live/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
             $("#GameConfigurationUrl").blur();
         });
         $("#GameConfigurationUrl").blur(function() {
@@ -818,15 +818,15 @@ function SpecialDeals() {
                     //textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
                 }
             }
-            //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped1 + '.png")');
+            //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agar.io/live/v15/2230/' + textcropped1 + '.png")');
             setTimeout(function() {
                 /*
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
                  } 
 				 */
-                $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped2 + '")');
-                $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped1 + '")');
+                $(".xpmt-skins").css('background-image', 'url("https://configs-web.agar.io/live/' + window.agarversion + textcropped2 + '")');
+                $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agar.io/live/' + window.agarversion + textcropped1 + '")');
             }, 500);
         });
 }
@@ -850,7 +850,7 @@ function buydeals() {
     }
     $.ajax({
         type: "GET",
-        url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + purchaseId + "/" + currency,
+        url: "https://payments.agar.io/pay/" + uid + "/" + purchaseId + "/" + currency,
         datatype: "json",
         success: function(info) {
             if (info && info.iframe_url) {
@@ -1309,7 +1309,7 @@ function getDealSkinImages(bundleId) {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
     var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
     var images = [];
 
     for (var bp = 0; bp < bundleProducts.length; bp++) {
@@ -1356,7 +1356,7 @@ function buyDealIAP(dealId, dealDesc) {
 
     $.ajax({
         type: 'GET',
-        url: 'https://payments.agario.miniclippt.com/pay/' + uid + '/' + dealId + '/' + currency,
+        url: 'https://payments.agar.io/pay/' + uid + '/' + dealId + '/' + currency,
         datatype: 'json',
         success: function(info) {
             if (info && info.iframe_url) {
@@ -1733,7 +1733,7 @@ function equipSkin(productId, imageName) {
         return;
     }
 
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
     localStorage.setItem('equippedSkinId', productId);
     if (imageName) localStorage.setItem('equippedSkinImage', imageName);
 
@@ -1795,7 +1795,7 @@ function updateEquippedSkinUI() {
 
     var equippedId = localStorage.getItem('equippedSkinId');
     var equippedImg = localStorage.getItem('equippedSkinImage');
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
 
     var bannerName = $('#activeSkinName');
     var bannerImg = $('#activeSkinImg');
@@ -1820,7 +1820,7 @@ function updateEquippedSkinUI() {
             }
         } else if (equippedId.startsWith('skin_custom_')) {
             // Custom skin — load from custom skins CDN
-            imgSrc = 'https://configs.agario.miniclippt.com/live/custom_skins/' + equippedId + '.png';
+            imgSrc = 'https://configs.agar.io/live/custom_skins/' + equippedId + '.png';
         }
 
         // Fallback: use saved image name or placeholder
@@ -1981,7 +1981,7 @@ window.getSkinPrice = getSkinPrice;
 function renderSkinPage() {
     var start = skinShopPage * skinShopPerPage;
     var end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-    var cdnBase = 'https://configs-web.agario.miniclippt.com/live/' + (window.agarversion || 'v15/10913/');
+    var cdnBase = 'https://configs-web.agar.io/live/' + (window.agarversion || 'v15/10913/');
     var grid = document.getElementById('skinGrid');
     var currentEquippedId = localStorage.getItem('equippedSkinId');
     var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
@@ -2161,7 +2161,7 @@ function buySkin(productId) {
     console.log('[SHOP]: Opening payment URL for ' + productId);
     $.ajax({
         type: "GET",
-        url: "https://payments.agario.miniclippt.com/pay/" + uid + "/" + productId + "/" + currency,
+        url: "https://payments.agar.io/pay/" + uid + "/" + productId + "/" + currency,
         datatype: "json",
         success: function(info) {
             if (info && info.iframe_url) {
@@ -2291,7 +2291,7 @@ function LoadGameConfiguration() {
 
     var targetUrl = window.MiniclipConfigDestination || "https://configs-web.agar.io/live/v15/10913/GameConfiguration.json";
     if (targetUrl.includes('miniclippt.com')) {
-        targetUrl = targetUrl.replace('configs-web.agario.miniclippt.com', 'configs-web.agar.io');
+        targetUrl = targetUrl.replace('configs-web.agar.io', 'configs-web.agar.io');
     }
 
     $.ajax({
