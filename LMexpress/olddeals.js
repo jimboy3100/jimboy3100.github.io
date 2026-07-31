@@ -345,6 +345,38 @@ function SpecialDeals() {
             setTimeout(populateSkins, 1500);
         }
 
+        window.validateShopIntegrity = function validateShopIntegrity(actionName) {
+            var label = actionName || 'this action';
+
+            // 1. Logged In check
+            var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+            if (!isLoggedIn) {
+                if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be logged in with Google/Facebook to ' + label + '.');
+                return false;
+            }
+
+            // 2. Agar.io UID check
+            var uid = window.agarioEncodedUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID");
+            if (!uid) {
+                if (window.toastr) toastr.error('<b>[SHOP]:</b> No Agar.io UID found. Play a game session first to sync your account UID.');
+                return false;
+            }
+
+            // 3. Actual game server connection / integrity state
+            var hasGameConnection = !!(
+                (window.core && window.core.proxyMobileData) ||
+                (window.application && typeof window.application.sendProto === 'function') ||
+                window.integrityToken ||
+                (window.legendmod && window.legendmod.ws)
+            );
+            if (!hasGameConnection) {
+                if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be connected to an active Agar.io game server for ' + label + '.');
+                return false;
+            }
+
+            return true;
+        };
+
         // --- Login & UID status checker (shared across tabs) ---
         window.updateShopLoginState = function updateShopLoginState() {
             var uploadBtn = $('#legendSaveBtnModal');
@@ -352,9 +384,14 @@ function SpecialDeals() {
             var fileInput = $('#legendUploadInputModal');
             var skinNameInput = $('#legendSkinNameModal');
             var skinColorInput = $('#legendSkinColorModal');
-            var isLoggedIn = !!(window.loggedIn);
-            var hasUID = !!(window.agarioEncodedUID);
-            var hasConnection = !!(window.core && window.core.proxyMobileData);
+            var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+            var hasUID = !!(window.agarioEncodedUID || localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID"));
+            var hasConnection = !!(
+                (window.core && window.core.proxyMobileData) ||
+                (window.application && typeof window.application.sendProto === 'function') ||
+                window.integrityToken ||
+                (window.legendmod && window.legendmod.ws)
+            );
             var allReady = isLoggedIn && hasUID && hasConnection;
 
             // Live DNA & Coins sync (check multiple sources for accuracy when logged in)
@@ -1589,12 +1626,7 @@ function deleteCustomSkin(skinId) {
 window.deleteCustomSkin = deleteCustomSkin;
 
 function equipSkin(productId, imageName) {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to equip skins');
-        return;
-    }
-    if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('equip skins')) {
         return;
     }
 
@@ -1606,10 +1638,6 @@ function equipSkin(productId, imageName) {
     window.serverEquippedSkinId = productId;
 
     // ─── Send opcode 80 via window.changeSkin() ───
-    // changeSkin() in ogario.v4.js (line 1410) already:
-    //   1. Encodes User_setting { type:1, key:1, valueString: productId }
-    //   2. Sends opcode 80 via proxyMobileData
-    //   3. Loads the skin URL via application.loadSkin()
     if (typeof window.changeSkin === 'function') {
         try {
             window.changeSkin(productId);
@@ -1630,12 +1658,7 @@ function equipSkin(productId, imageName) {
 }
 
 function unequipSkin() {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to unequip skins');
-        return;
-    }
-    if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('unequip skins')) {
         return;
     }
 
