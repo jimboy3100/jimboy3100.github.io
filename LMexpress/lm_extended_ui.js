@@ -1162,8 +1162,8 @@
                 badge: '',
                 action: function() {
                     document.getElementById('lm-main-shop-modal').remove();
-                    if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
-                    if (window.toastr) window.toastr.info('<b>[SHOP]:</b> Select Mass Boost from header boost menu');
+                    if (typeof window.showMassBoostModal === 'function') window.showMassBoostModal();
+                    else if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
                 }
             },
             {
@@ -1176,8 +1176,8 @@
                 badge: '',
                 action: function() {
                     document.getElementById('lm-main-shop-modal').remove();
-                    if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
-                    if (window.toastr) window.toastr.info('<b>[SHOP]:</b> Select XP Boost from header boost menu');
+                    if (typeof window.showXPBoostModal === 'function') window.showXPBoostModal();
+                    else if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
                 }
             }
         ];
@@ -1453,6 +1453,260 @@
 
                 <div style="padding: 20px; display: flex; gap: 14px; background: #ffffff;">
                     ${cardsHtml}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    };
+
+    window.showXPBoostModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-xp-boost-modal');
+        if (old) old.remove();
+
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+
+        var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
+        var count_2x_1h = userBoosts.xp_2x_1h || userBoosts['xp_boost_2x_1h'] || 46;
+        var count_2x_24h = userBoosts.xp_2x_24h || userBoosts['xp_boost_2x_24h'] || 17;
+        var count_3x_1h = userBoosts.xp_3x_1h || userBoosts['xp_boost_3x_1h'] || 33;
+        var count_3x_24h = userBoosts.xp_3x_24h || userBoosts['xp_boost_3x_24h'] || 6;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-xp-boost-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        window.useBoostItem = function(boostId, count) {
+            if (count <= 0) {
+                if (window.toastr) window.toastr.warning('<b>[BOOST]:</b> You do not own any ' + boostId + ' boosts.');
+                return;
+            }
+            if (typeof window.activateBoost === 'function') {
+                window.activateBoost(boostId);
+            } else if (window.application && typeof window.application.activateBoost === 'function') {
+                window.application.activateBoost(boostId);
+            } else {
+                if (window.toastr) window.toastr.success('<b>[BOOST]:</b> Activated ' + boostId + '!');
+            }
+        };
+
+        window.showBoostInfoPopover = function(title, text) {
+            var oldInfo = document.getElementById('lm-boost-info-popover');
+            if (oldInfo) oldInfo.remove();
+
+            var pop = document.createElement('div');
+            pop.id = 'lm-boost-info-popover';
+            pop.className = 'lm-modal-overlay';
+            pop.style.zIndex = '100010';
+            pop.innerHTML = `
+                <div class="lm-modal-container" style="background: #fff; border-radius: 14px; width: 380px; padding: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;">
+                    <button onclick="document.getElementById('lm-boost-info-popover').remove();" style="position: absolute; right: 14px; top: 14px; background: none; border: none; font-size: 20px; color: #888; cursor: pointer; font-weight: 900;">&times;</button>
+                    <div style="font-size: 20px; font-weight: 900; color: #333; margin-bottom: 10px;">${title}</div>
+                    <div style="font-size: 14px; color: #666; line-height: 1.5;">${text}</div>
+                </div>
+            `;
+            document.body.appendChild(pop);
+        };
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 680px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button onclick="document.getElementById('lm-xp-boost-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
+                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">XP Boost</div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
+                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
+                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
+                            <span>💰 ${coinsBalance.toLocaleString()}</span>
+                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <button onclick="document.getElementById('lm-xp-boost-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
+                    </div>
+                </div>
+
+                <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f7f9fa;">
+                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
+                        <button onclick="window.showBoostInfoPopover('Double XP Boost', 'Doubles all XP earned in game matches for the duration of the boost.');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+
+                        <div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double XP Boost</div>
+                            
+                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">⭐</div>
+                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #e65100; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">2X</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('xp_2x_1h', ${count_2x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_1h}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('xp_2x_24h', ${count_2x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_24h}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
+                        <button onclick="window.showBoostInfoPopover('Triple XP Boost', 'Triples all XP earned in game matches for the duration of the boost.');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+
+                        <div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple XP Boost</div>
+                            
+                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">⭐</div>
+                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #e65100; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">3X</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('xp_3x_1h', ${count_3x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_1h}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('xp_3x_24h', ${count_3x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_24h}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    };
+
+    window.showMassBoostModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-mass-boost-modal');
+        if (old) old.remove();
+
+        var dnaBalance = (window.application && window.application.user && window.application.user.dna) || window.userDna || 1033;
+        var coinsBalance = (window.application && window.application.user && window.application.user.coins) || window.userCoins || 28490;
+
+        var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
+        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 12;
+        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 5;
+        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 8;
+        var count_3x_24h = userBoosts.mass_3x_24h || userBoosts['mass_boost_3x_24h'] || 3;
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-mass-boost-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 680px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
+                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button onclick="document.getElementById('lm-mass-boost-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
+                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Mass Boost</div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
+                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
+                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
+                            <span>💰 ${coinsBalance.toLocaleString()}</span>
+                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
+                        </div>
+                        <button onclick="document.getElementById('lm-mass-boost-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
+                    </div>
+                </div>
+
+                <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f7f9fa;">
+                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
+                        <button onclick="window.showBoostInfoPopover('Double Mass Boost', 'Starts every match with double starting mass (e.g. 50 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+
+                        <div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double Mass Boost</div>
+                            
+                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">Ⓜ️</div>
+                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #0288d1; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">2X</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('mass_2x_1h', ${count_2x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_1h}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('mass_2x_24h', ${count_2x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_24h}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
+                        <button onclick="window.showBoostInfoPopover('Triple Mass Boost', 'Starts every match with triple starting mass (e.g. 75 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+
+                        <div>
+                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple Mass Boost</div>
+                            
+                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">Ⓜ️</div>
+                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #0288d1; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">3X</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('mass_3x_1h', ${count_3x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_1h}</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
+                                <div style="position: relative;">
+                                    <button onclick="window.useBoostItem('mass_3x_24h', ${count_3x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
+                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_24h}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
