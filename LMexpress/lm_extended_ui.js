@@ -2088,14 +2088,6 @@
         if (!token && typeof window.parseRewardToken === 'function') {
             token = window.parseRewardToken(window.location.href);
         }
-        if (!token && $('#rewardLinkInput').length) {
-            token = $('#rewardLinkInput').val().trim();
-        }
-
-        // Clean domain and protocol prefix if user pasted full URL
-        if (token) {
-            token = token.replace(/^https?:\/\/[^\/]+\/?/i, '').replace(/^#reward-/i, '').split(/[?#&]/)[0].trim();
-        }
 
         var bannerEl = document.getElementById('lm-promo-reward-banner');
         if (!token || token.length < 3 || token.includes('agar.io') || token.startsWith('http')) {
