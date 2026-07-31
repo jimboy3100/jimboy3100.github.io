@@ -1529,9 +1529,9 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
     var modal = document.createElement('div');
     modal.id = 'deal-buy-confirm-modal';
     modal.className = 'lm-modal-overlay';
-    modal.style.zIndex = '100001';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML = 
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">' +
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
                 '🛒 Purchase Confirmation' +
             '</div>' +
@@ -1541,18 +1541,35 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
                 '<div style="font-size: 11px; color: ' + t.tc2 + ';">Are you sure you want to proceed?</div>' +
             '</div>' +
             '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="deal-confirm-cancel" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Cancel</button>' +
-                '<button id="deal-confirm-buy" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">Confirm</button>' +
+                '<button id="deal-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Cancel</button>' +
+                '<button id="deal-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">Confirm</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
 
-    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-    document.getElementById('deal-confirm-cancel').addEventListener('click', function() { modal.remove(); });
-    document.getElementById('deal-confirm-buy').addEventListener('click', function() {
+    function doConfirm(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
         modal.remove();
         if (typeof onConfirm === 'function') onConfirm();
-    });
+    }
+
+    function doCancel(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        modal.remove();
+    }
+
+    modal.addEventListener('click', function(e) { if (e.target === modal) doCancel(e); });
+
+    var cancelBtn = document.getElementById('deal-confirm-cancel');
+    var buyBtn = document.getElementById('deal-confirm-buy');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', doCancel);
+        cancelBtn.addEventListener('touchstart', doCancel, { passive: false });
+    }
+    if (buyBtn) {
+        buyBtn.addEventListener('click', doConfirm);
+        buyBtn.addEventListener('touchstart', doConfirm, { passive: false });
+    }
 }
 
 /**
@@ -2446,7 +2463,7 @@ function buySkin(productId) {
     var t = getShopTheme();
     var modal = document.createElement('div');
     modal.id = 'skin-confirm-modal';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index: 100010; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease;';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
         '<div style="background: ' + t.pc + '; border: 2px solid ' + t.mc + '; border-radius: 14px; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); overflow: hidden; font-family: \'Roboto Condensed\', sans-serif;">' +
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
@@ -2463,19 +2480,34 @@ function buySkin(productId) {
                 balanceWarning +
             '</div>' +
             '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="skin-confirm-cancel" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15); transition: all 0.15s;">Cancel</button>' +
-                '<button id="skin-confirm-buy" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none; transition: all 0.15s;">Buy Now</button>' +
+                '<button id="skin-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15); transition: all 0.15s;">Cancel</button>' +
+                '<button id="skin-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none; transition: all 0.15s;">Buy Now</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
 
-    // Backdrop click to dismiss
-    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-    document.getElementById('skin-confirm-cancel').addEventListener('click', function() { modal.remove(); });
-    document.getElementById('skin-confirm-buy').addEventListener('click', function() {
+    function doSkinConfirm(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
         modal.remove();
         _executeSkinPurchase(productId, purchaseId, displayName);
-    });
+    }
+
+    function doSkinCancel(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        modal.remove();
+    }
+
+    modal.addEventListener('click', function(e) { if (e.target === modal) doSkinCancel(e); });
+    var sCancel = document.getElementById('skin-confirm-cancel');
+    var sBuy = document.getElementById('skin-confirm-buy');
+    if (sCancel) {
+        sCancel.addEventListener('click', doSkinCancel);
+        sCancel.addEventListener('touchstart', doSkinCancel, { passive: false });
+    }
+    if (sBuy) {
+        sBuy.addEventListener('click', doSkinConfirm);
+        sBuy.addEventListener('touchstart', doSkinConfirm, { passive: false });
+    }
 }
 
 /**
