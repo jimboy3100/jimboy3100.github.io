@@ -280,6 +280,7 @@
                     </div>
                     <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
                     <button class="btn" onclick="window.showLastWeekResultsModal(${tabType});" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
+                    <button class="btn" onclick="window.showLeaguesInfoModal();" style="background: rgba(255,255,255,0.2); color: #fff; font-weight: 900; font-size: 15px; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">?</button>
                 </div>
             </div>
         `;
@@ -772,6 +773,85 @@
         contentArea.style.maxHeight = '420px';
         contentArea.style.overflowY = 'auto';
         contentArea.innerHTML = html;
+    };
+
+    // Leagues Information "?" modal — matches original agar.io "World Information" popup
+    window.showLeaguesInfoModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-leaguesinfo-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-leaguesinfo-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100001';
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 480px;">
+                <div class="lm-modal-header" style="background: ${t.pc2}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div style="width: 100%; text-align: center; position: relative;">
+                        <span style="font-size: 17px; font-weight: 900; color: ${t.tc};">World Information</span>
+                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ${t.tc};" onclick="document.getElementById('lm-leaguesinfo-modal').remove();">&times;</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; padding: 12px 20px 0 20px; gap: 8px;">
+                    <button id="lm-info-tab-rules" onclick="window._switchLeaguesInfoTab('rules')" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b1}; background: ${t.b1}; color: ${t.btc};">Rules</button>
+                    <button id="lm-info-tab-trophies" onclick="window._switchLeaguesInfoTab('trophies')" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; border: 2px solid ${t.b2}; background: transparent; color: ${t.tc};">Trophies</button>
+                </div>
+
+                <div id="lm-info-content" class="lm-modal-body" style="padding: 24px 30px; min-height: 180px; text-align: center;">
+                </div>
+
+                <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button class="btn" onclick="document.getElementById('lm-leaguesinfo-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        window._switchLeaguesInfoTab('rules');
+    };
+
+    window._switchLeaguesInfoTab = function(tab) {
+        var t = getTheme();
+        var content = document.getElementById('lm-info-content');
+        var rulesBtn = document.getElementById('lm-info-tab-rules');
+        var trophiesBtn = document.getElementById('lm-info-tab-trophies');
+        if (!content || !rulesBtn || !trophiesBtn) return;
+
+        if (tab === 'rules') {
+            rulesBtn.style.background = t.b1;
+            rulesBtn.style.color = t.btc;
+            rulesBtn.style.borderColor = t.b1;
+            trophiesBtn.style.background = 'transparent';
+            trophiesBtn.style.color = t.tc;
+            trophiesBtn.style.borderColor = t.b2;
+
+            content.innerHTML = '<div style="color: ' + t.tc + '; font-size: 14px; line-height: 1.8; font-weight: 600;">' +
+                '<p>Ranking is based on total weekly trophy winnings.</p>' +
+                '<p style="margin-top: 12px;">At the end of each week, come back to check if you won the prize.</p>' +
+                '<p style="margin-top: 12px;">You need to open the app to claim your prize - so don\'t miss out!</p>' +
+                '</div>';
+        } else {
+            trophiesBtn.style.background = t.b1;
+            trophiesBtn.style.color = t.btc;
+            trophiesBtn.style.borderColor = t.b1;
+            rulesBtn.style.background = 'transparent';
+            rulesBtn.style.color = t.tc;
+            rulesBtn.style.borderColor = t.b2;
+
+            content.innerHTML = '<div style="color: ' + t.tc + '; font-size: 14px; line-height: 1.8; font-weight: 600;">' +
+                '<p>Trophies can be found inside Mystery Potions. Collect as many as you can to climb on the leaderboards.</p>' +
+                '<p style="font-weight: 800; margin-top: 14px;">Play any game mode to collect Mystery Potions.</p>' +
+                '<div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px;">' +
+                '<div style="font-size: 48px;">🧪</div>' +
+                '<div style="font-size: 32px; color: ' + t.mc + ';">➤</div>' +
+                '<div style="font-size: 48px;">🏆</div>' +
+                '</div>' +
+                '</div>';
+        }
     };
 
     window.showPotionsHelpModal = function(activeTabName) {

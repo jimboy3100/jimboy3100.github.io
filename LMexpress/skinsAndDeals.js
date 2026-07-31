@@ -25,6 +25,17 @@ else{
 window.MiniclipConfigDestination = window.LM_CONFIG_URL();
 window.MiniclipDestination = window.LM_CDN_BASE();
 
+// Early fallback so onclick="window.closeSpecialShopModal()" never throws before the modal opens
+if (typeof window.closeSpecialShopModal !== 'function') {
+    window.closeSpecialShopModal = function() {
+        var modal = document.getElementById('specialShopModal');
+        if (modal) modal.remove();
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) backdrop.remove();
+        document.body.classList.remove('modal-open');
+    };
+}
+
 if (window.agarversion != null) {
     var _av = window.agarversion;
     if (!_av.endsWith('/')) _av += '/';
@@ -2355,6 +2366,7 @@ function _fetchConfigFallback(callback) {
 
 function populateLibConfig() {
     var x = document.getElementById("ss-select-agarVersionDestinations");
+    if (!window.agarversionDestinations || !x) return;
     //for (i = 0; i < Object.keys(window.agarversionDestinations).length; i++) {
     for (var i = Object.keys(window.agarversionDestinations).length - 1; i > 0; i--) {
         //if (window.agarversionDestinations[i].includes(window.getLatestconfigVersion)) {
