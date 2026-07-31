@@ -1397,30 +1397,54 @@ window.refreshDealsTab = function() {
 };
 
 /**
- * Get skin image URL for a deal bundle
+ * Get skin image URLs for a deal bundle (optimized with O(1) hash map lookup)
  */
 function getDealSkinImages(bundleId) {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
-    var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
-    var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
-    var cdnBase = window.LM_CDN_BASE();
-    var images = [];
 
-    for (var bp = 0; bp < bundleProducts.length; bp++) {
-        if (bundleProducts[bp].bundleId === bundleId) {
-            var prodId = bundleProducts[bp].productId;
-            if (prodId && prodId.indexOf('skin') !== -1) {
-                for (var s = 0; s < skins.length; s++) {
-                    if (skins[s].productId === prodId && skins[s].image) {
-                        images.push(cdnBase + skins[s].image);
-                        if (images.length >= 2) return images; // max 2
-                        break;
-                    }
+    // Build the bundle-to-images lookup map once when GameConfiguration changes
+    if (!window._bundleSkinImagesCache || window._bundleSkinImagesCacheConfig !== window.GameConfiguration.gameConfig) {
+        window._bundleSkinImagesCacheConfig = window.GameConfiguration.gameConfig;
+        window._bundleSkinImagesCache = {};
+
+        var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
+        var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
+        var cdnBase = window.LM_CDN_BASE();
+
+        // 1. Map productId -> image URL
+        var skinImageMap = {};
+        for (var s = 0; s < skins.length; s++) {
+            var skinItem = skins[s];
+            if (skinItem && skinItem.productId && skinItem.image) {
+                var imgFile = skinItem.image;
+                if (imgFile === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skinItem.productId]) {
+                    imgFile = window.SpineSkinMap[skinItem.productId] + '.png';
+                }
+                if (imgFile && imgFile !== 'uses_spine') {
+                    skinImageMap[skinItem.productId] = cdnBase + imgFile;
+                    var cleanPid = skinItem.productId.replace(/^(shop_skin_|skin_)/, '');
+                    skinImageMap[cleanPid] = cdnBase + imgFile;
+                }
+            }
+        }
+
+        // 2. Map bundleId -> array of skin image URLs (max 2)
+        for (var bp = 0; bp < bundleProducts.length; bp++) {
+            var item = bundleProducts[bp];
+            if (!item || !item.bundleId || !item.productId) continue;
+            var bId = item.bundleId;
+            if (!window._bundleSkinImagesCache[bId]) window._bundleSkinImagesCache[bId] = [];
+            if (window._bundleSkinImagesCache[bId].length < 2) {
+                var pId = item.productId;
+                var img = skinImageMap[pId] || skinImageMap[pId.replace(/^(shop_skin_|skin_)/, '')];
+                if (img && window._bundleSkinImagesCache[bId].indexOf(img) === -1) {
+                    window._bundleSkinImagesCache[bId].push(img);
                 }
             }
         }
     }
-    return images;
+
+    return window._bundleSkinImagesCache[bundleId] || [];
 }
 // Backwards compat wrapper
 function getDealSkinImage(bundleId) {
