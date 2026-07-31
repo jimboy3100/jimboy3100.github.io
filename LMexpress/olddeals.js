@@ -191,7 +191,7 @@ function SpecialDeals() {
 
             // Header
             '<div id="CloseSpecialDeals2" class="modal-header">' +
-            '<button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal" title="Close"><span aria-hidden="true">&times;</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+            '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
             '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif; font-weight: 700; color: ' + mc + ';"><i class="fa fa-paint-brush"></i> Agar.io Skins & Deals</h4>' +
             '</div>' +
@@ -676,8 +676,7 @@ function SpecialDeals() {
                 //populateSD();
             //}, 1500);
         });
-        $("#CloseSpecialDeals").off('click').on('click', function(e) {
-            if (e) e.stopPropagation();
+        window.closeSpecialShopModal = function() {
             if (window._shopLoginCheckInterval) {
                 clearInterval(window._shopLoginCheckInterval);
                 window._shopLoginCheckInterval = null;
@@ -685,6 +684,21 @@ function SpecialDeals() {
             $("#specialShopModal").remove();
             $(".modal-backdrop").remove();
             $("body").removeClass("modal-open");
+        };
+
+        $(document).off('click', '#CloseSpecialDeals, #specialShopModal .modal-backdrop')
+               .on('click', '#CloseSpecialDeals, #specialShopModal .modal-backdrop', function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            window.closeSpecialShopModal();
+        });
+
+        $(document).off('keydown.shopModal').on('keydown.shopModal', function(e) {
+            if (e.which === 27 && $('#specialShopModal').length) {
+                window.closeSpecialShopModal();
+            }
         });
         $("#FAQSpecialDeals").off('click').on('click', function(e) {
             if (e) e.stopPropagation();
