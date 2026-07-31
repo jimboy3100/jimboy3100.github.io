@@ -1557,6 +1557,18 @@
                 window.SpecialDeals('deals');
             }
         });
+
+        $(document).off('click', '.vanilla-skin-preview').on('click', '.vanilla-skin-preview', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.BeforeSpecialDeals === 'function') {
+                window.BeforeSpecialDeals();
+            } else if (typeof window.SpecialDeals === 'function') {
+                window.SpecialDeals('skins');
+            } else if (typeof window.openDailyDealsModal === 'function') {
+                window.openDailyDealsModal();
+            }
+        });
     });
 
 })();

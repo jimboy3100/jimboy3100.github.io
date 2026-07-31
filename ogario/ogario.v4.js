@@ -7326,10 +7326,12 @@ function thelegendmodproject() {
                 }
             });
             $(document).on(`click`, `.vanilla-skin-preview`, () => {
-                if ($("#player-skins").is(":visible")) {
-                    $("#player-skins").hide();
-                } else {
-                    $('#player-skins').show();
+                if (typeof window.BeforeSpecialDeals === 'function') {
+                    window.BeforeSpecialDeals();
+                } else if (typeof window.SpecialDeals === 'function') {
+                    window.SpecialDeals('skins');
+                } else if (typeof window.openDailyDealsModal === 'function') {
+                    window.openDailyDealsModal();
                 }
             });
             $(document).on(`click`, `.agario-profile-picture`, () => {
