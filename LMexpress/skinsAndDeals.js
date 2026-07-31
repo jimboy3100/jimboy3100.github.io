@@ -1163,7 +1163,17 @@ function populateDealsGrid() {
     for (var i = 0; i < iaps.length; i++) {
         var deal = iaps[i];
         var bundleInfo = bundleLookup[deal.bundleId] || {};
-        var price = priceMap[deal.priceTier] || ('Tier ' + deal.priceTier);
+        var price = (function(tier) {
+            if (window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig['Prices - Matrix']) {
+                var matrix = window.GameConfiguration.gameConfig['Prices - Matrix'];
+                for (var m = 0; m < matrix.length; m++) {
+                    if (String(matrix[m].tierId || matrix[m].id) === String(tier)) {
+                        return '$' + (matrix[m].amount || matrix[m].price);
+                    }
+                }
+            }
+            return priceMap[tier] || ('Tier ' + tier);
+        })(deal.priceTier);
         var desc = (bundleInfo.description && bundleInfo.description !== 'na')
             ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
             : deal.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
