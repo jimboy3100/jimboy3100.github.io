@@ -784,13 +784,24 @@
             token = $('#rewardLinkInput').val().trim();
         }
 
+        // Clean domain and protocol prefix if user pasted full URL
+        if (token) {
+            token = token.replace(/^https?:\/\/[^\/]+\/?/i, '').replace(/^#reward-/i, '').split(/[?#&]/)[0].trim();
+        }
+
         var bannerEl = document.getElementById('lm-promo-reward-banner');
-        if (!token || token.length < 3) {
+        if (!token || token.length < 3 || token.includes('agar.io') || token.startsWith('http')) {
             if (bannerEl) bannerEl.remove();
             return;
         }
 
         window.currentPromoToken = token;
+
+        // Prevent continuous DOM reloading/re-rendering loop if token hasn't changed
+        if (bannerEl && bannerEl.dataset.token === token) {
+            return;
+        }
+
         var targetContainer = profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab;
 
         if (!bannerEl) {
@@ -805,11 +816,14 @@
             }
         }
 
+        bannerEl.dataset.token = token;
+        var displayToken = token.length > 20 ? (token.substring(0, 18) + '...') : token;
+
         bannerEl.innerHTML = `
             <a id="legendAdAnchor3" href="#" onclick="window.claimPromoBannerReward(); return false;" style="display: block; text-decoration: none;">
-                <img id="lm-promo-banner-img" src="https://jimboy3100.github.io/banners/rewardlinkbanner.png" style="width: 100%; max-height: 80px; object-fit: cover; border-radius: 6px; display: block;" onerror="this.src='https://jimboy3100.github.io/banners/dyinglightbanner2.jpg'">
-                <div id="lm-promo-banner-title" style="color: #00ff88; font-size: 12px; font-weight: 800; margin-top: 6px; text-shadow: 0 1px 3px #000; letter-spacing: 0.5px;">
-                    🎁 REDEEM PROMO REWARD (${token})
+                <img id="lm-promo-banner-img" src="https://jimboy3100.github.io/banners/rewardlinkbanner.png" style="width: 100%; max-height: 80px; object-fit: cover; border-radius: 6px; display: block;" onerror="this.style.display='none';">
+                <div id="lm-promo-banner-title" style="color: #00ff88; font-size: 13px; font-weight: 800; margin-top: 6px; text-shadow: 0 1px 3px #000; letter-spacing: 0.5px;">
+                    🎁 REDEEM PROMO REWARD (${displayToken})
                 </div>
             </a>
         `;
