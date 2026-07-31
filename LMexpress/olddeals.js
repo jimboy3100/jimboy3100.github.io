@@ -952,6 +952,18 @@ window.refreshDealsTab = function() {
         clearTimeout(window._dealSoftTimeout);
         window._dealSoftTimeout = null;
     }
+    if (window._dealBundleTimeout) {
+        clearTimeout(window._dealBundleTimeout);
+        window._dealBundleTimeout = null;
+    }
+    if (window._boostTimeout) {
+        clearTimeout(window._boostTimeout);
+        window._boostTimeout = null;
+    }
+    if (window._deleteTimeout) {
+        clearTimeout(window._deleteTimeout);
+        window._deleteTimeout = null;
+    }
 };
 
 /**
@@ -1035,13 +1047,28 @@ function buyDealSoft(purchaseId, cost, currencyType) {
         return;
     }
 
+    // Disable all deal Buy buttons to prevent double-clicks
+    var allBtns = document.querySelectorAll('#dealsGrid .btn');
+    for (var i = 0; i < allBtns.length; i++) {
+        allBtns[i].disabled = true;
+        allBtns[i].style.opacity = '0.5';
+        allBtns[i].style.pointerEvents = 'none';
+    }
+
     toastr.info('<b>[SHOP]:</b> Sending purchase request...');
     window.application.softPurchase(purchaseId);
-    // ogario.v4.js case 71 handles the response (toastr + refreshSkinGrid + updateProducts).
-    // Safety fallback to refresh balance if response is delayed:
+    // ogario.v4.js case 71 handles the response (toastr + refreshSkinGrid + refreshDealsTab).
+    // refreshDealsTab() repopulates the grid which resets all buttons.
+    // Safety fallback to restore buttons if response is delayed:
     window._dealSoftTimeout = setTimeout(function() {
+        var btns = document.querySelectorAll('#dealsGrid .btn');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].disabled = false;
+            btns[j].style.opacity = '1';
+            btns[j].style.pointerEvents = 'auto';
+        }
         updateDealsBalance();
-    }, 8000);
+    }, 10000);
 }
 window.buyDealSoft = buyDealSoft;
 
@@ -1060,6 +1087,14 @@ function buyDealBundle(bundleId, dealDesc) {
         return;
     }
     if (!confirm('Purchase bundle "' + dealDesc + '"?')) return;
+
+    // Disable all deal buttons to prevent double-clicks
+    var allBtns = document.querySelectorAll('#dealsGrid .btn');
+    for (var bi = 0; bi < allBtns.length; bi++) {
+        allBtns[bi].disabled = true;
+        allBtns[bi].style.opacity = '0.5';
+        allBtns[bi].style.pointerEvents = 'none';
+    }
 
     // Encode Offer_bundle_request { bundleId: string } and send via opcode 77
     // Proto: field 1 (bundleId) wire type 2 (length-delimited string)
@@ -1083,7 +1118,26 @@ function buyDealBundle(bundleId, dealDesc) {
     } catch (e) {
         console.error('[SHOP] Offer bundle encode error:', e);
         toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
+        // Re-enable buttons on encode failure
+        var btns2 = document.querySelectorAll('#dealsGrid .btn');
+        for (var j = 0; j < btns2.length; j++) {
+            btns2[j].disabled = false;
+            btns2[j].style.opacity = '1';
+            btns2[j].style.pointerEvents = 'auto';
+        }
+        return;
     }
+    // ogario.v4.js case 78 handles response → refreshDealsTab repopulates grid.
+    // Safety fallback to restore buttons if response is delayed:
+    window._dealBundleTimeout = setTimeout(function() {
+        var btns = document.querySelectorAll('#dealsGrid .btn');
+        for (var k = 0; k < btns.length; k++) {
+            btns[k].disabled = false;
+            btns[k].style.opacity = '1';
+            btns[k].style.pointerEvents = 'auto';
+        }
+        updateDealsBalance();
+    }, 10000);
 }
 window.buyDealBundle = buyDealBundle;
 
@@ -1102,6 +1156,14 @@ function activateBoost(productId) {
     }
     var displayName = productId.replace(/_/g, ' ');
     if (!confirm('Activate boost "' + displayName + '"?')) return;
+
+    // Disable all deal buttons to prevent double-clicks
+    var allBtns = document.querySelectorAll('#dealsGrid .btn');
+    for (var bi = 0; bi < allBtns.length; bi++) {
+        allBtns[bi].disabled = true;
+        allBtns[bi].style.opacity = '0.5';
+        allBtns[bi].style.pointerEvents = 'none';
+    }
 
     // Encode Activate_boost_request { productId: string } and send via opcode 112
     // Proto: field 1 (productId) wire type 2 (length-delimited string)
@@ -1122,7 +1184,26 @@ function activateBoost(productId) {
     } catch (e) {
         console.error('[SHOP] Boost encode error:', e);
         toastr.error('<b>[SHOP]:</b> Failed to activate boost');
+        // Re-enable on failure
+        var btns2 = document.querySelectorAll('#dealsGrid .btn');
+        for (var j = 0; j < btns2.length; j++) {
+            btns2[j].disabled = false;
+            btns2[j].style.opacity = '1';
+            btns2[j].style.pointerEvents = 'auto';
+        }
+        return;
     }
+    // ogario.v4.js case 113 handles response → refreshDealsTab repopulates grid.
+    // Safety fallback:
+    window._boostTimeout = setTimeout(function() {
+        var btns = document.querySelectorAll('#dealsGrid .btn');
+        for (var k = 0; k < btns.length; k++) {
+            btns[k].disabled = false;
+            btns[k].style.opacity = '1';
+            btns[k].style.pointerEvents = 'auto';
+        }
+        updateDealsBalance();
+    }, 10000);
 }
 window.activateBoost = activateBoost;
 
@@ -1289,6 +1370,10 @@ function deleteCustomSkin(skinId) {
         return;
     }
 
+    // Disable the delete button on this skin card to prevent double-clicks
+    var cardBtn = $('.skin-card[data-product-id="' + skinId + '"] .skin-btn-delete, .skin-card[data-product-id="' + skinId + '"] .skin-btn-buy');
+    cardBtn.prop('disabled', true).css({ opacity: 0.5, pointerEvents: 'none' }).text('Deleting...');
+
     // Official client flow (agario.js:38643-38644):
     //   createDeleteUserSkinRequestMessage(skinId) → set_skinId(skinId)
     //   sendMessage(152, deleteMsg)
@@ -1324,7 +1409,14 @@ function deleteCustomSkin(skinId) {
         }
     } else {
         toastr && toastr.error('<b>[ERROR]:</b> Protobuf not loaded');
+        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+        return;
     }
+    // ogario.v4.js case 152 handles response → refreshSkinGrid rebuilds grid.
+    // Safety fallback to restore the button if response is lost:
+    window._deleteTimeout = setTimeout(function() {
+        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+    }, 10000);
 }
 window.deleteCustomSkin = deleteCustomSkin;
 

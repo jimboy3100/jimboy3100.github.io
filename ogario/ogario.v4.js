@@ -15784,6 +15784,7 @@ function thelegendmodproject() {
                                 }
                                 try { this.createSkinsHTML(); } catch(e) {}
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                                if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (spResult === 2) {
                                 toastr.error('<b>[SERVER]:</b> Purchase failed — not enough DNA/coins.');
                             } else if (spResult === 3) {
@@ -15807,6 +15808,8 @@ function thelegendmodproject() {
                                 if (iap.productUpdates && iap.productUpdates.length) {
                                     this.updateProducts(iap.productUpdates);
                                 }
+                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                                if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else {
                                 toastr.error('<b>[SERVER]:</b> In-app purchase failed (code ' + iap.result + ')');
                             }
@@ -15824,6 +15827,7 @@ function thelegendmodproject() {
                             this.updateProducts(wu.productUpdates);
                             try { this.createSkinsHTML(); } catch(e) {}
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
                     } catch(wuErr) {
                         console.warn("[LM] Error parsing wallet updates:", wuErr);
@@ -15838,6 +15842,7 @@ function thelegendmodproject() {
                             if (pwu.walletUpdates && pwu.walletUpdates.productUpdates) {
                                 this.updateProducts(pwu.walletUpdates.productUpdates);
                             }
+                            if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
                     } catch(pwuErr) {
                         console.warn("[LM] Error parsing purchase wallet updates:", pwuErr);
