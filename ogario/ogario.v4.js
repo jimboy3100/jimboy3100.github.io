@@ -10,7 +10,8 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
-window.OgVer = 3.496;
+window.OgVer = 3.497;
+console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
 
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
@@ -20500,6 +20501,20 @@ Most cells eaten   : ${mostCellsEaten}
             var max = this.glCellMaxInstances;
             var viewScale = this.scale || 1;
 
+            /* Atomic hybrid rendering: never mix ordinary Canvas2D cells with
+             * WebGL cells in the same frame. The WebGL canvas is a separate DOM
+             * layer, so partial fallback destroys global size-based z-order. */
+            var abortCellBatch = function () {
+                for (var ai = 0; ai < cellsArray.length; ai++) {
+                    var abortCell = cellsArray[ai];
+                    if (!abortCell) continue;
+                    abortCell._webglRendered = false;
+                    if (abortCell._webglCellIdx !== undefined) delete abortCell._webglCellIdx;
+                    if (abortCell._webglZ !== undefined) delete abortCell._webglZ;
+                }
+                return false;
+            };
+
             // Viewport culling bounds
             var minX, maxX, minY, maxY;
             if (window.fullSpectator) {
@@ -20518,7 +20533,7 @@ Most cells eaten   : ${mostCellsEaten}
             var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
             var _isParty = ':party' === application.gameMode;
 
-            for (var i = 0; i < cellsArray.length && count < max; i++) {
+            for (var i = 0; i < cellsArray.length; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
                 // Skip rendering duplicate spectator cell if primary socket is already drawing it
@@ -20537,14 +20552,28 @@ Most cells eaten   : ${mostCellsEaten}
                 if (cell.isFood) continue; // food cells use separate drawFood() path
                 if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
                 if (cell.removed) continue; // removed cells need Canvas2D alpha fade
-                // Video skins require Canvas2D drawImage of video element
-                if (defaultmapsettings.videoSkins && cell.targetNick) {
-                    var _vsUrl = application.customSkinsMap[cell.targetNick];
-                    if (_vsUrl && (typeof _vsUrl === 'string') && (_vsUrl.includes('.mp4') || _vsUrl.includes('.webm') || _vsUrl.includes('.ogv'))) continue;
-                }
+
 
                 var x = cell.x, y = cell.y, r = cell.size;
                 if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+
+                /* Video skins require Canvas2D. Abort the complete cell batch instead
+                 * of allowing one video-skinned cell to fall behind the WebGL canvas. */
+                if (defaultmapsettings.videoSkins && cell.targetNick) {
+                    var _vsUrl = _isParty
+                        ? application.customSkinsMap[cell.targetNick + cell.color]
+                        : application.customSkinsMap[cell.targetNick];
+
+                    if (typeof _vsUrl === 'string' &&
+                        /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(_vsUrl)) {
+                        return abortCellBatch();
+                    }
+                }
+
+                /* Never silently truncate the sorted array at 2000 instances. */
+                if (count >= max) {
+                    return abortCellBatch();
+                }
 
                 // Color resolution
                 var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
@@ -20604,6 +20633,13 @@ Most cells eaten   : ${mostCellsEaten}
                                   ) : null);
                     }
                     if (skinUrl) {
+                        /* A video URL found through an alternate skin-map key must
+                         * also force the complete batch to Canvas2D. */
+                        if (typeof skinUrl === 'string' &&
+                            /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(skinUrl)) {
+                            return abortCellBatch();
+                        }
+
                         skinRequested = true;
                         if (!application.customSkinsCache.hasOwnProperty(skinUrl)) {
                             application.loadSkin(application.customSkinsCache, skinUrl, undefined, true);
@@ -20626,11 +20662,10 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* FALLBACK: If cell has a skin requested but no WebGL texture layer could be assigned
-                 * (e.g. 128-layer GL capacity full), skip WebGL rendering for this cell so Canvas2D
-                 * draws the cell body + skin natively. */
+                /* Never allow a per-cell fallback. A partial WebGL batch is on a
+                 * separate canvas layer and therefore cannot preserve global z-order. */
                 if (skinRequested && skinLayer < 0) {
-                    continue;
+                    return abortCellBatch();
                 }
 
                 var idx = count * 9;
