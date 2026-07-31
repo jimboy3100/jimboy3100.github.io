@@ -9790,46 +9790,162 @@ function thelegendmodproject() {
         sendSLG(i, t) { },
         /* ─── §4.14 Message Handling ─── */
         handleMessage(message) {
-            this.readMessage(new DataView(message.data));
+            var payload =
+                message &&
+                message.data;
+
+            var view = null;
+
+            try {
+                if (
+                    payload instanceof ArrayBuffer
+                ) {
+                    view =
+                        new DataView(payload);
+                } else if (
+                    ArrayBuffer.isView(payload)
+                ) {
+                    view =
+                        new DataView(
+                            payload.buffer,
+                            payload.byteOffset,
+                            payload.byteLength
+                        );
+                }
+            } catch (viewError) {
+                console.warn(
+                    "[Relay] Invalid message buffer:",
+                    viewError
+                );
+                return;
+            }
+
+            if (
+                !view ||
+                view.byteLength < 1
+            ) {
+                return;
+            }
+
+            try {
+                this.readMessage(view);
+            } catch (messageError) {
+                if (
+                    messageError instanceof RangeError
+                ) {
+                    console.warn(
+                        "[Relay] Rejected truncated packet:",
+                        messageError
+                    );
+                    return;
+                }
+
+                console.error(
+                    "[Relay] Message handler failed:",
+                    messageError
+                );
+            }
         },
         //Sonia4
         handleSLGMessage(message) { },
         readMessage(message) {
-            var opcode = message.getUint8(0);
+            if (
+                !message ||
+                message.byteLength < 1
+            ) {
+                return;
+            }
+
+            var opcode =
+                message.getUint8(0);
+
             switch (opcode) {
                 case 0:
-                    this.playerID = message.getUint32(1, true);
+                    if (
+                        message.byteLength < 5
+                    ) {
+                        console.warn(
+                            "[Relay] Truncated player-ID packet"
+                        );
+                        return;
+                    }
+
+                    this.playerID =
+                        message.getUint32(
+                            1,
+                            true
+                        );
                     break;
+
                 case 1:
                     this.sendPlayerUpdate();
                     break;
+
                 case 12:
-                    this.readPlayerRemove(message);
+                    this.readPlayerRemove(
+                        message
+                    );
                     break;
+
                 case 16:
-                    this.readPpv7(message);
+                    this.readPpv7(
+                        message
+                    );
                     break;
+
                 case 20:
-                    this.updateTeamPlayer(message);
+                    this.updateTeamPlayer(
+                        message
+                    );
                     break;
 
                 case 30:
-                    this.updateTeamPlayerPosition(message);
+                    if (
+                        message.byteLength < 17
+                    ) {
+                        console.warn(
+                            "[Relay] Truncated player-position packet"
+                        );
+                        return;
+                    }
+
+                    this.updateTeamPlayerPosition(
+                        message
+                    );
                     break;
+
                 case 41:
-                    this.readQuadrantRequest(message);
+                    this.readQuadrantRequest(
+                        message
+                    );
                     break;
+
                 case 42:
-                    this.readQuadrantResponse(message);
+                    this.readQuadrantResponse(
+                        message
+                    );
                     break;
+
                 case 45:
-                    this.readWavePing(message);
+                    this.readWavePing(
+                        message
+                    );
                     break;
+
                 case 96:
                     break;
 
                 case 100:
-                    this.readChatMessage(message);
+                    this.readChatMessage(
+                        message
+                    );
+                    break;
+
+                default:
+                    console.debug(
+                        "[Relay] Unknown opcode:",
+                        opcode
+                    );
                     break;
             }
         },
@@ -9846,84 +9962,431 @@ function thelegendmodproject() {
             }
         },
         readPpv7(view) {
+            if (
+                !view ||
+                view.byteLength < 1
+            ) {
+                return;
+            }
+
             var offset = 1;
+            var malformed = false;
+
+            function hasBytes(count) {
+                return (
+                    count >= 0 &&
+                    offset + count <=
+                        view.byteLength
+                );
+            }
+
             function readUTF16() {
-                if (offset >= view.byteLength) return '';
-                var len = view.getUint8(offset);
-                offset += 1;
-                var str = '';
-                for (var i = 0; i < len && offset + 1 < view.byteLength; i++) {
-                    str += String.fromCharCode(view.getUint16(offset, true));
+                if (!hasBytes(1)) {
+                    malformed = true;
+                    return null;
+                }
+
+                var len =
+                    view.getUint8(offset++);
+
+                var byteLength =
+                    len * 2;
+
+                if (!hasBytes(byteLength)) {
+                    malformed = true;
+                    return null;
+                }
+
+                var str = "";
+
+                for (
+                    var i = 0;
+                    i < len;
+                    i++
+                ) {
+                    str +=
+                        String.fromCharCode(
+                            view.getUint16(
+                                offset,
+                                true
+                            )
+                        );
+
                     offset += 2;
                 }
+
                 return str;
             }
+
             function readColor() {
-                if (offset + 3 > view.byteLength) return '#000000';
-                var r = view.getUint8(offset++).toString(16).padStart(2, '0');
-                var g = view.getUint8(offset++).toString(16).padStart(2, '0');
-                var b = view.getUint8(offset++).toString(16).padStart(2, '0');
-                return '#' + r + g + b;
-            }
-            while (offset + 1 < view.byteLength) {
-                var playerID = view.getUint16(offset, true);
-                offset += 2;
-                if (playerID === 0) break;
-
-                var flagsTopLevel = view.getUint8(offset);
-                offset += 1;
-                if (!flagsTopLevel) continue;
-
-                var flagsDownLevel = (flagsTopLevel & 1) ? view.getUint8(offset++) : 0;
-                var clientId = (flagsDownLevel & 1) ? (view.getUint16(offset, true), offset += 2) : undefined;
-                var nick = (flagsDownLevel & 2) ? readUTF16() : undefined;
-                var customSkin = (flagsDownLevel & 4) ? readUTF16() : undefined;
-                var customColor = (flagsDownLevel & 8) ? readColor() : undefined;
-                var pSkin = (flagsDownLevel & 16) ? readUTF16() : undefined;
-                var pColor = (flagsDownLevel & 32) ? readColor() : undefined;
-                var accountId = (flagsDownLevel & 64) ? (view.getUint32(offset, true), offset += 4) : undefined;
-
-                var posX, posY, mass;
-                if (flagsTopLevel & 2) {
-                    posX = view.getInt16(offset, true); offset += 2;
-                    posY = view.getInt16(offset, true); offset += 2;
-                    mass = view.getUint32(offset, true); offset += 4;
+                if (!hasBytes(3)) {
+                    malformed = true;
+                    return null;
                 }
-                var isAlive = (flagsTopLevel & 4) ? Boolean(view.getUint8(offset++)) : undefined;
-                var quadrant = (flagsTopLevel & 8) ? view.getInt8(offset++) : undefined;
 
-                var existingIdx = this.checkPlayerID(playerID);
-                var activeNick = nick || (existingIdx !== null ? this.teamPlayers[existingIdx].nick : '');
-                var activeSkin = customSkin || pSkin || (existingIdx !== null ? this.teamPlayers[existingIdx].skinURL : '');
-                var activeColor = customColor || pColor || '#000000';
+                var r =
+                    view
+                        .getUint8(offset++)
+                        .toString(16)
+                        .padStart(2, "0");
+
+                var g =
+                    view
+                        .getUint8(offset++)
+                        .toString(16)
+                        .padStart(2, "0");
+
+                var b =
+                    view
+                        .getUint8(offset++)
+                        .toString(16)
+                        .padStart(2, "0");
+
+                return (
+                    "#" +
+                    r +
+                    g +
+                    b
+                );
+            }
+
+            while (!malformed) {
+                if (!hasBytes(2)) {
+                    break;
+                }
+
+                var playerID =
+                    view.getUint16(
+                        offset,
+                        true
+                    );
+
+                offset += 2;
+
+                if (playerID === 0) {
+                    break;
+                }
+
+                if (!hasBytes(1)) {
+                    malformed = true;
+                    break;
+                }
+
+                var flagsTopLevel =
+                    view.getUint8(offset++);
+
+                if (!flagsTopLevel) {
+                    continue;
+                }
+
+                var flagsDownLevel = 0;
+
+                if (flagsTopLevel & 1) {
+                    if (!hasBytes(1)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    flagsDownLevel =
+                        view.getUint8(
+                            offset++
+                        );
+                }
+
+                var clientId;
+                var nick;
+                var customSkin;
+                var customColor;
+                var pSkin;
+                var pColor;
+                var accountId;
+
+                if (flagsDownLevel & 1) {
+                    if (!hasBytes(2)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    clientId =
+                        view.getUint16(
+                            offset,
+                            true
+                        );
+
+                    offset += 2;
+                }
+
+                if (flagsDownLevel & 2) {
+                    nick = readUTF16();
+                }
+
+                if (flagsDownLevel & 4) {
+                    customSkin =
+                        readUTF16();
+                }
+
+                if (flagsDownLevel & 8) {
+                    customColor =
+                        readColor();
+                }
+
+                if (flagsDownLevel & 16) {
+                    pSkin =
+                        readUTF16();
+                }
+
+                if (flagsDownLevel & 32) {
+                    pColor =
+                        readColor();
+                }
+
+                if (
+                    malformed ||
+                    nick === null ||
+                    customSkin === null ||
+                    customColor === null ||
+                    pSkin === null ||
+                    pColor === null
+                ) {
+                    malformed = true;
+                    break;
+                }
+
+                if (flagsDownLevel & 64) {
+                    if (!hasBytes(4)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    accountId =
+                        view.getUint32(
+                            offset,
+                            true
+                        );
+
+                    offset += 4;
+                }
+
+                var posX;
+                var posY;
+                var mass;
+
+                if (flagsTopLevel & 2) {
+                    if (!hasBytes(8)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    posX =
+                        view.getInt16(
+                            offset,
+                            true
+                        );
+
+                    offset += 2;
+
+                    posY =
+                        view.getInt16(
+                            offset,
+                            true
+                        );
+
+                    offset += 2;
+
+                    mass =
+                        view.getUint32(
+                            offset,
+                            true
+                        );
+
+                    offset += 4;
+                }
+
+                var isAlive;
+                var quadrant;
+
+                if (flagsTopLevel & 4) {
+                    if (!hasBytes(1)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    isAlive =
+                        Boolean(
+                            view.getUint8(
+                                offset++
+                            )
+                        );
+                }
+
+                if (flagsTopLevel & 8) {
+                    if (!hasBytes(1)) {
+                        malformed = true;
+                        break;
+                    }
+
+                    quadrant =
+                        view.getInt8(
+                            offset++
+                        );
+                }
+
+                var existingIdx =
+                    this.checkPlayerID(
+                        playerID
+                    );
+
+                var activeNick =
+                    nick ||
+                    (
+                        existingIdx !== null
+                            ? this.teamPlayers[
+                                existingIdx
+                            ].nick
+                            : ""
+                    );
+
+                var activeSkin =
+                    customSkin ||
+                    pSkin ||
+                    (
+                        existingIdx !== null
+                            ? this.teamPlayers[
+                                existingIdx
+                            ].skinURL
+                            : ""
+                    );
+
+                var activeColor =
+                    customColor ||
+                    pColor ||
+                    "#000000";
 
                 if (activeSkin) {
                     if (activeNick) {
-                        this.cacheCustomSkin(activeNick, activeColor, activeSkin);
+                        this.cacheCustomSkin(
+                            activeNick,
+                            activeColor,
+                            activeSkin
+                        );
                     }
+
                     if (existingIdx !== null) {
-                        this.teamPlayers[existingIdx].skinURL = activeSkin;
-                        if (!activeNick && this.teamPlayers[existingIdx].nick) {
-                            this.cacheCustomSkin(this.teamPlayers[existingIdx].nick, activeColor, activeSkin);
+                        this.teamPlayers[
+                            existingIdx
+                        ].skinURL =
+                            activeSkin;
+
+                        if (
+                            !activeNick &&
+                            this.teamPlayers[
+                                existingIdx
+                            ].nick
+                        ) {
+                            this.cacheCustomSkin(
+                                this.teamPlayers[
+                                    existingIdx
+                                ].nick,
+                                activeColor,
+                                activeSkin
+                            );
                         }
                     }
                 }
+
                 if (existingIdx !== null) {
-                    if (nick !== undefined) this.teamPlayers[existingIdx].nick = nick;
-                    if (activeSkin) this.teamPlayers[existingIdx].skinURL = activeSkin;
-                    if (posX !== undefined && posY !== undefined) {
-                        this.teamPlayers[existingIdx].x = posX;
-                        this.teamPlayers[existingIdx].y = posY;
+                    if (nick !== undefined) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].nick = nick;
+                    }
+
+                    if (activeSkin) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].skinURL =
+                            activeSkin;
+                    }
+
+                    if (
+                        posX !== undefined &&
+                        posY !== undefined
+                    ) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].x = posX;
+
+                        this.teamPlayers[
+                            existingIdx
+                        ].y = posY;
+                    }
+
+                    if (mass !== undefined) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].mass = mass;
+                    }
+
+                    if (isAlive !== undefined) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].alive = isAlive;
+                    }
+
+                    if (quadrant !== undefined) {
+                        this.teamPlayers[
+                            existingIdx
+                        ].quadrant = quadrant;
                     }
                 } else if (activeNick) {
-                    var skinName = ":party" === this.gameMode ? activeNick + activeColor : activeNick;
-                    var map = new minimapCell(playerID, activeNick, skinName, activeSkin || '');
-                    if (posX !== undefined && posY !== undefined) {
+                    var skinName =
+                        ":party" ===
+                        this.gameMode
+                            ? activeNick +
+                                activeColor
+                            : activeNick;
+
+                    var map =
+                        new minimapCell(
+                            playerID,
+                            activeNick,
+                            skinName,
+                            activeSkin || ""
+                        );
+
+                    if (
+                        posX !== undefined &&
+                        posY !== undefined
+                    ) {
                         map.x = posX;
                         map.y = posY;
+                        map.lastX = posX;
+                        map.lastY = posY;
                     }
-                    this.teamPlayers.push(map);
+
+                    if (mass !== undefined) {
+                        map.mass = mass;
+                    }
+
+                    if (isAlive !== undefined) {
+                        map.alive = isAlive;
+                    }
+
+                    if (quadrant !== undefined) {
+                        map.quadrant =
+                            quadrant;
+                    }
+
+                    this.teamPlayers.push(
+                        map
+                    );
                 }
+            }
+
+            if (malformed) {
+                console.warn(
+                    "[Relay] Rejected malformed PPv7 packet"
+                );
             }
         },
         /* ─── §4.15 Delta/SLG Protocol ─── */
@@ -10251,34 +10714,118 @@ function thelegendmodproject() {
             //
         },
         sendPlayerUpdate() {
-            if ((this.isSocketOpen() || window.ogarioWS) && ogario.play && this.playerID && ogario.playerColor) {
-                function encode(str) {
-                    for (let length = 0; length < str.length; length++) {
-                        view.setUint16(offset, str.charCodeAt(length), true);
-                        offset += 2;
-                    }
-                    view.setUint16(offset, 0, true);
+            if (
+                !(
+                    this.isSocketOpen() ||
+                    window.ogarioWS
+                ) ||
+                !ogario.play ||
+                !this.playerID ||
+                !ogario.playerColor
+            ) {
+                return;
+            }
+
+            var nick =
+                String(
+                    ogarcopythelb.nick || ""
+                );
+
+            var skinURL =
+                String(
+                    ogarcopythelb.skinURL || ""
+                );
+
+            var customColor =
+                String(
+                    ogarcopythelb.color || ""
+                );
+
+            var playerColor =
+                String(
+                    ogario.playerColor || ""
+                );
+
+            var strings = [
+                nick,
+                skinURL,
+                customColor,
+                playerColor
+            ];
+
+            var bufferSize = 5;
+
+            for (
+                var stringIndex = 0;
+                stringIndex <
+                    strings.length;
+                stringIndex++
+            ) {
+                bufferSize +=
+                    strings[stringIndex]
+                        .length *
+                        2 +
+                    2;
+            }
+
+            var view =
+                this.createView(
+                    bufferSize
+                );
+
+            view.setUint8(0, 20);
+
+            view.setUint32(
+                1,
+                this.playerID,
+                true
+            );
+
+            var offset = 5;
+
+            function encode(str) {
+                for (
+                    var length = 0;
+                    length < str.length;
+                    length++
+                ) {
+                    view.setUint16(
+                        offset,
+                        str.charCodeAt(length),
+                        true
+                    );
+
                     offset += 2;
                 }
-                let text = 41;
-                text += ogarcopythelb.nick.length * 2;
-                text += ogarcopythelb.skinURL.length * 2;
-                var view = this.createView(text);
-                view.setUint8(0, 20);
-                view.setUint32(1, this.playerID, true);
-                var offset = 5;
-                encode(ogarcopythelb.nick);
-                encode(ogarcopythelb.skinURL);
-                encode(ogarcopythelb.color);
-                encode(ogario.playerColor);
-                /* Route op20 to relay (not game server) when on private server */
-                if (this.privateMode && window.ogarioWS) {
-                    window.ogarioWS.send(view.buffer);
-                } else {
-                    this.sendBuffer(view);
-                }
-                this.sendDeltaPlayerUpdate();
+
+                view.setUint16(
+                    offset,
+                    0,
+                    true
+                );
+
+                offset += 2;
             }
+
+            encode(nick);
+            encode(skinURL);
+            encode(customColor);
+            encode(playerColor);
+
+            if (
+                this.privateMode &&
+                window.ogarioWS &&
+                window.ogarioWS.readyState ===
+                    WebSocket.OPEN
+            ) {
+                window.ogarioWS.send(
+                    view.buffer
+                );
+            } else {
+                this.sendBuffer(view);
+            }
+
+            this.sendDeltaPlayerUpdate();
         },
         sendPlayerPosition() {
             if (this.isSocketOpen() && (ogario.play || LM.playerCellsMulti.length) && this.playerID) {
@@ -10569,40 +11116,134 @@ function thelegendmodproject() {
             return null;
         },
         updateTeamPlayer(message) {
-            function encode() {
-                var text = "";
-                for (; ;) {
-                    var string = message.getUint16(offset, true);
-                    if (0 === string) {
-                        break;
-                    }
-                    text = text + String.fromCharCode(string);
-                    offset = offset + 2;
-                }
-                return offset = offset + 2, text;
+            if (
+                !message ||
+                message.byteLength < 5
+            ) {
+                console.warn(
+                    "[Relay] Truncated team-player packet"
+                );
+                return;
             }
 
-            var id = message.getUint32(1, true);
+            var id =
+                message.getUint32(
+                    1,
+                    true
+                );
+
             var offset = 5;
-            var nick = encode();
-            var skinUrl = this.checkSkinURL(encode());
-            var customColor = encode();
-            var defaultColor = encode();
-            var skinName = ":party" === this.gameMode ? nick + defaultColor : nick;
-            var userId = this.checkPlayerID(id);
-            if (null !== userId) {
-                this.teamPlayers[userId].nick = nick;
-                this.teamPlayers[userId].skinID = skinName;
-                this.teamPlayers[userId].skinURL = skinUrl;
-                this.teamPlayers[userId].setColor(defaultColor, customColor);
+
+            function readZeroTerminatedUTF16() {
+                var text = "";
+
+                while (
+                    offset + 1 <
+                    message.byteLength
+                ) {
+                    var codeUnit =
+                        message.getUint16(
+                            offset,
+                            true
+                        );
+
+                    offset += 2;
+
+                    if (codeUnit === 0) {
+                        return text;
+                    }
+
+                    text +=
+                        String.fromCharCode(
+                            codeUnit
+                        );
+                }
+
+                return null;
+            }
+
+            var nick =
+                readZeroTerminatedUTF16();
+
+            var rawSkinUrl =
+                readZeroTerminatedUTF16();
+
+            var customColor =
+                readZeroTerminatedUTF16();
+
+            var defaultColor =
+                readZeroTerminatedUTF16();
+
+            if (
+                nick === null ||
+                rawSkinUrl === null ||
+                customColor === null ||
+                defaultColor === null
+            ) {
+                console.warn(
+                    "[Relay] Rejected unterminated team-player packet"
+                );
+                return;
+            }
+
+            var skinUrl =
+                this.checkSkinURL(
+                    rawSkinUrl
+                );
+
+            var skinName =
+                ":party" === this.gameMode
+                    ? nick + defaultColor
+                    : nick;
+
+            var userId =
+                this.checkPlayerID(id);
+
+            if (userId !== null) {
+                this.teamPlayers[
+                    userId
+                ].nick = nick;
+
+                this.teamPlayers[
+                    userId
+                ].skinID = skinName;
+
+                this.teamPlayers[
+                    userId
+                ].skinURL = skinUrl;
+
+                this.teamPlayers[
+                    userId
+                ].setColor(
+                    defaultColor,
+                    customColor
+                );
             } else {
-                const map = new minimapCell(id, nick, skinName, skinUrl);
-                map.setColor(defaultColor, customColor);
-                this.teamPlayers.push(map);
+                var map =
+                    new minimapCell(
+                        id,
+                        nick,
+                        skinName,
+                        skinUrl
+                    );
+
+                map.setColor(
+                    defaultColor,
+                    customColor
+                );
+
+                this.teamPlayers.push(
+                    map
+                );
             }
 
             if (skinUrl && nick) {
-                this.cacheCustomSkin(nick, defaultColor || '#000000', skinUrl);
+                this.cacheCustomSkin(
+                    nick,
+                    defaultColor ||
+                        "#000000",
+                    skinUrl
+                );
             }
         },
         updateTeamPlayerPosition(message) {
@@ -11594,9 +12235,8 @@ function thelegendmodproject() {
             }
         },
         setupSkinUploadInterface() {
-            // 1. INJECT THE HTML PANEL (If it doesn't exist)
-            if ($('#custom-skin-uploader').length === 0) {
-                const panelHTML = `
+            if ($("#custom-skin-uploader").length === 0) {
+                var panelHTML = `
                     <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; border-radius: 8px; background-color: #00243e; border: 2px solid #01d9cc;">
                         <div class="clearfix" style="margin-bottom: 10px;">
                             <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">✕</div>
@@ -11617,83 +12257,119 @@ function thelegendmodproject() {
                         <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
                         <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">Ready</div>
                     </div>`;
-                $('body').append(panelHTML);
 
-                // Initialize Color Picker for the new panel
-                $('#custom-skin-uploader .color-picker').colorpicker({ format: 'hex' }).on('changeColor.colorpicker', function (e) {
-                    $('#legendSkinColor').val(e.color.toHex());
-                    $('#legendCanvas').css('border-color', e.color.toHex());
-                });
+                $("body").append(panelHTML);
+
+                if ($.fn && $.fn.colorpicker) {
+                    $("#custom-skin-uploader .color-picker")
+                        .colorpicker({ format: "hex" })
+                        .off("changeColor.colorpicker")
+                        .on("changeColor.colorpicker", function (e) {
+                            var hexColor = e && e.color ? e.color.toHex() : "#FFFF00";
+                            $("#legendSkinColor").val(hexColor);
+                            $("#legendCanvas").css("border-color", hexColor);
+                        });
+                }
             }
 
-            // 2. DEFINE VARIABLES
-            const panel = $('#custom-skin-uploader');
-            const saveBtn = $('#legendSaveBtn');
-            const status = $('#legendStatus');
-            const app = this;
-            let processedBuffer = null;
+            var panel = $("#custom-skin-uploader");
+            var saveBtn = $("#legendSaveBtn");
+            var status = $("#legendStatus");
+            var app = this;
+            var processedBuffer = null;
+            var currentObjectUrl = null;
 
-            // 3. IMAGE PROCESSING LOGIC
-            const processAndFormat = (src) => {
-                const img = new Image();
+            function cleanupObjectUrl() {
+                if (currentObjectUrl) {
+                    try {
+                        URL.revokeObjectURL(currentObjectUrl);
+                    } catch (e) {}
+                    currentObjectUrl = null;
+                }
+            }
+
+            function processAndFormat(src, isObjectUrl) {
+                var img = new Image();
                 img.crossOrigin = "Anonymous";
-                img.onload = () => {
-                    const canvas = document.getElementById("legendCanvas");
-                    const ctx = canvas.getContext("2d");
-
-                    // FORCE 512x512 PNG
+                img.onload = function () {
+                    var canvas = document.getElementById("legendCanvas");
+                    if (!canvas) {
+                        cleanupObjectUrl();
+                        return;
+                    }
+                    var ctx = canvas.getContext("2d");
                     ctx.clearRect(0, 0, 512, 512);
                     ctx.drawImage(img, 0, 0, 512, 512);
 
-                    canvas.toBlob((blob) => {
-                        const reader = new FileReader();
-                        reader.onload = () => {
+                    if (isObjectUrl) {
+                        cleanupObjectUrl();
+                    }
+
+                    canvas.toBlob(function (blob) {
+                        if (!blob) {
+                            status.text("Image Conversion Failed").css("color", "red");
+                            return;
+                        }
+                        var reader = new FileReader();
+                        reader.onload = function () {
                             processedBuffer = new Uint8Array(reader.result);
-                            const kb = (processedBuffer.length / 1024).toFixed(1);
+                            var kb = (processedBuffer.length / 1024).toFixed(1);
 
                             if (processedBuffer.length > 102400) {
-                                status.text("Too Big: " + kb + "KB (Limit 100KB)").css('color', 'red');
-                                saveBtn.prop('disabled', true).css('opacity', 0.5);
+                                status.text("Too Big: " + kb + "KB (Limit 100KB)").css("color", "red");
+                                saveBtn.prop("disabled", true).css("opacity", 0.5);
                             } else {
-                                status.text("PNG Ready: " + kb + "KB").css('color', '#0f0');
-                                saveBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                                status.text("PNG Ready: " + kb + "KB").css("color", "#0f0");
+                                saveBtn.prop("disabled", false).css({ opacity: 1, cursor: "pointer" });
                             }
                         };
                         reader.readAsArrayBuffer(blob);
-                    }, 'image/png');
+                    }, "image/png");
+                };
+                img.onerror = function () {
+                    status.text("Failed to load image").css("color", "red");
+                    cleanupObjectUrl();
                 };
                 img.src = src;
-            };
+            }
 
-            // 4. EVENT LISTENERS
-            saveBtn.off('click').on('click', () => {
-                const name = $('#legendSkinName').val() || "test";
-                const color = $('#legendSkinColor').val() || "#FFFF00";
+            saveBtn.off("click").on("click", function () {
+                var name = $("#legendSkinName").val() || "test";
+                var color = $("#legendSkinColor").val() || "#FFFF00";
                 if (processedBuffer) {
                     app.uploadCustomSkin(processedBuffer, name, color);
                 }
             });
 
-            $('#legendUploadInput').on('change', (e) => {
-                const file = e.target.files[0];
-                if (file) processAndFormat(URL.createObjectURL(file));
-            });
-
-            $('.quick-custom-skin').on('click', (e) => {
-                e.preventDefault();
-                panel.fadeIn(200);
-                if (!window.agarioUID) {
-                    status.text("Must be logged in to Agar.io to upload custom skins").css('color', '#ff5252');
-                    saveBtn.prop('disabled', true).css('opacity', 0.5);
-                    $('label[for="legendUploadInput"]').css({ opacity: 0.5, 'pointer-events': 'none' });
-                } else {
-                    $('label[for="legendUploadInput"]').css({ opacity: 1, 'pointer-events': 'auto' });
-                    const currentUrl = $('#skin').val();
-                    if (currentUrl && currentUrl.length > 5) processAndFormat(currentUrl);
+            $("#legendUploadInput").off("change").on("change", function (e) {
+                var file = e.target.files && e.target.files[0];
+                if (file) {
+                    cleanupObjectUrl();
+                    currentObjectUrl = URL.createObjectURL(file);
+                    processAndFormat(currentObjectUrl, true);
                 }
             });
 
-            $('#close-custom-skin').on('click', () => panel.fadeOut(200));
+            $(".quick-custom-skin").off("click").on("click", function (e) {
+                e.preventDefault();
+                panel.fadeIn(200);
+                if (!window.agarioUID) {
+                    status.text("Must be logged in to Agar.io to upload custom skins").css("color", "#ff5252");
+                    saveBtn.prop("disabled", true).css("opacity", 0.5);
+                    $('label[for="legendUploadInput"]').css({ opacity: 0.5, "pointer-events": "none" });
+                } else {
+                    $('label[for="legendUploadInput"]').css({ opacity: 1, "pointer-events": "auto" });
+                    var currentUrl = $("#skin").val();
+                    if (currentUrl && currentUrl.length > 5) {
+                        processAndFormat(currentUrl, false);
+                    }
+                }
+            });
+
+            $("#close-custom-skin").off("click").on("click", function () {
+                cleanupObjectUrl();
+                panel.fadeOut(200);
+            });
         },
         /* ─── §4.22 Init ─── */
         init() {

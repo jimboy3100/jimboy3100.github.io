@@ -24,35 +24,149 @@ window.EnvConfig.configVersion = self.localStorage.getItem("EnvConfig.configVers
 
 var window = this;
 window.loggedIn=false;
-if (!(document.URL && (document.URL.includes('jimboy3100.github.io') || document.URL.includes('expanding.land') || document.URL.includes('legendmod.ml')))){
-$.ajax("//agar.io/index.html", {
-    error() {},
-    success(sketchContents) {
-        var parsed = $.parseHTML(sketchContents);
-        window.EnvConfig = sketchContents.match(/EnvConfig = \{[^}]+}/);
-        var runEnvConfig = new Function(window.EnvConfig);
+if (
+    !(
+        document.URL &&
+        (
+            document.URL.includes("jimboy3100.github.io") ||
+            document.URL.includes("expanding.land") ||
+            document.URL.includes("legendmod.ml")
+        )
+    )
+) {
+    $.ajax("//agar.io/index.html", {
+        error(xhr, status, errorThrown) {
+            console.warn(
+                "[Master] Could not refresh EnvConfig:",
+                status,
+                errorThrown
+            );
+        },
 
-        runEnvConfig();
-        localStorage.setItem("EnvConfig.fb_app_id", window.EnvConfig.fb_app_id);
-        localStorage.setItem("EnvConfig.google_client_id", window.EnvConfig.google_client_id);
-        localStorage.setItem("EnvConfig.master_url", window.EnvConfig.master_url);
-        localStorage.setItem("EnvConfig.configVersion", window.EnvConfig.configVersion);
-        //legendmaster(window);	
-    },
-    dataType: "text",
-    method: "GET",
-    cache: false,
-    crossDomain: true
-});
-}	
+        success(sketchContents) {
+            if (typeof sketchContents !== "string") {
+                console.warn(
+                    "[Master] Agar.io index returned no text EnvConfig source"
+                );
+                return;
+            }
+
+            var envConfigMatch =
+                sketchContents.match(
+                    /EnvConfig\s*=\s*\{[^}]+\}/
+                );
+
+            if (!envConfigMatch) {
+                console.warn(
+                    "[Master] EnvConfig declaration was not found in Agar.io index"
+                );
+                return;
+            }
+
+            try {
+                new Function(
+                    '"use strict";\n' +
+                    "window." +
+                    envConfigMatch[0] +
+                    ";"
+                )();
+            } catch (envConfigError) {
+                console.error(
+                    "[Master] Failed to evaluate EnvConfig:",
+                    envConfigError
+                );
+                return;
+            }
+
+            if (
+                !window.EnvConfig ||
+                typeof window.EnvConfig !== "object"
+            ) {
+                console.warn(
+                    "[Master] Evaluated EnvConfig is invalid"
+                );
+                return;
+            }
+
+            if (window.EnvConfig.fb_app_id != null) {
+                localStorage.setItem(
+                    "EnvConfig.fb_app_id",
+                    window.EnvConfig.fb_app_id
+                );
+            }
+
+            if (window.EnvConfig.google_client_id != null) {
+                localStorage.setItem(
+                    "EnvConfig.google_client_id",
+                    window.EnvConfig.google_client_id
+                );
+            }
+
+            if (window.EnvConfig.master_url != null) {
+                localStorage.setItem(
+                    "EnvConfig.master_url",
+                    window.EnvConfig.master_url
+                );
+            }
+
+            if (window.EnvConfig.configVersion != null) {
+                localStorage.setItem(
+                    "EnvConfig.configVersion",
+                    window.EnvConfig.configVersion
+                );
+            }
+        },
+
+        timeout: 10000,
+        dataType: "text",
+        method: "GET",
+        cache: false,
+        crossDomain: true
+    });
+}
 if (window.EnvConfig.master_url != null) {
     $.ajax(window.EnvConfig.master_url + "/getLatestID", {
-        error() {},
-        success(sketchContents) {
-            var getLatestIDtemp = $.parseHTML(sketchContents);
-            window.getLatestID = getLatestIDtemp[0].textContent;
-            localStorage.setItem("getLatestID", window.getLatestID);
+        error(xhr, status, errorThrown) {
+            console.warn(
+                "[Master] getLatestID request failed:",
+                status,
+                errorThrown
+            );
         },
+
+        success(sketchContents) {
+            var latestIdText = "";
+
+            if (typeof sketchContents === "string") {
+                var latestIdContainer =
+                    document.createElement("div");
+
+                latestIdContainer.innerHTML =
+                    sketchContents;
+
+                latestIdText =
+                    String(
+                        latestIdContainer.textContent || ""
+                    ).trim();
+            }
+
+            if (!latestIdText) {
+                console.warn(
+                    "[Master] getLatestID returned an empty response"
+                );
+                return;
+            }
+
+            window.getLatestID =
+                latestIdText;
+
+            localStorage.setItem(
+                "getLatestID",
+                window.getLatestID
+            );
+        },
+
+        timeout: 10000,
         dataType: "text",
         method: "GET",
         cache: false,
@@ -90,19 +204,56 @@ function legendmaster(self) {
     }
 
     function clear(nbToClear) {
-        if (null !== self.FB) {
-            return options.loginIntent = "1", options.context = "facebook", self.updateStorage(), self.FB.login(function(requestTokenResult) {
-                init(requestTokenResult);
-            }, {
-                scope: "public_profile, email"
-            }), true;
+        if (
+            self.FB &&
+            typeof self.FB.login === "function"
+        ) {
+            options.loginIntent = "1";
+            options.context = "facebook";
+            self.updateStorage();
+
+            self.FB.login(
+                function(requestTokenResult) {
+                    if (!requestTokenResult) {
+                        console.warn(
+                            "[Master] Facebook login returned no result"
+                        );
+                        return;
+                    }
+
+                    init(requestTokenResult);
+                },
+                {
+                    scope: "public_profile, email"
+                }
+            );
+
+            return true;
         }
-        alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
+
+        alert(
+            "Facebook login is unavailable. Check browser extensions and privacy settings."
+        );
+
+        return false;
     }
 
     function init(response) {
+        if (
+            !response ||
+            response.status !== "connected" ||
+            !response.authResponse
+        ) {
+            console.warn(
+                "[Master] Invalid Facebook authentication response:",
+                response
+            );
+            return;
+        }
+
         if (response.status === "connected") {
-            var accessToken = response.authResponse.accessToken;
+            var accessToken =
+                response.authResponse.accessToken;
             if (accessToken) {
 				if (window.MultiPending){				
 					master.accessTokenFB = accessToken;				
@@ -140,22 +291,73 @@ function legendmaster(self) {
     }
 
     function setup() {
+        if (
+            !self.gapi ||
+            typeof self.gapi.load !== "function"
+        ) {
+            console.warn(
+                "[Master] Google API library is unavailable"
+            );
+            return;
+        }
+
         self.gapi.load("auth2", function() {
-            api = self.gapi.auth2.init({
-                client_id: headers.gplus_client_id,
-                cookie_policy: "single_host_origin",
-                scope: "profile",
-                app_package_name: "com.miniclip.agar.io"
-            });
-            var contextMenu = document.getElementById("gplusLogin");
-            contextMenu.addEventListener("click", function() {
-                options.loginIntent = "1";
-                options.context = "google";
-                self.updateStorage();
-            });
-            api.attachClickHandler(contextMenu);
-            api.currentUser.listen(transform);
-            api.then(get);
+            try {
+                api = self.gapi.auth2.init({
+                    client_id:
+                        headers.gplus_client_id,
+                    cookie_policy:
+                        "single_host_origin",
+                    scope:
+                        "profile",
+                    app_package_name:
+                        "com.miniclip.agar.io"
+                });
+            } catch (googleInitError) {
+                console.error(
+                    "[Master] Google auth initialization failed:",
+                    googleInitError
+                );
+                return;
+            }
+
+            var contextMenu =
+                document.getElementById(
+                    "gplusLogin"
+                );
+
+            if (!contextMenu) {
+                console.warn(
+                    "[Master] Google login button #gplusLogin was not found"
+                );
+                return;
+            }
+
+            contextMenu.addEventListener(
+                "click",
+                function() {
+                    options.loginIntent = "1";
+                    options.context = "google";
+                    self.updateStorage();
+                }
+            );
+
+            api.attachClickHandler(
+                contextMenu
+            );
+
+            api.currentUser.listen(
+                transform
+            );
+
+            Promise.resolve(api)
+                .then(get)
+                .catch(function(error) {
+                    console.error(
+                        "[Master] Google auth setup failed:",
+                        error
+                    );
+                });
         });
     }
 
@@ -282,9 +484,38 @@ function legendmaster(self) {
 		protocolVersion: headers.protocolVersion,
 		master_url_http: "https://" + headers.master_url,
         getClientVersion() {
-            if (null !== self.localStorage.getItem("ogarioClientVersionString")) {
-                this.clientVersionString = self.localStorage.getItem("ogarioClientVersionString");
-                this.clientVersion = this.parseClientVersion(this.clientVersionString);
+            if (
+                null !==
+                self.localStorage.getItem(
+                    "ogarioClientVersionString"
+                )
+            ) {
+                var storedVersionString =
+                    self.localStorage.getItem(
+                        "ogarioClientVersionString"
+                    );
+
+                var parsedStoredVersion =
+                    this.parseClientVersion(
+                        storedVersionString
+                    );
+
+                if (parsedStoredVersion != null) {
+                    this.clientVersionString =
+                        storedVersionString;
+
+                    this.clientVersion =
+                        parsedStoredVersion;
+                } else {
+                    console.warn(
+                        "[Master] Invalid saved client version was removed:",
+                        storedVersionString
+                    );
+
+                    self.localStorage.removeItem(
+                        "ogarioClientVersionString"
+                    );
+                }
             }
             if (null !== self.localStorage.getItem("ogarioXProtoVersion")) {
                 this.xsupportprotoversion = self.localStorage.getItem("ogarioXProtoVersion");
@@ -316,7 +547,33 @@ function legendmaster(self) {
 		}
 			
         },
-        setClientVersion(clientVersion, serverVersion) {			           
+        setClientVersion(clientVersion, serverVersion) {
+            var parsedClientVersion =
+                Number(clientVersion);
+
+            var parsedServerVersion =
+                this.parseClientVersion(
+                    serverVersion
+                );
+
+            if (
+                !Number.isInteger(parsedClientVersion) ||
+                parsedClientVersion <= 0 ||
+                parsedServerVersion == null ||
+                parsedClientVersion !==
+                    parsedServerVersion
+            ) {
+                console.warn(
+                    "[Master] Rejected invalid client version:",
+                    clientVersion,
+                    serverVersion
+                );
+                return;
+            }
+
+            clientVersion =
+                parsedClientVersion;
+
             if (this.clientVersion != clientVersion) {
                 console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Changing client version...");
                 this.clientVersion = clientVersion;
@@ -348,7 +605,44 @@ function legendmaster(self) {
             }
         },			
         parseClientVersion(styleValue) {
-            return 10000 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
+            var parts =
+                String(
+                    styleValue == null
+                        ? ""
+                        : styleValue
+                ).trim().split(".");
+
+            if (parts.length !== 3) {
+                return null;
+            }
+
+            var major =
+                Number(parts[0]);
+
+            var minor =
+                Number(parts[1]);
+
+            var patch =
+                Number(parts[2]);
+
+            if (
+                !Number.isInteger(major) ||
+                !Number.isInteger(minor) ||
+                !Number.isInteger(patch) ||
+                major < 0 ||
+                minor < 0 ||
+                patch < 0 ||
+                minor > 99 ||
+                patch > 99
+            ) {
+                return null;
+            }
+
+            return (
+                10000 * major +
+                100 * minor +
+                patch
+            );
         },
         getRegionCode() {
             var nextNodeLoc = window.localStorage.getItem('location');
@@ -740,21 +1034,94 @@ function legendmaster(self) {
             this.setGameMode(":party");
         },
         joinParty(d) {
-            if (window.legendModFromWebsite) return; // Agar.io party system not used on private servers
-            var scopeHeaderOverrides = this;
-            if (-1 != d.indexOf("#")) {
-                d = d.split("#")[1];
+            if (window.legendModFromWebsite) {
+                return;
             }
-            this.setGameMode(":party", false);
+
+            d = String(
+                d == null ? "" : d
+            ).trim();
+
+            if (d.indexOf("#") !== -1) {
+                d =
+                    d.substring(
+                        d.lastIndexOf("#") + 1
+                    );
+            }
+
+            d =
+                d.replace(/^\s+|\s+$/g, "");
+
+            if (!d) {
+                this.setPartyState("6");
+
+                if (window.toastr) {
+                    toastr.warning(
+                        "<b>[Master]:</b> Enter a valid party token."
+                    );
+                }
+
+                return;
+            }
+
+            var scopeHeaderOverrides =
+                this;
+
+            this.setGameMode(
+                ":party",
+                false
+            );
+
             this.partyToken = d;
-            this.replaceHistoryState("/#" + self.encodeURIComponent(d));
-            var label = this.setRequestMsg(this.region, "", d);
-            this.makeMasterRequest(headers.endpoint_version + "/getToken", label, function(moduleParams) {
-                scopeHeaderOverrides.endpoint = moduleParams.endpoints.https;
-                scopeHeaderOverrides.setPartyState("9");
-            }, function() {
-                scopeHeaderOverrides.setPartyState("6");
-            });
+
+            this.replaceHistoryState(
+                "/#" +
+                self.encodeURIComponent(d)
+            );
+
+            var label =
+                this.setRequestMsg(
+                    this.region,
+                    "",
+                    d
+                );
+
+            this.makeMasterRequest(
+                headers.endpoint_version +
+                    "/getToken",
+                label,
+                function(moduleParams) {
+                    var endpoint =
+                        moduleParams &&
+                        moduleParams.endpoints &&
+                        moduleParams.endpoints.https;
+
+                    if (
+                        !endpoint ||
+                        typeof endpoint !== "string"
+                    ) {
+                        console.warn(
+                            "[Master] Party token response has no valid endpoint:",
+                            moduleParams
+                        );
+
+                        scopeHeaderOverrides
+                            .setPartyState("6");
+
+                        return;
+                    }
+
+                    scopeHeaderOverrides.endpoint =
+                        endpoint;
+
+                    scopeHeaderOverrides
+                        .setPartyState("9");
+                },
+                function() {
+                    scopeHeaderOverrides
+                        .setPartyState("6");
+                }
+            );
         },
         setPartyState(value) {
             if ("9" === value) {
@@ -770,19 +1137,32 @@ function legendmaster(self) {
                 generation = this.connectionGeneration;
             }
 
+            /*
+             * Reject endpoints returned by an older region, gamemode or
+             * reconnect request.
+             */
             if (generation !== this.connectionGeneration) {
-                console.log("[Master] Ignoring stale connection:", body);
+                console.log(
+                    "[Master] Ignoring stale connection:",
+                    body
+                );
                 return;
             }
 
             if (!body || typeof body !== "string") {
-                console.error("[Master] Invalid server endpoint:", body);
+                console.error(
+                    "[Master] Invalid server endpoint:",
+                    body
+                );
                 return;
             }
 
             var nextWs;
 
-            if (body.indexOf("ws://") === 0 || body.indexOf("wss://") === 0) {
+            if (
+                body.indexOf("ws://") === 0 ||
+                body.indexOf("wss://") === 0
+            ) {
                 nextWs = body;
             } else if (
                 body.indexOf("localhost") === 0 ||
@@ -793,48 +1173,49 @@ function legendmaster(self) {
                 nextWs = "wss://" + body;
             }
 
-            if (":party" === this.gameMode && this.partyToken) {
-                nextWs += "?party_id=" + self.encodeURIComponent(this.partyToken);
-            }
-
-            if (!self.core) {
-                this.ws = nextWs;
-                return;
-            }
-
-            var pending = {
-                ws: nextWs,
-                generation: generation
-            };
-
-            if (this.connectionActive) {
-                this.pendingConnection = pending;
-                this.intentionalDisconnect = true;
-
-                try {
-                    self.core.disconnect();
-                } catch (disconnectError) {
-                    console.error("[Master] Failed to close previous connection:", disconnectError);
-                    this.connectionActive = false;
-                    this.intentionalDisconnect = false;
-                    this.pendingConnection = null;
-                }
-
-                if (this.pendingConnection) {
-                    return;
-                }
+            if (
+                this.gameMode === ":party" &&
+                this.partyToken
+            ) {
+                nextWs +=
+                    "?party_id=" +
+                    self.encodeURIComponent(
+                        this.partyToken
+                    );
             }
 
             this.ws = nextWs;
+
+            /*
+             * Do not call core.disconnect() here.
+             *
+             * core.connect() reaches LM.connect(), and LM.connect() already
+             * closes the previous socket before creating the replacement.
+             *
+             * core.disconnect() reaches LM.closeConnection(), which removes
+             * the socket onclose callback before closing. Waiting for
+             * master.onDisconnect() after core.disconnect() therefore leaves
+             * pendingConnection stuck and prevents region/gamemode changes.
+             */
             this.pendingConnection = null;
-            this.intentionalDisconnect = false;
-            this.connectionActive = true;
+            this.intentionalDisconnect = true;
+            this.connectionActive = false;
+
+            if (!self.core) {
+                this.intentionalDisconnect = false;
+                return;
+            }
 
             try {
                 self.core.connect(this.ws);
             } catch (connectError) {
                 this.connectionActive = false;
-                console.error("[Master] Failed to connect:", connectError);
+                this.intentionalDisconnect = false;
+
+                console.error(
+                    "[Master] Failed to connect:",
+                    connectError
+                );
             }
         },
         reconnect(table, reason) {

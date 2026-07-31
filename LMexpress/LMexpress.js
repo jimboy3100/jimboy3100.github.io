@@ -451,19 +451,68 @@ function PremiumUsers() {
         if (window.agarioUID && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]) {
 
             if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason.includes("Give")) {
-                var YYYYMMDD = parseInt(new Date().toISOString().slice(0, new Date().toISOString().indexOf("T")).replace(/-/g, ""));
-                var expDate = parseInt(ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason.split('@')[1])
-                if (expDate && expDate < YYYYMMDD && window.proLicenceUID) {
-                    window.proLicenceUID = null
-                    toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
-                }
-                else if (expDate && expDate >= YYYYMMDD) {
+                var todayYYYYMMDD = parseInt(
+                    new Date()
+                        .toISOString()
+                        .slice(0, 10)
+                        .replace(/-/g, ""),
+                    10
+                );
+
+                var giveawayReason =
+                    String(
+                        ProLicenceUsersTable
+                            .ProLicenceUsers[window.agarioUID]
+                            .reason || ""
+                    );
+
+                var expDateText =
+                    String(
+                        giveawayReason.split("@")[1] || ""
+                    ).replace(/\D/g, "");
+
+                var expDate =
+                    parseInt(expDateText, 10);
+
+                if (
+                    expDateText.length !== 8 ||
+                    !isFinite(expDate)
+                ) {
+                    console.warn(
+                        "[Premium] Invalid giveaway expiration date:",
+                        giveawayReason
+                    );
+                } else if (
+                    expDate < todayYYYYMMDD &&
+                    window.proLicenceUID
+                ) {
+                    window.proLicenceUID = null;
+                    localStorage.removeItem("proLicenceUID");
+
+                    toastr
+                        .warning(
+                            "<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!"
+                        )
+                        .css("width", "350px");
+                } else if (expDate >= todayYYYYMMDD) {
                     if (!window.proLicenceUID) {
-                        window.proLicenceUID = "Give"
-                        expDate = ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason.split('@')[1]
-                        toastr.warning("<b>[SERVER]:</b>  Your licence is stored as Giveaway Premium until " + expDate.slice(0, 2) + "/" + expDate.slice(2, 4) + "/" + expDate.slice(4, 8) + ". Thank you for using our mod!").css("width", "350px");
-                    }
-                    else {
+                        window.proLicenceUID = "Give";
+                        localStorage.setItem(
+                            "proLicenceUID",
+                            window.proLicenceUID
+                        );
+
+                        toastr
+                            .warning(
+                                "<b>[SERVER]:</b> Your licence is stored as Giveaway Premium until " +
+                                expDateText.slice(0, 4) +
+                                "/" +
+                                expDateText.slice(4, 6) +
+                                "/" +
+                                expDateText.slice(6, 8) +
+                                ". Thank you for using our mod!"
+                            )
+                            .css("width", "350px");
                     }
                 }
             }
