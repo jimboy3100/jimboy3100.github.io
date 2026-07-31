@@ -16954,13 +16954,17 @@ function thelegendmodproject() {
                 var key = s[i].key;
                 switch (key) {
                     case 1:
-                        var skin = this.getLink(s[i].valueString);
-                        if (skin && skin[0]) {
-                            url = this.urlReplaces.hasOwnProperty(skin[0]) ? this.urlReplaces[skin[0]] : skin[0];
-                            $('.vanilla-skin-preview').attr('src', url);
+                        var skinVal = s[i].valueString || '';
+                        window.serverEquippedSkinId = skinVal;
+                        if (!skinVal || skinVal === 'skin_empty') {
+                            localStorage.removeItem('equippedSkinId');
+                            localStorage.removeItem('equippedSkinImage');
+                        } else {
+                            localStorage.setItem('equippedSkinId', skinVal);
                         }
-                        // Store server-confirmed equipped skinId for shop UI sync
-                        window.serverEquippedSkinId = s[i].valueString || '';
+                        if (typeof window.updateEquippedSkinUI === 'function') {
+                            try { window.updateEquippedSkinUI(); } catch (e) {}
+                        }
                         break;
                     case 2:
                         //stop moving on relise (1,0)
