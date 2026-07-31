@@ -1372,12 +1372,14 @@ function autoRandomPotionDigger() {
     }, 5000);
 }
 
-function PotionDrinker(slot) {
-    var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
-    window.core.proxyMobileData(bytes); //PotionDrinker(1) 1 2 3 common rare mystical
-}
+// PotionDrinker: removed (duplicate of window.openPotion, never called)
 
 function userLeaguesInfoRequest(slot) {
+    // Prefer sendProto-based method
+    if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
+        return window.application.requestLeaguesInfo();
+    }
+    // Fallback: raw bytes
     var bytes = [8, 1, 18, 8, 8, 130, 1, 146, 8, 2, 8, 1];
     window.core.proxyMobileData(bytes); //response 131	
 }
@@ -15118,8 +15120,13 @@ function thelegendmodproject() {
                             case 121:
                                 window.testobjects102121 = node;
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Open Potion For Product Response", option, response);
-                                var bytes = [8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
-                                window.core.proxyMobileData(bytes); //Confirm Brew of any potions
+                                // Auto-confirm: skip potion brew timer
+                                if (window.application && typeof window.application.activateTimedEvent === 'function') {
+                                    window.application.activateTimedEvent("potionSkipBrew");
+                                } else {
+                                    var bytes = [8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
+                                    window.core.proxyMobileData(bytes);
+                                }
                                 break;
                             case 122:
                                 window.testobjects102122 = node;
@@ -15845,8 +15852,13 @@ function thelegendmodproject() {
                     }
                     break;
                 case 81:
-                    var u = r.uncompressedData.updateUserSettingsResponseField;
-                    this.updateUserSettings(u.updatedUserSettings)
+                    // Update user settings response
+                    try {
+                        var u = r.uncompressedData.updateUserSettingsResponseField;
+                        if (u && u.updatedUserSettings) {
+                            this.updateUserSettings(u.updatedUserSettings);
+                        }
+                    } catch(usErr) { console.warn("[LM] Error parsing user settings response:", usErr); }
                     break;
                 case 83:
                     // User stats response
@@ -16153,11 +16165,17 @@ function thelegendmodproject() {
                     }
                     break;
                 case 170:
-                    var u = r.uncompressedData.actionCountersUpdateField,
-                        prev = this.user.actionCounters;
-                    if (u.potionsObtained > prev.potionsObtained) toastr.info('<b>[' + Premadeletter123 + ']:</b> New potion');
-                    if (u.questsCompleted > prev.questsCompleted) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
-                    if (u.skinsCreated > prev.skinsCreated) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
+                    // Action counters update (server push — potions, quests, skins)
+                    try {
+                        var u = r.uncompressedData.actionCountersUpdateField;
+                        var prev = (this.user && this.user.actionCounters) || {};
+                        if (u) {
+                            if (u.potionsObtained > (prev.potionsObtained || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> New potion');
+                            if (u.questsCompleted > (prev.questsCompleted || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
+                            if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
+                            this.user.actionCounters = u;
+                        }
+                    } catch(acErr) { console.warn("[LM] Error parsing action counters:", acErr); }
                     break;
                 case 184:
                     // Reward link activation response
