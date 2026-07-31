@@ -209,90 +209,6 @@
     // ─── Component 1: 🏆 Leaderboards & Weekly Leagues Modal ───
     window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World
 
-    window.switchLeagueTab = function(tabType) {
-        window.currentLeagueTab = tabType || 1;
-        
-        // Update tab button styles
-        $('.lm-tab-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.06)', color: '#aaa', border: '1px solid rgba(255,255,255,0.1)' });
-        $('#lm-tab-' + tabType).addClass('active').css({ background: '#455ee8', color: '#fff', border: '1px solid #6b7ff0' });
-
-        var bodyContainer = document.getElementById('lm-leagues-list-container');
-        if (bodyContainer) {
-            bodyContainer.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa;">
-                <i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Fetching ${tabType === 1 ? 'My League' : (tabType === 2 ? 'Country Standings' : 'World Leaderboards')}...
-            </div>`;
-        }
-
-        // Dispatch Opcode 130 request
-        if (typeof window.requestLeaguesInfo === 'function') {
-            window.requestLeaguesInfo(tabType);
-        } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
-            window.application.requestLeaguesInfo(tabType);
-        } else if (typeof window.userLeaguesInfoRequest === 'function') {
-            window.userLeaguesInfoRequest();
-        }
-
-        setTimeout(function() {
-            var el = document.getElementById('lm-leagues-list-container');
-            if (el && el.innerHTML.includes('Fetching')) {
-                document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', {
-                    detail: {
-                        leagueRequestType: tabType,
-                        leagueName: tabType === 1 ? 'Kraken League' : (tabType === 2 ? 'Country' : 'World'),
-                        leagueEntries: window.RecordPlayers || []
-                    }
-                }));
-            }
-        }, 2000);
-    };
-
-    window.showLeaguesModal = function() {
-        injectStyles();
-        var t = getTheme();
-        var old = document.getElementById('lm-leagues-modal');
-        if (old) old.remove();
-
-        var modal = document.createElement('div');
-        modal.id = 'lm-leagues-modal';
-        modal.className = 'lm-modal-overlay';
-        modal.innerHTML = `
-            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 680px;">
-                <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                    <div style="width: 100%; text-align: center; position: relative;">
-                        <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
-                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
-                    </div>
-                </div>
-
-                <div class="lm-modal-body" style="padding: 16px;">
-                    <!-- 3 Leaderboard Tabs -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
-                            ⭐ My League
-                        </button>
-                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
-                            🇺🇸 Country
-                        </button>
-                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
-                            🌎 World
-                        </button>
-                    </div>
-
-                    <!-- Dynamic Leaderboard Content Container -->
-                    <div id="lm-leagues-content-area">
-                        <div style="text-align: center; padding: 30px; color: ${t.tc2};">
-                            <i class="fa fa-spinner fa-spin fa-2x" style="color: ${t.mc};"></i><br><br>Fetching Standings...
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-
-        // Load active tab data
-        window.switchLeagueTab(window.currentLeagueTab || 1);
-    };
-
     // Official Agar.io Level-to-League Tier calculator (from agario.js lines 3074 & 19794)
     window.getLeagueTierFromLevel = function(level) {
         level = parseInt(level, 10) || 1;
@@ -308,14 +224,13 @@
         return { id: 'fly', name: 'Fly League', color: '#8f7e3a', gradient: 'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)' };
     };
 
-    // Listen to leagues update event and render real player data matching Agar.io UI
-    document.addEventListener('leaguesInfoUpdate', function(e) {
-        var data = e.detail || {};
+    window.renderLeaguesContent = function(tabType, data) {
+        data = data || {};
         var contentArea = document.getElementById('lm-leagues-content-area');
         if (!contentArea) return;
 
         var t = getTheme();
-        var tabType = window.currentLeagueTab || data.leagueRequestType || 1;
+        tabType = tabType || window.currentLeagueTab || 1;
         var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
         var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
@@ -383,7 +298,7 @@
         var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers || []);
         var currentUser = (window.application && window.application.user) || {};
         var currentUserName = currentUser.displayName || window.agarioProfileName || 'Dimitrios';
-        var currentUserLevel = currentUser.level || 101;
+        var currentUserLevel = currentUser.level || userLevel;
         var currentUserAvatar = currentUser.picture || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
         var currentUserCountry = userCountry;
         var currentUserRank = tabType === 1 ? '#148' : (tabType === 2 ? '#5121' : '#5164');
@@ -436,8 +351,8 @@
             });
         }
 
-        // Highlight logged in user at their current rank position if not already rendered
-        if (!userFoundInList && window.loggedIn) {
+        // Highlight logged in user at their current rank position
+        if (!userFoundInList) {
             html += `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
                     <div style="width: 70px;">
@@ -458,9 +373,76 @@
 
         html += `</div>`;
         contentArea.innerHTML = html;
-    });
+    };
 
-    // ─── Component 2: 👥 Friends & Party Joiner Panel ───
+    window.switchLeagueTab = function(tabType) {
+        window.currentLeagueTab = tabType || 1;
+        var t = getTheme();
+
+        // Update tab button styles
+        $('.lm-tab-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.06)', color: t.tc2, border: '1px solid rgba(255,255,255,0.1)' });
+        $('#lm-tab-' + tabType).addClass('active').css({ background: t.b1, color: t.btc, border: '1px solid ' + t.mc });
+
+        // Immediately render content area with current tab configuration & cached response
+        window.renderLeaguesContent(tabType, window.lastLeaguesResponse || {});
+
+        // Dispatch Opcode 130 request in background
+        if (typeof window.requestLeaguesInfo === 'function') {
+            window.requestLeaguesInfo(tabType);
+        } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
+            window.application.requestLeaguesInfo(tabType);
+        } else if (typeof window.userLeaguesInfoRequest === 'function') {
+            window.userLeaguesInfoRequest();
+        }
+    };
+
+    window.showLeaguesModal = function() {
+        injectStyles();
+        var t = getTheme();
+        var old = document.getElementById('lm-leagues-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-leagues-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 680px;">
+                <div class="lm-modal-header" style="background: ${t.pc2}; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div style="width: 100%; text-align: center; position: relative;">
+                        <span style="font-size: 18px; font-weight: 800; color: ${t.mc}; text-transform: uppercase; letter-spacing: 1px;">Leaderboards</span>
+                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px;" onclick="document.getElementById('lm-leagues-modal').remove();">&times;</button>
+                    </div>
+                </div>
+
+                <div class="lm-modal-body" style="padding: 16px;">
+                    <!-- 3 Leaderboard Tabs -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                            ⭐ My League
+                        </button>
+                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                            🇺🇸 Country
+                        </button>
+                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                            🌎 World
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Leaderboard Content Container -->
+                    <div id="lm-leagues-content-area"></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Load active tab data immediately
+        window.switchLeagueTab(window.currentLeagueTab || 1);
+    };
+
+    // Listen to leagues update event and render real player data matching Agar.io UI
+    document.addEventListener('leaguesInfoUpdate', function(e) {
+        window.renderLeaguesContent(window.currentLeagueTab || 1, e.detail || {});
+    });
     window.showFriendsModal = function() {
         // Authenticated & Connected check
         var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
