@@ -613,6 +613,76 @@
                 friendsBtn.css({ opacity: 1, cursor: 'pointer' }).prop('disabled', false);
             }
         }
+
+        // 6. Render Promo Reward Banner if token detected
+        window.renderPromoRewardBanner();
+    };
+
+    // Render Promo Reward Banner inside Profile Tab (#profile) panel
+    window.renderPromoRewardBanner = function() {
+        var profileTab = $('#profile');
+        if (!profileTab.length) return;
+
+        var token = window.currentPromoToken;
+        if (!token && typeof window.parseRewardToken === 'function') {
+            token = window.parseRewardToken(window.location.href);
+        }
+        if (!token && $('#rewardLinkInput').length) {
+            token = $('#rewardLinkInput').val().trim();
+        }
+
+        var bannerEl = document.getElementById('lm-promo-reward-banner');
+        if (!token || token.length < 3) {
+            if (bannerEl) bannerEl.remove();
+            return;
+        }
+
+        window.currentPromoToken = token;
+        var targetContainer = profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab;
+
+        if (!bannerEl) {
+            bannerEl = document.createElement('div');
+            bannerEl.id = 'lm-promo-reward-banner';
+            bannerEl.style.cssText = 'margin: 10px 0; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.5); text-align: center; padding: 6px; clear: both; width: 100%; box-sizing: border-box; transition: transform 0.2s ease-in-out;';
+            
+            if (targetContainer.find('#lm-extended-menu-btns').length) {
+                targetContainer.find('#lm-extended-menu-btns').after(bannerEl);
+            } else {
+                targetContainer.prepend(bannerEl);
+            }
+        }
+
+        bannerEl.innerHTML = `
+            <a id="legendAdAnchor3" href="#" onclick="window.claimPromoBannerReward(); return false;" style="display: block; text-decoration: none;">
+                <img id="lm-promo-banner-img" src="https://jimboy3100.github.io/banners/rewardlinkbanner.png" style="width: 100%; max-height: 80px; object-fit: cover; border-radius: 6px; display: block;" onerror="this.src='https://jimboy3100.github.io/banners/dyinglightbanner2.jpg'">
+                <div id="lm-promo-banner-title" style="color: #00ff88; font-size: 12px; font-weight: 800; margin-top: 6px; text-shadow: 0 1px 3px #000; letter-spacing: 0.5px;">
+                    🎁 REDEEM PROMO REWARD (${token})
+                </div>
+            </a>
+        `;
+    };
+
+    window.claimPromoBannerReward = function() {
+        var token = window.currentPromoToken || (typeof window.parseRewardToken === 'function' ? window.parseRewardToken(window.location.href) : '');
+        if (!token) {
+            if (window.toastr) toastr.warning('<b>[PROMO]:</b> No valid promo token found.');
+            return;
+        }
+
+        if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('claim promo reward')) {
+            return;
+        }
+
+        var titleEl = document.getElementById('lm-promo-banner-title');
+        if (titleEl) titleEl.innerHTML = '🎁 Claiming Promo Reward...';
+
+        if (typeof window.activateRewardLink === 'function') {
+            window.activateRewardLink(token);
+        }
+
+        setTimeout(function() {
+            if (titleEl) titleEl.innerHTML = '✨ Promo Reward Claim Request Sent!';
+        }, 1500);
     };
 
     window.initBoostDropdown = function() {

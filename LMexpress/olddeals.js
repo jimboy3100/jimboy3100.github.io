@@ -391,8 +391,9 @@ function SpecialDeals() {
             var urlToken = window.parseRewardToken(window.location.href);
             if (urlToken && urlToken.length > 3) {
                 console.log('[LM] Auto-detected URL reward token:', urlToken);
-                $('#rewardLinkInput').val(urlToken);
-                if (window.toastr) toastr.info('<b>[REWARD LINK]:</b> Detected promo token from URL: <code>' + urlToken + '</code>. Open Deals to claim!');
+                window.currentPromoToken = urlToken;
+                if ($('#rewardLinkInput').length) $('#rewardLinkInput').val(urlToken);
+                if (typeof window.renderPromoRewardBanner === 'function') window.renderPromoRewardBanner();
             }
         }, 1500);
 
