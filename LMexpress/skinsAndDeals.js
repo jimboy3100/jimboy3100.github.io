@@ -2319,7 +2319,7 @@ function LoadGameConfiguration() {
         error: function(err) {
             console.warn('[Shop] Primary config URL failed, trying fallback...', err);
             $.ajax({
-                url: 'https://www.legendmod.ml/agario/live/v15/10913/GameConfiguration.json',
+                url: 'https://configs-web.agar.io/live/v15/10913/GameConfiguration.json',
                 type: 'GET',
                 success: function(info) {
                     window.GameConfiguration = (typeof info === 'string') ? JSON.parse(info) : info;
