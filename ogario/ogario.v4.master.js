@@ -268,6 +268,8 @@ function legendmaster(self) {
         findingServer: 0,
         curValidFindServer: 0,
         backoffPeriod: 500,
+        intentionalDisconnect: false,
+        connectionGeneration: 0,
         regionNames: {},
         context: "",
         accessToken: null,
@@ -401,16 +403,41 @@ function legendmaster(self) {
                 /** @type {boolean} */
                 left = true;
             }
-            if (items) {
-                this.region = items;
-                self.localStorage.setItem("location", items);
+
+            if (!items) {
+                return;
+            }
+
+            /*
+             * Ignore duplicate change events for the currently selected region.
+             */
+            if (this.region === items) {
+                self.localStorage.setItem(
+                    "location",
+                    items
+                );
+
                 if ($("#region").val() !== items) {
                     $("#region").val(items);
                 }
-                if (left) {
-                    //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegion called, left=null, reconnecting");
-                    this.reconnect();
-                }
+
+                return;
+            }
+
+            this.region = items;
+
+            self.localStorage.setItem(
+                "location",
+                items
+            );
+
+            if ($("#region").val() !== items) {
+                $("#region").val(items);
+            }
+
+            if (left) {
+                this.intentionalDisconnect = true;
+                this.reconnect(false, "region-change");
             }
         },
         checkRegion() {
@@ -484,11 +511,26 @@ function legendmaster(self) {
             if (null == opt_validate) {
                 opt_validate = true;
             }
+
+            /*
+             * Do nothing when the selected mode has not actually changed.
+             * This prevents duplicate DOM change events from reconnecting again.
+             */
+            if (this.gameMode === val) {
+                this.applyGameMode(val);
+                return;
+            }
+
             this.applyGameMode(val);
             this.gameMode = val;
+
             if (opt_validate) {
-                //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setGameMode called, opt_validate!=null, reconnecting");
-                this.reconnect();
+                /*
+                 * The current socket is expected to close while moving to the newly
+                 * selected mode. Its onclose event must not start another reconnect.
+                 */
+                this.intentionalDisconnect = true;
+                this.reconnect(false, "mode-change");
             }
         },
         applyGameMode(value) {
@@ -502,7 +544,18 @@ function legendmaster(self) {
             var n = $("#gamemode").val();
             this.setGameMode(n);
         },
-        findServer(id, params) {
+        findServer(id, params, generation) {
+            if (generation == null) {
+                generation =
+                    this.connectionGeneration;
+            }
+
+            if (
+                generation !==
+                this.connectionGeneration
+            ) {
+                return;
+            }
             if (window.legendModFromWebsite) return; // Never contact Agar.io master server on private servers
             var e = Date.now();
             if (!(e - this.findingServer < 500)) {
@@ -532,10 +585,19 @@ function legendmaster(self) {
 				//console.log("id", id, "params", params);
                 var container;
 				container= this.setRequestMsg(id, params, null, source2);
-                var defaultWarningTime = ++this.curValidFindServer;
+                var defaultWarningTime =
+                    ++this.curValidFindServer;
+
+                var requestGeneration =
+                    generation;
                 this.findingServer = e;
                 this.makeMasterRequest(headers.endpoint_version + "/" + picKey, container, function(response) {
-                    if (defaultWarningTime == options.curValidFindServer) {
+                    if (
+                        defaultWarningTime ===
+                            options.curValidFindServer &&
+                        requestGeneration ===
+                            options.connectionGeneration
+                    ) {
                         var key = response.endpoints;
                         if (null !== key && "0.0.0.0:0" !== key.https) {
                             options.serverIP = key.https;
@@ -543,16 +605,33 @@ function legendmaster(self) {
                                 options.partyToken = response.token;
                             }
                             options.backoffPeriod = 500;
-                            options.connect(options.serverIP);
+                            options.connect(
+                                options.serverIP,
+                                requestGeneration
+                            );
                         } else {
-                            options.findServer(id, params);
+                            options.findServer(
+                                id,
+                                params,
+                                requestGeneration
+                            );
                         }
                     }
                 }, 
 				function() {
+                    if (
+                        requestGeneration !==
+                        options.connectionGeneration
+                    ) {
+                        return;
+                    }
                     options.backoffPeriod = Math.min(options.backoffPeriod * 2, 30000);
                     setTimeout(function() {
-                        options.findServer(id, params);
+                        options.findServer(
+                            id,
+                            params,
+                            requestGeneration
+                        );
                     }, options.backoffPeriod);
                 });
             }
@@ -683,7 +762,22 @@ function legendmaster(self) {
             }
             $("#helloContainer").attr("data-party-state", value);
         },
-        connect(body) {
+        connect(body, generation) {
+            if (generation == null) {
+                generation =
+                    this.connectionGeneration;
+            }
+
+            if (
+                generation !==
+                this.connectionGeneration
+            ) {
+                console.log(
+                    "[Master] Ignoring stale connection:",
+                    body
+                );
+                return;
+            }
             //            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Connect to:", body);
             if (body.indexOf("ws://") === 0 || body.indexOf("wss://") === 0) {
                 this.ws = body;
@@ -696,18 +790,47 @@ function legendmaster(self) {
                 this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
             }
             if (self.core) {
+                this.intentionalDisconnect = true;
                 self.core.connect(this.ws);
             }
         },
-        reconnect(table) {
-            if (window.legendModFromWebsite) return; // On website, only #gamemode should connect
-            if (typeof LM !== 'undefined' && LM.isLegendWorld) return; // EL server via agar.io — no master needed
-            if (this.region) {
-                if (table && this.serverIP) {
-                    this.connect(this.serverIP);
-                } else {
-					this.findServer(this.region, this.gameMode);
-                }
+        reconnect(table, reason) {
+            if (window.legendModFromWebsite) {
+                return;
+            }
+
+            if (
+                typeof LM !== "undefined" &&
+                LM.isLegendWorld
+            ) {
+                return;
+            }
+
+            if (!this.region) {
+                return;
+            }
+
+            var generation =
+                ++this.connectionGeneration;
+
+            /*
+             * Remember why this reconnect began. This value is diagnostic only;
+             * compatibility does not depend on callers supplying the second argument.
+             */
+            this.reconnectReason =
+                reason || "unspecified";
+
+            if (table && this.serverIP) {
+                this.connect(
+                    this.serverIP,
+                    generation
+                );
+            } else {
+                this.findServer(
+                    this.region,
+                    this.gameMode,
+                    generation
+                );
             }
         },
         onConnect() {
@@ -716,23 +839,63 @@ function legendmaster(self) {
             }
         },
         onDisconnect() {
-            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " onDisconnect called, reconnecting");
-            /* Preserve login state during reconnect — the core's reconnect()
-             * may internally call logout(), but we don't want to lose the
-             * Google/Facebook session just because the game server disconnected. */
-            window._lwReconnecting = true;
-            var savedToken = this.accessToken;
-            var savedContext = this.context;
-            var savedLoggedIn = window.loggedIn;
-            this.reconnect();
-            /* Restore in case reconnect() cleared them synchronously */
-            if (savedToken && savedContext) {
-                this.accessToken = savedToken;
-                this.context = savedContext;
-                window.loggedIn = savedLoggedIn;
+            /*
+             * Mode changes, region changes and explicit server replacements close the
+             * previous socket deliberately. Do not start another reconnect from the
+             * old socket's onclose callback.
+             */
+            if (this.intentionalDisconnect) {
+                console.log(
+                    "[Master] Intended disconnect ignored:",
+                    this.reconnectReason ||
+                        "connection replacement"
+                );
+
+                this.intentionalDisconnect = false;
+                return;
             }
-            /* Clear flag after a tick to catch async logout calls too */
-            setTimeout(function() { window._lwReconnecting = false; }, 3000);
+
+            console.log(
+                "[Master] Unexpected disconnect; reconnecting"
+            );
+
+            window._lwReconnecting = true;
+
+            var savedToken =
+                this.accessToken;
+
+            var savedContext =
+                this.context;
+
+            var savedLoggedIn =
+                window.loggedIn;
+
+            this.reconnect(
+                false,
+                "unexpected-disconnect"
+            );
+
+            if (
+                savedToken &&
+                savedContext
+            ) {
+                this.accessToken =
+                    savedToken;
+
+                this.context =
+                    savedContext;
+
+                window.loggedIn =
+                    savedLoggedIn;
+            }
+
+            setTimeout(
+                function () {
+                    window._lwReconnecting =
+                        false;
+                },
+                3000
+            );
         },
         recaptchaRequested() {
             window.agarCaptcha.requestCaptcha(true);

@@ -23639,7 +23639,30 @@ Most cells eaten   : ${mostCellsEaten}
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client
         },
-        disconnect() { },
+        disconnect() {
+            if (
+                window.LM &&
+                typeof window.LM.closeConnection ===
+                    "function"
+            ) {
+                window.LM.closeConnection();
+                return;
+            }
+
+            if (
+                window.LM &&
+                window.LM.socket
+            ) {
+                try {
+                    window.LM.socket.close();
+                } catch (error) {
+                    console.warn(
+                        "[LM] Failed to close socket:",
+                        error
+                    );
+                }
+            }
+        },
         sendNick(nick) {
             LM.sendNick(nick);
         },

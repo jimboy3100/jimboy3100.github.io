@@ -7080,26 +7080,88 @@ function initializeLM(modVersion) {
             IdfromLegendmod()
         });
     }
-    core.disconnect = function () {
-        adres(null, $('#gamemode').val(), $('#region').val());
-        pauseVideos();
-    };
+    /*
+     * Preserve the real game-core disconnect implementation.
+     * LMexpress may add side effects, but it must not replace connection control.
+     */
+    if (
+        window.core &&
+        typeof window.core.disconnect ===
+            "function" &&
+        !window.core.disconnect
+            ._lmExpressWrapped
+    ) {
+        var originalCoreDisconnect =
+            window.core.disconnect;
+
+        var wrappedCoreDisconnect =
+            function () {
+                adres(
+                    null,
+                    $("#gamemode").val(),
+                    $("#region").val()
+                );
+
+                pauseVideos();
+
+                return originalCoreDisconnect
+                    .apply(
+                        this,
+                        arguments
+                    );
+            };
+
+        wrappedCoreDisconnect
+            ._lmExpressWrapped = true;
+
+        window.core.disconnect =
+            wrappedCoreDisconnect;
+    }
     $('#server-reconnect').click(function () {
         setTimeout(function () {
             adres(null, $('#gamemode').val(), $('#region').val());
         }, 100);
     });
 
-    $("#gamemode").change(function () {
-        setTimeout(function () {
-            adres(null, $('#gamemode').val(), $('#region').val());
-        }, 50);
-    });
-    $("#region").change(function () {
-        setTimeout(function () {
-            adres(null, $('#gamemode').val(), $('#region').val());
-        }, 50);
-    });
+    $("#gamemode")
+        .off("change.lmAddress")
+        .on(
+            "change.lmAddress",
+            function () {
+                setTimeout(
+                    function () {
+                        adres(
+                            null,
+                            $("#gamemode")
+                                .val(),
+                            $("#region")
+                                .val()
+                        );
+                    },
+                    50
+                );
+            }
+        );
+
+    $("#region")
+        .off("change.lmAddress")
+        .on(
+            "change.lmAddress",
+            function () {
+                setTimeout(
+                    function () {
+                        adres(
+                            null,
+                            $("#gamemode")
+                                .val(),
+                            $("#region")
+                                .val()
+                        );
+                    },
+                    50
+                );
+            }
+        );
 
     $('#server-join').click(function () {
         adres(null, null, null);
