@@ -8260,11 +8260,18 @@ function thelegendmodproject() {
 
                         if (isCustomSkin) {
                             /* Custom skin CDN fallback chain:
-                             * 1. configs.agar.io → configs-web.agar.io
-                             * 2. configs-web.agar.io → give up silently */
-                            if (url.includes('configs.agar.io') && !url.includes('configs-web')) {
+                             * 1. configs.agario.miniclippt.com → configs-web.agario.miniclippt.com
+                             * 2. configs-web.agario.miniclippt.com → configs-web.agar.io
+                             * 3. configs-web.agar.io → skin-proxy (CORS proxy)
+                             * 4. skin-proxy failed → give up */
+                            if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
+                                app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
+                            } else if (url.includes('configs-web.agario.miniclippt.com')) {
                                 app.loadSkin(img, 'https://configs-web.agar.io/live/custom_skins/' + filename + '?', animated, isPriority);
+                            } else if (url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) {
+                                app.loadSkin(img, 'https://ffa.legendmod.ml/skin-proxy/vanilla/' + filename, animated, isPriority);
                             }
+                            /* else: all CDNs failed, give up silently */
                             return;
                         }
 
@@ -8290,8 +8297,11 @@ function thelegendmodproject() {
                         else if (url.includes('ffa.legendmod.ml/skin-proxy/')) {
                             app.loadSkin(img, 'https://configs-web.agar.io/live/v15/10912/' + filename, animated, isPriority);
                         }
-                        else if (url.includes('configs-web.agar.io/live/')) {
-                            app.loadSkin(img, 'https://jimboy3100.github.io/vanillaskins/' + filename, animated, isPriority);
+                        else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
+                        }
+                        else if (url.includes('configs.agario.miniclippt.com/live/')) {
+                            app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                         }
                     };
                     img[url].src = url;
@@ -16808,17 +16818,33 @@ function thelegendmodproject() {
                 }
             };
             img.onerror = function () {
+                //console.log("error loading image: "+ url);
                 var rawFileName = url.split('/').pop().replace(/\?.*$/, '');
-                if (!rawFileName || !url || url.length < 10) return;
-
-                if (url.includes('configs.agar.io') && url.includes('/custom_skins/')) {
-                    var newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
+                if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
+                    var newURL;
+                    if (url.includes('/custom_skins/')) {
+                        /* Custom skin CDN fallback: miniclippt → agar.io → skin-proxy */
+                        newURL = "https://configs-web.agar.io/live/custom_skins/" + rawFileName + "?";
+                    } else {
+                        newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    }
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;
                     }
                     app.getImg(newURL, name, callback);
                     return newURL;
+
+                } else if ((url.includes('configs-web.agar.io') || url.includes('configs.agar.io')) && url.includes('/custom_skins/')) {
+                    /* agar.io CDN also failed → last resort: CORS skin-proxy */
+                    var newURL = "https://ffa.legendmod.ml/skin-proxy/vanilla/" + rawFileName;
+                    app.urlReplaces[url] = newURL;
+                    if (app.user && app.user.skins && app.user.skins[url]) {
+                        app.user.skins[url].url = newURL;
+                    }
+                    app.getImg(newURL, name, callback);
+                    return newURL;
+
                 } else if (url.includes('legendmod.ml')) {
                     var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
@@ -16827,6 +16853,7 @@ function thelegendmodproject() {
                     }
                     app.getImg(newURL, name, callback);
                     return newURL;
+
                 } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
                     var newURL = "https://jimboy3100.github.io/lowresskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
@@ -16835,6 +16862,7 @@ function thelegendmodproject() {
                     }
                     app.getImg(newURL, name, callback);
                     return newURL;
+
                 } else if (url.includes('jimboy3100.github.io/lowresskins') || url.includes('jimboy3000.github.io/lowresskins')) {
                     if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
