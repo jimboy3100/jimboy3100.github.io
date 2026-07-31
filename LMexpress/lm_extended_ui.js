@@ -392,26 +392,30 @@
     function initMenuButtons() {
         if (document.getElementById('lm-claim-all-btn')) return;
 
-        var targetContainer = $('.agario-profile-panel, #leftPanel .agario-panel, #profile').first();
+        var targetContainer = $('#profile .agario-profile-panel, .agario-profile-panel, #profile').first();
         if (!targetContainer.length) return;
 
         var t = getTheme();
         var btnGroup = document.createElement('div');
         btnGroup.id = 'lm-extended-menu-btns';
-        btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0 6px 0; justify-content: space-between; width: 100%; box-sizing: border-box;';
+        btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 12px 0 8px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-claim-all-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b2}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.claimAllRewardsAndGifts();">
+            <button id="lm-claim-all-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b2}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 7px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.claimAllRewardsAndGifts();">
                 🎁 Claim All
             </button>
-            <button id="lm-leagues-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b3}, ${t.b4}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showLeaguesModal();">
+            <button id="lm-leagues-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b3}, ${t.b4}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 7px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showLeaguesModal();">
                 🏆 Leagues
             </button>
-            <button id="lm-friends-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b3}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 6px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showFriendsModal();">
+            <button id="lm-friends-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, ${t.b1}, ${t.b3}); color: ${t.btc}; font-weight: 700; border-radius: 6px; border: none; padding: 7px 2px; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" onclick="window.showFriendsModal();">
                 👥 Friends
             </button>
         `;
 
-        targetContainer.append(btnGroup);
+        if (targetContainer.find('#potions').length) {
+            targetContainer.find('#potions').before(btnGroup);
+        } else {
+            targetContainer.append(btnGroup);
+        }
     }
 
     // ─── Component 5: 👤 Player Profile Stats Modal ───
@@ -571,7 +575,10 @@
             initMenuButtons();
             initBoostDropdown();
             syncProfileTabUI();
-            setInterval(syncProfileTabUI, 2500);
+            setInterval(function() {
+                initMenuButtons();
+                syncProfileTabUI();
+            }, 2500);
         }, 1000);
     });
 
