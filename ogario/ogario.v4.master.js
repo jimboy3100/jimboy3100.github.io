@@ -8,7 +8,9 @@ window.LM_CONFIG_CDN = "https://configs-web.agario.miniclippt.com/live";
 window.LM_CUSTOM_SKINS_CDN = window.LM_CONFIG_CDN + "/custom_skins";
 // Computed after agarversion is known:
 window.LM_CDN_BASE = function() {
-    return window.LM_CONFIG_CDN + "/" + (window.agarversion || "v15/10913/");
+    var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || "v15/10913/";
+    if (!v.endsWith('/')) v += '/';
+    return window.LM_CONFIG_CDN + "/" + v;
 };
 window.LM_CONFIG_URL = function() {
     return window.LM_CDN_BASE() + "GameConfiguration.json";
@@ -1058,7 +1060,9 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = null;
 window.LMGameConfigurationReady = new Promise(function(resolve) {
-    var primaryUrl = window.LM_CONFIG_CDN + "/" + (window.agarversion || Lmagarversion || "") + "GameConfiguration.json";
+    var version = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || "v15/10913/";
+    if (!version.endsWith('/')) version += '/';
+    var primaryUrl = window.LM_CONFIG_CDN + "/" + version + "GameConfiguration.json";
     var fallbackUrl = window.LM_CONFIG_URL();
     var settled = false;
 

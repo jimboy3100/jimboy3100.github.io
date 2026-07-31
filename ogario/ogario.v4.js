@@ -15679,7 +15679,7 @@ function thelegendmodproject() {
                     console.log(extraOptions3,3);*/
                     data = this.createView(3);
                     data.setUint8(0, 227);
-                    data.setUint16(1, extraOptions);
+                    data.setUint16(1, extraOptions, true);
                     this.sendMessage(data);
                     break;
                 case 241:

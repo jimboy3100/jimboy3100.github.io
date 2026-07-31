@@ -34,7 +34,7 @@ window.closeSpecialShopModal = window.closeSpecialShopModal || function() {
 window.MiniclipConfigDestination = window.LM_CONFIG_URL();
 window.MiniclipDestination = window.LM_CDN_BASE();
 
-if (window.agarversion != null) {
+if (window.agarversion) {
     var _av = window.agarversion;
     if (!_av.endsWith('/')) _av += '/';
     window.MiniclipConfigDestination = window.LM_CONFIG_CDN + "/" + _av + "GameConfiguration.json";
@@ -256,13 +256,13 @@ function SpecialDeals(defaultTab) {
             '<div style="text-align: center; margin-bottom: 12px;">' +
             '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid ' + mc + '; background-color: #000; box-shadow: 0 0 12px ' + mc + '4d;"></canvas>' +
             '</div>' +
-            '<label for="legendUploadInputModal" class="btn btn-primary" id="legendChooseFileBtn" style="background: ' + b1 + '; margin-bottom: 8px; width: 220px; font-weight: 700; border: none; cursor: pointer;">&#x1F4C2; Choose Image File</label>' +
+            '<label for="legendUploadInputModal" class="btn" id="legendChooseFileBtn" style="background: ' + b2 + '; color: ' + btc + '; margin-bottom: 8px; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s; display: inline-block;">&#x1F4C2; Choose Image File</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
             '<div style="display: flex; gap: 4px; max-width: 320px; margin: 0 auto 8px; align-items: center;">' +
-            '<input type="text" id="legendSkinUrlInput" class="form-control" placeholder="...or paste image URL" style="flex: 1; height: 30px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
-            '<button id="legendLoadUrlBtn" class="btn btn-xs" style="background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 10px; font-size: 11px; white-space: nowrap; cursor: pointer;">Load</button>' +
+            '<input type="text" id="legendSkinUrlInput" class="form-control" placeholder="...or paste image URL" style="flex: 1; height: 32px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
+            '<button id="legendLoadUrlBtn" class="btn" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 800; font-size: 11px; border: none; border-radius: 6px; padding: 6px 14px; white-space: nowrap; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">Load</button>' +
             '</div>' +
-            '<button id="legendSaveBtnModal" class="btn btn-success" disabled style="background: ' + b2 + '; width: 220px; font-weight: 700;">Upload &amp; Buy (90 DNA)</button>' +
+            '<button id="legendSaveBtnModal" class="btn" disabled style="background: ' + b2 + '; color: ' + btc + '; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">Upload &amp; Buy (90 DNA)</button>' +
             '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; Clear Image</button>' +
             '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">Select an image, drag &amp; drop, or paste a URL</div>' +
             '</div>' + // close drop zone
@@ -621,7 +621,19 @@ function SpecialDeals(defaultTab) {
             img.src = src;
         }
 
+        $('#legendChooseFileBtn').off('click').on('click', function(e) {
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('choose image file')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        });
+
         $('#legendUploadInputModal').off('change').on('change', function(e) {
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('choose image file')) {
+                $(this).val('');
+                return;
+            }
             var file = e.target.files && e.target.files[0];
             if (file) {
                 var reader = new FileReader();
@@ -650,6 +662,9 @@ function SpecialDeals(defaultTab) {
                 e.preventDefault();
                 e.stopPropagation();
                 dropZone.classList.remove('drag-over');
+                if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('upload custom skin')) {
+                    return;
+                }
                 var file = e.dataTransfer.files && e.dataTransfer.files[0];
                 if (file && file.type.startsWith('image/')) {
                     var reader = new FileReader();
@@ -680,6 +695,9 @@ function SpecialDeals(defaultTab) {
 
         // --- Load from URL ---
         $('#legendLoadUrlBtn').off('click').on('click', function() {
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('load custom skin URL')) {
+                return;
+            }
             var url = $('#legendSkinUrlInput').val().trim();
             if (!url) {
                 toastr && toastr.warning('<b>[UPLOAD]:</b> Paste an image URL first.');
@@ -705,12 +723,7 @@ function SpecialDeals(defaultTab) {
             var color = $('#legendSkinColorModal').val() || "#FFFF00";
 
             // Login + UID gate
-            if (!window.loggedIn) {
-                toastr.error("<b>[ERROR]:</b> You must be logged in to upload skins.");
-                return;
-            }
-            if (!window.agarioEncodedUID) {
-                toastr.error("<b>[ERROR]:</b> No UID found. Play a game first to get your UID!");
+            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('upload and buy custom skin')) {
                 return;
             }
             if (!(window.core && window.core.proxyMobileData)) {
@@ -1455,38 +1468,68 @@ function getDealSkinImage(bundleId) {
 /**
  * Buy a deal via IAP payment URL (real money)
  */
+function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
+    var old = document.getElementById('deal-buy-confirm-modal');
+    if (old) old.remove();
+
+    var t = getShopTheme();
+    var modal = document.createElement('div');
+    modal.id = 'deal-buy-confirm-modal';
+    modal.className = 'lm-modal-overlay';
+    modal.style.zIndex = '100001';
+    modal.innerHTML = 
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">' +
+            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
+                '🛒 Purchase Confirmation' +
+            '</div>' +
+            '<div style="padding: 20px 24px;">' +
+                '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 8px;">' + title + '</div>' +
+                (priceLabel ? ('<div style="font-size: 13px; font-weight: 700; color: ' + t.mc + '; margin-bottom: 14px;">Price: ' + priceLabel + '</div>') : '') +
+                '<div style="font-size: 11px; color: ' + t.tc2 + ';">Are you sure you want to proceed?</div>' +
+            '</div>' +
+            '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
+                '<button id="deal-confirm-cancel" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Cancel</button>' +
+                '<button id="deal-confirm-buy" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">Confirm</button>' +
+            '</div>' +
+        '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+    document.getElementById('deal-confirm-cancel').addEventListener('click', function() { modal.remove(); });
+    document.getElementById('deal-confirm-buy').addEventListener('click', function() {
+        modal.remove();
+        if (typeof onConfirm === 'function') onConfirm();
+    });
+}
+
+/**
+ * Buy a deal via IAP payment URL (real money)
+ */
 function buyDealIAP(dealId, dealDesc) {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to buy deals');
-        return;
-    }
-    if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
         return;
     }
 
-    if (!confirm('Purchase "' + dealDesc + '"?\n\nThis will open a payment window.\nMake sure you are logged in.')) {
-        return;
-    }
+    _showDealBuyConfirmationModal(dealDesc || dealId, null, function() {
+        var uid = $('#exp-uid').text() || window.agarioEncodedUID;
+        var currency = $('#BuyDealCurrency').val() || 'USD';
 
-    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
-    var currency = $('#BuyDealCurrency').val() || 'USD';
-
-    $.ajax({
-        type: 'GET',
-        url: 'https://payments.agar.io/pay/' + uid + '/' + dealId + '/' + currency,
-        datatype: 'json',
-        success: function(info) {
-            if (info && info.iframe_url) {
-                window.open(info.iframe_url, 'PopupWindow', 'width=600,height=600,scrollbars=yes,resizable=no');
-                toastr.info('<b>[SHOP]:</b> Payment window opened. Complete the purchase there.');
-            } else {
-                toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this deal');
+        $.ajax({
+            type: 'GET',
+            url: 'https://payments.agar.io/pay/' + uid + '/' + dealId + '/' + currency,
+            datatype: 'json',
+            success: function(info) {
+                if (info && info.iframe_url) {
+                    window.open(info.iframe_url, 'PopupWindow', 'width=600,height=600,scrollbars=yes,resizable=no');
+                    toastr.info('<b>[SHOP]:</b> Payment window opened. Complete the purchase there.');
+                } else {
+                    toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this deal');
+                }
+            },
+            error: function() {
+                toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
             }
-        },
-        error: function() {
-            toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
-        }
+        });
     });
 }
 window.buyDealIAP = buyDealIAP;
@@ -1496,42 +1539,40 @@ window.buyDealIAP = buyDealIAP;
  * Response comes on opcode 71 — ogario.v4.js case 71 calls refreshSkinGrid() & shows toastr.
  */
 function buyDealSoft(purchaseId, cost, currencyType) {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
         return;
     }
     if (!window.application || !window.application.softPurchase) {
-        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
+        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
         return;
     }
 
-    var currLabel = currencyType.indexOf('dna') !== -1 ? 'DNA' : 'Coins';
-    if (!confirm('Buy "' + purchaseId.replace(/_/g, ' ') + '" for ' + cost.toLocaleString() + ' ' + currLabel + '?')) {
-        return;
-    }
+    var title = purchaseId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+    var currLabel = (currencyType || '').indexOf('dna') !== -1 ? '🧬 DNA' : '💰 Coins';
+    var priceText = cost.toLocaleString() + ' ' + currLabel;
 
-    // Disable all deal Buy buttons to prevent double-clicks
-    var allBtns = document.querySelectorAll('#dealsGrid .btn');
-    for (var i = 0; i < allBtns.length; i++) {
-        allBtns[i].disabled = true;
-        allBtns[i].style.opacity = '0.5';
-        allBtns[i].style.pointerEvents = 'none';
-    }
-
-    toastr.info('<b>[SHOP]:</b> Sending purchase request...');
-    window.application.softPurchase(purchaseId);
-    // ogario.v4.js case 71 handles the response (toastr + refreshSkinGrid + refreshDealsTab).
-    // refreshDealsTab() repopulates the grid which resets all buttons.
-    // Safety fallback to restore buttons if response is delayed:
-    window._dealSoftTimeout = setTimeout(function() {
-        var btns = document.querySelectorAll('#dealsGrid .btn');
-        for (var j = 0; j < btns.length; j++) {
-            btns[j].disabled = false;
-            btns[j].style.opacity = '1';
-            btns[j].style.pointerEvents = 'auto';
+    _showDealBuyConfirmationModal(title, priceText, function() {
+        // Disable all deal Buy buttons to prevent double-clicks
+        var allBtns = document.querySelectorAll('#dealsGrid .btn');
+        for (var i = 0; i < allBtns.length; i++) {
+            allBtns[i].disabled = true;
+            allBtns[i].style.opacity = '0.5';
+            allBtns[i].style.pointerEvents = 'none';
         }
-        updateDealsBalance();
-    }, 10000);
+
+        toastr.info('<b>[SHOP]:</b> Sending purchase request...');
+        window.application.softPurchase(purchaseId);
+
+        window._dealSoftTimeout = setTimeout(function() {
+            var btns = document.querySelectorAll('#dealsGrid .btn');
+            for (var j = 0; j < btns.length; j++) {
+                btns[j].disabled = false;
+                btns[j].style.opacity = '1';
+                btns[j].style.pointerEvents = 'auto';
+            }
+            updateDealsBalance();
+        }, 10000);
+    });
 }
 window.buyDealSoft = buyDealSoft;
 
@@ -1541,53 +1582,44 @@ window.buyDealSoft = buyDealSoft;
  * Response comes on opcode 78 — ogario.v4.js case 78.
  */
 function buyDealBundle(bundleId, dealDesc) {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('purchase deal bundle')) {
         return;
     }
-    if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+    if (!(window.core && window.core.proxyMobileData) || !window.application || !window.application.sendProto) {
+        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
         return;
-    }
-    if (!confirm('Purchase bundle "' + dealDesc + '"?')) return;
-
-    // Disable all deal buttons to prevent double-clicks
-    var allBtns = document.querySelectorAll('#dealsGrid .btn');
-    for (var bi = 0; bi < allBtns.length; bi++) {
-        allBtns[bi].disabled = true;
-        allBtns[bi].style.opacity = '0.5';
-        allBtns[bi].style.pointerEvents = 'none';
     }
 
-    // Use sendProto to encode Offer_bundle_request { bundleId } via opcode 77
-    if (!window.application || !window.application.sendProto) {
-        toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
-        // Re-enable buttons
-        var btns2 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j = 0; j < btns2.length; j++) { btns2[j].disabled = false; btns2[j].style.opacity = '1'; btns2[j].style.pointerEvents = 'auto'; }
-        return;
-    }
-    var sent = window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
-    if (sent) {
-        toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
-        console.log('[SHOP] Sent offer bundle request for ' + bundleId);
-    } else {
-        toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
-        var btns3 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
-        return;
-    }
-    // ogario.v4.js case 78 handles response → refreshDealsTab repopulates grid.
-    // Safety fallback to restore buttons if response is delayed:
-    window._dealBundleTimeout = setTimeout(function() {
-        var btns = document.querySelectorAll('#dealsGrid .btn');
-        for (var k = 0; k < btns.length; k++) {
-            btns[k].disabled = false;
-            btns[k].style.opacity = '1';
-            btns[k].style.pointerEvents = 'auto';
+    _showDealBuyConfirmationModal(dealDesc || bundleId, 'Special Bundle', function() {
+        // Disable all deal buttons to prevent double-clicks
+        var allBtns = document.querySelectorAll('#dealsGrid .btn');
+        for (var bi = 0; bi < allBtns.length; bi++) {
+            allBtns[bi].disabled = true;
+            allBtns[bi].style.opacity = '0.5';
+            allBtns[bi].style.pointerEvents = 'none';
         }
-        updateDealsBalance();
-    }, 10000);
+
+        var sent = window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
+        if (sent) {
+            toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
+            console.log('[SHOP] Sent offer bundle request for ' + bundleId);
+        } else {
+            toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
+            var btns3 = document.querySelectorAll('#dealsGrid .btn');
+            for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
+            return;
+        }
+
+        window._dealBundleTimeout = setTimeout(function() {
+            var btns = document.querySelectorAll('#dealsGrid .btn');
+            for (var k = 0; k < btns.length; k++) {
+                btns[k].disabled = false;
+                btns[k].style.opacity = '1';
+                btns[k].style.pointerEvents = 'auto';
+            }
+            updateDealsBalance();
+        }, 10000);
+    });
 }
 window.buyDealBundle = buyDealBundle;
 
@@ -1596,50 +1628,42 @@ window.buyDealBundle = buyDealBundle;
  * Response comes on opcode 113 — ogario.v4.js case 113.
  */
 function activateBoost(productId) {
-    if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('activate boost')) {
         return;
     }
-    if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+    if (!(window.core && window.core.proxyMobileData) || !window.application || !window.application.activateBoost) {
+        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
         return;
     }
     var displayName = productId.replace(/_/g, ' ');
-    if (!confirm('Activate boost "' + displayName + '"?')) return;
 
-    // Disable all deal buttons to prevent double-clicks
-    var allBtns = document.querySelectorAll('#dealsGrid .btn');
-    for (var bi = 0; bi < allBtns.length; bi++) {
-        allBtns[bi].disabled = true;
-        allBtns[bi].style.opacity = '0.5';
-        allBtns[bi].style.pointerEvents = 'none';
-    }
-
-    // Use sendProto via application object
-    if (!window.application || !window.application.activateBoost) {
-        toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
-        var btns2 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j = 0; j < btns2.length; j++) { btns2[j].disabled = false; btns2[j].style.opacity = '1'; btns2[j].style.pointerEvents = 'auto'; }
-        return;
-    }
-    var sent = window.application.activateBoost(productId);
-    if (!sent) {
-        toastr.error('<b>[SHOP]:</b> Failed to activate boost');
-        var btns3 = document.querySelectorAll('#dealsGrid .btn');
-        for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
-        return;
-    }
-    // ogario.v4.js case 113 handles response → refreshDealsTab repopulates grid.
-    // Safety fallback:
-    window._boostTimeout = setTimeout(function() {
-        var btns = document.querySelectorAll('#dealsGrid .btn');
-        for (var k = 0; k < btns.length; k++) {
-            btns[k].disabled = false;
-            btns[k].style.opacity = '1';
-            btns[k].style.pointerEvents = 'auto';
+    _showDealBuyConfirmationModal('Activate ' + displayName, null, function() {
+        // Disable all deal buttons to prevent double-clicks
+        var allBtns = document.querySelectorAll('#dealsGrid .btn');
+        for (var bi = 0; bi < allBtns.length; bi++) {
+            allBtns[bi].disabled = true;
+            allBtns[bi].style.opacity = '0.5';
+            allBtns[bi].style.pointerEvents = 'none';
         }
-        updateDealsBalance();
-    }, 10000);
+
+        var sent = window.application.activateBoost(productId);
+        if (!sent) {
+            toastr.error('<b>[SHOP]:</b> Failed to activate boost');
+            var btns3 = document.querySelectorAll('#dealsGrid .btn');
+            for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
+            return;
+        }
+
+        window._boostTimeout = setTimeout(function() {
+            var btns = document.querySelectorAll('#dealsGrid .btn');
+            for (var k = 0; k < btns.length; k++) {
+                btns[k].disabled = false;
+                btns[k].style.opacity = '1';
+                btns[k].style.pointerEvents = 'auto';
+            }
+            updateDealsBalance();
+        }, 10000);
+    });
 }
 window.activateBoost = activateBoost;
 
@@ -2160,8 +2184,9 @@ function getSkinPrice(productId) {
 window.getSkinPrice = getSkinPrice;
 
 function updatePaginationUI() {
+    var grid = document.getElementById('skinGrid');
     var total = skinShopFiltered ? skinShopFiltered.length : 0;
-    var renderedCount = Math.min(skinShopLoadedPages * skinShopPerPage, total);
+    var renderedCount = grid ? grid.children.length : Math.min(skinShopLoadedPages * skinShopPerPage, total);
     $('#skinCount').text(renderedCount);
     $('#skinTotal').text(total);
 
@@ -2183,13 +2208,13 @@ function renderSkinPage(appendNextPage) {
     var end = 0;
 
     if (appendNextPage === true) {
-        start = skinShopLoadedPages * skinShopPerPage;
+        start = grid.children.length;
         if (start >= skinShopFiltered.length) {
             updatePaginationUI();
             return;
         }
         end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-        skinShopLoadedPages++;
+        skinShopLoadedPages = Math.ceil(end / skinShopPerPage);
     } else {
         grid.innerHTML = '';
         start = 0;

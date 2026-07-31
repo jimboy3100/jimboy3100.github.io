@@ -1125,70 +1125,72 @@
                     </div>
                 `;
             } else {
-                var potionHelpItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
-                                      ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
-                                       (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
+                var rawItems = (window.PotionHelpConfig && window.PotionHelpConfig.length) ? window.PotionHelpConfig :
+                              ((window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Potion Help"]) ||
+                               (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Potion Help"]));
                 
+                var officialTiers = [
+                    { id: 'common', name: 'Common', color: '#4caf50', skin: 'x1', spec: '', coins: '💰 +', trophies: '🏆 x1' },
+                    { id: 'rare', name: 'Rare', color: '#00d3ff', skin: 'x3', spec: '', coins: '💰 ++', trophies: '🏆🏆 x2' },
+                    { id: 'exotic', name: 'Exotic', color: '#e91e63', skin: 'x4', spec: '(At least x1 Special)', coins: '💰 +++', trophies: '🏆🏆 x2' },
+                    { id: 'mystical', name: 'Mystical', color: '#ffb300', skin: 'x6', spec: '(At least x3 Special)', coins: '💰 ++++', trophies: '🏆🏆🏆 x3' }
+                ];
+
                 var rowsHtml = '';
-                if (potionHelpItems && potionHelpItems.length) {
-                    var tierColors = { "potion_common": "#4caf50", "potion_rare": "#2196f3", "potion_exotic": "#e91e63", "potion_mystical": "#ffb300", "potion_superior": "#4caf50", "potion_epic": "#00bcd4", "potion_legendary": "#e91e63", "potion_mythical": "#ffb300", "Common": "#4caf50", "Rare": "#2196f3", "Exotic": "#e91e63", "Mystical": "#ffb300" };
-                    for (var p = 0; p < potionHelpItems.length; p++) {
-                        var ph = potionHelpItems[p];
-                        var pColor = tierColors[ph.potionId] || t.mc;
-                        var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${pColor};">(${ph.minSpecialPieces})</span>` : '';
-                        var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + ph.coinText) : '<span style="opacity: 0.5;">—</span>';
-                        var nameLabel = (ph.potionId || 'Potion').replace('potion_', '').replace(/\b\w/g, function(c){return c.toUpperCase();});
+
+                // If authoritative server configs exist, filter strictly for standard tiers to avoid internal/fake rows
+                if (rawItems && rawItems.length) {
+                    var tierMap = {
+                        'potion_common': officialTiers[0], 'common': officialTiers[0],
+                        'potion_rare': officialTiers[1], 'rare': officialTiers[1],
+                        'potion_exotic': officialTiers[2], 'exotic': officialTiers[2],
+                        'potion_mystical': officialTiers[3], 'mystical': officialTiers[3]
+                    };
+                    for (var p = 0; p < rawItems.length; p++) {
+                        var ph = rawItems[p];
+                        var key = (ph.potionId || '').toLowerCase();
+                        if (tierMap[key]) {
+                            var tObj = tierMap[key];
+                            var specText = (ph.minSpecialPieces && ph.minSpecialPieces !== '0') ? ` <span style="font-size: 10px; color: ${tObj.color}; font-weight: 800;">(At least x${ph.minSpecialPieces} Special)</span>` : '';
+                            var coinVal = (ph.coinText && ph.coinText !== 'na') ? ('💰 ' + ph.coinText) : tObj.coins;
+                            rowsHtml += `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                                    <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tObj.color}; font-size: 13px;">
+                                        🧪 ${tObj.name}
+                                    </div>
+                                    <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
+                                        ${ph.skinPieces || tObj.skin}${specText}
+                                    </div>
+                                    <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
+                                        ${coinVal}
+                                    </div>
+                                    <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
+                                        ${tObj.trophies}
+                                    </div>
+                                    <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
+                                        and more!
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                // Fallback to official 4 standard tiers if server data is unavailable or filtered
+                if (!rowsHtml) {
+                    for (var ot = 0; ot < officialTiers.length; ot++) {
+                        var tier = officialTiers[ot];
+                        var specHtml = tier.spec ? ` <span style="font-size: 10px; color: ${tier.color}; font-weight: 800;">${tier.spec}</span>` : '';
                         rowsHtml += `
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                                <div style="width: 130px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${pColor}; font-size: 13px;">
-                                    🧪 ${nameLabel}
-                                </div>
-                                <div style="width: 150px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">
-                                    ${ph.skinPieces || 'x1'}${specText}
-                                </div>
-                                <div style="width: 100px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">
-                                    ${coinVal}
-                                </div>
-                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">
-                                    🏆 x1
-                                </div>
-                                <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">
-                                    and more!
-                                </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
+                                <div style="width: 120px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: ${tier.color}; font-size: 13px;">🧪 ${tier.name}</div>
+                                <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">${tier.skin}${specHtml}</div>
+                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">${tier.coins}</div>
+                                <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">${tier.trophies}</div>
+                                <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
                             </div>
                         `;
                     }
-                } else {
-                    rowsHtml = `
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #4caf50; font-size: 13px;">🧪 Common</div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">x1</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 +Coins</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x1</div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #2196f3; font-size: 13px;">🧪 Rare</div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 12px;">x3</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 ++Coins</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x2</div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #e91e63; font-size: 13px;">🧪 Exotic</div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">x4 <span style="font-size: 10px; color: #ff4081;">(At least x1 Special)</span></div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 +++Coins</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x3</div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;">
-                            <div style="width: 110px; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #ffb300; font-size: 13px;">🧪 Mystical</div>
-                            <div style="width: 170px; text-align: center; font-weight: 700; color: ${t.tc}; font-size: 11px;">x6 <span style="font-size: 10px; color: #ffd700;">(At least x3 Special)</span></div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ffd700; font-size: 12px;">💰 ++++Coins</div>
-                            <div style="width: 90px; text-align: center; font-weight: 800; color: #ff9800; font-size: 12px;">🏆 x3</div>
-                            <div style="width: 80px; text-align: right; font-size: 11px; color: ${t.tc2}; font-weight: 600;">and more!</div>
-                        </div>
-                    `;
                 }
 
                 return `
@@ -1196,8 +1198,8 @@
                         Each potion has amazing rewards inside! Brew the potions to open them!
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; font-size: 11px; font-weight: 800; color: ${t.tc2}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
-                        <div style="width: 110px;">POTIONS</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 16px; font-size: 11px; font-weight: 800; color: ${t.tc2}; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                        <div style="width: 120px;">POTIONS</div>
                         <div style="width: 170px; text-align: center;">SKIN PIECES</div>
                         <div style="width: 90px; text-align: center;">COINS</div>
                         <div style="width: 90px; text-align: center;">TROPHIES</div>
@@ -1910,12 +1912,26 @@
     };
 
     window.showFriendsModal = function() {
-        // Authenticated & Connected check
-        var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+        // Authenticated & Facebook login check
+        var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
+        var isFacebookLoggedIn = isLoggedIn && (
+            (window.master && window.master.context === 'facebook') ||
+            (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
+            !!window.facebookUser ||
+            !!window.fbLoggedIn
+        );
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
 
-        if (!isLoggedIn || !hasServerConnection) {
-            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in with Facebook/Miniclip and connected to Agar.io servers to view friends.');
+        if (!isLoggedIn) {
+            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in to view friends.');
+            return;
+        }
+        if (!isFacebookLoggedIn) {
+            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> Friends feature requires logging in with Facebook.');
+            return;
+        }
+        if (!hasServerConnection) {
+            if (window.toastr) toastr.error('<b>[FRIENDS]:</b> No server connection. Join an Agar.io server first.');
             return;
         }
 
@@ -2259,15 +2275,30 @@
             }
         }
 
-        // 5. Friends Button Disabled state when unauthenticated or disconnected
-        var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
+        // 5. Friends Button Disabled state when unauthenticated, not logged in with Facebook, or disconnected
+        var isUserLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
+        var isFacebookLoggedIn = isUserLoggedIn && (
+            (window.master && window.master.context === 'facebook') ||
+            (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
+            !!window.facebookUser ||
+            !!window.fbLoggedIn
+        );
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
-        var friendsBtn = $('#lm-friends-btn');
+        var friendsBtn = $('#lm-friends-btn, .lm-friends-btn');
         if (friendsBtn.length) {
-            if (!isLoggedIn || !hasServerConnection) {
-                friendsBtn.css({ opacity: 0.5, cursor: 'not-allowed' }).prop('disabled', true);
+            if (!isUserLoggedIn || !isFacebookLoggedIn || !hasServerConnection) {
+                var friendsTitle = !isUserLoggedIn
+                    ? 'Log in with Facebook and join a game session first to access Friends'
+                    : (!isFacebookLoggedIn
+                        ? 'Friends feature requires logging in with Facebook'
+                        : 'Join an Agar.io server first');
+                friendsBtn.css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' })
+                          .prop('disabled', true)
+                          .attr('title', friendsTitle);
             } else {
-                friendsBtn.css({ opacity: 1, cursor: 'pointer' }).prop('disabled', false);
+                friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
+                          .prop('disabled', false)
+                          .removeAttr('title');
             }
         }
 
@@ -2416,6 +2447,21 @@
 
         $(document).off('click', '#lm-friends-btn').on('click', '#lm-friends-btn', function(e) {
             e.preventDefault();
+            var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn);
+            var isFacebookLoggedIn = isLoggedIn && (
+                (window.master && window.master.context === 'facebook') ||
+                (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
+                !!window.facebookUser ||
+                !!window.fbLoggedIn
+            );
+            if (!isLoggedIn) {
+                if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in with Facebook to access Friends.');
+                return false;
+            }
+            if (!isFacebookLoggedIn) {
+                if (window.toastr) toastr.error('<b>[FRIENDS]:</b> Friends feature requires logging in with Facebook.');
+                return false;
+            }
             if (typeof window.showFriendsModal === 'function') window.showFriendsModal();
         });
 
