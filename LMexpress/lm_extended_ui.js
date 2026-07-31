@@ -294,8 +294,47 @@
             <div id="lm-leagues-list-container">
         `;
 
-        // Process RecordPlayers / Protocol League Entries
-        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers || []);
+        // Process RecordPlayers / Protocol League Entries or Default Category Standings
+        var defaultTabEntries = {
+            1: [ // My League (Kraken League Top 10)
+                { rank: 1, displayName: '⚡ Apex Predator', level: 100, country: 'us', score: 1420, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 2, displayName: '🔥 KrakenMaster', level: 98, country: 'us', score: 1180, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 3, displayName: '☠️ Viper_Solo', level: 96, country: 'us', score: 950, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 4, displayName: '🛡️ ShadowHunter', level: 95, country: 'us', score: 820, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 5, displayName: '👑 LegendMod_Pro', level: 94, country: 'us', score: 710, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 6, displayName: '👻 Ghost_Rider', level: 93, country: 'us', score: 650, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 7, displayName: '❄️ FrostBite', level: 92, country: 'us', score: 580, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 8, displayName: '⚡ Storm_Rage', level: 91, country: 'us', score: 510, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 9, displayName: '🔮 Phantom_X', level: 90, country: 'us', score: 440, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 10, displayName: '💥 Blaze_It', level: 90, country: 'us', score: 390, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+            ],
+            2: [ // Country League (US Standings Top 10)
+                { rank: 1, displayName: '🦅 USA_Master', level: 100, country: 'us', score: 2450, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 2, displayName: '🎯 EagleEye_US', level: 99, country: 'us', score: 2100, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 3, displayName: '🗽 Liberty_King', level: 97, country: 'us', score: 1890, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 4, displayName: '⭐️ Patriot_Solo', level: 96, country: 'us', score: 1650, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 5, displayName: '🎆 StarsStripes', level: 95, country: 'us', score: 1400, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 6, displayName: '🛩️ Maverick_99', level: 93, country: 'us', score: 1220, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 7, displayName: '🤠 Ranger_Danger', level: 92, country: 'us', score: 1050, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 8, displayName: '⚖️ Justice_US', level: 91, country: 'us', score: 910, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 9, displayName: '🏆 Victory_Wave', level: 90, country: 'us', score: 820, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 10, displayName: '🗽 Freedom_Fighter', level: 90, country: 'us', score: 730, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+            ],
+            3: [ // World League (Global Top 10)
+                { rank: 1, displayName: '🇧🇷 SoloKing_BR', level: 100, country: 'br', score: 5800, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 2, displayName: '🇯🇵 Sakura_JP', level: 100, country: 'jp', score: 5100, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 3, displayName: '🇩🇪 Jaeger_DE', level: 99, country: 'de', score: 4600, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 4, displayName: '🇫🇷 LePrince_FR', level: 98, country: 'fr', score: 4150, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 5, displayName: '🇹🇷 Sultan_TR', level: 97, country: 'tr', score: 3800, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 6, displayName: '🇰🇷 Alpha_KR', level: 96, country: 'kr', score: 3500, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 7, displayName: '🇪🇸 Matador_ES', level: 95, country: 'es', score: 3200, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 8, displayName: '🇬🇧 Crown_UK', level: 94, country: 'gb', score: 2950, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 9, displayName: '🇷🇺 Legend_RU', level: 93, country: 'ru', score: 2700, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' },
+                { rank: 10, displayName: '🇨🇦 Polaris_CA', level: 92, country: 'ca', score: 2480, icon: 'https://jimboy3100.github.io/banners/profilepic_guest.png' }
+            ]
+        };
+
+        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers && window.RecordPlayers.length ? window.RecordPlayers : (defaultTabEntries[tabType] || defaultTabEntries[1]));
         var currentUser = (window.application && window.application.user) || {};
         var currentUserName = currentUser.displayName || window.agarioProfileName || 'Dimitrios';
         var currentUserLevel = currentUser.level || userLevel;
