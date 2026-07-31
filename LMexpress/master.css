@@ -11269,7 +11269,11 @@ form {
 	height: 30px;
 	position: relative;
 	border: 2px solid #01612B;
+}
+#profile .agario-exp-bar,
+.clearfix .agario-exp-bar {
 	transform-origin: left !important;
+	margin-left: 10px;
 }
 
 .agario-exp-bar .progress-bar {
