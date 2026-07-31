@@ -278,7 +278,7 @@
                         <div style="opacity: 0.8; margin-bottom: 2px;">Top 3 prizes</div>
                         <div style="font-weight: 800; color: #ffd700;">${cfg.prizes} <i class="fa fa-ticket"></i></div>
                     </div>
-                    <button class="btn" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
+                    <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
                     <button class="btn" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
                 </div>
             </div>
@@ -482,6 +482,99 @@
     document.addEventListener('leaguesInfoUpdate', function(e) {
         window.renderLeaguesContent(window.currentLeagueTab || 1, e.detail || {});
     });
+
+    window.showMorePrizesModal = function(tabType) {
+        injectStyles();
+        var t = getTheme();
+        var currentTab = tabType || window.currentLeagueTab || 1;
+        var myTier = window.getLeagueTierFromLevel(userLevel);
+
+        var prizeData = {
+            1: {
+                title: (myTier && myTier.name ? myTier.name : 'Kraken League') + ' - Prizes Breakdown',
+                gradient: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
+                tiers: [
+                    { rank: '🥇 Rank 1', prize: '140 🎫 Potions & 2,500 Coins', bonus: 'Golden Box + 2x XP Boost' },
+                    { rank: '🥈 Rank 2', prize: '120 🎫 Potions & 1,800 Coins', bonus: 'Silver Box' },
+                    { rank: '🥉 Rank 3', prize: '110 🎫 Potions & 1,200 Coins', bonus: 'Bronze Box' },
+                    { rank: '🏅 Rank 4 - 10', prize: '80 🎫 Potions & 800 Coins', bonus: 'Mass Boost (1h)' },
+                    { rank: '🏅 Rank 11 - 20', prize: '50 🎫 Potions & 500 Coins', bonus: 'Mystery Potion' },
+                    { rank: '🏅 Rank 21 - 50', prize: '30 🎫 Potions & 300 Coins', bonus: '100 DNA' },
+                    { rank: '🏅 Rank 51 - 100', prize: '15 🎫 Potions & 150 Coins', bonus: '50 DNA' }
+                ]
+            },
+            2: {
+                title: 'Country League (' + userCountry.toUpperCase() + ') - Prizes Breakdown',
+                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
+                tiers: [
+                    { rank: '🥇 Rank 1', prize: '200 🎫 Potions & 5,000 Coins', bonus: 'Golden Country Box + Flag Skin' },
+                    { rank: '🥈 Rank 2', prize: '150 🎫 Potions & 3,500 Coins', bonus: 'Silver Box' },
+                    { rank: '🥉 Rank 3', prize: '100 🎫 Potions & 2,500 Coins', bonus: 'Bronze Box' },
+                    { rank: '🏅 Rank 4 - 10', prize: '75 🎫 Potions & 1,500 Coins', bonus: '2x XP Boost (24h)' },
+                    { rank: '🏅 Rank 11 - 20', prize: '50 🎫 Potions & 1,000 Coins', bonus: '200 DNA' },
+                    { rank: '🏅 Rank 21 - 50', prize: '30 🎫 Potions & 600 Coins', bonus: '100 DNA' },
+                    { rank: '🏅 Rank 51 - 100', prize: '20 🎫 Potions & 300 Coins', bonus: '50 DNA' }
+                ]
+            },
+            3: {
+                title: 'World League - Prizes Breakdown',
+                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+                tiers: [
+                    { rank: '🥇 Rank 1', prize: '1,000 🎫 Potions & 15,000 Coins', bonus: 'Diamond World Box + Exclusive World Crown' },
+                    { rank: '🥈 Rank 2', prize: '800 🎫 Potions & 10,000 Coins', bonus: 'Platinum Box' },
+                    { rank: '🥉 Rank 3', prize: '500 🎫 Potions & 7,500 Coins', bonus: 'Gold Box' },
+                    { rank: '🏅 Rank 4 - 10', prize: '300 🎫 Potions & 5,000 Coins', bonus: '3x Mass Boost (24h)' },
+                    { rank: '🏅 Rank 11 - 20', prize: '200 🎫 Potions & 3,000 Coins', bonus: '500 DNA' },
+                    { rank: '🏅 Rank 21 - 50', prize: '100 🎫 Potions & 1,500 Coins', bonus: '250 DNA' },
+                    { rank: '🏅 Rank 51 - 100', prize: '50 🎫 Potions & 800 Coins', bonus: '100 DNA' }
+                ]
+            }
+        };
+
+        var cfg = prizeData[currentTab] || prizeData[1];
+        var old = document.getElementById('lm-prizes-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-prizes-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        var rowsHtml = '';
+        cfg.tiers.forEach(function(row) {
+            rowsHtml += `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                    <div style="font-weight: 800; font-size: 13px; color: ${t.mc}; min-width: 140px;">${row.rank}</div>
+                    <div style="flex: 1; font-weight: 700; font-size: 13px; color: ${t.tc}; text-align: center;">${row.prize}</div>
+                    <div style="font-size: 11px; font-weight: 700; color: #ffd700; background: rgba(255,215,0,0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.2); min-width: 160px; text-align: right;">${row.bonus}</div>
+                </div>
+            `;
+        });
+
+        modal.innerHTML = `
+            <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.b2}; width: 620px;">
+                <div class="lm-modal-header" style="background: ${cfg.gradient}; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.15);">
+                    <div style="width: 100%; text-align: center; position: relative;">
+                        <span style="font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${cfg.title}</span>
+                        <button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: #fff;" onclick="document.getElementById('lm-prizes-modal').remove();">&times;</button>
+                    </div>
+                </div>
+
+                <div class="lm-modal-body" style="padding: 16px; max-height: 420px; overflow-y: auto;">
+                    <div style="font-size: 12px; color: ${t.tc2}; margin-bottom: 12px; text-align: center; font-weight: 600;">
+                        🎁 Finish in these rank positions at the end of the week to claim these rewards!
+                    </div>
+                    ${rowsHtml}
+                </div>
+
+                <div style="padding: 12px 20px; text-align: center; background: ${t.pc2}; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button class="btn" onclick="document.getElementById('lm-prizes-modal').remove();" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; padding: 8px 24px; border-radius: 6px; border: none; cursor: pointer;">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    };
+
     window.showFriendsModal = function() {
         // Authenticated & Connected check
         var isLoggedIn = !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId) || window.agarioProfileName);
