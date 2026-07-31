@@ -2030,59 +2030,81 @@ window.findSkinInConfig = findSkinInConfig;
  * Returns { amount: number, currency: 'coin'|'dna' } or null if not found.
  */
 function getSkinPrice(productId) {
+    if (!productId) return null;
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+
+    var cleanId = productId.replace(/^(shop_skin_|skin_)/, '');
 
     // Build the lookup caches on first call
     if (!window._skinPriceCache) {
         window._skinPriceCache = {};
 
-        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"];
-        var softPurchases = window.GameConfiguration.gameConfig["Wallet - Soft Purchases"];
+        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"] || [];
+        var softPurchases = window.GameConfiguration.gameConfig["Wallet - Soft Purchases"] || [];
 
-        if (!shopSkins) return null;
-
-        // Index soft purchases by purchaseId
+        // Index soft purchases by all possible purchaseId variations
         var purchaseMap = {};
-        if (softPurchases) {
-            for (var p = 0; p < softPurchases.length; p++) {
-                var sp = softPurchases[p];
-                if (sp.purchaseId) purchaseMap[sp.purchaseId] = sp;
+        for (var p = 0; p < softPurchases.length; p++) {
+            var sp = softPurchases[p];
+            if (!sp) continue;
+            var pKeys = [sp.purchaseId, sp.id, sp.productId].filter(Boolean);
+            for (var k = 0; k < pKeys.length; k++) {
+                var pk = String(pKeys[k]);
+                purchaseMap[pk] = sp;
+                purchaseMap[pk.toLowerCase()] = sp;
             }
         }
 
         // Map skin productId AND productIdToQuantify → price info
         for (var s = 0; s < shopSkins.length; s++) {
             var shopSkin = shopSkins[s];
-            var pid = shopSkin.productId;
-            var gameplayPid = shopSkin.productIdToQuantify;
-            var refVal = shopSkin.referenceValue;
+            if (!shopSkin) continue;
+            var pid = shopSkin.productId || '';
+            var gameplayPid = shopSkin.productIdToQuantify || '';
+            var refVal = shopSkin.referenceValue || '';
             var skinType = shopSkin.type || '';
+
+            var purchase = purchaseMap[refVal] || purchaseMap[refVal.toLowerCase()] ||
+                            purchaseMap[pid] || purchaseMap[gameplayPid];
 
             var priceEntry = null;
 
             if (skinType === 'REWARD') {
-                // Reward skins are free (earned via level-up)
                 priceEntry = { amount: 0, currency: 'free', type: 'REWARD' };
-            } else if (skinType === 'SOFT' && refVal && purchaseMap[refVal]) {
-                var purchase = purchaseMap[refVal];
+            } else if (purchase) {
                 priceEntry = {
                     amount: purchase.currencyAmount || 0,
-                    currency: (purchase.currencyProductId === 'dna') ? 'dna' : 'coin',
+                    currency: (purchase.currencyProductId === 'dna' || purchase.currency === 'dna') ? 'dna' : 'coin',
                     type: 'SOFT'
                 };
+            } else if (skinType === 'SOFT' && refVal) {
+                // Soft purchase with referenceValue
+                priceEntry = { amount: 90, currency: 'coin', type: 'SOFT' };
             } else if (skinType === 'INAPP') {
                 priceEntry = { amount: 0, currency: 'real', type: 'INAPP' };
             }
 
             if (priceEntry) {
-                // Index by both shop productId and gameplay productId
-                if (pid) window._skinPriceCache[pid] = priceEntry;
-                if (gameplayPid) window._skinPriceCache[gameplayPid] = priceEntry;
+                var keysToStore = [
+                    pid, pid.toLowerCase(),
+                    gameplayPid, gameplayPid.toLowerCase(),
+                    pid.replace(/^shop_skin_/, 'skin_'),
+                    pid.replace(/^shop_skin_/, ''),
+                    gameplayPid.replace(/^skin_/, '')
+                ].filter(Boolean);
+
+                for (var iKey = 0; iKey < keysToStore.length; iKey++) {
+                    window._skinPriceCache[keysToStore[iKey]] = priceEntry;
+                }
             }
         }
     }
 
-    return window._skinPriceCache[productId] || null;
+    return window._skinPriceCache[productId] ||
+           window._skinPriceCache[productId.toLowerCase()] ||
+           window._skinPriceCache['skin_' + cleanId] ||
+           window._skinPriceCache[cleanId] ||
+           null;
 }
 window.getSkinPrice = getSkinPrice;
 
@@ -2261,7 +2283,7 @@ function buySkin(productId) {
     var ringColor = 'rgb(' + rC + ',' + gC + ',' + bC + ')';
 
     // Price info
-    var costHtml = '<div style="color: ' + (getShopTheme().mc) + '; font-weight: 800; font-size: 16px;">Free</div>';
+    var costHtml = '<div style="color: ' + (getShopTheme().mc) + '; font-weight: 800; font-size: 16px;">Price unavailable</div>';
     var balanceWarning = '';
     if (priceInfo && priceInfo.amount > 0) {
         var currencyIcon = priceInfo.currency === 'dna' ? '🧬' : '💰';
@@ -2275,6 +2297,8 @@ function buySkin(productId) {
         if (currentBalance < priceInfo.amount) {
             balanceWarning = '<div style="color: #ff9800; font-size: 12px; font-weight: 700; margin-top: 8px; padding: 6px 12px; border-radius: 6px; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.3);">⚠️ You may not have enough ' + currencyLabel + '!</div>';
         }
+    } else if (priceInfo && priceInfo.type === 'REWARD') {
+        costHtml = '<div style="color: #4caf50; font-weight: 800; font-size: 18px;">Free (Level Reward)</div>';
     }
 
     // Remove old confirm modal if any
