@@ -13,6 +13,36 @@ function getActiveSpect(unitNumber) {
 window.OgVer = 3.499;
 console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
 
+function readLocalStorageJSON(key, fallbackValue) {
+    var rawValue;
+
+    try {
+        rawValue = window.localStorage.getItem(key);
+
+        if (rawValue === null) {
+            return fallbackValue;
+        }
+
+        var parsedValue = JSON.parse(rawValue);
+
+        return parsedValue == null
+            ? fallbackValue
+            : parsedValue;
+    } catch (error) {
+        console.warn(
+            "[Legend Mod] Removing invalid localStorage JSON:",
+            key,
+            error
+        );
+
+        try {
+            window.localStorage.removeItem(key);
+        } catch (removeError) {}
+
+        return fallbackValue;
+    }
+}
+
 /* ─── Persistent Skin & Audio Storage (IndexedDB) ─── */
 (function () {
     window.LMSkinStorage = {
@@ -4529,9 +4559,20 @@ function thelegendmodproject() {
         chatScaleCSS: null,
         cursorCSS: null,
         loadThemeSettings() {
-            let storage = null;
-            if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
-                storage = JSON.parse(window.localStorage.getItem('ogarioThemeSettings'));
+            let storage =
+                readLocalStorageJSON(
+                    'ogarioThemeSettings',
+                    null
+                );
+
+            if (
+                storage !== null &&
+                (
+                    typeof storage !== 'object' ||
+                    Array.isArray(storage)
+                )
+            ) {
+                storage = null;
             }
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
@@ -5348,23 +5389,51 @@ function thelegendmodproject() {
         },
         macrobotFeed(on) {
             if (on) {
-                if (this.macrobotFeedActive) return;
+                if (this.macrobotFeedActive) {
+                    return;
+                }
+
                 this.macrobotFeedActive = true;
+
                 var app = this;
                 var lastFeedTime = 0;
+
                 this.Botseject();
+
                 function loop(now) {
-                    if (!app.macrobotFeedActive) return;
-                    var delay = defaultmapsettings.macroFeeding || 10;
+                    if (!app.macrobotFeedActive) {
+                        app.macrobotFeedFrame = null;
+                        return;
+                    }
+
+                    var delay =
+                        Number(defaultmapsettings.macroFeeding) || 10;
+
+                    if (delay < 1) {
+                        delay = 1;
+                    }
+
                     if (now - lastFeedTime >= delay) {
                         lastFeedTime = now;
                         app.Botseject();
                     }
-                    requestAnimationFrame(loop);
+
+                    app.macrobotFeedFrame =
+                        window.requestAnimationFrame(loop);
                 }
-                requestAnimationFrame(loop);
+
+                this.macrobotFeedFrame =
+                    window.requestAnimationFrame(loop);
             } else {
                 this.macrobotFeedActive = false;
+
+                if (this.macrobotFeedFrame != null) {
+                    window.cancelAnimationFrame(
+                        this.macrobotFeedFrame
+                    );
+                    this.macrobotFeedFrame = null;
+                }
+
                 if (this.feedInterval) {
                     clearInterval(this.feedInterval);
                     this.feedInterval = null;
@@ -5373,23 +5442,51 @@ function thelegendmodproject() {
         },
         macroFeed(on) {
             if (on) {
-                if (this.macroFeedActive) return;
+                if (this.macroFeedActive) {
+                    return;
+                }
+
                 this.macroFeedActive = true;
+
                 var app = this;
                 var lastFeedTime = 0;
+
                 this.feed();
+
                 function loop(now) {
-                    if (!app.macroFeedActive) return;
-                    var delay = defaultmapsettings.macroFeeding || 10;
+                    if (!app.macroFeedActive) {
+                        app.macroFeedFrame = null;
+                        return;
+                    }
+
+                    var delay =
+                        Number(defaultmapsettings.macroFeeding) || 10;
+
+                    if (delay < 1) {
+                        delay = 1;
+                    }
+
                     if (now - lastFeedTime >= delay) {
                         lastFeedTime = now;
                         app.feed();
                     }
-                    requestAnimationFrame(loop);
+
+                    app.macroFeedFrame =
+                        window.requestAnimationFrame(loop);
                 }
-                requestAnimationFrame(loop);
+
+                this.macroFeedFrame =
+                    window.requestAnimationFrame(loop);
             } else {
                 this.macroFeedActive = false;
+
+                if (this.macroFeedFrame != null) {
+                    window.cancelAnimationFrame(
+                        this.macroFeedFrame
+                    );
+                    this.macroFeedFrame = null;
+                }
+
                 if (this.feedInterval) {
                     clearInterval(this.feedInterval);
                     this.feedInterval = null;
@@ -5905,14 +6002,15 @@ function thelegendmodproject() {
             }
         },
         setVanillaSkins() {
+            if (window.animateSkinsTimer != null) {
+                clearTimeout(window.animateSkinsTimer);
+                window.animateSkinsTimer = null;
+            }
+
             if (defaultmapsettings.vanillaSkins) {
-                //defaultmapsettings.animateSkinsStart = setInterval(animateSkincheck, window.preSetanimateSkincheck);
-                setTimeout(function () {
-                    animateSkincheck()
-                }, window.preSetanimateSkincheck);
+                animateSkincheck();
             } else {
                 application.flushSkinsMap();
-                //animateSkinsStop();
                 window.preSetanimateSkincheck = 6000;
             }
         },
@@ -6542,9 +6640,20 @@ function thelegendmodproject() {
             return 'https://' + url;
         },
         loadSettings() {
-            let settings = null;
-            if (window.localStorage.getItem('ogarioSettings') !== null) {
-                settings = JSON.parse(window.localStorage.getItem('ogarioSettings'));
+            let settings =
+                readLocalStorageJSON(
+                    'ogarioSettings',
+                    null
+                );
+
+            if (
+                settings !== null &&
+                (
+                    typeof settings !== 'object' ||
+                    Array.isArray(settings)
+                )
+            ) {
+                settings = null;
             }
             for (const option in defaultmapsettings) {
                 if (defaultmapsettings.hasOwnProperty(option)) {
@@ -6694,7 +6803,15 @@ function thelegendmodproject() {
         /* ─── §4.6 Profile Management ─── */
         loadProfiles() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
-                profiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
+                profiles =
+                    readLocalStorageJSON(
+                        'ogarioPlayerProfiles',
+                        []
+                    );
+
+                if (!Array.isArray(profiles)) {
+                    profiles = [];
+                }
                 if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
                     //for (var t = 10; t < 15; t++) profiles.push({
                     for (var t = profiles.length; t < defaultmapsettings.profileNumber; t++) {
@@ -6730,11 +6847,37 @@ function thelegendmodproject() {
                 application.profiling();
 
             }, 200)
-            if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
-                this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
+            this.selectedProfile = parseInt(
+                readLocalStorageJSON(
+                    'ogarioSelectedProfile',
+                    this.selectedProfile || 0
+                ),
+                10
+            );
+
+            this.selectedOldProfile = parseInt(
+                readLocalStorageJSON(
+                    'ogarioSelectedOldProfile',
+                    this.selectedOldProfile || 0
+                ),
+                10
+            );
+
+            if (
+                !isFinite(this.selectedProfile) ||
+                this.selectedProfile < 0 ||
+                this.selectedProfile >= profiles.length
+            ) {
+                this.selectedProfile = 0;
             }
-            if (null !== window.localStorage.getItem('ogarioSelectedOldProfile')) {
-                this.selectedOldProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedOldProfile'));
+
+            if (
+                !isFinite(this.selectedOldProfile) ||
+                this.selectedOldProfile < 0 ||
+                this.selectedOldProfile >= profiles.length
+            ) {
+                this.selectedOldProfile =
+                    this.selectedProfile;
             }
             if (profiles[this.selectedProfile]) {
                 ogarcopythelb.nick = profiles[this.selectedProfile].nick;
@@ -7798,8 +7941,24 @@ function thelegendmodproject() {
             LM.showCustomSkins = !defaultmapsettings.noSkins;
             LM.showCustomSkin = !defaultmapsettings.noSkins;
             if (null !== window.localStorage.getItem("scale_setting")) {
-                var parseScaleSettings = JSON.parse(window.localStorage.getItem("scale_setting"));
-                this.setCanvasScale(parseScaleSettings);
+                var parseScaleSettings = Number(
+                    readLocalStorageJSON(
+                        "scale_setting",
+                        NaN
+                    )
+                );
+
+                if (
+                    isFinite(parseScaleSettings) &&
+                    parseScaleSettings > 0
+                ) {
+                    this.setCanvasScale(
+                        parseScaleSettings
+                    );
+                } else {
+                    var quality = $("#quality").val();
+                    this.getQuality(quality);
+                }
             } else {
                 var quality = $("#quality").val();
                 this.getQuality(quality);
@@ -7849,9 +8008,42 @@ function thelegendmodproject() {
                     this.setCanvasScale(defaultValue);
             }
         },
-        setCanvasScale(value) {
-            this.canvasScale = value;
-            ogario.canvasScale = value;
+        setCanvasScale(e) {
+            if (
+                typeof e !== "number" ||
+                !isFinite(e) ||
+                e <= 0
+            ) {
+                return;
+            }
+
+            this.canvasScale = e;
+            if (typeof ogario !== "undefined" && ogario) {
+                ogario.canvasScale = e;
+            }
+
+            if (
+                typeof LM !== "undefined" &&
+                LM &&
+                LM.gameReady &&
+                typeof LM.targetCanvasScale === "number" &&
+                isFinite(LM.targetCanvasScale) &&
+                LM.targetCanvasScale > 0 &&
+                LM.targetCanvasScale !== e
+            ) {
+                var o = LM.targetCanvasScale / e;
+
+                if (isFinite(o) && o > 0) {
+                    if (typeof this.viewX === "number") this.viewX *= o;
+                    if (typeof this.viewY === "number") this.viewY *= o;
+                }
+
+                LM.targetCanvasScale = e;
+            }
+
+            if (typeof this.setCanvasSize === "function") {
+                this.setCanvasSize();
+            }
         },
         setStreamMode() {
             if (defaultmapsettings.streamMode) {
@@ -21556,27 +21748,59 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
         drawGrid(ctx) {
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLGridShader()) {
+            if (
+                (
+                    typeof defaultmapsettings.webgl2Acceleration === "undefined" ||
+                    defaultmapsettings.webgl2Acceleration
+                ) &&
+                this.drawWebGLGridShader()
+            ) {
                 return;
             }
-            if (!this._staticGridPattern) {
+
+            var gridColor =
+                defaultSettings.gridColor ||
+                "rgba(255,255,255,0.05)";
+
+            if (
+                !this._staticGridPattern ||
+                this._staticGridPatternColor !== gridColor
+            ) {
                 var pCanvas = document.createElement("canvas");
                 pCanvas.width = 50;
                 pCanvas.height = 50;
+
                 var pCtx = pCanvas.getContext("2d");
-                pCtx.strokeStyle = defaultSettings.gridColor || "rgba(255,255,255,0.05)";
+                if (!pCtx) {
+                    this._staticGridPattern = null;
+                    this._staticGridPatternColor = null;
+                    return;
+                }
+
+                pCtx.strokeStyle = gridColor;
                 pCtx.beginPath();
                 pCtx.moveTo(0, 0);
                 pCtx.lineTo(50, 0);
                 pCtx.moveTo(0, 0);
                 pCtx.lineTo(0, 50);
                 pCtx.stroke();
-                this._staticGridPattern = ctx.createPattern(pCanvas, "repeat");
+
+                this._staticGridPattern =
+                    ctx.createPattern(pCanvas, "repeat");
+
+                this._staticGridPatternColor =
+                    gridColor;
             }
+
             if (this._staticGridPattern) {
                 ctx.save();
                 ctx.fillStyle = this._staticGridPattern;
-                ctx.fillRect(LM.mapMinX || -7071, LM.mapMinY || -7071, LM.mapSize || 14142, LM.mapSize || 14142);
+                ctx.fillRect(
+                    LM.mapMinX != null ? LM.mapMinX : -7071,
+                    LM.mapMinY != null ? LM.mapMinY : -7071,
+                    LM.mapSize || 14142,
+                    LM.mapSize || 14142
+                );
                 ctx.restore();
             }
         },
@@ -21866,29 +22090,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             ctx.globalAlpha = 1;
         },
-        /* Native C AVX2 SIMD Map Grid Engine (ogario_physics_simd.c -> generate_grid_pattern_avx2) */
-        drawGrid(ctx) {
-            if (!this._staticGridPattern) {
-                var pCanvas = document.createElement("canvas");
-                pCanvas.width = 50;
-                pCanvas.height = 50;
-                var pCtx = pCanvas.getContext("2d");
-                pCtx.strokeStyle = defaultSettings.gridColor || "rgba(255,255,255,0.05)";
-                pCtx.beginPath();
-                pCtx.moveTo(0, 0);
-                pCtx.lineTo(50, 0);
-                pCtx.moveTo(0, 0);
-                pCtx.lineTo(0, 50);
-                pCtx.stroke();
-                this._staticGridPattern = ctx.createPattern(pCanvas, "repeat");
-            }
-            if (this._staticGridPattern) {
-                ctx.save();
-                ctx.fillStyle = this._staticGridPattern;
-                ctx.fillRect(LM.mapMinX || -7071, LM.mapMinY || -7071, LM.mapSize || 14142, LM.mapSize || 14142);
-                ctx.restore();
-            }
-        },
+
         /*drawGridCached() {
             //for (var xx = 1; xx > 0; xx -= 0.025){
                 //xx = xx.toFixed(2);
@@ -23137,13 +23339,34 @@ Most cells eaten   : ${mostCellsEaten}
             hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
         },
         loadHotkeys() {
-            if (null !== window.localStorage.getItem('ogarioHotkeys')) {
-                hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
+            var storedHotkeys =
+                readLocalStorageJSON(
+                    'ogarioHotkeys',
+                    null
+                );
+
+            if (
+                storedHotkeys &&
+                typeof storedHotkeys === 'object' &&
+                !Array.isArray(storedHotkeys)
+            ) {
+                hotkeys = storedHotkeys;
             } else {
-                this.loadDefaultHotkeys()
+                this.loadDefaultHotkeys();
             }
-            if (null !== window.localStorage.getItem('ogarioCommands')) {
-                chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
+
+            var storedCommands =
+                readLocalStorageJSON(
+                    'ogarioCommands',
+                    null
+                );
+
+            if (
+                storedCommands &&
+                typeof storedCommands === 'object' &&
+                !Array.isArray(storedCommands)
+            ) {
+                chatCommand = storedCommands;
             }
         },
         saveHotkeys() {
