@@ -15909,6 +15909,22 @@ function thelegendmodproject() {
                         }
                     } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
                     break;
+                case 103:
+                    // Consume gift requests response (echo-back confirmation)
+                    try {
+                        var cgr = r.uncompressedData.consumeRequestsField;
+                        console.log("[LM] Consume Gift Requests confirmed", cgr);
+                        toastr.info('<b>[SERVER]:</b> Gift requests consumed');
+                    } catch(cgrErr) { console.warn("[LM] Error parsing consume requests:", cgrErr); }
+                    break;
+                case 104:
+                    // Request gifts response (echo-back confirmation)
+                    try {
+                        var rgr = r.uncompressedData.requestGiftsField;
+                        console.log("[LM] Request Gifts confirmed", rgr);
+                        toastr.info('<b>[SERVER]:</b> Gift requests sent');
+                    } catch(rgrErr) { console.warn("[LM] Error parsing request gifts:", rgrErr); }
+                    break;
                 case 105:
                     // Facebook invitation reward updates
                     try {
@@ -16171,9 +16187,15 @@ function thelegendmodproject() {
                         if (vatr && vatr.token) {
                             window.videoAdRewardToken = vatr.token;
                             console.log("[LM] Video Ad Reward Token received: " + vatr.token.substring(0, 20) + "...");
+                            toastr.success('<b>[SERVER]:</b> Ad reward token received! &#x1F4FA;');
                         } else {
                             console.log("[LM] Video Ad Token Response — no token in payload");
+                            toastr.info('<b>[SERVER]:</b> Ad reward processed (no token)');
                         }
+                        // Reset ad reward button UI
+                        var arBtn = document.getElementById('adRewardBtn');
+                        if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
+                        if (window._adRewardTimeout) { clearTimeout(window._adRewardTimeout); window._adRewardTimeout = null; }
                     } catch(vatrErr) {
                         console.warn("[LM] Error parsing video ad token response:", vatrErr);
                     }

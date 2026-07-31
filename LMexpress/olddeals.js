@@ -262,6 +262,23 @@ function SpecialDeals() {
             // Deal cards container
             '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
 
+            // Reward Link section
+            '<div style="display: flex; gap: 6px; align-items: center; margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid ' + b3 + '44;">' +
+            '<span style="font-size: 18px;">🎟️</span>' +
+            '<input type="text" id="rewardLinkInput" class="form-control" placeholder="Paste reward link token..." style="flex: 1; height: 30px; font-size: 12px; border: 1px solid ' + b3 + '44; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
+            '<button id="activateRewardLinkBtn" class="btn btn-sm" onclick="(function(){ var inp=document.getElementById(\'rewardLinkInput\'); var token=inp.value.trim(); if(!token){toastr.error(\'<b>[SHOP]:</b> Enter a reward token\');return;} var btn=document.getElementById(\'activateRewardLinkBtn\'); btn.disabled=true; btn.textContent=\'...\'; btn.style.opacity=\'0.4\'; btn.style.pointerEvents=\'none\'; window.activateRewardLink(token); window._rewardLinkTimeout=setTimeout(function(){btn.disabled=false;btn.textContent=\'Activate\';btn.style.opacity=\'1\';btn.style.pointerEvents=\'auto\';toastr.warning(\'<b>[SHOP]:</b> Reward link timed out\');},10000); })()" style="background: ' + b3 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 4px 14px; font-size: 12px; cursor: pointer; white-space: nowrap;">Activate</button>' +
+            '</div>' +
+
+            // Ad Reward + Potions row
+            '<div style="display: flex; gap: 8px; margin-bottom: 10px;">' +
+            // Ad Reward button
+            '<button id="adRewardBtn" class="btn btn-sm" onclick="(function(){ var btn=document.getElementById(\'adRewardBtn\'); btn.disabled=true; btn.innerHTML=\'📺 Requesting...\'; btn.style.opacity=\'0.4\'; btn.style.pointerEvents=\'none\'; window.requestAdRewardToken(); window._adRewardTimeout=setTimeout(function(){btn.disabled=false;btn.innerHTML=\'📺 Ad Reward\';btn.style.opacity=\'1\';btn.style.pointerEvents=\'auto\';toastr.warning(\'<b>[SHOP]:</b> Ad reward timed out\');},10000); })()" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; flex: 1;">📺 Ad Reward</button>' +
+            // Potion buttons
+            '<button class="btn btn-sm" onclick="window.brewPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧪 Brew</button>' +
+            '<button class="btn btn-sm" onclick="window.openPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧫 Open</button>' +
+            '<button class="btn btn-sm" onclick="if(window.application)window.application.openPotionForProduct(prompt(\'Product ID:\'))" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;" title="Open potion for a specific product ID">🧬 Potion→Prod</button>' +
+            '</div>' +
+
             // Encoded UID & Config section (collapsible)
             '<details style="margin-top: 8px; border-top: 1px solid ' + pc2 + '; padding-top: 8px;">' +
             '<summary style="cursor: pointer; color: ' + tc2 + '; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID &amp; Config</summary>' +
@@ -1046,6 +1063,20 @@ window.refreshDealsTab = function() {
         clearTimeout(window._deleteTimeout);
         window._deleteTimeout = null;
     }
+    if (window._rewardLinkTimeout) {
+        clearTimeout(window._rewardLinkTimeout);
+        window._rewardLinkTimeout = null;
+    }
+    if (window._adRewardTimeout) {
+        clearTimeout(window._adRewardTimeout);
+        window._adRewardTimeout = null;
+    }
+    // Reset reward link button
+    var rlBtn = document.getElementById('activateRewardLinkBtn');
+    if (rlBtn) { rlBtn.disabled = false; rlBtn.textContent = 'Activate'; rlBtn.style.opacity = '1'; rlBtn.style.pointerEvents = 'auto'; }
+    // Reset ad reward button
+    var arBtn = document.getElementById('adRewardBtn');
+    if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
 };
 
 /**
