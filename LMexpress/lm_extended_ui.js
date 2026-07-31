@@ -52,6 +52,9 @@
                 from { opacity: 0; transform: scale(0.96); }
                 to { opacity: 1; transform: scale(1); }
             }
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
             .lm-modal-container {
                 width: 620px;
                 max-width: 94vw;
@@ -839,6 +842,234 @@
                 '</div>';
         }
     };
+
+    // ═══════════════════════════════════════════════════════════════
+    //  FRIENDS MODAL
+    // ═══════════════════════════════════════════════════════════════
+
+    window.showFriendsModal = function() {
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-friends-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-friends-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '100000';
+
+        modal.innerHTML =
+            '<div class="lm-modal-container" style="background: ' + t.pc + '; border-color: ' + t.b2 + '; width: 420px;">' +
+                '<div class="lm-modal-header" style="background: ' + t.pc2 + '; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
+                    '<div style="width: 100%; text-align: center; position: relative;">' +
+                        '<span style="font-size: 17px; font-weight: 900; color: ' + t.tc + ';"><i class="fa fa-users"></i> Friends</span>' +
+                        '<button class="lm-modal-close" style="position: absolute; right: 0; top: -4px; color: ' + t.tc + ';" onclick="document.getElementById(\'lm-friends-modal\').remove();">&times;</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div id="lm-friends-summary" style="padding: 8px 20px; text-align: center; font-size: 12px; color: ' + t.tc2 + '; font-weight: 600; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06);"></div>' +
+                '<div id="lm-friends-content" class="lm-modal-body" style="padding: 12px 16px; min-height: 200px; max-height: 400px; overflow-y: auto;">' +
+                    '<div style="text-align: center; padding: 40px; color: ' + t.tc2 + ';">' +
+                        '<div class="spinner" style="width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: ' + t.mc + '; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;"></div>' +
+                        'Requesting friend list from server...' +
+                    '</div>' +
+                '</div>' +
+                '<div style="padding: 12px 20px; text-align: center; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1); display: flex; gap: 8px; justify-content: center;">' +
+                    '<button id="lm-friends-refresh-btn" onclick="window._refreshFriendsList();" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 12px;">🔄 Refresh</button>' +
+                    '<button onclick="document.getElementById(\'lm-friends-modal\').remove();" style="background: rgba(255,255,255,0.08); color: ' + t.tc + '; font-weight: 800; padding: 8px 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); cursor: pointer; font-size: 12px;">Close</button>' +
+                '</div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+
+        // Listen for friend list update
+        window._friendsModalListener = function(e) {
+            window._renderFriendsList(e.detail);
+        };
+        document.addEventListener('friendListUpdate', window._friendsModalListener);
+
+        // If we already have cached data, render it immediately while we fetch new
+        if (window._friendListData) {
+            window._renderFriendsList(window._friendListData);
+        }
+
+        // Request fresh data from server
+        window._refreshFriendsList();
+    };
+
+    window._refreshFriendsList = function() {
+        var content = document.getElementById('lm-friends-content');
+        var t = getTheme();
+        if (content && (!window._friendListData || !window._friendListData.friends.length)) {
+            content.innerHTML =
+                '<div style="text-align: center; padding: 40px; color: ' + t.tc2 + ';">' +
+                    '<div class="spinner" style="width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: ' + t.mc + '; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;"></div>' +
+                    'Requesting friend list...' +
+                '</div>';
+        }
+
+        // Send opcode 147 request
+        if (window.application && typeof window.application.requestFriendListUpdate === 'function') {
+            window.application.requestFriendListUpdate();
+        } else if (window.core && window.core.proxyMobileData) {
+            // Try direct proto send
+            try {
+                window.application.requestFriendListUpdate();
+            } catch(e) {
+                console.warn('[Friends] Could not request friend list:', e);
+            }
+        }
+
+        // If no data arrives within 5s, show empty state
+        setTimeout(function() {
+            var modal = document.getElementById('lm-friends-modal');
+            var content = document.getElementById('lm-friends-content');
+            if (modal && content && content.querySelector('.spinner')) {
+                window._renderFriendsList({ friends: [], totalOnline: 0 });
+            }
+        }, 5000);
+    };
+
+    window._renderFriendsList = function(data) {
+        var t = getTheme();
+        var content = document.getElementById('lm-friends-content');
+        var summary = document.getElementById('lm-friends-summary');
+        if (!content) return;
+
+        var friends = data.friends || [];
+        var totalOnline = data.totalOnline || 0;
+
+        // Update summary bar
+        if (summary) {
+            if (friends.length === 0) {
+                summary.innerHTML = 'No friends found • <span style="color: ' + t.mc + ';">Log in with Facebook to see friends</span>';
+            } else {
+                summary.innerHTML = '<span style="color: #4caf50; font-weight: 800;">' + totalOnline + ' Online</span> • ' + friends.length + ' Total Friends';
+            }
+        }
+
+        if (friends.length === 0) {
+            content.innerHTML =
+                '<div style="text-align: center; padding: 30px; color: ' + t.tc2 + ';">' +
+                    '<div style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;">👥</div>' +
+                    '<div style="font-size: 14px; font-weight: 700; color: ' + t.tc + '; margin-bottom: 6px;">No Friends Found</div>' +
+                    '<div style="font-size: 12px; color: ' + t.tc2 + '; line-height: 1.6;">' +
+                        'Friends are loaded from your Facebook account.<br>' +
+                        'Log in with Facebook in agar.io to see your friends who play.' +
+                    '</div>' +
+                '</div>';
+            return;
+        }
+
+        // Sort: online first, then offline
+        friends.sort(function(a, b) {
+            var aOnline = (a.status === 1) ? 0 : 1;
+            var bOnline = (b.status === 1) ? 0 : 1;
+            return aOnline - bOnline;
+        });
+
+        var html = '';
+        for (var i = 0; i < friends.length; i++) {
+            var f = friends[i];
+            var isOnline = (f.status === 1);
+            var userId = f.userId || f.user_id || '';
+            var realm = f.realmInfo || f.realm_info || null;
+            var avatarUrl = (realm && (realm.avatarUrl || realm.avatar_url)) || '';
+
+            // Status indicator
+            var statusColor = isOnline ? '#4caf50' : '#666';
+            var statusText = isOnline ? 'Online' : 'Offline';
+
+            // Realm/server info
+            var realmText = '';
+            if (isOnline && realm) {
+                var realmId = realm.realmId || realm.realm_id || '';
+                var realmType = realm.realm || 0;
+                var realmName = '';
+                // Map realm types
+                switch (realmType) {
+                    case 1: realmName = 'FFA'; break;
+                    case 2: realmName = 'Teams'; break;
+                    case 3: realmName = 'Experimental'; break;
+                    case 4: realmName = 'Party'; break;
+                    case 5: realmName = 'Battle Royale'; break;
+                    default: realmName = 'Playing'; break;
+                }
+                if (realmId) realmName += ' (' + realmId.substring(0, 8) + ')';
+                realmText = '<div style="font-size: 10px; color: #2196f3; font-weight: 600; margin-top: 2px;">🎮 ' + realmName + '</div>';
+            }
+
+            // Display name: extract from userId or show truncated ID
+            var displayId = userId;
+            if (userId.length > 20) displayId = userId.substring(0, 8) + '...' + userId.substring(userId.length - 6);
+
+            // Avatar
+            var avatarHtml = '';
+            if (avatarUrl) {
+                avatarHtml = '<img src="' + avatarUrl + '" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; object-fit: cover;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">';
+                avatarHtml += '<div style="display: none; width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); align-items: center; justify-content: center; font-size: 18px;">👤</div>';
+            } else {
+                avatarHtml = '<div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ' + statusColor + '; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 18px;">👤</div>';
+            }
+
+            // Spectate button (only for online friends with realm info)
+            var actionHtml = '';
+            if (isOnline && realm) {
+                var realmIdForJoin = realm.realmId || realm.realm_id || '';
+                if (realmIdForJoin) {
+                    actionHtml = '<button onclick="window._spectacteFriend(\'' + realmIdForJoin.replace(/'/g, "\\'") + '\');" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 800; padding: 4px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 10px; white-space: nowrap;">👁 Spectate</button>';
+                }
+            }
+
+            html += '<div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,' + (isOnline ? '0.06' : '0.02') + '); border: 1px solid rgba(255,255,255,' + (isOnline ? '0.1' : '0.04') + '); margin-bottom: 6px;' + (isOnline ? '' : ' opacity: 0.7;') + '">' +
+                avatarHtml +
+                '<div style="flex: 1; min-width: 0;">' +
+                    '<div style="display: flex; align-items: center; gap: 6px;">' +
+                        '<div style="width: 8px; height: 8px; border-radius: 50%; background: ' + statusColor + '; flex-shrink: 0;' + (isOnline ? ' box-shadow: 0 0 6px ' + statusColor + ';' : '') + '"></div>' +
+                        '<span style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + displayId + '</span>' +
+                    '</div>' +
+                    '<div style="font-size: 10px; color: ' + statusColor + '; font-weight: 600;">' + statusText + '</div>' +
+                    realmText +
+                '</div>' +
+                '<div style="flex-shrink: 0;">' + actionHtml + '</div>' +
+            '</div>';
+        }
+
+        content.innerHTML = html;
+    };
+
+    window._spectacteFriend = function(realmId) {
+        // Try to join the friend's server to spectate
+        if (!realmId) return;
+        console.log('[Friends] Spectating friend on realm:', realmId);
+
+        // Close the modal
+        var modal = document.getElementById('lm-friends-modal');
+        if (modal) modal.remove();
+
+        // Join the server
+        if (typeof window.joinGame === 'function') {
+            try { window.joinGame(realmId); } catch(e) {}
+        } else if (window.core && typeof window.core.connect === 'function') {
+            try { window.core.connect(realmId); } catch(e) {}
+        }
+
+        toastr && toastr.info('<b>[Friends]:</b> Joining friend\'s server: ' + realmId.substring(0, 12) + '...');
+    };
+
+    // Clean up listener when modal is removed
+    var friendsModalObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.removedNodes.forEach(function(node) {
+                if (node.id === 'lm-friends-modal' && window._friendsModalListener) {
+                    document.removeEventListener('friendListUpdate', window._friendsModalListener);
+                    window._friendsModalListener = null;
+                }
+            });
+        });
+    });
+    friendsModalObserver.observe(document.body, { childList: true });
 
     window.showPotionsHelpModal = function(activeTabName) {
         injectStyles();

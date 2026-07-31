@@ -16382,8 +16382,11 @@ function thelegendmodproject() {
                         var flu = r.uncompressedData.userFriendListUpdateField;
                         if (flu) {
                             console.log("[LM] Friend List Update received:", flu);
-                            this.user.friendList = flu.friends || flu;
-                            try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: flu })); } catch(e) {}
+                            var friendArr = flu.userFriends || flu.friends || [];
+                            var totalOnline = flu.totalOnlineFriends || 0;
+                            window._friendListData = { friends: friendArr, totalOnline: totalOnline };
+                            this.user.friendList = friendArr;
+                            try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: { friends: friendArr, totalOnline: totalOnline } })); } catch(e) {}
                         }
                     } catch(fluErr) {
                         console.warn("[LM] Error parsing friend list update:", fluErr);
