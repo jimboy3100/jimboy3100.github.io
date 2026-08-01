@@ -2846,6 +2846,17 @@ function userLeaguesInfoResponse() {
             isLastWeek: isLastWeek
         };
 
+        // Do not let a late legacy bridge update overwrite or rerender over official data.
+        var expectedOfficialRequestType = isLastWeek ? 2 : 1;
+        var existingStoredResponse = isLastWeek
+            ? window.lastWeekLeaguesResponse
+            : window.lastLeaguesResponse;
+        if (
+            existingStoredResponse &&
+            Number(existingStoredResponse.leagueRequestType) === expectedOfficialRequestType
+        ) {
+            return;
+        }
         // Store for later use
         if (isLastWeek) {
             window.lastWeekLeaguesResponse = detail;
@@ -8073,14 +8084,17 @@ function thelegendmodproject() {
                     $(`#skin`).popover(`hide`);
                 }
             });
-            $(document).on(`click`, `.vanilla-skin-preview`, () => {
+            $(document).off(`click.lmVanillaSkinShop`, `.vanilla-skin-preview`).on(`click.lmVanillaSkinShop`, `.vanilla-skin-preview`, function (event) {
+                event.preventDefault();
+                event.stopPropagation();
                 if (typeof window.BeforeSpecialDeals === 'function') {
-                    window.BeforeSpecialDeals();
+                    window.BeforeSpecialDeals('skins');
                 } else if (typeof window.SpecialDeals === 'function') {
                     window.SpecialDeals('skins');
-                } else if (typeof window.openDailyDealsModal === 'function') {
-                    window.openDailyDealsModal();
+                } else if (window.toastr) {
+                    toastr.error('<b>[SHOP]:</b> The skin shop is not ready.');
                 }
+                return false;
             });
             $(document).on(`click`, `.agario-profile-picture`, () => {
                 if ($("#user-stats").is(":visible")) {
@@ -10301,9 +10315,29 @@ function thelegendmodproject() {
                 }
                 //var n = o / ogario.mapSize;
                 const n = o / LM.mapSize;
-                const _isZeroBased = LM.isLegendWorld || (ogario.playerX > 0 && ogario.playerY > 0 && ogario.playerX > (LM.mapOffset || 7000) && ogario.playerY > (LM.mapOffset || 7000));
-                const r = ogario.mapOffsetX + (_isZeroBased ? 0 : LM.mapOffset);
-                const l = ogario.mapOffsetY + (_isZeroBased ? 0 : LM.mapOffset);
+                /*
+                 * setMapOffset() already derives normal private-server
+                 * translation from the actual border packet.
+                 *
+                 * Only Expanding Land omits LM.mapOffset. Never infer the
+                 * coordinate system from the player’s current position,
+                 * because that can change the minimap projection when the
+                 * player crosses the map midpoint.
+                 */
+                const r =
+                    ogario.mapOffsetX +
+                    (
+                        LM.isLegendWorld
+                            ? 0
+                            : LM.mapOffset
+                    );
+                const l =
+                    ogario.mapOffsetY +
+                    (
+                        LM.isLegendWorld
+                            ? 0
+                            : LM.mapOffset
+                    );
                 this.drawSelectedCell(this.miniMapCtx);
                 this.w = ogario.playerX;
                 this.u = ogario.playerY;
@@ -18914,30 +18948,32 @@ function thelegendmodproject() {
                     }
                     break;
                 case 131:
-                    // Leagues info response — store league standings
+                    // Leagues info response — classify and store the complete official response
                     try {
                         var lr = r.uncompressedData.userLeaguesInfoResponseField;
                         if (lr) {
-                            var isLastWeek = (window._leaguesRequestType === 2);
-                            console.log("[LM] Leagues Info Response received (isLastWeek=" + isLastWeek + ")");
+                            var responseRequestType = Number(lr.leagueRequestType);
+                            if (responseRequestType !== 1 && responseRequestType !== 2) {
+                                console.warn(
+                                    "[LM] Ignoring leagues response with invalid leagueRequestType:",
+                                    lr.leagueRequestType
+                                );
+                                break;
+                            }
+                            var isLastWeek = (responseRequestType === 2);
+                            console.log(
+                                "[LM] Leagues Info Response received (requestType=" +
+                                responseRequestType +
+                                ", isLastWeek=" +
+                                isLastWeek +
+                                ")"
+                            );
                             if (isLastWeek) {
                                 window.lastWeekLeaguesResponse = lr;
                             } else {
                                 window.lastLeaguesResponse = lr;
                             }
-                            // Store league entries for display
-                            if (lr.leagueEntries && lr.leagueEntries.length) {
-                                this.user.leagueEntries = lr.leagueEntries;
-                                console.log("[LM] League entries: " + lr.leagueEntries.length);
-                            }
-                            if (lr.userPosition !== undefined) {
-                                this.user.leaguePosition = lr.userPosition;
-                                console.log("[LM] Your league position: " + lr.userPosition);
-                            }
-                            if (lr.leagueName) {
-                                this.user.leagueName = lr.leagueName;
-                            }
-                            // Dispatch event for any UI that listens
+                            // Preserve the existing UI event contract without synthesizing leagueEntries.
                             lr.isLastWeek = isLastWeek;
                             try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch(e) {}
                         }
@@ -20173,9 +20209,29 @@ Most cells eaten   : ${mostCellsEaten}
                 } else {
                     var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
                     if (!this.mapOffsetFixed || pWidth >= currentWidth) {
-                        var isLW = (typeof LM !== 'undefined' && LM.isLegendWorld) || window.legendModFromWebsite;
-                        this.mapOffsetX = isLW ? 0 : this.mapSize / 2;
-                        this.mapOffsetY = isLW ? 0 : this.mapSize / 2;
+                        /*
+                         * Expanding Land uses centered coordinates while its
+                         * minimap intentionally omits LM.mapOffset.
+                         *
+                         * Other private servers must derive their origin from
+                         * the actual border packet. Their minimap adds
+                         * LM.mapOffset, so hardcoding another half-map here
+                         * double-shifts coordinates toward the lower-right.
+                         */
+                        if (LM.isLegendWorld) {
+                            this.mapOffsetX =
+                                this.mapSize / 2;
+                            this.mapOffsetY =
+                                this.mapSize / 2;
+                        } else {
+                            this.mapOffsetX =
+                                this.mapOffset -
+                                right;
+                            this.mapOffsetY =
+                                this.mapOffset -
+                                bottom;
+                        }
+
                         this.mapMinX = left;
                         this.mapMinY = top;
                         this.mapMaxX = right;

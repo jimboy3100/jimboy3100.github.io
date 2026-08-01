@@ -238,6 +238,58 @@
         return { id: 'fly', name: 'Fly League', color: '#8f7e3a', gradient: 'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)' };
     };
 
+    window._escapeLeagueHtmlText = function(value) {
+        if (
+            typeof value !== 'string' &&
+            typeof value !== 'number'
+        ) {
+            return '';
+        }
+
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    };
+
+    window._isLeagueCurrentUser = function(
+        entry,
+        currentUserName,
+        isOfficialEntry
+    ) {
+        if (!entry) return false;
+
+        if (isOfficialEntry) {
+            var authoritativeUid =
+                typeof window.agarioUID === 'string'
+                    ? window.agarioUID.trim()
+                    : '';
+
+            var entryUid = '';
+            if (typeof entry.uid === 'string') {
+                entryUid = entry.uid.trim();
+            } else if (typeof entry.id === 'string') {
+                entryUid = entry.id.trim();
+            }
+
+            return Boolean(
+                authoritativeUid &&
+                entryUid &&
+                authoritativeUid === entryUid
+            );
+        }
+
+        return (
+            entry.isUser === true ||
+            (
+                Boolean(entry.displayName) &&
+                entry.displayName === currentUserName
+            )
+        );
+    };
+
     window.renderLeaguesContent = function(tabType, data) {
         data = data || {};
         var contentArea = document.getElementById('lm-leagues-content-area');
@@ -259,7 +311,7 @@
             // Sort by positionFrom, take top 3
             filtered.sort(function(a, b) { return a.positionFrom - b.positionFrom; });
             var top3 = filtered.slice(0, 3);
-            return top3.map(function(p, i) { return (i+1) + '. ' + (p.rewardAmount || '?'); }).join(' &nbsp; ');
+            return top3.map(function(p, i) { return (i+1) + '. ' + window._escapeLeagueHtmlText(p.rewardAmount || '?'); }).join(' &nbsp; ');
         };
 
         var headerConfig = {
@@ -294,7 +346,7 @@
                         ${cfg.icon}
                     </div>
                     <div>
-                        <div style="font-size: 18px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">${cfg.title}</div>
+                        <div style="font-size: 18px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.4);">${window._escapeLeagueHtmlText(cfg.title)}</div>
                         <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">Weekly League</div>
                     </div>
                 </div>
@@ -321,8 +373,44 @@
             <div id="lm-leagues-list-container">
         `;
 
-        // Use real server data instead of hardcoded fake entries
-        var entries = (data && data.leagueEntries && data.leagueEntries.length) ? data.leagueEntries : (window.RecordPlayers && window.RecordPlayers.length ? window.RecordPlayers : null);
+        // Select and normalize official league rows without falling back to stale legacy data.
+        var entries = null;
+        var isOfficialResponse =
+            Number(data.leagueRequestType) === 1;
+        if (isOfficialResponse) {
+            var officialEntries =
+                tabType === 2
+                    ? data.country
+                    : (tabType === 3 ? data.world : data.league);
+            if (!Array.isArray(officialEntries)) {
+                officialEntries = [];
+            }
+            entries = officialEntries.map(function(entry, index) {
+                if (!entry) return null;
+                var officialUserId = entry.userId || '';
+                return {
+                    displayName: entry.displayName || '',
+                    id: officialUserId,
+                    uid: officialUserId,
+                    level: entry.level,
+                    country: entry.countryCode || 'us',
+                    icon: (typeof entry.avatarUrl === 'string' && entry.avatarUrl.trim()) ? entry.avatarUrl.trim() : 'https://jimboy3100.github.io/banners/profilepic_guest.png',
+                    rank: entry.rank !== undefined ? entry.rank : (index + 1),
+                    score: entry.trophies !== undefined ? entry.trophies : 0,
+                    leagueName: entry.leagueName || ''
+                };
+            });
+        } else if (
+            data.leagueEntries &&
+            data.leagueEntries.length
+        ) {
+            entries = data.leagueEntries;
+        } else if (
+            window.RecordPlayers &&
+            window.RecordPlayers.length
+        ) {
+            entries = window.RecordPlayers;
+        }
         var currentUser = (window.application && window.application.user) || {};
         var currentUserName = currentUser.displayName || window.agarioProfileName || 'You';
         var currentUserLevel = currentUser.level || userLevel;
@@ -339,7 +427,11 @@
                 if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
                 validCount++;
                 var rankNum = entry.rank || validCount;
-                var isUser = entry.displayName === currentUserName || entry.isUser;
+                var isUser = window._isLeagueCurrentUser(
+                    entry,
+                    currentUserName,
+                    isOfficialResponse
+                );
                 if (isUser) userFoundInList = true;
 
                 var rankBadge = '';
@@ -368,7 +460,7 @@
                             <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
                             <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
-                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${name}</span>
+                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${window._escapeLeagueHtmlText(name)}</span>
                         </div>
                         <div style="width: 140px; text-align: right; font-weight: 800; color: ${t.tc}; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
                             ${score} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
@@ -376,8 +468,16 @@
                     </div>
                 `;
             });
+        } else if (isOfficialResponse) {
+            // Valid official response received, but the selected leaderboard is empty.
+            html += `
+                <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
+                    <div style="font-size: 24px; margin-bottom: 10px;">🏆</div>
+                    No players in this leaderboard yet.
+                </div>
+            `;
         } else {
-            // No server data yet — show loading message matching original agar.io
+            // No server response yet — preserve the loading state.
             html += `
                 <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
                     <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
@@ -386,8 +486,15 @@
             `;
         }
 
-        // Highlight logged in user at their current rank position
-        if (!userFoundInList) {
+        // Show the fallback user row only when complete legacy summary data exists.
+        var hasCompleteLegacyUserSummary =
+            !isOfficialResponse &&
+            data.userPosition !== undefined &&
+            (
+                data.userScore !== undefined ||
+                data.userWinnings !== undefined
+            );
+        if (!userFoundInList && hasCompleteLegacyUserSummary) {
             html += `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
                     <div style="width: 70px;">
@@ -397,7 +504,7 @@
                         <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
                         <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${currentUserLevel}</span>
                         <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius: 2px;"></span>
-                        <span style="font-weight: 800; color: #00e676; font-size: 14px;">${currentUserName}</span>
+                        <span style="font-weight: 800; color: #00e676; font-size: 14px;">${window._escapeLeagueHtmlText(currentUserName)}</span>
                     </div>
                     <div style="width: 140px; text-align: right; font-weight: 800; color: #00e676; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
                         ${currentUserScore} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
@@ -410,27 +517,174 @@
         contentArea.innerHTML = html;
     };
 
+    window._hasRenderableCurrentLeagueRows = function(rows) {
+        if (!rows || !rows.length) return false;
+        for (var rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+            var row = rows[rowIndex];
+            if (
+                row &&
+                (
+                    row.displayName ||
+                    row.id ||
+                    row.uid
+                )
+            ) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    window._hasUsableCurrentLeaguesCache = function() {
+        var cachedResponse = window.lastLeaguesResponse;
+        if (
+            cachedResponse &&
+            Number(cachedResponse.leagueRequestType) === 1
+        ) {
+            return true;
+        }
+        if (
+            cachedResponse &&
+            window._hasRenderableCurrentLeagueRows(
+                cachedResponse.leagueEntries
+            )
+        ) {
+            return true;
+        }
+        return window._hasRenderableCurrentLeagueRows(
+            window.RecordPlayers
+        );
+    };
+
+    window._renderCurrentLeaguesRequestState = function(icon, message) {
+        var listContainer = document.getElementById(
+            'lm-leagues-list-container'
+        );
+        if (!listContainer) return;
+        var t = getTheme();
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 14px; font-weight: 600;">
+                <div style="font-size: 24px; margin-bottom: 10px;">${icon}</div>
+                ${message}
+            </div>
+        `;
+    };
+
+    window._startCurrentLeaguesRequest = function() {
+        if (
+            !document.getElementById('lm-leagues-modal') ||
+            window._leaguesRequestState !== 'idle'
+        ) {
+            return;
+        }
+
+        var requestToken = window._leaguesModalToken;
+        window._leaguesRequestState = 'loading';
+
+        var requestWasSent = false;
+        try {
+            if (typeof window.requestLeaguesInfo === 'function') {
+                requestWasSent =
+                    window.requestLeaguesInfo(1) === true;
+            } else if (
+                window.application &&
+                typeof window.application.requestLeaguesInfo === 'function'
+            ) {
+                requestWasSent =
+                    window.application.requestLeaguesInfo(1) === true;
+            } else if (
+                typeof window.userLeaguesInfoRequest === 'function'
+            ) {
+                requestWasSent =
+                    window.userLeaguesInfoRequest() !== false;
+            }
+        } catch (currentLeaguesRequestError) {
+            console.warn(
+                '[LM] Current-week leagues request failed:',
+                currentLeaguesRequestError
+            );
+            requestWasSent = false;
+        }
+
+        if (
+            window._leaguesModalToken !== requestToken ||
+            window._leaguesRequestState === 'success'
+        ) {
+            return;
+        }
+
+        if (!requestWasSent) {
+            window._leaguesRequestState = 'failure';
+            if (!window._hasUsableCurrentLeaguesCache()) {
+                window._renderCurrentLeaguesRequestState(
+                    '⚠️',
+                    'Unable to request leaderboard data.'
+                );
+            }
+            return;
+        }
+
+        if (!window._hasUsableCurrentLeaguesCache()) {
+            window._leaguesTimeoutTimer = setTimeout(function() {
+                if (
+                    window._leaguesModalToken !== requestToken ||
+                    window._leaguesRequestState !== 'loading'
+                ) {
+                    return;
+                }
+                window._leaguesTimeoutTimer = null;
+                window._leaguesRequestState = 'timeout';
+                if (!window._hasUsableCurrentLeaguesCache()) {
+                    window._renderCurrentLeaguesRequestState(
+                        '⏱️',
+                        'Leaderboard request timed out.'
+                    );
+                }
+            }, 5000);
+        }
+    };
+
     window.switchLeagueTab = function(tabType) {
-        window.currentLeagueTab = tabType || 1;
+        var normalizedTab = Number(tabType);
+        if (normalizedTab !== 2 && normalizedTab !== 3) {
+            normalizedTab = 1;
+        }
+        window.currentLeagueTab = normalizedTab;
         var t = getTheme();
 
         // Update tab button styles
-        $('.lm-tab-btn').removeClass('active').css({ background: 'rgba(255,255,255,0.06)', color: t.tc2, border: '1px solid rgba(255,255,255,0.1)' });
-        $('#lm-tab-' + tabType).addClass('active').css({ background: t.b1, color: t.btc, border: '1px solid ' + t.mc });
+        $('.lm-tab-btn').removeClass('active').css({
+            background: 'rgba(255,255,255,0.06)',
+            color: t.tc2,
+            border: '1px solid rgba(255,255,255,0.1)'
+        });
+        $('#lm-tab-' + normalizedTab).addClass('active').css({
+            background: t.b1,
+            color: t.btc,
+            border: '1px solid ' + t.mc
+        });
 
-        // Immediately render content area with current tab configuration & cached response
-        window.renderLeaguesContent(tabType, window.lastLeaguesResponse || {});
+        // Tab changes use the one cached response for this modal generation.
+        window.renderLeaguesContent(
+            normalizedTab,
+            window.lastLeaguesResponse || {}
+        );
 
-        // Dispatch Opcode 130 request for current week standings
-        // NOTE: leagueRequestType 1=current week, 2=last week (NOT the tab number!)
-        // Tabs (1=My League, 2=Country, 3=World) are UI-level only
-        if (typeof window.requestLeaguesInfo === 'function') {
-            window.requestLeaguesInfo(1);
-        } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
-            window.application.requestLeaguesInfo(1);
-        } else if (typeof window.userLeaguesInfoRequest === 'function') {
-            window.userLeaguesInfoRequest();
+        if (!window._hasUsableCurrentLeaguesCache()) {
+            if (window._leaguesRequestState === 'failure') {
+                window._renderCurrentLeaguesRequestState(
+                    '⚠️',
+                    'Unable to request leaderboard data.'
+                );
+            } else if (window._leaguesRequestState === 'timeout') {
+                window._renderCurrentLeaguesRequestState(
+                    '⏱️',
+                    'Leaderboard request timed out.'
+                );
+            }
         }
+
+        window._startCurrentLeaguesRequest();
     };
 
     window.showLeaguesModal = function() {
@@ -472,7 +726,16 @@
         `;
         document.body.appendChild(modal);
 
-        // Load active tab data immediately
+        // Start a new current-week request generation for this modal.
+        window._leaguesModalToken =
+            (window._leaguesModalToken || 0) + 1;
+        if (window._leaguesTimeoutTimer) {
+            clearTimeout(window._leaguesTimeoutTimer);
+            window._leaguesTimeoutTimer = null;
+        }
+        window._leaguesRequestState = 'idle';
+
+        // Load cached data and start exactly one background request.
         window.switchLeagueTab(window.currentLeagueTab || 1);
     };
 
@@ -480,14 +743,48 @@
     document.addEventListener('leaguesInfoUpdate', function(e) {
         var detail = e.detail || {};
         if (detail.isLastWeek) {
+            var acceptedLastWeekResponse =
+                Number(detail.leagueRequestType) === 2 ||
+                window._hasRenderableCurrentLeagueRows(
+                    detail.leagueEntries
+                );
+
+            if (!acceptedLastWeekResponse) {
+                return;
+            }
+
+            if (window._lastWeekTimeoutTimer) {
+                clearTimeout(window._lastWeekTimeoutTimer);
+                window._lastWeekTimeoutTimer = null;
+            }
+
             // Last week response — update last week modal if open
             window.lastWeekLeaguesResponse = detail;
             if (document.getElementById('lm-lastweek-modal')) {
                 window._renderLastWeekContent(detail);
             }
         } else {
-            // Current week — update leaderboard
-            window.renderLeaguesContent(window.currentLeagueTab || 1, detail);
+            var acceptedCurrentResponse =
+                Number(detail.leagueRequestType) === 1 ||
+                window._hasRenderableCurrentLeagueRows(
+                    detail.leagueEntries
+                );
+
+            if (!acceptedCurrentResponse) {
+                return;
+            }
+
+            if (window._leaguesTimeoutTimer) {
+                clearTimeout(window._leaguesTimeoutTimer);
+                window._leaguesTimeoutTimer = null;
+            }
+            window._leaguesRequestState = 'success';
+
+            // Current week — update leaderboard only for an accepted response.
+            window.renderLeaguesContent(
+                window.currentLeagueTab || 1,
+                detail
+            );
         }
     });
 
@@ -507,9 +804,13 @@
         };
         var leagueFilter = leagueFilterMap[currentTab] || 'kraken';
 
+        var safeUserCountryTitle =
+            window._escapeLeagueHtmlText(
+                userCountry
+            ).toUpperCase();
         var titleMap = {
             1: (myTier && myTier.name ? myTier.name : 'Kraken League'),
-            2: 'Country League (' + userCountry.toUpperCase() + ')',
+            2: 'Country League (' + safeUserCountryTitle + ')',
             3: 'World League'
         };
         var gradientMap = {
@@ -535,14 +836,26 @@
             }
             if (filtered.length > 0) {
                 filtered.forEach(function(prize) {
+                    var safePositionFrom =
+                        window._escapeLeagueHtmlText(
+                            prize.positionFrom
+                        );
+                    var safePositionTo =
+                        window._escapeLeagueHtmlText(
+                            prize.positionTo
+                        );
                     var place;
                     if (prize.positionFrom === prize.positionTo) {
                         if (prize.positionFrom === 1) place = '1st place';
                         else if (prize.positionFrom === 2) place = '2nd place';
                         else if (prize.positionFrom === 3) place = '3rd place';
-                        else place = prize.positionFrom + 'th place';
+                        else place = safePositionFrom + 'th place';
                     } else {
-                        place = prize.positionFrom + 'th - ' + prize.positionTo + 'th';
+                        place =
+                            safePositionFrom +
+                            'th - ' +
+                            safePositionTo +
+                            'th';
                     }
                     // Try to resolve reward amount from Wallet - Bonuses and Rewards
                     var amount = '?';
@@ -564,7 +877,7 @@
                             }
                         }
                     } catch(e) {}
-                    prizeRows.push({ rank: place, prize: amount + ' ' + currency });
+                    prizeRows.push({ rank: place, prize: window._escapeLeagueHtmlText(amount) + ' ' + currency });
                 });
             }
         }
@@ -619,12 +932,29 @@
 
     window.showLastWeekResultsModal = function(tabType) {
         injectStyles();
+        var requestedLastWeekTab = Number(
+            tabType || window.currentLeagueTab || 1
+        );
+        window._lastWeekLeagueTab =
+            requestedLastWeekTab === 2 ||
+            requestedLastWeekTab === 3
+                ? requestedLastWeekTab
+                : 1;
         var t = getTheme();
         var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
         var old = document.getElementById('lm-lastweek-modal');
         if (old) old.remove();
+
+        // Start a new Last Week modal generation.
+        window._lastWeekModalToken =
+            (window._lastWeekModalToken || 0) + 1;
+        var lastWeekRequestToken = window._lastWeekModalToken;
+        if (window._lastWeekTimeoutTimer) {
+            clearTimeout(window._lastWeekTimeoutTimer);
+            window._lastWeekTimeoutTimer = null;
+        }
 
         var modal = document.createElement('div');
         modal.id = 'lm-lastweek-modal';
@@ -659,20 +989,73 @@
         document.body.appendChild(modal);
 
         // Check if we already have cached last week data
-        if (window.lastWeekLeaguesResponse && window.lastWeekLeaguesResponse.leagueEntries) {
+        if (window.lastWeekLeaguesResponse) {
             window._renderLastWeekContent(window.lastWeekLeaguesResponse);
         } else {
-            // Request last week data from server (type=2)
-            if (typeof window.requestLeaguesInfo === 'function') {
-                window.requestLeaguesInfo(2);
-            } else if (window.application && typeof window.application.requestLeaguesInfo === 'function') {
-                window.application.requestLeaguesInfo(2);
+            // Request last week data from server (type=2).
+            var lastWeekRequestWasSent = false;
+            try {
+                if (typeof window.requestLeaguesInfo === 'function') {
+                    lastWeekRequestWasSent =
+                        window.requestLeaguesInfo(2) === true;
+                } else if (
+                    window.application &&
+                    typeof window.application.requestLeaguesInfo === 'function'
+                ) {
+                    lastWeekRequestWasSent =
+                        window.application.requestLeaguesInfo(2) === true;
+                }
+            } catch (lastWeekRequestError) {
+                console.warn(
+                    '[LM] Last Week leagues request failed:',
+                    lastWeekRequestError
+                );
+                lastWeekRequestWasSent = false;
             }
+
+            if (
+                window._lastWeekModalToken !== lastWeekRequestToken
+            ) {
+                return;
+            }
+
+            // A synchronously dispatched accepted response already rendered.
+            if (window.lastWeekLeaguesResponse) {
+                return;
+            }
+
+            if (!lastWeekRequestWasSent) {
+                var failedContentArea = document.getElementById(
+                    'lm-lastweek-content'
+                );
+                if (failedContentArea) {
+                    failedContentArea.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                            <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+                            Unable to request last week results.
+                        </div>
+                    `;
+                }
+                return;
+            }
+
             // Response will come via leaguesInfoUpdate event → _renderLastWeekContent
-            // Show timeout fallback after 5 seconds
-            setTimeout(function() {
-                var contentArea = document.getElementById('lm-lastweek-content');
-                if (contentArea && contentArea.querySelector('[data-loading]')) {
+            // Show a generation-bound timeout fallback after 5 seconds.
+            window._lastWeekTimeoutTimer = setTimeout(function() {
+                if (
+                    window._lastWeekModalToken !== lastWeekRequestToken
+                ) {
+                    return;
+                }
+
+                window._lastWeekTimeoutTimer = null;
+                var contentArea = document.getElementById(
+                    'lm-lastweek-content'
+                );
+                if (
+                    contentArea &&
+                    contentArea.querySelector('[data-loading]')
+                ) {
                     window._renderLastWeekNoResults();
                 }
             }, 5000);
@@ -697,10 +1080,74 @@
         var contentArea = document.getElementById('lm-lastweek-content');
         if (!contentArea) return;
 
-        var entries = data.leagueEntries || [];
-        if (entries.length === 0 && window.RecordPlayers && window.RecordPlayers.length) {
+        data = data || {};
+        // Select and normalize official Last Week rows without stale legacy fallback.
+        var entries = null;
+        var hasLastWeekRequestType =
+            data.leagueRequestType !== undefined &&
+            data.leagueRequestType !== null;
+        var lastWeekResponseRequestType = Number(data.leagueRequestType);
+        if (hasLastWeekRequestType) {
+            if (lastWeekResponseRequestType === 2) {
+                var selectedLastWeekTab = Number(
+                    window._lastWeekLeagueTab ||
+                    window.currentLeagueTab ||
+                    1
+                );
+                if (
+                    selectedLastWeekTab !== 2 &&
+                    selectedLastWeekTab !== 3
+                ) {
+                    selectedLastWeekTab = 1;
+                }
+                var lastWeekOfficialEntries =
+                    selectedLastWeekTab === 2
+                        ? data.country
+                        : (
+                            selectedLastWeekTab === 3
+                                ? data.world
+                                : data.league
+                        );
+                if (!Array.isArray(lastWeekOfficialEntries)) {
+                    lastWeekOfficialEntries = [];
+                }
+                entries = lastWeekOfficialEntries.map(function(entry, index) {
+                    if (!entry) return null;
+                    var officialUserId = entry.userId || '';
+                    return {
+                        displayName: entry.displayName || '',
+                        id: officialUserId,
+                        uid: officialUserId,
+                        level: entry.level,
+                        country: entry.countryCode || 'us',
+                        icon: (typeof entry.avatarUrl === 'string' && entry.avatarUrl.trim()) ? entry.avatarUrl.trim() : 'https://jimboy3100.github.io/banners/profilepic_guest.png',
+                        rank:
+                            entry.rank !== undefined
+                                ? entry.rank
+                                : (index + 1),
+                        score:
+                            entry.trophies !== undefined
+                                ? entry.trophies
+                                : 0,
+                        leagueName: entry.leagueName || ''
+                    };
+                });
+            } else {
+                // A response-owned request type other than 2 is not Last Week data.
+                entries = [];
+            }
+        } else if (
+            data.leagueEntries &&
+            data.leagueEntries.length
+        ) {
+            entries = data.leagueEntries;
+        } else if (
+            window.RecordPlayers &&
+            window.RecordPlayers.length
+        ) {
             entries = window.RecordPlayers;
         }
+        entries = entries || [];
 
         if (entries.length === 0) {
             window._renderLastWeekNoResults();
@@ -717,7 +1164,14 @@
             if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
             validCount++;
             var rankNum = entry.rank || validCount;
-            var isUser = entry.displayName === currentUserName || entry.isUser;
+            var isUser = window._isLeagueCurrentUser(
+                entry,
+                currentUserName,
+                (
+                    hasLastWeekRequestType &&
+                    lastWeekResponseRequestType === 2
+                )
+            );
 
             var name = entry.displayName || entry.id || ('Player ' + rankNum);
             var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : (entry.trophies !== undefined ? entry.trophies.toLocaleString() : '0'));
@@ -744,7 +1198,7 @@
             html += '<img src="' + icon + '" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\'">';
             html += '<span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">' + level + '</span>';
             html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius: 2px;"></span>';
-            html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + name + '</span>';
+            html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + window._escapeLeagueHtmlText(name) + '</span>';
             html += '</div>';
             html += '<div style="width: 100px; text-align: right; font-weight: 800; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">' + score + ' <i class="fa fa-trophy" style="color: ' + t.mc + ';"></i></div>';
             html += '</div>';
@@ -1277,14 +1731,166 @@
     };
 
     window.openDailyDealsModal = function() {
-        if (typeof window.SpecialDeals === 'function') {
-            window.SpecialDeals('deals');
-        } else if (typeof window.BeforeSpecialDeals === 'function') {
-            window.BeforeSpecialDeals('deals');
+        var appUser =
+            (
+                window.application &&
+                window.application.user
+            ) ||
+            (
+                window.legendmod &&
+                window.legendmod.user
+            ) ||
+            {};
+
+        var isLoggedIn;
+
+        if (
+            typeof window.checkUserLoggedIn ===
+            'function'
+        ) {
+            isLoggedIn =
+                window.checkUserLoggedIn();
+        } else {
+            var fallbackUserId =
+                appUser.userId !== undefined &&
+                appUser.userId !== null
+                    ? String(
+                        appUser.userId
+                    ).trim()
+                    : '';
+
+            var normalizedFallbackUserId =
+                fallbackUserId.toLowerCase();
+
+            isLoggedIn =
+                !!(
+                    window.loggedIn === true ||
+                    appUser.authenticated ===
+                        true ||
+                    (
+                        fallbackUserId &&
+                        fallbackUserId !== '0' &&
+                        normalizedFallbackUserId !==
+                            'null' &&
+                        normalizedFallbackUserId !==
+                            'undefined'
+                    )
+                );
         }
+
+        var hasUID;
+
+        if (
+            typeof window.checkUserUID ===
+            'function'
+        ) {
+            hasUID =
+                window.checkUserUID();
+        } else {
+            var fallbackUID =
+                typeof window.agarioUID ===
+                'string'
+                    ? window.agarioUID.trim()
+                    : '';
+
+            var normalizedFallbackUID =
+                fallbackUID.toLowerCase();
+
+            hasUID =
+                !!(
+                    isLoggedIn &&
+                    fallbackUID &&
+                    fallbackUID.length >= 8 &&
+                    fallbackUID.indexOf('$') ===
+                        -1 &&
+                    fallbackUID !== '0' &&
+                    normalizedFallbackUID !==
+                        'null' &&
+                    normalizedFallbackUID !==
+                        'undefined'
+                );
+        }
+
+        if (!isLoggedIn || !hasUID) {
+            if (window.toastr) {
+                toastr.error(
+                    '<b>[OFFICIAL OFFER]:</b> You must be logged in and have a valid Agar.io UID to access official offers.'
+                );
+            }
+
+            return false;
+        }
+
+        if (window._lmDailyDealOpening) {
+            return false;
+        }
+
+        var promoContainer =
+            document.querySelector(
+                '.promo-badge-container'
+            );
+
+        var promoButton =
+            promoContainer &&
+            promoContainer.querySelector(
+                'button'
+            );
+
+        var hasActivePromo =
+            !!(
+                promoButton &&
+                (
+                    !window.jQuery ||
+                    window.jQuery(
+                        promoButton
+                    ).is(':visible')
+                )
+            );
+
+        if (!hasActivePromo) {
+            if (window.toastr) {
+                toastr.info(
+                    '<b>[OFFICIAL OFFER]:</b> No active official Agar.io offer is currently available.'
+                );
+            }
+
+            return false;
+        }
+
+        window._lmDailyDealOpening = true;
+
+        try {
+            promoButton.click();
+        } catch (dailyDealOpenError) {
+            console.warn(
+                '[OFFICIAL OFFER] Official promotion callback failed:',
+                dailyDealOpenError
+            );
+
+            if (window.toastr) {
+                toastr.error(
+                    '<b>[OFFICIAL OFFER]:</b> The official Agar.io offer could not be opened.'
+                );
+            }
+
+            window._lmDailyDealOpening = false;
+
+            return false;
+        }
+
+        setTimeout(
+            function() {
+                window._lmDailyDealOpening =
+                    false;
+            },
+            750
+        );
+
+        return true;
     };
+
     window.showDailyDealsCarouselModal = function() {
-        window.openDailyDealsModal();
+        return window.openDailyDealsModal();
     };
 
     window.showShopModal = function() {
@@ -2167,7 +2773,7 @@
         return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
     };
 
-    // Inject "Daily Deal", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
+    // Inject "Official Offer", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
     function initMenuButtons() {
         var profileTab = $('#profile');
         if (!profileTab.length) return;
@@ -2187,7 +2793,7 @@
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
             <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;">
-                🔥 Daily Deal
+                🔥 Official Offer
                 <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
             <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;">
@@ -2261,8 +2867,17 @@
 
     // ─── Component 6: 👤 Profile Tab Auto-Sync & Boost Handlers ───
     window.syncProfileTabUI = function() {
-        var appUser = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || {};
-        
+        var appUser =
+            (
+                window.application &&
+                window.application.user
+            ) ||
+            (
+                window.legendmod &&
+                window.legendmod.user
+            ) ||
+            {};
+
         // 1. Balances (Coins, DNA, Trophies)
         var coins = appUser.coins || 0;
         var dna = appUser.dna || 0;
@@ -2278,19 +2893,111 @@
         var name = appUser.displayName || appUser.name || 'Guest';
         $('#UserProfileName1').text(name);
 
-        var uid = appUser.socialId || appUser.id || window.agarioUID || window.agarioEncodedUID || '';
-        if (uid) {
-            $('#UserProfileUID1').val(uid).text(uid);
-            $('#UserProfileUUID1').val(uid);
+        var uid =
+            typeof window.agarioUID ===
+            'string'
+                ? window.agarioUID.trim()
+                : '';
+
+        var normalizedUID =
+            uid.toLowerCase();
+
+        var hasDisplayUID =
+            !!(
+                uid &&
+                uid.length >= 8 &&
+                uid.indexOf('$') === -1 &&
+                uid !== '0' &&
+                normalizedUID !== 'null' &&
+                normalizedUID !==
+                    'undefined'
+            );
+
+        if (hasDisplayUID) {
+            $('#UserProfileUID1')
+                .val(uid)
+                .text(uid);
+
+            $('#UserProfileUUID1')
+                .val(uid);
+        } else {
+            $('#UserProfileUID1')
+                .val('')
+                .text('');
+
+            $('#UserProfileUUID1')
+                .val('');
         }
 
         // Disable Skins, Deals, Leagues, Buy & Use Boost buttons if not logged in or missing UID
-        var isLoggedIn = typeof window.checkUserLoggedIn === 'function'
-            ? window.checkUserLoggedIn()
-            : !!(appUser.authenticated || window.loggedIn || (appUser.socialId && appUser.socialId.length > 5));
-        var hasUID = typeof window.checkUserUID === 'function'
-            ? window.checkUserUID()
-            : !!(isLoggedIn && (window.agarioEncodedUID || appUser.socialId || appUser.id));
+        var isLoggedIn;
+
+        if (
+            typeof window.checkUserLoggedIn ===
+            'function'
+        ) {
+            isLoggedIn =
+                window.checkUserLoggedIn();
+        } else {
+            var fallbackUserId =
+                appUser.userId !== undefined &&
+                appUser.userId !== null
+                    ? String(
+                        appUser.userId
+                    ).trim()
+                    : '';
+
+            var normalizedFallbackUserId =
+                fallbackUserId.toLowerCase();
+
+            isLoggedIn =
+                !!(
+                    window.loggedIn === true ||
+                    appUser.authenticated ===
+                        true ||
+                    (
+                        fallbackUserId &&
+                        fallbackUserId !== '0' &&
+                        normalizedFallbackUserId !==
+                            'null' &&
+                        normalizedFallbackUserId !==
+                            'undefined'
+                    )
+                );
+        }
+
+        var hasUID;
+
+        if (
+            typeof window.checkUserUID ===
+            'function'
+        ) {
+            hasUID =
+                window.checkUserUID();
+        } else {
+            var fallbackUID =
+                typeof window.agarioUID ===
+                'string'
+                    ? window.agarioUID.trim()
+                    : '';
+
+            var normalizedFallbackUID =
+                fallbackUID.toLowerCase();
+
+            hasUID =
+                !!(
+                    isLoggedIn &&
+                    fallbackUID &&
+                    fallbackUID.length >= 8 &&
+                    fallbackUID.indexOf('$') ===
+                        -1 &&
+                    fallbackUID !== '0' &&
+                    normalizedFallbackUID !==
+                        'null' &&
+                    normalizedFallbackUID !==
+                        'undefined'
+                );
+        }
         var menuBtnEnabled = isLoggedIn && hasUID;
         var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
         menuBtns.prop('disabled', !menuBtnEnabled);
@@ -2301,8 +3008,40 @@
         }
 
         // Friends button requires Facebook login specifically
-        var isFacebook = (typeof appUser !== 'undefined' && (appUser.provider === 'facebook' || (appUser.socialId && appUser.socialId.indexOf('facebook') > -1))) || (window._lwAuth && window._lwAuth.provider === 'facebook') || window.loginProvider === 'facebook';
-        var friendsBtnEnabled = isLoggedIn && hasUID && isFacebook;
+        var isFacebook = false;
+
+        if (isLoggedIn && hasUID) {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API
+                    .isLoggedWithFacebook ===
+                    'function'
+            ) {
+                try {
+                    isFacebook =
+                        window.agarApp.API
+                            .isLoggedWithFacebook() ===
+                        true;
+                } catch (facebookCheckError) {
+                    console.warn(
+                        '[FRIENDS] Official Facebook login check failed during UI synchronization:',
+                        facebookCheckError
+                    );
+
+                    isFacebook = false;
+                }
+            } else {
+                isFacebook =
+                    appUser.context ===
+                    'facebook';
+            }
+        }
+
+        var friendsBtnEnabled =
+            isLoggedIn &&
+            hasUID &&
+            isFacebook;
         var friendsBtn = $('#lm-friends-btn');
         friendsBtn.prop('disabled', !friendsBtnEnabled);
         if (!friendsBtnEnabled) {
@@ -2538,19 +3277,132 @@
 
         $(document).off('click', '#lm-friends-btn').on('click', '#lm-friends-btn', function(e) {
             e.preventDefault();
-            var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn);
-            var isFacebookLoggedIn = isLoggedIn && (
-                (window.master && window.master.context === 'facebook') ||
-                (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
-                !!window.facebookUser ||
-                !!window.fbLoggedIn
-            );
-            if (!isLoggedIn) {
-                if (window.toastr) toastr.error('<b>[FRIENDS]:</b> You must be logged in with Facebook to access Friends.');
+
+            var appUser =
+                (
+                    window.application &&
+                    window.application.user
+                ) ||
+                (
+                    window.legendmod &&
+                    window.legendmod.user
+                ) ||
+                {};
+
+            var isLoggedIn;
+
+            if (
+                typeof window.checkUserLoggedIn ===
+                'function'
+            ) {
+                isLoggedIn =
+                    window.checkUserLoggedIn();
+            } else {
+                var fallbackUserId =
+                    appUser.userId !== undefined &&
+                    appUser.userId !== null
+                        ? String(
+                            appUser.userId
+                        ).trim()
+                        : '';
+
+                var normalizedFallbackUserId =
+                    fallbackUserId.toLowerCase();
+
+                isLoggedIn =
+                    !!(
+                        window.loggedIn === true ||
+                        appUser.authenticated ===
+                            true ||
+                        (
+                            fallbackUserId &&
+                            fallbackUserId !== '0' &&
+                            normalizedFallbackUserId !==
+                                'null' &&
+                            normalizedFallbackUserId !==
+                                'undefined'
+                        )
+                    );
+            }
+
+            var hasUID;
+
+            if (
+                typeof window.checkUserUID ===
+                'function'
+            ) {
+                hasUID =
+                    window.checkUserUID();
+            } else {
+                var fallbackUID =
+                    typeof window.agarioUID ===
+                    'string'
+                        ? window.agarioUID.trim()
+                        : '';
+
+                var normalizedFallbackUID =
+                    fallbackUID.toLowerCase();
+
+                hasUID =
+                    !!(
+                        isLoggedIn &&
+                        fallbackUID &&
+                        fallbackUID.length >= 8 &&
+                        fallbackUID.indexOf('$') ===
+                            -1 &&
+                        fallbackUID !== '0' &&
+                        normalizedFallbackUID !==
+                            'null' &&
+                        normalizedFallbackUID !==
+                            'undefined'
+                    );
+            }
+
+            if (!isLoggedIn || !hasUID) {
+                if (window.toastr) {
+                    toastr.error(
+                        '<b>[FRIENDS]:</b> You must be logged in and have a valid Agar.io UID to access Friends.'
+                    );
+                }
+
                 return false;
             }
-            if (!isFacebookLoggedIn) {
-                if (window.toastr) toastr.error('<b>[FRIENDS]:</b> Friends feature requires logging in with Facebook.');
+
+            var isFacebook = false;
+
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API
+                    .isLoggedWithFacebook ===
+                    'function'
+            ) {
+                try {
+                    isFacebook =
+                        window.agarApp.API
+                            .isLoggedWithFacebook() ===
+                        true;
+                } catch (facebookCheckError) {
+                    console.warn(
+                        '[FRIENDS] Official Facebook login check failed:',
+                        facebookCheckError
+                    );
+
+                    isFacebook = false;
+                }
+            } else {
+                isFacebook =
+                    appUser.context ===
+                    'facebook';
+            }
+
+            if (!isFacebook) {
+                if (window.toastr) {
+                    toastr.error(
+                        '<b>[FRIENDS]:</b> You must be logged in with Facebook to access Friends features.'
+                    );
+                }
+
                 return false;
             }
             if (typeof window.showFriendsModal === 'function') window.showFriendsModal();
@@ -2558,28 +3410,34 @@
 
         $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
             e.preventDefault();
-            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('access Special Deals')) {
+
+            if (
+                typeof window.openDailyDealsModal !==
+                'function'
+            ) {
+                if (window.toastr) {
+                    toastr.error(
+                        '<b>[OFFICIAL OFFER]:</b> The official Agar.io offer opener is not ready.'
+                    );
+                }
+
                 return false;
             }
-            if (typeof window.openDailyDealsModal === 'function') {
-                window.openDailyDealsModal();
-            } else if (typeof window.BeforeSpecialDeals === 'function') {
-                window.BeforeSpecialDeals('deals');
-            } else if (typeof window.SpecialDeals === 'function') {
-                window.SpecialDeals('deals');
-            }
+
+            return window.openDailyDealsModal();
         });
 
-        $(document).off('click', '.vanilla-skin-preview').on('click', '.vanilla-skin-preview', function(e) {
+        $(document).off('click.lmVanillaSkinShop', '.vanilla-skin-preview').on('click.lmVanillaSkinShop', '.vanilla-skin-preview', function(e) {
             e.preventDefault();
             e.stopPropagation();
             if (typeof window.BeforeSpecialDeals === 'function') {
-                window.BeforeSpecialDeals();
+                window.BeforeSpecialDeals('skins');
             } else if (typeof window.SpecialDeals === 'function') {
                 window.SpecialDeals('skins');
-            } else if (typeof window.openDailyDealsModal === 'function') {
-                window.openDailyDealsModal();
+            } else if (window.toastr) {
+                toastr.error('<b>[SHOP]:</b> The skin shop is not ready.');
             }
+            return false;
         });
 
         $(document).off('click', '#openShopBtn, .quick-shop').on('click', '#openShopBtn, .quick-shop', function(e) {

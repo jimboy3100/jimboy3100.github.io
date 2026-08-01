@@ -462,24 +462,83 @@ function SpecialDeals(defaultTab) {
         // NOTE: populateSkins is called by LoadGameConfiguration on success.
         // No separate setTimeout needed
         window.checkUserLoggedIn = function checkUserLoggedIn() {
-            if (window.loggedIn === true) return true;
-            var u = (window.application && window.application.user) || (window.legendmod && window.legendmod.user);
-            if (u && (u.authenticated === true || (u.userId && u.userId !== '0' && u.userId !== 0 && String(u.userId) !== '0'))) return true;
-            var pName = window.agarioProfileName || (u && (u.displayName || u.name)) || '';
-            if (pName && typeof pName === 'string') {
-                var lower = pName.toLowerCase().trim();
-                if (lower && lower !== 'guest' && lower !== 'name: guest' && lower.indexOf('guest') !== 0) return true;
+            if (window.loggedIn === true) {
+                return true;
             }
+
+            var u =
+                (
+                    window.application &&
+                    window.application.user
+                ) ||
+                (
+                    window.legendmod &&
+                    window.legendmod.user
+                );
+
+            if (!u) {
+                return false;
+            }
+
+            if (u.authenticated === true) {
+                return true;
+            }
+
+            if (
+                u.userId !== undefined &&
+                u.userId !== null
+            ) {
+                var userId =
+                    String(u.userId).trim();
+
+                if (
+                    userId &&
+                    userId !== '0' &&
+                    userId.toLowerCase() !==
+                        'null' &&
+                    userId.toLowerCase() !==
+                        'undefined'
+                ) {
+                    return true;
+                }
+            }
+
             return false;
         };
 
         window.checkUserUID = function checkUserUID() {
-            if (!window.checkUserLoggedIn()) return false;
-            var u = (window.application && window.application.user) || (window.legendmod && window.legendmod.user);
-            if (window.agarioEncodedUID && String(window.agarioEncodedUID).length > 5) return true;
-            if (u && u.socialId && String(u.socialId).length > 5) return true;
-            if (u && u.id && String(u.id).length > 5) return true;
-            return false;
+            if (!window.checkUserLoggedIn()) {
+                return false;
+            }
+
+            if (
+                typeof window.agarioUID !==
+                'string'
+            ) {
+                return false;
+            }
+
+            var uid =
+                window.agarioUID.trim();
+
+            if (!uid) {
+                return false;
+            }
+
+            var normalizedUid =
+                uid.toLowerCase();
+
+            if (
+                normalizedUid === '0' ||
+                normalizedUid === 'null' ||
+                normalizedUid ===
+                    'undefined' ||
+                uid.indexOf('$') !== -1
+            ) {
+                return false;
+            }
+
+            return uid.length >= 8;
         };
 
         window.validateShopIntegrity = function validateShopIntegrity(actionName) {
@@ -1029,10 +1088,6 @@ function SpecialDeals(defaultTab) {
                 //populateSD();
             //}, 1500);
         });
-        window.openDailyDealsModal = function() {
-            SpecialDeals('deals');
-        };
-
         window.closeSpecialShopModal =
             function() {
                 if (

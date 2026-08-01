@@ -7653,6 +7653,95 @@ function ytFrame() {
 function BeforeSpecialDeals(tab) {
     var targetTab = tab || 'skins';
 
+    var appUser =
+        (
+            window.application &&
+            window.application.user
+        ) ||
+        (
+            window.legendmod &&
+            window.legendmod.user
+        ) ||
+        {};
+
+    var isLoggedIn;
+
+    if (
+        typeof window.checkUserLoggedIn ===
+        'function'
+    ) {
+        isLoggedIn =
+            window.checkUserLoggedIn();
+    } else {
+        var fallbackUserId =
+            appUser.userId !== undefined &&
+            appUser.userId !== null
+                ? String(
+                    appUser.userId
+                ).trim()
+                : '';
+
+        var normalizedFallbackUserId =
+            fallbackUserId.toLowerCase();
+
+        isLoggedIn =
+            !!(
+                window.loggedIn === true ||
+                appUser.authenticated === true ||
+                (
+                    fallbackUserId &&
+                    fallbackUserId !== '0' &&
+                    normalizedFallbackUserId !==
+                        'null' &&
+                    normalizedFallbackUserId !==
+                        'undefined'
+                )
+            );
+    }
+
+    var hasUID;
+
+    if (
+        typeof window.checkUserUID ===
+        'function'
+    ) {
+        hasUID =
+            window.checkUserUID();
+    } else {
+        var fallbackUID =
+            typeof window.agarioUID ===
+            'string'
+                ? window.agarioUID.trim()
+                : '';
+
+        var normalizedFallbackUID =
+            fallbackUID.toLowerCase();
+
+        hasUID =
+            !!(
+                isLoggedIn &&
+                fallbackUID &&
+                fallbackUID.length >= 8 &&
+                fallbackUID.indexOf('$') ===
+                    -1 &&
+                fallbackUID !== '0' &&
+                normalizedFallbackUID !==
+                    'null' &&
+                normalizedFallbackUID !==
+                    'undefined'
+            );
+    }
+
+    if (!isLoggedIn || !hasUID) {
+        if (window.toastr) {
+            toastr.error(
+                '<b>[SHOP]:</b> You must be logged in and have a valid Agar.io UID to access Skins & Deals.'
+            );
+        }
+
+        return false;
+    }
+
     if ($('#specialShopModal').length) {
         /*
          * Reuse the existing shop. SpecialDeals() has a fast reopen path
