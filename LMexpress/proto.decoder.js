@@ -641,11 +641,35 @@ message openPotionForSlotResponseField {
 }
 
 message userLeaguesInfoRequestField {
+  int32 leagueRequestType = 1;
 ///
 }
 
+message userLeaguesPlayerInfo {
+  string userId = 1;
+  string displayName = 2;
+  string leagueName = 3;
+  string countryCode = 4;
+  uint32 rank = 5;
+  uint32 level = 6;
+  uint32 trophies = 7;
+  string avatarUrl = 8;
+  int32 realm = 9;
+  optional string realmId = 10;
+}
+
+message userLeaguesRewardUpdate {
+  int32 type = 1;
+}
+
 message userLeaguesInfoResponseField {
-///
+  int32 leagueRequestType = 1;
+  repeated userLeaguesPlayerInfo league = 2;
+  repeated userLeaguesPlayerInfo country = 3;
+  repeated userLeaguesPlayerInfo world = 4;
+  repeated userLeaguesPlayerInfo friends = 5;
+  userLeaguesInfo userLeaguesInfo = 6;
+  repeated userLeaguesRewardUpdate rewardsHandedOut = 7;
 }
 
 message userLeaguesPassUpdateField {
