@@ -81,19 +81,46 @@ function SpecialDeals(defaultTab) {
     // Remove any existing modal + backdrop first (prevents duplicates from re-loading the script)
     $('#specialShopModal').remove();
 
-    // Auto-restore encoded UID from memory/localStorage
-    if (!window.agarioEncodedUID) {
-        window.agarioEncodedUID = localStorage.getItem("agarioEncodedUID") || localStorage.getItem("agarioUID") || "";
-    }
-    if (window.agarioEncodedUID) {
-        localStorage.setItem("agarioEncodedUID", window.agarioEncodedUID);
+    /*
+     * Restore the two identifiers independently.
+     *
+     * agarioUID is the normal account UID.
+     * agarioEncodedUID is the already encoded Xsolla/payment token.
+     *
+     * Never substitute the normal UID for the encoded payment UID.
+     */
+    try {
+        if (!window.agarioUID) {
+            window.agarioUID =
+                localStorage.getItem(
+                    "agarioUID"
+                ) || "";
+        }
+
+        if (!window.agarioEncodedUID) {
+            window.agarioEncodedUID =
+                localStorage.getItem(
+                    "agarioEncodedUID"
+                ) || "";
+        }
+    } catch (error) {
+        console.warn(
+            "[SHOP] Could not restore Agar.io identity:",
+            error
+        );
     }
 
-    // Require UID to open — user must be logged in and have played
+    /*
+     * Login itself should now provide the payment UID.
+     * Playing or joining an arena is not required.
+     */
     if (!window.agarioEncodedUID) {
         if (window.toastr) {
-            toastr.warning('<b>[SHOP]:</b> Log in with Google/Facebook and play a game first to access skins.');
+            toastr.warning(
+                '<b>[SHOP]:</b> The Agar.io payment UID is not ready. Log out, log in again, and wait for the profile to load.'
+            );
         }
+
         return;
     }
 
@@ -411,7 +438,7 @@ function SpecialDeals(defaultTab) {
             // 2. Agar.io UID check
             var hasUID = window.checkUserUID();
             if (!hasUID) {
-                if (window.toastr) toastr.error('<b>[SHOP]:</b> No Agar.io UID found. Play a game session first to sync your account UID.');
+                if (window.toastr) toastr.error('<b>[SHOP]:</b> No Agar.io payment UID found. Log out and log in again to refresh it.');
                 return false;
             }
 
@@ -988,7 +1015,7 @@ function buydeals() {
         return;
     }
     if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
+        toastr && toastr.error('<b>[SHOP]:</b> No payment UID. Log out and log in again.');
         return;
     }
     var uid = $("#exp-uid").text() || window.agarioEncodedUID;
@@ -2402,7 +2429,7 @@ function buySkin(productId) {
         return;
     }
     if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No UID. Play a game first!');
+        toastr && toastr.error('<b>[SHOP]:</b> No payment UID. Log out and log in again.');
         return;
     }
     if (!(window.core && window.core.proxyMobileData)) {

@@ -13,6 +13,412 @@ function getActiveSpect(unitNumber) {
 window.OgVer = 3.499;
 console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
 
+/*
+ * Capture the authenticated Agar.io account identifiers from the
+ * official client's existing user_login event.
+ *
+ * The official client passes Core.user as the second event argument.
+ * This requires no Play click and no arena connection.
+ *
+ * Never remove the existing opcode-102 UID extraction later in this
+ * file. That remains the network fallback.
+ */
+(function installOfficialAgarIdentityCapture() {
+    if (window._lmOfficialIdentityCaptureInstallerStarted) {
+        return;
+    }
+
+    window._lmOfficialIdentityCaptureInstallerStarted = true;
+
+    function cleanIdentityValue(value) {
+        if (value === undefined || value === null) {
+            return "";
+        }
+
+        return String(value).trim();
+    }
+
+    function saveIdentityValue(key, value) {
+        if (!value) {
+            return;
+        }
+
+        try {
+            window.localStorage.setItem(key, value);
+        } catch (error) {
+            console.warn(
+                "[LM UID] Could not save " + key + ":",
+                error
+            );
+        }
+    }
+
+    function removeIdentityValue(key) {
+        try {
+            window.localStorage.removeItem(key);
+        } catch (error) {
+            console.warn(
+                "[LM UID] Could not remove " + key + ":",
+                error
+            );
+        }
+    }
+
+    function refreshIdentityUI() {
+        var uidInput =
+            document.getElementById(
+                "UserProfileUUID1"
+            );
+
+        if (
+            uidInput &&
+            window.agarioUID
+        ) {
+            uidInput.value =
+                window.agarioUID;
+        }
+
+        if (
+            typeof window.syncProfileTabUI ===
+            "function"
+        ) {
+            try {
+                window.syncProfileTabUI();
+            } catch (error) {
+                console.warn(
+                    "[LM UID] Profile UI refresh failed:",
+                    error
+                );
+            }
+        }
+
+        if (
+            typeof window.updateShopLoginState ===
+            "function"
+        ) {
+            try {
+                window.updateShopLoginState();
+            } catch (error) {
+                console.warn(
+                    "[LM UID] Shop UI refresh failed:",
+                    error
+                );
+            }
+        }
+    }
+
+    function captureOfficialUser(
+        officialUser,
+        source
+    ) {
+        if (!officialUser) {
+            return false;
+        }
+
+        /*
+         * Reject explicit guest or logged-out objects.
+         */
+        if (
+            officialUser.isGuest === true ||
+            officialUser.loggedIn === false
+        ) {
+            return false;
+        }
+
+        var uid =
+            cleanIdentityValue(
+                officialUser.id
+            );
+
+        var encodedUid =
+            cleanIdentityValue(
+                officialUser.xsollaToken
+            );
+
+        var userInfo =
+            officialUser.userInfo &&
+            typeof officialUser.userInfo ===
+                "object"
+                ? officialUser.userInfo
+                : {};
+
+        var profileName =
+            cleanIdentityValue(
+                userInfo.displayName ||
+                userInfo.name ||
+                officialUser.displayName ||
+                officialUser.name
+            );
+
+        var changed = false;
+
+        if (
+            uid &&
+            uid !== "0"
+        ) {
+            window.agarioUID = uid;
+
+            saveIdentityValue(
+                "agarioUID",
+                uid
+            );
+
+            changed = true;
+        }
+
+        /*
+         * The official client has already URL-encoded xsollaToken.
+         * Never call encodeURIComponent or any other encoder here.
+         */
+        if (encodedUid) {
+            window.agarioEncodedUID =
+                encodedUid;
+
+            saveIdentityValue(
+                "agarioEncodedUID",
+                encodedUid
+            );
+
+            changed = true;
+        }
+
+        if (
+            profileName &&
+            profileName.toLowerCase() !==
+                "guest"
+        ) {
+            window.agarioProfileName =
+                profileName;
+        }
+
+        /*
+         * Mark the Legend Mod login as ready only after both required
+         * identifiers exist.
+         */
+        if (
+            window.agarioUID &&
+            window.agarioEncodedUID
+        ) {
+            window.loggedIn = true;
+        }
+
+        if (changed) {
+            refreshIdentityUI();
+
+            console.log(
+                "[LM UID] Official Agar.io identity captured:",
+                {
+                    source:
+                        source || "unknown",
+                    uidAvailable:
+                        !!window.agarioUID,
+                    encodedUidAvailable:
+                        !!window.agarioEncodedUID
+                }
+            );
+        }
+
+        return changed;
+    }
+
+    /*
+     * The official update_user_info document event contains the
+     * normal account id. It does not expose xsollaToken, so this is
+     * only a secondary plain-UID capture path.
+     */
+    document.addEventListener(
+        "update_user_info",
+        function (event) {
+            var detail =
+                event && event.detail
+                    ? event.detail
+                    : null;
+
+            if (!detail) {
+                return;
+            }
+
+            var uid =
+                cleanIdentityValue(
+                    detail.id
+                );
+
+            if (
+                !uid ||
+                uid === "0"
+            ) {
+                return;
+            }
+
+            window.agarioUID = uid;
+
+            saveIdentityValue(
+                "agarioUID",
+                uid
+            );
+
+            var profileName =
+                cleanIdentityValue(
+                    detail.name
+                );
+
+            if (
+                profileName &&
+                profileName.toLowerCase() !==
+                    "guest"
+            ) {
+                window.agarioProfileName =
+                    profileName;
+            }
+
+            if (window.agarioEncodedUID) {
+                window.loggedIn = true;
+            }
+
+            refreshIdentityUI();
+        },
+        false
+    );
+
+    /*
+     * Remove cached account identifiers only on a real account
+     * logout. Do not clear them on ordinary game disconnection.
+     */
+    document.addEventListener(
+        "logout",
+        function () {
+            window.agarioUID = "";
+            window.agarioEncodedUID = "";
+            window.agarioProfileName = "";
+            window.loggedIn = false;
+
+            removeIdentityValue(
+                "agarioUID"
+            );
+
+            removeIdentityValue(
+                "agarioEncodedUID"
+            );
+
+            refreshIdentityUI();
+        },
+        false
+    );
+
+    /*
+     * Restore previously captured values while automatic login is
+     * pending. Never treat the normal UID as the encoded UID.
+     */
+    try {
+        if (!window.agarioUID) {
+            window.agarioUID =
+                window.localStorage.getItem(
+                    "agarioUID"
+                ) || "";
+        }
+
+        if (!window.agarioEncodedUID) {
+            window.agarioEncodedUID =
+                window.localStorage.getItem(
+                    "agarioEncodedUID"
+                ) || "";
+        }
+    } catch (error) {
+        console.warn(
+            "[LM UID] Could not restore cached identity:",
+            error
+        );
+    }
+
+    refreshIdentityUI();
+
+    /*
+     * Wait until the official agarApp event bus exists, then bind
+     * exactly once to user_login.
+     */
+    var bindAttempts = 0;
+    var maximumBindAttempts = 1200;
+
+    function bindOfficialUserLogin() {
+        var agarApp =
+            window.agarApp;
+
+        if (
+            !agarApp ||
+            !agarApp.core ||
+            typeof agarApp.core.bind !==
+                "function"
+        ) {
+            bindAttempts++;
+
+            if (
+                bindAttempts <
+                maximumBindAttempts
+            ) {
+                window.setTimeout(
+                    bindOfficialUserLogin,
+                    50
+                );
+            } else {
+                console.warn(
+                    "[LM UID] Official user_login event bus was not found."
+                );
+            }
+
+            return;
+        }
+
+        if (
+            window._lmOfficialUserLoginBound
+        ) {
+            return;
+        }
+
+        window._lmOfficialUserLoginBound =
+            true;
+
+        agarApp.core.bind(
+            "user_login",
+            function (
+                event,
+                officialUser
+            ) {
+                captureOfficialUser(
+                    officialUser,
+                    "user_login"
+                );
+            }
+        );
+
+        console.log(
+            "[LM UID] Bound to official Agar.io user_login event."
+        );
+
+        /*
+         * Handle the case where automatic login completed before
+         * this Legend Mod listener was installed.
+         */
+        try {
+            if (
+                window.Core &&
+                window.Core.user
+            ) {
+                captureOfficialUser(
+                    window.Core.user,
+                    "existing Core.user"
+                );
+            }
+        } catch (error) {
+            console.warn(
+                "[LM UID] Existing Core.user inspection failed:",
+                error
+            );
+        }
+    }
+
+    bindOfficialUserLogin();
+})();
+
 function readLocalStorageJSON(key, fallbackValue) {
     var rawValue;
 
@@ -4320,6 +4726,9 @@ var SkinExplain = [{
 /* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
+    /* WebGL2 is enabled by default, but every frame is preflighted.
+     * Unsupported or visually ambiguous scenes fall back atomically to Canvas2D. */
+    webgl2Acceleration: true,
     isAlphaChanged: false,
     jellyPhisycs: false,
     virusSound: false,
@@ -8197,16 +8606,85 @@ function thelegendmodproject() {
                 setTimeout(updateWorldSpecButton, 300);
             }
             $(document).on("click", ".btn-full-map-spec", function () {
-                var isLegend = app.serverType === "expandingland" || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
-                if (isLegend) {
-                    app.hideMenu();
-                    if (!app.isSocketOpen()) {
-                        app.connect();
-                    }
-                    legendmod.sendAction(55);
+                var gameUrl =
+                    legendmod.ws ||
+                    (
+                        typeof app.ws ===
+                        "string"
+                            ? app.ws
+                            : ""
+                    ) ||
+                    $("#server-url-text").val() ||
+                    "";
 
-                    if (window.addKeyListeners) window.addKeyListeners();
-                    if (defaultmapsettings.autoHideFood) ogario.showFood = false;
+                var isLegend =
+                    legendmod.serverType ===
+                        "expandingland" ||
+                    app.serverType ===
+                        "expandingland" ||
+                    gameUrl.includes(
+                        "legendmod.ml"
+                    ) ||
+                    gameUrl.includes(
+                        "expanding.land"
+                    );
+
+                if (!isLegend) {
+                    return;
+                }
+
+                if (!gameUrl) {
+                    gameUrl =
+                        "wss://ffa.legendmod.ml:8080";
+                }
+
+                app.hideMenu();
+
+                if (
+                    legendmod.isSocketOpen() &&
+                    legendmod.connectionOpened
+                ) {
+                    legendmod._worldSpectatePending =
+                        false;
+
+                    legendmod._worldSpectatePendingUrl =
+                        null;
+
+                    legendmod.sendAction(
+                        55
+                    );
+                } else {
+                    legendmod._worldSpectatePending =
+                        true;
+
+                    legendmod._worldSpectatePendingUrl =
+                        gameUrl;
+
+                    var gameSocket =
+                        legendmod.socket;
+
+                    if (
+                        !gameSocket ||
+                        gameSocket.readyState ===
+                            WebSocket.CLOSING ||
+                        gameSocket.readyState ===
+                            WebSocket.CLOSED
+                    ) {
+                        core.connect(
+                            gameUrl
+                        );
+                    }
+                }
+
+                if (window.addKeyListeners) {
+                    window.addKeyListeners();
+                }
+
+                if (
+                    defaultmapsettings.autoHideFood
+                ) {
+                    ogario.showFood =
+                        false;
                 }
             });
             $(document).on("click", ".btn-spectate", function () {
@@ -9124,8 +9602,9 @@ function thelegendmodproject() {
                 }
                 //var n = o / ogario.mapSize;
                 const n = o / LM.mapSize;
-                const r = ogario.mapOffsetX + (LM.isLegendWorld ? 0 : LM.mapOffset);
-                const l = ogario.mapOffsetY + (LM.isLegendWorld ? 0 : LM.mapOffset);
+                const _isZeroBased = LM.isLegendWorld || (ogario.playerX > 0 && ogario.playerY > 0 && ogario.playerX > (LM.mapOffset || 7000) && ogario.playerY > (LM.mapOffset || 7000));
+                const r = ogario.mapOffsetX + (_isZeroBased ? 0 : LM.mapOffset);
+                const l = ogario.mapOffsetY + (_isZeroBased ? 0 : LM.mapOffset);
                 this.drawSelectedCell(this.miniMapCtx);
                 this.w = ogario.playerX;
                 this.u = ogario.playerY;
@@ -9289,7 +9768,7 @@ function thelegendmodproject() {
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
+                        var _effDeathOff = (_isZeroBased ? 0 : LM.mapOffset);
                         u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
                         d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
@@ -14011,6 +14490,8 @@ function thelegendmodproject() {
         clientKey: null,
         connectionOpened: false,
         accessTokenSent: false,
+        _worldSpectatePending: false,
+        _worldSpectatePendingUrl: null,
         //clientVersion: 30604,
         clientVersion: master.clientVersion,
         protocolVersion: master.protocolVersion,
@@ -14179,6 +14660,31 @@ function thelegendmodproject() {
                             : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                                 : 'private';
 
+            /*
+             * Keep a pending World Spectate request only for the exact
+             * Expanding Land URL that the user requested.
+             *
+             * A region, mode, or server change invalidates the request before
+             * any delayed logout or connection work begins.
+             */
+            var _preserveWorldSpectatePending =
+                this._worldSpectatePending ===
+                    true &&
+                this._worldSpectatePendingUrl ===
+                    t &&
+                _earlyType ===
+                    'expandingland';
+
+            if (
+                !_preserveWorldSpectatePending
+            ) {
+                this._worldSpectatePending =
+                    false;
+
+                this._worldSpectatePendingUrl =
+                    null;
+            }
+
             /* Auto-logout when joining a server that doesn't support login.
              * We must logout BEFORE tearing down the old connection, otherwise
              * the logout handler triggers a disconnect on the NEW socket.
@@ -14198,6 +14704,12 @@ function thelegendmodproject() {
                     }, 500);
                     return; // stop — don't open the socket yet
                 }
+            }
+            if (_earlyType !== 'agario') {
+                if ($('#region').length && $('#region option[value="Private"]').length === 0) {
+                    $('#region').append('<option value="Private">Private</option>');
+                }
+                $('#region').val('Private');
             }
 
             var app = this;
@@ -14259,6 +14771,14 @@ function thelegendmodproject() {
             this.ws = t;
             this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || this.ws.indexOf('live-arena') > -1); // 2026 JIMBOY3100
             this.serverType = _earlyType;
+
+            this._worldSpectatePending =
+                _preserveWorldSpectatePending;
+
+            this._worldSpectatePendingUrl =
+                _preserveWorldSpectatePending
+                    ? t
+                    : null;
 
             /* Enable/disable social login buttons based on server type.
              * Only original agario and expandingland servers support login.
@@ -14460,6 +14980,33 @@ function thelegendmodproject() {
                     }, 200);
                 }
             }
+            /*
+             * Complete a World Spectate request that was made before the
+             * primary game socket finished its normal LM handshake.
+             *
+             * The URL and server-type checks prevent stale intent from being
+             * sent to a replacement connection.
+             */
+            if (
+                this._worldSpectatePending &&
+                this._worldSpectatePendingUrl ===
+                    this.ws &&
+                this.serverType ===
+                    'expandingland' &&
+                this.isSocketOpen() &&
+                this.connectionOpened
+            ) {
+                this._worldSpectatePending =
+                    false;
+
+                this._worldSpectatePendingUrl =
+                    null;
+
+                this.sendAction(
+                    55
+                );
+            }
+
             /* Show/hide World Spectate button reactively on server connect.
              * Handles auto-connect from expanding.land where the URL field
              * may be empty at the time setMainButtons() first checks it. */
@@ -14580,6 +15127,12 @@ function thelegendmodproject() {
                 this.socket = null;
                 this.ws = null;
             }
+
+            this._worldSpectatePending =
+                false;
+
+            this._worldSpectatePendingUrl =
+                null;
         },
         isSocketOpen() {
             return this.socket !== null && this.socket.readyState === this.socket.OPEN;
@@ -16096,13 +16649,13 @@ function thelegendmodproject() {
 
                 case 102:
                     //console.log('[LW 102 DBG] case 102 ENTERED, byteLength:', data.byteLength, 'buffer.byteLength:', data.buffer.byteLength);
-                    var msg = new buffer.Buffer(data.buffer.slice(1));
+                    var msg = new Uint8Array(data.buffer, data.byteOffset + 1, data.byteLength - 1);
                     try {
                         this.onMobileData(msg);
                     } catch (e102) {
                         console.error('[LW 102 DBG] onMobileData error:', e102);
                     }
-                    //break;				
+                    break;				
                     if (data.byteLength < 20) {
                         //this["loggedIn"] = ![];
                         //if (window["logout"]) {
@@ -16862,7 +17415,7 @@ function thelegendmodproject() {
                      * handle the protobuf login/game-over response here too. */
                     if (_lwOp === 102 && data.byteLength > 10) {
                         console.log('[LW 102 FALLBACK] opcode 102 in default: handler, len=' + data.byteLength);
-                        var msg102 = new buffer.Buffer(data.buffer.slice(1));
+                        var msg102 = new Uint8Array(data.buffer, data.byteOffset + 1, data.byteLength - 1);
                         try {
                             this.onMobileData(msg102);
                         } catch (e102f) {
@@ -19297,8 +19850,11 @@ Most cells eaten   : ${mostCellsEaten}
                 var imsoloCellType = -1;
                 var imsoloPartyCode = '';
                 var imsoloOwnerID = 0;
-                // For non-Imsolo servers: read 1-byte extended flags immediately after flags byte
-                if (!((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80))) {
+                var isLegacyMultiOgar = (!this.connectionIntegrity && this.serverType !== 'expandingland' && this.serverType !== 'garix') ||
+                    (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private');
+
+                // For non-LegacyMultiOgar servers (e.g. agar.io / Expanding Land proto 11+): read 1-byte extended flags immediately after flags byte
+                if (!isLegacyMultiOgar) {
                     128 & flags && (extendedFlags = view.readUInt8(offset++));
                 }
                 //128 & d && (f = t.readUInt8(i++));	
@@ -19333,13 +19889,13 @@ Most cells eaten   : ${mostCellsEaten}
                         this.vanillaskins(name, skin, color);
                     }
                 }
-                // Imsolo/Agar2 protocol 6-10: flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
-                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x40)) {
+                // MultiOgar / LegacyProtocol (protocols 6-10): flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
+                if (isLegacyMultiOgar && (flags & 0x40)) {
                     imsoloOwnerID = view.readUInt16LE(offset);
                     offset += 2;
                 }
-                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && (flags & 0x80)) {
-                    // Protocol 6-10: extended = uint16 cellType + string partyCode
+                if (isLegacyMultiOgar && (flags & 0x80)) {
+                    // Protocol 6-10: extended = uint16 cellType + string partyCode (UTF-8, null-terminated)
                     imsoloCellType = view.readUInt16LE(offset);
                     offset += 2;
                     var _pc = '';
@@ -19371,13 +19927,13 @@ Most cells eaten   : ${mostCellsEaten}
                 var isFood = extendedFlags & 1;
                 const isFriend = extendedFlags & 2;
 
-                // Imsolo/Agar2: use cellType-based food detection (cellType 1 = food/pellet)
-                if ((this.serverType === 'imsolo' || this.serverType === 'agar2') && imsoloCellType >= 0) {
+                // MultiOgar / LegacyProtocol: use cellType-based food detection (cellType 1 = food/pellet, 5 = event pellet)
+                if (isLegacyMultiOgar && imsoloCellType >= 0) {
                     isFood = (imsoloCellType === 1 || imsoloCellType === 5) ? 1 : 0; // 1=pellet, 5=event pellet
                 } else if (extendedFlags & 1) {
                     isFood = 1;
                 } else if (!LM.integrity) { //fix of food for private servers
-                    if (size <= 30 && name === '') isFood = 1 //only nameless small cells are food; pop pieces have names
+                    if (size <= 30 && name === '') isFood = 1; //only nameless small cells are food; pop pieces have names
                 }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
@@ -19430,6 +19986,9 @@ Most cells eaten   : ${mostCellsEaten}
 
                         /* Fast Player Cell & Fragment Detection */
                         var isOwnPlayerCell = (this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) != -1));
+                        if (isLegacyMultiOgar && imsoloOwnerID > 0 && this.imsoloPlayerID && imsoloOwnerID === this.imsoloPlayerID) {
+                            isOwnPlayerCell = true;
+                        }
                         if (isEjected) {
                             isOwnPlayerCell = false;
                             if (this._playerCellIDSet) this._playerCellIDSet.delete(id);
@@ -20065,6 +20624,16 @@ Most cells eaten   : ${mostCellsEaten}
     window.drawRender = {
         canvas: null,
         ctx: null,
+        overlayCanvas: null,
+        overlayCtx: null,
+        _gpuSceneActive: false,
+        _webglBackgroundActive: false,
+        _webglPhase: 'none',
+        _foregroundCtx: null,
+        _webglDisabledUntil: 0,
+        _overlayFramePrepared: false,
+        _retryCanvasFrame: false,
+        _renderLayerZ: null,
         canvasWidth: 0,
         canvasHeight: 0,
         camX: 0,
@@ -20094,12 +20663,473 @@ Most cells eaten   : ${mostCellsEaten}
             if (!this.canvas) return;
             this.ctx = this.canvas.getContext('2d');
             this.initWebGL();
+            this.initOverlayCanvas();
             this.canvas.onmousemove = function (event) {
                 LM.clientX = event.clientX;
                 LM.clientY = event.clientY;
                 LM.getCursorPosition();
             };
         },
+        initOverlayCanvas() {
+            if (!this.canvas || !this.canvas.parentNode) return;
+
+            if (!this.overlayCanvas) {
+                var overlay = document.createElement('canvas');
+                overlay.id = 'legendmod-render-overlay';
+                overlay.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;background:transparent;display:none;';
+                this.canvas.parentNode.appendChild(overlay);
+                this.overlayCanvas = overlay;
+                this.overlayCtx = overlay.getContext('2d');
+            }
+
+            /*
+             * Deterministic layers:
+             * 1. Original Canvas2D background/fallback.
+             * 2. WebGL cell bodies, skins and text.
+             * 3. Canvas2D foreground indicators and rings.
+             */
+            this.canvas.style.position = this.canvas.style.position || 'absolute';
+
+            if (this._renderLayerZ === null) {
+                var computedZ = parseInt(window.getComputedStyle(this.canvas).zIndex, 10);
+                this._renderLayerZ = Number.isFinite(computedZ) ? computedZ : 1;
+            }
+
+            var layerZ = String(this._renderLayerZ);
+            this.canvas.style.zIndex = layerZ;
+
+            if (this.glCanvas) {
+                this.glCanvas.style.zIndex = layerZ;
+            }
+
+            if (this.overlayCanvas) {
+                this.overlayCanvas.style.zIndex = layerZ;
+            }
+        },
+
+        _isCellInsideFrame(cell, padding) {
+            if (!cell) return false;
+
+            var viewScale = this.scale || 1;
+            var halfW = this.canvasWidth / viewScale / 2 + (padding || 250);
+            var halfH = this.canvasHeight / viewScale / 2 + (padding || 250);
+            var radius = cell.size || 10;
+
+            return !(
+                cell.x + radius < this.camX - halfW ||
+                cell.x - radius > this.camX + halfW ||
+                cell.y + radius < this.camY - halfH ||
+                cell.y - radius > this.camY + halfH
+            );
+        },
+
+        _resetWebGLSkinTextureArray() {
+            if (!this.gl) return false;
+
+            var gl = this.gl;
+
+            try {
+                if (this.glSkinArray) {
+                    gl.deleteTexture(this.glSkinArray);
+                }
+
+                this.glSkinArray = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+
+                gl.texStorage3D(
+                    gl.TEXTURE_2D_ARRAY,
+                    1,
+                    gl.RGBA8,
+                    this.glSkinTexSize,
+                    this.glSkinTexSize,
+                    this.glSkinMaxLayers
+                );
+
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+
+                this.glSkinMap = {};
+                this.glSkinNodeMap = new WeakMap();
+                this.glSkinNextLayer = 0;
+
+                return true;
+            } catch (error) {
+                try {
+                    gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                } catch (unbindError) {}
+
+                return false;
+            }
+        },
+
+        _getWebGLSkinAlphaMode(node) {
+            if (!node) return 'none';
+
+            if (!this.glSkinAlphaMode) {
+                this.glSkinAlphaMode = new WeakMap();
+            }
+
+            var cachedMode = this.glSkinAlphaMode.get(node);
+
+            if (cachedMode) {
+                return cachedMode;
+            }
+
+            var mode = 'unknown';
+
+            try {
+                var sampleCanvas = document.createElement('canvas');
+                sampleCanvas.width = 64;
+                sampleCanvas.height = 64;
+
+                var sampleCtx =
+                    sampleCanvas.getContext('2d', { willReadFrequently: true }) ||
+                    sampleCanvas.getContext('2d');
+
+                sampleCtx.clearRect(0, 0, 64, 64);
+                sampleCtx.drawImage(node, 0, 0, 64, 64);
+
+                var pixels = sampleCtx.getImageData(0, 0, 64, 64).data;
+                mode = 'opaque';
+
+                for (var y = 3; y < 61 && mode !== 'partial'; y++) {
+                    var dy = y - 31.5;
+
+                    for (var x = 3; x < 61; x++) {
+                        var dx = x - 31.5;
+
+                        if (dx * dx + dy * dy > 28.5 * 28.5) {
+                            continue;
+                        }
+
+                        var alpha = pixels[(y * 64 + x) * 4 + 3];
+
+                        if (alpha > 0 && alpha < 250) {
+                            mode = 'partial';
+                            break;
+                        }
+
+                        if (alpha === 0 && mode === 'opaque') {
+                            mode = 'binary';
+                        }
+                    }
+                }
+            } catch (error) {
+                mode = 'unknown';
+            }
+
+            this.glSkinAlphaMode.set(node, mode);
+            return mode;
+        },
+
+        _resolveWebGLSkin(cell, uploadReadyImage) {
+            if (
+                !cell ||
+                !defaultmapsettings.customSkins ||
+                !LM.showCustomSkins ||
+                cell.isEjected
+            ) {
+                return {
+                    requested: false,
+                    layer: -1,
+                    node: null,
+                    alphaMode: 'none'
+                };
+            }
+
+            var node = null;
+
+            try {
+                node = application.getCustomSkin(
+                    cell.targetNick,
+                    cell.color,
+                    cell.skin
+                );
+            } catch (error) {}
+
+            if (
+                !node ||
+                node._failed ||
+                !(
+                    node.naturalWidth > 0 ||
+                    node.width > 0 ||
+                    node.videoWidth > 0
+                )
+            ) {
+                return {
+                    requested: false,
+                    layer: -1,
+                    node: null,
+                    alphaMode: 'none'
+                };
+            }
+
+            var alphaMode = this._getWebGLSkinAlphaMode(node);
+
+            if (alphaMode === 'partial' || alphaMode === 'unknown') {
+                return {
+                    requested: true,
+                    layer: -1,
+                    node: node,
+                    alphaMode: alphaMode
+                };
+            }
+
+            if (!this.glSkinNodeMap) {
+                this.glSkinNodeMap = new WeakMap();
+            }
+
+            var mappedLayer = this.glSkinNodeMap.get(node);
+
+            if (typeof mappedLayer !== 'number' && uploadReadyImage) {
+                mappedLayer = this.uploadSkinTexture(node, node);
+            }
+
+            return {
+                requested: true,
+                layer: typeof mappedLayer === 'number' ? mappedLayer : -1,
+                node: node,
+                alphaMode: alphaMode
+            };
+        },
+
+        canUseWebGLScene(cellsArray) {
+            this._webglBackgroundActive = false;
+
+            if (defaultmapsettings.webgl2Acceleration === false) return false;
+            if (this._webglDisabledUntil && Date.now() < this._webglDisabledUntil) return false;
+
+            if (
+                !this.gl ||
+                !this.glCanvas ||
+                !this.glCellProgram ||
+                !this.glTextProgram ||
+                !this.overlayCtx
+            ) {
+                return false;
+            }
+
+            if (!cellsArray || !cellsArray.length) return false;
+
+            if (
+                this.glSkinNextLayer >= this.glSkinMaxLayers &&
+                !this._resetWebGLSkinTextureArray()
+            ) {
+                return false;
+            }
+
+            /*
+             * These rendering paths cannot safely be reproduced by a detached WebGL
+             * canvas without changing Canvas clipping, compositing or draw order.
+             */
+            if (LM.gameMode === ':teams') return false;
+            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.cellContours) return false;
+
+            if (
+                defaultmapsettings.transparentCells &&
+                defaultSettings.cellsAlpha < 0.999
+            ) {
+                return false;
+            }
+
+            if (
+                defaultmapsettings.transparentSkins &&
+                defaultSettings.skinsAlpha < 0.999
+            ) {
+                return false;
+            }
+
+            if (
+                defaultmapsettings.myTransparentSkin &&
+                defaultSettings.skinsAlpha < 0.999
+            ) {
+                return false;
+            }
+
+            if (
+                LM.ws &&
+                LM.ws.indexOf('replay') !== -1 &&
+                (
+                    window.replayGreyScale ||
+                    window.replaySepia ||
+                    window.replayHueRotate
+                )
+            ) {
+                return false;
+            }
+
+            if (
+                dyinglight1load === 'yes' ||
+                defaultmapsettings.spawnSpecialEffects ||
+                defaultmapsettings.teammatesInd
+            ) {
+                return false;
+            }
+
+            if (defaultmapsettings.FBTracking) return false;
+
+            if (
+                (defaultmapsettings.multiBoxShadow || defaultmapsettings.mbRings) &&
+                LM.playerCellsMulti &&
+                LM.playerCellsMulti.length
+            ) {
+                return false;
+            }
+
+            if (
+                defaultmapsettings.showChat &&
+                this._chatLookup &&
+                this._chatLookup.size
+            ) {
+                return false;
+            }
+
+            if (
+                window.ExternalScripts &&
+                window.legendmod5 &&
+                !window.legendmod5.optimizedMass
+            ) {
+                return false;
+            }
+
+            var gpuCount = 0;
+            var minGpuSize = Infinity;
+            var maxCanvasCellSize = -Infinity;
+            var visibleCanvasCells = 0;
+
+            for (var i = 0; i < cellsArray.length; i++) {
+                var cell = cellsArray[i];
+
+                if (
+                    !cell ||
+                    cell.invisible ||
+                    cell.removed ||
+                    cell.isFood ||
+                    !this._isCellInsideFrame(cell, 250)
+                ) {
+                    continue;
+                }
+
+                if (LM.hideSmallBots && cell.size <= 36) {
+                    continue;
+                }
+
+                if (
+                    cell.SpecialEffect ||
+                    cell.SpecialEffect2 ||
+                    cell.specialEffect ||
+                    cell.specialEffect2
+                ) {
+                    return false;
+                }
+
+                if (
+                    cell.targetNick &&
+                    typeof SpecialEffectPlayers !== 'undefined' &&
+                    SpecialEffectPlayers[cell.targetNick]
+                ) {
+                    return false;
+                }
+
+                if (cell.isVirus) {
+                    visibleCanvasCells++;
+                    maxCanvasCellSize = Math.max(
+                        maxCanvasCellSize,
+                        cell.size || 0
+                    );
+                    continue;
+                }
+
+                if (defaultmapsettings.videoSkins && cell.targetNick) {
+                    var videoUrl =
+                        application.gameMode === ':party'
+                            ? application.customSkinsMap[
+                                cell.targetNick + cell.color
+                            ]
+                            : application.customSkinsMap[cell.targetNick];
+
+                    if (
+                        typeof videoUrl === 'string' &&
+                        /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(videoUrl)
+                    ) {
+                        return false;
+                    }
+                }
+
+                var skinInfo = this._resolveWebGLSkin(cell, true);
+
+                if (skinInfo.requested && skinInfo.layer < 0) {
+                    return false;
+                }
+
+                gpuCount++;
+
+                if (gpuCount > this.glCellMaxInstances) {
+                    return false;
+                }
+
+                minGpuSize = Math.min(
+                    minGpuSize,
+                    cell.size || 0
+                );
+            }
+
+            if (!gpuCount) return false;
+
+            /*
+             * Canvas viruses may remain beneath the GPU layer only when every GPU
+             * cell is strictly larger. Equality is unsafe because IDs break ties.
+             */
+            if (
+                visibleCanvasCells &&
+                !(minGpuSize > maxCanvasCellSize)
+            ) {
+                return false;
+            }
+
+            this._webglBackgroundActive = false;
+            return true;
+        },
+
+        setWebGLFrameMode(active) {
+            this._gpuSceneActive = !!active;
+
+            this._foregroundCtx =
+                this._gpuSceneActive && this.overlayCtx
+                    ? this.overlayCtx
+                    : this.ctx;
+
+            this._webglPhase =
+                this._gpuSceneActive
+                    ? 'background'
+                    : 'none';
+
+            if (this.glCanvas) {
+                this.glCanvas.style.display =
+                    this._gpuSceneActive
+                        ? 'block'
+                        : 'none';
+            }
+
+            if (this.overlayCanvas) {
+                this.overlayCanvas.style.display =
+                    this._gpuSceneActive
+                        ? 'block'
+                        : 'none';
+            }
+        },
+
+        canDrawWebGLPrimitive() {
+            /*
+             * Arbitrary Canvas primitives cannot be interleaved correctly with a
+             * separate WebGL DOM canvas. Keep non-cell primitives on Canvas.
+             */
+            return false;
+        },
+
         resizeCanvas() {
             var dpr = (defaultmapsettings.highDPI || window.LM_IS_MOBILE) ? Math.min(window.devicePixelRatio || 1, 2) : 1;
             this.dpr = dpr;
@@ -20116,6 +21146,12 @@ Most cells eaten   : ${mostCellsEaten}
                 this.glCanvas.style.width = this.canvasWidth + 'px';
                 this.glCanvas.style.height = this.canvasHeight + 'px';
                 if (this.gl) this.gl.viewport(0, 0, this.canvasWidth * dpr, this.canvasHeight * dpr);
+            }
+            if (this.overlayCanvas) {
+                this.overlayCanvas.width = this.canvasWidth * dpr;
+                this.overlayCanvas.height = this.canvasHeight * dpr;
+                this.overlayCanvas.style.width = this.canvasWidth + 'px';
+                this.overlayCanvas.style.height = this.canvasHeight + 'px';
             }
         },
         initWebGL() {
@@ -20529,7 +21565,7 @@ Most cells eaten   : ${mostCellsEaten}
                 // Instance VBO: [x, y, radius, r, g, b, alpha, skinLayer, z] = 9 floats
                 this.glCellInstanceVBO = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
-                this.glCellMaxInstances = 2000;
+                this.glCellMaxInstances = 8192;
                 gl.bufferData(gl.ARRAY_BUFFER, this.glCellMaxInstances * 9 * 4, gl.DYNAMIC_DRAW);
                 var cellStride = 9 * 4;
 
@@ -20575,6 +21611,8 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
 
                 this.glSkinMap = {};
+                this.glSkinNodeMap = new WeakMap();
+                this.glSkinAlphaMode = new WeakMap();
                 this.glSkinNextLayer = 0;
 
                 // ===== WebGL2 Text Shader (textured quad with depth Z) =====
@@ -21722,6 +22760,21 @@ Most cells eaten   : ${mostCellsEaten}
 
                 gl.enable(gl.BLEND);
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+                var self = this;
+                this.glCanvas.addEventListener('webglcontextlost', function (event) {
+                    event.preventDefault();
+                    self._webglDisabledUntil = Date.now() + 5000;
+                    self._gpuSceneActive = false;
+
+                    if (self.glCanvas) {
+                        self.glCanvas.style.display = 'none';
+                    }
+
+                    if (self.overlayCanvas) {
+                        self.overlayCanvas.style.display = 'none';
+                    }
+                }, false);
             } catch (e) {
                 console.warn('[WebGL2 Instanced Renderer] Initialization failed, falling back to 2D Canvas:', e);
                 this.gl = null;
@@ -21729,6 +22782,118 @@ Most cells eaten   : ${mostCellsEaten}
                     this.glCanvas.parentNode.removeChild(this.glCanvas);
                     this.glCanvas = null;
                 }
+            }
+        },
+
+        uploadSkinTexture(sourceNode, keyNode) {
+            if (!this.gl || !sourceNode) return -1;
+
+            var node = keyNode || sourceNode;
+
+            if (typeof sourceNode === 'string') {
+                var url = sourceNode;
+                var canvas = keyNode;
+                if (!canvas) return -1;
+                if (this.glSkinMap && this.glSkinMap[url] !== undefined) return this.glSkinMap[url];
+                node = canvas;
+            }
+
+            if (!this.glSkinNodeMap) {
+                this.glSkinNodeMap = new WeakMap();
+            }
+
+            var existingLayer = this.glSkinNodeMap.get(node);
+
+            if (typeof existingLayer === 'number') {
+                if (typeof sourceNode === 'string' && this.glSkinMap) {
+                    this.glSkinMap[sourceNode] = existingLayer;
+                }
+                return existingLayer;
+            }
+
+            if (this.glSkinNextLayer >= this.glSkinMaxLayers) {
+                if (!this._resetWebGLSkinTextureArray()) {
+                    return -1;
+                }
+            }
+
+            var layer = this.glSkinNextLayer;
+            var gl = this.gl;
+            var size = this.glSkinTexSize || 512;
+
+            try {
+                var srcCanvas = node;
+                if (node.width && node.height && (node.width !== size || node.height !== size)) {
+                    var tmp = document.createElement('canvas');
+                    tmp.width = size;
+                    tmp.height = size;
+                    var tmpCtx = tmp.getContext('2d');
+                    tmpCtx.drawImage(node, 0, 0, size, size);
+                    srcCanvas = tmp;
+                }
+
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+
+                gl.texSubImage3D(
+                    gl.TEXTURE_2D_ARRAY,
+                    0,
+                    0,
+                    0,
+                    layer,
+                    size,
+                    size,
+                    1,
+                    gl.RGBA,
+                    gl.UNSIGNED_BYTE,
+                    srcCanvas
+                );
+
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                this.glSkinNextLayer++;
+                this.glSkinNodeMap.set(node, layer);
+                if (typeof sourceNode === 'string' && this.glSkinMap) {
+                    this.glSkinMap[sourceNode] = layer;
+                }
+                return layer;
+            } catch (error) {
+                try {
+                    gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                } catch (unbindError) {}
+                if (typeof sourceNode === 'string' && this.glSkinMap) {
+                    this.glSkinMap[sourceNode] = -1;
+                }
+
+                return -1;
+            }
+        },
+
+        _resetWebGLSkinTextureArray() {
+            if (!this.gl) return false;
+            var gl = this.gl;
+            try {
+                if (this.glSkinArray) {
+                    gl.deleteTexture(this.glSkinArray);
+                    this.glSkinArray = null;
+                }
+                this.glSkinArray = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                this.glSkinTexSize = 512;
+                this.glSkinMaxLayers = 128;
+                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+
+                this.glSkinMap = {};
+                this.glSkinNodeMap = new WeakMap();
+                this.glSkinAlphaMode = new WeakMap();
+                this.glSkinNextLayer = 0;
+                return true;
+            } catch (err) {
+                console.warn('[WebGL2 Instanced Renderer] Skin texture array reset failed:', err);
+                return false;
             }
         },
         parseWebGLOverlayColor(colorHex, fallbackHex) {
@@ -22591,39 +23756,6 @@ Most cells eaten   : ${mostCellsEaten}
             gl.bindVertexArray(null);
 
             return true;
-        },
-        uploadSkinTexture(url, canvas) {
-            if (!this.gl || !this.glSkinArray) return -1;
-            if (this.glSkinMap[url] !== undefined) return this.glSkinMap[url];
-            if (this.glSkinNextLayer >= this.glSkinMaxLayers) return -1;
-
-            var layer = this.glSkinNextLayer;
-            var gl = this.gl;
-            var size = this.glSkinTexSize;
-
-            try {
-                // Resize canvas to texture array layer size if needed
-                var srcCanvas = canvas;
-                if (canvas.width !== size || canvas.height !== size) {
-                    var tmp = document.createElement('canvas');
-                    tmp.width = size; tmp.height = size;
-                    var tmpCtx = tmp.getContext('2d');
-                    tmpCtx.drawImage(canvas, 0, 0, size, size);
-                    srcCanvas = tmp;
-                }
-
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-                gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-
-                /* Commit the layer only after successful upload — no slot leak on error */
-                this.glSkinNextLayer++;
-                this.glSkinMap[url] = layer;
-                return layer;
-            } catch (eErr) {
-                this.glSkinMap[url] = -1;
-                return -1;
-            }
         },
         /* ===== WebGL Text-as-Texture Rendering =====
          * Renders nick/mass/chat text to an offscreen Canvas2D, uploads as GL texture,

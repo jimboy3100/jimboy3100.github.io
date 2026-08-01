@@ -7675,9 +7675,33 @@ function BeforeSpecialDeals(tab) {
         return;
     }
 
-    var existingScript = document.getElementById('lm-special-deals-script');
+    var existingScript =
+        document.getElementById(
+            'lm-special-deals-script'
+        );
+
     if (existingScript) {
-        window._specialDealsScriptLoading = true;
+        window._specialDealsScriptLoading =
+            false;
+
+        /*
+         * The script may already be loaded because the user opened
+         * the shop before login. Reuse its exported function instead
+         * of permanently returning.
+         */
+        if (
+            typeof window.SpecialDeals ===
+            'function'
+        ) {
+            window.SpecialDeals(
+                targetTab
+            );
+        } else {
+            console.warn(
+                '[SHOP] skinsAndDeals.js exists, but SpecialDeals is not ready yet.'
+            );
+        }
+
         return;
     }
 
