@@ -10501,7 +10501,7 @@ function thelegendmodproject() {
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = (_isZeroBased ? 0 : LM.mapOffset);
+                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
                         u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
                         d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
