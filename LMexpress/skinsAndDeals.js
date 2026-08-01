@@ -66,20 +66,77 @@ SpecialDeals(window._pendingShopTab || 'skins');
 AgarVersionDestinations();
 
 function SpecialDeals(defaultTab) {
-    if (!defaultTab && window._pendingShopTab) {
-        defaultTab = window._pendingShopTab;
+    if (
+        !defaultTab &&
+        window._pendingShopTab
+    ) {
+        defaultTab =
+            window._pendingShopTab;
     }
+
     window._pendingShopTab = null;
     defaultTab = defaultTab || 'skins';
 
-    // Clear any leaked interval from a previous SpecialDeals() run
-    if (window._shopLoginCheckInterval) {
-        clearInterval(window._shopLoginCheckInterval);
-        window._shopLoginCheckInterval = null;
+    var existingShopModal =
+        document.getElementById(
+            'specialShopModal'
+        );
+
+    /*
+     * Fast reopen path: preserve built cards, decoded images, search state
+     * and tab state. Do not reconstruct the complete modal.
+     */
+    if (existingShopModal) {
+        $('#specialShopModal')
+            .show()
+            .addClass('in')
+            .attr(
+                'aria-hidden',
+                'false'
+            );
+
+        $('body').addClass(
+            'modal-open'
+        );
+
+        if (
+            typeof window.startShopLoginSync ===
+            'function'
+        ) {
+            window.startShopLoginSync();
+        } else if (
+            typeof window.updateShopLoginState ===
+            'function'
+        ) {
+            window.updateShopLoginState();
+        }
+
+        var requestedTab =
+            $('#specialShopModal .shop-tab[data-tab="' +
+                defaultTab +
+                '"]');
+
+        if (requestedTab.length) {
+            requestedTab.trigger('click');
+        }
+
+        return;
     }
 
-    // Remove any existing modal + backdrop first (prevents duplicates from re-loading the script)
-    $('#specialShopModal').remove();
+    if (window._shopLoginCheckInterval) {
+        clearInterval(
+            window._shopLoginCheckInterval
+        );
+
+        window._shopLoginCheckInterval =
+            null;
+    }
+
+    /*
+     * These flags belong to the newly created modal instance.
+     */
+    window._skinShopBuilt = false;
+    window._dealsShopBuilt = false;
 
     /*
      * Restore the two identifiers independently.
@@ -598,17 +655,68 @@ function SpecialDeals(defaultTab) {
             }
         }
 
-        // Check login state immediately and every 3 seconds
-        updateShopLoginState();
-        if (window._shopLoginCheckInterval) clearInterval(window._shopLoginCheckInterval);
-        window._shopLoginCheckInterval = setInterval(updateShopLoginState, 3000);
-        // Clean up when modal closes (bootstrap event)
-        $('#specialShopModal').on('hidden.bs.modal', function() {
-            if (window._shopLoginCheckInterval) {
-                clearInterval(window._shopLoginCheckInterval);
-                window._shopLoginCheckInterval = null;
+        /*
+         * Keep exactly one login/balance synchronizer while the retained
+         * modal is visible. Stop it whenever the modal is hidden.
+         */
+        window.startShopLoginSync =
+            function startShopLoginSync() {
+                if (
+                    window._shopLoginCheckInterval
+                ) {
+                    clearInterval(
+                        window._shopLoginCheckInterval
+                    );
+
+                    window._shopLoginCheckInterval =
+                        null;
+                }
+
+                updateShopLoginState();
+
+                window._shopLoginCheckInterval =
+                    setInterval(function () {
+                        var shop =
+                            document.getElementById(
+                                'specialShopModal'
+                            );
+
+                        if (
+                            !shop ||
+                            shop.style.display ===
+                                'none'
+                        ) {
+                            clearInterval(
+                                window._shopLoginCheckInterval
+                            );
+
+                            window._shopLoginCheckInterval =
+                                null;
+
+                            return;
+                        }
+
+                        updateShopLoginState();
+                    }, 3000);
+            };
+
+        window.startShopLoginSync();
+
+        $('#specialShopModal').on(
+            'hidden.bs.modal',
+            function() {
+                if (
+                    window._shopLoginCheckInterval
+                ) {
+                    clearInterval(
+                        window._shopLoginCheckInterval
+                    );
+
+                    window._shopLoginCheckInterval =
+                        null;
+                }
             }
-        });
+        );
 
         // --- Embedded Custom Skin Uploader Handlers ---
         var processedBufferModal = null;
@@ -867,12 +975,25 @@ function SpecialDeals(defaultTab) {
             }
 
             if (tab === 'skins') {
-                if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) {
+                if (
+                    !window.GameConfiguration ||
+                    !window.GameConfiguration.gameConfig
+                ) {
                     LoadGameConfiguration();
-                } else {
+                } else if (
+                    !window._skinShopBuilt
+                ) {
                     populateSkins();
+                } else {
+                    if (
+                        typeof window.resumeSkinGridImages ===
+                        'function'
+                    ) {
+                        window.resumeSkinGridImages();
+                    }
+
+                    updateEquippedSkinUI();
                 }
-                updateEquippedSkinUI();
             }
             if (tab === 'upload') {
                 updateUploadBalance();
@@ -882,7 +1003,10 @@ function SpecialDeals(defaultTab) {
                 }
             }
             if (tab === 'deals') {
-                populateDealsGrid();
+                if (!window._dealsShopBuilt) {
+                    populateDealsGrid();
+                }
+
                 updateDealsBalance();
             }
             updateShopLoginState();
@@ -909,15 +1033,44 @@ function SpecialDeals(defaultTab) {
             SpecialDeals('deals');
         };
 
-        window.closeSpecialShopModal = function() {
-            if (window._shopLoginCheckInterval) {
-                clearInterval(window._shopLoginCheckInterval);
-                window._shopLoginCheckInterval = null;
-            }
-            $("#specialShopModal").remove();
-            $(".modal-backdrop").remove();
-            $("body").removeClass("modal-open");
-        };
+        window.closeSpecialShopModal =
+            function() {
+                if (
+                    window._shopLoginCheckInterval
+                ) {
+                    clearInterval(
+                        window._shopLoginCheckInterval
+                    );
+
+                    window._shopLoginCheckInterval =
+                        null;
+                }
+
+                if (window._skinSearchTimer) {
+                    clearTimeout(
+                        window._skinSearchTimer
+                    );
+
+                    window._skinSearchTimer =
+                        null;
+                }
+
+                /*
+                 * Retain the built DOM and decoded thumbnails for fast reopen.
+                 * The backdrop is inside the modal and hides with its parent.
+                 */
+                $("#specialShopModal")
+                    .hide()
+                    .removeClass('in')
+                    .attr(
+                        'aria-hidden',
+                        'true'
+                    );
+
+                $("body").removeClass(
+                    "modal-open"
+                );
+            };
 
         $(document).off('click', '#CloseSpecialDeals, #specialShopModal .modal-backdrop')
                .on('click', '#CloseSpecialDeals, #specialShopModal .modal-backdrop', function(e) {
@@ -1447,6 +1600,26 @@ function populateDealsGrid() {
     }
 
     grid.innerHTML = html;
+
+    var dealImages =
+        grid.querySelectorAll('img');
+
+    for (
+        var dealImageIndex = 0;
+        dealImageIndex <
+            dealImages.length;
+        dealImageIndex++
+    ) {
+        dealImages[
+            dealImageIndex
+        ].loading = 'lazy';
+
+        dealImages[
+            dealImageIndex
+        ].decoding = 'async';
+    }
+
+    window._dealsShopBuilt = true;
 }
 window.populateDealsGrid = populateDealsGrid;
 window.refreshDealsTab = function() {
@@ -1872,10 +2045,27 @@ function populateSkins() {
         applySkinFilters(true);
     });
 
-    // Search handler
-    $('#skinSearchBar').off('input').on('input', function() {
-        applySkinFilters(true);
-    });
+    // Search handler — debounce filtering, sorting and DOM rebuilding
+    $('#skinSearchBar')
+        .off('input.skinShop')
+        .on(
+            'input.skinShop',
+            function() {
+                if (window._skinSearchTimer) {
+                    clearTimeout(
+                        window._skinSearchTimer
+                    );
+                }
+
+                window._skinSearchTimer =
+                    setTimeout(function() {
+                        window._skinSearchTimer =
+                            null;
+
+                        applySkinFilters(true);
+                    }, 140);
+            }
+        );
 
     // Load more handler
     $('#skinLoadMore').off('click').on('click', function() {
@@ -1899,7 +2089,12 @@ function populateSkins() {
     }
 
     // Expose for external refresh (server wallet updates, purchases, etc.)
-    window._skinShopRefresh = function() { applySkinFilters(false); };
+    window._skinShopRefresh =
+        function() {
+            applySkinFilters(false);
+        };
+
+    window._skinShopBuilt = true;
 }
 
 function openCustomSkinUploader() {
@@ -2280,6 +2475,120 @@ function getSkinPrice(productId) {
 }
 window.getSkinPrice = getSkinPrice;
 
+function loadSkinShopImage(image) {
+    if (!image) return;
+
+    var source =
+        image.getAttribute(
+            'data-src'
+        );
+
+    if (!source) return;
+
+    image.removeAttribute(
+        'data-src'
+    );
+
+    image.src = source;
+}
+
+function observeSkinShopImages(grid) {
+    if (!grid) return;
+
+    if (
+        window._skinShopImageObserver &&
+        typeof window._skinShopImageObserver
+            .disconnect === 'function'
+    ) {
+        window._skinShopImageObserver
+            .disconnect();
+    }
+
+    var pendingImages =
+        grid.querySelectorAll(
+            'img[data-src]'
+        );
+
+    if (
+        !('IntersectionObserver' in window)
+    ) {
+        for (
+            var fallbackIndex = 0;
+            fallbackIndex <
+                pendingImages.length;
+            fallbackIndex++
+        ) {
+            loadSkinShopImage(
+                pendingImages[
+                    fallbackIndex
+                ]
+            );
+        }
+
+        window._skinShopImageObserver =
+            null;
+
+        return;
+    }
+
+    window._skinShopImageObserver =
+        new IntersectionObserver(
+            function(entries, observer) {
+                for (
+                    var entryIndex = 0;
+                    entryIndex <
+                        entries.length;
+                    entryIndex++
+                ) {
+                    var entry =
+                        entries[entryIndex];
+
+                    if (
+                        entry.isIntersecting ||
+                        entry.intersectionRatio > 0
+                    ) {
+                        observer.unobserve(
+                            entry.target
+                        );
+
+                        loadSkinShopImage(
+                            entry.target
+                        );
+                    }
+                }
+            },
+            {
+                root: grid,
+                rootMargin:
+                    '180px 0px',
+                threshold: 0.01
+            }
+        );
+
+    for (
+        var imageIndex = 0;
+        imageIndex <
+            pendingImages.length;
+        imageIndex++
+    ) {
+        window._skinShopImageObserver
+            .observe(
+                pendingImages[
+                    imageIndex
+                ]
+            );
+    }
+}
+
+window.resumeSkinGridImages =
+    function resumeSkinGridImages() {
+        observeSkinShopImages(
+            document.getElementById(
+                'skinGrid'
+            )
+        );
+    };
+
 function updatePaginationUI() {
     var grid = document.getElementById('skinGrid');
     var total = skinShopFiltered ? skinShopFiltered.length : 0;
@@ -2391,7 +2700,7 @@ function renderSkinPage(appendNextPage) {
 
         // Build image HTML with cell color circle behind it (like agar.io)
         var imgHtml = imgUrl
-            ? '<img src="' + imgUrl + '" alt="' + displayName + '" loading="lazy" onerror="this.style.opacity=\'0\';">'
+            ? '<img data-src="' + imgUrl + '" alt="' + displayName + '" loading="lazy" decoding="async" fetchpriority="low" onerror="this.removeAttribute(\'data-src\');this.style.opacity=\'0\';">'
             : '';
 
         card.innerHTML = topBadgeHtml +
@@ -2418,9 +2727,16 @@ function renderSkinPage(appendNextPage) {
         grid.appendChild(card);
     }
 
+    observeSkinShopImages(grid);
     updatePaginationUI();
     updateEquippedSkinUI();
-    if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
+
+    if (
+        typeof window.updateShopLoginState ===
+        'function'
+    ) {
+        window.updateShopLoginState();
+    }
 }
 
 function buySkin(productId) {
@@ -2706,54 +3022,159 @@ function letterCount(string, letter, caseSensitive) {
 }
 
 function LoadGameConfiguration() {
-    var selectEl = document.getElementById("ss-select-purchases");
-    if (selectEl) {
-        for (var i = selectEl.options.length; i-- > 0; ){
-            selectEl.options[i] = null;
+    function _onConfigReady() {
+        window._isLoadingGameConfig =
+            false;
+
+        /*
+         * Legacy select/config metadata remains available, but do not build
+         * both large visual tabs when only one is visible.
+         */
+        populateSD();
+
+        var activeTab =
+            $('#specialShopModal .shop-tab.active')
+                .attr('data-tab') ||
+            'skins';
+
+        if (activeTab === 'deals') {
+            if (!window._dealsShopBuilt) {
+                populateDealsGrid();
+            }
+
+            updateDealsBalance();
+        } else if (
+            activeTab === 'skins'
+        ) {
+            if (!window._skinShopBuilt) {
+                populateSkins();
+            } else {
+                if (
+                    typeof window.resumeSkinGridImages ===
+                    'function'
+                ) {
+                    window.resumeSkinGridImages();
+                }
+
+                updateEquippedSkinUI();
+            }
+        } else if (
+            activeTab === 'upload'
+        ) {
+            updateUploadBalance();
         }
     }
-    $(".xpmt-skins2").css('background-image', '');
-    $(".xpmt-skins").css('background-image', '');
 
-    function _onConfigReady() {
-        window._isLoadingGameConfig = false;
-        populateSD();
-        if (typeof populateDealsGrid === 'function') populateDealsGrid();
-        if (typeof populateSkins === 'function') populateSkins();
+    if (
+        window.GameConfiguration &&
+        window.GameConfiguration.gameConfig
+    ) {
+        _onConfigReady();
+        return;
     }
 
-    // 1. Already loaded in this session
-    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
+    if (
+        window.master &&
+        window.master.GameConfiguration &&
+        window.master.GameConfiguration
+            .gameConfig
+    ) {
+        window.GameConfiguration =
+            window.master
+                .GameConfiguration;
+
         _onConfigReady();
         return;
     }
-    // 2. Loaded by master.js (window.master.GameConfiguration)
-    if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
-        window.GameConfiguration = window.master.GameConfiguration;
+
+    if (
+        window.LMGameConfiguration &&
+        window.LMGameConfiguration
+            .gameConfig
+    ) {
+        window.GameConfiguration =
+            window.LMGameConfiguration;
+
         _onConfigReady();
         return;
     }
-    // 3. Loaded by master.js async (LMGameConfiguration)
-    if (window.LMGameConfiguration && window.LMGameConfiguration.gameConfig) {
-        window.GameConfiguration = window.LMGameConfiguration;
-        _onConfigReady();
+
+    /*
+     * Multiple callers may request configuration while the modal initializes.
+     * Maintain one in-flight Promise or fallback request.
+     */
+    if (window._isLoadingGameConfig) {
         return;
     }
-    // 4. Wait for master.js promise if available (avoids duplicate AJAX)
-    if (window.LMGameConfigurationReady && typeof window.LMGameConfigurationReady.then === 'function') {
-        window.LMGameConfigurationReady.then(function(config) {
-            if (config && config.gameConfig) {
-                window.GameConfiguration = config;
-                _onConfigReady();
-            } else {
-                // Promise resolved with null — fetch manually
-                _fetchConfigFallback(_onConfigReady);
-            }
-        });
+
+    window._isLoadingGameConfig = true;
+
+    var selectEl =
+        document.getElementById(
+            "ss-select-purchases"
+        );
+
+    if (selectEl) {
+        for (
+            var selectIndex =
+                selectEl.options.length;
+            selectIndex-- > 0;
+        ) {
+            selectEl.options[
+                selectIndex
+            ] = null;
+        }
+    }
+
+    $(".xpmt-skins2").css(
+        'background-image',
+        ''
+    );
+
+    $(".xpmt-skins").css(
+        'background-image',
+        ''
+    );
+
+    if (
+        window.LMGameConfigurationReady &&
+        typeof window
+            .LMGameConfigurationReady
+            .then === 'function'
+    ) {
+        window.LMGameConfigurationReady
+            .then(function(config) {
+                if (
+                    config &&
+                    config.gameConfig
+                ) {
+                    window.GameConfiguration =
+                        config;
+
+                    _onConfigReady();
+                } else {
+                    _fetchConfigFallback(
+                        _onConfigReady
+                    );
+                }
+            })
+            .catch(function(error) {
+                console.warn(
+                    '[Shop] Shared config promise failed:',
+                    error
+                );
+
+                _fetchConfigFallback(
+                    _onConfigReady
+                );
+            });
+
         return;
     }
-    // 5. Manual fetch as last resort
-    _fetchConfigFallback(_onConfigReady);
+
+    _fetchConfigFallback(
+        _onConfigReady
+    );
 }
 
 function _fetchConfigFallback(callback) {

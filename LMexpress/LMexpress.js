@@ -7654,16 +7654,43 @@ function BeforeSpecialDeals(tab) {
     var targetTab = tab || 'skins';
 
     if ($('#specialShopModal').length) {
-        $('#specialShopModal').modal('show');
-
-        if (typeof window.updateShopLoginState === 'function') {
-            window.updateShopLoginState();
-        }
-
-        if (typeof window.SpecialDeals === 'function') {
-            window.SpecialDeals(targetTab);
+        /*
+         * Reuse the existing shop. SpecialDeals() has a fast reopen path
+         * that shows the retained modal and switches tabs without rebuilding
+         * its complete DOM or image grid.
+         */
+        if (
+            typeof window.SpecialDeals ===
+            'function'
+        ) {
+            window.SpecialDeals(
+                targetTab
+            );
         } else {
-            $('.shop-tab[data-tab="' + targetTab + '"]').trigger('click');
+            $('#specialShopModal')
+                .show()
+                .addClass('in')
+                .attr(
+                    'aria-hidden',
+                    'false'
+                );
+
+            $('body').addClass(
+                'modal-open'
+            );
+
+            $(
+                '.shop-tab[data-tab="' +
+                targetTab +
+                '"]'
+            ).trigger('click');
+
+            if (
+                typeof window.updateShopLoginState ===
+                'function'
+            ) {
+                window.updateShopLoginState();
+            }
         }
 
         return;

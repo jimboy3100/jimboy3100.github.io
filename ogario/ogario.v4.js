@@ -8982,7 +8982,17 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
+
+            if (!url || typeof url !== 'string') {
+                return;
+            }
+
             url = url.trim();
+
+            if (!url) {
+                return;
+            }
+
             if (url.includes(' ')) {
                 url = url.replace(/ /g, '_');
             }
@@ -9003,11 +9013,36 @@ function thelegendmodproject() {
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
-            if (app._pendingSkinLoads.has(url)) return;
+
+            if (app._pendingSkinLoads.has(url)) {
+                return;
+            }
+
             var failTime = app._failedSkinURLs[url];
-            if (failTime && (Date.now() - failTime) < 30000) return;
-            if (failTime) delete app._failedSkinURLs[url];
-            if (img && img[url]) return;
+
+            if (
+                failTime &&
+                (Date.now() - failTime) < 30000
+            ) {
+                return;
+            }
+
+            if (failTime) {
+                delete app._failedSkinURLs[url];
+            }
+
+            /*
+             * A failed Image object must not permanently occupy img[url].
+             * Once the negative-cache cooldown expires, remove the failed
+             * object and permit a clean retry.
+             */
+            if (img && img[url]) {
+                if (img[url]._failed === true) {
+                    delete img[url];
+                } else {
+                    return;
+                }
+            }
 
             /* 1. Zero-Latency LRU Memory Cache (Capped at 2,000 entries) */
             window._skinMemoryCache = window._skinMemoryCache || new Map();
@@ -9045,54 +9080,206 @@ function thelegendmodproject() {
 
             app._pendingSkinLoads.add(url);
 
+            /*
+             * Validate and publish one candidate.
+             *
+             * A candidate failure is not necessarily a whole-request failure:
+             * IndexedDB, fetch/Blob and Image-tag candidates may overlap.
+             * Request-level pending and negative-cache state is therefore
+             * finalized only on candidate success or terminal request failure.
+             */
             var processOnLoad = function (imageObj) {
-                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                if (imageObj.complete &&
-                    imageObj.width &&
-                    imageObj.height &&
-                    imageObj.width <= 2000 && imageObj.width > 0 &&
-                    imageObj.height <= 2000 && imageObj.height > 0) {
+                var imageWidth = imageObj
+                    ? (
+                        imageObj.naturalWidth ||
+                        imageObj.videoWidth ||
+                        imageObj.width ||
+                        0
+                    )
+                    : 0;
 
-                    /* LRU memory cache update */
-                    if (window._skinMemoryCache.has(url)) window._skinMemoryCache.delete(url);
-                    window._skinMemoryCache.set(url, imageObj);
-                    if (window._skinMemoryCache.size > 2000) {
-                        var oldestKey = window._skinMemoryCache.keys().next().value;
-                        if (oldestKey) window._skinMemoryCache.delete(oldestKey);
+                var imageHeight = imageObj
+                    ? (
+                        imageObj.naturalHeight ||
+                        imageObj.videoHeight ||
+                        imageObj.height ||
+                        0
+                    )
+                    : 0;
+
+                var imageReady =
+                    !!imageObj &&
+                    (
+                        typeof imageObj.complete !== 'boolean' ||
+                        imageObj.complete === true
+                    );
+
+                var validImage =
+                    imageReady &&
+                    Number.isFinite(imageWidth) &&
+                    Number.isFinite(imageHeight) &&
+                    imageWidth > 0 &&
+                    imageHeight > 0 &&
+                    imageWidth <= 2000 &&
+                    imageHeight <= 2000;
+
+                if (!validImage) {
+                    /*
+                     * Reject only this candidate. Another candidate for the
+                     * same URL may still be decoding or downloading.
+                     */
+                    if (imageObj) {
+                        imageObj._failed = true;
                     }
 
-                    if (imageObj.width >= imageObj.height * 1.5) {
-                        animated = true;
+                    if (
+                        img &&
+                        img[url] === imageObj
+                    ) {
+                        delete img[url];
                     }
 
-                    if (animated === "animatedSkins") {
-                        app.cacheQueueSkinAnimated.push(url);
-                        if (1 === app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated);
-                        app.cacheQueue2.push(url);
-                        if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                    } else if (animated !== "fbSkin") {
-                        app.cacheQueue.push(url);
-                        if (1 === app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated);
-                        app.cacheQueue2.push(url);
-                        if (1 === app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache);
-                        if (animated === true) app.cacheQueue3.push(url);
-                        if (1 === app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache);
-                    } else if (animated === "fbSkin") {
-                        app.cacheQueue4.push(url);
-                        if (1 === app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache);
+                    return false;
+                }
+
+                /*
+                 * A valid candidate completes the URL request.
+                 *
+                 * Clear request-level pending state and any stale failure
+                 * timestamp before publishing the successful image.
+                 */
+                if (app._pendingSkinLoads) {
+                    app._pendingSkinLoads.delete(
+                        url
+                    );
+                }
+
+                if (
+                    app._failedSkinURLs &&
+                    app._failedSkinURLs[url]
+                ) {
+                    delete app._failedSkinURLs[
+                        url
+                    ];
+                }
+
+                /*
+                 * Publish the decoded image only after dimension validation.
+                 * Canvas and WebGL cache workers read the image through the
+                 * same img/url map.
+                 */
+                if (img) {
+                    img[url] = imageObj;
+                }
+
+                if (window._skinMemoryCache.has(url)) {
+                    window._skinMemoryCache.delete(url);
+                }
+
+                window._skinMemoryCache.set(
+                    url,
+                    imageObj
+                );
+
+                if (
+                    window._skinMemoryCache.size >
+                    2000
+                ) {
+                    var oldestKey =
+                        window._skinMemoryCache
+                            .keys()
+                            .next()
+                            .value;
+
+                    if (oldestKey) {
+                        window._skinMemoryCache.delete(
+                            oldestKey
+                        );
+                    }
+                }
+
+                if (
+                    imageWidth >=
+                    imageHeight * 1.5
+                ) {
+                    animated = true;
+                }
+
+                if (animated === "animatedSkins") {
+                    app.cacheQueueSkinAnimated.push(url);
+
+                    if (
+                        app.cacheQueueSkinAnimated.length ===
+                        1
+                    ) {
+                        app.cacheSkinAnimated(
+                            app.customSkinsCache,
+                            animated
+                        );
+                    }
+
+                    app.cacheQueue2.push(url);
+
+                    if (app.cacheQueue2.length === 1) {
+                        app.cacheSkin2(
+                            app.customSkinsCache
+                        );
+                    }
+                } else if (animated !== "fbSkin") {
+                    app.cacheQueue.push(url);
+
+                    if (app.cacheQueue.length === 1) {
+                        app.cacheSkin(
+                            app.customSkinsCache,
+                            animated
+                        );
+                    }
+
+                    app.cacheQueue2.push(url);
+
+                    if (app.cacheQueue2.length === 1) {
+                        app.cacheSkin2(
+                            app.customSkinsCache
+                        );
+                    }
+
+                    if (animated === true) {
+                        app.cacheQueue3.push(url);
+                    }
+
+                    if (app.cacheQueue3.length === 1) {
+                        app.cacheSkin3(
+                            app.customSkinsCache
+                        );
                     }
                 } else {
-                    imageObj._failed = true;
-                    if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                    app.cacheQueue4.push(url);
+
+                    if (app.cacheQueue4.length === 1) {
+                        app.cacheSkin4(
+                            app.customSkinsCache
+                        );
+                    }
                 }
+
+                return true;
             };
 
-            /* 2. Global Adaptive Concurrency Queue (24 streams max) */
+            /* 2. Global Adaptive Concurrency Queue (6–12 streams) */
             if (!window._skinLoadQueue) {
                 window._skinLoadQueue = {
                     queue: [],
                     activeCount: 0,
-                    maxConcurrent: 24,
+                    maxConcurrent: Math.max(
+                        6,
+                        Math.min(
+                            12,
+                            Number(
+                                window.navigator &&
+                                window.navigator.hardwareConcurrency
+                            ) || 8
+                        )
+                    ),
                     push: function (task, priority) {
                         if (priority) {
                             this.queue.unshift(task);
@@ -9116,42 +9303,253 @@ function thelegendmodproject() {
 
             var isResolved = false;
 
-            /* 3. True First-Win Race: IndexedDB lookup runs concurrently */
+            /*
+             * Shared state between the IndexedDB candidate and the queued
+             * network candidate.
+             */
+            var networkAbortController = null;
+            var networkAbortWasCacheWin = false;
+            var networkFetchTimer = null;
+            var networkQueueDone = null;
+            var networkQueueReleased = false;
+
+            var releaseNetworkQueue =
+                function releaseNetworkQueue() {
+                    if (networkQueueReleased) {
+                        return;
+                    }
+
+                    /*
+                     * A cache candidate may win before the network queue task
+                     * starts. In that case, the task's initial isResolved check
+                     * will release itself when it starts.
+                     */
+                    if (
+                        typeof networkQueueDone !==
+                        'function'
+                    ) {
+                        return;
+                    }
+
+                    networkQueueReleased = true;
+
+                    var queueDone =
+                        networkQueueDone;
+
+                    networkQueueDone = null;
+                    queueDone();
+                };
+
+            var acceptSkinCandidate =
+                function acceptSkinCandidate(
+                    imageObj,
+                    source
+                ) {
+                    if (isResolved) {
+                        return false;
+                    }
+
+                    if (!processOnLoad(imageObj)) {
+                        return false;
+                    }
+
+                    isResolved = true;
+
+                    /*
+                     * Only an IndexedDB winner should cancel concurrent HTTP
+                     * work. Network/Image candidates must not abort themselves.
+                     */
+                    if (
+                        source === 'indexeddb' &&
+                        networkAbortController
+                    ) {
+                        networkAbortWasCacheWin =
+                            true;
+
+                        try {
+                            networkAbortController
+                                .abort();
+                        } catch (abortError) {
+                            /*
+                             * Queue release below is still authoritative even
+                             * if abort() is unavailable or throws.
+                             */
+                        }
+                    }
+
+                    return true;
+                };
+
+            /*
+             * IndexedDB and network race concurrently.
+             *
+             * Do not declare IndexedDB the winner until the cached image has
+             * decoded and passed dimension validation. A corrupt cached Blob
+             * must not cancel a valid network request.
+             */
             if (!isVideo && window.LMSkinStorage) {
-                window.LMSkinStorage.get(url, function (cachedData) {
-                    if (isResolved || (img && img[url])) return;
-                    if (cachedData) {
-                        isResolved = true;
+                window.LMSkinStorage.get(
+                    url,
+                    function (cachedData) {
+                        if (isResolved) {
+                            return;
+                        }
+
+                        if (!cachedData) {
+                            return;
+                        }
+
+                        /*
+                         * A network Image object may already exist in img[url]
+                         * while still loading. It is not a completed winner.
+                         * Only reject this cached candidate when a valid,
+                         * decoded image is already published.
+                         */
+                        var publishedImage =
+                            img && img[url]
+                                ? img[url]
+                                : null;
+
+                        if (
+                            publishedImage &&
+                            publishedImage.complete === true &&
+                            (
+                                publishedImage.naturalWidth ||
+                                publishedImage.width ||
+                                0
+                            ) > 0 &&
+                            (
+                                publishedImage.naturalHeight ||
+                                publishedImage.height ||
+                                0
+                            ) > 0
+                        ) {
+                            return;
+                        }
+
                         var cachedImg = new Image();
                         var objUrl = null;
+
                         cachedImg.onload = function () {
-                            img[url] = this;
-                            processOnLoad(this);
-                            if (objUrl) URL.revokeObjectURL(objUrl);
+                            if (isResolved) {
+                                if (objUrl) {
+                                    URL.revokeObjectURL(
+                                        objUrl
+                                    );
+                                }
+
+                                return;
+                            }
+
+                            var alreadyPublished =
+                                img && img[url]
+                                    ? img[url]
+                                    : null;
+
+                            if (
+                                alreadyPublished &&
+                                alreadyPublished !== this &&
+                                alreadyPublished.complete === true &&
+                                (
+                                    alreadyPublished.naturalWidth ||
+                                    alreadyPublished.width ||
+                                    0
+                                ) > 0 &&
+                                (
+                                    alreadyPublished.naturalHeight ||
+                                    alreadyPublished.height ||
+                                    0
+                                ) > 0
+                            ) {
+                                if (objUrl) {
+                                    URL.revokeObjectURL(
+                                        objUrl
+                                    );
+                                }
+
+                                return;
+                            }
+
+                            if (
+                                acceptSkinCandidate(
+                                    this,
+                                    'indexeddb'
+                                )
+                            ) {
+                                /*
+                                 * Release an already-running network queue
+                                 * task immediately. When the task has not
+                                 * started yet, its initial isResolved check
+                                 * releases it later.
+                                 */
+                                releaseNetworkQueue();
+                            }
+
+                            if (objUrl) {
+                                URL.revokeObjectURL(
+                                    objUrl
+                                );
+                            }
                         };
+
                         cachedImg.onerror = function () {
-                            if (objUrl) URL.revokeObjectURL(objUrl);
-                            isResolved = false;
+                            if (objUrl) {
+                                URL.revokeObjectURL(
+                                    objUrl
+                                );
+                            }
+
+                            /*
+                             * Leave isResolved false. The concurrent network
+                             * request remains responsible for resolving the
+                             * skin when cached data cannot decode.
+                             */
                         };
+
                         if (cachedData instanceof Blob) {
-                            objUrl = URL.createObjectURL(cachedData);
+                            objUrl =
+                                URL.createObjectURL(
+                                    cachedData
+                                );
+
                             cachedImg.src = objUrl;
-                        } else {
+                        } else if (
+                            typeof cachedData ===
+                            'string'
+                        ) {
                             cachedImg.src = cachedData;
                         }
                     }
-                });
+                );
             }
 
             /* 4. Network Task: Single Fetch for Display & Storage */
             var fetchFromNetwork = function (doneCb) {
                 var onDone = function () {
-                    if (doneCb) { doneCb(); doneCb = null; }
+                    if (networkFetchTimer) {
+                        clearTimeout(
+                            networkFetchTimer
+                        );
+
+                        networkFetchTimer = null;
+                    }
+
+                    if (doneCb) {
+                        doneCb();
+                        doneCb = null;
+                    }
+
+                    networkQueueDone = null;
+                    networkAbortController = null;
                 };
 
-                /* If IndexedDB already resolved the skin while queued, exit network task immediately */
-                if (isResolved || (img && img[url])) {
-                    onDone();
+                networkQueueDone = onDone;
+
+                if (
+                    isResolved ||
+                    (img && img[url])
+                ) {
+                    releaseNetworkQueue();
                     return;
                 }
 
@@ -9166,40 +9564,180 @@ function thelegendmodproject() {
                     } else {
                         img[url] = new Image();
                     }
+
+                    /*
+                     * Keep ownership of this exact fallback candidate.
+                     * Another concurrent candidate may later replace img[url].
+                     */
+                    var directImage = img[url];
+
                     if (isCorsBlocked) {
-                        img[url].referrerPolicy = 'no-referrer';
+                        directImage.referrerPolicy =
+                            'no-referrer';
                     } else {
-                        img[url].crossOrigin = 'anonymous';
+                        directImage.crossOrigin =
+                            'anonymous';
                     }
 
                     var _loadTimer = setTimeout(function () {
-                        if (img[url] && !img[url].complete) {
-                            if (typeof img[url].onerror === 'function') {
-                                var errHandler = img[url].onerror;
-                                img[url].onerror = img[url].onload = null;
-                                errHandler();
-                            } else {
-                                img[url]._failed = true;
-                                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                                if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                        if (
+                            directImage &&
+                            !directImage.complete
+                        ) {
+                            if (
+                                typeof directImage.onerror ===
+                                'function'
+                            ) {
+                                var errHandler =
+                                    directImage.onerror;
+
+                                directImage.onerror =
+                                    null;
+
+                                directImage.onload =
+                                    null;
+
+                                errHandler.call(
+                                    directImage
+                                );
+                            } else if (!isResolved) {
+                                directImage._failed =
+                                    true;
+
+                                if (
+                                    img &&
+                                    img[url] ===
+                                        timedOutImage
+                                ) {
+                                    delete img[url];
+                                }
+
+                                if (
+                                    app._pendingSkinLoads
+                                ) {
+                                    app._pendingSkinLoads.delete(
+                                        url
+                                    );
+                                }
+
+                                if (
+                                    app._failedSkinURLs
+                                ) {
+                                    app._failedSkinURLs[url] =
+                                        Date.now();
+                                }
                             }
                             onDone();
                         }
                     }, 8000);
 
-                    img[url].onload = function () {
+                    directImage.onload = function () {
                         clearTimeout(_loadTimer);
-                        isResolved = true;
-                        processOnLoad(this);
-                        onDone();
+
+                        var loadedImage = this;
+                        var invalidImageHandler =
+                            loadedImage.onerror;
+
+                        if (
+                            isResolved &&
+                            img[url] !== loadedImage
+                        ) {
+                            onDone();
+                            return;
+                        }
+
+                        if (
+                            acceptSkinCandidate(
+                                loadedImage,
+                                'network'
+                            )
+                        ) {
+                            onDone();
+                            return;
+                        }
+
+                        /*
+                         * The Image element completed but failed dimension
+                         * validation. Treat this as the terminal failure of
+                         * the direct Image candidate and reuse the existing
+                         * onerror path so mirror/custom-skin fallback behavior
+                         * remains unchanged.
+                         */
+                        loadedImage.onload = null;
+                        loadedImage.onerror = null;
+
+                        if (
+                            typeof invalidImageHandler ===
+                            'function'
+                        ) {
+                            invalidImageHandler.call(
+                                loadedImage
+                            );
+                        } else {
+                            if (
+                                app._pendingSkinLoads
+                            ) {
+                                app._pendingSkinLoads.delete(
+                                    url
+                                );
+                            }
+
+                            if (
+                                app._failedSkinURLs
+                            ) {
+                                app._failedSkinURLs[url] =
+                                    Date.now();
+                            }
+
+                            if (
+                                img &&
+                                img[url] ===
+                                    loadedImage
+                            ) {
+                                delete img[url];
+                            }
+
+                            onDone();
+                        }
                     };
 
-                    img[url].onerror = function () {
+                    directImage.onerror = function () {
                         clearTimeout(_loadTimer);
+
+                        var failedImage = directImage;
+
+                        /*
+                         * Another candidate already completed the URL request.
+                         * This late error belongs to an obsolete direct Image
+                         * and must not touch the published winner or URL-level
+                         * failure state.
+                         */
+                        if (isResolved) {
+                            onDone();
+                            return;
+                        }
+
                         onDone();
-                        if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
-                        if (img[url]) img[url]._failed = true;
-                        if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+
+                        if (app._pendingSkinLoads) {
+                            app._pendingSkinLoads.delete(
+                                url
+                            );
+                        }
+
+                        failedImage._failed = true;
+
+                        if (
+                            img &&
+                            img[url] === failedImage
+                        ) {
+                            delete img[url];
+                        }
+
+                        if (app._failedSkinURLs) {
+                            app._failedSkinURLs[url] =
+                                Date.now();
+                        }
                         if (!url || typeof url !== 'string' || url.length < 10 || !url.includes('.')) return;
                         console.warn("[LM] Skin URL failed to load: " + url);
                         var filename = url.split('/').pop().replace('?', '');
@@ -9245,40 +9783,201 @@ function thelegendmodproject() {
                             app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
                         }
                     };
-                    img[url].src = url;
+                    directImage.src = url;
                 };
 
                 /* Single Fetch Strategy for CORS-enabled assets */
                 if (!isVideo && !isCorsBlocked && typeof fetch === 'function') {
-                    fetch(url).then(function (res) {
-                        if (!res.ok) throw new Error("HTTP " + res.status);
-                        return res.blob();
-                    }).then(function (blob) {
-                        if (isResolved || (img && img[url])) { onDone(); return; }
-                        if (!blob || blob.size < 100) { fallbackToImageTag(); return; }
-                        isResolved = true;
+                    networkAbortController =
+                        typeof AbortController ===
+                            'function'
+                            ? new AbortController()
+                            : null;
 
-                        /* Store single fetch blob in IndexedDB */
-                        if (window.LMSkinStorage) {
-                            window.LMSkinStorage.put(url, blob);
+                    if (networkAbortController) {
+                        networkFetchTimer =
+                            setTimeout(function () {
+                                if (!isResolved) {
+                                    try {
+                                        networkAbortController
+                                            .abort();
+                                    } catch (abortError) {
+                                        /*
+                                         * The fetch rejection/fallback path
+                                         * remains responsible for completion.
+                                         */
+                                    }
+                                }
+                            }, 8000);
+                    }
+
+                    fetch(
+                        url,
+                        networkAbortController
+                            ? {
+                                signal:
+                                    networkAbortController
+                                        .signal
+                            }
+                            : undefined
+                    ).then(function (res) {
+                        /*
+                         * Keep the timeout active while the complete response
+                         * body is consumed by res.blob(). Receiving headers is
+                         * not completion of the skin request.
+                         */
+                        if (!res.ok) {
+                            throw new Error(
+                                "HTTP " + res.status
+                            );
                         }
 
-                        /* Create Object URL for display from exact same blob */
-                        var blobUrl = URL.createObjectURL(blob);
+                        return res.blob();
+                    }).then(function (blob) {
+                        if (networkFetchTimer) {
+                            clearTimeout(
+                                networkFetchTimer
+                            );
+
+                            networkFetchTimer =
+                                null;
+                        }
+                        if (isResolved || (img && img[url])) { onDone(); return; }
+                        if (!blob || blob.size < 100) {
+                            fallbackToImageTag();
+                            return;
+                        }
+
+                        /*
+                         * Decoding must succeed before this request wins and
+                         * before the Blob is persisted. This prevents corrupt
+                         * HTTP responses from poisoning IndexedDB.
+                         */
+                        var blobUrl =
+                            URL.createObjectURL(blob);
+
                         var loadedImg = new Image();
+
                         loadedImg.onload = function () {
-                            img[url] = this;
-                            processOnLoad(this);
-                            URL.revokeObjectURL(blobUrl);
+                            if (isResolved) {
+                                URL.revokeObjectURL(
+                                    blobUrl
+                                );
+
+                                onDone();
+                                return;
+                            }
+
+                            var alreadyPublished =
+                                img && img[url]
+                                    ? img[url]
+                                    : null;
+
+                            if (
+                                alreadyPublished &&
+                                alreadyPublished !== this &&
+                                alreadyPublished.complete === true &&
+                                (
+                                    alreadyPublished.naturalWidth ||
+                                    alreadyPublished.width ||
+                                    0
+                                ) > 0 &&
+                                (
+                                    alreadyPublished.naturalHeight ||
+                                    alreadyPublished.height ||
+                                    0
+                                ) > 0
+                            ) {
+                                URL.revokeObjectURL(
+                                    blobUrl
+                                );
+
+                                onDone();
+                                return;
+                            }
+
+                            if (
+                                !acceptSkinCandidate(
+                                    this,
+                                    'network'
+                                )
+                            ) {
+                                URL.revokeObjectURL(
+                                    blobUrl
+                                );
+
+                                /*
+                                 * The HTTP request returned data, but the
+                                 * decoded image failed validation. Continue
+                                 * through the direct Image path rather than
+                                 * terminating the whole URL request.
+                                 */
+                                if (!isResolved) {
+                                    fallbackToImageTag();
+                                } else {
+                                    onDone();
+                                }
+
+                                return;
+                            }
+
+                            if (
+                                window.LMSkinStorage
+                            ) {
+                                window.LMSkinStorage.put(
+                                    url,
+                                    blob
+                                );
+                            }
+
+                            URL.revokeObjectURL(
+                                blobUrl
+                            );
+
                             onDone();
                         };
+
                         loadedImg.onerror = function () {
-                            URL.revokeObjectURL(blobUrl);
-                            isResolved = false;
-                            fallbackToImageTag();
+                            URL.revokeObjectURL(
+                                blobUrl
+                            );
+
+                            if (!isResolved) {
+                                fallbackToImageTag();
+                            } else {
+                                onDone();
+                            }
                         };
+
                         loadedImg.src = blobUrl;
-                    }).catch(function () {
+                    }).catch(function (fetchError) {
+                        if (networkFetchTimer) {
+                            clearTimeout(
+                                networkFetchTimer
+                            );
+
+                            networkFetchTimer =
+                                null;
+                        }
+
+                        /*
+                         * A cache winner already supplied the image and
+                         * intentionally aborted HTTP work. Do not start an
+                         * unnecessary Image-tag fallback.
+                         */
+                        if (
+                            isResolved ||
+                            networkAbortWasCacheWin
+                        ) {
+                            releaseNetworkQueue();
+                            return;
+                        }
+
+                        /*
+                         * A network timeout, HTTP rejection, CORS failure or
+                         * non-cache abort falls through to the existing direct
+                         * Image path.
+                         */
                         fallbackToImageTag();
                     });
                 } else {
@@ -16094,6 +16793,10 @@ function thelegendmodproject() {
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                     break;
                 case 17:
+                    if (data.byteLength < 13) {
+                        console.warn('[Protocol] Ignoring truncated opcode 17 packet:', data.byteLength);
+                        break;
+                    }
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
 
@@ -16127,6 +16830,10 @@ function thelegendmodproject() {
                     this.flushCellsData();
                     break;
                 case 32:
+                    if (data.byteLength < 5) {
+                        console.warn('[Protocol] Ignoring truncated opcode 32 packet:', data.byteLength);
+                        break;
+                    }
                     window.testobjectsOpcode32 = data;
                     this.playerCellIDs.push(data.getUint32(s, true));
                     if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
@@ -16304,19 +17011,47 @@ function thelegendmodproject() {
                     window.testobjectsOpcode54 = data;
                     break;
                 case 69:
-                    window.testobjectsOpcode65 = data;
+                    if (data.byteLength < 3) {
+                        console.warn('[Protocol] Ignoring truncated opcode 69 packet:', data.byteLength);
+                        break;
+                    }
+
                     var u = data.getUint16(s, true);
-                    s += 2, this.ghostCells = [];
+                    var ghostRecordSize = 13;
+                    var requiredGhostPacketLength = 3 + (u * ghostRecordSize);
+
+                    if (requiredGhostPacketLength > data.byteLength) {
+                        console.warn(
+                            '[Protocol] Ignoring truncated opcode 69 packet:',
+                            data.byteLength,
+                            'expected at least',
+                            requiredGhostPacketLength,
+                            'for',
+                            u,
+                            'records'
+                        );
+                        break;
+                    }
+
+                    window.testobjectsOpcode65 = data;
+                    s += 2;
+                    this.ghostCells = [];
+
                     var max = 0; //Sonia3
                     var mmax = 0; //Sonia3
-                    for (n = 0; n < u; n++) {
+
+                    for (var n = 0; n < u; n++) {
                         var d = data.getInt32(s, true);
                         s += 4;
+
                         var f = data.getInt32(s, true);
                         s += 4;
+
                         var m = data.getUint32(s, true);
                         s += 5;
+
                         var g = ~~Math.sqrt(100 * m);
+
                         this.ghostCells.push({
                             'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
                             'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
@@ -16324,11 +17059,13 @@ function thelegendmodproject() {
                             'mass': m,
                             'inView': this.isInView(d, f, g)
                         });
+
                         if (m > mmax) { //Sonia3
                             mmax = m; //Sonia3
                             max = n; //Sonia3
                         } //Sonia3
                     }
+
                     //window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
                     if (this.ghostCells[0]) {
                         window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[0].x, this.ghostCells[0].y); //Sonia3
@@ -16386,26 +17123,80 @@ function thelegendmodproject() {
                     break;
                 case 200: // 0xC8 — MapEvent (Expanding Land) or ShopResponse (Agar2)
                     if (this.serverType === 'agar2') {
+                        /*
+                         * Agar2 ShopResponse fixed prefix:
+                         * action(1) + success(1) + coins(4) + remaining(4)
+                         * = 10 payload bytes, or 11 including opcode.
+                         */
+                        if (data.byteLength < 11) {
+                            console.warn('[Protocol] Ignoring truncated Agar2 opcode 200 packet:', data.byteLength);
+                            break;
+                        }
+
                         // Parse shop response but don't act on it (no shop UI yet)
                         var shopAction = data.getUint8(s++);
                         var shopSuccess = data.getUint8(s++);
-                        var shopCoins = data.getInt32(s, true); s += 4;
-                        var shopRemaining = data.getInt32(s, true); s += 4;
+                        var shopCoins = data.getInt32(s, true);
+                        s += 4;
+                        var shopRemaining = data.getInt32(s, true);
+                        s += 4;
                         var shopMsg = encode();
-                        console.log('%c[MultiProto]%c ShopResponse:', 'color:#3af', 'color:inherit',
-                            'action:', shopAction, 'success:', shopSuccess, 'coins:', shopCoins);
+
+                        console.log(
+                            '%c[MultiProto]%c ShopResponse:',
+                            'color:#3af',
+                            'color:inherit',
+                            'action:',
+                            shopAction,
+                            'success:',
+                            shopSuccess,
+                            'coins:',
+                            shopCoins
+                        );
                     } else {
-                        // Expanding Land MapEvent — parse 42-byte packet
+                        /*
+                         * Expanding Land MapEvent payload:
+                         * eventType(1)
+                         * currentSize(8)
+                         * targetSize(8)
+                         * centerX(8)
+                         * centerY(8)
+                         * transitionDuration(4)
+                         * warningDuration(4)
+                         * tier(1)
+                         *
+                         * Payload = 42 bytes; packet including opcode = 43.
+                         */
+                        if (data.byteLength < 43) {
+                            console.warn('[Protocol] Ignoring truncated Expanding Land opcode 200 packet:', data.byteLength);
+                            break;
+                        }
+
                         var meEventType = data.getUint8(s++);
-                        var meCurrentSize = data.getFloat64(s, true); s += 8;
-                        var meTargetSize = data.getFloat64(s, true); s += 8;
-                        var meCenterX = data.getFloat64(s, true); s += 8;
-                        var meCenterY = data.getFloat64(s, true); s += 8;
-                        var meTransDur = data.getUint32(s, true); s += 4;
-                        var meWarnDur = data.getUint32(s, true); s += 4;
+                        var meCurrentSize = data.getFloat64(s, true);
+                        s += 8;
+                        var meTargetSize = data.getFloat64(s, true);
+                        s += 8;
+                        var meCenterX = data.getFloat64(s, true);
+                        s += 8;
+                        var meCenterY = data.getFloat64(s, true);
+                        s += 8;
+                        var meTransDur = data.getUint32(s, true);
+                        s += 4;
+                        var meWarnDur = data.getUint32(s, true);
+                        s += 4;
                         var meTier = data.getUint8(s++);
-                        this.handleMapEvent(meEventType, meCurrentSize, meTargetSize,
-                            meCenterX, meCenterY, meTransDur, meWarnDur, meTier);
+
+                        this.handleMapEvent(
+                            meEventType,
+                            meCurrentSize,
+                            meTargetSize,
+                            meCenterX,
+                            meCenterY,
+                            meTransDur,
+                            meWarnDur,
+                            meTier
+                        );
                     }
                     break;
                 case 201: // 0xC9 — AuthSuccess (Agar2) / Pong (Garix)
@@ -16423,6 +17214,11 @@ function thelegendmodproject() {
 
                 case 203: // 0xCB — Expanding Land Player Stats (human + bot counts)
                     {
+                        if (data.byteLength < 5) {
+                            console.warn('[Protocol] Ignoring truncated opcode 203 packet:', data.byteLength);
+                            break;
+                        }
+
                         var elHumans = data.getUint16(s, true); s += 2;
                         var elBots = data.getUint16(s, true); s += 2;
                         ogario.elPlayerCount = elHumans;
@@ -16433,6 +17229,11 @@ function thelegendmodproject() {
                 // ===== Garix Protocol Opcodes (2026) =====
                 case 161: // 0xA1 — DualInfo (Garix)
                     if (this.serverType === 'garix') {
+                        if (data.byteLength < 6) {
+                            console.warn('[Protocol] Ignoring truncated Garix opcode 161 packet:', data.byteLength);
+                            break;
+                        }
+
                         var gTabCount = data.getUint8(s++);
                         this.garixTabID1 = data.getUint16(s, true); s += 2;
                         this.garixTabID2 = data.getUint16(s, true); s += 2;
@@ -16456,6 +17257,11 @@ function thelegendmodproject() {
                     break;
                 case 172: // 0xAC — Handshake Seed (Garix)
                     if (this.serverType === 'garix') {
+                        if (data.byteLength < 5) {
+                            console.warn('[Protocol] Ignoring truncated Garix opcode 172 packet:', data.byteLength);
+                            break;
+                        }
+
                         var garixSeed = data.getUint32(s, true); s += 4;
                         console.log('%c[Garix]%c Handshake step 2: received seed=' + garixSeed, 'color:#f8a', 'color:inherit');
 
@@ -16488,6 +17294,11 @@ function thelegendmodproject() {
                     break;
                 case 222: // 0xDE — Auth Result (Garix)
                     if (this.serverType === 'garix') {
+                        if (data.byteLength < 2) {
+                            console.warn('[Protocol] Ignoring truncated Garix opcode 222 packet:', data.byteLength);
+                            break;
+                        }
+
                         var authSuccess = data.getUint8(s++);
                         var authReason = '';
                         while (s < data.byteLength) {
@@ -16593,13 +17404,26 @@ function thelegendmodproject() {
                     break;
 
                 case 99: //chat for specific private servers
-                    window.testobjectsOpcode99 = data;
+                    if (data.byteLength < 5) {
+                        console.warn('[Protocol] Ignoring truncated opcode 99 packet:', data.byteLength);
+                        break;
+                    }
+
                     var flag = data.getUint8(s++);
-                    var color2 = this.rgb2Hex(data.getUint8(s++), data.getUint8(s++), data.getUint8(s++));
+                    var color2 = this.rgb2Hex(
+                        data.getUint8(s++),
+                        data.getUint8(s++),
+                        data.getUint8(s++)
+                    );
 
                     // Garix: flag bit 2 (0x04) = prefix and nick have different colors
                     if (this.serverType === 'garix' && (flag & 0x04)) {
                         // Extra 3 bytes for nick color + 1 byte prefix length
+                        if (s + 4 > data.byteLength) {
+                            console.warn('[Protocol] Ignoring truncated Garix opcode 99 packet:', data.byteLength);
+                            break;
+                        }
+
                         var nickColorR = data.getUint8(s++);
                         var nickColorG = data.getUint8(s++);
                         var nickColorB = data.getUint8(s++);
@@ -16607,6 +17431,7 @@ function thelegendmodproject() {
                         // color2 = prefix color, nickColor = name color
                     }
 
+                    window.testobjectsOpcode99 = data;
                     var name = encode();
                     var message = encode();
                     var server = !!(flag & 128),
@@ -17333,6 +18158,10 @@ function thelegendmodproject() {
                     toastr.info(temp);
                     break;
                 case 226: //227
+                    if (data.byteLength < 3) {
+                        console.warn('[Protocol] Ignoring truncated opcode 226 packet:', data.byteLength);
+                        break;
+                    }
                     //console.log("pong")
                     window.testobjectsOpcode226 = data;
                     var extraOptions = data.getUint16(1, !![]);
@@ -17347,6 +18176,10 @@ function thelegendmodproject() {
                     this.sendMessage(data);
                     break;
                 case 241:
+                    if (data.byteLength < 5) {
+                        console.warn('[Protocol] Ignoring truncated opcode 241 packet:', data.byteLength);
+                        break;
+                    }
                     window.testobjectsOpcode241 = data;
                     this.protocolKey = data.getUint32(s, true);
 
@@ -17362,6 +18195,10 @@ function thelegendmodproject() {
                     }
                     break;
                 case 242:
+                    if (data.byteLength < 5) {
+                        console.warn('[Protocol] Ignoring truncated opcode 242 packet:', data.byteLength);
+                        break;
+                    }
                     window.testobjectsOpcode242 = data;
                     this.serverTime = 1000 * data.getUint32(s, true);
                     this.serverTimeDiff = Date.now() - this.serverTime;
@@ -17385,6 +18222,10 @@ function thelegendmodproject() {
                     //this.countPps()
                     break;
                 case 64: //2020 jimboy3100 specific private servers
+                    if (data.byteLength < 33) {
+                        console.warn('[Protocol] Ignoring truncated opcode 64 packet:', data.byteLength);
+                        break;
+                    }
                     //var message = new LMbuffer(data['buffer'])						
                     var message = new window.buffer.Buffer(data.buffer)
                     this.viewMinX = message.readDoubleLE(s);
@@ -17425,6 +18266,30 @@ function thelegendmodproject() {
                         /* LW Beacon — sets isLegendWorld (Expanding Land) */
                         LM.isLegendWorld = true;
                         this.gameMode = ':expandingland';
+
+                        /*
+                         * The server currently queues SetBorder before this LW
+                         * beacon. Reapply the already received border now that
+                         * setMapOffset() knows to use centered Expanding Land
+                         * coordinates instead of generic private-server offsets.
+                         */
+                        if (
+                            Number.isFinite(this.viewMinX) &&
+                            Number.isFinite(this.viewMinY) &&
+                            Number.isFinite(this.viewMaxX) &&
+                            Number.isFinite(this.viewMaxY) &&
+                            this.viewMaxX > this.viewMinX &&
+                            this.viewMaxY > this.viewMinY
+                        ) {
+                            this.mapOffsetFixed = false;
+                            this.setMapOffset(
+                                this.viewMinX,
+                                this.viewMinY,
+                                this.viewMaxX,
+                                this.viewMaxY
+                            );
+                        }
+
                         console.log('%c[Expanding Land]%c Connected to Expanding Land server!',
                             'color: #33ff33; font-weight: bold', 'color: inherit');
                         /* State-based login: trigger AFTER beacon confirms server is ready.
