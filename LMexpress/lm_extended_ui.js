@@ -254,6 +254,18 @@
             .replace(/'/g, '&#39;');
     };
 
+    window._normalizeLeagueCountryCode = function(value) {
+        if (typeof value !== 'string') {
+            return 'us';
+        }
+
+        var normalized = value.trim().toLowerCase();
+
+        return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized)
+            ? normalized
+            : 'us';
+    };
+
     window._isLeagueCurrentUser = function(
         entry,
         currentUserName,
@@ -297,7 +309,12 @@
 
         var t = getTheme();
         tabType = tabType || window.currentLeagueTab || 1;
-        var userCountry = (window.application && window.application.user && window.application.user.country) || 'us';
+        var userCountry =
+            window._normalizeLeagueCountryCode(
+                window.application &&
+                window.application.user &&
+                window.application.user.country
+            );
         var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
@@ -448,7 +465,10 @@
                 var name = entry.displayName || entry.id || ('Player ' + rankNum);
                 var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : '0');
                 var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
-                var country = (entry.country || 'us').toLowerCase();
+                var country =
+                    window._normalizeLeagueCountryCode(
+                        entry.country
+                    );
                 var level = entry.level || 100;
 
                 var rowBg = isUser ? 'background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676;' : 'background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);';
@@ -1176,7 +1196,11 @@
             var name = entry.displayName || entry.id || ('Player ' + rankNum);
             var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : (entry.trophies !== undefined ? entry.trophies.toLocaleString() : '0'));
             var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
-            var country = (entry.country || entry.countryCode || 'us').toLowerCase();
+            var country =
+                window._normalizeLeagueCountryCode(
+                    entry.country ||
+                    entry.countryCode
+                );
             var level = entry.level || 100;
 
             var rankBadge = '';
