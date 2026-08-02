@@ -4123,15 +4123,15 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;">
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 🔥 Official Offer
                 <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
-            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;">
+            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 <i class="fa fa-trophy"></i> Leagues
                 <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
-            <button id="lm-friends-btn" class="btn btn-info btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden;">
+            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
                 <i class="fa fa-users"></i> Friends
                 <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
