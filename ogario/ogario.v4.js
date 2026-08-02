@@ -39,6 +39,17 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
     }
 
     function saveIdentityValue(key, value) {
+        /*
+         * Never save user account identifiers (agarioUID, agarioEncodedUID) to localStorage.
+         * Account identifiers must strictly come from authoritative live login and server protobuf responses.
+         */
+        if (key === 'agarioUID' || key === 'agarioEncodedUID') {
+            try {
+                window.localStorage.removeItem(key);
+            } catch (e) {}
+            return;
+        }
+
         if (!value) {
             return;
         }
@@ -338,27 +349,18 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
      * pending. Never treat the normal UID as the encoded UID.
      */
     try {
+        window.localStorage.removeItem("agarioUID");
+        window.localStorage.removeItem("agarioEncodedUID");
+
         var officialUser = (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getUserInfo === 'function') ? window.agarApp.API.getUserInfo() : null;
         var isExplicitGuestOrLoggedOut = officialUser && (officialUser.isGuest === true || officialUser.loggedIn === false);
 
-        if (!isExplicitGuestOrLoggedOut) {
-            var cachedUID = window.localStorage.getItem("agarioUID") || "";
-            var cachedEncodedUID = window.localStorage.getItem("agarioEncodedUID") || "";
-            if (cachedUID && cachedEncodedUID && cachedUID.length >= 8 && cachedUID !== "0") {
-                if (!window.agarioUID) window.agarioUID = cachedUID;
-                if (!window.agarioEncodedUID) window.agarioEncodedUID = cachedEncodedUID;
-                window.loggedIn = true;
-            }
-        } else {
+        if (isExplicitGuestOrLoggedOut) {
             window.agarioUID = "";
             window.agarioEncodedUID = "";
             window.loggedIn = false;
         }
     } catch (error) {
-        console.warn(
-            "[LM UID] Could not restore cached identity:",
-            error
-        );
     }
 
     refreshIdentityUI();
@@ -18850,9 +18852,12 @@ function thelegendmodproject() {
                             }
                         }*/
 
+                        try {
+                            localStorage.removeItem("agarioUID");
+                            localStorage.removeItem("agarioEncodedUID");
+                        } catch (e) {}
+
                         if (window.agarioUID && window.agarioUID !== "0" && window.agarioUID.length >= 8) {
-                            localStorage.setItem("agarioUID", window.agarioUID);
-                            if (window.agarioID) localStorage.setItem("agarioID", window.agarioID);
                             $("#UserProfileUUID1").val(window.agarioUID);
                         }
                         if (window.agarioUID && UIDcontroller && !window.checkOneTheUID) {

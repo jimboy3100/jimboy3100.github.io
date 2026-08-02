@@ -1,8 +1,5 @@
 //v0.13c
 
-	if (!window.agarioUID){
-		 window.agarioUID = localStorage.getItem("agarioUID");
-	}
 
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
