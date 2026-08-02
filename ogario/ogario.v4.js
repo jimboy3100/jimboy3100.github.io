@@ -1113,13 +1113,36 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             window._isChangingToPrivateServer = false;
             window._loginRetryCount = 0;
             window._lw_loginNotifShown = false;
+            window.expandingLandUID = '';
+            window.lastLeaguesResponse = null;
+            window.lastWeekLeaguesResponse = null;
+
+            try {
+                localStorage.removeItem('expandingLandUID');
+            } catch (e) {
+            }
+
+            var uuidField =
+                document.getElementById('UserProfileUUID1');
+            if (uuidField) {
+                uuidField.value = '';
+            }
+
             window._lwResetAuthState();
+
+            /* Reset UI */
             var hello = document.getElementById('helloContainer');
             if (hello) hello.removeAttribute('data-logged-in');
             var slc = document.getElementById('socialLoginContainer');
             if (slc) slc.style.display = '';
-            console.log('[LW AUTH] Logout — all login state cleared');
-            if (_origLogout) _origLogout.apply(this, arguments);
+
+            console.log(
+                '[LW AUTH] Logout — all login state cleared'
+            );
+
+            if (_origLogout) {
+                _origLogout.apply(this, arguments);
+            }
             return;
         }
 
@@ -15418,24 +15441,89 @@ function thelegendmodproject() {
                     null;
             }
 
-            /* Auto-logout when joining a server that doesn't support login.
-             * We must logout BEFORE tearing down the old connection, otherwise
-             * the logout handler triggers a disconnect on the NEW socket.
-             * After logout completes we re-invoke connect() — by then the user
-             * is no longer logged in so we skip this block and proceed normally. */
-            if (_earlyType !== 'agario' && _earlyType !== 'expandingland') {
-                var _isLoggedIn = (window._lwAuth && window._lwAuth.state === 'logged_in') ||
-                    (window.master && (window.master.context === 'facebook' || window.master.context === 'google'));
+            /* Account-domain boundary:
+             * official Agar.io and Expanding Land use different authoritative
+             * accounts and UIDs. Crossing that boundary must complete logout
+             * before the new socket is opened. Same-domain region, mode and
+             * reconnect changes preserve the current account session. */
+            var _previousType = this.serverType || '';
+            var _previousDomain =
+                _previousType === 'agario'
+                    ? 'official'
+                    : _previousType === 'expandingland'
+                        ? 'expandingland'
+                        : window.expandingLandUID
+                            ? 'expandingland'
+                            : window.agarioUID
+                                ? 'official'
+                                : null;
+            var _nextDomain =
+                _earlyType === 'agario'
+                    ? 'official'
+                    : _earlyType === 'expandingland'
+                        ? 'expandingland'
+                        : null;
+            var _crossingAccountDomain = Boolean(
+                _previousDomain &&
+                _nextDomain &&
+                _previousDomain !== _nextDomain
+            );
+            var _joiningUnsupportedServer =
+                _earlyType !== 'agario' &&
+                _earlyType !== 'expandingland';
+
+            if (_crossingAccountDomain || _joiningUnsupportedServer) {
+                var _isLoggedIn = Boolean(
+                    window.agarioUID ||
+                    window.expandingLandUID ||
+                    (
+                        window._lwAuth &&
+                        window._lwAuth.state === 'logged_in'
+                    ) ||
+                    (
+                        window.master &&
+                        (
+                            window.master.context === 'facebook' ||
+                            window.master.context === 'google'
+                        )
+                    )
+                );
+
                 if (_isLoggedIn && typeof window.logout === 'function') {
-                    console.log('[LW] Auto-logout before joining non-EL server, will reconnect in 500ms');
-                    window._isChangingToPrivateServer = true;
+                    var _logoutReason = _crossingAccountDomain
+                        ? 'account-domain switch'
+                        : 'unsupported server';
+
+                    console.log(
+                        '[LW] Auto-logout before ' +
+                        _logoutReason +
+                        ', reconnecting in 500ms'
+                    );
+
+                    if (_crossingAccountDomain) {
+                        window.lastLeaguesResponse = null;
+                        window.lastWeekLeaguesResponse = null;
+
+                        if (_previousDomain === 'expandingland') {
+                            window.expandingLandUID = '';
+                        }
+                    }
+
+                    window._isChangingToPrivateServer =
+                        _joiningUnsupportedServer;
+
                     window.logout();
+
                     var self = this;
                     setTimeout(function () {
-                        console.log('[LW] Logout complete, now connecting to: ' + t);
+                        console.log(
+                            '[LW] Logout complete, now connecting to: ' +
+                            t
+                        );
                         self.connect(t);
                     }, 500);
-                    return; // stop — don't open the socket yet
+
+                    return;
                 }
             }
             if (_earlyType !== 'agario') {
@@ -17559,14 +17647,26 @@ function thelegendmodproject() {
                             console.log('[LW 102 DBG] Response size:', data.buffer.byteLength,
                                 'agarioUID:', window.agarioUID, 'agarioID:', window.agarioID);
                             var rawText = window.testobjects2;
-                            if (!window.agarioUID && rawText.includes('$')) {
+                            if (
+                                (
+                                    LM.isLegendWorld ||
+                                    this.serverType === 'expandingland'
+                                ) &&
+                                !window.expandingLandUID &&
+                                rawText.includes('$')
+                            ) {
                                 try {
-                                    var uidMatch = rawText.match(/(?:google|discord|facebook)\$([0-9a-f-]{8,})/i);
+                                    var uidMatch = rawText.match(/(?:google|discord|facebook)$([0-9a-f-]{8,})/i);
                                     if (uidMatch) {
-                                        window.agarioUID = uidMatch[1].substr(0, 36);
-                                        localStorage.setItem("agarioUID", window.agarioUID);
-                                        $("#UserProfileUUID1").val(window.agarioUID);
-                                        console.log('[LW 102 DBG] Fallback extracted UID:', window.agarioUID);
+                                        window.expandingLandUID =
+                                            uidMatch[1].substr(0, 36);
+                                        $("#UserProfileUUID1").val(
+                                            window.expandingLandUID
+                                        );
+                                        console.log(
+                                            '[LW 102 DBG] Fallback extracted Expanding Land UID:',
+                                            window.expandingLandUID
+                                        );
                                     }
                                 } catch (lwErr) {
                                     console.warn('[LW 102 DBG] LW fallback parse error:', lwErr);
@@ -19778,13 +19878,24 @@ Most cells eaten   : ${mostCellsEaten}
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
              * Server sends userId="provider$UUID" (e.g. "discord$abc-123-def").
              * This is the clean parsed path — no raw text splitting needed. */
-            if ((window.expandingLand || window.legendModFromWebsite) && i.userId) {
+            if (
+                (
+                    LM.isLegendWorld ||
+                    this.serverType === 'expandingland'
+                ) &&
+                i.userId
+            ) {
                 var parts = i.userId.split('$');
                 if (parts.length >= 2) {
-                    window.agarioUID = parts[1].substr(0, 36);
-                    localStorage.setItem("agarioUID", window.agarioUID);
-                    $("#UserProfileUUID1").val(window.agarioUID);
-                    console.log('[LW 102] UID from protobuf:', window.agarioUID);
+                    window.expandingLandUID =
+                        parts[1].substr(0, 36);
+                    $("#UserProfileUUID1").val(
+                        window.expandingLandUID
+                    );
+                    console.log(
+                        '[LW 102] Expanding Land UID from protobuf:',
+                        window.expandingLandUID
+                    );
                 }
                 /* realmInfo contains the social ID */
                 if (i.realmInfo && i.realmInfo.userId) {
