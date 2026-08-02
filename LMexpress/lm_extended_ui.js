@@ -3786,10 +3786,12 @@
         var level = appUser.level || 1;
 
         var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
-        $('.agario-exp-bar .progress-bar').css('width', percent + '%');
         var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
-        $('.agario-exp-bar .progress-bar-text').text(xpText);
-        $('.progress-bar-star').text(level);
+
+        var officialXpPanel = $('#exp-bar').eq(0);
+        officialXpPanel.find('.progress-bar').css('width', percent + '%');
+        officialXpPanel.find('.progress-bar-text').text(xpText);
+        $('.agario-profile-panel .progress-bar-star').first().text(level);
 
         // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
         var potions = appUser.potions || window.lastPotionsData || [];
