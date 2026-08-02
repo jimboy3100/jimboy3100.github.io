@@ -4032,199 +4032,7 @@
         return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
     };
 
-    /*
-     * Return the current potion state by slot.
-     *
-     * Sources are merged because potion information may arrive through:
-     * - application.user.potions;
-     * - application.user.potionsStatus;
-     * - LM.user.potionsStatus;
-     * - lastPotionsData.
-     *
-     * Later, more authoritative sources override earlier ones.
-     */
-    window._getProfilePotionSlots = function() {
-        var bySlot = {};
 
-        function getExpiresAt(potion) {
-            if (!potion) return 0;
-            if (potion.expires instanceof Date) return potion.expires.getTime();
-            var numericExpires = Number(potion.expires);
-            if (Number.isFinite(numericExpires) && numericExpires > 0) return numericExpires;
-            if (typeof potion.expires === 'string') {
-                var parsedExpires = Date.parse(potion.expires);
-                if (Number.isFinite(parsedExpires)) return parsedExpires;
-            }
-            var secondsRemaining = Number(
-                potion.expiresInSeconds !== undefined ? potion.expiresInSeconds : potion.secondsRemaining
-            );
-            if (Number.isFinite(secondsRemaining) && secondsRemaining > 0) {
-                return Date.now() + secondsRemaining * 1000;
-            }
-            return 0;
-        }
-
-        function ingest(source) {
-            if (!source) return;
-            var items = Array.isArray(source)
-                ? source
-                : Object.keys(source).map(function(key) { return source[key]; });
-            for (var index = 0; index < items.length; index++) {
-                var potion = items[index];
-                if (!potion) continue;
-                var slot = Number(potion.slot);
-                if (!Number.isInteger(slot) || slot < 1 || slot > 3) continue;
-                bySlot[slot] = {
-                    slot: slot,
-                    status: Number(potion.status) || 0,
-                    type: String(potion.type || potion.productId || ''),
-                    expiresAt: getExpiresAt(potion),
-                    raw: potion
-                };
-            }
-        }
-
-        var appUser = window.application && window.application.user ? window.application.user : null;
-        ingest(window.lastPotionsData);
-        ingest(appUser && appUser.potions);
-        ingest(window.LM && window.LM.user && window.LM.user.potionsStatus);
-        ingest(appUser && appUser.potionsStatus);
-
-        /* DOM fallback */
-        for (var slotNumber = 1; slotNumber <= 3; slotNumber++) {
-            if (bySlot[slotNumber]) continue;
-            var potionElement = document.getElementById('potion' + slotNumber);
-            if (!potionElement) continue;
-            var potionText = String(potionElement.textContent || '').trim().toLowerCase();
-            var detectedStatus = 0;
-            if (potionText.indexOf('open') !== -1) detectedStatus = 3;
-            else if (potionText.indexOf('brew') !== -1) detectedStatus = 1;
-            else if (potionText && potionText.indexOf('empty') === -1) detectedStatus = 2;
-            if (detectedStatus) {
-                bySlot[slotNumber] = { slot: slotNumber, status: detectedStatus, type: '', expiresAt: 0, raw: null };
-            }
-        }
-
-        return [bySlot[1], bySlot[2], bySlot[3]].filter(Boolean);
-    };
-
-    window.brewNextProfilePotion = function() {
-        if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('brew potion')) return false;
-        var potions = window._getProfilePotionSlots();
-        var potionToBrew = potions.find(function(p) { return p && p.status === 1; });
-        if (!potionToBrew) {
-            if (window.toastr) toastr.info('<b>[POTIONS]:</b> No unbrewed potion is currently available.');
-            return false;
-        }
-        if (typeof window.brewPotion !== 'function') {
-            if (window.toastr) toastr.error('<b>[POTIONS]:</b> Potion protocol is unavailable.');
-            return false;
-        }
-        window.brewPotion(potionToBrew.slot);
-        return true;
-    };
-
-    window.openReadyProfilePotion = function() {
-        if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('open potion')) return false;
-        var now = Date.now();
-        var potions = window._getProfilePotionSlots();
-        var readyPotion = potions.find(function(p) {
-            if (!p) return false;
-            if (p.status === 3) return true;
-            return p.status === 2 && p.expiresAt > 0 && p.expiresAt <= now;
-        });
-        if (!readyPotion) {
-            if (window.toastr) toastr.info('<b>[POTIONS]:</b> No potion is ready to open.');
-            return false;
-        }
-        if (typeof window.openPotion !== 'function') {
-            if (window.toastr) toastr.error('<b>[POTIONS]:</b> Potion protocol is unavailable.');
-            return false;
-        }
-        window.openPotion(readyPotion.slot, true);
-        return true;
-    };
-
-    window.resetProfileAdRewardButton = function() {
-        var button = document.getElementById('adRewardBtn');
-        if (!button) return;
-        button.disabled = false;
-        button.innerHTML = '📺 Ad Reward';
-        button.style.opacity = '1';
-        button.style.pointerEvents = 'auto';
-    };
-
-    window.requestProfileAdReward = function() {
-        if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('claim ad rewards')) return false;
-        if (!window.application || typeof window.application.requestAdRewardToken !== 'function') {
-            if (window.toastr) toastr.error('<b>[REWARDS]:</b> Join an Agar.io server before requesting an ad reward.');
-            return false;
-        }
-        var button = document.getElementById('adRewardBtn');
-        if (button) {
-            button.disabled = true;
-            button.innerHTML = '📺 Requesting...';
-            button.style.opacity = '0.4';
-            button.style.pointerEvents = 'none';
-        }
-        if (window._adRewardTimeout) { clearTimeout(window._adRewardTimeout); window._adRewardTimeout = null; }
-        var requestResult = window.application.requestAdRewardToken();
-        if (requestResult === false) {
-            window.resetProfileAdRewardButton();
-            if (window.toastr) toastr.error('<b>[REWARDS]:</b> Ad reward request could not be sent.');
-            return false;
-        }
-        window._adRewardTimeout = setTimeout(function() {
-            window.resetProfileAdRewardButton();
-            window._adRewardTimeout = null;
-            if (window.toastr) toastr.warning('<b>[REWARDS]:</b> Ad reward request timed out.');
-        }, 10000);
-        return true;
-    };
-
-    window.ensureProfilePotionActions = function() {
-        var profile = document.getElementById('profile');
-        var potions = profile && profile.querySelector('#potions');
-        if (!profile || !potions) return false;
-
-        var actions = document.getElementById('lm-profile-potion-actions');
-        if (!actions) {
-            actions = document.createElement('div');
-            actions.id = 'lm-profile-potion-actions';
-            actions.style.cssText =
-                'clear:both;width:100%;box-sizing:border-box;margin:8px 0;padding:7px;' +
-                'border-radius:7px;background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.08);';
-            actions.innerHTML =
-                '<div style="font-size:10px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:#aaa;margin-bottom:5px;">Rewards &amp; Potions</div>' +
-                '<div style="display:grid;grid-template-columns:1.25fr 0.85fr 0.85fr 1fr;gap:5px;">' +
-                    '<button id="adRewardBtn" type="button" class="btn btn-sm btn-primary" style="font-size:10px;padding:6px 3px;font-weight:700;">📺 Ad Reward</button>' +
-                    '<button id="lm-profile-brew-potion" type="button" class="btn btn-sm btn-warning" style="font-size:10px;padding:6px 3px;font-weight:700;">🧪 Brew</button>' +
-                    '<button id="lm-profile-open-potion" type="button" class="btn btn-sm btn-success" style="font-size:10px;padding:6px 3px;font-weight:700;">🧫 Open</button>' +
-                    '<button id="lm-profile-potion-selector" type="button" class="btn btn-sm btn-info" style="font-size:10px;padding:6px 3px;font-weight:700;" title="Select a potion type or active potion">🧬 Select</button>' +
-                '</div>';
-            potions.parentNode.insertBefore(actions, potions);
-        } else if (actions.nextElementSibling !== potions) {
-            potions.parentNode.insertBefore(actions, potions);
-        }
-
-        $(document).off('click.lmProfilePotions', '#adRewardBtn').on('click.lmProfilePotions', '#adRewardBtn', function(e) {
-            e.preventDefault(); e.stopPropagation(); window.requestProfileAdReward(); return false;
-        });
-        $(document).off('click.lmProfilePotions', '#lm-profile-brew-potion').on('click.lmProfilePotions', '#lm-profile-brew-potion', function(e) {
-            e.preventDefault(); e.stopPropagation(); window.brewNextProfilePotion(); return false;
-        });
-        $(document).off('click.lmProfilePotions', '#lm-profile-open-potion').on('click.lmProfilePotions', '#lm-profile-open-potion', function(e) {
-            e.preventDefault(); e.stopPropagation(); window.openReadyProfilePotion(); return false;
-        });
-        $(document).off('click.lmProfilePotions', '#lm-profile-potion-selector').on('click.lmProfilePotions', '#lm-profile-potion-selector', function(e) {
-            e.preventDefault(); e.stopPropagation();
-            if (typeof window.showPotionProductSelector === 'function') window.showPotionProductSelector();
-            else if (window.toastr) toastr.error('<b>[POTIONS]:</b> Potion selector is unavailable.');
-            return false;
-        });
-
-        return true;
-    };
 
     // Inject "Official Offer", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
     function initMenuButtons() {
@@ -4236,9 +4044,7 @@
             if (!$.contains(profileTab[0], document.getElementById('lm-daily-deal-btn'))) {
                 $('#lm-extended-menu-btns').appendTo(profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab);
             }
-            if (typeof window.ensureProfilePotionActions === 'function') {
-                window.ensureProfilePotionActions();
-            }
+
             return;
         }
 
@@ -4268,9 +4074,7 @@
             targetContainer.prepend(btnGroup);
         }
 
-        if (typeof window.ensureProfilePotionActions === 'function') {
-            window.ensureProfilePotionActions();
-        }
+
 
         if (typeof window.syncProfileTabUI === 'function') {
             window.syncProfileTabUI();
@@ -4619,9 +4423,7 @@
             legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
         }
 
-        if (typeof window.ensureProfilePotionActions === 'function') {
-            window.ensureProfilePotionActions();
-        }
+
 
         // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
         var potions = appUser.potions || window.lastPotionsData || [];
