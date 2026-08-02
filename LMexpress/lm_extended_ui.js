@@ -15,69 +15,138 @@
     window._lmExtendedUiInitDone = true;
 
     /*
-     * Install the official promotion capture listener EARLY, in the
-     * capture phase, before Agar.io's menu is destroyed by Legend Mod.
+     * Install official promotion capture hooks.
+     *
+     * The official chain is:
+     *   PromoService → delegate.showBadge(badge,system)
+     *   → Core.ui.mainUI.showPromoBadge(badge)
+     *   → loadResources(badgeConfig) → getButtonForOffer()
+     *   → HTMLPromoButton.initWithConfig()
+     *   → dispatches "promo_badge_create" on document
+     *
+     * If loadResources fails (CDN image loading), the event never fires.
+     * We hook at TWO levels:
+     *   1. The document event (for when the chain completes)
+     *   2. Core.ui.mainUI.showPromoBadge directly (to capture even
+     *      when loadResources fails)
      */
     (function installOfficialPromotionCaptureEarly() {
-        if (
-            window._lmOfficialPromotionListenerInstalled
-        ) {
+        if (window._lmOfficialPromotionListenerInstalled) {
             return;
         }
 
-        window._lmOfficialPromotionListenerInstalled =
-            true;
+        window._lmOfficialPromotionListenerInstalled = true;
 
-        if (
-            window._lmOfficialPromotion ===
-            undefined
-        ) {
-            window._lmOfficialPromotion =
-                null;
+        if (window._lmOfficialPromotion === undefined) {
+            window._lmOfficialPromotion = null;
         }
 
+        /* Hook 1: The standard document event (when full chain succeeds) */
         document.addEventListener(
             'promo_badge_create',
             function(event) {
-                var detail =
-                    event && event.detail
-                        ? event.detail
-                        : null;
-
-                if (!detail) {
-                    return;
-                }
+                var detail = event && event.detail ? event.detail : null;
+                if (!detail) return;
 
                 window._lmOfficialPromotion = {
-                    offerId:
-                        detail.offerId,
-
-                    config:
-                        detail.config || null,
-
-                    delegate:
-                        detail.delegate || null,
-
-                    system:
-                        detail.system || null,
-
-                    callback:
-                        typeof detail.callback ===
-                        'function'
-                            ? detail.callback
-                            : null,
-
-                    receivedAt:
-                        Date.now()
+                    offerId: detail.offerId,
+                    config: detail.config || null,
+                    delegate: detail.delegate || null,
+                    system: detail.system || null,
+                    callback: typeof detail.callback === 'function'
+                        ? detail.callback : null,
+                    receivedAt: Date.now()
                 };
 
                 console.log(
-                    '[OFFICIAL OFFER] Captured official promotion:',
+                    '[OFFICIAL OFFER] Captured via promo_badge_create event:',
                     window._lmOfficialPromotion
                 );
             },
             true
         );
+
+        /*
+         * Hook 2: Wrap Core.ui.mainUI.showPromoBadge to capture the
+         * badge BEFORE loadResources (which may fail).
+         *
+         * We retry this hook because Core.ui.mainUI may not exist yet
+         * when lm_extended_ui.js loads.
+         */
+        var hookAttempts = 0;
+        var maxHookAttempts = 30;
+
+        function tryHookShowPromoBadge() {
+            hookAttempts++;
+
+            var mainUI = null;
+            try {
+                /* Try window.Core first (Haxe global) */
+                if (
+                    typeof Core !== 'undefined' &&
+                    Core && Core.ui && Core.ui.mainUI &&
+                    typeof Core.ui.mainUI.showPromoBadge === 'function'
+                ) {
+                    mainUI = Core.ui.mainUI;
+                }
+            } catch (e) { /* Core not available yet */ }
+
+            if (!mainUI) {
+                if (hookAttempts < maxHookAttempts) {
+                    setTimeout(tryHookShowPromoBadge, 2000);
+                }
+                return;
+            }
+
+            if (mainUI._lmShowPromoBadgeHooked) return;
+            mainUI._lmShowPromoBadgeHooked = true;
+
+            var origShowPromoBadge = mainUI.showPromoBadge;
+
+            mainUI.showPromoBadge = function(pBadge) {
+                /* Capture the badge data immediately */
+                try {
+                    if (pBadge && typeof pBadge.get_offerId === 'function') {
+                        var offerId = pBadge.get_offerId();
+                        var badgeConfig = typeof pBadge.getBadgeConfiguration === 'function'
+                            ? pBadge.getBadgeConfiguration() : null;
+                        var callback = typeof pBadge.executeCallback === 'function'
+                            ? function() { pBadge.executeCallback(); } : null;
+
+                        if (offerId) {
+                            window._lmOfficialPromotion = {
+                                offerId: offerId,
+                                config: badgeConfig ? badgeConfig.badgeConfiguration : null,
+                                delegate: null,
+                                system: pBadge.system || null,
+                                callback: callback,
+                                receivedAt: Date.now()
+                            };
+
+                            console.log(
+                                '[OFFICIAL OFFER] Captured via showPromoBadge hook:',
+                                window._lmOfficialPromotion
+                            );
+                        }
+                    }
+                } catch (captureError) {
+                    console.warn(
+                        '[OFFICIAL OFFER] Badge capture in showPromoBadge hook failed:',
+                        captureError
+                    );
+                }
+
+                /* Call original so the standard chain continues */
+                if (origShowPromoBadge) {
+                    return origShowPromoBadge.apply(this, arguments);
+                }
+            };
+
+            console.log('[OFFICIAL OFFER] showPromoBadge hook installed on Core.ui.mainUI');
+        }
+
+        /* Start trying after a short delay to let Core initialize */
+        setTimeout(tryHookShowPromoBadge, 3000);
     })();
 
     // ─── Theme Resolver Helper ───
