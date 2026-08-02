@@ -4431,6 +4431,11 @@
                         'undefined'
                 );
         }
+        var agarioUidDirect = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
+        if (agarioUidDirect && agarioUidDirect.length >= 8 && agarioUidDirect !== '0' && agarioUidDirect.indexOf('$') === -1 && agarioUidDirect.toLowerCase() !== 'null' && agarioUidDirect.toLowerCase() !== 'undefined') {
+            isLoggedIn = true;
+            hasUID = true;
+        }
         var menuBtnEnabled = isLoggedIn && hasUID;
         var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, #lm-extended-menu-btns button, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-official-offer-btn, #adRewardBtn');
         menuBtns.prop('disabled', !menuBtnEnabled);
