@@ -1098,6 +1098,291 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         window._isUserManualLogout = true;
     });
 
+    /*
+     * Clear account-domain runtime data without replacing the shared user
+     * object. This runs only when crossing between official Agar.io and
+     * Expanding Land. Same-domain reconnects keep their current account state.
+     */
+    window._clearAccountDomainRuntime = function (previousDomain) {
+        function clearObject(object) {
+            if (!object || typeof object !== 'object') {
+                return;
+            }
+
+            Object.keys(object).forEach(function (key) {
+                delete object[key];
+            });
+        }
+
+        function clearCollection(owner, key, arrayFallback) {
+            if (!owner || typeof owner !== 'object') {
+                return;
+            }
+
+            var value = owner[key];
+
+            if (Array.isArray(value)) {
+                value.length = 0;
+                return;
+            }
+
+            if (value && typeof value === 'object') {
+                clearObject(value);
+                return;
+            }
+
+            owner[key] = arrayFallback ? [] : {};
+        }
+
+        function resetUser(user) {
+            if (!user || typeof user !== 'object') {
+                return;
+            }
+
+            [
+                'coins',
+                'dna',
+                'trophy',
+                'trophies',
+                'xp',
+                'level',
+                'mass',
+                'massConsumed',
+                'gamesPlayed',
+                'highestMass',
+                'highestPosition'
+            ].forEach(function (key) {
+                if (key in user) {
+                    user[key] = 0;
+                }
+            });
+
+            [
+                'userId',
+                'socialId',
+                'sessionId',
+                'userSessionId',
+                'displayName',
+                'name',
+                'skinId',
+                'selectedSkin',
+                'equippedSkin',
+                'avatarUrl',
+                'countryCode',
+                'leagueName'
+            ].forEach(function (key) {
+                if (key in user) {
+                    user[key] = '';
+                }
+            });
+
+            [
+                'authenticated',
+                'loggedIn'
+            ].forEach(function (key) {
+                if (key in user) {
+                    user[key] = false;
+                }
+            });
+
+            [
+                ['wallet', false],
+                ['userWallet', false],
+                ['userWalletItems', true],
+                ['inventory', false],
+                ['skins', false],
+                ['ownedSkins', true],
+                ['skinPieces', false],
+                ['potions', false],
+                ['potionsStatus', false],
+                ['skipBrew', false],
+                ['boosts', false],
+                ['rushBoosts', false],
+                ['quests', true],
+                ['activeQuests', true],
+                ['rewards', true],
+                ['timedEvents', true],
+                ['actionCounters', true],
+                ['statistics', false],
+                ['stats', false],
+                ['friends', true]
+            ].forEach(function (entry) {
+                var key = entry[0];
+
+                if (key in user) {
+                    clearCollection(user, key, entry[1]);
+                }
+            });
+        }
+
+        var applicationUser =
+            window.application &&
+            window.application.user;
+
+        var legendUser =
+            window.legendmod &&
+            window.legendmod.user;
+
+        resetUser(applicationUser);
+
+        if (legendUser && legendUser !== applicationUser) {
+            resetUser(legendUser);
+        }
+
+        if (
+            window.application &&
+            'userInfo' in window.application
+        ) {
+            window.application.userInfo = null;
+        }
+
+        if (
+            window.legendmod &&
+            'userInfo' in window.legendmod
+        ) {
+            window.legendmod.userInfo = null;
+        }
+
+        window.lastLeaguesResponse = null;
+        window.lastWeekLeaguesResponse = null;
+        window._leaguesRequestType = 0;
+        window._leaguesRequestToken = null;
+        window._leagueRequestToken = null;
+        window._leagueRequestId = 0;
+
+        if (Array.isArray(window.agarioFriends)) {
+            window.agarioFriends.length = 0;
+        } else {
+            window.agarioFriends = [];
+        }
+
+        window._friendRequestToken = null;
+        window._friendsRequestToken = null;
+        window._friendRequestId = 0;
+
+        if (window.ogario) {
+            window.ogario.friendsCache = null;
+
+            if (Array.isArray(window.ogario.friendList)) {
+                window.ogario.friendList.length = 0;
+            }
+
+            if (Array.isArray(window.ogario.fbOnline)) {
+                window.ogario.fbOnline.length = 0;
+            }
+        }
+
+        [
+            '_dealSoftTimeout',
+            '_dealBundleTimeout',
+            '_boostTimeout',
+            '_deleteTimeout',
+            '_rewardLinkTimeout',
+            '_adRewardTimeout',
+            '_freeCoinsTimeout',
+            '_leagueTimeout',
+            '_leaguesTimeout',
+            '_leagueRequestTimeout',
+            '_friendTimeout',
+            '_friendsTimeout',
+            '_friendListTimeout',
+            '_friendRequestTimeout',
+            '_friendsFallbackTimeout',
+            '_shopLoginCheckInterval'
+        ].forEach(function (timerName) {
+            var timer = window[timerName];
+
+            if (timer) {
+                clearTimeout(timer);
+                clearInterval(timer);
+                window[timerName] = null;
+            }
+        });
+
+        window._pendingShopTab = null;
+
+        [
+            'lm-friends-modal',
+            'lm-potion-selector-modal',
+            'lm-leagues-modal',
+            'league-modal',
+            'leaguesModal',
+            'specialShopModal'
+        ].forEach(function (id) {
+            var element = document.getElementById(id);
+
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        });
+
+        [
+            'coins',
+            'dna',
+            'dealsCoinsCount',
+            'dealsDnaCount',
+            'coinsCountModal',
+            'dnaCountModal'
+        ].forEach(function (id) {
+            var element = document.getElementById(id);
+
+            if (element) {
+                element.textContent = '0';
+            }
+        });
+
+        var uuidField =
+            document.getElementById('UserProfileUUID1');
+
+        if (uuidField) {
+            uuidField.value = '';
+        }
+
+        /*
+         * The existing logout implementation may still need the current
+         * provider context while it runs. Clear provider identity after the
+         * synchronous logout chain finishes, but before the delayed 500 ms
+         * cross-domain continuation opens the destination connection.
+         */
+        setTimeout(function () {
+            if (window.master) {
+                if ('context' in window.master) {
+                    window.master.context = null;
+                }
+
+                if ('accessToken' in window.master) {
+                    window.master.accessToken = null;
+                }
+
+                if ('token' in window.master) {
+                    window.master.token = null;
+                }
+            }
+
+            if ('facebookUser' in window) {
+                window.facebookUser = null;
+            }
+
+            if ('fbLoggedIn' in window) {
+                window.fbLoggedIn = false;
+            }
+        }, 0);
+
+        try {
+            document.dispatchEvent(
+                new CustomEvent(
+                    'accountDomainRuntimeReset',
+                    {
+                        detail: {
+                            previousDomain: previousDomain || null
+                        }
+                    }
+                )
+            );
+        } catch (error) {
+        }
+    };
+
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
@@ -15514,8 +15799,9 @@ function thelegendmodproject() {
                     );
 
                     if (_crossingAccountDomain) {
-                        window.lastLeaguesResponse = null;
-                        window.lastWeekLeaguesResponse = null;
+                        window._clearAccountDomainRuntime(
+                            _previousDomain
+                        );
 
                         if (_previousDomain === 'expandingland') {
                             window.expandingLandUID = '';
