@@ -20007,7 +20007,7 @@ function thelegendmodproject() {
                         /* Custom skin CDN fallback: miniclippt → LM_CUSTOM_SKINS_CDN */
                         newURL = window.LM_CUSTOM_SKINS_CDN + "/" + rawFileName + "?";
                     } else {
-                        newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                        newURL = "https://jimboy3000.github.io/vanillaskins/" + rawFileName;
                     }
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
@@ -20017,7 +20017,7 @@ function thelegendmodproject() {
                     return newURL;
 
                 } else if (url.includes('legendmod.ml')) {
-                    var newURL = "https://jimboy3100.github.io/vanillaskins/" + rawFileName;
+                    var newURL = "https://jimboy3000.github.io/vanillaskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;
@@ -20026,7 +20026,7 @@ function thelegendmodproject() {
                     return newURL;
 
                 } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
-                    var newURL = "https://jimboy3100.github.io/lowresskins/" + rawFileName;
+                    var newURL = "https://jimboy3000.github.io/lowresskins/" + rawFileName;
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;
