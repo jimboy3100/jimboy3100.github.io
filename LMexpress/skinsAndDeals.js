@@ -384,15 +384,6 @@ function SpecialDeals(defaultTab) {
             '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
 
 
-            // Ad Reward + Potions row
-            '<div style="display: flex; gap: 8px; margin-bottom: 10px;">' +
-            // Ad Reward button
-            '<button id="adRewardBtn" class="btn btn-sm" onclick="(function(){ if(typeof window.validateShopIntegrity === \'function\' && !window.validateShopIntegrity(\'claim ad rewards\')) return; var btn=document.getElementById(\'adRewardBtn\'); btn.disabled=true; btn.innerHTML=\'📺 Requesting...\'; btn.style.opacity=\'0.4\'; btn.style.pointerEvents=\'none\'; window.requestAdRewardToken(); window._adRewardTimeout=setTimeout(function(){btn.disabled=false;btn.innerHTML=\'📺 Ad Reward\';btn.style.opacity=\'1\';btn.style.pointerEvents=\'auto\';toastr.warning(\'<b>[SHOP]:</b> Ad reward timed out\');},10000); })()" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 700; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; flex: 1;">📺 Ad Reward</button>' +
-            // Potion buttons
-            '<button class="btn btn-sm" onclick="window.brewPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧪 Brew</button>' +
-            '<button class="btn btn-sm" onclick="window.openPotion(1)" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;">🧫 Open</button>' +
-            '<button class="btn btn-sm" onclick="window.showPotionProductSelector()" style="background: ' + pc2 + '; color: ' + tc + '; font-weight: 700; border: 1px solid ' + mc + '44; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer;" title="Select and open specific potion types">🧬 Potion Selector</button>' +
-            '</div>' +
 
             // Encoded UID & Config section (collapsible)
             '<details style="margin-top: 8px; border-top: 1px solid ' + pc2 + '; padding-top: 8px;">' +
