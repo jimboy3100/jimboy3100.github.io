@@ -119,25 +119,35 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
     }
 
     window.checkUserLoggedIn = function () {
-        var officialUser = (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getUserInfo === 'function') ? window.agarApp.API.getUserInfo() : null;
-        if (officialUser) {
-            if (officialUser.isGuest === true || officialUser.loggedIn === false) {
-                return false;
-            }
-            if (officialUser.loggedIn === true || officialUser.hasVIPSubscription || officialUser.userId) {
-                return true;
-            }
-        }
         var uid = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
-        return !!(window.loggedIn === true || (uid && uid.length >= 8 && uid !== '0' && uid.indexOf('$') === -1 && uid.toLowerCase() !== 'null' && uid.toLowerCase() !== 'undefined'));
+        if (uid && uid.length >= 8 && uid !== '0' && uid.indexOf('$') === -1 && uid.toLowerCase() !== 'null' && uid.toLowerCase() !== 'undefined') {
+            return true;
+        }
+        if (window.loggedIn === true) {
+            return true;
+        }
+        var appUser = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || {};
+        if (appUser.authenticated === true || (appUser.userId && String(appUser.userId) !== '0' && String(appUser.userId).toLowerCase() !== 'null')) {
+            return true;
+        }
+        var officialUser = (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getUserInfo === 'function') ? window.agarApp.API.getUserInfo() : null;
+        if (officialUser && (officialUser.loggedIn === true || officialUser.hasVIPSubscription || officialUser.userId)) {
+            return true;
+        }
+        return false;
     };
 
     window.checkUserUID = function () {
         var uid = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
-        if (!uid || uid.length < 8 || uid === '0' || uid.indexOf('$') !== -1 || uid.toLowerCase() === 'null' || uid.toLowerCase() === 'undefined') {
-            return false;
+        if (uid && uid.length >= 8 && uid !== '0' && uid.indexOf('$') === -1 && uid.toLowerCase() !== 'null' && uid.toLowerCase() !== 'undefined') {
+            return true;
         }
-        return window.checkUserLoggedIn();
+        var appUser = (window.application && window.application.user) || (window.legendmod && window.legendmod.user) || {};
+        var fallbackUID = typeof appUser.userId !== 'undefined' && appUser.userId !== null ? String(appUser.userId).trim() : '';
+        if (fallbackUID && fallbackUID.length >= 8 && fallbackUID !== '0' && fallbackUID.indexOf('$') === -1 && fallbackUID.toLowerCase() !== 'null' && fallbackUID.toLowerCase() !== 'undefined') {
+            return true;
+        }
+        return false;
     };
 
     function captureOfficialUser(
