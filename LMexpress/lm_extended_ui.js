@@ -3786,23 +3786,31 @@
         var level = appUser.level || 1;
 
         var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
-        var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextXp.toLocaleString() + ' XP';
 
-        var officialXpPanel = $('#exp-bar').eq(0);
-        officialXpPanel.find('.progress-bar').css('width', percent + '%');
-        officialXpPanel.find('.progress-bar-text').text(xpText);
-        $('.agario-profile-panel .progress-bar-star').first().text(level);
-
-        if (!window.LMscore && localStorage['LMscore']) {
-            window.LMscore = Number(localStorage['LMscore']) || 0;
+        if (typeof window.updateOfficialXpPanel === 'function') {
+            window.updateOfficialXpPanel(level, percent);
+        } else {
+            var officialXpPanel = $('#exp-bar').eq(0);
+            officialXpPanel.find('.progress-bar').css('width', percent + '%');
+            var star3 = officialXpPanel.find('.progress-bar-star3');
+            if (star3.length > 0) { star3.text(level); } else { officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + level + '</strong>'); }
+            $('.agario-profile-panel .progress-bar-star').first().text(level);
         }
-        var lmScoreVal = window.LMscore || 0;
-        var legendXpPanel = $('#exp-bar').eq(1);
-        legendXpPanel.find('.progress-bar-striped2').css({
-            "transition": "5s",
-            "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
-        });
-        legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
+
+        if (typeof window.updateLegendXpPanel === 'function') {
+            window.updateLegendXpPanel();
+        } else {
+            if (!window.LMscore && localStorage['LMscore']) {
+                window.LMscore = Number(localStorage['LMscore']) || 0;
+            }
+            var lmScoreVal = window.LMscore || 0;
+            var legendXpPanel = $('#exp-bar').eq(1);
+            legendXpPanel.find('.progress-bar-striped2').css({
+                "transition": "5s",
+                "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
+            });
+            legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
+        }
 
         // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
         var potions = appUser.potions || window.lastPotionsData || [];

@@ -2698,24 +2698,46 @@ var UIDfunction = new Function(UIDInstructions);
 window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
-function setLevelProgressBar() {
+window.updateOfficialXpPanel = function(level, expPercent) {
+    if (level !== undefined && level !== null) {
+        window.agarioLEVEL = level;
+    }
+    var lvlVal = window.agarioLEVEL || 1;
+    var officialXpPanel = $('#exp-bar').eq(0);
+    officialXpPanel.find('.progress-bar-striped, .progress-bar').css({
+        "transition": "5s",
+        "width": (expPercent !== undefined ? expPercent : lvlVal) + "%"
+    });
+    var star3 = officialXpPanel.find('.progress-bar-star3');
+    if (star3.length > 0) {
+        star3.text(lvlVal);
+    } else {
+        officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + lvlVal + '</strong>');
+    }
+    $('.agario-profile-panel .progress-bar-star').first().text(lvlVal);
+};
+
+window.updateLegendXpPanel = function() {
     if (!window.LMscore && localStorage['LMscore']) {
         window.LMscore = Number(localStorage['LMscore']) || 0;
     }
     var lmScoreVal = window.LMscore || 0;
-    var officialXpPanel = $('#exp-bar').eq(0);
     var legendXpPanel = $('#exp-bar').eq(1);
-    officialXpPanel.find('.progress-bar-striped').css({
-        "transition": "5s",
-        "width": window.agarioLEVEL + "%"
-    });
-    legendXpPanel.find('.progress-bar-striped2').css({
+    legendXpPanel.find('.progress-bar-striped2, .progress-bar').css({
         "transition": "5s",
         "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
     });
-    officialXpPanel.find('.progress-bar-star3').text(window.agarioLEVEL);
-    $('.agario-profile-panel .progress-bar-star').first().text(window.agarioLEVEL);
-    legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
+    var star2 = legendXpPanel.find('.progress-bar-star2');
+    if (star2.length > 0) {
+        star2.text(lmScoreVal);
+    } else {
+        legendXpPanel.find('.progress-bar-text').html('★★★ <strong class="progress-bar-star2">' + lmScoreVal + '</strong>');
+    }
+};
+
+function setLevelProgressBar() {
+    window.updateOfficialXpPanel(window.agarioLEVEL);
+    window.updateLegendXpPanel();
 }
 
 function resetLevelProgressBar() {
@@ -19095,27 +19117,7 @@ function thelegendmodproject() {
                         }
                         window.agarioLEVEL = gLevel;
 
-                        var officialXpPanel =
-                            $('#exp-bar').eq(0);
-
-                        officialXpPanel
-                            .find('.progress-bar-striped')
-                            .width(exp + '%');
-
-                        officialXpPanel
-                            .find('.progress-bar-text')
-                            .text(
-                                gLevel >= 150
-                                    ? 'MAX LEVEL (' + gLevel + ')'
-                                    : gXp.toLocaleString() +
-                                      ' / ' +
-                                      gNextXp.toLocaleString() +
-                                      ' XP'
-                            );
-
-                        $('.agario-profile-panel .progress-bar-star')
-                            .first()
-                            .text(gLevel);
+                        window.updateOfficialXpPanel(gLevel, exp);
                     }
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
@@ -20318,22 +20320,7 @@ Most cells eaten   : ${mostCellsEaten}
             window.agarioXP = xp;
             window.agarioNextXP = nextLevelXp;
 
-            var officialXpPanel =
-                $('#exp-bar').eq(0);
-
-            officialXpPanel
-                .find('.progress-bar-striped')
-                .width(exp + '%');
-
-            var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
-            officialXpPanel
-                .find('.progress-bar-text')
-                .text(xpText);
-
-            officialXpPanel
-                .find('.progress-bar-star3')
-                .text(level);
-            $('.agario-profile-panel .progress-bar-star').first().text(level);
+            window.updateOfficialXpPanel(level, exp);
             this.user.actionCounters = i.actionCounters;
 
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
