@@ -18780,8 +18780,7 @@ function thelegendmodproject() {
                         this.onMobileData(msg);
                     } catch (e102) {
                         console.error('[LW 102 DBG] onMobileData error:', e102);
-                    }
-                    break;				
+                    }				
                     if (data.byteLength < 20) {
                         //this["loggedIn"] = ![];
                         //if (window["logout"]) {
