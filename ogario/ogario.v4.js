@@ -25114,11 +25114,15 @@ Most cells eaten   : ${mostCellsEaten}
             var tctx = this._textCtx;
             tctx.font = font;
             var metrics = tctx.measureText(text);
-            var pad = (strokeWidth || 0) + 4;
-            var w = Math.ceil(metrics.width + pad * 2);
+            /* Match the old Canvas2D text box: its height was always
+             * fontSize + 2 * (fontSize * 0.2) = 1.4 * fontSize.
+             * Do not add fixed pixel padding vertically: fixed pixels become
+             * variable world-space distance after division by viewScale. */
+            var sidePad = Math.max(1, Math.ceil(strokeWidth || 0));
+            var w = Math.ceil(metrics.width + sidePad * 2);
             var fontSizeMatch = font.match(/(\d+)\s*px/);
             var fontPx = fontSizeMatch ? parseInt(fontSizeMatch[1]) : 24;
-            var h = Math.ceil(fontPx * 1.4 + pad * 2);
+            var h = Math.ceil(fontPx * 1.4);
             if (w < 1 || h < 1) return null;
             /* Clamp to reasonable size to avoid huge textures */
             if (w > 2048) w = 2048;
@@ -25165,13 +25169,17 @@ Most cells eaten   : ${mostCellsEaten}
             }
             return entry;
         },
-        drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, cellSize, z) {
+        drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, targetWorldH, z) {
             if (!texEntry || !this.gl || !this.glTextProgram) return;
             var gl = this.gl;
             var viewScale = this.scale || 1;
-            /* Convert pixel dimensions to world units */
-            var worldW = texEntry.w / viewScale;
-            var worldH = texEntry.h / viewScale;
+
+            /* Texture resolution follows screen zoom for sharpness, but the
+             * displayed world-space size must not. Using an explicit world
+             * height prevents nick/mass size and spacing from walking when the
+             * user scroll-zooms. */
+            var worldH = targetWorldH > 0 ? targetWorldH : texEntry.h / viewScale;
+            var worldW = worldH * (texEntry.w / texEntry.h);
             var halfW = worldW * 0.5;
             var halfH = worldH * 0.5;
 
@@ -25211,16 +25219,15 @@ Most cells eaten   : ${mostCellsEaten}
                 hasSkin = !!application.getCustomSkin(cell.targetNick, cell.color, cell.skin);
             }
 
-            /* Font sizing: match Canvas2D ogarbasicassembly.setFontSize()
-             * Canvas2D: fontSize = max(size*0.3, 26) * scale
-             *           nickSize = ~~(fontSize * nickScale)
-             * We render at screen pixels, so don't divide by scale later. */
+            /* Preserve the Canvas2D sizing formula in world units. Only the
+             * texture rasterization size is multiplied by viewScale; layout is
+             * deliberately independent of zoom. */
             var namesScale = defaultSettings.namesScale || 1;
             var massScale = defaultSettings.massScale || 1;
             var strokeScale = defaultSettings.strokeScale || 1;
-            var baseFontSize = Math.max(cellSize * 0.3, 26) * viewScale;
-            var nickFontSize = ~~(baseFontSize * namesScale);
-            if (nickFontSize < 6) return;
+            var baseWorldFontSize = Math.max(cellSize * 0.3, 26);
+            var nickWorldFontSize = baseWorldFontSize * namesScale;
+            var nickFontSize = Math.max(6, Math.round(nickWorldFontSize * viewScale));
 
             /* Read colors and font from settings (matching Canvas2D path) */
             var nickColor = defaultSettings.namesColor || '#ffffff';
@@ -25247,26 +25254,48 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (!showNick && !showMass) return;
 
-            /* Match Canvas2D text layout:
-             * - Nick centered at cell center (y)
-             * - Mass top edge flush with nick bottom edge
-             * Canvas2D: nick drawn at y - nickH/2, mass drawn at y + nickH/2 */
+            /* Old Canvas2D geometry:
+             * - nick centered on the cell;
+             * - mass below the nick;
+             * - each text box is 1.4 * its font size high.
+             * WebGL adds a small, fixed world-space gap and hard bounds so the
+             * mass can never collide with the nick or leave the cell. */
             var nickWorldH = 0;
 
-            /* Draw nick */
             if (showNick) {
                 var nickEntry = this.getOrCreateTextTexture(cell.targetNick, nickFont, nickColor, nickStrokeColor, nickStrokeW);
                 if (nickEntry) {
-                    nickWorldH = nickEntry.h / viewScale;
-                    /* Nick centered at y (offsetY = 0), matching Canvas2D */
-                    this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, 0, cellSize, z);
+                    nickWorldH = nickWorldFontSize * 1.4;
+                    this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, 0, nickWorldH, z);
                 }
             }
 
-            /* Draw mass — quantize to avoid cache thrashing */
+            /* Draw mass — quantize the value to avoid cache thrashing. */
             if (showMass) {
-                var massFontSize = ~~(baseFontSize * 0.5 * massScale);
-                if (massFontSize < 4) massFontSize = 4;
+                /* Mass is always subordinate to the nick. User massScale may
+                 * make it smaller, but never larger than 72% of nick size. */
+                var massWorldFontSize = Math.min(
+                    baseWorldFontSize * 0.5 * massScale,
+                    nickWorldFontSize * 0.72
+                );
+                var gapWorld = nickWorldH > 0
+                    ? Math.max(1, nickWorldFontSize * 0.04)
+                    : 0;
+                var massWorldH = massWorldFontSize * 1.4;
+
+                if (nickWorldH > 0) {
+                    /* Keep the lower edge at least 10% of the radius inside the
+                     * cell. This prevents low-mass cells from showing their
+                     * mass outside the circle. */
+                    var maxMassWorldH = cellSize * 0.90 - nickWorldH * 0.5 - gapWorld;
+                    if (maxMassWorldH <= 1) return;
+                    if (massWorldH > maxMassWorldH) {
+                        massWorldH = maxMassWorldH;
+                        massWorldFontSize = massWorldH / 1.4;
+                    }
+                }
+
+                var massFontSize = Math.max(4, Math.round(massWorldFontSize * viewScale));
                 var massFontFamily = defaultSettings.massFontFamily || fontFamily;
                 var massFontWeight = defaultSettings.massFontWeight || fontWeight;
                 var massFont = massFontWeight + ' ' + massFontSize + 'px ' + massFontFamily;
@@ -25274,7 +25303,7 @@ Most cells eaten   : ${mostCellsEaten}
                     ? ~~(massFontSize * 0.1 * strokeScale) : 0;
 
                 /* Compute mass from cell.size directly — cell.mass may not be
-                 * set yet because setMass() only runs inside cell.draw() */
+                 * set yet because setMass() only runs inside cell.draw(). */
                 var massVal = cell.mass > 0 ? ~~cell.mass : ~~(cellSize * cellSize / 100);
                 var massStr;
                 if (defaultmapsettings.shortMass && massVal >= 1000) {
@@ -25284,13 +25313,35 @@ Most cells eaten   : ${mostCellsEaten}
                     else if (massVal >= 100) massVal = Math.round(massVal / 5) * 5;
                     massStr = '' + massVal;
                 }
+
                 var massEntry = this.getOrCreateTextTexture(massStr, massFont, massColor, massStrokeColor, massStrokeW);
                 if (massEntry) {
-                    var massWorldH = massEntry.h / viewScale;
-                    /* Mass top flush with nick bottom: mass center at y + nickH/2 + massH/2
-                     * When no nick shown: mass centered at y (offset = 0) */
-                    var massOffsetY = showNick ? (nickWorldH * 0.5 + massWorldH * 0.5) : 0;
-                    this.drawWebGLTextQuad(massEntry, cell.x, cell.y, massOffsetY, cellSize, z);
+                    /* Fit the complete mass rectangle inside the circle at its
+                     * lower edge. This also handles wide values such as
+                     * "999.9k", not only two- or three-digit values. */
+                    var massBottomY = nickWorldH > 0
+                        ? nickWorldH * 0.5 + gapWorld + massWorldH
+                        : massWorldH * 0.5;
+                    var chordY = Math.min(cellSize * 0.90, Math.max(0, massBottomY));
+                    var safeChordW = 2 * Math.sqrt(
+                        Math.max(0, cellSize * cellSize - chordY * chordY)
+                    ) * 0.92;
+                    var massWorldW = massWorldH * (massEntry.w / massEntry.h);
+                    if (safeChordW > 0 && massWorldW > safeChordW) {
+                        massWorldH *= safeChordW / massWorldW;
+                    }
+
+                    var massOffsetY = nickWorldH > 0
+                        ? nickWorldH * 0.5 + gapWorld + massWorldH * 0.5
+                        : 0;
+                    this.drawWebGLTextQuad(
+                        massEntry,
+                        cell.x,
+                        cell.y,
+                        massOffsetY,
+                        massWorldH,
+                        z
+                    );
                 }
             }
         },
