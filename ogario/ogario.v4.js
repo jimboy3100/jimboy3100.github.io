@@ -8124,13 +8124,6 @@ function thelegendmodproject() {
             $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://www.legendmod.ml" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://www.legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
-            /*
-             * The official Agar.io site creates its own .agario-profile-panel
-             * with an .agario-exp-bar inside. The line above moves it into
-             * #profile. Our custom #exp-bar bars already display official XP
-             * and Legend Mod level, so remove the duplicate official XP bar.
-             */
-            $('#profile > .agario-profile-panel').not('#exp-bar').find('.agario-exp-bar').remove();
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
             $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty();
             //$(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
