@@ -102,10 +102,29 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 console.warn(
                     "[LM UID] Shop UI refresh failed:",
                     error
-                );
-            }
         }
     }
+
+    window.checkUserLoggedIn = function () {
+        var officialUser = (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getUserInfo === 'function') ? window.agarApp.API.getUserInfo() : null;
+        if (officialUser) {
+            if (officialUser.isGuest === true || officialUser.loggedIn === false) {
+                return false;
+            }
+        }
+        return window.loggedIn === true;
+    };
+
+    window.checkUserUID = function () {
+        if (!window.checkUserLoggedIn()) {
+            return false;
+        }
+        var uid = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
+        if (!uid || uid.length < 8 || uid === '0' || uid.indexOf('$') !== -1 || uid.toLowerCase() === 'null' || uid.toLowerCase() === 'undefined') {
+            return false;
+        }
+        return true;
+    };
 
     function captureOfficialUser(
         officialUser,
@@ -316,18 +335,21 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
      * pending. Never treat the normal UID as the encoded UID.
      */
     try {
-        if (!window.agarioUID) {
-            window.agarioUID =
-                window.localStorage.getItem(
-                    "agarioUID"
-                ) || "";
-        }
+        var officialUser = (window.agarApp && window.agarApp.API && typeof window.agarApp.API.getUserInfo === 'function') ? window.agarApp.API.getUserInfo() : null;
+        var isExplicitGuestOrLoggedOut = officialUser && (officialUser.isGuest === true || officialUser.loggedIn === false);
 
-        if (!window.agarioEncodedUID) {
-            window.agarioEncodedUID =
-                window.localStorage.getItem(
-                    "agarioEncodedUID"
-                ) || "";
+        if (!isExplicitGuestOrLoggedOut) {
+            var cachedUID = window.localStorage.getItem("agarioUID") || "";
+            var cachedEncodedUID = window.localStorage.getItem("agarioEncodedUID") || "";
+            if (cachedUID && cachedEncodedUID && cachedUID.length >= 8 && cachedUID !== "0") {
+                if (!window.agarioUID) window.agarioUID = cachedUID;
+                if (!window.agarioEncodedUID) window.agarioEncodedUID = cachedEncodedUID;
+                window.loggedIn = true;
+            }
+        } else {
+            window.agarioUID = "";
+            window.agarioEncodedUID = "";
+            window.loggedIn = false;
         }
     } catch (error) {
         console.warn(

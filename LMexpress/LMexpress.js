@@ -7651,6 +7651,12 @@ function ytFrame() {
 
 
 function BeforeSpecialDeals(tab) {
+    if (typeof window.checkUserUID === 'function' && !window.checkUserUID()) {
+        if (window.toastr) {
+            toastr.error('<b>[SHOP]:</b> You must be logged in and have a valid Agar.io UID to access Skins & Deals.');
+        }
+        return false;
+    }
     var targetTab = tab || 'skins';
 
     var appUser =

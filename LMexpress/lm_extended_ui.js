@@ -4431,8 +4431,7 @@
                         'undefined'
                 );
         }
-        var menuBtnEnabled = isLoggedIn && hasUID;
-        var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
+        var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, #lm-extended-menu-btns button, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-official-offer-btn, #adRewardBtn');
         menuBtns.prop('disabled', !menuBtnEnabled);
         if (!menuBtnEnabled) {
             menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals, Boosts & Leagues');
