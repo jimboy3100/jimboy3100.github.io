@@ -1484,9 +1484,10 @@ function populateDealsGrid() {
     var iaps = window.GameConfiguration.gameConfig['Wallet - In-App Purchases'] || [];
     var bundles = window.GameConfiguration.gameConfig['Visual - Bundles'] || [];
     var softPurchases = window.GameConfiguration.gameConfig['Wallet - Soft Purchases'] || [];
+    var offerableBundles = window.GameConfiguration.gameConfig['Wallet - Offerable Bundles'] || [];
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
 
-    if (iaps.length === 0 && softPurchases.length === 0) {
+    if (iaps.length === 0 && softPurchases.length === 0 && offerableBundles.length === 0) {
         grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">No deals available.</div>';
         return;
     }
@@ -1628,23 +1629,29 @@ function populateDealsGrid() {
         html += boostHtml;
     }
 
-    // --- Offer Bundles ---
-    for (var ob = 0; ob < bundles.length; ob++) {
-        var bundle = bundles[ob];
-        if (!bundle.bundleId) continue;
+    // --- Offer Bundles (from Wallet - Offerable Bundles, not Visual - Bundles) ---
+    for (var ob = 0; ob < offerableBundles.length; ob++) {
+        var offerBundle = offerableBundles[ob];
+        if (!offerBundle || !offerBundle.bundleId) continue;
+        var offerBundleId = offerBundle.bundleId;
+
         // Skip bundles already shown as IAP deals
         var alreadyShown = false;
         for (var ai = 0; ai < iaps.length; ai++) {
-            if (iaps[ai].bundleId === bundle.bundleId) { alreadyShown = true; break; }
+            if (iaps[ai].bundleId === offerBundleId) { alreadyShown = true; break; }
         }
         if (alreadyShown) continue;
 
+        /* Visual - Bundles contains only presentation metadata.
+         * Wallet - Offerable Bundles determines what is purchasable. */
+        var bundle = bundleLookup[offerBundleId] || { bundleId: offerBundleId };
+
         var bDesc = (bundle.description && bundle.description !== 'na')
             ? bundle.description.replace(/_/g, ' ').replace(' name', '')
-            : bundle.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
+            : offerBundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
 
         // Build contents list
-        var bContents = productLookup[bundle.bundleId] || [];
+        var bContents = productLookup[offerBundleId] || [];
         var bContentText = '';
         for (var bc = 0; bc < bContents.length; bc++) {
             var bcPid = bContents[bc].productId || '';
@@ -1660,8 +1667,8 @@ function populateDealsGrid() {
         if (!bContentText) bContentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
         // Resolve all bundle skin entries and render small skin icons
-        var bSkinImgs = getDealSkinImages(bundle.bundleId);
-        var bSkinMiniIconsHtml = renderDealSkinMiniIcons(bundle.bundleId, 6);
+        var bSkinImgs = getDealSkinImages(offerBundleId);
+        var bSkinMiniIconsHtml = renderDealSkinMiniIcons(offerBundleId, 6);
 
         // Build icon area — same stacked skin logic
         var bIconHtml = '';
@@ -1684,7 +1691,7 @@ function populateDealsGrid() {
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + bDesc + '</div>';
         html += '<div style="line-height: 1.4; margin-top: 2px;">' + bContentText + bSkinMiniIconsHtml + '</div>';
         html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + bundle.bundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + offerBundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
     }
 
@@ -1967,34 +1974,102 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
 }
 
 /**
- * Buy a deal via IAP payment URL (real money)
+ * Open a real-money IAP from either:
+ * - the latest Agar.io configuration; or
+ * - a historical library GameConfiguration destination.
+ *
+ * Validates against the currently loaded GameConfiguration (which may
+ * be a historical archive). The official payment server decides whether
+ * the archived purchase ID is still accepted.
  */
 function buyDealIAP(dealId, dealDesc) {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
-        return;
+        return false;
     }
 
-    _showDealBuyConfirmationModal(dealDesc || dealId, null, function() {
-        var uid = $('#exp-uid').text() || window.agarioEncodedUID;
-        var currency = $('#BuyDealCurrency').val() || 'USD';
+    if (!window.loggedIn) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be logged in to buy deals.');
+        return false;
+    }
+
+    var gameConfig = window.GameConfiguration && window.GameConfiguration.gameConfig;
+    var configuredIaps = gameConfig ? (gameConfig['Wallet - In-App Purchases'] || []) : [];
+
+    var configuredDeal = null;
+    for (var index = 0; index < configuredIaps.length; index++) {
+        var candidate = configuredIaps[index];
+        if (candidate && String(candidate.id) === String(dealId)) {
+            configuredDeal = candidate;
+            break;
+        }
+    }
+
+    if (!configuredDeal) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> The selected purchase ID was not found in the loaded configuration.');
+        console.error('[SHOP] Unknown IAP in selected configuration:', dealId);
+        return false;
+    }
+
+    var paymentToken = String($('#exp-uid').text() || window.agarioEncodedUID || '').trim();
+    if (!paymentToken) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> No encoded Agar.io payment token is available. Log out and log in again.');
+        return false;
+    }
+
+    var purchaseId = String(configuredDeal.id).trim();
+    if (!purchaseId || !/^[A-Za-z0-9._-]+$/.test(purchaseId)) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> Invalid purchase ID.');
+        return false;
+    }
+
+    var currency = String($('#BuyDealCurrency').val() || 'USD').toUpperCase();
+    if (currency !== 'USD' && currency !== 'EU') currency = 'USD';
+
+    var librarySelect = document.getElementById('ss-select-agarVersionDestinations');
+    var isHistoricalLibrary = !!(librarySelect && librarySelect.options.length && librarySelect.options[0] && librarySelect.value !== librarySelect.options[0].value);
+    var libraryLabel = isHistoricalLibrary
+        ? ('Archived configuration: ' + librarySelect.value)
+        : 'Current configuration';
+
+    _showDealBuyConfirmationModal(dealDesc || configuredDeal.bundleId || purchaseId, libraryLabel, function() {
+        var paymentUrl = 'https://payments.agar.io/pay/' + paymentToken + '/' + encodeURIComponent(purchaseId) + '/' + currency;
+
+        console.log('[SHOP] Opening Agar.io IAP:', {
+            purchaseId: purchaseId,
+            bundleId: configuredDeal.bundleId,
+            historical: isHistoricalLibrary,
+            configuration: librarySelect ? librarySelect.value : null
+        });
 
         $.ajax({
             type: 'GET',
-            url: 'https://payments.agar.io/pay/' + uid + '/' + dealId + '/' + currency,
-            datatype: 'json',
+            url: paymentUrl,
+            dataType: 'json',
+            timeout: 15000,
             success: function(info) {
-                if (info && info.iframe_url) {
-                    window.open(info.iframe_url, 'PopupWindow', 'width=600,height=600,scrollbars=yes,resizable=no');
-                    toastr.info('<b>[SHOP]:</b> Payment window opened. Complete the purchase there.');
-                } else {
-                    toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this deal');
+                if (info && typeof info.iframe_url === 'string' && /^https:\/\//i.test(info.iframe_url)) {
+                    window.open(info.iframe_url, 'AgarPayment', 'width=600,height=600,scrollbars=yes,resizable=yes');
+                    if (window.toastr) toastr.info('<b>[SHOP]:</b> Official payment window opened.');
+                    return;
+                }
+                if (window.toastr) {
+                    toastr.error(isHistoricalLibrary
+                        ? '<b>[SHOP]:</b> Agar.io no longer accepts this archived purchase ID.'
+                        : '<b>[SHOP]:</b> Payment is unavailable for this deal.');
                 }
             },
-            error: function() {
-                toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
+            error: function(xhr) {
+                console.error('[SHOP] Agar.io payment request failed:', {
+                    status: xhr && xhr.status,
+                    purchaseId: purchaseId,
+                    historical: isHistoricalLibrary
+                });
+                if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint rejected or could not process the request.');
             }
         });
     });
+
+    return true;
 }
 window.buyDealIAP = buyDealIAP;
 
@@ -2049,13 +2124,38 @@ function buyDealBundle(bundleId, dealDesc) {
     if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('purchase deal bundle')) {
         return;
     }
+
+    var gameConfig = window.GameConfiguration && window.GameConfiguration.gameConfig;
+    var configuredIaps = gameConfig ? (gameConfig['Wallet - In-App Purchases'] || []) : [];
+
+    /*
+     * Some historical configurations expose the same bundle through visual
+     * metadata and an IAP entry. In that case, use the IAP purchase ID and
+     * the archived payment route — not opcode 77.
+     */
+    for (var iapIndex = 0; iapIndex < configuredIaps.length; iapIndex++) {
+        var historicalIap = configuredIaps[iapIndex];
+        if (historicalIap && String(historicalIap.bundleId) === String(bundleId)) {
+            return window.buyDealIAP(historicalIap.id, dealDesc || historicalIap.bundleId);
+        }
+    }
+
+    var offerableBundles = gameConfig ? (gameConfig['Wallet - Offerable Bundles'] || []) : [];
+    var isOfferable = offerableBundles.some(function(item) {
+        return item && String(item.bundleId) === String(bundleId);
+    });
+
+    if (!isOfferable) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> This bundle is neither an IAP nor an offerable bundle in the selected configuration.');
+        return false;
+    }
+
     if (!(window.core && window.core.proxyMobileData) || !window.application || !window.application.sendProto) {
         toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
         return;
     }
 
-    _showDealBuyConfirmationModal(dealDesc || bundleId, 'Special Bundle', function() {
-        // Disable all deal buttons to prevent double-clicks
+    _showDealBuyConfirmationModal(dealDesc || bundleId, 'Offerable Bundle', function() {
         var allBtns = document.querySelectorAll('#dealsGrid .btn');
         for (var bi = 0; bi < allBtns.length; bi++) {
             allBtns[bi].disabled = true;
@@ -2063,14 +2163,22 @@ function buyDealBundle(bundleId, dealDesc) {
             allBtns[bi].style.pointerEvents = 'none';
         }
 
-        var sent = window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
-        if (sent) {
+        try {
+            /*
+             * The official dispatcher resolves this as type OFFER and sends
+             * Offer_bundle_request, opcode 77. No purchase URL is involved.
+             */
+            window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } });
             toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
             console.log('[SHOP] Sent offer bundle request for ' + bundleId);
-        } else {
-            toastr.error('<b>[SHOP]:</b> Failed to send bundle request');
-            var btns3 = document.querySelectorAll('#dealsGrid .btn');
-            for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
+        } catch (error) {
+            console.error('[SHOP] Official offer purchase failed:', error);
+            toastr && toastr.error('<b>[SHOP]:</b> Could not send the bundle purchase request');
+            for (var ri = 0; ri < allBtns.length; ri++) {
+                allBtns[ri].disabled = false;
+                allBtns[ri].style.opacity = '1';
+                allBtns[ri].style.pointerEvents = 'auto';
+            }
             return;
         }
 
