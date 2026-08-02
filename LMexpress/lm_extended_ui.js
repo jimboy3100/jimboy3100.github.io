@@ -3051,15 +3051,112 @@
         }
     };
 
+    /*
+     * Determine whether the current authenticated Agar.io account uses
+     * Facebook.
+     *
+     * Do not trust only agarApp.API.isLoggedWithFacebook(). In Legend Mod,
+     * the official API bridge can exist before its authenticationProvider
+     * state has synchronized, while master.context and the authenticated
+     * user data already identify the provider correctly.
+     */
+    window.isFacebookAgarAccount = function() {
+        var appUser =
+            (
+                window.application &&
+                window.application.user
+            ) || {};
+
+        var providerValues = [
+            window.master && window.master.context,
+            appUser.context,
+            appUser.realm,
+            appUser.loginProvider,
+            appUser.authProvider,
+            window.agarApp &&
+                window.agarApp.storageInfo &&
+                window.agarApp.storageInfo.context
+        ];
+
+        /*
+         * First accept an affirmative result from the official Agar.io API.
+         * A false result is not final because the bridge can be stale during
+         * Legend Mod's loading sequence.
+         */
+        try {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API
+                    .isLoggedWithFacebook ===
+                    'function' &&
+                window.agarApp.API
+                    .isLoggedWithFacebook() ===
+                    true
+            ) {
+                return true;
+            }
+        } catch (facebookApiError) {
+            console.warn(
+                '[FRIENDS] Official Facebook provider check failed:',
+                facebookApiError
+            );
+        }
+
+        for (
+            var i = 0;
+            i < providerValues.length;
+            i++
+        ) {
+            var value =
+                providerValues[i];
+
+            if (
+                value === undefined ||
+                value === null
+            ) {
+                continue;
+            }
+
+            var normalized =
+                String(value)
+                    .trim()
+                    .toLowerCase();
+
+            if (
+                normalized === 'facebook' ||
+                normalized.indexOf('facebook') !== -1
+            ) {
+                return true;
+            }
+        }
+
+        if (
+            appUser.facebookId !== undefined &&
+            appUser.facebookId !== null &&
+            String(appUser.facebookId).trim() !== ''
+        ) {
+            return true;
+        }
+
+        if (
+            window.facebookUser ||
+            window.fbLoggedIn === true
+        ) {
+            return true;
+        }
+
+        return false;
+    };
+
     window.showFriendsModal = function() {
         // Authenticated & Facebook login check
         var isLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
-        var isFacebookLoggedIn = isLoggedIn && (
-            (window.master && window.master.context === 'facebook') ||
-            (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
-            !!window.facebookUser ||
-            !!window.fbLoggedIn
-        );
+        var isFacebookLoggedIn =
+            isLoggedIn &&
+            typeof window.isFacebookAgarAccount ===
+                'function' &&
+            window.isFacebookAgarAccount();
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
 
         var token = window.legendmod ? window.legendmod.accessToken : null;
@@ -3625,36 +3722,13 @@
             menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
         }
 
-        // Friends button requires Facebook login specifically
-        var isFacebook = false;
-
-        if (isLoggedIn && hasUID) {
-            if (
-                window.agarApp &&
-                window.agarApp.API &&
-                typeof window.agarApp.API
-                    .isLoggedWithFacebook ===
-                    'function'
-            ) {
-                try {
-                    isFacebook =
-                        window.agarApp.API
-                            .isLoggedWithFacebook() ===
-                        true;
-                } catch (facebookCheckError) {
-                    console.warn(
-                        '[FRIENDS] Official Facebook login check failed during UI synchronization:',
-                        facebookCheckError
-                    );
-
-                    isFacebook = false;
-                }
-            } else {
-                isFacebook =
-                    appUser.context ===
-                    'facebook';
-            }
-        }
+        // Friends requires an authenticated Facebook Agar.io account.
+        var isFacebook =
+            isLoggedIn &&
+            hasUID &&
+            typeof window.isFacebookAgarAccount ===
+                'function' &&
+            window.isFacebookAgarAccount();
 
         var friendsBtnEnabled =
             isLoggedIn &&
@@ -3732,12 +3806,12 @@
                 var n = u.toLowerCase();
                 return isUserLoggedIn && u && u.length >= 8 && u.indexOf('$') === -1 && u !== '0' && n !== 'null' && n !== 'undefined';
             })();
-        var isFacebookLoggedIn = isUserLoggedIn && hasUserUID && (
-            (window.master && window.master.context === 'facebook') ||
-            (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
-            !!window.facebookUser ||
-            !!window.fbLoggedIn
-        );
+        var isFacebookLoggedIn =
+            isUserLoggedIn &&
+            hasUserUID &&
+            typeof window.isFacebookAgarAccount ===
+                'function' &&
+            window.isFacebookAgarAccount();
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
         var friendsBtn = $('#lm-friends-btn, .lm-friends-btn');
         if (friendsBtn.length) {
@@ -3998,33 +4072,10 @@
                 return false;
             }
 
-            var isFacebook = false;
-
-            if (
-                window.agarApp &&
-                window.agarApp.API &&
-                typeof window.agarApp.API
-                    .isLoggedWithFacebook ===
-                    'function'
-            ) {
-                try {
-                    isFacebook =
-                        window.agarApp.API
-                            .isLoggedWithFacebook() ===
-                        true;
-                } catch (facebookCheckError) {
-                    console.warn(
-                        '[FRIENDS] Official Facebook login check failed:',
-                        facebookCheckError
-                    );
-
-                    isFacebook = false;
-                }
-            } else {
-                isFacebook =
-                    appUser.context ===
-                    'facebook';
-            }
+            var isFacebook =
+                typeof window.isFacebookAgarAccount ===
+                    'function' &&
+                window.isFacebookAgarAccount();
 
             if (!isFacebook) {
                 if (window.toastr) {
