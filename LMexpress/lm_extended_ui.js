@@ -4491,8 +4491,8 @@
                 $this.text(level);
             }
         });
-        profileExpBars.find('.progress-bar-star').first().text(level);
-        profileExpBars.find('.progress-bar-active, .progress-bar').not('.progress-bar-striped, .progress-bar-striped2').css('width', percent + '%');
+        profileExpBars.find('.progress-bar-star').text(level);
+        profileExpBars.find('.progress-bar-active, .progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', percent + '%');
 
         if (typeof window.updateLegendXpPanel === 'function') {
             window.updateLegendXpPanel();

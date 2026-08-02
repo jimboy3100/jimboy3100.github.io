@@ -2801,13 +2801,17 @@ window.updateOfficialXpPanel = function(level, expPercent) {
 
     /* Sync the original profile panel's exp bar (not the LM #exp-bar elements) */
     var profilePanels = $('.agario-profile-panel').not('#exp-bar');
-    profilePanels.find('.progress-bar-star').first().text(lvlVal);
+    profilePanels.find('.progress-bar-star').text(lvlVal);
     profilePanels.find('.progress-bar-text').each(function() {
         var txt = $(this).text().trim();
-        if (txt === '' || /^\d+$/.test(txt) || /Level|★|⭐/.test(txt)) {
+        if (txt === '' || /^\d+$/.test(txt) || /Level|★|⭐/.test(txt) || /^\d+\s*\//.test(txt)) {
             $(this).text(lvlVal);
         }
     });
+    if (expPercent !== undefined && expPercent !== null) {
+        var clampedPercent = Math.max(0, Math.min(100, Number(expPercent) || 0));
+        profilePanels.find('.progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', clampedPercent + '%');
+    }
 };
 
 window.updateLegendXpPanel = function() {
