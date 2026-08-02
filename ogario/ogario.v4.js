@@ -1463,6 +1463,19 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             uuidField.value = '';
         }
 
+        window.agarioUID = "";
+        window.agarioEncodedUID = "";
+        window.agarioProfileName = "";
+        window.loggedIn = false;
+        try {
+            localStorage.removeItem("agarioUID");
+            localStorage.removeItem("agarioEncodedUID");
+        } catch (e) {}
+
+        if (typeof refreshIdentityUI === 'function') {
+            refreshIdentityUI();
+        }
+
         /*
          * The existing logout implementation may still need the current
          * provider context while it runs. Clear provider identity after the
@@ -18836,14 +18849,10 @@ function thelegendmodproject() {
                             }
                         }*/
 
-                        if (window.agarioUID != undefined) {
+                        if (window.agarioUID && window.agarioUID !== "0" && window.agarioUID.length >= 8) {
                             localStorage.setItem("agarioUID", window.agarioUID);
-                            localStorage.setItem("agarioID", window.agarioID);
-                            $("#UserProfileUUID1").val(agarioUID);
-
-                        } else {
-                            window.agarioUID = localStorage.getItem("agarioUID");
-                            window.agarioID = localStorage.getItem("agarioID");
+                            if (window.agarioID) localStorage.setItem("agarioID", window.agarioID);
+                            $("#UserProfileUUID1").val(window.agarioUID);
                         }
                         if (window.agarioUID && UIDcontroller && !window.checkOneTheUID) {
                             window.checkOneTheUID = true;
