@@ -2185,6 +2185,8 @@ function populateSkins() {
             button.removeAttribute('disabled');
             button.setAttribute('aria-disabled', 'false');
 
+            console.log('[SKIN SHOP] Load More clicked. skinShopFiltered.length=' + (skinShopFiltered ? skinShopFiltered.length : 'null'));
+
             renderSkinPage(true);
 
             /*
@@ -2199,10 +2201,16 @@ function populateSkins() {
                 ? grid.children.length
                 : 0;
 
+            console.log('[SKIN SHOP] After renderSkinPage: rendered=' + renderedCount + ' total=' + total);
+
             if (renderedCount < total) {
                 button.disabled = false;
                 button.removeAttribute('disabled');
                 button.setAttribute('aria-disabled', 'false');
+                button.style.display = 'block';
+
+                /* Scroll the button into view so the user can see it */
+                try { button.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
             }
 
             return false;
@@ -2734,11 +2742,14 @@ function updatePaginationUI() {
 
     var loadMoreButton = $('#skinLoadMore');
 
+    console.log('[SKIN SHOP] updatePaginationUI: rendered=' + renderedCount + ' total=' + total + ' buttonLength=' + loadMoreButton.length);
+
     if (renderedCount < total) {
         loadMoreButton
             .prop('disabled', false)
             .removeAttr('disabled')
             .attr('aria-disabled', 'false')
+            .css('display', 'block')
             .show()
             .text(
                 'Load More Skins (' +
@@ -2746,11 +2757,7 @@ function updatePaginationUI() {
                 ' remaining)'
             );
     } else {
-        loadMoreButton
-            .prop('disabled', false)
-            .removeAttr('disabled')
-            .attr('aria-disabled', 'false')
-            .hide();
+        loadMoreButton.hide();
     }
 }
 
