@@ -422,6 +422,321 @@
         }
     };
 
+    /*
+     * Resolve League prizes exclusively through Agar.io's official
+     * MiniclipAPI instance.
+     *
+     * The original Agar.io bundle exposes that same instance through:
+     *   window.agarApp.API
+     *   window.MC
+     *
+     * No manual GameConfiguration parsing and no hardcoded quantities
+     * are permitted in this resolver.
+     */
+    window._resolveOfficialLeaguePrizeData = function(
+        tabType,
+        response
+    ) {
+        var result = {
+            ok: false,
+            reason: '',
+            api: null,
+            user: null,
+            userTier: '',
+            league: '',
+            total: 100,
+            entries: [],
+            prizes: []
+        };
+
+        var api = null;
+
+        if (
+            window.agarApp &&
+            window.agarApp.API &&
+            typeof window.agarApp.API
+                .getLeaguesPrizes === 'function'
+        ) {
+            api =
+                window.agarApp.API;
+        } else if (
+            window.MC &&
+            typeof window.MC
+                .getLeaguesPrizes === 'function'
+        ) {
+            /*
+             * Official bundle:
+             *   agarApp.API = MC;
+             *   window.MC = MC;
+             */
+            api =
+                window.MC;
+        }
+
+        if (!api) {
+            result.reason =
+                'api-unavailable';
+
+            return result;
+        }
+
+        result.api =
+            api;
+
+        try {
+            if (
+                typeof api.getUserInfo ===
+                'function'
+            ) {
+                result.user =
+                    api.getUserInfo();
+            }
+        } catch (userError) {
+            console.warn(
+                '[LM LEAGUES] Official getUserInfo failed:',
+                userError
+            );
+        }
+
+        response =
+            response ||
+            window.currentLeaguesResponse ||
+            {};
+
+        var officialUserId = '';
+
+        if (result.user) {
+            officialUserId =
+                String(
+                    result.user.id ||
+                    result.user.userId ||
+                    ''
+                ).trim();
+        }
+
+        if (
+            !officialUserId &&
+            typeof window.agarioUID ===
+                'string'
+        ) {
+            officialUserId =
+                window.agarioUID.trim();
+        }
+
+        /*
+         * Match official Agar.io:
+         * derive the user's weekly tier from their row in res.league.
+         *
+         * Do not derive it from current account level because the weekly
+         * tier can remain fixed while the account level changes.
+         */
+        var userLeagueEntry = null;
+
+        if (Array.isArray(response.league)) {
+            for (
+                var leagueIndex = 0;
+                leagueIndex <
+                    response.league.length;
+                leagueIndex++
+            ) {
+                var candidate =
+                    response.league[
+                        leagueIndex
+                    ];
+
+                if (!candidate) {
+                    continue;
+                }
+
+                var candidateId =
+                    String(
+                        candidate.userId ||
+                        candidate.id ||
+                        candidate.uid ||
+                        ''
+                    ).trim();
+
+                if (
+                    officialUserId &&
+                    candidateId ===
+                        officialUserId
+                ) {
+                    userLeagueEntry =
+                        candidate;
+
+                    break;
+                }
+
+                if (
+                    !officialUserId &&
+                    candidate.isUser === true
+                ) {
+                    userLeagueEntry =
+                        candidate;
+
+                    break;
+                }
+            }
+        }
+
+        /*
+         * Official cached-row fallback.
+         * This still uses Agar.io's own Leagues model.
+         */
+        if (
+            !userLeagueEntry &&
+            typeof api.getCachedDataLeague ===
+                'function'
+        ) {
+            try {
+                userLeagueEntry =
+                    api.getCachedDataLeague() ||
+                    null;
+            } catch (
+                cachedLeagueError
+            ) {
+                console.warn(
+                    '[LM LEAGUES] Official cached league lookup failed:',
+                    cachedLeagueError
+                );
+            }
+        }
+
+        if (
+            userLeagueEntry &&
+            userLeagueEntry.leagueName
+        ) {
+            /*
+             * Preserve the exact official value.
+             * Do not lowercase it or strip "League".
+             */
+            result.userTier =
+                String(
+                    userLeagueEntry.leagueName
+                ).trim();
+        }
+
+        var currentTab =
+            Number(tabType) || 1;
+
+        switch (currentTab) {
+            case 2:
+                result.league =
+                    'country';
+
+                result.entries =
+                    Array.isArray(
+                        response.country
+                    )
+                        ? response.country
+                        : [];
+                break;
+
+            case 3:
+                result.league =
+                    'world';
+
+                result.entries =
+                    Array.isArray(
+                        response.world
+                    )
+                        ? response.world
+                        : [];
+                break;
+
+            case 4:
+                result.league =
+                    'friends';
+
+                result.entries =
+                    Array.isArray(
+                        response.friends
+                    )
+                        ? response.friends
+                        : [];
+                break;
+
+            case 1:
+            default:
+                result.league =
+                    result.userTier;
+
+                result.entries =
+                    Array.isArray(
+                        response.league
+                    )
+                        ? response.league
+                        : [];
+                break;
+        }
+
+        if (!result.league) {
+            result.reason =
+                'tier-unavailable';
+
+            return result;
+        }
+
+        /*
+         * Exact official fallback:
+         * if no selected records exist, pass 100, not zero.
+         */
+        result.total =
+            result.entries.length > 0
+                ? result.entries.length
+                : 100;
+
+        try {
+            result.prizes =
+                api.getLeaguesPrizes(
+                    result.league,
+                    result.total
+                );
+        } catch (prizeError) {
+            result.reason =
+                'lookup-failed';
+
+            result.error =
+                prizeError;
+
+            console.error(
+                '[LM LEAGUES] Official getLeaguesPrizes failed:',
+                {
+                    league:
+                        result.league,
+
+                    total:
+                        result.total,
+
+                    error:
+                        prizeError
+                }
+            );
+
+            return result;
+        }
+
+        if (
+            !Array.isArray(
+                result.prizes
+            ) ||
+            result.prizes.length === 0
+        ) {
+            result.reason =
+                'empty';
+
+            result.prizes =
+                [];
+
+            return result;
+        }
+
+        result.ok =
+            true;
+
+        return result;
+    };
+
     window.renderLeaguesContent = function(tabType, data) {
         data = data || {};
         var contentArea = document.getElementById('lm-leagues-content-area');
@@ -438,37 +753,180 @@
         var userLevel = (window.application && window.application.user && window.application.user.level) || 101;
         var myTier = window.getLeagueTierFromLevel(userLevel);
 
-        // Header Card Data configuration
-        // Try to read top 3 prizes from GameConfiguration
-        var _getPrizeSummary = function(leagueId) {
-            var cfg = window.LeaguesPrizesConfig;
-            if (!cfg || !cfg.length) return null;
-            var filtered = cfg.filter(function(p) { return p.leagueName === leagueId; });
-            if (!filtered.length) return null;
-            // Sort by positionFrom, take top 3
-            filtered.sort(function(a, b) { return a.positionFrom - b.positionFrom; });
-            var top3 = filtered.slice(0, 3);
-            return top3.map(function(p, i) { return (i+1) + '. ' + window._escapeLeagueHtmlText(p.rewardAmount || '?'); }).join(' &nbsp; ');
-        };
+        /*
+         * Use only prizes resolved by Agar.io's own API.
+         * Do not read rewardAmount or display invented quantities.
+         */
+        var officialHeaderPrizeData =
+            window._resolveOfficialLeaguePrizeData(
+                tabType,
+                data
+            );
+
+        var _getOfficialPrizeSummary =
+            function() {
+                if (
+                    !officialHeaderPrizeData.ok
+                ) {
+                    return '—';
+                }
+
+                return officialHeaderPrizeData
+                    .prizes
+                    .slice(0, 3)
+                    .map(
+                        function(
+                            prize,
+                            index
+                        ) {
+                            var quantity =
+                                Number(
+                                    prize.price
+                                );
+
+                            if (
+                                !Number.isFinite(
+                                    quantity
+                                )
+                            ) {
+                                return null;
+                            }
+
+                            var currency =
+                                String(
+                                    prize.currency ||
+                                    ''
+                                ).toLowerCase();
+
+                            var currencyHtml =
+                                '';
+
+                            if (
+                                currency ===
+                                'coin'
+                            ) {
+                                currencyHtml =
+                                    ' <i class="Coins_S sprite-common coins"></i>';
+                            } else if (
+                                currency ===
+                                'dna'
+                            ) {
+                                currencyHtml =
+                                    ' <i class="DNA_S sprite-common dna"></i>';
+                            }
+
+                            return (
+                                index +
+                                1 +
+                                '. ' +
+                                window
+                                    ._escapeLeagueHtmlText(
+                                        quantity
+                                            .toLocaleString()
+                                    ) +
+                                currencyHtml
+                            );
+                        }
+                    )
+                    .filter(Boolean)
+                    .join(
+                        ' &nbsp; '
+                    ) || '—';
+            };
+
+        var officialTierTitle =
+            officialHeaderPrizeData
+                .userTier || '';
+
+        if (officialTierTitle) {
+            officialTierTitle =
+                officialTierTitle
+                    .replace(/_/g, ' ')
+                    .trim();
+
+            if (
+                !/\bleague$/i.test(
+                    officialTierTitle
+                )
+            ) {
+                officialTierTitle +=
+                    ' League';
+            }
+
+            officialTierTitle =
+                officialTierTitle
+                    .charAt(0)
+                    .toUpperCase() +
+                officialTierTitle
+                    .slice(1);
+        }
+
+        var officialPrizeSummary =
+            _getOfficialPrizeSummary();
 
         var headerConfig = {
             1: {
-                title: data.leagueName || myTier.name,
-                gradient: myTier.gradient,
-                icon: '⭐',
-                prizes: _getPrizeSummary(myTier.id) || '🏆 🏆 🏆'
+                title:
+                    officialTierTitle ||
+                    data.leagueName ||
+                    myTier.name,
+
+                gradient:
+                    myTier.gradient,
+
+                icon:
+                    '⭐',
+
+                prizes:
+                    officialPrizeSummary
             },
+
             2: {
-                title: 'Country (' + userCountry.toUpperCase() + ')',
-                gradient: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
-                icon: '<span class="flag-icon flag-icon-' + userCountry.toLowerCase() + '" style="border-radius: 3px;"></span>',
-                prizes: _getPrizeSummary('country') || '🏆 🏆 🏆'
+                title:
+                    'Country (' +
+                    userCountry
+                        .toUpperCase() +
+                    ')',
+
+                gradient:
+                    'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
+
+                icon:
+                    '<span class="flag-icon flag-icon-' +
+                    userCountry
+                        .toLowerCase() +
+                    '" style="border-radius: 3px;"></span>',
+
+                prizes:
+                    officialPrizeSummary
             },
+
             3: {
-                title: 'World',
-                gradient: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
-                icon: '🌎',
-                prizes: _getPrizeSummary('world') || '🏆 🏆 🏆'
+                title:
+                    'World',
+
+                gradient:
+                    'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+
+                icon:
+                    '🌎',
+
+                prizes:
+                    officialPrizeSummary
+            },
+
+            4: {
+                title:
+                    'Friends',
+
+                gradient:
+                    'linear-gradient(135deg, #1976d2 0%, #0288d1 100%)',
+
+                icon:
+                    '👥',
+
+                prizes:
+                    officialPrizeSummary
             }
         };
 
@@ -491,7 +949,7 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); font-size: 11px; text-align: center;">
                         <div style="opacity: 0.8; margin-bottom: 2px;">Top 3 prizes</div>
-                        <div style="font-weight: 800; color: #ffd700;">${cfg.prizes} <i class="fa fa-ticket"></i></div>
+                        <div style="font-weight: 800; color: #ffd700;">${cfg.prizes}</div>
                     </div>
                     <button class="btn" onclick="window.showMorePrizesModal(${tabType});" style="background: ${t.b2}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">More Prizes</button>
                     <button class="btn" onclick="window.showLastWeekResultsModal(${tabType});" style="background: ${t.b1}; color: ${t.btc}; font-weight: 800; font-size: 11px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer;">Last Week Results</button>
@@ -993,252 +1451,96 @@
             currentTab = 1;
         }
 
+        /*
+         * Follow the original Agar.io prize path:
+         *
+         *   current response
+         *     -> exact weekly userTier
+         *     -> selected category
+         *     -> records length or 100
+         *     -> official MiniclipAPI.getLeaguesPrizes()
+         */
+        var resolvedPrizeData =
+            window._resolveOfficialLeaguePrizeData(
+                currentTab,
+                window.currentLeaguesResponse
+            );
+
+        if (!resolvedPrizeData.ok) {
+            var reasonText;
+
+            switch (
+                resolvedPrizeData.reason
+            ) {
+                case 'api-unavailable':
+                    reasonText =
+                        'The official Agar.io MiniclipAPI bridge is unavailable.';
+                    break;
+
+                case 'tier-unavailable':
+                    reasonText =
+                        'The current weekly league tier could not be resolved from the official leaderboard response.';
+                    break;
+
+                case 'lookup-failed':
+                    reasonText =
+                        'Agar.io failed while resolving its official league prize configuration.';
+                    break;
+
+                case 'empty':
+                    reasonText =
+                        'Agar.io returned no official prizes for this leaderboard.';
+                    break;
+
+                default:
+                    reasonText =
+                        'The official Agar.io prize lookup failed.';
+                    break;
+            }
+
+            console.error(
+                '[LM LEAGUES] More Prizes unavailable:',
+                resolvedPrizeData
+            );
+
+            if (window.toastr) {
+                toastr.error(
+                    '<b>[LEAGUES]:</b> ' +
+                    reasonText
+                );
+            }
+
+            return false;
+        }
+
         var api =
-            window.agarApp &&
-            window.agarApp.API;
+            resolvedPrizeData.api;
+
+        var officialUser =
+            resolvedPrizeData.user;
 
         /*
-         * Strict official-only behaviour.
-         *
-         * Do not use:
-         *   window.LeaguesPrizesConfig
-         *   window.LMAgarGameConfiguration
-         *   window.GameConfiguration
-         *   hardcoded quantities
-         *   manually reconstructed reward chains
+         * Keep this object only for compatibility with the existing
+         * title-building code below. Its ID is the exact weekly tier
+         * supplied by Agar.io, not a level-derived approximation.
          */
-        if (
-            !api ||
-            typeof api.getLeaguesPrizes !==
-                'function'
-        ) {
-            console.error(
-                '[LM LEAGUES] Official getLeaguesPrizes API is unavailable.'
-            );
-
-            if (window.toastr) {
-                toastr.error(
-                    '<b>[LEAGUES]:</b> Official Agar.io prize data is not ready.'
-                );
-            }
-
-            return false;
-        }
-
-        var officialUser = null;
-
-        try {
-            if (
-                typeof api.getUserInfo ===
-                'function'
-            ) {
-                officialUser =
-                    api.getUserInfo();
-            }
-        } catch (userInfoError) {
-            console.warn(
-                '[LM LEAGUES] Official user lookup failed:',
-                userInfoError
-            );
-        }
-
-        var userLevel = Number(
-            officialUser &&
-            officialUser.level
-        );
-
-        if (!Number.isFinite(userLevel)) {
-            userLevel = Number(
-                window.application &&
-                window.application.user &&
-                window.application.user.level
-            );
-        }
-
-        if (!Number.isFinite(userLevel)) {
-            userLevel = 1;
-        }
-
-        var officialTier = null;
-
-        try {
-            if (
-                typeof api.getLeaguesTiers ===
-                    'function'
-            ) {
-                var officialTiers =
-                    api.getLeaguesTiers();
-
-                if (Array.isArray(officialTiers)) {
-                    officialTier =
-                        officialTiers.find(
-                            function(tier) {
-                                return (
-                                    tier &&
-                                    userLevel >=
-                                        Number(
-                                            tier.levelFrom
-                                        ) &&
-                                    userLevel <=
-                                        Number(
-                                            tier.levelTo
-                                        )
-                                );
-                            }
-                        ) || null;
+        var officialTier =
+            resolvedPrizeData.userTier
+                ? {
+                    id:
+                        resolvedPrizeData
+                            .userTier
                 }
-            }
-        } catch (tierError) {
-            console.warn(
-                '[LM LEAGUES] Official tier lookup failed:',
-                tierError
-            );
-        }
+                : null;
 
-        /*
-         * The official getPrizes() accepts:
-         *
-         *   tier ID for My League
-         *   "country"
-         *   "world"
-         *   "friends"
-         */
-        var officialLeague;
+        var officialLeague =
+            resolvedPrizeData.league;
 
-        switch (currentTab) {
-            case 2:
-                officialLeague = 'country';
-                break;
-
-            case 3:
-                officialLeague = 'world';
-                break;
-
-            case 4:
-                officialLeague = 'friends';
-                break;
-
-            case 1:
-            default:
-                officialLeague =
-                    officialTier &&
-                    officialTier.id
-                        ? String(
-                            officialTier.id
-                        )
-                        : '';
-                break;
-        }
-
-        if (!officialLeague) {
-            console.error(
-                '[LM LEAGUES] Official user tier could not be resolved.',
-                {
-                    userLevel: userLevel,
-                    officialTier: officialTier
-                }
-            );
-
-            if (window.toastr) {
-                toastr.error(
-                    '<b>[LEAGUES]:</b> Agar.io has not supplied the official league tier yet.'
-                );
-            }
-
-            return false;
-        }
-
-        var currentResponse =
-            window.currentLeaguesResponse ||
-            {};
-
-        var currentEntries;
-
-        switch (currentTab) {
-            case 2:
-                currentEntries =
-                    currentResponse.country;
-                break;
-
-            case 3:
-                currentEntries =
-                    currentResponse.world;
-                break;
-
-            case 4:
-                currentEntries =
-                    currentResponse.friends;
-                break;
-
-            case 1:
-            default:
-                currentEntries =
-                    currentResponse.league;
-                break;
-        }
-
-        /*
-         * Only Friends prizes depend on the participant count.
-         * The official getPrizes() ignores this value for the other
-         * leaderboard categories.
-         */
         var participantCount =
-            Array.isArray(currentEntries)
-                ? currentEntries.length
-                : 0;
+            resolvedPrizeData.total;
 
-        var officialPrizes;
-
-        try {
-            officialPrizes =
-                api.getLeaguesPrizes(
-                    officialLeague,
-                    participantCount
-                );
-        } catch (officialPrizeError) {
-            console.error(
-                '[LM LEAGUES] Official getLeaguesPrizes failed:',
-                {
-                    league: officialLeague,
-                    participantCount:
-                        participantCount,
-                    error:
-                        officialPrizeError
-                }
-            );
-
-            if (window.toastr) {
-                toastr.error(
-                    '<b>[LEAGUES]:</b> Agar.io could not resolve the official prizes.'
-                );
-            }
-
-            return false;
-        }
-
-        if (
-            !Array.isArray(officialPrizes) ||
-            officialPrizes.length === 0
-        ) {
-            console.warn(
-                '[LM LEAGUES] Official API returned no prizes:',
-                {
-                    league: officialLeague,
-                    participantCount:
-                        participantCount,
-                    response:
-                        officialPrizes
-                }
-            );
-
-            if (window.toastr) {
-                toastr.info(
-                    '<b>[LEAGUES]:</b> No official prizes are currently configured for this leaderboard.'
-                );
-            }
-
-            return false;
-        }
+        var officialPrizes =
+            resolvedPrizeData.prizes;
 
         /*
          * Copy only fields returned by Agar.io's official API.
@@ -1333,17 +1635,34 @@
         var officialTierId =
             officialTier &&
             officialTier.id
-                ? String(officialTier.id)
+                ? String(
+                    officialTier.id
+                ).trim()
                 : '';
 
         var tierTitle =
             officialTierId
                 ? officialTierId
-                    .charAt(0)
-                    .toUpperCase() +
-                  officialTierId.slice(1) +
-                  ' League'
+                    .replace(/_/g, ' ')
+                    .trim()
                 : 'My League';
+
+        if (
+            tierTitle !==
+                'My League' &&
+            !/\bleague$/i.test(
+                tierTitle
+            )
+        ) {
+            tierTitle +=
+                ' League';
+        }
+
+        tierTitle =
+            tierTitle
+                .charAt(0)
+                .toUpperCase() +
+            tierTitle.slice(1);
 
         var title;
 
