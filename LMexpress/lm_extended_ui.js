@@ -2065,6 +2065,15 @@
             return false;
         }
 
+        /*
+         * Agar.io creates the official promotion button after receiving
+         * the promo_badge_create event. Legend Mod hides the original
+         * Agar.io menu, so jQuery :visible must not be used to determine
+         * whether the promotion exists.
+         *
+         * Select the promotion button itself and explicitly exclude the
+         * ordinary coin-shop fallback button.
+         */
         var promoContainer =
             document.querySelector(
                 '.promo-badge-container'
@@ -2073,34 +2082,66 @@
         var promoButton =
             promoContainer &&
             promoContainer.querySelector(
-                'button'
+                'button:not(#coinShop)'
             );
 
         var hasActivePromo =
             !!(
                 promoButton &&
-                (
-                    !window.jQuery ||
-                    window.jQuery(
-                        promoButton
-                    ).is(':visible')
-                )
+                promoButton.isConnected
             );
 
         if (!hasActivePromo) {
+            /*
+             * The official promotion badge may still be in its 500 ms
+             * fade/replacement interval. Retry briefly before declaring
+             * that no promotion exists.
+             */
+            if (!window._lmOfficialOfferRetryCount) {
+                window._lmOfficialOfferRetryCount = 0;
+            }
+
+            if (
+                window._lmOfficialOfferRetryCount < 5
+            ) {
+                window._lmOfficialOfferRetryCount++;
+
+                setTimeout(
+                    function() {
+                        window.openDailyDealsModal();
+                    },
+                    250
+                );
+
+                return false;
+            }
+
+            window._lmOfficialOfferRetryCount = 0;
+
             if (window.toastr) {
                 toastr.info(
-                    '<b>[OFFICIAL OFFER]:</b> No active official Agar.io offer is currently available.'
+                    '<b>[OFFICIAL OFFER]:</b> The official Agar.io promotion has not finished loading yet. Try again in a moment.'
                 );
             }
 
             return false;
         }
 
+        window._lmOfficialOfferRetryCount = 0;
+
         window._lmDailyDealOpening = true;
 
         try {
-            promoButton.click();
+            promoButton.dispatchEvent(
+                new MouseEvent(
+                    'click',
+                    {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    }
+                )
+            );
         } catch (dailyDealOpenError) {
             console.warn(
                 '[OFFICIAL OFFER] Official promotion callback failed:',
