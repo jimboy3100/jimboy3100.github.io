@@ -113,19 +113,20 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             if (officialUser.isGuest === true || officialUser.loggedIn === false) {
                 return false;
             }
+            if (officialUser.loggedIn === true || officialUser.hasVIPSubscription || officialUser.userId) {
+                return true;
+            }
         }
-        return window.loggedIn === true;
+        var uid = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
+        return !!(window.loggedIn === true || (uid && uid.length >= 8 && uid !== '0' && uid.indexOf('$') === -1 && uid.toLowerCase() !== 'null' && uid.toLowerCase() !== 'undefined'));
     };
 
     window.checkUserUID = function () {
-        if (!window.checkUserLoggedIn()) {
-            return false;
-        }
         var uid = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
         if (!uid || uid.length < 8 || uid === '0' || uid.indexOf('$') !== -1 || uid.toLowerCase() === 'null' || uid.toLowerCase() === 'undefined') {
             return false;
         }
-        return true;
+        return window.checkUserLoggedIn();
     };
 
     function captureOfficialUser(
