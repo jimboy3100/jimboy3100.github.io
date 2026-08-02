@@ -15799,9 +15799,14 @@ function thelegendmodproject() {
                     );
 
                     if (_crossingAccountDomain) {
-                        window._clearAccountDomainRuntime(
-                            _previousDomain
-                        );
+                        if (typeof window._clearAccountDomainRuntime === 'function') {
+                            window._clearAccountDomainRuntime(
+                                _previousDomain
+                            );
+                        } else {
+                            window.lastLeaguesResponse = null;
+                            window.lastWeekLeaguesResponse = null;
+                        }
 
                         if (_previousDomain === 'expandingland') {
                             window.expandingLandUID = '';
