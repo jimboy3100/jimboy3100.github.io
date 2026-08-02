@@ -18349,26 +18349,11 @@ function thelegendmodproject() {
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 User Leagues Info Request", option, response);
                                 break;
                             case 131:
-                                window.testobjects102131 = node;
-                                //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 User Leagues Info Response", option, response);
-                                var sampleBytes = new Uint8Array(window.testobjects102131.view.buffer);
-                                var enc = new TextDecoder();
-                                window.testobjects102131DEC = enc.decode(sampleBytes);
-                                window.testobjects102131DEC2 = window.testobjects102131DEC.split('')[0]
-                                var matchNew = window.testobjects102131DEC2.split("$")
-                                window.RecordPlayers = [];
-                                for (var i = 1; i < matchNew.length; i++) {
-                                    window.RecordPlayers[i] = {}
-                                    //console.log(i)
-                                    window.RecordPlayers[i].uid = matchNew[i].split("")[0] //uid
-                                    if (matchNew[i].split("")[1]) window.RecordPlayers[i].id = matchNew[i].split("")[1].split('')[0].replace('', "").replace('', ""); //id
-                                    if (matchNew[i].split("")[1] && matchNew[i].split("")[1].split('')[1]) window.RecordPlayers[i].level = matchNew[i].split("")[1].split('')[1].split('\"')[0] //level
-                                    if (matchNew[i].split("")[1] && matchNew[i].split("")[1].split('\"')[1]) window.RecordPlayers[i].country = matchNew[i].split("")[1].split('\"')[1].split('\(')[0].replace('', ""); //country
-                                    if (matchNew[i].split("")[1]) window.RecordPlayers[i].socialid = matchNew[i].split("")[1].split('')[0] //social id						
-                                    if (matchNew[i].split(" ")[1]) window.RecordPlayers[i].icon = matchNew[i].split(" ")[1].split('')[0].split('%')[0].split('"')[0] //icon	
-                                    else if (matchNew[i].split("")[1]) window.RecordPlayers[i].icon = matchNew[i].split("")[1].split('')[0].substr(1).split('"')[0];
-                                }
-                                userLeaguesInfoResponse();
+                                /*
+                                 * Do not parse this protobuf packet with TextDecoder/string splitting.
+                                 * The complete response is decoded later by the official
+                                 * userLeaguesInfoResponseField protobuf handler.
+                                 */
                                 break;
                             case 132:
                                 window.testobjects102132 = node;

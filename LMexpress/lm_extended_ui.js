@@ -302,6 +302,60 @@
         );
     };
 
+    window._normalizeLeagueAvatarUrl = function(value) {
+        var fallback =
+            'https://jimboy3100.github.io/banners/profilepic_guest.png';
+
+        if (typeof value !== 'string') {
+            return fallback;
+        }
+
+        var url = value.trim();
+        if (!url) {
+            return fallback;
+        }
+
+        /*
+         * Recover a valid URL if a binary prefix, account ID or control
+         * character was accidentally placed before the real URL.
+         */
+        var embeddedUrl = url.match(
+            /https?:\/\/[^\u0000-\u0020"'<>]+/i
+        );
+
+        if (embeddedUrl) {
+            url = embeddedUrl[0];
+        }
+
+        try {
+            var parsed = new URL(url);
+
+            if (
+                parsed.protocol !== 'https:' &&
+                parsed.protocol !== 'http:'
+            ) {
+                return fallback;
+            }
+
+            /*
+             * Reject malformed relative requests such as:
+             * https://agar.io/<id>%1Ahttps://platform-lookaside...
+             */
+            if (
+                parsed.hostname === window.location.hostname &&
+                /https?:\/\//i.test(
+                    parsed.pathname + parsed.search
+                )
+            ) {
+                return fallback;
+            }
+
+            return parsed.href;
+        } catch (error) {
+            return fallback;
+        }
+    };
+
     window.renderLeaguesContent = function(tabType, data) {
         data = data || {};
         var contentArea = document.getElementById('lm-leagues-content-area');
@@ -411,7 +465,9 @@
                     uid: officialUserId,
                     level: entry.level,
                     country: entry.countryCode || 'us',
-                    icon: (typeof entry.avatarUrl === 'string' && entry.avatarUrl.trim()) ? entry.avatarUrl.trim() : 'https://jimboy3100.github.io/banners/profilepic_guest.png',
+                    icon: window._normalizeLeagueAvatarUrl(
+                        entry.avatarUrl
+                    ),
                     rank: entry.rank !== undefined ? entry.rank : (index + 1),
                     score: entry.trophies !== undefined ? entry.trophies : 0,
                     leagueName: entry.leagueName || ''
@@ -464,7 +520,9 @@
 
                 var name = entry.displayName || entry.id || ('Player ' + rankNum);
                 var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : '0');
-                var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                var icon = window._normalizeLeagueAvatarUrl(
+                    entry.icon || entry.avatar
+                );
                 var country =
                     window._normalizeLeagueCountryCode(
                         entry.country
@@ -477,7 +535,7 @@
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ${rowBg} transition: transform 0.15s;">
                         <div style="width: 70px;">${rankBadge}</div>
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                            <img src="${icon}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                            <img src="${icon}" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
                             <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
                             <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${window._escapeLeagueHtmlText(name)}</span>
@@ -877,27 +935,105 @@
                             safePositionTo +
                             'th';
                     }
-                    // Try to resolve reward amount from Wallet - Bonuses and Rewards
-                    var amount = '?';
-                    var currency = '🏆';
+                    /*
+                     * Resolve prizes exactly like the original Agar.io client:
+                     *
+                     * prize.rewardId
+                     *   -> Wallet - Bonuses and Rewards[].bonusId
+                     *   -> bonus.bundleId
+                     *   -> Wallet - Product Bundles[].bundleId
+                     *   -> productId + quantity
+                     */
+                    var amount = null;
+                    var productId = '';
+
                     try {
-                        var gcfg = (window.GameConfiguration || window.LMAgarGameConfiguration || {}).gameConfig || {};
-                        var bonuses = gcfg["Wallet - Bonuses and Rewards"];
-                        if (bonuses) {
-                            var bonus = bonuses.find(function(b) { return b.id === prize.rewardId; });
-                            if (bonus && bonus.bundleId) {
-                                var bundles = gcfg["Wallet - Product Bundles"];
-                                if (bundles) {
-                                    var bundle = bundles.find(function(bun) { return bun.bundleId === bonus.bundleId; });
-                                    if (bundle) {
-                                        amount = bundle.quantity || '?';
-                                        currency = bundle.productId === 'coin' ? '💰' : (bundle.productId === 'trophy' ? '🏆' : '🎫');
-                                    }
-                                }
+                        var gameConfig = {};
+
+                        if (
+                            window.GameConfiguration &&
+                            window.GameConfiguration.gameConfig
+                        ) {
+                            gameConfig =
+                                window.GameConfiguration.gameConfig;
+                        } else if (
+                            window.LMAgarGameConfiguration &&
+                            window.LMAgarGameConfiguration.gameConfig
+                        ) {
+                            gameConfig =
+                                window.LMAgarGameConfiguration.gameConfig;
+                        }
+
+                        var bonuses =
+                            gameConfig[
+                                'Wallet - Bonuses and Rewards'
+                            ] || [];
+
+                        var bundles =
+                            window.WalletProductBundlesConfig ||
+                            gameConfig[
+                                'Wallet - Product Bundles'
+                            ] ||
+                            [];
+
+                        var bonus = bonuses.find(function(item) {
+                            return (
+                                item &&
+                                String(item.bonusId) ===
+                                    String(prize.rewardId)
+                            );
+                        });
+
+                        if (bonus && bonus.bundleId) {
+                            var bundle = bundles.find(function(item) {
+                                return (
+                                    item &&
+                                    String(item.bundleId) ===
+                                        String(bonus.bundleId)
+                                );
+                            });
+
+                            if (bundle) {
+                                amount = Number(bundle.quantity);
+                                productId = String(
+                                    bundle.productId || ''
+                                ).toLowerCase();
                             }
                         }
-                    } catch(e) {}
-                    prizeRows.push({ rank: place, prize: window._escapeLeagueHtmlText(amount) + ' ' + currency });
+                    } catch (error) {
+                        console.warn(
+                            '[LM] Could not resolve league prize:',
+                            prize,
+                            error
+                        );
+                    }
+
+                    var currencyIcon;
+
+                    if (productId === 'coin') {
+                        currencyIcon = '🪙';
+                    } else if (productId === 'dna') {
+                        currencyIcon = '🧬';
+                    } else if (productId === 'trophy') {
+                        currencyIcon = '🏆';
+                    } else {
+                        currencyIcon = '🎁';
+                    }
+
+                    var displayAmount =
+                        Number.isFinite(amount) && amount >= 0
+                            ? amount.toLocaleString()
+                            : 'Unavailable';
+
+                    prizeRows.push({
+                        rank: place,
+                        prize:
+                            window._escapeLeagueHtmlText(
+                                displayAmount
+                            ) +
+                            ' ' +
+                            currencyIcon
+                    });
                 });
             }
         }
@@ -1059,8 +1195,11 @@
                 return;
             }
 
-            // Response will come via leaguesInfoUpdate event → _renderLastWeekContent
-            // Show a generation-bound timeout fallback after 5 seconds.
+            /*
+             * A timeout is not an empty official response.
+             * Keep transport failure separate from the genuine Agar.io
+             * "no results last week" state.
+             */
             window._lastWeekTimeoutTimer = setTimeout(function() {
                 if (
                     window._lastWeekModalToken !== lastWeekRequestToken
@@ -1069,14 +1208,22 @@
                 }
 
                 window._lastWeekTimeoutTimer = null;
+
                 var contentArea = document.getElementById(
                     'lm-lastweek-content'
                 );
+
                 if (
                     contentArea &&
                     contentArea.querySelector('[data-loading]')
                 ) {
-                    window._renderLastWeekNoResults();
+                    contentArea.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                            <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+                            Weekly results could not be loaded.<br>
+                            Close this window and try again.
+                        </div>
+                    `;
                 }
             }, 5000);
         }
@@ -1101,76 +1248,139 @@
         if (!contentArea) return;
 
         data = data || {};
-        // Select and normalize official Last Week rows without stale legacy fallback.
-        var entries = null;
+
+        var entries = [];
         var hasLastWeekRequestType =
             data.leagueRequestType !== undefined &&
             data.leagueRequestType !== null;
-        var lastWeekResponseRequestType = Number(data.leagueRequestType);
-        if (hasLastWeekRequestType) {
-            if (lastWeekResponseRequestType === 2) {
-                var selectedLastWeekTab = Number(
-                    window._lastWeekLeagueTab ||
-                    window.currentLeagueTab ||
-                    1
-                );
-                if (
-                    selectedLastWeekTab !== 2 &&
-                    selectedLastWeekTab !== 3
-                ) {
-                    selectedLastWeekTab = 1;
-                }
-                var lastWeekOfficialEntries =
-                    selectedLastWeekTab === 2
-                        ? data.country
-                        : (
-                            selectedLastWeekTab === 3
-                                ? data.world
-                                : data.league
-                        );
-                if (!Array.isArray(lastWeekOfficialEntries)) {
-                    lastWeekOfficialEntries = [];
-                }
-                entries = lastWeekOfficialEntries.map(function(entry, index) {
-                    if (!entry) return null;
-                    var officialUserId = entry.userId || '';
-                    return {
-                        displayName: entry.displayName || '',
-                        id: officialUserId,
-                        uid: officialUserId,
-                        level: entry.level,
-                        country: entry.countryCode || 'us',
-                        icon: (typeof entry.avatarUrl === 'string' && entry.avatarUrl.trim()) ? entry.avatarUrl.trim() : 'https://jimboy3100.github.io/banners/profilepic_guest.png',
-                        rank:
-                            entry.rank !== undefined
-                                ? entry.rank
-                                : (index + 1),
-                        score:
-                            entry.trophies !== undefined
-                                ? entry.trophies
-                                : 0,
-                        leagueName: entry.leagueName || ''
-                    };
-                });
-            } else {
-                // A response-owned request type other than 2 is not Last Week data.
-                entries = [];
-            }
-        } else if (
-            data.leagueEntries &&
-            data.leagueEntries.length
-        ) {
-            entries = data.leagueEntries;
-        } else if (
-            window.RecordPlayers &&
-            window.RecordPlayers.length
-        ) {
-            entries = window.RecordPlayers;
-        }
-        entries = entries || [];
 
-        if (entries.length === 0) {
+        var lastWeekResponseRequestType =
+            Number(data.leagueRequestType);
+
+        if (
+            hasLastWeekRequestType &&
+            lastWeekResponseRequestType !== 2
+        ) {
+            console.warn(
+                '[LM] Refusing non-last-week response in Weekly Results:',
+                data.leagueRequestType
+            );
+            return;
+        }
+
+        /*
+         * Match original Agar.io:
+         * show the global no-results state only when every last-week
+         * leaderboard category is empty.
+         */
+        var leagueEntries =
+            Array.isArray(data.league) ? data.league : [];
+
+        var friendsEntries =
+            Array.isArray(data.friends) ? data.friends : [];
+
+        var countryEntries =
+            Array.isArray(data.country) ? data.country : [];
+
+        var worldEntries =
+            Array.isArray(data.world) ? data.world : [];
+
+        var totalLastWeekResults =
+            leagueEntries.length +
+            friendsEntries.length +
+            countryEntries.length +
+            worldEntries.length;
+
+        if (hasLastWeekRequestType && totalLastWeekResults === 0) {
             window._renderLastWeekNoResults();
+            return;
+        }
+
+        var selectedLastWeekTab = Number(
+            window._lastWeekLeagueTab ||
+            window.currentLeagueTab ||
+            1
+        );
+
+        if (
+            selectedLastWeekTab !== 2 &&
+            selectedLastWeekTab !== 3
+        ) {
+            selectedLastWeekTab = 1;
+        }
+
+        var selectedOfficialEntries =
+            selectedLastWeekTab === 2
+                ? countryEntries
+                : (
+                    selectedLastWeekTab === 3
+                        ? worldEntries
+                        : leagueEntries
+                );
+
+        entries = selectedOfficialEntries.map(function(entry, index) {
+            if (!entry) {
+                return null;
+            }
+
+            var officialUserId =
+                entry.userId || '';
+
+            return {
+                displayName:
+                    entry.displayName || '',
+
+                id:
+                    officialUserId,
+
+                uid:
+                    officialUserId,
+
+                level:
+                    entry.level,
+
+                country:
+                    entry.countryCode || 'us',
+
+                icon:
+                    typeof window._normalizeLeagueAvatarUrl ===
+                    'function'
+                        ? window._normalizeLeagueAvatarUrl(
+                            entry.avatarUrl
+                        )
+                        : (
+                            typeof entry.avatarUrl === 'string' &&
+                            entry.avatarUrl.trim()
+                                ? entry.avatarUrl.trim()
+                                : 'https://jimboy3100.github.io/banners/profilepic_guest.png'
+                        ),
+
+                rank:
+                    entry.rank !== undefined
+                        ? entry.rank
+                        : index + 1,
+
+                score:
+                    entry.trophies !== undefined
+                        ? entry.trophies
+                        : 0,
+
+                leagueName:
+                    entry.leagueName || ''
+            };
+        }).filter(Boolean);
+
+        /*
+         * At least one category has results, but the selected category
+         * is empty. This is not the global "you earned no trophies"
+         * condition.
+         */
+        if (entries.length === 0) {
+            contentArea.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: ${t.tc2}; font-size: 15px; font-weight: 600; line-height: 1.6;">
+                    No results are available for this leaderboard.
+                </div>
+            `;
             return;
         }
 
@@ -1195,7 +1405,13 @@
 
             var name = entry.displayName || entry.id || ('Player ' + rankNum);
             var score = entry.score !== undefined ? entry.score.toLocaleString() : (entry.winnings !== undefined ? entry.winnings.toLocaleString() : (entry.trophies !== undefined ? entry.trophies.toLocaleString() : '0'));
-            var icon = entry.icon || entry.avatar || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+            var icon =
+                typeof window._normalizeLeagueAvatarUrl ===
+                'function'
+                    ? window._normalizeLeagueAvatarUrl(
+                        entry.icon || entry.avatar
+                    )
+                    : 'https://jimboy3100.github.io/banners/profilepic_guest.png';
             var country =
                 window._normalizeLeagueCountryCode(
                     entry.country ||
@@ -1219,7 +1435,7 @@
             html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius: 8px; ' + rowBg + '">';
             html += '<div style="width: 60px;">' + rankBadge + '</div>';
             html += '<div style="flex: 1; display: flex; align-items: center; gap: 10px;">';
-            html += '<img src="' + icon + '" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\'">';
+            html += '<img src="' + icon + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\';">';
             html += '<span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">' + level + '</span>';
             html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius: 2px;"></span>';
             html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + window._escapeLeagueHtmlText(name) + '</span>';
@@ -2890,6 +3106,106 @@
     };
 
     // ─── Component 6: 👤 Profile Tab Auto-Sync & Boost Handlers ───
+
+    /**
+     * Shared runtime guard for all lm-extended-menu-btns click handlers.
+     * Returns true when the user is logged in AND has a valid Agar.io UID.
+     * Shows a toastr warning when access is blocked.
+     */
+    window._lmExtendedMenuEnabled = function() {
+        var appUser =
+            (
+                window.application &&
+                window.application.user
+            ) ||
+            (
+                window.legendmod &&
+                window.legendmod.user
+            ) ||
+            {};
+
+        var isLoggedIn;
+
+        if (
+            typeof window.checkUserLoggedIn ===
+            'function'
+        ) {
+            isLoggedIn =
+                window.checkUserLoggedIn();
+        } else {
+            var fallbackUserId =
+                appUser.userId !== undefined &&
+                appUser.userId !== null
+                    ? String(
+                        appUser.userId
+                    ).trim()
+                    : '';
+
+            var normalizedFallbackUserId =
+                fallbackUserId.toLowerCase();
+
+            isLoggedIn =
+                !!(
+                    window.loggedIn === true ||
+                    appUser.authenticated ===
+                        true ||
+                    (
+                        fallbackUserId &&
+                        fallbackUserId !== '0' &&
+                        normalizedFallbackUserId !==
+                            'null' &&
+                        normalizedFallbackUserId !==
+                            'undefined'
+                    )
+                );
+        }
+
+        var hasUID;
+
+        if (
+            typeof window.checkUserUID ===
+            'function'
+        ) {
+            hasUID =
+                window.checkUserUID();
+        } else {
+            var fallbackUID =
+                typeof window.agarioUID ===
+                'string'
+                    ? window.agarioUID.trim()
+                    : '';
+
+            var normalizedFallbackUID =
+                fallbackUID.toLowerCase();
+
+            hasUID =
+                !!(
+                    isLoggedIn &&
+                    fallbackUID &&
+                    fallbackUID.length >= 8 &&
+                    fallbackUID.indexOf('$') ===
+                        -1 &&
+                    fallbackUID !== '0' &&
+                    normalizedFallbackUID !==
+                        'null' &&
+                    normalizedFallbackUID !==
+                        'undefined'
+                );
+        }
+
+        if (!isLoggedIn || !hasUID) {
+            if (window.toastr) {
+                toastr.error(
+                    '<b>[LOGIN REQUIRED]:</b> Log in with Google/Facebook and play a game session first.'
+                );
+            }
+
+            return false;
+        }
+
+        return true;
+    };
+
     window.syncProfileTabUI = function() {
         var appUser =
             (
@@ -3129,9 +3445,16 @@
             }
         }
 
-        // 5. Friends Button Disabled state when unauthenticated, not logged in with Facebook, or disconnected
+        // 5. Friends Button Disabled state when unauthenticated, missing UID, not logged in with Facebook, or disconnected
         var isUserLoggedIn = typeof window.checkUserLoggedIn === 'function' ? window.checkUserLoggedIn() : !!(window.loggedIn || (window.application && window.application.user && window.application.user.userId));
-        var isFacebookLoggedIn = isUserLoggedIn && (
+        var hasUserUID = typeof window.checkUserUID === 'function'
+            ? window.checkUserUID()
+            : !!(function() {
+                var u = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
+                var n = u.toLowerCase();
+                return isUserLoggedIn && u && u.length >= 8 && u.indexOf('$') === -1 && u !== '0' && n !== 'null' && n !== 'undefined';
+            })();
+        var isFacebookLoggedIn = isUserLoggedIn && hasUserUID && (
             (window.master && window.master.context === 'facebook') ||
             (window.application && window.application.user && (window.application.user.context === 'facebook' || window.application.user.facebookId)) ||
             !!window.facebookUser ||
@@ -3140,12 +3463,14 @@
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
         var friendsBtn = $('#lm-friends-btn, .lm-friends-btn');
         if (friendsBtn.length) {
-            if (!isUserLoggedIn || !isFacebookLoggedIn || !hasServerConnection) {
+            if (!isUserLoggedIn || !hasUserUID || !isFacebookLoggedIn || !hasServerConnection) {
                 var friendsTitle = !isUserLoggedIn
                     ? 'Log in with Facebook and join a game session first to access Friends'
-                    : (!isFacebookLoggedIn
-                        ? 'Friends feature requires logging in with Facebook'
-                        : 'Join an Agar.io server first');
+                    : (!hasUserUID
+                        ? 'Play a game session first to receive your Agar.io UID'
+                        : (!isFacebookLoggedIn
+                            ? 'Friends feature requires logging in with Facebook'
+                            : 'Join an Agar.io server first'));
                 friendsBtn.css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' })
                           .prop('disabled', true)
                           .attr('title', friendsTitle);
@@ -3293,6 +3618,9 @@
 
         $(document).off('click', '#lm-leagues-btn').on('click', '#lm-leagues-btn', function(e) {
             e.preventDefault();
+            if (!window._lmExtendedMenuEnabled()) {
+                return false;
+            }
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('access Weekly Leagues')) {
                 return false;
             }
@@ -3434,6 +3762,9 @@
 
         $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
             e.preventDefault();
+            if (!window._lmExtendedMenuEnabled()) {
+                return false;
+            }
 
             if (
                 typeof window.openDailyDealsModal !==
