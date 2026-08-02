@@ -1816,7 +1816,7 @@ window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
 window.chatLimit = 15;
-window.LMscore = 0;
+window.LMscore = Number(localStorage['LMscore']) || 0;
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
 var isMobile = false;
@@ -2699,6 +2699,10 @@ window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
 function setLevelProgressBar() {
+    if (!window.LMscore && localStorage['LMscore']) {
+        window.LMscore = Number(localStorage['LMscore']) || 0;
+    }
+    var lmScoreVal = window.LMscore || 0;
     var officialXpPanel = $('#exp-bar').eq(0);
     var legendXpPanel = $('#exp-bar').eq(1);
     officialXpPanel.find('.progress-bar-striped').css({
@@ -2707,11 +2711,11 @@ function setLevelProgressBar() {
     });
     legendXpPanel.find('.progress-bar-striped2').css({
         "transition": "5s",
-        "width": window.LMscore + "%"
+        "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
     });
     officialXpPanel.find('.progress-bar-star3').text(window.agarioLEVEL);
     $('.agario-profile-panel .progress-bar-star').first().text(window.agarioLEVEL);
-    legendXpPanel.find('.progress-bar-star2').text(window.LMscore);
+    legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
 }
 
 function resetLevelProgressBar() {
@@ -20246,15 +20250,30 @@ function thelegendmodproject() {
             if (!s) s = {}; /* guard: protobuf may not decode userStats */
             /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.
              * Convert to Number so arithmetic and template literals work correctly. */
-            var allTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore) || 0;
+            var rawAllTimeScore = null;
+            if (s.allTimeScore !== undefined && s.allTimeScore !== null) {
+                rawAllTimeScore = (typeof s.allTimeScore === 'object' && s.allTimeScore.toNumber) ? s.allTimeScore.toNumber() : Number(s.allTimeScore);
+            } else if (window.application && window.application.user && window.application.user.stats && window.application.user.stats.allTimeScore !== undefined) {
+                rawAllTimeScore = Number(window.application.user.stats.allTimeScore);
+            }
+
+            if (rawAllTimeScore !== null && !isNaN(rawAllTimeScore) && rawAllTimeScore >= 0) {
+                window._lastAllTimeScore = rawAllTimeScore;
+                window.LMscore = Math.trunc(rawAllTimeScore / 2000000);
+                try { localStorage['LMscore'] = window.LMscore; } catch(e) {}
+            } else if (!window.LMscore && localStorage['LMscore']) {
+                window.LMscore = Number(localStorage['LMscore']) || 0;
+            }
+
+            var allTimeScore = window._lastAllTimeScore || 0;
+            var lmScoreVal = window.LMscore || 0;
             var massConsumed = (typeof s.massConsumed === 'object' && s.massConsumed.toNumber) ? s.massConsumed.toNumber() : Number(s.massConsumed) || 0;
             var gamesPlayed = Number(s.gamesPlayed) || 0;
             var highestMass = Number(s.highestMass) || 0;
             var longestTimeAlive = Number(s.longestTimeAlive) || 0;
             var mostCellsEaten = Number(s.mostCellsEaten) || 0;
 
-            window.LMscore = Math.trunc(allTimeScore / 2000000);
-            if (window.LMscore > 40) {
+            if (lmScoreVal > 40) {
                 PremiumUsersLMscore();
             }
             var legendXpPanel =
@@ -20262,16 +20281,17 @@ function thelegendmodproject() {
 
             legendXpPanel
                 .find('.progress-bar-striped2')
-                .width(
-                    Math.max(
+                .css({
+                    "transition": "5s",
+                    "width": Math.max(
                         0,
-                        Math.min(100, window.LMscore)
+                        Math.min(100, lmScoreVal)
                     ) + '%'
-                );
+                });
 
             legendXpPanel
                 .find('.progress-bar-star2')
-                .text(window.LMscore);
+                .text(lmScoreVal);
 
             $("#stats-content").html(`
 All time score     : ${allTimeScore}<br/>

@@ -3793,6 +3793,17 @@
         officialXpPanel.find('.progress-bar-text').text(xpText);
         $('.agario-profile-panel .progress-bar-star').first().text(level);
 
+        if (!window.LMscore && localStorage['LMscore']) {
+            window.LMscore = Number(localStorage['LMscore']) || 0;
+        }
+        var lmScoreVal = window.LMscore || 0;
+        var legendXpPanel = $('#exp-bar').eq(1);
+        legendXpPanel.find('.progress-bar-striped2').css({
+            "transition": "5s",
+            "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
+        });
+        legendXpPanel.find('.progress-bar-star2').text(lmScoreVal);
+
         // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
         var potions = appUser.potions || window.lastPotionsData || [];
         if (!window.LM) window.LM = {};
