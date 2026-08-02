@@ -333,90 +333,185 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
     refreshIdentityUI();
 
     /*
-     * Wait until the official agarApp event bus exists, then bind
-     * exactly once to user_login.
+     * Capture the official account through every event surface exposed
+     * by the Agar.io client.
+     *
+     * Loading order is not guaranteed:
+     * - Core.user may already exist;
+     * - the native Haxe USER_LOGGED event may exist first;
+     * - agarApp.core.bind may appear later.
      */
-    var bindAttempts = 0;
-    var maximumBindAttempts = 1200;
+    var officialIdentityPollTimer = null;
 
-    function bindOfficialUserLogin() {
-        var agarApp =
-            window.agarApp;
-
-        if (
-            !agarApp ||
-            !agarApp.core ||
-            typeof agarApp.core.bind !==
-                "function"
-        ) {
-            bindAttempts++;
-
-            if (
-                bindAttempts <
-                maximumBindAttempts
-            ) {
-                window.setTimeout(
-                    bindOfficialUserLogin,
-                    50
-                );
-            } else {
-                console.warn(
-                    "[LM UID] Official user_login event bus was not found."
-                );
-            }
-
-            return;
-        }
-
-        if (
-            window._lmOfficialUserLoginBound
-        ) {
-            return;
-        }
-
-        window._lmOfficialUserLoginBound =
-            true;
-
-        agarApp.core.bind(
-            "user_login",
-            function (
-                event,
-                officialUser
-            ) {
-                captureOfficialUser(
-                    officialUser,
-                    "user_login"
-                );
-            }
-        );
-
-        console.log(
-            "[LM UID] Bound to official Agar.io user_login event."
-        );
-
-        /*
-         * Handle the case where automatic login completed before
-         * this Legend Mod listener was installed.
-         */
+    function inspectExistingOfficialUser(source) {
         try {
             if (
                 window.Core &&
                 window.Core.user
             ) {
-                captureOfficialUser(
+                return captureOfficialUser(
                     window.Core.user,
-                    "existing Core.user"
+                    source || "existing Core.user"
                 );
             }
         } catch (error) {
             console.warn(
-                "[LM UID] Existing Core.user inspection failed:",
+                "[LM UID] Core.user inspection failed:",
                 error
             );
         }
+
+        return false;
     }
 
-    bindOfficialUserLogin();
+    function bindAgarAppUserLogin() {
+        var agarApp =
+            window.agarApp;
+
+        if (
+            window._lmAgarAppUserLoginBound ||
+            !agarApp ||
+            !agarApp.core ||
+            typeof agarApp.core.bind !==
+                "function"
+        ) {
+            return false;
+        }
+
+        try {
+            agarApp.core.bind(
+                "user_login",
+                function (
+                    event,
+                    officialUser
+                ) {
+                    /*
+                     * The official event passes Core.user as the
+                     * second argument.
+                     */
+                    captureOfficialUser(
+                        officialUser ||
+                        (
+                            window.Core &&
+                            window.Core.user
+                        ),
+                        "agarApp.core user_login"
+                    );
+                }
+            );
+
+            window._lmAgarAppUserLoginBound =
+                true;
+
+            console.log(
+                "[LM UID] Bound to agarApp.core user_login."
+            );
+
+            return true;
+        } catch (error) {
+            console.warn(
+                "[LM UID] Could not bind agarApp.core user_login:",
+                error
+            );
+
+            return false;
+        }
+    }
+
+    function bindNativeUserLoggedEvent() {
+        if (
+            window._lmNativeUserLoggedBound ||
+            !window.Core ||
+            typeof window.Core.get_events !==
+                "function"
+        ) {
+            return false;
+        }
+
+        var events;
+
+        try {
+            events =
+                window.Core.get_events();
+        } catch (error) {
+            return false;
+        }
+
+        if (
+            !events ||
+            typeof events.addEventListener !==
+                "function"
+        ) {
+            return false;
+        }
+
+        try {
+            events.addEventListener(
+                "UserEvent::USER_LOGGED",
+                function () {
+                    inspectExistingOfficialUser(
+                        "Core USER_LOGGED"
+                    );
+                }
+            );
+
+            window._lmNativeUserLoggedBound =
+                true;
+
+            console.log(
+                "[LM UID] Bound to Core USER_LOGGED."
+            );
+
+            return true;
+        } catch (error) {
+            console.warn(
+                "[LM UID] Could not bind Core USER_LOGGED:",
+                error
+            );
+
+            return false;
+        }
+    }
+
+    function pollOfficialIdentitySources() {
+        /*
+         * Capture first. This covers login that finished before either
+         * listener was installed.
+         */
+        inspectExistingOfficialUser(
+            "identity poll"
+        );
+
+        bindAgarAppUserLogin();
+        bindNativeUserLoggedEvent();
+
+        /*
+         * Keep polling until both available official event surfaces have
+         * been bound. Do not report their temporary absence as an error.
+         */
+        if (
+            window._lmAgarAppUserLoginBound &&
+            (
+                window._lmNativeUserLoggedBound ||
+                (
+                    window.Core &&
+                    typeof window.Core.get_events !==
+                        "function"
+                )
+            )
+        ) {
+            officialIdentityPollTimer = null;
+            return;
+        }
+
+        officialIdentityPollTimer =
+            window.setTimeout(
+                pollOfficialIdentitySources,
+                250
+            );
+    }
+
+    pollOfficialIdentitySources();
 })();
 
 function readLocalStorageJSON(key, fallbackValue) {
