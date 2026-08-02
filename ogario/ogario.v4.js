@@ -2704,10 +2704,18 @@ window.updateOfficialXpPanel = function(level, expPercent) {
     }
     var lvlVal = window.agarioLEVEL || 1;
     var officialXpPanel = $('#exp-bar').eq(0);
-    officialXpPanel.find('.progress-bar-striped, .progress-bar').css({
-        "transition": "5s",
-        "width": (expPercent !== undefined ? expPercent : lvlVal) + "%"
-    });
+
+    /* Only update the bar width when a real 0–100 percentage is provided.
+     * Previously, when expPercent was undefined it fell back to lvlVal
+     * (the level number, e.g. 150), causing width: 150% overflow. */
+    if (expPercent !== undefined && expPercent !== null) {
+        var clampedPercent = Math.max(0, Math.min(100, Number(expPercent) || 0));
+        officialXpPanel.find('.progress-bar-striped, .progress-bar').css({
+            "transition": "5s",
+            "width": clampedPercent + "%"
+        });
+    }
+
     var star3 = officialXpPanel.find('.progress-bar-star3');
     if (star3.length > 0) {
         star3.text(lvlVal);
@@ -2723,10 +2731,14 @@ window.updateLegendXpPanel = function() {
     }
     var lmScoreVal = window.LMscore || 0;
     var legendXpPanel = $('#exp-bar').eq(1);
-    legendXpPanel.find('.progress-bar-striped2, .progress-bar').css({
+
+    /* Only target .progress-bar-striped2 — not the generic .progress-bar
+     * class which also exists on the left panel's bar element. */
+    legendXpPanel.find('.progress-bar-striped2').css({
         "transition": "5s",
         "width": Math.max(0, Math.min(100, lmScoreVal)) + "%"
     });
+
     var star2 = legendXpPanel.find('.progress-bar-star2');
     if (star2.length > 0) {
         star2.text(lmScoreVal);
