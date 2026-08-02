@@ -337,7 +337,7 @@ function SpecialDeals(defaultTab) {
             '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; Search skins by name...">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
             '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
-            '<button class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
+            '<button type="button" class="skin-load-more" id="skinLoadMore" style="display:none;">Load More Skins</button>' +
             '</div>' +
             '</div>' +
 
@@ -2123,9 +2123,45 @@ function populateSkins() {
         );
 
     // Load more handler
-    $('#skinLoadMore').off('click').on('click', function() {
-        renderSkinPage(true);
-    });
+    $('#skinLoadMore')
+        .off('click.skinShop')
+        .on('click.skinShop', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var button = this;
+
+            /*
+             * This is a pagination control, not a submit/action button.
+             * Explicitly clear any disabled state inherited from generic
+             * modal, form or shop button-management code.
+             */
+            button.disabled = false;
+            button.removeAttribute('disabled');
+            button.setAttribute('aria-disabled', 'false');
+
+            renderSkinPage(true);
+
+            /*
+             * renderSkinPage() updates the count and button text.
+             * Keep the control usable when additional rows remain.
+             */
+            var grid = document.getElementById('skinGrid');
+            var total = skinShopFiltered
+                ? skinShopFiltered.length
+                : 0;
+            var renderedCount = grid
+                ? grid.children.length
+                : 0;
+
+            if (renderedCount < total) {
+                button.disabled = false;
+                button.removeAttribute('disabled');
+                button.setAttribute('aria-disabled', 'false');
+            }
+
+            return false;
+        });
 
     applySkinFilters(true);
     updateEquippedSkinUI();
@@ -2651,10 +2687,25 @@ function updatePaginationUI() {
     $('#skinCount').text(renderedCount);
     $('#skinTotal').text(total);
 
+    var loadMoreButton = $('#skinLoadMore');
+
     if (renderedCount < total) {
-        $('#skinLoadMore').show().text('Load More Skins (' + (total - renderedCount) + ' remaining)');
+        loadMoreButton
+            .prop('disabled', false)
+            .removeAttr('disabled')
+            .attr('aria-disabled', 'false')
+            .show()
+            .text(
+                'Load More Skins (' +
+                (total - renderedCount) +
+                ' remaining)'
+            );
     } else {
-        $('#skinLoadMore').hide();
+        loadMoreButton
+            .prop('disabled', false)
+            .removeAttr('disabled')
+            .attr('aria-disabled', 'false')
+            .hide();
     }
 }
 

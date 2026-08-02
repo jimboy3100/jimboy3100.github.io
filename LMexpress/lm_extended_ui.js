@@ -900,141 +900,288 @@
         var title = titleMap[currentTab] || titleMap[1];
         var gradient = gradientMap[currentTab] || gradientMap[1];
 
-        // Build prize rows from real config or fallback
+        /*
+         * Use the exact official Agar.io prize-resolution path.
+         *
+         * Original client:
+         *   agarApp.API.getLeaguesPrizes(fetchLeague, total)
+         *
+         * Internally:
+         *   Leagues - Prizes[].rewardId
+         *     -> Wallet - Bonuses and Rewards[].bonusId  (getBonusById)
+         *     -> bonus.bundleId
+         *     -> Wallet - Product Bundles[].id            (getProductByBundleId)
+         *     -> productId + quantity
+         *
+         * CRITICAL: the official lookup uses bundle.id, NOT bundle.bundleId.
+         */
         var prizeRows = [];
-        var prizesConfig = window.LeaguesPrizesConfig;
-        if (prizesConfig && prizesConfig.length) {
-            // Filter by league name
-            var filtered = prizesConfig.filter(function(p) { return p.leagueName === leagueFilter; });
-            if (filtered.length === 0) {
-                // Try lowercase matching or partial
-                filtered = prizesConfig.filter(function(p) {
-                    return p.leagueName && p.leagueName.toLowerCase() === leagueFilter.toLowerCase();
-                });
+
+        var fetchLeague;
+
+        if (currentTab === 2) {
+            fetchLeague = 'country';
+        } else if (currentTab === 3) {
+            fetchLeague = 'world';
+        } else {
+            /*
+             * For My League, Agar.io passes the user's tier identifier,
+             * for example: kraken, mammoth, crocodile, etc.
+             */
+            fetchLeague =
+                window.currentLeagueTier ||
+                (
+                    window.application &&
+                    window.application.user &&
+                    window.application.user.tier
+                ) ||
+                (
+                    window.legendmod &&
+                    window.legendmod.user &&
+                    window.legendmod.user.tier
+                ) ||
+                '';
+
+            fetchLeague = String(fetchLeague)
+                .trim()
+                .toLowerCase()
+                .replace(/\s+league$/i, '');
+
+            /* If no tier resolved, use the leagueFilter from the tier lookup */
+            if (!fetchLeague) {
+                fetchLeague = leagueFilter;
             }
-            if (filtered.length > 0) {
-                filtered.forEach(function(prize) {
-                    var safePositionFrom =
-                        window._escapeLeagueHtmlText(
-                            prize.positionFrom
-                        );
-                    var safePositionTo =
-                        window._escapeLeagueHtmlText(
-                            prize.positionTo
-                        );
-                    var place;
-                    if (prize.positionFrom === prize.positionTo) {
-                        if (prize.positionFrom === 1) place = '1st place';
-                        else if (prize.positionFrom === 2) place = '2nd place';
-                        else if (prize.positionFrom === 3) place = '3rd place';
-                        else place = safePositionFrom + 'th place';
-                    } else {
-                        place =
-                            safePositionFrom +
-                            'th - ' +
-                            safePositionTo +
-                            'th';
-                    }
-                    /*
-                     * Resolve prizes exactly like the original Agar.io client:
-                     *
-                     * prize.rewardId
-                     *   -> Wallet - Bonuses and Rewards[].bonusId
-                     *   -> bonus.bundleId
-                     *   -> Wallet - Product Bundles[].bundleId
-                     *   -> productId + quantity
-                     */
-                    var amount = null;
-                    var productId = '';
+        }
 
-                    try {
-                        var gameConfig = {};
+        var totalPlayers = 100;
 
-                        if (
-                            window.GameConfiguration &&
-                            window.GameConfiguration.gameConfig
-                        ) {
-                            gameConfig =
-                                window.GameConfiguration.gameConfig;
-                        } else if (
-                            window.LMAgarGameConfiguration &&
-                            window.LMAgarGameConfiguration.gameConfig
-                        ) {
-                            gameConfig =
-                                window.LMAgarGameConfiguration.gameConfig;
+        try {
+            var leagueData =
+                window.currentLeaguesResponse ||
+                window.lastLeaguesResponse ||
+                {};
+
+            var selectedPlayers =
+                currentTab === 2
+                    ? leagueData.country
+                    : (
+                        currentTab === 3
+                            ? leagueData.world
+                            : leagueData.league
+                    );
+
+            if (
+                Array.isArray(selectedPlayers) &&
+                selectedPlayers.length > 0
+            ) {
+                totalPlayers = selectedPlayers.length;
+            }
+        } catch (playerCountError) {
+            totalPlayers = 100;
+        }
+
+        var officialPrizes = [];
+
+        try {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API.getLeaguesPrizes ===
+                    'function' &&
+                fetchLeague
+            ) {
+                officialPrizes =
+                    window.agarApp.API.getLeaguesPrizes(
+                        fetchLeague,
+                        totalPlayers
+                    ) || [];
+            }
+        } catch (officialPrizeError) {
+            console.error(
+                '[LM] Official Agar.io league prize lookup failed:',
+                {
+                    fetchLeague: fetchLeague,
+                    totalPlayers: totalPlayers,
+                    error: officialPrizeError
+                }
+            );
+
+            officialPrizes = [];
+        }
+
+        if (Array.isArray(officialPrizes) && officialPrizes.length > 0) {
+            officialPrizes.forEach(function(prize) {
+                if (!prize) {
+                    return;
+                }
+
+                var quantity = Number(prize.price);
+
+                if (!Number.isFinite(quantity)) {
+                    return;
+                }
+
+                var currency = String(
+                    prize.currency || ''
+                ).toLowerCase();
+
+                var currencyIcon;
+
+                if (currency === 'coin') {
+                    currencyIcon = '🪙';
+                } else if (currency === 'dna') {
+                    currencyIcon = '🧬';
+                } else if (currency === 'trophy') {
+                    currencyIcon = '🏆';
+                } else {
+                    currencyIcon = '🎁';
+                }
+
+                prizeRows.push({
+                    rank:
+                        window._escapeLeagueHtmlText(
+                            prize.place || ''
+                        ),
+
+                    prize:
+                        window._escapeLeagueHtmlText(
+                            quantity.toLocaleString()
+                        ) +
+                        ' ' +
+                        currencyIcon
+                });
+            });
+        } else {
+            /*
+             * Manual fallback: replicate the official resolution chain
+             * using the correct field names when the API is unavailable.
+             */
+            var prizesConfig = window.LeaguesPrizesConfig;
+            if (prizesConfig && prizesConfig.length) {
+                var filtered = prizesConfig.filter(function(p) {
+                    return p.leagueName && p.leagueName.toLowerCase() === fetchLeague.toLowerCase();
+                });
+
+                if (filtered.length > 0) {
+                    filtered.forEach(function(prize) {
+                        var safePositionFrom =
+                            window._escapeLeagueHtmlText(
+                                prize.positionFrom
+                            );
+                        var safePositionTo =
+                            window._escapeLeagueHtmlText(
+                                prize.positionTo
+                            );
+                        var place;
+                        if (prize.positionFrom === prize.positionTo) {
+                            if (prize.positionFrom === 1) place = '1st place';
+                            else if (prize.positionFrom === 2) place = '2nd place';
+                            else if (prize.positionFrom === 3) place = '3rd place';
+                            else place = safePositionFrom + 'th place';
+                        } else {
+                            place =
+                                safePositionFrom +
+                                'th - ' +
+                                safePositionTo +
+                                'th';
                         }
 
-                        var bonuses =
-                            gameConfig[
-                                'Wallet - Bonuses and Rewards'
-                            ] || [];
+                        var amount = null;
+                        var productId = '';
 
-                        var bundles =
-                            window.WalletProductBundlesConfig ||
-                            gameConfig[
-                                'Wallet - Product Bundles'
-                            ] ||
-                            [];
+                        try {
+                            var gameConfig = {};
 
-                        var bonus = bonuses.find(function(item) {
-                            return (
-                                item &&
-                                String(item.bonusId) ===
-                                    String(prize.rewardId)
-                            );
-                        });
+                            if (
+                                window.GameConfiguration &&
+                                window.GameConfiguration.gameConfig
+                            ) {
+                                gameConfig =
+                                    window.GameConfiguration.gameConfig;
+                            } else if (
+                                window.LMAgarGameConfiguration &&
+                                window.LMAgarGameConfiguration.gameConfig
+                            ) {
+                                gameConfig =
+                                    window.LMAgarGameConfiguration.gameConfig;
+                            }
 
-                        if (bonus && bonus.bundleId) {
-                            var bundle = bundles.find(function(item) {
+                            var bonuses =
+                                gameConfig[
+                                    'Wallet - Bonuses and Rewards'
+                                ] || [];
+
+                            var bundles =
+                                window.WalletProductBundlesConfig ||
+                                gameConfig[
+                                    'Wallet - Product Bundles'
+                                ] ||
+                                [];
+
+                            var bonus = bonuses.find(function(item) {
                                 return (
                                     item &&
-                                    String(item.bundleId) ===
-                                        String(bonus.bundleId)
+                                    String(item.bonusId) ===
+                                        String(prize.rewardId)
                                 );
                             });
 
-                            if (bundle) {
-                                amount = Number(bundle.quantity);
-                                productId = String(
-                                    bundle.productId || ''
-                                ).toLowerCase();
+                            if (bonus && bonus.bundleId) {
+                                /*
+                                 * CRITICAL: Original Agar.io getProductByBundleId
+                                 * searches bundle.id, NOT bundle.bundleId
+                                 */
+                                var bundle = bundles.find(function(item) {
+                                    return (
+                                        item &&
+                                        String(item.id) ===
+                                            String(bonus.bundleId)
+                                    );
+                                });
+
+                                if (bundle) {
+                                    amount = Number(bundle.quantity);
+                                    productId = String(
+                                        bundle.productId || ''
+                                    ).toLowerCase();
+                                }
                             }
+                        } catch (error) {
+                            console.warn(
+                                '[LM] Could not resolve league prize:',
+                                prize,
+                                error
+                            );
                         }
-                    } catch (error) {
-                        console.warn(
-                            '[LM] Could not resolve league prize:',
-                            prize,
-                            error
-                        );
-                    }
 
-                    var currencyIcon;
+                        var currencyIcon;
 
-                    if (productId === 'coin') {
-                        currencyIcon = '🪙';
-                    } else if (productId === 'dna') {
-                        currencyIcon = '🧬';
-                    } else if (productId === 'trophy') {
-                        currencyIcon = '🏆';
-                    } else {
-                        currencyIcon = '🎁';
-                    }
+                        if (productId === 'coin') {
+                            currencyIcon = '🪙';
+                        } else if (productId === 'dna') {
+                            currencyIcon = '🧬';
+                        } else if (productId === 'trophy') {
+                            currencyIcon = '🏆';
+                        } else {
+                            currencyIcon = '🎁';
+                        }
 
-                    var displayAmount =
-                        Number.isFinite(amount) && amount >= 0
-                            ? amount.toLocaleString()
-                            : 'Unavailable';
+                        var displayAmount =
+                            Number.isFinite(amount) && amount >= 0
+                                ? amount.toLocaleString()
+                                : '?';
 
-                    prizeRows.push({
-                        rank: place,
-                        prize:
-                            window._escapeLeagueHtmlText(
-                                displayAmount
-                            ) +
-                            ' ' +
-                            currencyIcon
+                        prizeRows.push({
+                            rank: place,
+                            prize:
+                                window._escapeLeagueHtmlText(
+                                    displayAmount
+                                ) +
+                                ' ' +
+                                currencyIcon
+                        });
                     });
-                });
+                }
             }
         }
 
@@ -1058,7 +1205,12 @@
                 `;
             });
         } else {
-            rowsHtml = `<div style="text-align: center; color: ${t.tc2}; padding: 30px; font-weight: 600; font-size: 13px;">Fetching league prize configuration from server...</div>`;
+            rowsHtml = `
+                <div style="text-align: center; color: ${t.tc2}; padding: 30px; font-weight: 600; font-size: 13px; line-height: 1.6;">
+                    League prize data is not ready.<br>
+                    Close this window and open it again after Agar.io finishes loading.
+                </div>
+            `;
         }
 
         modal.innerHTML = `

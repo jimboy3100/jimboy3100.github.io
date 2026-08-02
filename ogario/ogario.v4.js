@@ -3170,6 +3170,7 @@ function userLeaguesInfoResponse() {
             window.lastWeekLeaguesResponse = detail;
         } else {
             window.lastLeaguesResponse = detail;
+            window.currentLeaguesResponse = detail;
         }
 
         console.log('[LM] Leagues data dispatched (' + entries.length + ' entries, isLastWeek=' + isLastWeek + ')');
