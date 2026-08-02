@@ -4405,8 +4405,26 @@
             officialXpPanel.find('.progress-bar').css('width', percent + '%');
             var star3 = officialXpPanel.find('.progress-bar-star3');
             if (star3.length > 0) { star3.text(level); } else { officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + level + '</strong>'); }
-            $('.agario-profile-panel .progress-bar-star').first().text(level);
         }
+
+        /*
+         * Directly sync the #profile tab's own agario-exp-bar.
+         * The official profile panel (.agario-profile-panel) has its own
+         * .progress-bar-text and .progress-bar-star inside .agario-exp-bar.
+         * These are separate from the Legend Mod #exp-bar elements.
+         * Scope to only the original .agario-profile-panel that is NOT #exp-bar.
+         */
+        var profileExpBars = $('.agario-profile-panel').not('#exp-bar');
+        profileExpBars.find('.progress-bar-text').each(function() {
+            var $this = $(this);
+            /* Only update if it looks like a level display (contains a number or star) */
+            var currentText = $this.text().trim();
+            if (currentText === '' || /^\d+$/.test(currentText) || /Level|★|⭐/.test(currentText) || /^\d+\s*\//.test(currentText)) {
+                $this.text(level);
+            }
+        });
+        profileExpBars.find('.progress-bar-star').first().text(level);
+        profileExpBars.find('.progress-bar-active, .progress-bar').not('.progress-bar-striped, .progress-bar-striped2').css('width', percent + '%');
 
         if (typeof window.updateLegendXpPanel === 'function') {
             window.updateLegendXpPanel();

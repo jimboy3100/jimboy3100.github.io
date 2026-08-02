@@ -2760,7 +2760,16 @@ window.updateOfficialXpPanel = function(level, expPercent) {
     } else {
         officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + lvlVal + '</strong>');
     }
-    $('.agario-profile-panel .progress-bar-star').first().text(lvlVal);
+
+    /* Sync the original profile panel's exp bar (not the LM #exp-bar elements) */
+    var profilePanels = $('.agario-profile-panel').not('#exp-bar');
+    profilePanels.find('.progress-bar-star').first().text(lvlVal);
+    profilePanels.find('.progress-bar-text').each(function() {
+        var txt = $(this).text().trim();
+        if (txt === '' || /^\d+$/.test(txt) || /Level|★|⭐/.test(txt)) {
+            $(this).text(lvlVal);
+        }
+    });
 };
 
 window.updateLegendXpPanel = function() {
