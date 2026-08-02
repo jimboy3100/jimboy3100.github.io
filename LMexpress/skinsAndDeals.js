@@ -2183,34 +2183,49 @@ function populateSkins() {
     _populateSkinsRetries = 0; // reset for next open
     window._skinPriceCache = null; // force price cache rebuild from fresh config
 
-    var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+    var skins =
+        window.GameConfiguration.gameConfig[
+            "Gameplay - Equippable Skins"
+        ];
+
     var currentFilter = 'all';
 
-    function applySkinFilters(resetPagination) {
-        if (resetPagination !== false) {
-            skinShopLoadedPages = 1;
+    /*
+     * Rebuild the real filtered skin array independently from rendering.
+     * Load More calls this too, so it cannot operate on an empty/stale
+     * global skinShopFiltered cache.
+     */
+    function rebuildSkinShopFiltered() {
+        var activeFilter =
+            $('.skin-filter-btn.active')
+                .attr('data-filter');
+
+        if (
+            activeFilter === 'all' ||
+            activeFilter === 'owned'
+        ) {
+            currentFilter = activeFilter;
         }
+
         var searchEl = $('#skinSearchBar');
-        var query = (searchEl.length && searchEl.val()) ? String(searchEl.val()).toLowerCase().trim() : '';
+        var query =
+            searchEl.length && searchEl.val()
+                ? String(searchEl.val()).toLowerCase().trim()
+                : '';
+
         var ownedSkinsObj = getOwnedSkinsMap();
 
-        skinShopFiltered = skins.filter(function(s) {
-            if (!s || !s.productId || s.productId === 'skin_empty') return false;
-
-            if (currentFilter === 'owned') {
-                if (!isSkinOwned(s, ownedSkinsObj)) return false;
-            }
-
+        skinShopFiltered = skins.filter(function(skin) {
+            if (!skin || !skin.productId || skin.productId === 'skin_empty') return false;
+            if (currentFilter === 'owned' && !isSkinOwned(skin, ownedSkinsObj)) return false;
             if (query !== '') {
-                var name = (s.displayName || s.productId.replace('skin_', '').replace(/_/g, ' ')).toLowerCase();
-                var pid = s.productId.toLowerCase();
-                if (name.indexOf(query) === -1 && pid.indexOf(query) === -1) return false;
+                var name = (skin.displayName || skin.productId.replace('skin_', '').replace(/_/g, ' ')).toLowerCase();
+                var productId = skin.productId.toLowerCase();
+                if (name.indexOf(query) === -1 && productId.indexOf(query) === -1) return false;
             }
-
             return true;
         });
 
-        // Owned skins go first in the grid list!
         skinShopFiltered.sort(function(a, b) {
             var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
             var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
@@ -2218,16 +2233,35 @@ function populateSkins() {
             return 0;
         });
 
-        $('#skinGrid').empty();
+        return skinShopFiltered;
+    }
+
+    function applySkinFilters(resetPagination) {
+        if (resetPagination !== false) {
+            skinShopLoadedPages = 1;
+        }
+
+        rebuildSkinShopFiltered();
+
+        var grid = document.getElementById('skinGrid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
 
         if (currentFilter === 'owned' && skinShopFiltered.length === 0) {
-            $('#skinGrid').html('<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: ' + getShopTheme().tc2 + '; font-size: 13px;">No owned skins detected on this session.<br><span style="font-size: 11px; color: ' + getShopTheme().tc2 + ';">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>');
+            grid.innerHTML =
+                '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
+                getShopTheme().tc2 + ';font-size:13px;">' +
+                'No owned skins detected on this session.<br>' +
+                '<span style="font-size:11px;color:' + getShopTheme().tc2 +
+                ';">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>';
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
-        } else {
-            renderSkinPage(false);
+            return;
         }
+
+        renderSkinPage(false);
     }
 
     // Filter button handler
@@ -2267,45 +2301,38 @@ function populateSkins() {
         .on('click.skinShop', function(event) {
             event.preventDefault();
             event.stopPropagation();
+            event.stopImmediatePropagation();
 
             var button = this;
-
-            /*
-             * This is a pagination control, not a submit/action button.
-             * Explicitly clear any disabled state inherited from generic
-             * modal, form or shop button-management code.
-             */
             button.disabled = false;
             button.removeAttribute('disabled');
             button.setAttribute('aria-disabled', 'false');
 
-            console.log('[SKIN SHOP] Load More clicked. skinShopFiltered.length=' + (skinShopFiltered ? skinShopFiltered.length : 'null'));
-
-            renderSkinPage(true);
-
             /*
-             * renderSkinPage() updates the count and button text.
-             * Keep the control usable when additional rows remain.
+             * Critical: reconstruct the filtered list from GameConfiguration
+             * before pagination. Without this, the stale/empty cache causes
+             * updatePaginationUI to hide the button.
              */
+            rebuildSkinShopFiltered();
+
             var grid = document.getElementById('skinGrid');
-            var total = skinShopFiltered
-                ? skinShopFiltered.length
-                : 0;
-            var renderedCount = grid
-                ? grid.children.length
-                : 0;
+            if (!grid) return false;
 
-            console.log('[SKIN SHOP] After renderSkinPage: rendered=' + renderedCount + ' total=' + total);
+            var renderedCount = grid.querySelectorAll('.skin-card').length;
 
-            if (renderedCount < total) {
-                button.disabled = false;
-                button.removeAttribute('disabled');
-                button.setAttribute('aria-disabled', 'false');
-                button.style.display = 'block';
-
-                /* Scroll the button into view so the user can see it */
-                try { button.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+            if (skinShopFiltered.length === 0) {
+                updatePaginationUI();
+                return false;
             }
+
+            if (renderedCount === 0) {
+                skinShopLoadedPages = 1;
+                renderSkinPage(false);
+            } else {
+                renderSkinPage(true);
+            }
+
+            updatePaginationUI();
 
             return false;
         });
@@ -2830,7 +2857,9 @@ window.resumeSkinGridImages =
 function updatePaginationUI() {
     var grid = document.getElementById('skinGrid');
     var total = skinShopFiltered ? skinShopFiltered.length : 0;
-    var renderedCount = grid ? grid.children.length : Math.min(skinShopLoadedPages * skinShopPerPage, total);
+    var renderedCount = grid
+        ? grid.querySelectorAll('.skin-card').length
+        : Math.min(skinShopLoadedPages * skinShopPerPage, total);
     $('#skinCount').text(renderedCount);
     $('#skinTotal').text(total);
 
@@ -2866,7 +2895,7 @@ function renderSkinPage(appendNextPage) {
     var end = 0;
 
     if (appendNextPage === true) {
-        start = grid.children.length;
+        start = grid.querySelectorAll('.skin-card').length;
         if (start >= skinShopFiltered.length) {
             updatePaginationUI();
             return;
