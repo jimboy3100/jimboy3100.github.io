@@ -102,6 +102,8 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 console.warn(
                     "[LM UID] Shop UI refresh failed:",
                     error
+                );
+            }
         }
     }
 
