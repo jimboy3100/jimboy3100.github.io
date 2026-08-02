@@ -20259,11 +20259,16 @@ function thelegendmodproject() {
                 rawAllTimeScore = Number(window.application.user.stats.allTimeScore);
             }
 
-            if (rawAllTimeScore !== null && !isNaN(rawAllTimeScore) && rawAllTimeScore >= 0) {
+            /* Only update LMscore when we have a real positive allTimeScore.
+             * rawAllTimeScore === 0 means the server sent no data or a new account —
+             * do NOT overwrite a previously known score. */
+            if (rawAllTimeScore !== null && !isNaN(rawAllTimeScore) && rawAllTimeScore > 0) {
                 window._lastAllTimeScore = rawAllTimeScore;
                 window.LMscore = Math.trunc(rawAllTimeScore / 2000000);
                 try { localStorage['LMscore'] = window.LMscore; } catch(e) {}
-            } else if (!window.LMscore && localStorage['LMscore']) {
+            }
+            /* Always restore from localStorage if window.LMscore is falsy */
+            if (!window.LMscore && localStorage['LMscore']) {
                 window.LMscore = Number(localStorage['LMscore']) || 0;
             }
 
@@ -20278,22 +20283,9 @@ function thelegendmodproject() {
             if (lmScoreVal > 40) {
                 PremiumUsersLMscore();
             }
-            var legendXpPanel =
-                $('#exp-bar').eq(1);
 
-            legendXpPanel
-                .find('.progress-bar-striped2')
-                .css({
-                    "transition": "5s",
-                    "width": Math.max(
-                        0,
-                        Math.min(100, lmScoreVal)
-                    ) + '%'
-                });
-
-            legendXpPanel
-                .find('.progress-bar-star2')
-                .text(lmScoreVal);
+            /* Delegate to the shared updater so the progress bar and star stay in sync */
+            window.updateLegendXpPanel();
 
             $("#stats-content").html(`
 All time score     : ${allTimeScore}<br/>
