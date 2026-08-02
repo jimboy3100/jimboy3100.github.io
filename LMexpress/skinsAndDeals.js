@@ -1546,15 +1546,16 @@ function populateDealsGrid() {
             var label = pid.replace(/_/g, ' ');
             if (pid.indexOf('coins') !== -1) label = '💰 ' + qty.toLocaleString() + ' Coins';
             else if (pid.indexOf('dna') !== -1) label = '🧬 ' + qty.toLocaleString() + ' DNA';
-            else if (pid.indexOf('skin') !== -1) label = '🎨 ' + pid.replace('skin_', '').replace(/_/g, ' ');
+            else if (pid.indexOf('skin') !== -1) label = '🎨 ' + pid.replace(/^(shop_skin_|skin_)/, '').replace(/_/g, ' ');
             else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
             contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
         }
         if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
-        // Resolve up to 2 skin images for preview
+        // Resolve all deal skin entries and render small skin icons
         var skinImgs = getDealSkinImages(deal.bundleId);
+        var skinMiniIconsHtml = renderDealSkinMiniIcons(deal.bundleId, 6);
 
         // Build the icon area — 0, 1, or 2 stacked skin previews
         var iconHtml = '';
@@ -1578,7 +1579,7 @@ function populateDealsGrid() {
         html += iconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + desc + '</div>';
-        html += '<div style="line-height: 1.4; margin-top: 2px;">' + contentText + '</div>';
+        html += '<div style="line-height: 1.4; margin-top: 2px;">' + contentText + skinMiniIconsHtml + '</div>';
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
         html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
@@ -1660,15 +1661,16 @@ function populateDealsGrid() {
             var bcLabel = bcPid.replace(/_/g, ' ');
             if (bcPid.indexOf('coins') !== -1) bcLabel = '💰 ' + bcQty.toLocaleString() + ' Coins';
             else if (bcPid.indexOf('dna') !== -1) bcLabel = '🧬 ' + bcQty.toLocaleString() + ' DNA';
-            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 ' + bcPid.replace('skin_', '').replace(/_/g, ' ');
+            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 ' + bcPid.replace(/^(shop_skin_|skin_)/, '').replace(/_/g, ' ');
             else if (bcPid.indexOf('boost') !== -1) bcLabel = '🚀 ' + bcPid.replace(/_/g, ' ');
             else bcLabel = bcQty + 'x ' + bcLabel;
             bContentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + bcLabel + '</span> ';
         }
         if (!bContentText) bContentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
 
-        // Resolve up to 2 skin images
+        // Resolve all bundle skin entries and render small skin icons
         var bSkinImgs = getDealSkinImages(bundle.bundleId);
+        var bSkinMiniIconsHtml = renderDealSkinMiniIcons(bundle.bundleId, 6);
 
         // Build icon area — same stacked skin logic
         var bIconHtml = '';
@@ -1689,7 +1691,7 @@ function populateDealsGrid() {
         html += bIconHtml;
         html += '<div style="flex: 1; min-width: 0;">';
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + bDesc + '</div>';
-        html += '<div style="line-height: 1.4; margin-top: 2px;">' + bContentText + '</div>';
+        html += '<div style="line-height: 1.4; margin-top: 2px;">' + bContentText + bSkinMiniIconsHtml + '</div>';
         html += '</div>';
         html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + bundle.bundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
         html += '</div>';
@@ -1765,53 +1767,154 @@ window.refreshDealsTab = function() {
 /**
  * Get skin image URLs for a deal bundle (optimized with O(1) hash map lookup)
  */
-function getDealSkinImages(bundleId) {
+function getDealSkinEntries(bundleId) {
     if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return [];
 
-    // Build the bundle-to-images lookup map once when GameConfiguration changes
-    if (!window._bundleSkinImagesCache || window._bundleSkinImagesCacheConfig !== window.GameConfiguration.gameConfig) {
-        window._bundleSkinImagesCacheConfig = window.GameConfiguration.gameConfig;
+    if (
+        !window._bundleSkinEntriesCache ||
+        window._bundleSkinEntriesCacheConfig !== window.GameConfiguration.gameConfig
+    ) {
+        window._bundleSkinEntriesCacheConfig = window.GameConfiguration.gameConfig;
+        window._bundleSkinEntriesCache = {};
         window._bundleSkinImagesCache = {};
 
         var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
         var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
         var cdnBase = window.LM_CDN_BASE();
 
-        // 1. Map productId -> image URL
-        var skinImageMap = {};
+        // productId/cleanId -> { productId, name, imageUrl }
+        var skinMetaMap = {};
+
         for (var s = 0; s < skins.length; s++) {
             var skinItem = skins[s];
-            if (skinItem && skinItem.productId && skinItem.image) {
-                var imgFile = skinItem.image;
-                if (imgFile === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skinItem.productId]) {
-                    imgFile = window.SpineSkinMap[skinItem.productId] + '.png';
-                }
-                if (imgFile && imgFile !== 'uses_spine') {
-                    skinImageMap[skinItem.productId] = cdnBase + imgFile;
-                    var cleanPid = skinItem.productId.replace(/^(shop_skin_|skin_)/, '');
-                    skinImageMap[cleanPid] = cdnBase + imgFile;
-                }
+            if (!skinItem || !skinItem.productId) continue;
+
+            var imgFile = skinItem.image || '';
+            if (imgFile === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skinItem.productId]) {
+                imgFile = window.SpineSkinMap[skinItem.productId] + '.png';
             }
+
+            var imageUrl = '';
+            if (imgFile && imgFile !== 'uses_spine') {
+                imageUrl = cdnBase + imgFile;
+            }
+
+            var cleanPid = skinItem.productId.replace(/^(shop_skin_|skin_)/, '');
+            var displayName =
+                (skinItem.name && skinItem.name !== 'na' ? skinItem.name : cleanPid)
+                    .replace(/_/g, ' ')
+                    .replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+
+            var meta = {
+                productId: skinItem.productId,
+                cleanProductId: cleanPid,
+                name: displayName,
+                imageUrl: imageUrl
+            };
+
+            skinMetaMap[skinItem.productId] = meta;
+            skinMetaMap[cleanPid] = meta;
         }
 
-        // 2. Map bundleId -> array of skin image URLs (max 2)
         for (var bp = 0; bp < bundleProducts.length; bp++) {
             var item = bundleProducts[bp];
             if (!item || !item.bundleId || !item.productId) continue;
+
             var bId = item.bundleId;
-            if (!window._bundleSkinImagesCache[bId]) window._bundleSkinImagesCache[bId] = [];
-            if (window._bundleSkinImagesCache[bId].length < 2) {
-                var pId = item.productId;
-                var img = skinImageMap[pId] || skinImageMap[pId.replace(/^(shop_skin_|skin_)/, '')];
-                if (img && window._bundleSkinImagesCache[bId].indexOf(img) === -1) {
-                    window._bundleSkinImagesCache[bId].push(img);
+            var pId = item.productId;
+            var cleanPId = pId.replace(/^(shop_skin_|skin_)/, '');
+            var meta = skinMetaMap[pId] || skinMetaMap[cleanPId];
+
+            if (!meta) continue;
+
+            if (!window._bundleSkinEntriesCache[bId]) {
+                window._bundleSkinEntriesCache[bId] = [];
+            }
+            if (!window._bundleSkinImagesCache[bId]) {
+                window._bundleSkinImagesCache[bId] = [];
+            }
+
+            var alreadyExists = false;
+            for (var ex = 0; ex < window._bundleSkinEntriesCache[bId].length; ex++) {
+                if (window._bundleSkinEntriesCache[bId][ex].productId === meta.productId) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!alreadyExists) {
+                window._bundleSkinEntriesCache[bId].push(meta);
+                if (meta.imageUrl) {
+                    window._bundleSkinImagesCache[bId].push(meta.imageUrl);
                 }
             }
         }
     }
 
-    return window._bundleSkinImagesCache[bundleId] || [];
+    return window._bundleSkinEntriesCache[bundleId] || [];
 }
+
+function getDealSkinImages(bundleId) {
+    var entries = getDealSkinEntries(bundleId);
+    var imgs = [];
+    for (var i = 0; i < entries.length; i++) {
+        if (entries[i] && entries[i].imageUrl) {
+            imgs.push(entries[i].imageUrl);
+        }
+    }
+    return imgs;
+}
+
+function renderDealSkinMiniIcons(bundleId, maxIcons) {
+    var entries = getDealSkinEntries(bundleId);
+    if (!entries || !entries.length) return '';
+
+    if (!maxIcons) maxIcons = 6;
+
+    var shown = entries.slice(0, maxIcons);
+    var html = '<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; align-items:center;">';
+
+    for (var i = 0; i < shown.length; i++) {
+        var e = shown[i];
+        if (!e || !e.imageUrl) continue;
+
+        html +=
+            '<img ' +
+                'src="' + e.imageUrl + '" ' +
+                'title="' + String(e.name || e.productId).replace(/"/g, '&quot;') + '" ' +
+                'style="' +
+                    'width:22px;' +
+                    'height:22px;' +
+                    'border-radius:50%;' +
+                    'object-fit:cover;' +
+                    'border:1px solid rgba(255,255,255,0.35);' +
+                    'background:rgba(0,0,0,0.2);' +
+                '" ' +
+                'onerror="this.style.display=\'none\'"' +
+            '>';
+    }
+
+    if (entries.length > maxIcons) {
+        html +=
+            '<span style="' +
+                'display:inline-flex;' +
+                'align-items:center;' +
+                'justify-content:center;' +
+                'height:22px;' +
+                'min-width:22px;' +
+                'padding:0 6px;' +
+                'border-radius:11px;' +
+                'font-size:10px;' +
+                'font-weight:700;' +
+                'background:rgba(255,255,255,0.08);' +
+                'color:#ddd;' +
+            '">+' + (entries.length - maxIcons) + '</span>';
+    }
+
+    html += '</div>';
+    return html;
+}
+
 // Backwards compat wrapper
 function getDealSkinImage(bundleId) {
     var imgs = getDealSkinImages(bundleId);
