@@ -1111,6 +1111,28 @@ function SpecialDeals(defaultTab) {
                 }
 
                 /*
+                 * A focused descendant must not remain inside an element
+                 * that is about to become aria-hidden. Chrome blocks
+                 * aria-hidden and prints a warning otherwise.
+                 */
+                var modal =
+                    document.getElementById(
+                        'specialShopModal'
+                    );
+
+                if (modal) {
+                    var activeElement =
+                        document.activeElement;
+
+                    if (
+                        activeElement &&
+                        modal.contains(activeElement)
+                    ) {
+                        activeElement.blur();
+                    }
+                }
+
+                /*
                  * Retain the built DOM and decoded thumbnails for fast reopen.
                  * The backdrop is inside the modal and hides with its parent.
                  */
@@ -1125,6 +1147,29 @@ function SpecialDeals(defaultTab) {
                 $("body").removeClass(
                     "modal-open"
                 );
+
+                /*
+                 * Move focus to a safe external target so screen readers
+                 * and keyboard navigation return to a visible element.
+                 */
+                var focusTarget =
+                    document.getElementById(
+                        'lm-special-deals-btn'
+                    ) ||
+                    document.getElementById(
+                        'SpecialDealsBtn'
+                    ) ||
+                    document.body;
+
+                if (
+                    focusTarget &&
+                    typeof focusTarget.focus ===
+                        'function'
+                ) {
+                    focusTarget.focus({
+                        preventScroll: true
+                    });
+                }
             };
 
         $(document).off('click', '#CloseSpecialDeals, #specialShopModal .modal-backdrop')

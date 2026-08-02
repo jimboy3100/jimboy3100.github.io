@@ -221,7 +221,7 @@
     }
 
     // ─── Component 1: 🏆 Leaderboards & Weekly Leagues Modal ───
-    window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World
+    window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World, 4 = Friends
 
     // Official Agar.io Level-to-League Tier calculator (from agario.js lines 3074 & 19794)
     window.getLeagueTierFromLevel = function(level) {
@@ -449,10 +449,38 @@
         var isOfficialResponse =
             Number(data.leagueRequestType) === 1;
         if (isOfficialResponse) {
-            var officialEntries =
-                tabType === 2
-                    ? data.country
-                    : (tabType === 3 ? data.world : data.league);
+            var officialEntries;
+
+            switch (Number(tabType)) {
+                case 2:
+                    officialEntries =
+                        Array.isArray(data.country)
+                            ? data.country
+                            : [];
+                    break;
+
+                case 3:
+                    officialEntries =
+                        Array.isArray(data.world)
+                            ? data.world
+                            : [];
+                    break;
+
+                case 4:
+                    officialEntries =
+                        Array.isArray(data.friends)
+                            ? data.friends
+                            : [];
+                    break;
+
+                case 1:
+                default:
+                    officialEntries =
+                        Array.isArray(data.league)
+                            ? data.league
+                            : [];
+                    break;
+            }
             if (!Array.isArray(officialEntries)) {
                 officialEntries = [];
             }
@@ -724,7 +752,12 @@
 
     window.switchLeagueTab = function(tabType) {
         var normalizedTab = Number(tabType);
-        if (normalizedTab !== 2 && normalizedTab !== 3) {
+        if (
+            normalizedTab !== 1 &&
+            normalizedTab !== 2 &&
+            normalizedTab !== 3 &&
+            normalizedTab !== 4
+        ) {
             normalizedTab = 1;
         }
         window.currentLeagueTab = normalizedTab;
@@ -786,13 +819,16 @@
                 <div class="lm-modal-body" style="padding: 16px;">
                     <!-- 3 Leaderboard Tabs -->
                     <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-1" class="lm-tab-btn ${window.currentLeagueTab === 1 ? 'active' : ''}" onclick="window.switchLeagueTab(1);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 1 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 1 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 1 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             ⭐ My League
                         </button>
-                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-4" class="lm-tab-btn ${window.currentLeagueTab === 4 ? 'active' : ''}" onclick="window.switchLeagueTab(4);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 4 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 4 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 4 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                            👥 Friends
+                        </button>
+                        <button id="lm-tab-2" class="lm-tab-btn ${window.currentLeagueTab === 2 ? 'active' : ''}" onclick="window.switchLeagueTab(2);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 2 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 2 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 2 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🇺🇸 Country
                         </button>
-                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
+                        <button id="lm-tab-3" class="lm-tab-btn ${window.currentLeagueTab === 3 ? 'active' : ''}" onclick="window.switchLeagueTab(3);" style="flex: 1; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; background: ${window.currentLeagueTab === 3 ? t.b1 : 'rgba(255,255,255,0.06)'}; color: ${window.currentLeagueTab === 3 ? t.btc : t.tc2}; border: 1px solid ${window.currentLeagueTab === 3 ? t.mc : 'rgba(255,255,255,0.1)'};">
                             🌎 World
                         </button>
                     </div>
@@ -889,12 +925,14 @@
         var titleMap = {
             1: (myTier && myTier.name ? myTier.name : 'Kraken League'),
             2: 'Country League (' + safeUserCountryTitle + ')',
-            3: 'World League'
+            3: 'World League',
+            4: 'Friends League'
         };
         var gradientMap = {
             1: myTier ? myTier.gradient : 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)',
             2: 'linear-gradient(135deg, #7b1fa2 0%, #4527a0 100%)',
-            3: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)'
+            3: 'linear-gradient(135deg, #1565c0 0%, #0277bd 100%)',
+            4: 'linear-gradient(135deg, #1976d2 0%, #0288d1 100%)'
         };
 
         var title = titleMap[currentTab] || titleMap[1];
@@ -3979,115 +4017,76 @@
             if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
         });
 
-        $(document).off('click', '#lm-friends-btn').on('click', '#lm-friends-btn', function(e) {
-            e.preventDefault();
+        $(document)
+            .off('click.lmFriendsLeague', '#lm-friends-btn')
+            .on('click.lmFriendsLeague', '#lm-friends-btn', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
 
-            var appUser =
-                (
-                    window.application &&
-                    window.application.user
-                ) ||
-                (
-                    window.legendmod &&
-                    window.legendmod.user
-                ) ||
-                {};
+                var isLoggedIn =
+                    typeof window.checkUserLoggedIn === 'function'
+                        ? window.checkUserLoggedIn()
+                        : !!(
+                            window.loggedIn ||
+                            (
+                                window.application &&
+                                window.application.user &&
+                                window.application.user.userId
+                            )
+                        );
 
-            var isLoggedIn;
+                if (!isLoggedIn) {
+                    if (window.toastr) {
+                        toastr.error(
+                            '<b>[FRIENDS LEAGUE]:</b> You must be logged in to view the Friends leaderboard.'
+                        );
+                    }
 
-            if (
-                typeof window.checkUserLoggedIn ===
-                'function'
-            ) {
-                isLoggedIn =
-                    window.checkUserLoggedIn();
-            } else {
-                var fallbackUserId =
-                    appUser.userId !== undefined &&
-                    appUser.userId !== null
-                        ? String(
-                            appUser.userId
-                        ).trim()
-                        : '';
-
-                var normalizedFallbackUserId =
-                    fallbackUserId.toLowerCase();
-
-                isLoggedIn =
-                    !!(
-                        window.loggedIn === true ||
-                        appUser.authenticated ===
-                            true ||
-                        (
-                            fallbackUserId &&
-                            fallbackUserId !== '0' &&
-                            normalizedFallbackUserId !==
-                                'null' &&
-                            normalizedFallbackUserId !==
-                                'undefined'
-                        )
-                    );
-            }
-
-            var hasUID;
-
-            if (
-                typeof window.checkUserUID ===
-                'function'
-            ) {
-                hasUID =
-                    window.checkUserUID();
-            } else {
-                var fallbackUID =
-                    typeof window.agarioUID ===
-                    'string'
-                        ? window.agarioUID.trim()
-                        : '';
-
-                var normalizedFallbackUID =
-                    fallbackUID.toLowerCase();
-
-                hasUID =
-                    !!(
-                        isLoggedIn &&
-                        fallbackUID &&
-                        fallbackUID.length >= 8 &&
-                        fallbackUID.indexOf('$') ===
-                            -1 &&
-                        fallbackUID !== '0' &&
-                        normalizedFallbackUID !==
-                            'null' &&
-                        normalizedFallbackUID !==
-                            'undefined'
-                    );
-            }
-
-            if (!isLoggedIn || !hasUID) {
-                if (window.toastr) {
-                    toastr.error(
-                        '<b>[FRIENDS]:</b> You must be logged in and have a valid Agar.io UID to access Friends.'
-                    );
+                    return false;
                 }
 
-                return false;
-            }
+                /*
+                 * Match the official Agar.io behavior:
+                 * open the Leagues interface and select data.friends.
+                 */
+                window.currentLeagueTab = 4;
+                window._requestedLeagueTab = 4;
 
-            var isFacebook =
-                typeof window.isFacebookAgarAccount ===
-                    'function' &&
-                window.isFacebookAgarAccount();
-
-            if (!isFacebook) {
-                if (window.toastr) {
-                    toastr.error(
-                        '<b>[FRIENDS]:</b> You must be logged in with Facebook to access Friends features.'
+                if (typeof window.showLeaguesModal === 'function') {
+                    window.showLeaguesModal();
+                } else {
+                    console.error(
+                        '[LM] showLeaguesModal is unavailable.'
                     );
+
+                    return false;
                 }
 
+                /*
+                 * showLeaguesModal may create the tab buttons asynchronously.
+                 * Select Friends after the modal has been inserted.
+                 */
+                window.setTimeout(function() {
+                    var friendsTab =
+                        document.getElementById(
+                            'lm-tab-4'
+                        );
+
+                    if (friendsTab) {
+                        friendsTab.click();
+                        return;
+                    }
+
+                    if (
+                        typeof window.switchLeagueTab ===
+                        'function'
+                    ) {
+                        window.switchLeagueTab(4);
+                    }
+                }, 0);
+
                 return false;
-            }
-            if (typeof window.showFriendsModal === 'function') window.showFriendsModal();
-        });
+            });
 
         $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
             e.preventDefault();
