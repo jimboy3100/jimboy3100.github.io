@@ -2122,6 +2122,88 @@
         $('#lm-tab-mystery').on('click', function() { updateTabs('mystery'); });
     };
 
+    /*
+     * Preserve the current official Agar.io promotion independently of
+     * Agar.io's original DOM button.
+     *
+     * The original client dispatches:
+     *   promo_badge_create
+     *
+     * with:
+     *   offerId
+     *   config
+     *   delegate
+     *   system
+     *   callback
+     *
+     * The callback is the authoritative official action that opens the
+     * complete Agar.io promotion popup with its original images, icons,
+     * prices, countdown and purchase buttons.
+     */
+    window._lmOfficialPromotion = null;
+
+    if (!window._lmOfficialPromotionListenerInstalled) {
+        window._lmOfficialPromotionListenerInstalled = true;
+
+        document.addEventListener(
+            'promo_badge_create',
+            function(event) {
+                var detail =
+                    event && event.detail
+                        ? event.detail
+                        : null;
+
+                if (
+                    !detail ||
+                    typeof detail.callback !== 'function'
+                ) {
+                    console.warn(
+                        '[OFFICIAL OFFER] Invalid promo_badge_create event:',
+                        detail
+                    );
+
+                    return;
+                }
+
+                window._lmOfficialPromotion = {
+                    offerId:
+                        detail.offerId,
+
+                    config:
+                        detail.config || null,
+
+                    delegate:
+                        detail.delegate || null,
+
+                    system:
+                        detail.system || null,
+
+                    callback:
+                        detail.callback,
+
+                    receivedAt:
+                        Date.now()
+                };
+
+                console.log(
+                    '[OFFICIAL OFFER] Captured official Agar.io promotion:',
+                    {
+                        offerId:
+                            detail.offerId,
+
+                        hasConfig:
+                            !!detail.config,
+
+                        hasCallback:
+                            typeof detail.callback ===
+                            'function'
+                    }
+                );
+            },
+            false
+        );
+    }
+
     window.openDailyDealsModal = function() {
         var appUser =
             (
@@ -2157,8 +2239,7 @@
             isLoggedIn =
                 !!(
                     window.loggedIn === true ||
-                    appUser.authenticated ===
-                        true ||
+                    appUser.authenticated === true ||
                     (
                         fallbackUserId &&
                         fallbackUserId !== '0' &&
@@ -2170,43 +2251,10 @@
                 );
         }
 
-        var hasUID;
-
-        if (
-            typeof window.checkUserUID ===
-            'function'
-        ) {
-            hasUID =
-                window.checkUserUID();
-        } else {
-            var fallbackUID =
-                typeof window.agarioUID ===
-                'string'
-                    ? window.agarioUID.trim()
-                    : '';
-
-            var normalizedFallbackUID =
-                fallbackUID.toLowerCase();
-
-            hasUID =
-                !!(
-                    isLoggedIn &&
-                    fallbackUID &&
-                    fallbackUID.length >= 8 &&
-                    fallbackUID.indexOf('$') ===
-                        -1 &&
-                    fallbackUID !== '0' &&
-                    normalizedFallbackUID !==
-                        'null' &&
-                    normalizedFallbackUID !==
-                        'undefined'
-                );
-        }
-
-        if (!isLoggedIn || !hasUID) {
+        if (!isLoggedIn) {
             if (window.toastr) {
                 toastr.error(
-                    '<b>[OFFICIAL OFFER]:</b> You must be logged in and have a valid Agar.io UID to access official offers.'
+                    '<b>[OFFICIAL OFFER]:</b> You must be logged in to access official Agar.io offers.'
                 );
             }
 
@@ -2217,109 +2265,146 @@
             return false;
         }
 
+        var promotion =
+            window._lmOfficialPromotion;
+
         /*
-         * Agar.io creates the official promotion button after receiving
-         * the promo_badge_create event. Legend Mod hides the original
-         * Agar.io menu, so jQuery :visible must not be used to determine
-         * whether the promotion exists.
-         *
-         * Select the promotion button itself and explicitly exclude the
-         * ordinary coin-shop fallback button.
+         * Primary path:
+         * use the exact callback delivered by official Agar.io.
+         */
+        if (
+            promotion &&
+            typeof promotion.callback === 'function'
+        ) {
+            window._lmDailyDealOpening = true;
+
+            try {
+                promotion.callback();
+
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API.playSound ===
+                        'function'
+                ) {
+                    window.agarApp.API.playSound(
+                        'sfxClick'
+                    );
+                }
+            } catch (promotionCallbackError) {
+                console.error(
+                    '[OFFICIAL OFFER] Official promotion callback failed:',
+                    promotionCallbackError
+                );
+
+                window._lmDailyDealOpening = false;
+
+                if (window.toastr) {
+                    toastr.error(
+                        '<b>[OFFICIAL OFFER]:</b> Agar.io supplied an offer, but its official callback failed.'
+                    );
+                }
+
+                return false;
+            }
+
+            setTimeout(
+                function() {
+                    window._lmDailyDealOpening =
+                        false;
+                },
+                750
+            );
+
+            return true;
+        }
+
+        /*
+         * Secondary recovery path:
+         * use the original rendered promotion button if the event was
+         * emitted before this listener was installed.
          */
         var promoContainer =
             document.querySelector(
                 '.promo-badge-container'
             );
 
-        var promoButton =
-            promoContainer &&
-            promoContainer.querySelector(
-                'button:not(#coinShop)'
-            );
+        var promoButtons =
+            promoContainer
+                ? promoContainer.querySelectorAll(
+                    'button'
+                )
+                : [];
 
-        var hasActivePromo =
-            !!(
-                promoButton &&
-                promoButton.isConnected
-            );
+        var promoButton = null;
 
-        if (!hasActivePromo) {
-            /*
-             * The official promotion badge may still be in its 500 ms
-             * fade/replacement interval. Retry briefly before declaring
-             * that no promotion exists.
-             */
-            if (!window._lmOfficialOfferRetryCount) {
-                window._lmOfficialOfferRetryCount = 0;
-            }
-
+        for (
+            var i = 0;
+            i < promoButtons.length;
+            i++
+        ) {
             if (
-                window._lmOfficialOfferRetryCount < 5
+                promoButtons[i].id !==
+                'coinShop'
             ) {
-                window._lmOfficialOfferRetryCount++;
+                promoButton =
+                    promoButtons[i];
 
-                setTimeout(
-                    function() {
-                        window.openDailyDealsModal();
-                    },
-                    250
+                break;
+            }
+        }
+
+        if (promoButton) {
+            window._lmDailyDealOpening = true;
+
+            try {
+                promoButton.dispatchEvent(
+                    new MouseEvent(
+                        'click',
+                        {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        }
+                    )
                 );
+            } catch (promoButtonError) {
+                console.error(
+                    '[OFFICIAL OFFER] Original Agar.io promotion button failed:',
+                    promoButtonError
+                );
+
+                window._lmDailyDealOpening = false;
 
                 return false;
             }
 
-            window._lmOfficialOfferRetryCount = 0;
-
-            if (window.toastr) {
-                toastr.info(
-                    '<b>[OFFICIAL OFFER]:</b> The official Agar.io promotion has not finished loading yet. Try again in a moment.'
-                );
-            }
-
-            return false;
-        }
-
-        window._lmOfficialOfferRetryCount = 0;
-
-        window._lmDailyDealOpening = true;
-
-        try {
-            promoButton.dispatchEvent(
-                new MouseEvent(
-                    'click',
-                    {
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                    }
-                )
-            );
-        } catch (dailyDealOpenError) {
-            console.warn(
-                '[OFFICIAL OFFER] Official promotion callback failed:',
-                dailyDealOpenError
+            setTimeout(
+                function() {
+                    window._lmDailyDealOpening =
+                        false;
+                },
+                750
             );
 
-            if (window.toastr) {
-                toastr.error(
-                    '<b>[OFFICIAL OFFER]:</b> The official Agar.io offer could not be opened.'
-                );
-            }
-
-            window._lmDailyDealOpening = false;
-
-            return false;
+            return true;
         }
 
-        setTimeout(
-            function() {
-                window._lmDailyDealOpening =
-                    false;
-            },
-            750
+        /*
+         * Do not repeatedly retry openDailyDealsModal().
+         * The promotion event is produced asynchronously by Agar.io.
+         */
+        if (window.toastr) {
+            toastr.info(
+                '<b>[OFFICIAL OFFER]:</b> Agar.io has not supplied an official promotion yet. Return to the main menu and try again after a few seconds.'
+            );
+        }
+
+        console.warn(
+            '[OFFICIAL OFFER] No captured promo_badge_create event and no original promotion button were found.'
         );
 
-        return true;
+        return false;
     };
 
     window.showDailyDealsCarouselModal = function() {
