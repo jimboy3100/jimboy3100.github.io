@@ -2604,27 +2604,25 @@ window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
 function setLevelProgressBar() {
-    //$('.progress-bar.progress-bar-striped').css('width', window.agarioLEVEL + '%');
-    $('.progress-bar.progress-bar-striped').css({
+    $('#agario-xp-bar .progress-bar-striped').css({
         "transition": "5s",
         "width": window.agarioLEVEL + "%"
     });
-    $('.progress-bar.progress-bar-striped2').css({
+    $('#legend-xp-bar .progress-bar-striped2').css({
         "transition": "5s",
         "width": window.LMscore + "%"
     });
-    $('.progress-bar-star3').text(window.agarioLEVEL); $('.progress-bar-star').text(window.agarioLEVEL);
-    $('.progress-bar-star2').text(window.LMscore);
-
+    $('#agario-xp-bar .progress-bar-star3').text(window.agarioLEVEL);
+    $('.agario-profile-panel .progress-bar-star').first().text(window.agarioLEVEL);
+    $('#legend-xp-bar .progress-bar-star2').text(window.LMscore);
 }
 
 function resetLevelProgressBar() {
-    //$('.progress-bar.progress-bar-striped').css('width', '100%');
-    $('.progress-bar.progress-bar-striped').css({
+    $('#agario-xp-bar .progress-bar-striped').css({
         "transition": "5s",
         "width": "0%"
     });
-    $('.progress-bar.progress-bar-striped2').css({
+    $('#legend-xp-bar .progress-bar-striped2').css({
         "transition": "5s",
         "width": "0%"
     });
@@ -7950,8 +7948,24 @@ function thelegendmodproject() {
         setMenu() {
             const app = this;
             document.title = this.name;
-            $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★ <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
-                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
+            $("#mainPanel").before(
+                '<div id="agario-xp-panel" class="agario-panel agario-profile-panel">' +
+                    '<span class="ogicon-user"></span>' +
+                    '<div id="agario-xp-bar" class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;">' +
+                        '<span class="progress-bar-text">' +
+                            '★★ <strong class="progress-bar-star3">0</strong>' +
+                        '</span>' +
+                        '<div class="progress-bar progress-bar-striped" style="width: 0%;"></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div id="legend-xp-panel" class="agario-panel legend-profile-panel">' +
+                    '<div id="legend-xp-bar" class="legend-exp-bar progress" style="transform: scale(0.9); transform-origin: center;">' +
+                        '<span class="legend-progress-bar-text">' +
+                            '★★★ <strong class="progress-bar-star2">0</strong>' +
+                        '</span>' +
+                        '<div class="legend-progress-bar progress-bar-striped2" style="width: 0%;"></div>' +
+                    '</div>' +
+                '</div>' +
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
@@ -18990,11 +19004,22 @@ function thelegendmodproject() {
                         }
                         window.agarioLEVEL = gLevel;
 
-                        $('.progress-bar-striped').width(exp + '%');
-                        $('.agario-exp-bar .progress-bar').css('width', exp + '%');
-                        $('.agario-exp-bar .progress-bar-text').text(gXp.toLocaleString() + ' / ' + gNextXp.toLocaleString() + ' XP');
-                        $('.progress-bar-star3').text(gLevel);
-                        $('.progress-bar-star').text(gLevel);
+                        $('#agario-xp-bar .progress-bar-striped')
+                            .width(exp + '%');
+
+                        $('#agario-xp-bar .progress-bar-text')
+                            .text(
+                                gLevel >= 150
+                                    ? 'MAX LEVEL (' + gLevel + ')'
+                                    : gXp.toLocaleString() +
+                                      ' / ' +
+                                      gNextXp.toLocaleString() +
+                                      ' XP'
+                            );
+
+                        $('.agario-profile-panel .progress-bar-star')
+                            .first()
+                            .text(gLevel);
                     }
                     this.updateProducts(u.productUpdates);
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
@@ -20140,8 +20165,16 @@ function thelegendmodproject() {
             if (window.LMscore > 40) {
                 PremiumUsersLMscore();
             }
-            $('.progress-bar-striped2').width(window.LMscore + '%');
-            $('.progress-bar-star2').text(window.LMscore);
+            $('#legend-xp-bar .progress-bar-striped2')
+                .width(
+                    Math.max(
+                        0,
+                        Math.min(100, window.LMscore)
+                    ) + '%'
+                );
+
+            $('#legend-xp-bar .progress-bar-star2')
+                .text(window.LMscore);
 
             $("#stats-content").html(`
 All time score     : ${allTimeScore}<br/>
@@ -20168,13 +20201,13 @@ Most cells eaten   : ${mostCellsEaten}
             window.agarioXP = xp;
             window.agarioNextXP = nextLevelXp;
 
-            $('.progress-bar-striped').width(exp + '%');
-            $('.agario-exp-bar .progress-bar').css('width', exp + '%');
-            var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
-            $('.agario-exp-bar .progress-bar-text').text(xpText);
+            $('#agario-xp-bar .progress-bar-striped').width(exp + '%');
 
-            $('.progress-bar-star3').text(level);
-            $('.progress-bar-star').text(level);
+            var xpText = level >= 150 ? 'MAX LEVEL (' + level + ')' : xp.toLocaleString() + ' / ' + nextLevelXp.toLocaleString() + ' XP';
+            $('#agario-xp-bar .progress-bar-text').text(xpText);
+
+            $('#agario-xp-bar .progress-bar-star3').text(level);
+            $('.agario-profile-panel .progress-bar-star').first().text(level);
             this.user.actionCounters = i.actionCounters;
 
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
