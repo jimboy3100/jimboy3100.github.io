@@ -1262,28 +1262,16 @@ function buydeals() {
         toastr && toastr.error('<b>[SHOP]:</b> No payment UID. Log out and log in again.');
         return;
     }
-    var uid = $("#exp-uid").text() || window.agarioEncodedUID;
     var purchaseId = $("#ss-select-purchases option:selected").val();
-    var currency = $("#BuyDealCurrency").val() || 'USD';
     if (!purchaseId) {
         toastr && toastr.warning('<b>[SHOP]:</b> Select a deal first');
         return;
     }
-    $.ajax({
-        type: "GET",
-        url: "https://payments.agar.io/pay/" + uid + "/" + purchaseId + "/" + currency,
-        datatype: "json",
-        success: function(info) {
-            if (info && info.iframe_url) {
-                window.open(info.iframe_url, "PopupWindow", "width=600,height=600,scrollbars=yes,resizable=no");
-            } else {
-                toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this deal');
-            }
-        },
-        error: function() {
-            toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
-        }
-    });
+    /* Use the official IPayment service instead of the dead payments.agar.io hostname */
+    var started = openOfficialAgarIAP(purchaseId, { description: purchaseId });
+    if (!started) {
+        toastr && toastr.error('<b>[SHOP]:</b> Could not open the official payment flow');
+    }
 }
 
 // ========================================
@@ -1974,102 +1962,145 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
 }
 
 /**
- * Open a real-money IAP from either:
- * - the latest Agar.io configuration; or
- * - a historical library GameConfiguration destination.
- *
- * Validates against the currently loaded GameConfiguration (which may
- * be a historical archive). The official payment server decides whether
- * the archived purchase ID is still accepted.
+ * Resolve the payment service created and configured by the real Agar.io
+ * client. The service contains the current xsolla_endpoint and must be used
+ * instead of the obsolete hardcoded payments.agar.io hostname.
  */
-function buyDealIAP(dealId, dealDesc) {
-    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
+function getOfficialAgarPaymentService() {
+    try {
+        var serviceManager =
+            window.oaktree_ext_services_ServiceManager ||
+            (window.$hxClasses && window.$hxClasses['oaktree.ext.services.ServiceManager']) ||
+            (typeof oaktree_ext_services_ServiceManager !== 'undefined' ? oaktree_ext_services_ServiceManager : null);
+
+        var paymentInterface =
+            window.agario_services_IPayment ||
+            (window.$hxClasses && window.$hxClasses['agario.services.IPayment']) ||
+            (typeof agario_services_IPayment !== 'undefined' ? agario_services_IPayment : null);
+
+        if (!serviceManager || typeof serviceManager.getService !== 'function' || !paymentInterface) {
+            return null;
+        }
+
+        var paymentService = serviceManager.getService(paymentInterface);
+        if (!paymentService || typeof paymentService.buyProduct !== 'function') {
+            return null;
+        }
+
+        return paymentService;
+    } catch (error) {
+        console.error('[SHOP] Could not resolve official Agar.io payment service:', error);
+        return null;
+    }
+}
+
+/**
+ * Open an Agar.io real-money purchase.
+ *
+ * Current products use the public official purchase API so the normal
+ * catalogue and purchase lifecycle remain intact.
+ *
+ * Historical products that are absent from the current catalogue are sent
+ * directly through the official, currently configured IPayment service.
+ * The archived purchaseId is preserved, but the obsolete archived payment
+ * host is never reused.
+ */
+function openOfficialAgarIAP(purchaseId, options) {
+    options = options || {};
+    purchaseId = String(purchaseId || '').trim();
+
+    if (!purchaseId) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> Missing purchase ID.');
         return false;
     }
 
-    if (!window.loggedIn) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be logged in to buy deals.');
+    var officialUser = (window.Core && window.Core.user) ? window.Core.user : null;
+
+    /* xsollaToken is already encoded by the official client.
+     * Do not pass it through encodeURIComponent(). */
+    var xsollaToken = (officialUser && officialUser.xsollaToken) ||
+        window.agarioEncodedUID || '';
+
+    if (!xsollaToken) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> The Agar.io payment token is unavailable. Log out, log in again, and wait for the profile to load.');
         return false;
     }
 
-    var gameConfig = window.GameConfiguration && window.GameConfiguration.gameConfig;
-    var configuredIaps = gameConfig ? (gameConfig['Wallet - In-App Purchases'] || []) : [];
+    /* Check if the product exists in the current official catalogue */
+    var currentPurchase = null;
+    try {
+        var purchaseModel = (window.Core && window.Core.models) ? window.Core.models.shopPurchasesModel : null;
+        if (purchaseModel && typeof purchaseModel.getPurchaseByPurchaseId === 'function') {
+            currentPurchase = purchaseModel.getPurchaseByPurchaseId(purchaseId);
+        }
+    } catch (lookupError) {
+        console.warn('[SHOP] Current catalogue lookup failed; continuing through the official payment service:', lookupError);
+        currentPurchase = null;
+    }
 
-    var configuredDeal = null;
-    for (var index = 0; index < configuredIaps.length; index++) {
-        var candidate = configuredIaps[index];
-        if (candidate && String(candidate.id) === String(dealId)) {
-            configuredDeal = candidate;
-            break;
+    /* Current catalogue product: use the public Agar.io purchase API */
+    if (currentPurchase && currentPurchase.type === 'INAPP' &&
+        window.agarApp && window.agarApp.API &&
+        typeof window.agarApp.API.makePurchase === 'function') {
+        try {
+            var officialResult = window.agarApp.API.makePurchase(purchaseId, true, true);
+            if (officialResult !== false) {
+                console.log('[SHOP] Current IAP submitted through agarApp.API:', { purchaseId: purchaseId, historical: false });
+                return true;
+            }
+        } catch (officialApiError) {
+            console.warn('[SHOP] Public purchase API failed; falling back to the official IPayment service:', officialApiError);
         }
     }
 
-    if (!configuredDeal) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> The selected purchase ID was not found in the loaded configuration.');
-        console.error('[SHOP] Unknown IAP in selected configuration:', dealId);
+    /* Archived catalogue product, or public-API fallback:
+     * resolve the live IPayment service. This preserves an archived SKU while
+     * using the currently configured xsolla_endpoint. */
+    var paymentService = getOfficialAgarPaymentService();
+    if (!paymentService) {
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> Official Agar.io payment service is not ready. Wait for the Agar.io shop configuration to load and try again.');
         return false;
     }
 
-    var paymentToken = String($('#exp-uid').text() || window.agarioEncodedUID || '').trim();
-    if (!paymentToken) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> No encoded Agar.io payment token is available. Log out and log in again.');
+    if (!paymentService.payment_endpoint) {
+        console.error('[SHOP] Official payment service has no configured endpoint:', paymentService);
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io has not supplied a payment endpoint yet. Wait for the official client to finish loading.');
         return false;
     }
 
-    var purchaseId = String(configuredDeal.id).trim();
-    if (!purchaseId || !/^[A-Za-z0-9._-]+$/.test(purchaseId)) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> Invalid purchase ID.');
-        return false;
-    }
+    var currency = (typeof paymentService.getCurrencyCode === 'function')
+        ? paymentService.getCurrencyCode() : '';
+    if (!currency) currency = $('#BuyDealCurrency').val() || 'USD';
 
-    var currency = String($('#BuyDealCurrency').val() || 'USD').toUpperCase();
-    if (currency !== 'USD' && currency !== 'EU') currency = 'USD';
-
-    var librarySelect = document.getElementById('ss-select-agarVersionDestinations');
-    var isHistoricalLibrary = !!(librarySelect && librarySelect.options.length && librarySelect.options[0] && librarySelect.value !== librarySelect.options[0].value);
-    var libraryLabel = isHistoricalLibrary
-        ? ('Archived configuration: ' + librarySelect.value)
-        : 'Current configuration';
-
-    _showDealBuyConfirmationModal(dealDesc || configuredDeal.bundleId || purchaseId, libraryLabel, function() {
-        var paymentUrl = 'https://payments.agar.io/pay/' + paymentToken + '/' + encodeURIComponent(purchaseId) + '/' + currency;
-
-        console.log('[SHOP] Opening Agar.io IAP:', {
-            purchaseId: purchaseId,
-            bundleId: configuredDeal.bundleId,
-            historical: isHistoricalLibrary,
-            configuration: librarySelect ? librarySelect.value : null
-        });
-
-        $.ajax({
-            type: 'GET',
-            url: paymentUrl,
-            dataType: 'json',
-            timeout: 15000,
-            success: function(info) {
-                if (info && typeof info.iframe_url === 'string' && /^https:\/\//i.test(info.iframe_url)) {
-                    window.open(info.iframe_url, 'AgarPayment', 'width=600,height=600,scrollbars=yes,resizable=yes');
-                    if (window.toastr) toastr.info('<b>[SHOP]:</b> Official payment window opened.');
-                    return;
-                }
-                if (window.toastr) {
-                    toastr.error(isHistoricalLibrary
-                        ? '<b>[SHOP]:</b> Agar.io no longer accepts this archived purchase ID.'
-                        : '<b>[SHOP]:</b> Payment is unavailable for this deal.');
-                }
-            },
-            error: function(xhr) {
-                console.error('[SHOP] Agar.io payment request failed:', {
-                    status: xhr && xhr.status,
-                    purchaseId: purchaseId,
-                    historical: isHistoricalLibrary
-                });
-                if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint rejected or could not process the request.');
-            }
-        });
+    console.log('[SHOP] Opening IAP through official IPayment service:', {
+        purchaseId: purchaseId, historical: !currentPurchase, currency: currency, endpointReady: true
     });
 
-    return true;
+    try {
+        paymentService.buyProduct(xsollaToken, purchaseId, currency);
+        return true;
+    } catch (paymentError) {
+        console.error('[SHOP] Official Agar.io payment service rejected the request:', paymentError);
+        if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io could not open this payment.');
+        return false;
+    }
+}
+window.openOfficialAgarIAP = openOfficialAgarIAP;
+
+/**
+ * Buy an IAP deal after explicit user confirmation.
+ */
+function buyDealIAP(dealId, dealDesc) {
+    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
+        return;
+    }
+
+    _showDealBuyConfirmationModal(dealDesc || dealId, null, function() {
+        var started = openOfficialAgarIAP(dealId, { description: dealDesc || dealId });
+        if (started && window.toastr) {
+            toastr.info('<b>[SHOP]:</b> Agar.io payment window requested.');
+        }
+    });
 }
 window.buyDealIAP = buyDealIAP;
 
@@ -3288,25 +3319,12 @@ function _executeSkinPurchase(productId, purchaseId, displayName) {
         if (sent) return;
     }
 
-    // Fallback: Payment URL (real-money purchase)
-    var uid = $('#exp-uid').text() || window.agarioEncodedUID;
-    var currency = $('#BuyDealCurrency').val() || 'USD';
-    console.log('[SHOP]: Opening payment URL for ' + productId);
-    $.ajax({
-        type: "GET",
-        url: "https://payments.agar.io/pay/" + uid + "/" + productId + "/" + currency,
-        datatype: "json",
-        success: function(info) {
-            if (info && info.iframe_url) {
-                window.open(info.iframe_url, "SkinPurchase", "width=600,height=600,scrollbars=yes,resizable=no");
-            } else {
-                toastr && toastr.error('<b>[SHOP]:</b> Payment not available for this skin');
-            }
-        },
-        error: function() {
-            toastr && toastr.error('<b>[SHOP]:</b> Payment endpoint unavailable');
-        }
-    });
+    // Fallback: real-money purchase via official IPayment service
+    console.log('[SHOP]: Opening official payment for ' + productId);
+    var started = openOfficialAgarIAP(productId, { description: productId });
+    if (!started) {
+        toastr && toastr.error('<b>[SHOP]:</b> Could not open the official payment flow for this skin');
+    }
 }
 
 /**
