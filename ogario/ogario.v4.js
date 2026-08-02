@@ -1520,6 +1520,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 '[LW AUTH] Logout — all login state cleared'
             );
 
+            /* Clear LM level on logout — it must come from server, not localStorage */
+            window.LMscore = 0;
+            window._lastAllTimeScore = 0;
+            try { localStorage.removeItem('LMscore'); } catch(e) {}
+            if (typeof window.updateLegendXpPanel === 'function') {
+                window.updateLegendXpPanel();
+            }
+
             if (_origLogout) {
                 _origLogout.apply(this, arguments);
             }
@@ -1816,7 +1824,7 @@ window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
 window.chatLimit = 15;
-window.LMscore = Number(localStorage['LMscore']) || 0;
+window.LMscore = 0;
 //inject gamepad libraries if Mobile
 //var isMobile = window.orientation > -1; //false for PC, true for mobile 
 var isMobile = false;
@@ -2773,9 +2781,6 @@ window.updateOfficialXpPanel = function(level, expPercent) {
 };
 
 window.updateLegendXpPanel = function() {
-    if (!window.LMscore && localStorage['LMscore']) {
-        window.LMscore = Number(localStorage['LMscore']) || 0;
-    }
     var lmScoreVal = window.LMscore || 0;
     var legendXpPanel = $('.progress-bar-striped2').closest('#exp-bar');
 
@@ -20356,12 +20361,8 @@ function thelegendmodproject() {
             if (rawAllTimeScore !== null && !isNaN(rawAllTimeScore) && rawAllTimeScore > 0) {
                 window._lastAllTimeScore = rawAllTimeScore;
                 window.LMscore = Math.trunc(rawAllTimeScore / 2000000);
-                try { localStorage['LMscore'] = window.LMscore; } catch(e) {}
             }
-            /* Always restore from localStorage if window.LMscore is falsy */
-            if (!window.LMscore && localStorage['LMscore']) {
-                window.LMscore = Number(localStorage['LMscore']) || 0;
-            }
+
 
             var allTimeScore = window._lastAllTimeScore || 0;
             var lmScoreVal = window.LMscore || 0;

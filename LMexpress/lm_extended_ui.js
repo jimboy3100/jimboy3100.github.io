@@ -4429,9 +4429,6 @@
         if (typeof window.updateLegendXpPanel === 'function') {
             window.updateLegendXpPanel();
         } else {
-            if (!window.LMscore && localStorage['LMscore']) {
-                window.LMscore = Number(localStorage['LMscore']) || 0;
-            }
             var lmScoreVal = window.LMscore || 0;
             var legendXpPanel = $('#exp-bar').eq(1);
             legendXpPanel.find('.progress-bar-striped2').css({
