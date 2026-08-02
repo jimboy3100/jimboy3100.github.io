@@ -8137,7 +8137,46 @@ function thelegendmodproject() {
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
-            $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty();
+            $("#exp-bar").addClass("agario-profile-panel");
+
+            /*
+             * Preserve Agar.io's official promotion DOM before Legend Mod clears
+             * the original left-side menu.
+             */
+            var officialPromoNode =
+                document.querySelector('.promo-badge-container');
+
+            if (officialPromoNode) {
+                var officialPromoRoot =
+                    officialPromoNode.parentElement || officialPromoNode;
+
+                officialPromoRoot.id =
+                    'lm-preserved-official-promo';
+
+                officialPromoRoot.style.position =
+                    'fixed';
+
+                officialPromoRoot.style.left =
+                    '-10000px';
+
+                officialPromoRoot.style.top =
+                    '-10000px';
+
+                officialPromoRoot.style.width =
+                    '1px';
+
+                officialPromoRoot.style.height =
+                    '1px';
+
+                officialPromoRoot.style.overflow =
+                    'hidden';
+
+                document.body.appendChild(
+                    officialPromoRoot
+                );
+            }
+
+            $(".left-container").empty();
             //$(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
 
             $("#tags-container").appendTo($("#profile"));

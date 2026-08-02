@@ -14,6 +14,72 @@
 
     window._lmExtendedUiInitDone = true;
 
+    /*
+     * Install the official promotion capture listener EARLY, in the
+     * capture phase, before Agar.io's menu is destroyed by Legend Mod.
+     */
+    (function installOfficialPromotionCaptureEarly() {
+        if (
+            window._lmOfficialPromotionListenerInstalled
+        ) {
+            return;
+        }
+
+        window._lmOfficialPromotionListenerInstalled =
+            true;
+
+        if (
+            window._lmOfficialPromotion ===
+            undefined
+        ) {
+            window._lmOfficialPromotion =
+                null;
+        }
+
+        document.addEventListener(
+            'promo_badge_create',
+            function(event) {
+                var detail =
+                    event && event.detail
+                        ? event.detail
+                        : null;
+
+                if (!detail) {
+                    return;
+                }
+
+                window._lmOfficialPromotion = {
+                    offerId:
+                        detail.offerId,
+
+                    config:
+                        detail.config || null,
+
+                    delegate:
+                        detail.delegate || null,
+
+                    system:
+                        detail.system || null,
+
+                    callback:
+                        typeof detail.callback ===
+                        'function'
+                            ? detail.callback
+                            : null,
+
+                    receivedAt:
+                        Date.now()
+                };
+
+                console.log(
+                    '[OFFICIAL OFFER] Captured official promotion:',
+                    window._lmOfficialPromotion
+                );
+            },
+            true
+        );
+    })();
+
     // ─── Theme Resolver Helper ───
     function getTheme() {
         if (typeof window.getShopTheme === 'function') {
@@ -2458,87 +2524,8 @@
         $('#lm-tab-mystery').on('click', function() { updateTabs('mystery'); });
     };
 
-    /*
-     * Preserve the current official Agar.io promotion independently of
-     * Agar.io's original DOM button.
-     *
-     * The original client dispatches:
-     *   promo_badge_create
-     *
-     * with:
-     *   offerId
-     *   config
-     *   delegate
-     *   system
-     *   callback
-     *
-     * The callback is the authoritative official action that opens the
-     * complete Agar.io promotion popup with its original images, icons,
-     * prices, countdown and purchase buttons.
-     */
-    window._lmOfficialPromotion = null;
-
-    if (!window._lmOfficialPromotionListenerInstalled) {
-        window._lmOfficialPromotionListenerInstalled = true;
-
-        document.addEventListener(
-            'promo_badge_create',
-            function(event) {
-                var detail =
-                    event && event.detail
-                        ? event.detail
-                        : null;
-
-                if (
-                    !detail ||
-                    typeof detail.callback !== 'function'
-                ) {
-                    console.warn(
-                        '[OFFICIAL OFFER] Invalid promo_badge_create event:',
-                        detail
-                    );
-
-                    return;
-                }
-
-                window._lmOfficialPromotion = {
-                    offerId:
-                        detail.offerId,
-
-                    config:
-                        detail.config || null,
-
-                    delegate:
-                        detail.delegate || null,
-
-                    system:
-                        detail.system || null,
-
-                    callback:
-                        detail.callback,
-
-                    receivedAt:
-                        Date.now()
-                };
-
-                console.log(
-                    '[OFFICIAL OFFER] Captured official Agar.io promotion:',
-                    {
-                        offerId:
-                            detail.offerId,
-
-                        hasConfig:
-                            !!detail.config,
-
-                        hasCallback:
-                            typeof detail.callback ===
-                            'function'
-                    }
-                );
-            },
-            false
-        );
-    }
+    /* Official promotion listener is installed at the top of this file
+     * in capture phase — see installOfficialPromotionCaptureEarly(). */
 
     window.openDailyDealsModal = function() {
         var appUser =
@@ -2662,6 +2649,8 @@
          */
         var promoContainer =
             document.querySelector(
+                '#lm-preserved-official-promo .promo-badge-container, ' +
+                '#lm-preserved-official-promo, ' +
                 '.promo-badge-container'
             );
 
