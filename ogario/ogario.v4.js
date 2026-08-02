@@ -15446,6 +15446,18 @@ function thelegendmodproject() {
              * accounts and UIDs. Crossing that boundary must complete logout
              * before the new socket is opened. Same-domain region, mode and
              * reconnect changes preserve the current account session. */
+            var _resumeAccountDomainSwitch =
+                this._resumeAccountDomainSwitchTarget === t;
+            this._resumeAccountDomainSwitchTarget = '';
+
+            if (
+                !_resumeAccountDomainSwitch &&
+                this._accountDomainSwitchTimer
+            ) {
+                clearTimeout(this._accountDomainSwitchTimer);
+                this._accountDomainSwitchTimer = null;
+            }
+
             var _previousType = this.serverType || '';
             var _previousDomain =
                 _previousType === 'agario'
@@ -15464,6 +15476,7 @@ function thelegendmodproject() {
                         ? 'expandingland'
                         : null;
             var _crossingAccountDomain = Boolean(
+                !_resumeAccountDomainSwitch &&
                 _previousDomain &&
                 _nextDomain &&
                 _previousDomain !== _nextDomain
@@ -15509,19 +15522,31 @@ function thelegendmodproject() {
                         }
                     }
 
-                    window._isChangingToPrivateServer =
-                        _joiningUnsupportedServer;
+                    /*
+                     * Both unsupported-server and account-domain switches are
+                     * intentional logout operations. The existing logout
+                     * wrapper must therefore execute its cleanup branch rather
+                     * than its unexpected-disconnect recovery branch.
+                     */
+                    window._isChangingToPrivateServer = true;
 
                     window.logout();
 
                     var self = this;
-                    setTimeout(function () {
-                        console.log(
-                            '[LW] Logout complete, now connecting to: ' +
-                            t
-                        );
-                        self.connect(t);
-                    }, 500);
+                    this._accountDomainSwitchTimer =
+                        setTimeout(function () {
+                            self._accountDomainSwitchTimer = null;
+
+                            if (_crossingAccountDomain) {
+                                self._resumeAccountDomainSwitchTarget = t;
+                            }
+
+                            console.log(
+                                '[LW] Logout complete, now connecting to: ' +
+                                t
+                            );
+                            self.connect(t);
+                        }, 500);
 
                     return;
                 }
