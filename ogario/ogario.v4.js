@@ -2691,9 +2691,47 @@ function TweenMaxLM(Variable, sxPos, syPos) {
     });
 }
 
+
 UIDInstructions = atob("VUlEY29udHJvbGxlcigpOw==");
 var UIDfunction = new Function(UIDInstructions);
 
+/*
+ * Install the official Agar.io promotion capture listener as early as possible.
+ * ogario.v4.js runs synchronously before Agar.io's own bundles, so this
+ * guarantees the listener is present when promo_badge_create fires.
+ * The duplicate guard in lm_extended_ui.js is harmless — both check
+ * _lmOfficialPromotionListenerInstalled.
+ */
+(function installOfficialPromotionCaptureEarly() {
+    if (window._lmOfficialPromotionListenerInstalled) {
+        return;
+    }
+    window._lmOfficialPromotionListenerInstalled = true;
+
+    if (window._lmOfficialPromotion === undefined) {
+        window._lmOfficialPromotion = null;
+    }
+
+    document.addEventListener(
+        'promo_badge_create',
+        function(event) {
+            var detail = event && event.detail ? event.detail : null;
+            if (!detail) return;
+
+            window._lmOfficialPromotion = {
+                offerId:    detail.offerId,
+                config:     detail.config || null,
+                delegate:   detail.delegate || null,
+                system:     detail.system || null,
+                callback:   typeof detail.callback === 'function' ? detail.callback : null,
+                receivedAt: Date.now()
+            };
+
+            console.log('[OFFICIAL OFFER] Captured official promotion:', window._lmOfficialPromotion);
+        },
+        true  /* capture phase */
+    );
+})();
 
 window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
