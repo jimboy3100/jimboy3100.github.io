@@ -2768,7 +2768,7 @@ window.updateLegendXpPanel = function() {
         window.LMscore = Number(localStorage['LMscore']) || 0;
     }
     var lmScoreVal = window.LMscore || 0;
-    var legendXpPanel = $('#lm-exp-bar');
+    var legendXpPanel = $('.progress-bar-striped2').closest('#exp-bar');
 
     /* Only target .progress-bar-striped2 — not the generic .progress-bar
      * class which also exists on the left panel's bar element. */
@@ -2791,8 +2791,8 @@ function setLevelProgressBar() {
 }
 
 function resetLevelProgressBar() {
-    var officialXpPanel = $('#exp-bar');
-    var legendXpPanel = $('#lm-exp-bar');
+    var officialXpPanel = $('#exp-bar').eq(0);
+    var legendXpPanel = $('.progress-bar-striped2').closest('#exp-bar');
     officialXpPanel.find('.progress-bar-striped').css({
         "transition": "5s",
         "width": "0%"
@@ -8124,7 +8124,7 @@ function thelegendmodproject() {
             const app = this;
             document.title = this.name;
             $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★ <strong class="progress-bar-star3">0</strong></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div></div>' +
-                '<div id="lm-exp-bar" class="agario-panel"><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
+                '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
@@ -8175,7 +8175,7 @@ function thelegendmodproject() {
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
-            $("#exp-bar, #lm-exp-bar").addClass("agario-profile-panel");
+            $("#exp-bar").addClass("agario-profile-panel");
 
             /*
              * Preserve Agar.io's official promotion DOM before Legend Mod clears
@@ -29449,7 +29449,7 @@ function preUserLeaguesInfoRequest() {
 function openhelper() {
     if ($('#legendhelper').length) {
         $('#legendhelper').show();
-        $('#main-menu, #skins-panel, #quick-menu, #exp-bar, #lm-exp-bar').hide();
+        $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide();
         return;
     }
     var s = document.createElement("script");
