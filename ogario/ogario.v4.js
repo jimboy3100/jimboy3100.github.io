@@ -16177,6 +16177,9 @@ function thelegendmodproject() {
                 $(".btn-full-map-spec").hide();
             }
             this.imsoloPlayerID = null; // for Imsolo/Agar2 PlayerID (0xFA)
+            this.imsoloGhostCells = [];
+            this.imsoloPlayersByID = new Map();
+            this.protocolFamily = null;
             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
@@ -17977,8 +17980,8 @@ function thelegendmodproject() {
                         console.log('%c[Garix]%c Auth result: ' + (authSuccess ? 'SUCCESS' : 'FAIL') + (authReason ? ' reason=' + authReason : ''), authSuccess ? 'color:#3f3' : 'color:#f33', 'color:inherit');
                     }
                     break;
-                case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2)
-                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                case 249: // 0xF9 — BattleBorder Update (Imsolo/Agar2/private)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private' || this.protocolFamily === 'legacy-multiogar') {
                         if (s + 10 > data.byteLength) break; // need 2+2+2+4 bytes
                         var bbEnabled = data.getUint16(s, true); s += 2;
                         var bbCenterX = data.getUint16(s, true); s += 2;
@@ -17988,12 +17991,19 @@ function thelegendmodproject() {
                             'enabled:', bbEnabled, 'center:', bbCenterX, bbCenterY, 'radius:', bbRadius);
                     }
                     break;
-                case 250: // 0xFA — Admin Toast Warning Notice (Expanding Land) / PlayerID (Imsolo/Agar2)
-                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
-                        if (s + 2 > data.byteLength) break;
+                case 250: { // 0xFA — Admin Toast Warning Notice (Expanding Land) / PlayerID (Imsolo/Agar2/private)
+                    var isKnownLegacyMultiOgar = (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.protocolFamily === 'legacy-multiogar');
+                    var isPrivateLegacyPlayerID = (this.serverType === 'private' && data.byteLength === 3);
+
+                    if (isKnownLegacyMultiOgar || isPrivateLegacyPlayerID) {
+                        if (data.byteLength !== 3) {
+                            console.warn('[Protocol] Ignoring malformed LegacyMultiOgar opcode 250 packet length:', data.byteLength);
+                            break;
+                        }
+                        this.protocolFamily = 'legacy-multiogar';
                         this.imsoloPlayerID = data.getUint16(s, true);
                         console.log('%c[MultiProto]%c Assigned PlayerID:', 'color:#3f3', 'color:inherit', this.imsoloPlayerID);
-                    } else {
+                    } else if (this.serverType === 'expandingland') {
                         if (s < data.byteLength) {
                             var toastType = data.getUint8(s++);
                             var toastMsg = "";
@@ -18011,10 +18021,13 @@ function thelegendmodproject() {
                                 }
                             }
                         }
+                    } else {
+                        console.warn('[Protocol] Ignoring unsupported opcode 250 packet for server type:', this.serverType, 'length:', data.byteLength);
                     }
                     break;
+                }
                 case 251: // 0xFB — Admin Command Response (Expanding Land) / PartyFriend Update (Imsolo/Agar2)
-                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private' || this.protocolFamily === 'legacy-multiogar') {
                         if (s + 1 > data.byteLength) break;
                         var _pfHas = data.getUint8(s++);
                         if (_pfHas) {
@@ -18047,11 +18060,13 @@ function thelegendmodproject() {
                         }
                     }
                     break;
-                case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2)
-                    if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
+                case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2/private)
+                    if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private' || this.protocolFamily === 'legacy-multiogar') {
                         if (s + 2 > data.byteLength) break;
                         var ghostCount = data.getUint16(s, true); s += 2;
                         this.imsoloGhostCells = [];
+                        if (!this.imsoloPlayersByID) this.imsoloPlayersByID = new Map();
+                        this.imsoloPlayersByID.clear();
                         for (var gi = 0; gi < ghostCount && s + 14 <= data.byteLength; gi++) {
                             var gPlayerID = data.getUint16(s, true); s += 2;
                             var gX = data.getInt32(s, true); s += 4;
@@ -18059,7 +18074,21 @@ function thelegendmodproject() {
                             var gMass = data.getInt32(s, true); s += 4;
                             var gColor = encode();
                             var gName = encode();
-                            this.imsoloGhostCells.push({ id: gPlayerID, x: gX, y: gY, mass: gMass, color: gColor, name: gName });
+                            var gObj = { id: gPlayerID, x: gX, y: gY, mass: gMass, color: gColor, name: gName };
+                            this.imsoloGhostCells.push(gObj);
+                            this.imsoloPlayersByID.set(gPlayerID, gObj);
+                        }
+                        // Backfill nicknames on existing active cells if ghost map arrives after cells
+                        if (this.imsoloPlayersByID.size > 0 && this.cells && this.cells.length > 0) {
+                            for (var ci = 0; ci < this.cells.length; ci++) {
+                                var cell = this.cells[ci];
+                                if (cell && cell.imsoloOwnerID > 0 && (!cell.name || cell.name === "")) {
+                                    var owner = this.imsoloPlayersByID.get(cell.imsoloOwnerID);
+                                    if (owner && owner.name) {
+                                        cell.name = owner.name;
+                                    }
+                                }
+                            }
                         }
                     }
                     break;
@@ -21463,6 +21492,13 @@ Most cells eaten   : ${mostCellsEaten}
                 if (isLegacyMultiOgar && (flags & 0x40)) {
                     imsoloOwnerID = view.readUInt16LE(offset);
                     offset += 2;
+                    if ((!namePresent || name === "") && this.imsoloPlayersByID && this.imsoloPlayersByID.has(imsoloOwnerID)) {
+                        var _ownerPlayer = this.imsoloPlayersByID.get(imsoloOwnerID);
+                        if (_ownerPlayer && _ownerPlayer.name) {
+                            name = _ownerPlayer.name;
+                            namePresent = true;
+                        }
+                    }
                 }
                 if (isLegacyMultiOgar && (flags & 0x80)) {
                     // Protocol 6-10: extended = uint16 cellType + string partyCode (UTF-8, null-terminated)
@@ -21540,12 +21576,16 @@ Most cells eaten   : ${mostCellsEaten}
                     invisible = !this.isInViewCustom3(x, y, size);
                 }
                 cellUpdateCells = this.indexedCells[id];
+                if (imsoloOwnerID > 0) {
+                    cellUpdateCells ? (cellUpdateCells.imsoloOwnerID = imsoloOwnerID) : null;
+                }
                 if (cellUpdateCells) {
                     if (color && !cellUpdateCells.isFood && !cellUpdateCells.isVirus) {
                         cellUpdateCells.color = color;
                     }
                 } else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    if (imsoloOwnerID > 0) cellUpdateCells.imsoloOwnerID = imsoloOwnerID;
                     cellUpdateCells.time = this.time;
                     cellUpdateCells.spectator = false;
                     if (!isFood) {
