@@ -4509,17 +4509,21 @@
 
 
 
-        // 4. Potions Slot Rendering & Protocol Wiring (Opcodes 120, 122, 124)
+        // 4. Potions Status Tracking (Opcodes 120, 122, 124)
+        // The Vue potion components (.potion-slot-button) handle their own
+        // click events via agarApp.API.openPotion/startPotion/skipPotion.
+        // LM only tracks status in window.LM.user.potionsStatus for
+        // autobrewing and the potions help button — never overwrite Vue DOM.
         var potions = appUser.potions || window.lastPotionsData || [];
         if (!window.LM) window.LM = {};
         if (!window.LM.user) window.LM.user = {};
         if (!window.LM.user.potionsStatus) window.LM.user.potionsStatus = {};
 
-        var potionsContainer = $('#potions, .potions-container');
+        var potionsContainer = $('.potions-container');
         if (potionsContainer.length) {
             potionsContainer.css({ position: 'relative', overflow: 'visible' });
             if (!document.getElementById('lm-potions-help-btn')) {
-                var helpBtn = $('<button id="lm-potions-help-btn" onclick="if(typeof window.showPotionsHelpModal===\'function\'){window.showPotionsHelpModal(\'rewards\');}else if(typeof window.showPremiumPotionsModal===\'function\'){window.showPremiumPotionsModal();} return false;" style="position: absolute; right: -28px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: 2px solid #fff; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); z-index: 9999; line-height: 1; text-align: center; padding: 0; pointer-events: auto;" title="Potions Help">?</button>');
+                var helpBtn = $('<button id="lm-potions-help-btn" style="position: absolute; right: -28px; top: 4px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: 2px solid #fff; font-weight: 900; font-size: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.4); z-index: 5; line-height: 1; text-align: center; padding: 0; pointer-events: auto;" title="Potions Help">?</button>');
                 potionsContainer.append(helpBtn);
             }
         }
@@ -4531,31 +4535,18 @@
             return false;
         });
 
+        /* Track potion status for autobrewing without overwriting Vue slots */
         for (var s = 1; s <= 3; s++) {
             var pData = potions[s - 1] || null;
-            var slotEl = $('#slot-' + s + ', #potion-slot-' + s + ', .potion-slot:nth-child(' + s + ')');
-            if (slotEl.length) {
-                if (pData) {
-                    var status = pData.status || 1; // 1 = unbrewed, 2 = brewing, 3 = ready
-                    var potionKey = 'potion' + s;
-                    window.LM.user.potionsStatus[potionKey] = {
-                        type: pData.productId || pData.type || '',
-                        slot: s,
-                        status: status,
-                        expires: pData.expiresInSeconds ? new Date(Date.now() + (pData.expiresInSeconds * 1000)) : new Date(0)
-                    };
-
-                    if (status === 3 || (status === 2 && (pData.expiresInSeconds || 0) <= 0)) {
-                        slotEl.html('<div style="color: #00ff88; font-weight: 800; font-size: 11px; cursor: pointer;" onclick="if(window.openPotion) window.openPotion(' + s + ');">✨ OPEN</div>');
-                    } else if (status === 2) {
-                        var mins = Math.floor((pData.expiresInSeconds || 0) / 60);
-                        var secs = (pData.expiresInSeconds || 0) % 60;
-                        var timeStr = mins + ':' + (secs < 10 ? '0' : '') + secs;
-                        slotEl.html('<div style="color: #ffaa00; font-weight: 700; font-size: 10px; cursor: pointer;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct(\'' + (pData.productId || '') + '\');">⏱️ ' + timeStr + '</div>');
-                    } else {
-                        slotEl.html('<div style="color: #01d9cc; font-weight: 700; font-size: 11px; cursor: pointer;" onclick="if(window.brewPotion) window.brewPotion(' + s + ');">🧪 BREW</div>');
-                    }
-                }
+            if (pData) {
+                var status = pData.status || 1; // 1 = unbrewed, 2 = brewing, 3 = ready
+                var potionKey = 'potion' + s;
+                window.LM.user.potionsStatus[potionKey] = {
+                    type: pData.productId || pData.type || '',
+                    slot: s,
+                    status: status,
+                    expires: pData.expiresInSeconds ? new Date(Date.now() + (pData.expiresInSeconds * 1000)) : new Date(0)
+                };
             }
         }
 
