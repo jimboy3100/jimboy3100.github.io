@@ -1630,7 +1630,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 toastr.warning('<b>[AUTH]:</b> Unexpected disconnect detected. Attempting auto-login (' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + ')...');
             }
 
-            var tryRelogin = function () {
+            var executeRetryStep = function () {
                 var reloginAttempted = false;
 
                 if (typeof window.gplusRelogin === 'function') {
@@ -1658,8 +1658,9 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         window._lwReconnecting = false;
                         window._loginRetryCount = 0;
                     } else if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
-                        window._lwReconnecting = false;
-                        window.logout(); // trigger next retry iteration
+                        window._loginRetryCount++;
+                        console.warn('[LW AUTH] Retrying auto-login (' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + ')...');
+                        setTimeout(executeRetryStep, 2500);
                     } else {
                         console.error('[LW AUTH] All ' + MAX_LOGIN_RETRIES + ' auto-login retries failed. Proceeding with full logout.');
                         window._lwReconnecting = false;
@@ -1670,7 +1671,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 }, 2500);
             };
 
-            setTimeout(tryRelogin, 1000 * window._loginRetryCount);
+            setTimeout(executeRetryStep, 1000);
             return;
         }
 
