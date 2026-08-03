@@ -350,7 +350,7 @@ function SpecialDeals(defaultTab) {
 
             '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 PNG and submitted directly to Agar.io via Protobuf.</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
-            '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">' +
+            '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name (required)" style="width: 70%;" maxlength="15" required aria-required="true" autocomplete="off">' +
             '<div class="input-group legendSkinColor-picker" style="width: 30%;">' +
             '<input id="legendSkinColorModal" type="hidden" value="#FFFF00">' +
             '<span class="input-group-addon" style="cursor:pointer; background: ' + pc + '; border: 1px solid ' + pc2 + '; border-radius: 4px;"><i style="background-color: #FFFF00;"></i></span>' +
@@ -613,8 +613,36 @@ function SpecialDeals(defaultTab) {
                 $('#legendSkinUrlInput').prop('disabled', false).css('opacity', 1);
                 $('#legendLoadUrlBtn').prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' });
                 $('#legendClearBtn').css({ opacity: 1, pointerEvents: 'auto' });
-                if (processedBufferModal) {
-                    uploadBtn.prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
+                var hasRequiredSkinName =
+                    $.trim(
+                        skinNameInput.val() ||
+                        ''
+                    ).length > 0;
+
+                if (
+                    processedBufferModal &&
+                    hasRequiredSkinName
+                ) {
+                    uploadBtn
+                        .prop(
+                            'disabled',
+                            false
+                        )
+                        .css({
+                            opacity: 1,
+                            cursor: 'pointer'
+                        });
+                } else {
+                    uploadBtn
+                        .prop(
+                            'disabled',
+                            true
+                        )
+                        .css({
+                            opacity: 0.5,
+                            cursor:
+                                'not-allowed'
+                        });
                 }
             } else {
                 uploadBtn.prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
@@ -1031,9 +1059,321 @@ function SpecialDeals(defaultTab) {
             return null;
         }
 
+        function loadAgarEncoderScript(id, src, readyCheck) {
+            return new Promise(function(resolve, reject) {
+                if (readyCheck()) {
+                    resolve();
+                    return;
+                }
+
+                var existing =
+                    document.getElementById(id);
+
+                if (
+                    existing &&
+                    existing.parentNode
+                ) {
+                    existing.parentNode.removeChild(
+                        existing
+                    );
+                }
+
+                var script =
+                    document.createElement(
+                        'script'
+                    );
+
+                script.id = id;
+                script.src = src;
+                script.async = true;
+                script.crossOrigin =
+                    'anonymous';
+
+                script.onload = function() {
+                    if (readyCheck()) {
+                        resolve();
+                    } else {
+                        reject(
+                            new Error(
+                                id +
+                                ' loaded without exposing its API'
+                            )
+                        );
+                    }
+                };
+
+                script.onerror = function() {
+                    reject(
+                        new Error(
+                            'Could not load ' +
+                            src
+                        )
+                    );
+                };
+
+                document.head.appendChild(
+                    script
+                );
+            });
+        }
+
+        function ensureAgarUPNG() {
+            /*
+             * First use Agar.io's own UPNG module when the current runtime
+             * exposes it.
+             */
+            var existingUPNG =
+                getOfficialAgarUPNG();
+
+            if (
+                existingUPNG &&
+                typeof existingUPNG.encode ===
+                    'function'
+            ) {
+                return Promise.resolve(
+                    existingUPNG
+                );
+            }
+
+            /*
+             * Share one loading operation among repeated file selections.
+             */
+            if (window._lmAgarUPNGLoadPromise) {
+                return window
+                    ._lmAgarUPNGLoadPromise;
+            }
+
+            /*
+             * The original Agar.io UPNG module depends on Pako.
+             * Load equivalent pinned browser builds only when the private
+             * Agar.io webpack module cannot be accessed.
+             */
+            window._lmAgarUPNGLoadPromise =
+                loadAgarEncoderScript(
+                    'lm-agar-pako',
+                    'https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js',
+                    function() {
+                        return !!window.pako;
+                    }
+                )
+                .then(function() {
+                    return loadAgarEncoderScript(
+                        'lm-agar-upng',
+                        'https://cdn.jsdelivr.net/npm/upng-js@2.1.0/UPNG.js',
+                        function() {
+                            return !!(
+                                window.UPNG &&
+                                typeof window.UPNG.encode ===
+                                    'function'
+                            );
+                        }
+                    );
+                })
+                .then(function() {
+                    window._lmOfficialAgarUPNG =
+                        window.UPNG;
+
+                    return window
+                        ._lmOfficialAgarUPNG;
+                })
+                .catch(function(error) {
+                    /*
+                     * Permit a later retry after a temporary network failure.
+                     */
+                    window._lmAgarUPNGLoadPromise =
+                        null;
+
+                    throw error;
+                });
+
+            return window
+                ._lmAgarUPNGLoadPromise;
+        }
+
+        function validateAgarPNG8(pngBytes) {
+            if (
+                !(pngBytes instanceof Uint8Array) ||
+                pngBytes.length < 33
+            ) {
+                return {
+                    valid: false,
+                    error:
+                        'Encoded PNG is empty or truncated'
+                };
+            }
+
+            var signature = [
+                137, 80, 78, 71,
+                13, 10, 26, 10
+            ];
+
+            for (
+                var signatureIndex = 0;
+                signatureIndex <
+                    signature.length;
+                signatureIndex++
+            ) {
+                if (
+                    pngBytes[signatureIndex] !==
+                    signature[signatureIndex]
+                ) {
+                    return {
+                        valid: false,
+                        error:
+                            'Encoded data is not a PNG file'
+                    };
+                }
+            }
+
+            var view =
+                new DataView(
+                    pngBytes.buffer,
+                    pngBytes.byteOffset,
+                    pngBytes.byteLength
+                );
+
+            /*
+             * PNG IHDR:
+             * width     bytes 16-19
+             * height    bytes 20-23
+             * bit depth byte 24
+             * color type byte 25
+             */
+            var width =
+                view.getUint32(
+                    16,
+                    false
+                );
+
+            var height =
+                view.getUint32(
+                    20,
+                    false
+                );
+
+            var bitDepth =
+                pngBytes[24];
+
+            var colorType =
+                pngBytes[25];
+
+            var paletteEntries = 0;
+            var offset = 8;
+
+            /*
+             * Inspect PNG chunks and locate PLTE.
+             */
+            while (
+                offset + 12 <=
+                    pngBytes.length
+            ) {
+                var chunkLength =
+                    view.getUint32(
+                        offset,
+                        false
+                    );
+
+                var chunkType =
+                    String.fromCharCode(
+                        pngBytes[offset + 4],
+                        pngBytes[offset + 5],
+                        pngBytes[offset + 6],
+                        pngBytes[offset + 7]
+                    );
+
+                if (
+                    offset +
+                        12 +
+                        chunkLength >
+                    pngBytes.length
+                ) {
+                    return {
+                        valid: false,
+                        error:
+                            'PNG contains a truncated chunk'
+                    };
+                }
+
+                if (chunkType === 'PLTE') {
+                    paletteEntries =
+                        chunkLength / 3;
+                }
+
+                offset +=
+                    12 +
+                    chunkLength;
+
+                if (chunkType === 'IEND') {
+                    break;
+                }
+            }
+
+            if (
+                width !== 512 ||
+                height !== 512
+            ) {
+                return {
+                    valid: false,
+                    error:
+                        'PNG dimensions are ' +
+                        width +
+                        'x' +
+                        height +
+                        ', not 512x512'
+                };
+            }
+
+            /*
+             * PNG color type 3 is indexed/palette color.
+             * Reject ordinary RGBA PNG output.
+             */
+            if (
+                colorType !== 3 ||
+                paletteEntries < 1 ||
+                paletteEntries > 16
+            ) {
+                return {
+                    valid: false,
+                    error:
+                        'PNG is not an indexed palette image with 16 colors or fewer'
+                };
+            }
+
+            if (
+                bitDepth !== 1 &&
+                bitDepth !== 2 &&
+                bitDepth !== 4 &&
+                bitDepth !== 8
+            ) {
+                return {
+                    valid: false,
+                    error:
+                        'PNG has an invalid indexed bit depth'
+                };
+            }
+
+            return {
+                valid: true,
+                paletteEntries:
+                    paletteEntries
+            };
+        }
+
         function processAndFormatModal(src) {
-            var img =
-                new Image();
+            var img = new Image();
+
+            processedBufferModal =
+                null;
+
+            $('#legendSaveBtnModal')
+                .prop(
+                    'disabled',
+                    true
+                )
+                .css({
+                    opacity: 0.5,
+                    cursor: 'not-allowed'
+                });
 
             if (
                 typeof src === 'string' &&
@@ -1060,11 +1400,8 @@ function SpecialDeals(defaultTab) {
                     return;
                 }
 
-                canvas.width =
-                    512;
-
-                canvas.height =
-                    512;
+                canvas.width = 512;
+                canvas.height = 512;
 
                 var ctx =
                     canvas.getContext(
@@ -1075,7 +1412,34 @@ function SpecialDeals(defaultTab) {
                         }
                     );
 
+                if (!ctx) {
+                    $('#legendStatusModal')
+                        .text(
+                            'Canvas image processing is unavailable'
+                        )
+                        .css(
+                            'color',
+                            getShopTheme().b4
+                        );
+
+                    return;
+                }
+
                 ctx.clearRect(
+                    0,
+                    0,
+                    512,
+                    512
+                );
+
+                /*
+                 * The official editor renders a final background before
+                 * retrieving its 512x512 RGBA image data.
+                 */
+                ctx.fillStyle =
+                    '#000000';
+
+                ctx.fillRect(
                     0,
                     0,
                     512,
@@ -1085,13 +1449,14 @@ function SpecialDeals(defaultTab) {
                 ctx.imageSmoothingEnabled =
                     true;
 
-                ctx.imageSmoothingQuality =
-                    'high';
+                if (
+                    'imageSmoothingQuality' in
+                    ctx
+                ) {
+                    ctx.imageSmoothingQuality =
+                        'high';
+                }
 
-                /*
-                 * Keep the submitted image at the exact official dimensions.
-                 * Never submit 384, 256, 192 or 128-pixel PNG files.
-                 */
                 ctx.drawImage(
                     img,
                     0,
@@ -1100,94 +1465,140 @@ function SpecialDeals(defaultTab) {
                     512
                 );
 
+                $('#legendStatusModal')
+                    .text(
+                        'Image loaded \u2014 preparing Agar.io PNG8...'
+                    )
+                    .css(
+                        'color',
+                        getShopTheme().mc
+                    );
+
                 /*
-                 * Always display the selected image in the preview.
-                 * PNG8 availability controls uploading, not previewing.
+                 * Prevent an older asynchronous encode from replacing a
+                 * newer selected image.
                  */
-                var upng =
-                    getOfficialAgarUPNG();
+                var encodeJobId =
+                    (
+                        window
+                            ._lmSkinEncodeJobId ||
+                        0
+                    ) + 1;
 
-                if (!upng) {
-                    processedBufferModal =
-                        null;
+                window._lmSkinEncodeJobId =
+                    encodeJobId;
 
-                    $('#legendStatusModal')
-                        .text(
-                            'Image loaded — Agar.io PNG8 encoder is not ready'
-                        )
-                        .css(
-                            'color',
-                            getShopTheme().b4
-                        );
+                ensureAgarUPNG()
+                    .then(function(upng) {
+                        if (
+                            encodeJobId !==
+                            window
+                                ._lmSkinEncodeJobId
+                        ) {
+                            return;
+                        }
 
-                    $('#legendSaveBtnModal')
-                        .prop(
-                            'disabled',
-                            true
-                        )
-                        .css({
-                            opacity: 0.5,
-                            cursor: 'not-allowed'
-                        });
+                        var rgba =
+                            ctx.getImageData(
+                                0,
+                                0,
+                                512,
+                                512
+                            );
 
-                    return;
-                }
+                        /*
+                         * Exact image encoding call used by the original
+                         * Agar.io custom-skin editor.
+                         */
+                        var encodedPng =
+                            upng.encode(
+                                [
+                                    rgba.data
+                                        .buffer
+                                ],
+                                512,
+                                512,
+                                16
+                            );
 
-                try {
-                    var rgba =
-                        ctx.getImageData(
-                            0,
-                            0,
-                            512,
-                            512
-                        );
+                        var pngBytes =
+                            new Uint8Array(
+                                encodedPng
+                            );
 
-                    /*
-                     * Exact equivalent of Agar.io:
-                     *
-                     * UPNG.encode(
-                     *     [rawRgbaBuffer],
-                     *     512,
-                     *     512,
-                     *     16
-                     * )
-                     */
-                    var encodedPng =
-                        upng.encode(
-                            [
-                                rgba.data
-                                    .buffer
-                            ],
-                            512,
-                            512,
-                            16
-                        );
+                        /*
+                         * Never enable payment/upload until the output has
+                         * been proven to be an indexed 512x512 PNG8 with no
+                         * more than 16 palette entries.
+                         */
+                        var validation =
+                            validateAgarPNG8(
+                                pngBytes
+                            );
 
-                    processedBufferModal =
-                        new Uint8Array(
-                            encodedPng
-                        );
+                        if (!validation.valid) {
+                            throw new Error(
+                                validation.error
+                            );
+                        }
 
-                    var kb =
-                        (
-                            processedBufferModal
-                                .length /
-                            1024
-                        ).toFixed(1);
+                        var kb =
+                            (
+                                pngBytes.length /
+                                1024
+                            ).toFixed(1);
 
-                    if (
-                        processedBufferModal
-                            .length >
-                        102400
-                    ) {
+                        if (
+                            pngBytes.length >
+                            102400
+                        ) {
+                            throw new Error(
+                                'Agar PNG8 is too large: ' +
+                                kb +
+                                'KB; maximum is 100KB'
+                            );
+                        }
+
                         processedBufferModal =
-                            null;
+                            pngBytes;
 
                         $('#legendStatusModal')
                             .text(
-                                'Agar PNG8 is too large: ' +
+                                'Agar PNG8 Ready: ' +
                                 kb +
-                                'KB'
+                                'KB (512x512, ' +
+                                validation
+                                    .paletteEntries +
+                                ' colors)'
+                            )
+                            .css(
+                                'color',
+                                getShopTheme().b2
+                            );
+
+                        updateShopLoginState();
+                    })
+                    .catch(function(error) {
+                        if (
+                            encodeJobId !==
+                            window
+                                ._lmSkinEncodeJobId
+                        ) {
+                            return;
+                        }
+
+                        processedBufferModal =
+                            null;
+
+                        console.error(
+                            '[LM SKIN] Agar.io PNG8 preparation failed:',
+                            error
+                        );
+
+                        $('#legendStatusModal')
+                            .text(
+                                'Agar.io PNG8 encoder failed: ' +
+                                error.message
                             )
                             .css(
                                 'color',
@@ -1199,56 +1610,12 @@ function SpecialDeals(defaultTab) {
                                 'disabled',
                                 true
                             )
-                            .css(
-                                'opacity',
-                                0.5
-                            );
-
-                        return;
-                    }
-
-                    $('#legendStatusModal')
-                        .text(
-                            'Agar PNG8 Ready: ' +
-                            kb +
-                            'KB (512x512, 16 colors)'
-                        )
-                        .css(
-                            'color',
-                            getShopTheme().b2
-                        );
-
-                    updateShopLoginState();
-                } catch (
-                    png8Error
-                ) {
-                    processedBufferModal =
-                        null;
-
-                    console.error(
-                        '[LM SKIN] PNG8 encoding failed:',
-                        png8Error
-                    );
-
-                    $('#legendStatusModal')
-                        .text(
-                            'Could not create Agar PNG8'
-                        )
-                        .css(
-                            'color',
-                            getShopTheme().b4
-                        );
-
-                    $('#legendSaveBtnModal')
-                        .prop(
-                            'disabled',
-                            true
-                        )
-                        .css(
-                            'opacity',
-                            0.5
-                        );
-                }
+                            .css({
+                                opacity: 0.5,
+                                cursor:
+                                    'not-allowed'
+                            });
+                    });
             };
 
             img.onerror = function() {
@@ -1265,8 +1632,7 @@ function SpecialDeals(defaultTab) {
                     );
             };
 
-            img.src =
-                src;
+            img.src = src;
         }
 
         $('#legendChooseFileBtn').off('click').on('click', function(e) {
@@ -1386,10 +1752,58 @@ function SpecialDeals(defaultTab) {
             }
         });
 
+        $('#legendSkinNameModal')
+            .off(
+                'input.skinNameRequired'
+            )
+            .on(
+                'input.skinNameRequired',
+                function() {
+                    updateShopLoginState();
+                }
+            );
+
         $('#legendSaveBtnModal').off('click').on('click', function() {
             var btn = $(this);
-            var name = $('#legendSkinNameModal').val() || "test";
-            var color = $('#legendSkinColorModal').val() || "#FFFF00";
+
+            var name =
+                $.trim(
+                    $(
+                        '#legendSkinNameModal'
+                    ).val() ||
+                    ''
+                );
+
+            var color =
+                $(
+                    '#legendSkinColorModal'
+                ).val() ||
+                "#FFFF00";
+
+            if (!name) {
+                toastr.warning(
+                    '<b>[SKIN]:</b> Enter a skin name before uploading.'
+                );
+
+                $(
+                    '#legendSkinNameModal'
+                )
+                    .focus()
+                    .css(
+                        'border-color',
+                        '#ff5252'
+                    );
+
+                updateShopLoginState();
+                return;
+            }
+
+            $(
+                '#legendSkinNameModal'
+            ).css(
+                'border-color',
+                ''
+            );
 
             // Login + UID gate
             if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('upload and buy custom skin')) {
