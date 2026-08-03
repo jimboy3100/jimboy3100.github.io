@@ -29341,6 +29341,29 @@ Most cells eaten   : ${mostCellsEaten}
                     drawRender.camX = LM.viewX;
                     drawRender.camY = LM.viewY;
                 }
+
+                /*
+                 * Rebuild every viewport-dependent subsystem before the first
+                 * resumed render frame. Browser backgrounding can leave the
+                 * canvas dimensions, DPR, GL viewport, HUD layout, minimap
+                 * sector canvas and zoom inputs based on stale dimensions.
+                 */
+                if (typeof drawRender !== 'undefined') {
+                    drawRender.resizeCanvas();
+                    drawRender.fpsLastRequest = null;
+                }
+
+                if (typeof ogarhusettings === 'function') {
+                    ogarhusettings();
+                }
+
+                if (
+                    typeof application !== 'undefined' &&
+                    typeof application.resetMiniMapSectors === 'function'
+                ) {
+                    application.resetMiniMapSectors();
+                }
+
                 LM.time = now;
                 /* If tab was hidden > 2 seconds, request server resync to clear ghost cells.
                  * When backgrounded, the browser buffers WS messages but pauses JS processing.
