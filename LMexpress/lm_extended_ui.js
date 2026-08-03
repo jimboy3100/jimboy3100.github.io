@@ -3096,9 +3096,374 @@
         }
 
         /*
-         * Secondary recovery path:
-         * use the original rendered promotion button if the event was
-         * emitted before this listener was installed.
+         * Runtime recovery path:
+         * use Agar.io's actual promotion objects instead of depending
+         * on the optional HTML badge or promo_badge_create event.
+         *
+         * The official client writes the current BasePromotionButton to
+         * Core.ui.mainUI._badgeButton before loading badge resources.
+         */
+        var officialCore = null;
+
+        try {
+            if (
+                typeof Core !== 'undefined' &&
+                Core
+            ) {
+                officialCore = Core;
+            } else if (window.Core) {
+                officialCore = window.Core;
+            }
+        } catch (officialCoreLookupError) {
+            officialCore = null;
+        }
+
+        var officialMainUI =
+            officialCore &&
+            officialCore.ui &&
+            officialCore.ui.mainUI
+                ? officialCore.ui.mainUI
+                : null;
+
+        var liveBadge =
+            officialMainUI &&
+            officialMainUI._badgeButton
+                ? officialMainUI._badgeButton
+                : null;
+
+        /*
+         * First runtime path:
+         * execute the exact BasePromotionButton currently selected by
+         * Agar.io.
+         */
+        if (
+            liveBadge &&
+            typeof liveBadge.executeCallback ===
+                'function'
+        ) {
+            var liveOfferId = null;
+            var liveOfferSystem =
+                liveBadge.system || null;
+            var liveOfferIsActive = true;
+            var liveBadgeConfig = null;
+
+            try {
+                if (
+                    typeof liveBadge.get_offerId ===
+                        'function'
+                ) {
+                    liveOfferId =
+                        liveBadge.get_offerId();
+                }
+
+                if (
+                    liveOfferId &&
+                    liveOfferSystem &&
+                    typeof liveOfferSystem.isOfferActive ===
+                        'function'
+                ) {
+                    liveOfferIsActive =
+                        !!liveOfferSystem.isOfferActive(
+                            liveOfferId
+                        );
+                }
+
+                if (
+                    typeof liveBadge.getBadgeConfiguration ===
+                        'function'
+                ) {
+                    var liveBadgeConfigWrapper =
+                        liveBadge.getBadgeConfiguration();
+
+                    liveBadgeConfig =
+                        liveBadgeConfigWrapper &&
+                        liveBadgeConfigWrapper
+                            .badgeConfiguration
+                            ? liveBadgeConfigWrapper
+                                .badgeConfiguration
+                            : liveBadgeConfigWrapper;
+                }
+            } catch (liveBadgeReadError) {
+                console.warn(
+                    '[OFFICIAL OFFER] Could not inspect the live Agar.io badge:',
+                    liveBadgeReadError
+                );
+            }
+
+            if (liveOfferIsActive) {
+                window._lmDailyDealOpening = true;
+
+                try {
+                    liveBadge.executeCallback();
+
+                    window._lmOfficialPromotion = {
+                        offerId: liveOfferId,
+                        config: liveBadgeConfig,
+                        delegate: null,
+                        system: liveOfferSystem,
+                        callback: function() {
+                            return liveBadge
+                                .executeCallback();
+                        },
+                        receivedAt: Date.now(),
+                        source:
+                            'Core.ui.mainUI._badgeButton'
+                    };
+
+                    if (
+                        window.agarApp &&
+                        window.agarApp.API &&
+                        typeof window.agarApp.API.playSound ===
+                            'function'
+                    ) {
+                        window.agarApp.API.playSound(
+                            'sfxClick'
+                        );
+                    }
+
+                    console.log(
+                        '[OFFICIAL OFFER] Opened through Core.ui.mainUI._badgeButton:',
+                        {
+                            offerId: liveOfferId,
+                            system: liveOfferSystem
+                        }
+                    );
+
+                    setTimeout(
+                        function() {
+                            window._lmDailyDealOpening =
+                                false;
+                        },
+                        750
+                    );
+
+                    return true;
+                } catch (liveBadgeOpenError) {
+                    window._lmDailyDealOpening = false;
+
+                    console.warn(
+                        '[OFFICIAL OFFER] Live badge callback failed; trying the active promotion client:',
+                        liveBadgeOpenError
+                    );
+                }
+            }
+        }
+
+        /*
+         * Second runtime path:
+         * ask the official active promotion client for its next
+         * badge-eligible offer and invoke the same badgeButtonPressed()
+         * method used by Agar.io's BasePromotionButton callback.
+         */
+        var promoService =
+            officialCore &&
+            officialCore.services
+                ? officialCore.services.promo
+                : null;
+
+        var activePromoSystem = null;
+        var activePromoClient = null;
+        var activePromoDelegate = null;
+        var activeOfferId = null;
+
+        try {
+            if (
+                promoService &&
+                typeof promoService
+                    .getActivePromotionSystem ===
+                    'function'
+            ) {
+                activePromoSystem =
+                    promoService
+                        .getActivePromotionSystem();
+            }
+
+            if (
+                promoService &&
+                typeof promoService
+                    .getActivePromotionClient ===
+                    'function'
+            ) {
+                activePromoClient =
+                    promoService
+                        .getActivePromotionClient();
+            }
+
+            if (
+                activePromoClient &&
+                typeof activePromoClient
+                    .get_gameDelegate ===
+                    'function'
+            ) {
+                activePromoDelegate =
+                    activePromoClient
+                        .get_gameDelegate();
+            }
+
+            if (
+                activePromoClient &&
+                typeof activePromoClient
+                    .getNextShowableBadgeOfferId ===
+                    'function'
+            ) {
+                activeOfferId =
+                    activePromoClient
+                        .getNextShowableBadgeOfferId();
+            }
+
+            /*
+             * Defensive fallback for builds where the client method
+             * returned no value even though the system contains active,
+             * badge-eligible offers.
+             */
+            if (
+                !activeOfferId &&
+                activePromoSystem &&
+                typeof activePromoSystem
+                    .getActiveOffers ===
+                    'function'
+            ) {
+                var activeOffers =
+                    activePromoSystem
+                        .getActiveOffers() || [];
+
+                for (
+                    var activeOfferIndex = 0;
+                    activeOfferIndex <
+                        activeOffers.length;
+                    activeOfferIndex++
+                ) {
+                    var activeOffer =
+                        activeOffers[
+                            activeOfferIndex
+                        ];
+
+                    var candidateOfferId =
+                        activeOffer &&
+                        activeOffer.offerName
+                            ? activeOffer.offerName
+                            : null;
+
+                    if (!candidateOfferId) {
+                        continue;
+                    }
+
+                    if (
+                        activePromoDelegate &&
+                        typeof activePromoDelegate
+                            .canShowOfferBadge ===
+                            'function' &&
+                        !activePromoDelegate
+                            .canShowOfferBadge(
+                                candidateOfferId,
+                                activePromoSystem
+                            )
+                    ) {
+                        continue;
+                    }
+
+                    activeOfferId =
+                        candidateOfferId;
+
+                    break;
+                }
+            }
+
+            if (
+                activeOfferId &&
+                activePromoSystem &&
+                typeof activePromoSystem
+                    .isOfferActive ===
+                    'function' &&
+                !activePromoSystem
+                    .isOfferActive(activeOfferId)
+            ) {
+                activeOfferId = null;
+            }
+        } catch (activePromoLookupError) {
+            console.warn(
+                '[OFFICIAL OFFER] Active promotion lookup failed:',
+                activePromoLookupError
+            );
+
+            activeOfferId = null;
+        }
+
+        if (
+            activeOfferId &&
+            activePromoSystem &&
+            activePromoDelegate &&
+            typeof activePromoDelegate
+                .badgeButtonPressed ===
+                'function'
+        ) {
+            window._lmDailyDealOpening = true;
+
+            try {
+                activePromoDelegate
+                    .badgeButtonPressed(
+                        activeOfferId,
+                        activePromoSystem
+                    );
+
+                window._lmOfficialPromotion = {
+                    offerId: activeOfferId,
+                    config: null,
+                    delegate: activePromoDelegate,
+                    system: activePromoSystem,
+                    callback: function() {
+                        return activePromoDelegate
+                            .badgeButtonPressed(
+                                activeOfferId,
+                                activePromoSystem
+                            );
+                    },
+                    receivedAt: Date.now(),
+                    source:
+                        'Core.services.promo'
+                };
+
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API.playSound ===
+                        'function'
+                ) {
+                    window.agarApp.API.playSound(
+                        'sfxClick'
+                    );
+                }
+
+                console.log(
+                    '[OFFICIAL OFFER] Opened through the active Agar.io promotion client:',
+                    {
+                        offerId: activeOfferId,
+                        system: activePromoSystem
+                    }
+                );
+
+                setTimeout(
+                    function() {
+                        window._lmDailyDealOpening =
+                            false;
+                    },
+                    750
+                );
+
+                return true;
+            } catch (activePromoOpenError) {
+                window._lmDailyDealOpening = false;
+
+                console.error(
+                    '[OFFICIAL OFFER] Active Agar.io promotion failed to open:',
+                    activePromoOpenError
+                );
+            }
+        }
+
+        /*
+         * Final DOM recovery path:
+         * use the original rendered promotion button if available.
          */
         var promoContainer =
             document.querySelector(
@@ -3179,7 +3544,7 @@
         }
 
         console.warn(
-            '[OFFICIAL OFFER] No captured promo_badge_create event and no original promotion button were found.'
+            '[OFFICIAL OFFER] No active official promotion was available through the captured event, Core.ui.mainUI._badgeButton, Core.services.promo, or the original promotion DOM.'
         );
 
         return false;
