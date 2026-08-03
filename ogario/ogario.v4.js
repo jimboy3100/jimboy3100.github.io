@@ -21508,11 +21508,19 @@ function thelegendmodproject() {
                         var weJustEquipped = window._lmSkinEquipId && recentEquipAge < 10000;
 
                         if (weJustEquipped && skinVal !== window._lmSkinEquipId) {
-                            console.warn('[SKIN] Ignoring stale server skin response (race condition). Server=' + skinVal + ', we sent=' + window._lmSkinEquipId + ', ' + recentEquipAge + 'ms ago. Re-sending equip...');
-                            // Re-send our equip request — the stale response means
-                            // the server hasn't processed our opcode 80 yet
-                            if (typeof window.changeSkin === 'function') {
-                                try { window.changeSkin(window._lmSkinEquipId); } catch (re) { }
+                            /*
+                             * Ignore an older server settings value while the requested skin
+                             * is pending, but NEVER send another equip request from inside
+                             * the server-response handler.
+                             *
+                             * Calling changeSkin() here creates an opcode 80 → opcode 81 →
+                             * changeSkin() feedback loop and continuously resets
+                             * _lmSkinEquipTime, preventing the 10s expiry from ever firing.
+                             */
+                            var mismatchLogTime = Date.now();
+                            if (!window._lmLastSkinMismatchLogAt || mismatchLogTime - window._lmLastSkinMismatchLogAt >= 1000) {
+                                window._lmLastSkinMismatchLogAt = mismatchLogTime;
+                                console.warn('[SKIN] Ignoring stale server skin response. Server=' + skinVal + ', pending=' + window._lmSkinEquipId + ', elapsed=' + recentEquipAge + 'ms. No recursive resend.');
                             }
                             break;
                         }
@@ -21522,6 +21530,7 @@ function thelegendmodproject() {
                             console.log('[SKIN] Server confirmed equip: ' + skinVal + ' (' + recentEquipAge + 'ms)');
                             window._lmSkinEquipId = null;
                             window._lmSkinEquipTime = 0;
+                            window._lmLastSkinMismatchLogAt = 0;
                         }
 
                         window.serverEquippedSkinId = skinVal;
