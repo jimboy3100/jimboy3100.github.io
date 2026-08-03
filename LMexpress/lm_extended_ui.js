@@ -4561,10 +4561,6 @@
                 <i class="fa fa-trophy"></i> Leagues
                 <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
             </button>
-            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
-                <i class="fa fa-users"></i> Friends
-                <div style="position: absolute; right: -12px; top: 5px; background: red; color: white; font-size: 8px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">BETA</div>
-            </button>
         `;
 
         if (targetContainer.find('#potions').length) {
@@ -4851,17 +4847,6 @@
                 'function' &&
             window.isFacebookAgarAccount();
 
-        var friendsBtnEnabled =
-            buttonsEnabled &&
-            isFacebook;
-        var friendsBtn = $('#lm-friends-btn');
-        friendsBtn.prop('disabled', !friendsBtnEnabled);
-        if (!friendsBtnEnabled) {
-            friendsBtn.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Facebook and play a game session first to access Friends');
-        } else {
-            friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
-        }
-
         // 3. Official Agar.io XP Progress Bar & Level
         var xpState =
             window.getOfficialAgarXpState(
@@ -5025,26 +5010,6 @@
                 'function' &&
             window.isFacebookAgarAccount();
         var hasServerConnection = !!((window.core && window.core.proxyMobileData) || (window.application && typeof window.application.sendProto === 'function') || window.legendmod);
-        var friendsBtn = $('#lm-friends-btn, .lm-friends-btn');
-        if (friendsBtn.length) {
-            if (!isUserLoggedIn || !hasUserUID || !isFacebookLoggedIn || !hasServerConnection) {
-                var friendsTitle = !isUserLoggedIn
-                    ? 'Log in with Facebook and join a game session first to access Friends'
-                    : (!hasUserUID
-                        ? 'Play a game session first to receive your Agar.io UID'
-                        : (!isFacebookLoggedIn
-                            ? 'Friends feature requires logging in with Facebook'
-                            : 'Join an Agar.io server first'));
-                friendsBtn.css({ opacity: 0.4, cursor: 'not-allowed', pointerEvents: 'none' })
-                          .prop('disabled', true)
-                          .attr('title', friendsTitle);
-            } else {
-                friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
-                          .prop('disabled', false)
-                          .removeAttr('title');
-            }
-        }
-
         // 6. Render Promo Reward Banner if token detected
         window.renderPromoRewardBanner();
     };
@@ -5185,82 +5150,8 @@
             if (!window._lmExtendedMenuEnabled()) {
                 return false;
             }
-            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('access Weekly Leagues')) {
-                return false;
-            }
             if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal();
         });
-
-        $(document)
-            .off('click.lmFriendsLeague', '#lm-friends-btn')
-            .on('click.lmFriendsLeague', '#lm-friends-btn', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                var isLoggedIn =
-                    typeof window.checkUserLoggedIn === 'function'
-                        ? window.checkUserLoggedIn()
-                        : !!(
-                            window.loggedIn ||
-                            (
-                                window.application &&
-                                window.application.user &&
-                                window.application.user.userId
-                            )
-                        );
-
-                if (!isLoggedIn) {
-                    if (window.toastr) {
-                        toastr.error(
-                            '<b>[FRIENDS LEAGUE]:</b> You must be logged in to view the Friends leaderboard.'
-                        );
-                    }
-
-                    return false;
-                }
-
-                /*
-                 * Match the official Agar.io behavior:
-                 * open the Leagues interface and select data.friends.
-                 */
-                window.currentLeagueTab = 4;
-                window._requestedLeagueTab = 4;
-
-                if (typeof window.showLeaguesModal === 'function') {
-                    window.showLeaguesModal();
-                } else {
-                    console.error(
-                        '[LM] showLeaguesModal is unavailable.'
-                    );
-
-                    return false;
-                }
-
-                /*
-                 * showLeaguesModal may create the tab buttons asynchronously.
-                 * Select Friends after the modal has been inserted.
-                 */
-                window.setTimeout(function() {
-                    var friendsTab =
-                        document.getElementById(
-                            'lm-tab-4'
-                        );
-
-                    if (friendsTab) {
-                        friendsTab.click();
-                        return;
-                    }
-
-                    if (
-                        typeof window.switchLeagueTab ===
-                        'function'
-                    ) {
-                        window.switchLeagueTab(4);
-                    }
-                }, 0);
-
-                return false;
-            });
 
         $(document).off('click', '#lm-daily-deal-btn').on('click', '#lm-daily-deal-btn', function(e) {
             e.preventDefault();
