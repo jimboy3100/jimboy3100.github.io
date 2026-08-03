@@ -14775,35 +14775,20 @@ function thelegendmodproject() {
             function sendSkinUpload() {
                 try {
                     /*
-                     * Convert PNG bytes to Base64 string — exact match of official
-                     * compressImageBufferToPNG8 (bundle_end.js:12504-12509):
+                     * The official stores content as a Base64 string internally,
+                     * but writeToBuffer() calls haxe_crypto_Base64.decode(content)
+                     * before write__TYPE_BYTES (agario.js:37203).  So the WIRE
+                     * content is raw PNG binary bytes, not Base64 ASCII.
                      *
-                     *   var dData = new Uint8Array(encodePNG).reduce(
-                     *       function(data, _byte) {
-                     *           return data + String.fromCharCode(_byte);
-                     *       }, '');
-                     *   return btoa(dData);
-                     *
-                     * The Haxe proto set_content() receives this Base64 string
-                     * and serializes it via Bytes.ofString() — the wire content
-                     * is the ASCII character bytes of the Base64 string, NOT the
-                     * decoded binary.  Using proto type "string" in protobufjs
-                     * produces identical wire bytes.
+                     * With protobufjs "bytes content = 1", passing a Uint8Array
+                     * writes the raw bytes directly — identical wire format.
                      */
-                    var binaryString = '';
-                    for (var bi = 0; bi < imageUint8Array.length; bi++) {
-                        binaryString += String.fromCharCode(
-                            imageUint8Array[bi]
-                        );
-                    }
-                    var base64Content = btoa(binaryString);
-
                     var buffer = window.mesega.encode({
                         contentType: 1,
                         uncompressedData: {
                             type: 150,
                             userSkinsCreateRequestField: {
-                                content: base64Content,
+                                content: imageUint8Array,
                                 meta: xmlMeta
                             }
                         }
@@ -14813,40 +14798,19 @@ function thelegendmodproject() {
                     try {
                         var decodedUpload =
                             window.mesega.decode(buffer);
-                        var decodedB64 =
+                        var decodedContent =
                             decodedUpload &&
                             decodedUpload.uncompressedData &&
                             decodedUpload.uncompressedData
                                 .userSkinsCreateRequestField &&
                             decodedUpload.uncompressedData
                                 .userSkinsCreateRequestField.content;
-
-                        if (
-                            typeof decodedB64 !== 'string' ||
-                            decodedB64.length === 0
-                        ) {
-                            throw new Error(
-                                "Opcode 150 content is empty or not a string"
-                            );
-                        }
-
-                        /* Decode first 12 Base64 chars → 9 raw bytes, check PNG sig */
-                        var rawCheck = atob(
-                            decodedB64.substring(0, 12)
-                        );
-                        var decodedSig = [];
-                        for (
-                            var si = 0;
-                            si < Math.min(8, rawCheck.length);
-                            si++
-                        ) {
-                            decodedSig.push(
-                                rawCheck.charCodeAt(si)
-                            );
-                        }
+                        var decodedSig = decodedContent
+                            ? Array.from(decodedContent.slice(0, 8))
+                            : [];
 
                         console.log(
-                            "[SKIN] Encoded payload (Base64→PNG sig):",
+                            "[SKIN] Encoded payload PNG signature:",
                             decodedSig
                         );
 
@@ -14862,7 +14826,7 @@ function thelegendmodproject() {
                             decodedSig[7] !== 10
                         ) {
                             throw new Error(
-                                "Opcode 150 Base64 content does not decode to PNG"
+                                "Opcode 150 content is not raw PNG bytes"
                             );
                         }
                     } catch (packetValidationError) {
@@ -14877,16 +14841,27 @@ function thelegendmodproject() {
                         return false;
                     }
 
+                    console.log(
+                        "[LM SKIN] Opcode 150 buffer ready:",
+                        {
+                            totalBytes: buffer.length,
+                            pngBytes: imageUint8Array.length,
+                            metaLength: xmlMeta.length,
+                            first30: Array.from(buffer.slice(0, 30))
+                        }
+                    );
+
                     window.core.proxyMobileData(buffer);
 
                     console.log(
                         "[LM SKIN] Sent opcode 150 via autonomous " +
                         "protocol: " +
+                        buffer.length +
+                        " total bytes (" +
                         imageUint8Array.length +
-                        " PNG bytes → " +
-                        base64Content.length +
-                        " Base64 chars, meta length: " +
-                        xmlMeta.length
+                        " PNG + " +
+                        xmlMeta.length +
+                        " meta)"
                     );
 
                     toastr.info(
