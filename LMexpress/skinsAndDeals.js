@@ -2220,17 +2220,32 @@ function SpecialDeals(defaultTab) {
         }
 
         $("#ss-select-agarVersionDestinations").change(function() {
+            var newUrl = window.LM_CONFIG_CDN + "/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json";
+            $("#GameConfigurationUrl").val(newUrl);
 
-            $("#GameConfigurationUrl").val(window.LM_CONFIG_CDN + "/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json");
-            $("#GameConfigurationUrl").blur();
+            /* Invalidate cached config so LoadGameConfiguration fetches fresh data
+             * from the new library path instead of returning the stale cache. */
+            window.GameConfiguration = null;
+            window.LMGameConfiguration = null;
+            window._isLoadingGameConfig = false;
+            window._dealsShopBuilt = false;
+            window._skinShopBuilt = false;
+            window.MiniclipConfigDestination = newUrl;
+
+            LoadGameConfiguration();
         });
         $("#GameConfigurationUrl").blur(function() {
-            //toastr["warning"]('<b>[SERVER]:</b> Do not change this unless you know what it is');
-            window.MiniclipConfigDestination = $("#GameConfigurationUrl").val();
+            var newUrl = $("#GameConfigurationUrl").val();
+            window.MiniclipConfigDestination = newUrl;
+
+            /* Invalidate cached config so a fresh fetch is forced */
+            window.GameConfiguration = null;
+            window.LMGameConfiguration = null;
+            window._isLoadingGameConfig = false;
+            window._dealsShopBuilt = false;
+            window._skinShopBuilt = false;
+
             LoadGameConfiguration();
-            //setTimeout(function() {
-                //populateSD();
-            //}, 1500);
         });
         window.closeSpecialShopModal =
             function() {
