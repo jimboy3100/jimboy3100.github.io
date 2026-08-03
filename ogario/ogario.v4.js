@@ -24270,7 +24270,7 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     float distSq = dot(v_unitPos, v_unitPos);
                     if (distSq > 1.0) discard;
-                    float alpha = smoothstep(1.0, 0.9, distSq);
+                    float alpha = 1.0 - smoothstep(0.9, 1.0, distSq);
                     fragColor = vec4(v_color.rgb, v_color.a * alpha);
                 }`;
 
@@ -24359,6 +24359,11 @@ Most cells eaten   : ${mostCellsEaten}
                 out vec2 v_worldPos;
                 void main() {
                     gl_Position = vec4(a_unitPos, 0.0, 1.0);
+                    /*
+                     * u_viewCenter now receives only the wrapped grid phase
+                     * (0 to gridSpacing), not absolute camera coordinates.
+                     * This avoids float32 precision loss on large maps.
+                     */
                     v_worldPos = u_viewCenter + (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
                 }`;
 
@@ -24371,7 +24376,12 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     vec2 coord = fract(v_worldPos / u_gridSpacing);
                     vec2 grid = abs(coord - 0.5);
-                    float line = step(0.48, max(grid.x, grid.y));
+                    /* Use derivative-based antialiasing instead of hard step().
+                     * fwidth gives a pixel-width feather that adapts to zoom. */
+                    vec2 fw = fwidth(coord);
+                    float lineX = smoothstep(0.5 - fw.x, 0.5, grid.x);
+                    float lineY = smoothstep(0.5 - fw.y, 0.5, grid.y);
+                    float line = max(lineX, lineY);
                     if (line <= 0.0) discard;
                     fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line);
                 }`;
@@ -24504,7 +24514,7 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     float distSq = dot(v_unitPos, v_unitPos);
                     if (distSq > 1.0) discard;
-                    float edgeAlpha = smoothstep(1.0, 0.95, distSq);
+                    float edgeAlpha = 1.0 - smoothstep(0.95, 1.0, distSq);
                     if (v_skinLayer >= 0.0) {
                         vec2 skinUV = v_unitPos * 0.5 + 0.5;
                         vec4 skinSample = texture(u_skinArray, vec3(skinUV, v_skinLayer));
@@ -24910,7 +24920,7 @@ Most cells eaten   : ${mostCellsEaten}
                     if (distSq > 1.0) discard;
                     float dist = sqrt(distSq);
                     // Ring band: 0.95 to 1.0 of radius (thinner to match Canvas2D)
-                    float ringAlpha = smoothstep(0.94, 0.96, dist) * smoothstep(1.0, 0.97, dist);
+                    float ringAlpha = smoothstep(0.94, 0.96, dist) * (1.0 - smoothstep(0.97, 1.0, dist));
                     if (ringAlpha < 0.01) discard;
                     // Dashed pattern: 20px dash, 30px gap → 40% on (dash=20, total=50)
                     float angle = atan(v_unitPos.y, v_unitPos.x) + 3.14159265;
@@ -24980,7 +24990,7 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     float distSq = dot(v_unitPos, v_unitPos);
                     if (distSq > 1.0) discard;
-                    float edgeAlpha = smoothstep(1.0, 0.85, distSq);
+                    float edgeAlpha = 1.0 - smoothstep(0.85, 1.0, distSq);
                     // Linear gradient: dot product with gradient direction
                     float gradT = dot(v_unitPos, v_gradDir) * 0.5 + 0.5;
                     float gradAlpha = gradT;
@@ -25903,9 +25913,18 @@ Most cells eaten   : ${mostCellsEaten}
             var viewScale = this.scale || 1;
 
             gl.useProgram(this.glGridProgram);
-            gl.uniform2f(this.u_grid_viewCenter, this.camX, this.camY);
+            /*
+             * Send only the camera's wrapped grid phase to the GPU.
+             * Never send huge absolute coordinates to fract()/mod().
+             * Values stay between 0 and gridSpacing, avoiding float32
+             * precision loss on large maps.
+             */
+            var gridSpacing = 50.0;
+            var gridPhaseX = ((this.camX % gridSpacing) + gridSpacing) % gridSpacing;
+            var gridPhaseY = ((this.camY % gridSpacing) + gridSpacing) % gridSpacing;
+            gl.uniform2f(this.u_grid_viewCenter, gridPhaseX, gridPhaseY);
             gl.uniform2f(this.u_grid_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-            gl.uniform1f(this.u_gridSpacing, 50.0);
+            gl.uniform1f(this.u_gridSpacing, gridSpacing);
             gl.uniform4f(this.u_gridColor, 1.0, 1.0, 1.0, 0.08);
 
             gl.bindVertexArray(this.glVAO);
