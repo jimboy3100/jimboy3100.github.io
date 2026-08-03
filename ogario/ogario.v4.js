@@ -27384,9 +27384,25 @@ Most cells eaten   : ${mostCellsEaten}
                     var _bMinY = LM.mapMinY - tempborderwidthradius;
                     var _bMaxX = LM.mapMaxX + tempborderwidthradius;
                     var _bMaxY = LM.mapMaxY + tempborderwidthradius;
-                    if (!LM.mapOffsetFixed || !this.drawWebGLBorders(_bMinX, _bMinY, _bMaxX, _bMaxY, defaultSettings.bordersColor, defaultSettings.bordersWidth)) {
-                        this.drawMapBorders(this.ctx, LM.mapOffsetFixed, _bMinX, _bMinY, _bMaxX, _bMaxY, defaultSettings.bordersColor, defaultSettings.bordersWidth);
-                    }
+
+                    /*
+                     * Keep the map border on the Canvas2D background layer.
+                     *
+                     * The WebGL canvas is a separate DOM layer above Canvas2D. When the
+                     * atomic WebGL cell batch falls back, cells are rendered on Canvas2D;
+                     * therefore a WebGL border would always cover those cells regardless
+                     * of WebGL depth values.
+                     */
+                    this.drawMapBorders(
+                        this.ctx,
+                        LM.mapOffsetFixed,
+                        _bMinX,
+                        _bMinY,
+                        _bMaxX,
+                        _bMaxY,
+                        defaultSettings.bordersColor,
+                        defaultSettings.bordersWidth
+                    );
                 }
                 if (window.clientProfiler) window.clientProfiler.recordGrid(performance.now() - _tGrid);
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
