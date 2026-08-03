@@ -14730,45 +14730,80 @@ function thelegendmodproject() {
                 safeName = "My Skin";
             }
 
-            var subscriptionsXml = "<array/>";
+            var subscriptionsXml = '<array/>';
             if (indexedSubscriptions.length) {
                 subscriptionsXml =
-                    "<array>" +
+                    '<array>\n' +
                     indexedSubscriptions
                         .map(function (item) {
-                            return "<string>" + escapeSkinXml(item) + "</string>";
+                            return '      <string>' + escapeSkinXml(item) + '</string>';
                         })
-                        .join("") +
-                    "</array>";
+                        .join('\n') +
+                    '\n    </array>';
             }
 
+            /*
+             * XML plist meta — exact match of official plist.build() output.
+             *
+             * The official uses npm 'plist' which calls xmlbuilder.create('plist')
+             * with doc.end({ pretty: true }).  Defaults: 2-space indent, \n newline.
+             *
+             * Structure:
+             *   Level 0: <plist> (root)
+             *   Level 1: <dict>  (2-space indent)
+             *   Level 2: <key>, <string>, <integer>, <array/> (4-space indent)
+             */
             var xmlMeta =
                 '<?xml version="1.0" encoding="UTF-8"?>\n' +
                 '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" ' +
                 '"http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n' +
                 '<plist version="1.0">\n' +
-                '<dict>\n' +
-                '\t<key>name</key>\n' +
-                '\t<string>' + safeName + '</string>\n' +
-                '\t<key>color</key>\n' +
-                '\t<integer>' + colorInt + '</integer>\n' +
-                '\t<key>indexedSubscriptions</key>\n\t' +
-                subscriptionsXml + '\n' +
-                '\t<key>creationDate</key>\n' +
-                '\t<integer>' + Math.round(Date.now() / 1000) +
+                '  <dict>\n' +
+                '    <key>name</key>\n' +
+                '    <string>' + safeName + '</string>\n' +
+                '    <key>color</key>\n' +
+                '    <integer>' + colorInt + '</integer>\n' +
+                '    <key>indexedSubscriptions</key>\n' +
+                '    ' + subscriptionsXml + '\n' +
+                '    <key>creationDate</key>\n' +
+                '    <integer>' + Math.round(Date.now() / 1000) +
                 '</integer>\n' +
-                '</dict>\n' +
+                '  </dict>\n' +
                 '</plist>';
 
             /* ── Send opcode 150 (always via mesega) ── */
             function sendSkinUpload() {
                 try {
+                    /*
+                     * Convert PNG bytes to Base64 string — exact match of official
+                     * compressImageBufferToPNG8 (bundle_end.js:12504-12509):
+                     *
+                     *   var dData = new Uint8Array(encodePNG).reduce(
+                     *       function(data, _byte) {
+                     *           return data + String.fromCharCode(_byte);
+                     *       }, '');
+                     *   return btoa(dData);
+                     *
+                     * The Haxe proto set_content() receives this Base64 string
+                     * and serializes it via Bytes.ofString() — the wire content
+                     * is the ASCII character bytes of the Base64 string, NOT the
+                     * decoded binary.  Using proto type "string" in protobufjs
+                     * produces identical wire bytes.
+                     */
+                    var binaryString = '';
+                    for (var bi = 0; bi < imageUint8Array.length; bi++) {
+                        binaryString += String.fromCharCode(
+                            imageUint8Array[bi]
+                        );
+                    }
+                    var base64Content = btoa(binaryString);
+
                     var buffer = window.mesega.encode({
                         contentType: 1,
                         uncompressedData: {
                             type: 150,
                             userSkinsCreateRequestField: {
-                                content: imageUint8Array,
+                                content: base64Content,
                                 meta: xmlMeta
                             }
                         }
@@ -14778,19 +14813,40 @@ function thelegendmodproject() {
                     try {
                         var decodedUpload =
                             window.mesega.decode(buffer);
-                        var decodedContent =
+                        var decodedB64 =
                             decodedUpload &&
                             decodedUpload.uncompressedData &&
                             decodedUpload.uncompressedData
                                 .userSkinsCreateRequestField &&
                             decodedUpload.uncompressedData
                                 .userSkinsCreateRequestField.content;
-                        var decodedSig = decodedContent
-                            ? Array.from(decodedContent.slice(0, 8))
-                            : [];
+
+                        if (
+                            typeof decodedB64 !== 'string' ||
+                            decodedB64.length === 0
+                        ) {
+                            throw new Error(
+                                "Opcode 150 content is empty or not a string"
+                            );
+                        }
+
+                        /* Decode first 12 Base64 chars → 9 raw bytes, check PNG sig */
+                        var rawCheck = atob(
+                            decodedB64.substring(0, 12)
+                        );
+                        var decodedSig = [];
+                        for (
+                            var si = 0;
+                            si < Math.min(8, rawCheck.length);
+                            si++
+                        ) {
+                            decodedSig.push(
+                                rawCheck.charCodeAt(si)
+                            );
+                        }
 
                         console.log(
-                            "[SKIN] Encoded payload PNG signature:",
+                            "[SKIN] Encoded payload (Base64→PNG sig):",
                             decodedSig
                         );
 
@@ -14806,7 +14862,7 @@ function thelegendmodproject() {
                             decodedSig[7] !== 10
                         ) {
                             throw new Error(
-                                "Opcode 150 content is not raw PNG bytes"
+                                "Opcode 150 Base64 content does not decode to PNG"
                             );
                         }
                     } catch (packetValidationError) {
@@ -14827,7 +14883,9 @@ function thelegendmodproject() {
                         "[LM SKIN] Sent opcode 150 via autonomous " +
                         "protocol: " +
                         imageUint8Array.length +
-                        " PNG bytes, meta length: " +
+                        " PNG bytes → " +
+                        base64Content.length +
+                        " Base64 chars, meta length: " +
                         xmlMeta.length
                     );
 

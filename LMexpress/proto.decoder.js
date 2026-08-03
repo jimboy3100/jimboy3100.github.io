@@ -701,7 +701,7 @@ message userFriendListUpdateField {
 }
 
 message userSkinsCreateRequestField {
-    bytes content = 1;
+    string content = 1;
     string meta = 2;
 ///
 }
