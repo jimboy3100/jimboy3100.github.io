@@ -2528,76 +2528,16 @@ function populateDealsGrid() {
     }
 
     // --- Offer Bundles (from Wallet - Offerable Bundles, not Visual - Bundles) ---
-    for (var ob = 0; ob < offerableBundles.length; ob++) {
-        var offerBundle = offerableBundles[ob];
-        if (!offerBundle || !offerBundle.bundleId) continue;
-        var offerBundleId = offerBundle.bundleId;
-
-        // Skip bundles already shown as IAP deals
-        var alreadyShown = false;
-        for (var ai = 0; ai < iaps.length; ai++) {
-            if (iaps[ai].bundleId === offerBundleId) { alreadyShown = true; break; }
-        }
-        if (alreadyShown) continue;
-
-        // Skip conditional skin unlock/progression bundles (e.g. 1_skin_octopower_level_1).
-        // These require accumulated skin pieces and are not freely purchasable.
-        // The original Agar.io client only sends opcode 77 for these after verifying
-        // the user has enough pieces. Showing a "Buy" button is incorrect.
-        if (/_level_\d+$/.test(offerBundleId)) continue;
-
-        /* Visual - Bundles contains only presentation metadata.
-         * Wallet - Offerable Bundles determines what is purchasable. */
-        var bundle = bundleLookup[offerBundleId] || { bundleId: offerBundleId };
-
-        var bDesc = (bundle.description && bundle.description !== 'na')
-            ? bundle.description.replace(/_/g, ' ').replace(' name', '')
-            : offerBundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
-
-        // Build contents list
-        var bContents = productLookup[offerBundleId] || [];
-        var bContentText = '';
-        for (var bc = 0; bc < bContents.length; bc++) {
-            var bcPid = bContents[bc].productId || '';
-            var bcQty = bContents[bc].quantity || 1;
-            var bcLabel = bcPid.replace(/_/g, ' ');
-            if (bcPid.indexOf('coins') !== -1) bcLabel = '💰 ' + bcQty.toLocaleString() + ' Coins';
-            else if (bcPid.indexOf('dna') !== -1) bcLabel = '🧬 ' + bcQty.toLocaleString() + ' DNA';
-            else if (bcPid.indexOf('skin') !== -1) bcLabel = '🎨 ' + bcPid.replace(/^(shop_skin_|skin_)/, '').replace(/_/g, ' ');
-            else if (bcPid.indexOf('boost') !== -1) bcLabel = '🚀 ' + bcPid.replace(/_/g, ' ');
-            else bcLabel = bcQty + 'x ' + bcLabel;
-            bContentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + bcLabel + '</span> ';
-        }
-        if (!bContentText) bContentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
-
-        // Resolve all bundle skin entries and render small skin icons
-        var bSkinImgs = getDealSkinImages(offerBundleId);
-        var bSkinMiniIconsHtml = renderDealSkinMiniIcons(offerBundleId, 6);
-
-        // Build icon area — same stacked skin logic
-        var bIconHtml = '';
-        if (bSkinImgs.length >= 2) {
-            bIconHtml += '<div style="position: relative; min-width: 56px; width: 56px; height: 56px;">';
-            bIconHtml += '<img src="' + bSkinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b1 + '; z-index: 2;" onerror="this.style.display=\'none\'">';
-            bIconHtml += '<img src="' + bSkinImgs[1] + '" style="position: absolute; bottom: 0; right: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
-            bIconHtml += '</div>';
-        } else if (bSkinImgs.length === 1) {
-            bIconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid ' + t.b1 + ';">';
-            bIconHtml += '<img src="' + bSkinImgs[0] + '" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.innerHTML=\'📦\'">';
-            bIconHtml += '</div>';
-        } else {
-            bIconHtml += '<div style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.b1 + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.b1 + ';">📦</div>';
-        }
-
-        html += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.b1 + '66; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">';
-        html += bIconHtml;
-        html += '<div style="flex: 1; min-width: 0;">';
-        html += '<div style="font-weight: 700; font-size: 13px; color: ' + t.tc + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' + bDesc + '</div>';
-        html += '<div style="line-height: 1.4; margin-top: 2px;">' + bContentText + bSkinMiniIconsHtml + '</div>';
-        html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealBundle(\'' + offerBundleId + '\', \'' + bDesc.replace(/'/g, "\\'") + '\')" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
-        html += '</div>';
-    }
+    //
+    // HIDDEN: These are unfiltered catalog definitions, NOT confirmed active offers.
+    // The server rejects them with opcode 78 result 2 ("offer not active").
+    // LM currently has no way to determine which bundles are genuinely active
+    // for the current account/session. Showing Buy buttons is misleading.
+    //
+    // To re-enable: implement active-offer tracking via server responses and
+    // filter offerableBundles against confirmed active IDs before rendering.
+    //
+    // The data is still loaded above (line ~2385) for future use.
 
     if (!html) {
         html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">No deals found in configuration.</div>';
