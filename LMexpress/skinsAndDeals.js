@@ -770,63 +770,345 @@ function SpecialDeals(defaultTab) {
 
         // --- Embedded Custom Skin Uploader Handlers ---
         var processedBufferModal = null;
-        function processAndFormatModal(src) {
-            var img = new Image();
-            if (typeof src === 'string' && (src.startsWith('http://') || src.startsWith('https://'))) {
-                img.crossOrigin = "Anonymous";
+
+        /*
+         * The real Agar.io editor converts the final 512x512 RGBA canvas
+         * into a 16-color PNG8 through its bundled UPNG encoder.
+         */
+        function getOfficialAgarUPNG() {
+            if (
+                window._lmOfficialAgarUPNG &&
+                typeof window._lmOfficialAgarUPNG.encode ===
+                    'function'
+            ) {
+                return window._lmOfficialAgarUPNG;
             }
-            img.onload = function() {
-                var canvas = document.getElementById("legendCanvasModal");
-                if (!canvas) return;
-                // Try progressively smaller sizes until under 100KB
-                var sizes = [512, 384, 256, 192, 128];
-                var attempt = 0;
 
-                function trySize() {
-                    var size = sizes[attempt] || 128;
-                    var ctx = canvas.getContext("2d");
-                    canvas.width = 512; canvas.height = 512; // keep canvas display size
-                    ctx.clearRect(0, 0, 512, 512);
+            if (
+                window.UPNG &&
+                typeof window.UPNG.encode ===
+                    'function'
+            ) {
+                window._lmOfficialAgarUPNG =
+                    window.UPNG;
 
-                    // Draw at target resolution then scale up for display
-                    var tmpCanvas = document.createElement('canvas');
-                    tmpCanvas.width = size; tmpCanvas.height = size;
-                    var tmpCtx = tmpCanvas.getContext('2d');
-                    tmpCtx.drawImage(img, 0, 0, size, size);
+                return window._lmOfficialAgarUPNG;
+            }
 
-                    // Show on modal canvas at 512x512
-                    ctx.imageSmoothingEnabled = true;
-                    ctx.drawImage(tmpCanvas, 0, 0, 512, 512);
+            /*
+             * The currently supplied original Agar.io bundle stores UPNG
+             * in webpack module 647. Capture webpack's private require
+             * function without modifying an existing Agar.io module.
+             */
+            if (
+                !window._lmAgarWebpackRequire &&
+                typeof window.webpackJsonp ===
+                    'function'
+            ) {
+                try {
+                    var bridgeId =
+                        '__lm_capture_agar_require__';
 
-                    // Export PNG at actual reduced size
-                    tmpCanvas.toBlob(function(blob) {
-                        if (!blob) return;
-                        var reader = new FileReader();
-                        reader.onload = function() {
-                            processedBufferModal = new Uint8Array(reader.result);
-                            var kb = (processedBufferModal.length / 1024).toFixed(1);
-                            if (processedBufferModal.length > 102400 && attempt < sizes.length - 1) {
-                                attempt++;
-                                $('#legendStatusModal').text("Compressing... " + kb + "KB → trying " + sizes[attempt] + "px").css('color', getShopTheme().b3);
-                                trySize();
-                            } else if (processedBufferModal.length > 102400) {
-                                $('#legendStatusModal').text("Too Big: " + kb + "KB even at " + size + "px").css('color', getShopTheme().b4);
-                                $('#legendSaveBtnModal').prop('disabled', true).css('opacity', 0.5);
-                            } else {
-                                $('#legendStatusModal').text("PNG Ready: " + kb + "KB (" + size + "x" + size + ")").css('color', getShopTheme().b2);
-                                // Only enable if logged in
-                                updateShopLoginState();
-                            }
-                        };
-                        reader.readAsArrayBuffer(blob);
-                    }, 'image/png');
+                    var bridgeModules =
+                        {};
+
+                    bridgeModules[
+                        bridgeId
+                    ] = function(
+                        module,
+                        exports,
+                        __webpack_require__
+                    ) {
+                        window._lmAgarWebpackRequire =
+                            __webpack_require__;
+                    };
+
+                    window.webpackJsonp(
+                        [],
+                        bridgeModules,
+                        [bridgeId]
+                    );
+                } catch (
+                    webpackBridgeError
+                ) {
+                    console.warn(
+                        '[LM SKIN] Could not capture Agar.io webpack require:',
+                        webpackBridgeError
+                    );
                 }
-                trySize();
+            }
+
+            if (
+                window._lmAgarWebpackRequire
+            ) {
+                try {
+                    var upngModule =
+                        window
+                            ._lmAgarWebpackRequire(
+                                647
+                            );
+
+                    var upng =
+                        upngModule &&
+                        upngModule.default
+                            ? upngModule.default
+                            : upngModule;
+
+                    if (
+                        upng &&
+                        typeof upng.encode ===
+                            'function'
+                    ) {
+                        window._lmOfficialAgarUPNG =
+                            upng;
+
+                        return upng;
+                    }
+                } catch (
+                    upngLoadError
+                ) {
+                    console.warn(
+                        '[LM SKIN] Could not load Agar.io UPNG module:',
+                        upngLoadError
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        function processAndFormatModal(src) {
+            var img =
+                new Image();
+
+            if (
+                typeof src === 'string' &&
+                (
+                    src.startsWith(
+                        'http://'
+                    ) ||
+                    src.startsWith(
+                        'https://'
+                    )
+                )
+            ) {
+                img.crossOrigin =
+                    'Anonymous';
+            }
+
+            img.onload = function() {
+                var canvas =
+                    document.getElementById(
+                        'legendCanvasModal'
+                    );
+
+                if (!canvas) {
+                    return;
+                }
+
+                var upng =
+                    getOfficialAgarUPNG();
+
+                if (!upng) {
+                    processedBufferModal =
+                        null;
+
+                    $('#legendStatusModal')
+                        .text(
+                            'Agar.io PNG8 encoder is not ready'
+                        )
+                        .css(
+                            'color',
+                            getShopTheme().b4
+                        );
+
+                    $('#legendSaveBtnModal')
+                        .prop(
+                            'disabled',
+                            true
+                        )
+                        .css(
+                            'opacity',
+                            0.5
+                        );
+
+                    return;
+                }
+
+                canvas.width =
+                    512;
+
+                canvas.height =
+                    512;
+
+                var ctx =
+                    canvas.getContext(
+                        '2d',
+                        {
+                            willReadFrequently:
+                                true
+                        }
+                    );
+
+                ctx.clearRect(
+                    0,
+                    0,
+                    512,
+                    512
+                );
+
+                ctx.imageSmoothingEnabled =
+                    true;
+
+                ctx.imageSmoothingQuality =
+                    'high';
+
+                /*
+                 * Keep the submitted image at the exact official dimensions.
+                 * Never submit 384, 256, 192 or 128-pixel PNG files.
+                 */
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    512,
+                    512
+                );
+
+                try {
+                    var rgba =
+                        ctx.getImageData(
+                            0,
+                            0,
+                            512,
+                            512
+                        );
+
+                    /*
+                     * Exact equivalent of Agar.io:
+                     *
+                     * UPNG.encode(
+                     *     [rawRgbaBuffer],
+                     *     512,
+                     *     512,
+                     *     16
+                     * )
+                     */
+                    var encodedPng =
+                        upng.encode(
+                            [
+                                rgba.data
+                                    .buffer
+                            ],
+                            512,
+                            512,
+                            16
+                        );
+
+                    processedBufferModal =
+                        new Uint8Array(
+                            encodedPng
+                        );
+
+                    var kb =
+                        (
+                            processedBufferModal
+                                .length /
+                            1024
+                        ).toFixed(1);
+
+                    if (
+                        processedBufferModal
+                            .length >
+                        102400
+                    ) {
+                        processedBufferModal =
+                            null;
+
+                        $('#legendStatusModal')
+                            .text(
+                                'Agar PNG8 is too large: ' +
+                                kb +
+                                'KB'
+                            )
+                            .css(
+                                'color',
+                                getShopTheme().b4
+                            );
+
+                        $('#legendSaveBtnModal')
+                            .prop(
+                                'disabled',
+                                true
+                            )
+                            .css(
+                                'opacity',
+                                0.5
+                            );
+
+                        return;
+                    }
+
+                    $('#legendStatusModal')
+                        .text(
+                            'Agar PNG8 Ready: ' +
+                            kb +
+                            'KB (512x512, 16 colors)'
+                        )
+                        .css(
+                            'color',
+                            getShopTheme().b2
+                        );
+
+                    updateShopLoginState();
+                } catch (
+                    png8Error
+                ) {
+                    processedBufferModal =
+                        null;
+
+                    console.error(
+                        '[LM SKIN] PNG8 encoding failed:',
+                        png8Error
+                    );
+
+                    $('#legendStatusModal')
+                        .text(
+                            'Could not create Agar PNG8'
+                        )
+                        .css(
+                            'color',
+                            getShopTheme().b4
+                        );
+
+                    $('#legendSaveBtnModal')
+                        .prop(
+                            'disabled',
+                            true
+                        )
+                        .css(
+                            'opacity',
+                            0.5
+                        );
+                }
             };
+
             img.onerror = function() {
-                $('#legendStatusModal').text("Error loading image").css('color', getShopTheme().b4);
+                processedBufferModal =
+                    null;
+
+                $('#legendStatusModal')
+                    .text(
+                        'Error loading image'
+                    )
+                    .css(
+                        'color',
+                        getShopTheme().b4
+                    );
             };
-            img.src = src;
+
+            img.src =
+                src;
         }
 
         $('#legendChooseFileBtn').off('click').on('click', function(e) {
@@ -3069,7 +3351,20 @@ function renderSkinPage(appendNextPage) {
         if (skin.image === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
             imgFile = window.SpineSkinMap[skin.productId] + '.png';
         }
-        var imgUrl = (imgFile && imgFile !== 'uses_spine') ? (cdnBase + imgFile) : '';
+        var imgUrl = '';
+
+        if (
+            imgFile &&
+            imgFile !== 'uses_spine'
+        ) {
+            imgUrl =
+                /^https?:\/\//i.test(
+                    imgFile
+                )
+                    ? imgFile
+                    : cdnBase +
+                        imgFile;
+        }
 
         var isEquipped = (currentEquippedId === skin.productId);
         var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);

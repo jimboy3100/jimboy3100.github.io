@@ -20372,105 +20372,158 @@ function thelegendmodproject() {
                 case 151:
                     // Skin create response
                     try {
-                        var skinResp = r.uncompressedData.userSkinsCreateResponseField;
-                        if (skinResp) {
-                            var skinResult = skinResp.result || 0;
-                            console.log("[LM] Skin Create Response — result: " + skinResult);
-                            if (skinResult === 1) {
-                                var skinProducts =
-                                    skinResp.productUpdates || [];
+                        var skinResp =
+                            r.uncompressedData
+                                .userSkinsCreateResponseField;
 
-                                var createdSkinId =
-                                    '';
+                        if (skinResp) {
+                            var skinResult =
+                                Number(
+                                    skinResp.result ||
+                                    0
+                                );
+
+                            var skinProducts =
+                                Array.isArray(
+                                    skinResp
+                                        .productUpdates
+                                )
+                                    ? skinResp
+                                        .productUpdates
+                                    : [];
+
+                            var createdSkinId =
+                                '';
+
+                            /*
+                             * Official Agar.io obtains the new skin ID from
+                             * the positive product update returned by opcode
+                             * 151. Normally it is:
+                             *
+                             * skin_custom_<uuid>_<uuid>
+                             */
+                            for (
+                                var skinProductIndex = 0;
+                                skinProductIndex <
+                                    skinProducts.length;
+                                skinProductIndex++
+                            ) {
+                                var skinProductUpdate =
+                                    skinProducts[
+                                        skinProductIndex
+                                    ];
+
+                                var skinWalletItem =
+                                    skinProductUpdate &&
+                                    skinProductUpdate
+                                        .userWalletItem;
+
+                                var skinProductId =
+                                    skinWalletItem &&
+                                    skinWalletItem
+                                        .productId
+                                        ? String(
+                                            skinWalletItem
+                                                .productId
+                                        )
+                                        : '';
+
+                                if (
+                                    Number(
+                                        skinProductUpdate &&
+                                        skinProductUpdate
+                                            .deltaAmount
+                                    ) > 0 &&
+                                    skinProductId
+                                        .indexOf(
+                                            'skin_custom_'
+                                        ) === 0
+                                ) {
+                                    createdSkinId =
+                                        skinProductId;
+
+                                    break;
+                                }
+                            }
+
+                            console.log(
+                                '[LM] Skin Create Response:',
+                                {
+                                    result:
+                                        skinResult,
+
+                                    createdSkinId:
+                                        createdSkinId,
+
+                                    productUpdates:
+                                        skinProducts
+                                }
+                            );
+
+                            if (
+                                skinResult === 1
+                            ) {
+                                /*
+                                 * Do not claim success merely because result
+                                 * is 1. The positive product update is the
+                                 * proof and ID of the actual created skin.
+                                 */
+                                if (
+                                    !createdSkinId
+                                ) {
+                                    console.error(
+                                        '[LM SKIN] Agar.io returned result 1 but no positive skin_custom product update:',
+                                        skinResp
+                                    );
+
+                                    toastr.error(
+                                        '<b>[SERVER]:</b> Agar.io charged the token but did not return a created skin ID. The skin was not registered.'
+                                    );
+
+                                    break;
+                                }
 
                                 /*
-                                 * Update Legend Mod's own wallet and owned-skin
-                                 * state exactly as before.
+                                 * Update Legend Mod's wallet/owned-products
+                                 * state.
                                  */
-                                if (skinProducts.length) {
+                                if (
+                                    skinProducts.length
+                                ) {
                                     this.updateProducts(
                                         skinProducts
                                     );
                                 }
 
                                 /*
-                                 * Find the positive product update representing
-                                 * the newly created custom skin.
+                                 * Copy the exact official Agar.io success
+                                 * sequence.
                                  */
-                                for (
-                                    var skinUpdateIndex = 0;
-                                    skinUpdateIndex <
-                                        skinProducts.length;
-                                    skinUpdateIndex++
-                                ) {
-                                    var skinUpdate =
-                                        skinProducts[
-                                            skinUpdateIndex
-                                        ];
-
-                                    var walletItem =
-                                        skinUpdate &&
-                                        skinUpdate
-                                            .userWalletItem;
-
-                                    var productId =
-                                        walletItem &&
-                                        walletItem
-                                            .productId
-                                            ? String(
-                                                walletItem
-                                                    .productId
-                                            )
-                                            : '';
-
-                                    if (
-                                        skinUpdate &&
-                                        skinUpdate
-                                            .deltaAmount > 0 &&
-                                        productId.indexOf(
-                                            'custom'
-                                        ) !== -1
-                                    ) {
-                                        createdSkinId =
-                                            productId;
-
-                                        break;
-                                    }
-                                }
-
-                                var officialApi =
+                                var officialSkinApi =
                                     window.agarApp &&
                                     window.agarApp.API;
 
-                                if (officialApi) {
-                                    /*
-                                     * Copy the official Agar.io success flow:
-                                     * update Core.user's wallet first.
-                                     */
+                                if (
+                                    officialSkinApi
+                                ) {
                                     if (
                                         skinProducts.length &&
-                                        typeof officialApi
+                                        typeof officialSkinApi
                                             .handleUserUpdates ===
                                             'function'
                                     ) {
-                                        officialApi
+                                        officialSkinApi
                                             .handleUserUpdates(
                                                 skinProducts
                                             );
                                     }
 
-                                    /*
-                                     * Insert the custom skin into Agar.io's
-                                     * official skin model and broadcast the
-                                     * shop update.
-                                     */
                                     if (
-                                        createdSkinId &&
-                                        typeof officialApi
+                                        typeof officialSkinApi
                                             .addCustomSkin ===
                                             'function'
                                     ) {
-                                        officialApi
+                                        officialSkinApi
                                             .addCustomSkin(
                                                 createdSkinId,
                                                 true,
@@ -20479,14 +20532,92 @@ function thelegendmodproject() {
                                     }
                                 }
 
-                                console.log(
-                                    '[LM SKIN] Created custom skin registered:',
-                                    createdSkinId ||
-                                    '(product id missing)'
-                                );
+                                /*
+                                 * Agar.io inserts custom skins dynamically,
+                                 * while the LM grid starts from a static
+                                 * configuration array. Mirror the new skin
+                                 * into that runtime array once.
+                                 */
+                                var customSkinConfig =
+                                    window
+                                        .GameConfiguration &&
+                                    window
+                                        .GameConfiguration
+                                        .gameConfig &&
+                                    window
+                                        .GameConfiguration
+                                        .gameConfig[
+                                            'Gameplay - Equippable Skins'
+                                        ];
+
+                                if (
+                                    Array.isArray(
+                                        customSkinConfig
+                                    )
+                                ) {
+                                    var customSkinExists =
+                                        customSkinConfig
+                                            .some(
+                                                function(
+                                                    item
+                                                ) {
+                                                    return (
+                                                        item &&
+                                                        item
+                                                            .productId ===
+                                                            createdSkinId
+                                                    );
+                                                }
+                                            );
+
+                                    if (
+                                        !customSkinExists
+                                    ) {
+                                        var customSkinBase =
+                                            (
+                                                window
+                                                    .EnvConfig &&
+                                                window
+                                                    .EnvConfig
+                                                    .custom_skins_url
+                                            ) ||
+                                            '';
+
+                                        if (
+                                            customSkinBase &&
+                                            customSkinBase
+                                                .slice(-1) !==
+                                                '/'
+                                        ) {
+                                            customSkinBase +=
+                                                '/';
+                                        }
+
+                                        customSkinConfig
+                                            .unshift({
+                                                productId:
+                                                    createdSkinId,
+
+                                                gameplayId:
+                                                    createdSkinId,
+
+                                                image:
+                                                    customSkinBase +
+                                                    createdSkinId +
+                                                    '.png',
+
+                                                cellColor:
+                                                    '0x888888FF',
+
+                                                type:
+                                                    'CUSTOM'
+                                            });
+                                    }
+                                }
 
                                 toastr.success(
-                                    '<b>[SERVER]:</b> Custom skin created successfully! &#x2714;'
+                                    '<b>[SERVER]:</b> Custom skin created and registered: ' +
+                                    createdSkinId
                                 );
 
                                 try {
@@ -20494,29 +20625,46 @@ function thelegendmodproject() {
                                 } catch(e) {}
 
                                 if (
-                                    window.refreshSkinGrid
+                                    window
+                                        .refreshSkinGrid
                                 ) {
                                     setTimeout(
-                                        window.refreshSkinGrid,
-                                        500
+                                        window
+                                            .refreshSkinGrid,
+                                        750
                                     );
                                 }
 
-                                // Close the upload panel
                                 $('#custom-skin-uploader')
                                     .fadeOut(200);
-                            } else if (skinResult === 2) {
-                                toastr.error('<b>[SERVER]:</b> Skin creation failed — insufficient funds.');
-                            } else if (skinResult === 3) {
-                                toastr.error('<b>[SERVER]:</b> Temporary transaction error. Please try again.');
+                            } else if (
+                                skinResult === 2
+                            ) {
+                                toastr.error(
+                                    '<b>[SERVER]:</b> Skin creation failed — insufficient funds.'
+                                );
+                            } else if (
+                                skinResult === 3
+                            ) {
+                                toastr.error(
+                                    '<b>[SERVER]:</b> Temporary transaction error. Please try again.'
+                                );
                             } else {
-                                toastr.warning('<b>[SERVER]:</b> Skin create response: code ' + skinResult);
+                                toastr.warning(
+                                    '<b>[SERVER]:</b> Skin create response: code ' +
+                                    skinResult
+                                );
                             }
                         } else {
-                            console.log("returnMessage = r.get_userSkinsCreateResponseField(); (no data)");
+                            console.log(
+                                'returnMessage = r.get_userSkinsCreateResponseField(); (no data)'
+                            );
                         }
                     } catch(skinErr) {
-                        console.warn("[LM] Error parsing skin create response:", skinErr);
+                        console.warn(
+                            '[LM] Error parsing skin create response:',
+                            skinErr
+                        );
                     }
                     break;
                 case 152:
