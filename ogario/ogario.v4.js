@@ -14887,7 +14887,7 @@ function thelegendmodproject() {
                     }
                 } catch (packetValidationError) {
                     console.error("[SKIN] Refusing malformed opcode 150:", packetValidationError);
-                    toastr.error("<b>[SKIN]:</b> Upload packet validation failed. DNA was not charged by this attempt.");
+                    toastr.error("<b>[SKIN]:</b> Upload packet validation failed; opcode 150 was not sent.");
                     return false;
                 }
 
@@ -20743,13 +20743,10 @@ function thelegendmodproject() {
 
                                 if (
                                     delta > 0 &&
-                                    skinProductId &&
-                                    skinProductId !== 'create_skin_token' &&
-                                    skinProductId !== 'create_skin_token_for_vip_weekly'
+                                    skinProductId.indexOf('skin_custom_') === 0 &&
+                                    skinProductId.indexOf(':result_info') === -1
                                 ) {
-                                    createdSkinId =
-                                        skinProductId;
-
+                                    createdSkinId = skinProductId;
                                     break;
                                 }
                             }
@@ -20757,97 +20754,40 @@ function thelegendmodproject() {
                             console.log(
                                 '[LM] Skin Create Response:',
                                 {
-                                    result:
-                                        skinResult,
-
-                                    createdSkinId:
-                                        createdSkinId,
-
-                                    productUpdates:
-                                        skinProducts
+                                    result: skinResult,
+                                    createdSkinId: createdSkinId,
+                                    productUpdates: skinProducts
                                 }
                             );
 
-                            if (
-                                skinResult === 1
-                            ) {
-                                /*
-                                 * Do not claim success merely because result
-                                 * is 1. The positive product update is the
-                                 * proof and ID of the actual created skin.
-                                 */
-                                if (
-                                    !createdSkinId
-                                ) {
+                            if (skinResult === 1) {
+                                if (!createdSkinId) {
                                     console.error(
-                                        '[LM SKIN] Agar.io returned result 1 but no positive skin product update:',
+                                        '[LM SKIN] Result 1 contained no published positive skin_custom_ product:',
                                         skinResp
                                     );
 
                                     toastr.error(
-                                        '<b>[SERVER]:</b> Agar.io charged the token but did not return a created skin ID. The skin was not registered.'
+                                        '<b>[SERVER]:</b> Agar.io accepted the transaction but did not return a published custom skin.'
                                     );
 
                                     break;
                                 }
 
-                                /* Mark as owned in local user model */
-                                if (!this.user) this.user = {};
-                                if (!this.user.skins) this.user.skins = {};
-                                this.user.skins[createdSkinId] = 1;
-
-                                /*
-                                 * Update Legend Mod's wallet/owned-products
-                                 * state.
-                                 */
-                                if (
-                                    skinProducts.length
-                                ) {
-                                    this.updateProducts(
-                                        skinProducts
-                                    );
+                                if (skinProducts.length && typeof this.updateProducts === 'function') {
+                                    this.updateProducts(skinProducts);
                                 }
 
-                                /*
-                                 * Copy the exact official Agar.io success
-                                 * sequence with CDN-delay retries.
-                                 */
-                                var officialSkinApi =
-                                    window.agarApp &&
-                                    window.agarApp.API;
+                                var officialSkinApi = window.agarApp && window.agarApp.API;
 
-                                if (
-                                    officialSkinApi
-                                ) {
-                                    if (
-                                        skinProducts.length &&
-                                        typeof officialSkinApi
-                                            .handleUserUpdates ===
-                                        'function'
-                                    ) {
-                                        officialSkinApi
-                                            .handleUserUpdates(
-                                                skinProducts
-                                            );
+                                if (officialSkinApi) {
+                                    if (typeof officialSkinApi.handleUserUpdates === 'function') {
+                                        officialSkinApi.handleUserUpdates(skinProducts);
                                     }
 
-                                    var tryAddSkin = function (attempt) {
-                                        if (typeof officialSkinApi.addCustomSkin === 'function') {
-                                            officialSkinApi.addCustomSkin(createdSkinId, true, true);
-                                        }
-                                        if (attempt < 4) {
-                                            setTimeout(function () { tryAddSkin(attempt + 1); }, 1500 * (attempt + 1));
-                                        }
-                                    };
-                                    tryAddSkin(0);
-                                }
-
-                                /* Register directly in core so rendering works immediately */
-                                if (window.core && typeof window.core.registerSkin === 'function') {
-                                    var customSkinBaseUrl = ((window.EnvConfig && window.EnvConfig.custom_skins_url) || 'https://configs-web.agario.miniclip.com/custom_skins/').replace(/\/$/, '') + '/';
-                                    try {
-                                        window.core.registerSkin(null, createdSkinId, customSkinBaseUrl + createdSkinId + '.png', 2, 0xFF888888);
-                                    } catch (regErr) { }
+                                    if (typeof officialSkinApi.addCustomSkin === 'function') {
+                                        officialSkinApi.addCustomSkin(createdSkinId, true, true);
+                                    }
                                 }
 
                                 /*
