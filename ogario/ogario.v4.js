@@ -1163,21 +1163,6 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 _lw_sendDiscordProfile(user, newAttemptId);
                 window._lwAuth.state = 'waiting_server';
                 console.log('[LW Discord] gplusRelogin: re-authenticating attempt #' + newAttemptId);
-            } else if (window.master && typeof window.master.login === 'function') {
-                try {
-                    console.log('[LW AUTH] gplusRelogin: triggering master.login()');
-                    window.master.login();
-                } catch (e) { }
-            }
-            if (callback) callback();
-        };
-
-        window.facebookRelogin = function (callback) {
-            if (window.master && typeof window.master.login === 'function') {
-                try {
-                    console.log('[LW AUTH] facebookRelogin: triggering master.login()');
-                    window.master.login();
-                } catch (e) { }
             }
             if (callback) callback();
         };
@@ -1576,7 +1561,6 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             console.log('[LW AUTH] Intended logout (user manual or private server switch)');
             window._isUserManualLogout = false;
             window._isChangingToPrivateServer = false;
-            window._wasLoggedInOfficial = false;
             window._loginRetryCount = 0;
             window._lw_loginNotifShown = false;
             window.expandingLandUID = '';
@@ -19847,15 +19831,6 @@ function thelegendmodproject() {
                     //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
                     if (window.master && window.master.login) {
                         window.master.login();
-                    }
-                    if (window._wasLoggedInOfficial || window.loggedIn) {
-                        console.log('[LM] Official server connected — re-triggering login for official server');
-                        if (typeof window.gplusRelogin === 'function') {
-                            try { window.gplusRelogin(); } catch (e) { }
-                        }
-                        if (typeof window.facebookRelogin === 'function') {
-                            try { window.facebookRelogin(); } catch (e) { }
-                        }
                     }
                     break;
                 case 242:
