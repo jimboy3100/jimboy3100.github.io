@@ -4864,33 +4864,97 @@
             friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
         }
 
-        // 3. XP Progress Bar & Level
-        var xp = (window.agarioXP !== undefined && window.agarioXP !== null) ? window.agarioXP : (appUser.xp || 0);
-        var nextXp = (window.agarioNextXP !== undefined && window.agarioNextXP !== null) ? window.agarioNextXP : (appUser.nextLevelXp || appUser.nextXp || 1000);
-        var level = appUser.level || window.agarioLEVEL || 1;
+        // 3. Official Agar.io XP Progress Bar & Level
+        var xpState =
+            window.getOfficialAgarXpState(
+                appUser.level,
+                appUser.xp,
+                appUser.nextLevelXp ||
+                    appUser.nextXp
+            );
 
-        var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
+        var xp =
+            Math.floor(
+                xpState.currentXp
+            );
 
-        if (typeof window.updateOfficialXpPanel === 'function') {
-            window.updateOfficialXpPanel(level, percent, xp, nextXp);
-        } else {
-            var officialXpPanel = $('#exp-bar').eq(0);
-            officialXpPanel.find('.progress-bar').css('width', percent + '%');
-            var star3 = officialXpPanel.find('.progress-bar-star3');
-            if (star3.length > 0) { star3.text(level); } else { officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + level + '</strong>'); }
-        }
+        var nextXp =
+            Math.floor(
+                xpState.totalXp
+            );
+
+        var level =
+            xpState.level;
+
+        var percent =
+            xpState.percent;
 
         /*
-         * Directly sync the #profile tab's own agario-exp-bar.
-         * The official profile panel (.agario-profile-panel) has its own
-         * .progress-bar-text and .progress-bar-star inside .agario-exp-bar.
-         * Scope to only the original .agario-profile-panel that is NOT #exp-bar.
+         * Keep LM's account model synchronized with the authoritative
+         * Agar.io XP values.
          */
-        var profileExpBars = $('.agario-profile-panel').not('#exp-bar');
-        var xpRatioText = (xp !== undefined && xp !== null && nextXp) ? (xp + '/' + nextXp) : level;
-        profileExpBars.find('.progress-bar-text').text(xpRatioText);
-        profileExpBars.find('.progress-bar-star').text(level);
-        profileExpBars.find('.progress-bar-active, .progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', percent + '%');
+        appUser.level =
+            level;
+
+        appUser.xp =
+            xp;
+
+        appUser.nextLevelXp =
+            nextXp;
+
+        window.agarioLEVEL =
+            level;
+
+        window.agarioXP =
+            xp;
+
+        window.agarioNextXP =
+            nextXp;
+
+        if (
+            typeof window
+                .updateOfficialXpPanel ===
+                'function'
+        ) {
+            window.updateOfficialXpPanel(
+                level,
+                percent
+            );
+        } else {
+            var profileExpBars =
+                $('#profile .agario-profile-panel')
+                    .not('#exp-bar');
+
+            profileExpBars
+                .find(
+                    '.progress-bar-text'
+                )
+                .text(
+                    xp +
+                    '/' +
+                    nextXp +
+                    ' XP'
+                );
+
+            profileExpBars
+                .find(
+                    '.progress-bar-star'
+                )
+                .text(level);
+
+            profileExpBars
+                .find(
+                    '.progress-bar-active, .progress-bar, .progress-bar-striped'
+                )
+                .not(
+                    '.progress-bar-striped2'
+                )
+                .css(
+                    'width',
+                    percent +
+                    '%'
+                );
+        }
 
         if (typeof window.updateLegendXpPanel === 'function') {
             window.updateLegendXpPanel();

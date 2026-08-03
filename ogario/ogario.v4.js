@@ -2814,51 +2814,336 @@ var UIDfunction = new Function(UIDInstructions);
 window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
-window.updateOfficialXpPanel = function(level, expPercent, currentXp, targetXp) {
-    if (level !== undefined && level !== null) {
-        window.agarioLEVEL = level;
-    }
-    if (currentXp !== undefined && currentXp !== null) {
-        window.agarioXP = currentXp;
-    }
-    if (targetXp !== undefined && targetXp !== null) {
-        window.agarioNextXP = targetXp;
-    }
-    var lvlVal = window.agarioLEVEL || 1;
-    var officialXpPanel = $('#exp-bar');
+window.getOfficialAgarXpState = function(
+    fallbackLevel,
+    fallbackXp,
+    fallbackLimit
+) {
+    var level =
+        Number(fallbackLevel) ||
+        Number(window.agarioLEVEL) ||
+        1;
 
-    /* Only update the bar width when a real 0–100 percentage is provided.
-     * Previously, when expPercent was undefined it fell back to lvlVal
-     * (the level number, e.g. 150), causing width: 150% overflow. */
-    if (expPercent !== undefined && expPercent !== null) {
-        var clampedPercent = Math.max(0, Math.min(100, Number(expPercent) || 0));
-        officialXpPanel.find('.progress-bar-striped, .progress-bar').css({
-            "transition": "5s",
-            "width": clampedPercent + "%"
+    var currentXp =
+        Number(fallbackXp);
+
+    var totalXp = 0;
+
+    /*
+     * Primary source: Agar.io's live user and XP model.
+     * This is the same source used by the official client.
+     */
+    try {
+        if (
+            window.Core &&
+            Core.user &&
+            Core.user.userInfo
+        ) {
+            var officialLevel =
+                Number(
+                    Core.user.userInfo.level
+                );
+
+            var officialXp =
+                Number(
+                    Core.user.userInfo.xp
+                );
+
+            if (
+                isFinite(officialLevel) &&
+                officialLevel > 0
+            ) {
+                level = officialLevel;
+            }
+
+            if (
+                isFinite(officialXp) &&
+                officialXp >= 0
+            ) {
+                currentXp = officialXp;
+            }
+        }
+
+        if (
+            window.Core &&
+            Core.models &&
+            Core.models.xpModel &&
+            typeof Core.models.xpModel
+                .getMaxXpForLevel ===
+                'function'
+        ) {
+            var officialLimit =
+                Number(
+                    Core.models.xpModel
+                        .getMaxXpForLevel(
+                            level
+                        )
+                );
+
+            if (
+                isFinite(officialLimit) &&
+                officialLimit > 0
+            ) {
+                totalXp = officialLimit;
+            }
+        }
+    } catch (officialXpError) {
+        console.warn(
+            '[XP] Could not read the live Agar.io XP model:',
+            officialXpError
+        );
+    }
+
+    /*
+     * Secondary source: Agar.io's cached official account data.
+     */
+    try {
+        var storedUserInfo =
+            window.agarApp &&
+            agarApp.storageInfo &&
+            agarApp.storageInfo.userInfo
+                ? agarApp.storageInfo.userInfo
+                : null;
+
+        if (storedUserInfo) {
+            if (
+                !isFinite(currentXp) ||
+                currentXp < 0
+            ) {
+                var storedXp =
+                    Number(
+                        storedUserInfo.xp
+                    );
+
+                if (
+                    isFinite(storedXp) &&
+                    storedXp >= 0
+                ) {
+                    currentXp = storedXp;
+                }
+            }
+
+            if (!(totalXp > 0)) {
+                var storedLimit =
+                    Number(
+                        storedUserInfo.xpNeeded
+                    );
+
+                if (
+                    isFinite(storedLimit) &&
+                    storedLimit > 0
+                ) {
+                    totalXp = storedLimit;
+                }
+            }
+        }
+    } catch (storedXpError) {
+        console.warn(
+            '[XP] Could not read cached Agar.io XP data:',
+            storedXpError
+        );
+    }
+
+    /*
+     * Legend Mod fallback: calculate the level limit instead of
+     * inventing 1000.
+     */
+    if (!(totalXp > 0)) {
+        var lmApplication =
+            window.application ||
+            window.legendmod ||
+            null;
+
+        if (
+            lmApplication &&
+            typeof lmApplication.agarExp ===
+                'function'
+        ) {
+            var calculatedLimit =
+                Number(
+                    lmApplication.agarExp(
+                        level
+                    )
+                );
+
+            if (
+                isFinite(calculatedLimit) &&
+                calculatedLimit > 0
+            ) {
+                totalXp = calculatedLimit;
+            }
+        }
+    }
+
+    /*
+     * Last valid fallback. Never hardcode 1000 here.
+     */
+    if (!(totalXp > 0)) {
+        var suppliedLimit =
+            Number(fallbackLimit);
+
+        if (
+            isFinite(suppliedLimit) &&
+            suppliedLimit > 0
+        ) {
+            totalXp = suppliedLimit;
+        }
+    }
+
+    if (
+        !isFinite(currentXp) ||
+        currentXp < 0
+    ) {
+        currentXp =
+            Number(window.agarioXP) ||
+            0;
+    }
+
+    var percent =
+        totalXp > 0
+            ? Math.max(
+                0,
+                Math.min(
+                    100,
+                    currentXp * 100 /
+                        totalXp
+                )
+            )
+            : 0;
+
+    return {
+        level: level,
+        currentXp: currentXp,
+        totalXp: totalXp,
+        percent: percent
+    };
+};
+
+window.updateOfficialXpPanel = function(
+    level,
+    expPercent
+) {
+    var xpState =
+        window.getOfficialAgarXpState(
+            level,
+            window.agarioXP,
+            window.agarioNextXP
+        );
+
+    var lvlVal =
+        xpState.level;
+
+    var currentXp =
+        Math.floor(
+            xpState.currentXp
+        );
+
+    var totalXp =
+        Math.floor(
+            xpState.totalXp
+        );
+
+    var resolvedPercent =
+        expPercent !== undefined &&
+        expPercent !== null
+            ? Number(expPercent)
+            : xpState.percent;
+
+    resolvedPercent =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                isFinite(resolvedPercent)
+                    ? resolvedPercent
+                    : 0
+            )
+        );
+
+    window.agarioLEVEL =
+        lvlVal;
+
+    window.agarioXP =
+        currentXp;
+
+    window.agarioNextXP =
+        totalXp;
+
+    /*
+     * Legend Mod's compact level panel.
+     */
+    var officialXpPanel =
+        $('#exp-bar');
+
+    officialXpPanel
+        .find(
+            '.progress-bar-striped, .progress-bar'
+        )
+        .css({
+            transition: '5s',
+            width:
+                resolvedPercent +
+                '%'
         });
-    }
 
-    var star3 = officialXpPanel.find('.progress-bar-star3');
+    var star3 =
+        officialXpPanel.find(
+            '.progress-bar-star3'
+        );
+
     if (star3.length > 0) {
         star3.text(lvlVal);
     } else {
-        officialXpPanel.find('.progress-bar-text').html('★★ <strong class="progress-bar-star3">' + lvlVal + '</strong>');
+        officialXpPanel
+            .find(
+                '.progress-bar-text'
+            )
+            .html(
+                '★★ <strong class="progress-bar-star3">' +
+                lvlVal +
+                '</strong>'
+            );
     }
 
-    /* Sync the original profile panel's exp bar (not the LM #exp-bar elements) */
-    var profilePanels = $('.agario-profile-panel').not('#exp-bar');
-    profilePanels.find('.progress-bar-star').text(lvlVal);
+    /*
+     * Original Agar.io XP bar inside #profile.
+     * Do not replace this text with the level number.
+     */
+    var profilePanels =
+        $('#profile .agario-profile-panel')
+            .not('#exp-bar');
 
-    var cXp = (window.agarioXP !== undefined && window.agarioXP !== null) ? window.agarioXP : 0;
-    var tXp = (window.agarioNextXP !== undefined && window.agarioNextXP !== null) ? window.agarioNextXP : 1000;
-    var xpDisplayText = (cXp !== undefined && cXp !== null && tXp) ? (cXp + '/' + tXp) : lvlVal;
+    profilePanels
+        .find(
+            '.progress-bar-star'
+        )
+        .text(lvlVal);
 
-    profilePanels.find('.progress-bar-text').text(xpDisplayText);
-
-    if (expPercent !== undefined && expPercent !== null) {
-        var clampedPercent = Math.max(0, Math.min(100, Number(expPercent) || 0));
-        profilePanels.find('.progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', clampedPercent + '%');
+    if (totalXp > 0) {
+        profilePanels
+            .find(
+                '.progress-bar-text'
+            )
+            .text(
+                currentXp +
+                '/' +
+                totalXp +
+                ' XP'
+            );
     }
+
+    profilePanels
+        .find(
+            '.progress-bar, .progress-bar-striped'
+        )
+        .not(
+            '.progress-bar-striped2'
+        )
+        .css(
+            'width',
+            resolvedPercent +
+            '%'
+        );
 };
 
 window.updateLegendXpPanel = function() {
