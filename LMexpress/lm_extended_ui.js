@@ -3464,6 +3464,12 @@
         /*
          * Final DOM recovery path:
          * use the original rendered promotion button if available.
+         * Search multiple locations:
+         *   1. #lm-preserved-official-promo (where we moved the offers container)
+         *   2. .promo-badge-container (anywhere in the DOM)
+         *   3. #mainui-app (the official Vue app root, stays in DOM as position:fixed)
+         *   4. Any button whose id starts with "button_" (the official daily
+         *      deal pattern, e.g. button_ArcadeGamesSkins_2026-08-030)
          */
         var promoContainer =
             document.querySelector(
@@ -3488,7 +3494,9 @@
         ) {
             if (
                 promoButtons[i].id !==
-                'coinShop'
+                'coinShop' &&
+                promoButtons[i].id !==
+                'freeCoins'
             ) {
                 promoButton =
                     promoButtons[i];
@@ -3497,8 +3505,172 @@
             }
         }
 
+        /*
+         * Fallback: search #mainui-app directly.
+         * The official Vue app is position:fixed and stays in the DOM
+         * even after Legend Mod restructures the menu.
+         */
+        if (!promoButton) {
+            var mainuiApp =
+                document.getElementById('mainui-app');
+
+            if (mainuiApp) {
+                var mainuiPromoButtons =
+                    mainuiApp.querySelectorAll(
+                        '.promo-badge-container button'
+                    );
+
+                for (
+                    var mi = 0;
+                    mi < mainuiPromoButtons.length;
+                    mi++
+                ) {
+                    if (
+                        mainuiPromoButtons[mi].id !==
+                        'coinShop' &&
+                        mainuiPromoButtons[mi].id !==
+                        'freeCoins'
+                    ) {
+                        promoButton =
+                            mainuiPromoButtons[mi];
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        /*
+         * Fallback: search for any button whose id starts with "button_".
+         * The official daily deal button has a dynamic id like
+         * "button_ArcadeGamesSkins_2026-08-030" that changes each day.
+         */
+        if (!promoButton) {
+            promoButton =
+                document.querySelector(
+                    'button[id^="button_"]'
+                );
+
+            /* Exclude coinShop / freeCoins if they accidentally match */
+            if (
+                promoButton &&
+                (promoButton.id === 'coinShop' ||
+                 promoButton.id === 'freeCoins')
+            ) {
+                promoButton = null;
+            }
+        }
+
+        /*
+         * Last resort: try calling the Vue offers component's
+         * onPromoClick() directly, bypassing the DOM button entirely.
+         */
+        if (!promoButton) {
+            var offersEl =
+                document.getElementById(
+                    'mainui-offers'
+                );
+
+            var offersVm =
+                offersEl && offersEl.__vue__
+                    ? offersEl.__vue__
+                    : null;
+
+            /* Walk up the parent chain if __vue__ is on a wrapper */
+            if (
+                !offersVm &&
+                offersEl
+            ) {
+                var walker = offersEl;
+                while (
+                    walker &&
+                    !walker.__vue__
+                ) {
+                    walker = walker.parentElement;
+                }
+
+                if (
+                    walker &&
+                    walker.__vue__
+                ) {
+                    offersVm = walker.__vue__;
+                }
+            }
+
+            /* Try to find the offers child component */
+            if (
+                offersVm &&
+                offersVm.$children
+            ) {
+                for (
+                    var ci = 0;
+                    ci < offersVm.$children.length;
+                    ci++
+                ) {
+                    var child = offersVm.$children[ci];
+                    if (
+                        typeof child.promoCallback ===
+                        'function'
+                    ) {
+                        offersVm = child;
+                        break;
+                    }
+                }
+            }
+
+            if (
+                offersVm &&
+                typeof offersVm.promoCallback ===
+                    'function' &&
+                offersVm.promoConfig
+            ) {
+                window._lmDailyDealOpening = true;
+
+                try {
+                    offersVm.onPromoClick
+                        ? offersVm.onPromoClick()
+                        : offersVm.promoCallback();
+
+                    console.log(
+                        '[OFFICIAL OFFER] Opened via Vue onPromoClick/promoCallback:',
+                        {
+                            promoId: offersVm.promoId,
+                            hasConfig: !!offersVm.promoConfig
+                        }
+                    );
+
+                    setTimeout(
+                        function() {
+                            window._lmDailyDealOpening =
+                                false;
+                        },
+                        750
+                    );
+
+                    return true;
+                } catch (vueCallError) {
+                    window._lmDailyDealOpening = false;
+
+                    console.warn(
+                        '[OFFICIAL OFFER] Vue promoCallback failed:',
+                        vueCallError
+                    );
+                }
+            }
+        }
+
         if (promoButton) {
             window._lmDailyDealOpening = true;
+
+            console.log(
+                '[OFFICIAL OFFER] Found promo button in DOM:',
+                {
+                    id: promoButton.id,
+                    parentId: promoButton.parentElement
+                        ? promoButton.parentElement.id
+                        : 'none'
+                }
+            );
 
             try {
                 promoButton.dispatchEvent(
@@ -3534,6 +3706,61 @@
         }
 
         /*
+         * Diagnostic: log what we found at each search location
+         * so we can see exactly where the chain is breaking.
+         */
+        var diag = {
+            _lmOfficialPromotion:
+                window._lmOfficialPromotion
+                    ? {
+                        offerId: window._lmOfficialPromotion.offerId,
+                        hasCallback: typeof window._lmOfficialPromotion.callback === 'function',
+                        receivedAt: window._lmOfficialPromotion.receivedAt
+                    }
+                    : null,
+            preservedHost:
+                !!document.getElementById(
+                    'lm-preserved-official-promo'
+                ),
+            mainuiOffers:
+                !!document.getElementById(
+                    'mainui-offers'
+                ),
+            mainuiApp:
+                !!document.getElementById(
+                    'mainui-app'
+                ),
+            promoBadgeContainer:
+                !!document.querySelector(
+                    '.promo-badge-container'
+                ),
+            promoBadgeButtons:
+                document.querySelectorAll(
+                    '.promo-badge-container button'
+                ).length,
+            buttonIdPattern:
+                document.querySelectorAll(
+                    'button[id^="button_"]'
+                ).length,
+            offersVue: (function() {
+                var el = document.getElementById('mainui-offers');
+                if (!el) return 'no #mainui-offers';
+                if (!el.__vue__) return 'no __vue__';
+                var vm = el.__vue__;
+                return {
+                    promoId: vm.promoId,
+                    hasConfig: !!vm.promoConfig,
+                    hasCallback: typeof vm.promoCallback === 'function'
+                };
+            })()
+        };
+
+        console.warn(
+            '[OFFICIAL OFFER] All recovery paths failed. Diagnostic:',
+            diag
+        );
+
+        /*
          * Do not repeatedly retry openDailyDealsModal().
          * The promotion event is produced asynchronously by Agar.io.
          */
@@ -3542,10 +3769,6 @@
                 '<b>[OFFICIAL OFFER]:</b> Agar.io has not supplied an official promotion yet. Return to the main menu and try again after a few seconds.'
             );
         }
-
-        console.warn(
-            '[OFFICIAL OFFER] No active official promotion was available through the captured event, Core.ui.mainUI._badgeButton, Core.services.promo, or the original promotion DOM.'
-        );
 
         return false;
     };
