@@ -2571,6 +2571,15 @@ window.changeSkin = function (productID) {
     // the protobuf from being sent.
     window.core.proxyMobileData(bytes);
 
+    // Tell the game engine to load the skin immediately.
+    // Official client uses '%name' for standard skins, raw productId for custom.
+    try {
+        var skinName = productID.indexOf('skin_custom_') === 0
+            ? productID
+            : '%' + productID.replace('skin_', '');
+        window.core.loadSkin(skinName);
+    } catch (lsErr) {}
+
     try {
         var skinLink = legendmod.getLink(productID);
         var skinUrl = skinLink ? skinLink[0] : null;
