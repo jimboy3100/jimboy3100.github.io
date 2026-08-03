@@ -1138,8 +1138,8 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             if (window.updateStorage) window.updateStorage();
         }
 
-        /* Register gplusRelogin for reconnects.
-         * On agar.io the engine calls this; on expanding.land our hook calls it. */
+        /* Register gplusRelogin and facebookRelogin for reconnects.
+         * On agar.io the engine calls this; on server switch our hook calls it. */
         window.gplusRelogin = function (callback) {
             var user = window.legendmod_discordUser;
             if (!user) {
@@ -1163,6 +1163,21 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 _lw_sendDiscordProfile(user, newAttemptId);
                 window._lwAuth.state = 'waiting_server';
                 console.log('[LW Discord] gplusRelogin: re-authenticating attempt #' + newAttemptId);
+            } else if (window.master && typeof window.master.login === 'function') {
+                try {
+                    console.log('[LW AUTH] gplusRelogin: triggering master.login()');
+                    window.master.login();
+                } catch (e) { }
+            }
+            if (callback) callback();
+        };
+
+        window.facebookRelogin = function (callback) {
+            if (window.master && typeof window.master.login === 'function') {
+                try {
+                    console.log('[LW AUTH] facebookRelogin: triggering master.login()');
+                    window.master.login();
+                } catch (e) { }
             }
             if (callback) callback();
         };
@@ -1561,6 +1576,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             console.log('[LW AUTH] Intended logout (user manual or private server switch)');
             window._isUserManualLogout = false;
             window._isChangingToPrivateServer = false;
+            window._wasLoggedInOfficial = false;
             window._loginRetryCount = 0;
             window._lw_loginNotifShown = false;
             window.expandingLandUID = '';
@@ -19933,6 +19949,15 @@ function thelegendmodproject() {
                     if (window.master && window.master.login) {
                         window.master.login();
                     }
+                    if (window._wasLoggedInOfficial || window.loggedIn) {
+                        console.log('[LM] Official server connected — re-triggering login for official server');
+                        if (typeof window.gplusRelogin === 'function') {
+                            try { window.gplusRelogin(); } catch (e) { }
+                        }
+                        if (typeof window.facebookRelogin === 'function') {
+                            try { window.facebookRelogin(); } catch (e) { }
+                        }
+                    }
                     break;
                 case 242:
                     if (data.byteLength < 5) {
@@ -20136,7 +20161,10 @@ function thelegendmodproject() {
                             console.log('[LW AUTH] Login confirmed by server, provider=' + window._lwAuth.provider);
                         }
                         console.log('[LW 102] Protobuf type-11 login response received — fallback disabled');
+                    } else {
+                        window._wasLoggedInOfficial = true;
                     }
+                    window.loggedIn = true;
                     var u = r.uncompressedData.loginResponseField;
                     /* Preserve previous coins/dna/trophy across re-login to prevent
                      * the UI from flashing to 0 between reset and updateWalletInfo */
