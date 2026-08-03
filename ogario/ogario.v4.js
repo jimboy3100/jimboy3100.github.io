@@ -14812,6 +14812,37 @@ function thelegendmodproject() {
                         for (var si = 0; si < cp5.sockets.length; si++) {
                             var ws = cp5.sockets[si];
                             if (ws && ws.readyState === 1) {
+                                /*
+                                 * Monitor for disconnect after sending.
+                                 * Wrap onclose/onerror to capture details.
+                                 */
+                                var origOnClose = ws.onclose;
+                                var origOnError = ws.onerror;
+                                ws.onclose = function(event) {
+                                    console.error(
+                                        "[LM SKIN] WebSocket CLOSED after send!",
+                                        {
+                                            code: event.code,
+                                            reason: event.reason,
+                                            wasClean: event.wasClean,
+                                            timeAfterSend: Date.now()
+                                        }
+                                    );
+                                    toastr.error(
+                                        "<b>[SKIN]:</b> Socket closed (code " +
+                                        event.code + "): " +
+                                        (event.reason || "no reason")
+                                    );
+                                    if (origOnClose) origOnClose.call(ws, event);
+                                };
+                                ws.onerror = function(event) {
+                                    console.error(
+                                        "[LM SKIN] WebSocket ERROR after send!",
+                                        event
+                                    );
+                                    if (origOnError) origOnError.call(ws, event);
+                                };
+
                                 console.log(
                                     "[LM SKIN] Sending via cp5.sockets[" +
                                     si + "] directly (" +
