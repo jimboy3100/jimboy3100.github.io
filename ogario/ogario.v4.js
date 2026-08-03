@@ -20823,29 +20823,23 @@ function thelegendmodproject() {
 
                                 var skinWalletItem =
                                     skinProductUpdate &&
-                                    skinProductUpdate
-                                        .userWalletItem;
+                                    (skinProductUpdate.userWalletItem || skinProductUpdate.walletItem);
 
                                 var skinProductId =
                                     skinWalletItem &&
-                                        skinWalletItem
-                                            .productId
+                                        (skinWalletItem.productId || skinWalletItem.id)
                                         ? String(
-                                            skinWalletItem
-                                                .productId
+                                            skinWalletItem.productId || skinWalletItem.id
                                         )
                                         : '';
 
+                                var delta = Number(skinProductUpdate && skinProductUpdate.deltaAmount) || 0;
+
                                 if (
-                                    Number(
-                                        skinProductUpdate &&
-                                        skinProductUpdate
-                                            .deltaAmount
-                                    ) > 0 &&
-                                    skinProductId
-                                        .indexOf(
-                                            'skin_custom_'
-                                        ) === 0
+                                    delta > 0 &&
+                                    skinProductId &&
+                                    skinProductId !== 'create_skin_token' &&
+                                    skinProductId !== 'create_skin_token_for_vip_weekly'
                                 ) {
                                     createdSkinId =
                                         skinProductId;
@@ -20880,7 +20874,7 @@ function thelegendmodproject() {
                                     !createdSkinId
                                 ) {
                                     console.error(
-                                        '[LM SKIN] Agar.io returned result 1 but no positive skin_custom product update:',
+                                        '[LM SKIN] Agar.io returned result 1 but no positive skin product update:',
                                         skinResp
                                     );
 
@@ -20890,6 +20884,11 @@ function thelegendmodproject() {
 
                                     break;
                                 }
+
+                                /* Mark as owned in local user model */
+                                if (!this.user) this.user = {};
+                                if (!this.user.skins) this.user.skins = {};
+                                this.user.skins[createdSkinId] = 1;
 
                                 /*
                                  * Update Legend Mod's wallet/owned-products
@@ -20905,7 +20904,7 @@ function thelegendmodproject() {
 
                                 /*
                                  * Copy the exact official Agar.io success
-                                 * sequence.
+                                 * sequence with CDN-delay retries.
                                  */
                                 var officialSkinApi =
                                     window.agarApp &&
@@ -20926,18 +20925,23 @@ function thelegendmodproject() {
                                             );
                                     }
 
-                                    if (
-                                        typeof officialSkinApi
-                                            .addCustomSkin ===
-                                        'function'
-                                    ) {
-                                        officialSkinApi
-                                            .addCustomSkin(
-                                                createdSkinId,
-                                                true,
-                                                true
-                                            );
-                                    }
+                                    var tryAddSkin = function (attempt) {
+                                        if (typeof officialSkinApi.addCustomSkin === 'function') {
+                                            officialSkinApi.addCustomSkin(createdSkinId, true, true);
+                                        }
+                                        if (attempt < 4) {
+                                            setTimeout(function () { tryAddSkin(attempt + 1); }, 1500 * (attempt + 1));
+                                        }
+                                    };
+                                    tryAddSkin(0);
+                                }
+
+                                /* Register directly in core so rendering works immediately */
+                                if (window.core && typeof window.core.registerSkin === 'function') {
+                                    var customSkinBaseUrl = ((window.EnvConfig && window.EnvConfig.custom_skins_url) || 'https://configs-web.agario.miniclip.com/custom_skins/').replace(/\/$/, '') + '/';
+                                    try {
+                                        window.core.registerSkin(null, createdSkinId, customSkinBaseUrl + createdSkinId + '.png', 2, 0xFF888888);
+                                    } catch (regErr) { }
                                 }
 
                                 /*
