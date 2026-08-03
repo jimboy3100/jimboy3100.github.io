@@ -20,28 +20,26 @@ function showError(msg) {
 
 function generatePrimitives() {
     primitives = [];
-    const width = window.innerWidth || 800;
-    const height = window.innerHeight || 600;
 
     const minRadius = radiusProfile === 'small' ? 5 : 50;
     const maxRadius = radiusProfile === 'small' ? 20 : 200;
 
     for (let i = 0; i < primitiveCount; i++) {
         const isOffscreen = Math.random() < offscreenRatio;
-        let x, y;
+        let relX, relY;
 
         if (isOffscreen) {
-            x = Math.random() < 0.5 ? -300 : width + 300;
-            y = Math.random() < 0.5 ? -300 : height + 300;
+            relX = Math.random() < 0.5 ? -0.3 : 1.3;
+            relY = Math.random() < 0.5 ? -0.3 : 1.3;
         } else {
-            x = Math.random() * width;
-            y = Math.random() * height;
+            relX = Math.random();
+            relY = Math.random();
         }
 
         const radius = minRadius + Math.random() * (maxRadius - minRadius);
         const color = `hsl(${Math.floor(Math.random() * 360)}, 90%, 55%)`;
-        const vx = (Math.random() - 0.5) * 2;
-        const vy = (Math.random() - 0.5) * 2;
+        const relVx = (Math.random() - 0.5) * 0.002;
+        const relVy = (Math.random() - 0.5) * 0.002;
 
         let type = primitiveType;
         if (primitiveType === 'mixed') {
@@ -49,7 +47,7 @@ function generatePrimitives() {
             type = types[i % types.length];
         }
 
-        primitives.push({ x, y, vx, vy, radius, color, type });
+        primitives.push({ relX, relY, relVx, relVy, radius, color, type });
     }
 }
 
@@ -95,7 +93,6 @@ async function init() {
 
     window.addEventListener('resize', () => {
         if (engine) engine.resize();
-        generatePrimitives();
     });
 
     engine.resize();
@@ -122,28 +119,31 @@ async function init() {
         for (let i = 0; i < primitiveCount; i++) {
             const p = primitives[i];
 
-            // Animate positions every frame
-            p.x += p.vx;
-            p.y += p.vy;
+            // Animate positions relative to screen dimensions
+            p.relX += p.relVx;
+            p.relY += p.relVy;
 
-            if (p.x < 0 || p.x > width) p.vx = -p.vx;
-            if (p.y < 0 || p.y > height) p.vy = -p.vy;
+            if (p.relX < 0 || p.relX > 1) p.relVx = -p.relVx;
+            if (p.relY < 0 || p.relY > 1) p.relVy = -p.relVy;
+
+            const posX = p.relX * width;
+            const posY = p.relY * height;
 
             switch (p.type) {
                 case 'circle':
-                    engine.fillCircle(p.x, p.y, p.radius, p.color);
+                    engine.fillCircle(posX, posY, p.radius, p.color);
                     break;
                 case 'ring':
-                    engine.strokeCircle(p.x, p.y, p.radius, Math.max(1, p.radius * 0.2), p.color);
+                    engine.strokeCircle(posX, posY, p.radius, Math.max(1, p.radius * 0.2), p.color);
                     break;
                 case 'arc5':
-                    engine.strokeArc(p.x, p.y, p.radius, 0, (5 * Math.PI) / 180, Math.max(1, p.radius * 0.2), p.color);
+                    engine.strokeArc(posX, posY, p.radius, 0, (5 * Math.PI) / 180, Math.max(1, p.radius * 0.2), p.color);
                     break;
                 case 'arc30':
-                    engine.strokeArc(p.x, p.y, p.radius, 0, (30 * Math.PI) / 180, Math.max(1, p.radius * 0.2), p.color);
+                    engine.strokeArc(posX, posY, p.radius, 0, (30 * Math.PI) / 180, Math.max(1, p.radius * 0.2), p.color);
                     break;
                 case 'arc180':
-                    engine.strokeArc(p.x, p.y, p.radius, 0, Math.PI, Math.max(1, p.radius * 0.2), p.color);
+                    engine.strokeArc(posX, posY, p.radius, 0, Math.PI, Math.max(1, p.radius * 0.2), p.color);
                     break;
             }
         }
