@@ -628,16 +628,45 @@ function SpecialDeals(defaultTab) {
                             'disabled',
                             false
                         )
+                        .removeAttr(
+                            'title aria-label'
+                        )
                         .css({
                             opacity: 1,
                             cursor: 'pointer'
                         });
                 } else {
+                    var uploadDisabledReason;
+
+                    if (
+                        processedBufferModal &&
+                        !hasRequiredSkinName
+                    ) {
+                        uploadDisabledReason =
+                            'Enter a skin name first — the name is required.';
+                    } else if (
+                        !processedBufferModal &&
+                        hasRequiredSkinName
+                    ) {
+                        uploadDisabledReason =
+                            'Choose and process an image first.';
+                    } else {
+                        uploadDisabledReason =
+                            'Choose an image and enter a required skin name first.';
+                    }
+
                     uploadBtn
                         .prop(
                             'disabled',
                             true
                         )
+                        .attr({
+                            title:
+                                uploadDisabledReason,
+
+                            'aria-label':
+                                uploadDisabledReason
+                        })
                         .css({
                             opacity: 0.5,
                             cursor:
