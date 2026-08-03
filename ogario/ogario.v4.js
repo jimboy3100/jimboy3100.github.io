@@ -2548,36 +2548,40 @@ window.activateQuest = function () {
 window.changeSkin = function (productID) {
     if (productID == null) return;
 
-    // ─── Primary: use the official Agar.io setSkin API ───
-    // This updates Core.ui.settings.skinId (preventing the official client
-    // from resending the old skin), sends opcode 80 via the proper Haxe
-    // protobuf serializer, calls window.core.loadSkin(), and updates all views.
-    try {
-        if (typeof MiniclipAPI !== 'undefined' && MiniclipAPI.instance && typeof MiniclipAPI.instance.setSkin === 'function') {
-            MiniclipAPI.instance.setSkin(productID);
-            console.log('[SKIN] Equipped via MiniclipAPI.setSkin:', productID);
-        } else {
-            // Fallback: hand-craft the protobuf bytes (opcode 80)
-            var encode = function (str) {
-                bytes.push(str.length);
-                for (var i = 0; i < str.length; i++) {
-                    bytes.push(str.charCodeAt(i));
-                }
-            };
-            var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
-            encode(productID);
-            window.core.proxyMobileData(bytes);
-
-            // Also tell the game engine to load the skin
-            var skinName = productID.indexOf('skin_custom_') === 0
-                ? productID
-                : '%' + productID.replace('skin_', '');
-            window.core.loadSkin(skinName);
-            console.log('[SKIN] Equipped via proxyMobileData fallback:', productID);
+    // ─── 1. Send the raw protobuf (opcode 80) immediately ───
+    // This works from the moment the WebSocket is open — no shop data needed.
+    var encode = function (str) {
+        bytes.push(str.length);
+        for (var i = 0; i < str.length; i++) {
+            bytes.push(str.charCodeAt(i));
         }
-    } catch (err) {
-        console.warn('[SKIN] changeSkin error:', err);
-    }
+    };
+    var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
+    encode(productID);
+    window.core.proxyMobileData(bytes);
+
+    // ─── 2. Tell the game engine to load the skin texture immediately ───
+    try {
+        var skinName = productID.indexOf('skin_custom_') === 0
+            ? productID
+            : '%' + productID.replace('skin_', '');
+        window.core.loadSkin(skinName);
+    } catch (lsErr) {}
+
+    // ─── 3. Sync Core's internal skinId to prevent it from overwriting ───
+    // Core.ui.settings._settings.skinId is what the official client uses
+    // to decide which skin to send on periodic settings saves. If we don't
+    // update it, Core resends the OLD skin and overwrites our change.
+    try {
+        if (typeof Core !== 'undefined' && Core.ui && Core.ui.settings && Core.ui.settings._settings) {
+            Core.ui.settings._settings.skinId = productID;
+        }
+        if (typeof Core !== 'undefined' && Core.user && typeof Core.user.set_selectedSkin === 'function') {
+            Core.user.set_selectedSkin(productID);
+        }
+    } catch (coreErr) {}
+
+    console.log('[SKIN] changeSkin:', productID);
 
     try {
         var skinLink = legendmod.getLink(productID);
