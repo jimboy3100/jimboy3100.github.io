@@ -8266,38 +8266,77 @@ function thelegendmodproject() {
             $("#exp-bar").addClass("agario-profile-panel");
 
             /*
-             * Preserve Agar.io's official promotion DOM before Legend Mod clears
-             * the original left-side menu.
+             * Preserve the COMPLETE official Vue Offers component before
+             * Legend Mod clears .left-container. Moving only
+             * .promo-badge-container (or its immediate parent) detaches it from
+             * #mainui-offers and destroys the Vue instance that owns
+             * promoCallback.
              */
             var officialPromoNode =
                 document.querySelector('.promo-badge-container');
 
-            if (officialPromoNode) {
-                var officialPromoRoot =
-                    officialPromoNode.parentElement || officialPromoNode;
+            var officialPromoRoot =
+                document.getElementById('mainui-offers');
 
-                officialPromoRoot.id =
-                    'lm-preserved-official-promo';
+            if (
+                !officialPromoRoot &&
+                officialPromoNode &&
+                typeof officialPromoNode.closest === 'function'
+            ) {
+                officialPromoRoot =
+                    officialPromoNode.closest('#mainui-offers');
+            }
 
-                officialPromoRoot.style.position =
-                    'fixed';
+            if (!officialPromoRoot) {
+                officialPromoRoot =
+                    officialPromoNode;
+            }
 
-                officialPromoRoot.style.left =
-                    '-10000px';
+            if (officialPromoRoot) {
+                var officialPromoHost =
+                    document.getElementById(
+                        'lm-preserved-official-promo'
+                    );
 
-                officialPromoRoot.style.top =
-                    '-10000px';
+                if (!officialPromoHost) {
+                    officialPromoHost =
+                        document.createElement('div');
 
-                officialPromoRoot.style.width =
-                    '1px';
+                    officialPromoHost.id =
+                        'lm-preserved-official-promo';
 
-                officialPromoRoot.style.height =
-                    '1px';
+                    officialPromoHost.setAttribute(
+                        'aria-hidden',
+                        'true'
+                    );
 
-                officialPromoRoot.style.overflow =
-                    'hidden';
+                    officialPromoHost.style.position =
+                        'fixed';
 
-                document.body.appendChild(
+                    officialPromoHost.style.left =
+                        '-10000px';
+
+                    officialPromoHost.style.top =
+                        '-10000px';
+
+                    officialPromoHost.style.width =
+                        '1px';
+
+                    officialPromoHost.style.height =
+                        '1px';
+
+                    officialPromoHost.style.overflow =
+                        'hidden';
+
+                    officialPromoHost.style.pointerEvents =
+                        'none';
+
+                    document.body.appendChild(
+                        officialPromoHost
+                    );
+                }
+
+                officialPromoHost.appendChild(
                     officialPromoRoot
                 );
             }

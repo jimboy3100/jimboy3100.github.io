@@ -2980,6 +2980,71 @@
             window._lmOfficialPromotion;
 
         /*
+         * Recover a promotion event that fired before LM installed its
+         * listener. Agar.io's official Offers Vue component keeps the exact
+         * callback in promoCallback.
+         */
+        if (
+            !promotion ||
+            typeof promotion.callback !== 'function'
+        ) {
+            var officialPromoHost =
+                document.getElementById(
+                    'lm-preserved-official-promo'
+                );
+
+            var officialOffersRoot =
+                officialPromoHost
+                    ? officialPromoHost.querySelector(
+                        '#mainui-offers'
+                    )
+                    : null;
+
+            if (!officialOffersRoot) {
+                officialOffersRoot =
+                    document.getElementById(
+                        'mainui-offers'
+                    );
+            }
+
+            var officialOffersVm =
+                officialOffersRoot &&
+                officialOffersRoot.__vue__
+                    ? officialOffersRoot.__vue__
+                    : null;
+
+            if (
+                officialOffersVm &&
+                typeof officialOffersVm.promoCallback ===
+                    'function'
+            ) {
+                promotion = {
+                    offerId:
+                        officialOffersVm.promoId || null,
+                    config:
+                        officialOffersVm.promoConfig || null,
+                    delegate:
+                        officialOffersVm.promoDelegate || null,
+                    system:
+                        officialOffersVm.promoSystem || null,
+                    callback: function() {
+                        return officialOffersVm
+                            .promoCallback();
+                    },
+                    receivedAt: Date.now()
+                };
+
+                window._lmOfficialPromotion =
+                    promotion;
+
+                console.log(
+                    '[OFFICIAL OFFER] Recovered official promotion from preserved Vue component:',
+                    promotion
+                );
+            }
+        }
+
+        /*
          * Primary path:
          * use the exact callback delivered by official Agar.io.
          */
