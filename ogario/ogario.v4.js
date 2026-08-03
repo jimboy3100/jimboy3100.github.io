@@ -20375,7 +20375,10 @@ function thelegendmodproject() {
                     try {
                         var u = r.uncompressedData.updateUserSettingsResponseField;
                         if (u && u.updatedUserSettings) {
+                            console.log('[LM] ✓ Opcode 81 — Server confirmed user settings update:', JSON.stringify(u.updatedUserSettings.map(function(s) { return { key: s.key, val: s.valueString || s.valueInt32 }; })));
                             this.updateUserSettings(u.updatedUserSettings);
+                        } else {
+                            console.log('[LM] ✓ Opcode 81 — Server responded but no updatedUserSettings field');
                         }
                     } catch(usErr) { console.warn("[LM] Error parsing user settings response:", usErr); }
                     break;
