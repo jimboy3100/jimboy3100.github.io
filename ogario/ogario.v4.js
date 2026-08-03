@@ -21440,10 +21440,30 @@ function thelegendmodproject() {
                 switch (key) {
                     case 1:
                         var skinVal = s[i].valueString || '';
-                        // Log if the server's confirmed skin differs from what we tried to equip
-                        if (window._lmSkinEquipId && skinVal !== window._lmSkinEquipId && (Date.now() - window._lmSkinEquipTime) < 10000) {
-                            console.warn('[SKIN] Server rejected equip! Sent=' + window._lmSkinEquipId + ', server confirmed=' + skinVal + ', elapsed=' + (Date.now() - window._lmSkinEquipTime) + 'ms');
+                        // Guard: if we recently sent an equip (opcode 80), and the
+                        // server's opcode 81 response has a DIFFERENT skin, this is
+                        // a stale response from the login settings sync racing
+                        // against our equip request. Skip the overwrite and re-send.
+                        var recentEquipAge = (window._lmSkinEquipTime) ? (Date.now() - window._lmSkinEquipTime) : Infinity;
+                        var weJustEquipped = window._lmSkinEquipId && recentEquipAge < 10000;
+
+                        if (weJustEquipped && skinVal !== window._lmSkinEquipId) {
+                            console.warn('[SKIN] Ignoring stale server skin response (race condition). Server=' + skinVal + ', we sent=' + window._lmSkinEquipId + ', ' + recentEquipAge + 'ms ago. Re-sending equip...');
+                            // Re-send our equip request — the stale response means
+                            // the server hasn't processed our opcode 80 yet
+                            if (typeof window.changeSkin === 'function') {
+                                try { window.changeSkin(window._lmSkinEquipId); } catch (re) { }
+                            }
+                            break;
                         }
+
+                        // Server confirmed our skin (or no recent equip) — accept it
+                        if (weJustEquipped && skinVal === window._lmSkinEquipId) {
+                            console.log('[SKIN] Server confirmed equip: ' + skinVal + ' (' + recentEquipAge + 'ms)');
+                            window._lmSkinEquipId = null;
+                            window._lmSkinEquipTime = 0;
+                        }
+
                         window.serverEquippedSkinId = skinVal;
                         if (!skinVal || skinVal === 'skin_empty') {
                             localStorage.removeItem('equippedSkinId');

@@ -4521,6 +4521,13 @@ function updateEquippedSkinUI() {
 function syncEquippedSkinFromServer() {
     if (!window.application || !window.application.user) return;
 
+    // Don't let stale server data overwrite a recent user equip
+    var recentEquipAge = (window._lmSkinEquipTime) ? (Date.now() - window._lmSkinEquipTime) : Infinity;
+    if (window._lmSkinEquipId && recentEquipAge < 10000) {
+        // We recently sent an equip — skip server sync to avoid race condition
+        return;
+    }
+
     // window.serverEquippedSkinId is set by ogario.v4.js updateUserSettings
     // when key=1 (skinId) arrives from the server (opcode 11 login or opcode 81 settings response)
     var serverSkinId = window.serverEquippedSkinId;
