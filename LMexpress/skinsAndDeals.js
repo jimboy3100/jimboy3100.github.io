@@ -390,9 +390,9 @@ function SpecialDeals(defaultTab) {
             '<summary style="cursor: pointer; color: ' + tc2 + '; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID &amp; Config</summary>' +
             '<div style="margin-top: 8px;">' +
             '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block; margin-bottom: 6px;">' +
-            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend UID <input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
+            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend UID <input id="checkBoxLockUID" type="checkbox" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
             '<div style="display: flex; gap: 6px; margin-bottom: 6px;">' +
-            '<select id="BuyDealCurrency" class="form-control" style="width: 25%;"><option value="USD">USD</option><option value="EU">EU</option></select>' +
+            '<select id="BuyDealCurrency" class="form-control" style="width: 25%;"><option value="USD">USD</option><option value="EUR">EUR</option></select>' +
             '<select id="ss-select-agarVersionDestinations" class="form-control" style="width: 35%;"></select>' +
             '<span style="color: ' + tc2 + '; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
             '</div>' +
@@ -2371,6 +2371,23 @@ function SpecialDeals(defaultTab) {
                 $("#exp-uid").text(window.agarioEncodedUID);
             }
         });
+
+        /* Allow manual toggle of the Friend UID checkbox */
+        $('#checkBoxLockUID').change(function() {
+            if (this.checked) {
+                var manualUID = String($('#agario_uid_input').val() || '').trim();
+                if (manualUID.length > 10) {
+                    $("#exp-uid").text(manualUID);
+                    toastr["info"]("Using Friend UID for purchases").css("width", "250px");
+                } else {
+                    this.checked = false;
+                    toastr["warning"]("Enter a valid UID first").css("width", "210px");
+                }
+            } else {
+                $("#exp-uid").text(window.agarioEncodedUID);
+                toastr["info"]("Using your own UID for purchases").css("width", "250px");
+            }
+        });
         $('#ss-select-purchases').on('change', function() {
             $(".xpmt-skins2").css('background-image', '');
             $(".xpmt-skins").css('background-image', '');
@@ -3957,6 +3974,15 @@ function openOfficialAgarIAP(
         ) ||
         window.agarioEncodedUID ||
         '';
+
+    /* If the "Friend UID" checkbox is checked, override with the manual UID input */
+    var lockUIDCheckbox = document.getElementById('checkBoxLockUID');
+    if (lockUIDCheckbox && lockUIDCheckbox.checked) {
+        var manualUID = String($('#agario_uid_input').val() || '').trim();
+        if (manualUID.length > 10) {
+            xsollaToken = manualUID;
+        }
+    }
 
     if (!xsollaToken) {
         if (
