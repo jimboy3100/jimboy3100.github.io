@@ -20,8 +20,8 @@ function showError(msg) {
 
 function generatePrimitives() {
     primitives = [];
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = window.innerWidth || 800;
+    const height = window.innerHeight || 600;
 
     const minRadius = radiusProfile === 'small' ? 5 : 50;
     const maxRadius = radiusProfile === 'small' ? 20 : 200;
@@ -31,7 +31,6 @@ function generatePrimitives() {
         let x, y;
 
         if (isOffscreen) {
-            // Place outside visible bounds
             x = Math.random() < 0.5 ? -300 : width + 300;
             y = Math.random() < 0.5 ? -300 : height + 300;
         } else {
@@ -41,6 +40,8 @@ function generatePrimitives() {
 
         const radius = minRadius + Math.random() * (maxRadius - minRadius);
         const color = `hsl(${Math.floor(Math.random() * 360)}, 90%, 55%)`;
+        const vx = (Math.random() - 0.5) * 2;
+        const vy = (Math.random() - 0.5) * 2;
 
         let type = primitiveType;
         if (primitiveType === 'mixed') {
@@ -48,7 +49,7 @@ function generatePrimitives() {
             type = types[i % types.length];
         }
 
-        primitives.push({ x, y, radius, color, type });
+        primitives.push({ x, y, vx, vy, radius, color, type });
     }
 }
 
@@ -112,11 +113,22 @@ async function init() {
 
         isRendering = true;
 
+        const width = canvas.width;
+        const height = canvas.height;
+
         const recordStart = performance.now();
         engine.beginFrame();
 
         for (let i = 0; i < primitiveCount; i++) {
             const p = primitives[i];
+
+            // Animate positions every frame
+            p.x += p.vx;
+            p.y += p.vy;
+
+            if (p.x < 0 || p.x > width) p.vx = -p.vx;
+            if (p.y < 0 || p.y > height) p.vy = -p.vy;
+
             switch (p.type) {
                 case 'circle':
                     engine.fillCircle(p.x, p.y, p.radius, p.color);
