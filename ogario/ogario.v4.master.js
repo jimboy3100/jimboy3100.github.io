@@ -719,6 +719,10 @@ function legendmaster(self) {
                 return;
             }
 
+            if (this.region === items && this.connectionActive) {
+                return;
+            }
+
             if (typeof LM !== "undefined" && LM) LM.isLegendWorld = false;
             if (typeof ogario !== "undefined" && ogario) ogario.isLegendWorld = false;
 
@@ -807,6 +811,11 @@ function legendmaster(self) {
         setGameMode(val, opt_validate) {
             if (null == opt_validate) {
                 opt_validate = true;
+            }
+
+            if (this.gameMode === val && this.connectionActive) {
+                this.applyGameMode(val);
+                return;
             }
 
             if (typeof LM !== "undefined" && LM) LM.isLegendWorld = false;

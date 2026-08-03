@@ -17186,11 +17186,10 @@ function thelegendmodproject() {
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
                 app.onOpen();
-                //this.socket.ping();
+                if (window.master && window.master.onConnect) {
+                    window.master.onConnect();
+                }
             };
-            /*this.socket.onpong = function(t) {
-                console.log(t);
-            };	*/
             this.socket.onmessage = function (t) {
                 app.onMessage(t);
             };
@@ -17222,10 +17221,6 @@ function thelegendmodproject() {
             application.setUniversalChat();
             application.setAnimatedRainbowColor();
 
-
-            if (window.master && window.master.onConnect) {
-                window.master.onConnect();
-            }
             this.play = false //fix
 
             this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
@@ -17361,9 +17356,6 @@ function thelegendmodproject() {
         onError(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket error');
             this.flushCellsData();
-            if (window.master && window.master.onDisconnect) {
-                window.master.onDisconnect();
-            }
         },
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
