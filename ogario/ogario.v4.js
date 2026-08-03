@@ -21440,18 +21440,9 @@ function thelegendmodproject() {
                 switch (key) {
                     case 1:
                         var skinVal = s[i].valueString || '';
-                        // If we recently equipped a skin via our UI (within 5s),
-                        // the opcode 81 response still contains the OLD skin.
-                        // Don't let it overwrite our pending equip.
-                        var suppressOverwrite = (
-                            window._lmSkinEquipTime &&
-                            (Date.now() - window._lmSkinEquipTime) < 5000 &&
-                            window._lmSkinEquipId &&
-                            skinVal !== window._lmSkinEquipId
-                        );
-                        if (suppressOverwrite) {
-                            console.log('[SKIN] Suppressed opcode 81 overwrite: server=' + skinVal + ', keeping=' + window._lmSkinEquipId);
-                            break;
+                        // Log if the server's confirmed skin differs from what we tried to equip
+                        if (window._lmSkinEquipId && skinVal !== window._lmSkinEquipId && (Date.now() - window._lmSkinEquipTime) < 10000) {
+                            console.warn('[SKIN] Server rejected equip! Sent=' + window._lmSkinEquipId + ', server confirmed=' + skinVal + ', elapsed=' + (Date.now() - window._lmSkinEquipTime) + 'ms');
                         }
                         window.serverEquippedSkinId = skinVal;
                         if (!skinVal || skinVal === 'skin_empty') {
