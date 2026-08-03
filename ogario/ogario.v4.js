@@ -8656,6 +8656,43 @@ function thelegendmodproject() {
                     childList: true,
                     subtree: true
                 });
+            } else {
+                /*
+                 * Neither #mainui-app nor #home exist yet.
+                 * Create #home on body so Vue can mount on it
+                 * when bundle_end.js runs later.
+                 */
+                var newHome = document.createElement('div');
+                newHome.id = 'home';
+                newHome.style.position = 'fixed';
+                newHome.style.left = '-10000px';
+                newHome.style.top = '-10000px';
+                newHome.style.width = '1px';
+                newHome.style.height = '1px';
+                newHome.style.overflow = 'hidden';
+                newHome.style.pointerEvents = 'none';
+                newHome.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(newHome);
+
+                console.log(
+                    '[LM] Created #home placeholder (did not exist yet) ' +
+                    'before #mainPanel destroy'
+                );
+
+                /* Watch for Vue to mount on it */
+                var placeholderObserver = new MutationObserver(function() {
+                    var app = document.getElementById('mainui-app');
+                    if (app) {
+                        placeholderObserver.disconnect();
+                        console.log(
+                            '[LM] Vue mounted #mainui-app on placeholder #home'
+                        );
+                    }
+                });
+                placeholderObserver.observe(newHome, {
+                    childList: true,
+                    subtree: true
+                });
             }
 
             $("#mainPanel").empty().remove();

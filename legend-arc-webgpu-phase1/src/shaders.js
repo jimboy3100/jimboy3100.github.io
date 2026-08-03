@@ -1,4 +1,4 @@
-const COMMON_UNIFORMS = /* wgsl */`
+const COMMON = /* wgsl */`
 struct FrameUniforms {
     resolution : vec2<f32>,
     aaPixels   : f32,
@@ -8,8 +8,14 @@ struct FrameUniforms {
 @group(0) @binding(0)
 var<uniform> frame : FrameUniforms;
 
-fn quad_corner(vertexIndex : u32) -> vec2<f32> {
-    switch vertexIndex {
+const FLAG_MAJOR    : u32 = 1u;
+const FLAG_CCW      : u32 = 2u;
+const FLAG_FULL     : u32 = 4u;
+const FLAG_SEGMENT  : u32 = 8u;
+const FLAG_ORIENTED : u32 = 16u;
+
+fn quad_corner(index : u32) -> vec2<f32> {
+    switch index {
         case 0u: {
             return vec2<f32>(-1.0, -1.0);
         }
@@ -25,20 +31,22 @@ fn quad_corner(vertexIndex : u32) -> vec2<f32> {
     }
 }
 
-fn quad_uv(vertexIndex : u32) -> vec2<f32> {
-    return quad_corner(vertexIndex) * 0.5 +
-        vec2<f32>(0.5, 0.5);
+fn quad_uv(index : u32) -> vec2<f32> {
+    return quad_corner(index) * 0.5 +
+        vec2<f32>(0.5);
 }
 
-fn world_to_clip(world : vec2<f32>) -> vec4<f32> {
+fn world_to_clip(
+    world : vec2<f32>
+) -> vec4<f32> {
     let safeResolution = max(
         frame.resolution,
-        vec2<f32>(1.0, 1.0)
+        vec2<f32>(1.0)
     );
 
     var clip =
         world / safeResolution * 2.0 -
-        vec2<f32>(1.0, 1.0);
+        vec2<f32>(1.0);
 
     clip.y = -clip.y;
 
@@ -49,17 +57,63 @@ fn world_to_clip(world : vec2<f32>) -> vec4<f32> {
     );
 }
 
-fn premultiplied(
-    color : vec4<f32>,
-    coverage : f32
-) -> vec4<f32> {
-    let alpha =
-        color.a *
-        clamp(coverage, 0.0, 1.0);
+fn cross2(
+    a : vec2<f32>,
+    b : vec2<f32>
+) -> f32 {
+    return a.x * b.y -
+        a.y * b.x;
+}
 
-    return vec4<f32>(
-        color.rgb * alpha,
-        alpha
+fn safe_normalize(
+    v : vec2<f32>,
+    fallback : vec2<f32>
+) -> vec2<f32> {
+    let lengthSquared =
+        dot(v, v);
+
+    return select(
+        fallback,
+        v * inverseSqrt(lengthSquared),
+        lengthSquared > 1e-12
+    );
+}
+
+fn arc_middle(
+    startDirection : vec2<f32>,
+    endDirection : vec2<f32>,
+    flags : u32
+) -> vec2<f32> {
+    let ccw =
+        (flags & FLAG_CCW) != 0u;
+
+    let direction =
+        select(
+            1.0,
+            -1.0,
+            ccw
+        );
+
+    let halfTurnFallback =
+        vec2<f32>(
+            -startDirection.y * direction,
+            startDirection.x * direction
+        );
+
+    let minorMiddle =
+        safe_normalize(
+            startDirection +
+                endDirection,
+            halfTurnFallback
+        );
+
+    let major =
+        (flags & FLAG_MAJOR) != 0u;
+
+    return select(
+        minorMiddle,
+        -minorMiddle,
+        major
     );
 }
 
@@ -102,59 +156,26 @@ fn radial_coverage(
         innerCoverage;
 }
 
-fn conservative_local_padding(
-    axisX : vec2<f32>,
-    axisY : vec2<f32>
-) -> f32 {
-    let determinant =
-        abs(
-            axisX.x * axisY.y -
-            axisX.y * axisY.x
-        );
-
-    let frobenius =
-        sqrt(
-            max(
-                dot(axisX, axisX) +
-                dot(axisY, axisY),
-                1e-12
-            )
-        );
-
-    let conservativeMinScale =
-        max(
-            determinant / frobenius,
-            1e-4
-        );
-
-    return frame.aaPixels /
-        conservativeMinScale;
-}
-`;
-
-const ARC_HELPERS = /* wgsl */`
-fn cross2(
-    a : vec2<f32>,
-    b : vec2<f32>
-) -> f32 {
-    return a.x * b.y -
-        a.y * b.x;
-}
-
 fn angular_coverage(
     local : vec2<f32>,
     startDirection : vec2<f32>,
     endDirection : vec2<f32>,
     flags : u32
 ) -> f32 {
-    let anticlockwise =
-        (flags & 2u) != 0u;
+    if (
+        (flags & FLAG_FULL) != 0u
+    ) {
+        return 1.0;
+    }
+
+    let ccw =
+        (flags & FLAG_CCW) != 0u;
 
     let direction =
         select(
             1.0,
             -1.0,
-            anticlockwise
+            ccw
         );
 
     let sideStart =
@@ -171,8 +192,8 @@ fn angular_coverage(
             endDirection
         );
 
-    let majorArc =
-        (flags & 1u) != 0u;
+    let major =
+        (flags & FLAG_MAJOR) != 0u;
 
     let signedDistance =
         select(
@@ -184,7 +205,7 @@ fn angular_coverage(
                 sideStart,
                 sideEnd
             ),
-            majorArc
+            major
         );
 
     let aa =
@@ -202,10 +223,94 @@ fn angular_coverage(
         signedDistance
     );
 }
+
+fn segment_coverage(
+    local : vec2<f32>,
+    startDirection : vec2<f32>,
+    endDirection : vec2<f32>,
+    flags : u32
+) -> f32 {
+    let major =
+        (flags & FLAG_MAJOR) != 0u;
+
+    let middle =
+        arc_middle(
+            startDirection,
+            endDirection,
+            flags
+        );
+
+    let endpointDot =
+        clamp(
+            dot(
+                startDirection,
+                endDirection
+            ),
+            -1.0,
+            1.0
+        );
+
+    let minorHalfCosine =
+        sqrt(
+            max(
+                0.0,
+                (
+                    1.0 +
+                    endpointDot
+                ) * 0.5
+            )
+        );
+
+    let chordOffset =
+        select(
+            minorHalfCosine,
+            -minorHalfCosine,
+            major
+        );
+
+    let signedDistance =
+        dot(
+            middle,
+            local
+        ) -
+        chordOffset;
+
+    let aa =
+        max(
+            fwidth(
+                signedDistance
+            ),
+            1e-6
+        );
+
+    return smoothstep(
+        -aa,
+        aa,
+        signedDistance
+    );
+}
+
+fn premultiplied(
+    color : vec4<f32>,
+    coverage : f32
+) -> vec4<f32> {
+    let alpha =
+        color.a *
+        clamp(
+            coverage,
+            0.0,
+            1.0
+        );
+
+    return vec4<f32>(
+        color.rgb * alpha,
+        alpha
+    );
+}
 `;
 
-export const CIRCLE_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
+export const ARC_SHADER = /* wgsl */`
+${COMMON}
 
 struct VertexInput {
     @builtin(vertex_index)
@@ -221,6 +326,18 @@ struct VertexInput {
     innerRatio : f32,
 
     @location(3)
+    startDirection : vec2<f32>,
+
+    @location(4)
+    endDirection : vec2<f32>,
+
+    @location(5)
+    flags : u32,
+
+    @location(6)
+    bounds : vec4<f32>,
+
+    @location(7)
     color : vec4<f32>,
 };
 
@@ -235,6 +352,16 @@ struct VertexOutput {
     innerRatio : f32,
 
     @location(2)
+    startDirection : vec2<f32>,
+
+    @location(3)
+    endDirection : vec2<f32>,
+
+    @location(4)
+    @interpolate(flat)
+    flags : u32,
+
+    @location(5)
     color : vec4<f32>,
 };
 
@@ -248,221 +375,12 @@ fn vs_main(
             1e-4
         );
 
+    // snorm16 bounds have a maximum local quantization error of 1 / 32767.
+    // Include that error in the padding so extremely large arcs cannot clip.
     let padding =
         frame.aaPixels /
-        safeRadius;
-
-    let local =
-        quad_corner(
-            input.vertexIndex
-        ) *
-        (1.0 + padding);
-
-    let world =
-        input.center +
-        local * input.radius;
-
-    var output : VertexOutput;
-
-    output.position =
-        world_to_clip(world);
-
-    output.local =
-        local;
-
-    output.innerRatio =
-        input.innerRatio;
-
-    output.color =
-        input.color;
-
-    return output;
-}
-
-@fragment
-fn fs_main(
-    input : VertexOutput
-) -> @location(0) vec4<f32> {
-    let coverage =
-        radial_coverage(
-            input.local,
-            input.innerRatio
-        );
-
-    if coverage <= 0.0 {
-        discard;
-    }
-
-    return premultiplied(
-        input.color,
-        coverage
-    );
-}
-`;
-
-export const ELLIPSE_RING_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
-
-struct VertexInput {
-    @builtin(vertex_index)
-    vertexIndex : u32,
-
-    @location(0)
-    center : vec2<f32>,
-
-    @location(1)
-    axisX : vec2<f32>,
-
-    @location(2)
-    axisY : vec2<f32>,
-
-    @location(3)
-    innerRatio : f32,
-
-    @location(4)
-    color : vec4<f32>,
-};
-
-struct VertexOutput {
-    @builtin(position)
-    position : vec4<f32>,
-
-    @location(0)
-    local : vec2<f32>,
-
-    @location(1)
-    innerRatio : f32,
-
-    @location(2)
-    color : vec4<f32>,
-};
-
-@vertex
-fn vs_main(
-    input : VertexInput
-) -> VertexOutput {
-    let padding =
-        conservative_local_padding(
-            input.axisX,
-            input.axisY
-        );
-
-    let local =
-        quad_corner(
-            input.vertexIndex
-        ) *
-        (1.0 + padding);
-
-    let world =
-        input.center +
-        input.axisX * local.x +
-        input.axisY * local.y;
-
-    var output : VertexOutput;
-
-    output.position =
-        world_to_clip(world);
-
-    output.local =
-        local;
-
-    output.innerRatio =
-        input.innerRatio;
-
-    output.color =
-        input.color;
-
-    return output;
-}
-
-@fragment
-fn fs_main(
-    input : VertexOutput
-) -> @location(0) vec4<f32> {
-    let coverage =
-        radial_coverage(
-            input.local,
-            input.innerRatio
-        );
-
-    if coverage <= 0.0 {
-        discard;
-    }
-
-    return premultiplied(
-        input.color,
-        coverage
-    );
-}
-`;
-
-export const CIRCLE_PARTIAL_ARC_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
-${ARC_HELPERS}
-
-struct VertexInput {
-    @builtin(vertex_index)
-    vertexIndex : u32,
-
-    @location(0)
-    center : vec2<f32>,
-
-    @location(1)
-    radius : f32,
-
-    @location(2)
-    innerRatio : f32,
-
-    @location(3)
-    startDirection : vec2<f32>,
-
-    @location(4)
-    endDirection : vec2<f32>,
-
-    @location(5)
-    flags : u32,
-
-    @location(6)
-    bounds : vec4<f32>,
-
-    @location(7)
-    color : vec4<f32>,
-};
-
-struct VertexOutput {
-    @builtin(position)
-    position : vec4<f32>,
-
-    @location(0)
-    local : vec2<f32>,
-
-    @location(1)
-    innerRatio : f32,
-
-    @location(2)
-    startDirection : vec2<f32>,
-
-    @location(3)
-    endDirection : vec2<f32>,
-
-    @location(4)
-    @interpolate(flat)
-    flags : u32,
-
-    @location(5)
-    color : vec4<f32>,
-};
-
-@vertex
-fn vs_main(
-    input : VertexInput
-) -> VertexOutput {
-    let padding =
-        frame.aaPixels /
-        max(
-            abs(input.radius),
-            1e-4
-        );
+            safeRadius +
+        0.00003051944;
 
     let boundsMin =
         input.bounds.xy -
@@ -472,7 +390,7 @@ fn vs_main(
         input.bounds.zw +
         vec2<f32>(padding);
 
-    let local =
+    let boundedPoint =
         mix(
             boundsMin,
             boundsMax,
@@ -481,9 +399,38 @@ fn vs_main(
             )
         );
 
+    var local = boundedPoint;
+
+    if (
+        (
+            input.flags &
+            FLAG_ORIENTED
+        ) != 0u
+    ) {
+        let middle =
+            arc_middle(
+                input.startDirection,
+                input.endDirection,
+                input.flags
+            );
+
+        let tangent =
+            vec2<f32>(
+                -middle.y,
+                middle.x
+            );
+
+        local =
+            middle *
+                boundedPoint.x +
+            tangent *
+                boundedPoint.y;
+    }
+
     let world =
         input.center +
-        local * input.radius;
+        local *
+            input.radius;
 
     var output : VertexOutput;
 
@@ -515,19 +462,46 @@ fn vs_main(
 fn fs_main(
     input : VertexOutput
 ) -> @location(0) vec4<f32> {
-    let coverage =
+    let radial =
         radial_coverage(
             input.local,
             input.innerRatio
-        ) *
-        angular_coverage(
-            input.local,
-            input.startDirection,
-            input.endDirection,
-            input.flags
         );
 
-    if coverage <= 0.0 {
+    var shapeCoverage = 1.0;
+
+    if (
+        (
+            input.flags &
+            FLAG_SEGMENT
+        ) != 0u &&
+        (
+            input.flags &
+            FLAG_FULL
+        ) == 0u
+    ) {
+        shapeCoverage =
+            segment_coverage(
+                input.local,
+                input.startDirection,
+                input.endDirection,
+                input.flags
+            );
+    } else {
+        shapeCoverage =
+            angular_coverage(
+                input.local,
+                input.startDirection,
+                input.endDirection,
+                input.flags
+            );
+    }
+
+    let coverage =
+        radial *
+        shapeCoverage;
+
+    if (coverage <= 0.0) {
         discard;
     }
 
@@ -538,430 +512,116 @@ fn fs_main(
 }
 `;
 
-export const PARTIAL_ARC_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
-${ARC_HELPERS}
+export default ARC_SHADER;
 
-struct VertexInput {
-    @builtin(vertex_index)
-    vertexIndex : u32,
+// Sparse retained updates: one contiguous CPU upload followed by a GPU scatter.
+// The first u32 is the live patch count. Every patch after it contains one
+// destination index followed by the exact ten u32 words of an arc instance.
+export const PATCH_SHADER = /* wgsl */`
+@group(0) @binding(0)
+var<storage, read>
+patchWords : array<u32>;
 
-    @location(0)
-    center : vec2<f32>,
+@group(0) @binding(1)
+var<storage, read_write>
+instanceWords : array<u32>;
 
-    @location(1)
-    axisX : vec2<f32>,
+@compute
+@workgroup_size(64)
+fn cs_main(
+    @builtin(global_invocation_id)
+    globalId : vec3<u32>
+) {
+    let patchIndex =
+        globalId.x;
 
-    @location(2)
-    axisY : vec2<f32>,
+    let patchCount =
+        patchWords[0];
 
-    @location(3)
-    innerRatio : f32,
-
-    @location(4)
-    startDirection : vec2<f32>,
-
-    @location(5)
-    endDirection : vec2<f32>,
-
-    @location(6)
-    flags : u32,
-
-    @location(7)
-    bounds : vec4<f32>,
-
-    @location(8)
-    color : vec4<f32>,
-};
-
-struct VertexOutput {
-    @builtin(position)
-    position : vec4<f32>,
-
-    @location(0)
-    local : vec2<f32>,
-
-    @location(1)
-    innerRatio : f32,
-
-    @location(2)
-    startDirection : vec2<f32>,
-
-    @location(3)
-    endDirection : vec2<f32>,
-
-    @location(4)
-    @interpolate(flat)
-    flags : u32,
-
-    @location(5)
-    color : vec4<f32>,
-};
-
-@vertex
-fn vs_main(
-    input : VertexInput
-) -> VertexOutput {
-    let padding =
-        conservative_local_padding(
-            input.axisX,
-            input.axisY
-        );
-
-    let boundsMin =
-        input.bounds.xy -
-        vec2<f32>(padding);
-
-    let boundsMax =
-        input.bounds.zw +
-        vec2<f32>(padding);
-
-    let local =
-        mix(
-            boundsMin,
-            boundsMax,
-            quad_uv(
-                input.vertexIndex
-            )
-        );
-
-    let world =
-        input.center +
-        input.axisX * local.x +
-        input.axisY * local.y;
-
-    var output : VertexOutput;
-
-    output.position =
-        world_to_clip(world);
-
-    output.local =
-        local;
-
-    output.innerRatio =
-        input.innerRatio;
-
-    output.startDirection =
-        input.startDirection;
-
-    output.endDirection =
-        input.endDirection;
-
-    output.flags =
-        input.flags;
-
-    output.color =
-        input.color;
-
-    return output;
-}
-
-@fragment
-fn fs_main(
-    input : VertexOutput
-) -> @location(0) vec4<f32> {
-    let coverage =
-        radial_coverage(
-            input.local,
-            input.innerRatio
-        ) *
-        angular_coverage(
-            input.local,
-            input.startDirection,
-            input.endDirection,
-            input.flags
-        );
-
-    if coverage <= 0.0 {
-        discard;
+    if (
+        patchIndex >=
+        patchCount
+    ) {
+        return;
     }
 
-    return premultiplied(
-        input.color,
-        coverage
-    );
-}
-`;
-
-export const CIRCLE_ARC_SEGMENT_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
-
-struct VertexInput {
-    @builtin(vertex_index)
-    vertexIndex : u32,
-
-    @location(0)
-    center : vec2<f32>,
-
-    @location(1)
-    radius : f32,
-
-    @location(2)
-    middleDirection : vec2<f32>,
-
-    @location(3)
-    chordOffset : f32,
-
-    @location(4)
-    bounds : vec4<f32>,
-
-    @location(5)
-    color : vec4<f32>,
-};
-
-struct VertexOutput {
-    @builtin(position)
-    position : vec4<f32>,
-
-    @location(0)
-    local : vec2<f32>,
-
-    @location(1)
-    middleDirection : vec2<f32>,
-
-    @location(2)
-    chordOffset : f32,
-
-    @location(3)
-    color : vec4<f32>,
-};
-
-@vertex
-fn vs_main(
-    input : VertexInput
-) -> VertexOutput {
-    let padding =
-        frame.aaPixels /
-        max(
-            abs(input.radius),
-            1e-4
-        );
-
-    let boundsMin =
-        input.bounds.xy -
-        vec2<f32>(padding);
-
-    let boundsMax =
-        input.bounds.zw +
-        vec2<f32>(padding);
-
-    let local =
-        mix(
-            boundsMin,
-            boundsMax,
-            quad_uv(
-                input.vertexIndex
-            )
-        );
-
-    let world =
-        input.center +
-        local * input.radius;
-
-    var output : VertexOutput;
-
-    output.position =
-        world_to_clip(world);
-
-    output.local =
-        local;
-
-    output.middleDirection =
-        input.middleDirection;
-
-    output.chordOffset =
-        input.chordOffset;
-
-    output.color =
-        input.color;
-
-    return output;
-}
-
-@fragment
-fn fs_main(
-    input : VertexOutput
-) -> @location(0) vec4<f32> {
-    let radialCoverage =
-        radial_coverage(
-            input.local,
-            0.0
-        );
-
-    let chordDistance =
-        dot(
-            input.middleDirection,
-            input.local
-        ) -
-        input.chordOffset;
-
-    let chordAA =
-        max(
-            fwidth(chordDistance),
-            1e-6
-        );
-
-    let chordCoverage =
-        smoothstep(
-            -chordAA,
-            chordAA,
-            chordDistance
-        );
-
-    let coverage =
-        radialCoverage *
-        chordCoverage;
-
-    if coverage <= 0.0 {
-        discard;
-    }
-
-    return premultiplied(
-        input.color,
-        coverage
-    );
-}
-`;
-
-export const ARC_SEGMENT_SHADER = /* wgsl */`
-${COMMON_UNIFORMS}
-
-struct VertexInput {
-    @builtin(vertex_index)
-    vertexIndex : u32,
-
-    @location(0)
-    center : vec2<f32>,
-
-    @location(1)
-    axisX : vec2<f32>,
-
-    @location(2)
-    axisY : vec2<f32>,
-
-    @location(3)
-    middleDirection : vec2<f32>,
-
-    @location(4)
-    chordOffset : f32,
-
-    @location(5)
-    bounds : vec4<f32>,
-
-    @location(6)
-    color : vec4<f32>,
-};
-
-struct VertexOutput {
-    @builtin(position)
-    position : vec4<f32>,
-
-    @location(0)
-    local : vec2<f32>,
-
-    @location(1)
-    middleDirection : vec2<f32>,
-
-    @location(2)
-    chordOffset : f32,
-
-    @location(3)
-    color : vec4<f32>,
-};
-
-@vertex
-fn vs_main(
-    input : VertexInput
-) -> VertexOutput {
-    let padding =
-        conservative_local_padding(
-            input.axisX,
-            input.axisY
-        );
-
-    let boundsMin =
-        input.bounds.xy -
-        vec2<f32>(padding);
-
-    let boundsMax =
-        input.bounds.zw +
-        vec2<f32>(padding);
-
-    let local =
-        mix(
-            boundsMin,
-            boundsMax,
-            quad_uv(
-                input.vertexIndex
-            )
-        );
-
-    let world =
-        input.center +
-        input.axisX * local.x +
-        input.axisY * local.y;
-
-    var output : VertexOutput;
-
-    output.position =
-        world_to_clip(world);
-
-    output.local =
-        local;
-
-    output.middleDirection =
-        input.middleDirection;
-
-    output.chordOffset =
-        input.chordOffset;
-
-    output.color =
-        input.color;
-
-    return output;
-}
-
-@fragment
-fn fs_main(
-    input : VertexOutput
-) -> @location(0) vec4<f32> {
-    let radialCoverage =
-        radial_coverage(
-            input.local,
-            0.0
-        );
-
-    let chordDistance =
-        dot(
-            input.middleDirection,
-            input.local
-        ) -
-        input.chordOffset;
-
-    let chordAA =
-        max(
-            fwidth(chordDistance),
-            1e-6
-        );
-
-    let chordCoverage =
-        smoothstep(
-            -chordAA,
-            chordAA,
-            chordDistance
-        );
-
-    let coverage =
-        radialCoverage *
-        chordCoverage;
-
-    if coverage <= 0.0 {
-        discard;
-    }
-
-    return premultiplied(
-        input.color,
-        coverage
-    );
+    let patchBase =
+        1u +
+        patchIndex *
+            11u;
+
+    let destinationBase =
+        patchWords[patchBase] *
+        10u;
+
+    instanceWords[
+        destinationBase
+    ] =
+        patchWords[
+            patchBase + 1u
+        ];
+
+    instanceWords[
+        destinationBase + 1u
+    ] =
+        patchWords[
+            patchBase + 2u
+        ];
+
+    instanceWords[
+        destinationBase + 2u
+    ] =
+        patchWords[
+            patchBase + 3u
+        ];
+
+    instanceWords[
+        destinationBase + 3u
+    ] =
+        patchWords[
+            patchBase + 4u
+        ];
+
+    instanceWords[
+        destinationBase + 4u
+    ] =
+        patchWords[
+            patchBase + 5u
+        ];
+
+    instanceWords[
+        destinationBase + 5u
+    ] =
+        patchWords[
+            patchBase + 6u
+        ];
+
+    instanceWords[
+        destinationBase + 6u
+    ] =
+        patchWords[
+            patchBase + 7u
+        ];
+
+    instanceWords[
+        destinationBase + 7u
+    ] =
+        patchWords[
+            patchBase + 8u
+        ];
+
+    instanceWords[
+        destinationBase + 8u
+    ] =
+        patchWords[
+            patchBase + 9u
+        ];
+
+    instanceWords[
+        destinationBase + 9u
+    ] =
+        patchWords[
+            patchBase + 10u
+        ];
 }
 `;
