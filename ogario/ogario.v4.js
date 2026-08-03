@@ -20357,9 +20357,11 @@ function thelegendmodproject() {
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (obResult === 2) {
-                                toastr.error('<b>[SERVER]:</b> Bundle purchase failed — not enough currency.');
+                                toastr.error('<b>[SERVER]:</b> Offer bundle rejected — offer not active.');
+                            } else if (obResult === 3) {
+                                toastr.error('<b>[SERVER]:</b> Offer bundle rejected — preconditions failed (e.g. not enough skin pieces or progression requirements not met).');
                             } else {
-                                toastr.warning('<b>[SERVER]:</b> Bundle purchase response: code ' + obResult);
+                                toastr.warning('<b>[SERVER]:</b> Offer bundle response: unknown result code ' + obResult);
                             }
                         } else {
                             console.log("returnMessage = r.get_offerBundleResponseField(); (no data)");

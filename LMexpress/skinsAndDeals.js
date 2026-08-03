@@ -2540,6 +2540,12 @@ function populateDealsGrid() {
         }
         if (alreadyShown) continue;
 
+        // Skip conditional skin unlock/progression bundles (e.g. 1_skin_octopower_level_1).
+        // These require accumulated skin pieces and are not freely purchasable.
+        // The original Agar.io client only sends opcode 77 for these after verifying
+        // the user has enough pieces. Showing a "Buy" button is incorrect.
+        if (/_level_\d+$/.test(offerBundleId)) continue;
+
         /* Visual - Bundles contains only presentation metadata.
          * Wallet - Offerable Bundles determines what is purchasable. */
         var bundle = bundleLookup[offerBundleId] || { bundleId: offerBundleId };
