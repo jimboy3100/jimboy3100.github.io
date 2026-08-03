@@ -8587,6 +8587,81 @@ function thelegendmodproject() {
                 $(".btn-login-play, #socialLoginContainer").appendTo("#og-main");
                 $(".btn-play, .btn-play-guest").appendTo("#og-main");
             }
+
+            /*
+             * CRITICAL: Preserve the official Vue Offers component BEFORE
+             * #mainPanel is destroyed.  #mainui-app (the Vue root) lives
+             * inside #mainPanel — .empty().remove() would destroy it and
+             * all promo/deal buttons (e.g. button_ArcadeGamesSkins_*).
+             *
+             * We detach the entire #mainui-app and re-attach it to body
+             * off-screen so Vue reactivity and promoCallback stay alive.
+             */
+            var mainuiApp =
+                document.getElementById('mainui-app');
+
+            if (mainuiApp) {
+                /* Move #mainui-app out of #mainPanel before it's destroyed */
+                mainuiApp.style.position = 'fixed';
+                mainuiApp.style.left = '-10000px';
+                mainuiApp.style.top = '-10000px';
+                mainuiApp.style.width = '1px';
+                mainuiApp.style.height = '1px';
+                mainuiApp.style.overflow = 'hidden';
+                mainuiApp.style.pointerEvents = 'none';
+                mainuiApp.setAttribute('aria-hidden', 'true');
+
+                document.body.appendChild(mainuiApp);
+
+                console.log(
+                    '[LM] Preserved #mainui-app (Vue offers root) before #mainPanel destroy'
+                );
+            } else {
+                /*
+                 * Fallback: try to preserve just #mainui-offers or
+                 * .promo-badge-container if #mainui-app doesn't exist.
+                 */
+                var officialPromoNode =
+                    document.querySelector('.promo-badge-container');
+                var officialPromoRoot =
+                    document.getElementById('mainui-offers');
+
+                if (
+                    !officialPromoRoot &&
+                    officialPromoNode &&
+                    typeof officialPromoNode.closest === 'function'
+                ) {
+                    officialPromoRoot =
+                        officialPromoNode.closest('#mainui-offers');
+                }
+                if (!officialPromoRoot) {
+                    officialPromoRoot = officialPromoNode;
+                }
+
+                if (officialPromoRoot) {
+                    var officialPromoHost =
+                        document.createElement('div');
+                    officialPromoHost.id =
+                        'lm-preserved-official-promo';
+                    officialPromoHost.setAttribute(
+                        'aria-hidden', 'true'
+                    );
+                    officialPromoHost.style.position = 'fixed';
+                    officialPromoHost.style.left = '-10000px';
+                    officialPromoHost.style.top = '-10000px';
+                    officialPromoHost.style.width = '1px';
+                    officialPromoHost.style.height = '1px';
+                    officialPromoHost.style.overflow = 'hidden';
+                    officialPromoHost.style.pointerEvents = 'none';
+                    document.body.appendChild(officialPromoHost);
+                    officialPromoHost.appendChild(officialPromoRoot);
+
+                    console.log(
+                        '[LM] Preserved promo node before #mainPanel destroy'
+                    );
+                }
+            }
+
             $("#mainPanel").empty().remove();
             $(".center-container").addClass("ogario-menu");
             $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://www.legendmod.ml" target="_blank">jimboy3100.github.io</a> | ' + this.version + ' <a href="https://www.legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
@@ -8594,82 +8669,6 @@ function thelegendmodproject() {
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
             $("#exp-bar").addClass("agario-profile-panel");
-
-            /*
-             * Preserve the COMPLETE official Vue Offers component before
-             * Legend Mod clears .left-container. Moving only
-             * .promo-badge-container (or its immediate parent) detaches it from
-             * #mainui-offers and destroys the Vue instance that owns
-             * promoCallback.
-             */
-            var officialPromoNode =
-                document.querySelector('.promo-badge-container');
-
-            var officialPromoRoot =
-                document.getElementById('mainui-offers');
-
-            if (
-                !officialPromoRoot &&
-                officialPromoNode &&
-                typeof officialPromoNode.closest === 'function'
-            ) {
-                officialPromoRoot =
-                    officialPromoNode.closest('#mainui-offers');
-            }
-
-            if (!officialPromoRoot) {
-                officialPromoRoot =
-                    officialPromoNode;
-            }
-
-            if (officialPromoRoot) {
-                var officialPromoHost =
-                    document.getElementById(
-                        'lm-preserved-official-promo'
-                    );
-
-                if (!officialPromoHost) {
-                    officialPromoHost =
-                        document.createElement('div');
-
-                    officialPromoHost.id =
-                        'lm-preserved-official-promo';
-
-                    officialPromoHost.setAttribute(
-                        'aria-hidden',
-                        'true'
-                    );
-
-                    officialPromoHost.style.position =
-                        'fixed';
-
-                    officialPromoHost.style.left =
-                        '-10000px';
-
-                    officialPromoHost.style.top =
-                        '-10000px';
-
-                    officialPromoHost.style.width =
-                        '1px';
-
-                    officialPromoHost.style.height =
-                        '1px';
-
-                    officialPromoHost.style.overflow =
-                        'hidden';
-
-                    officialPromoHost.style.pointerEvents =
-                        'none';
-
-                    document.body.appendChild(
-                        officialPromoHost
-                    );
-                }
-
-                officialPromoHost.appendChild(
-                    officialPromoRoot
-                );
-            }
 
             $(".left-container").empty();
             //$(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
