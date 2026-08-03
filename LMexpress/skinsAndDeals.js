@@ -2391,7 +2391,6 @@ function populateDealsGrid() {
     }
 
     var html = '';
-    var priceMap = { '2': '$1.99', '5': '$4.99', '10': '$9.99', '20': '$19.99', '50': '$49.99', '60': '$99.99' };
     var t = getShopTheme(); // theme-aware colors
 
     // Build bundle lookup
@@ -2413,15 +2412,23 @@ function populateDealsGrid() {
         var deal = iaps[i];
         var bundleInfo = bundleLookup[deal.bundleId] || {};
         var price = (function(tier) {
-            if (window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig['Prices - Matrix']) {
-                var matrix = window.GameConfiguration.gameConfig['Prices - Matrix'];
+            var config = window.GameConfiguration && window.GameConfiguration.gameConfig;
+            var matrix = config && config['Prices - Matrix'];
+            if (Array.isArray(matrix)) {
                 for (var m = 0; m < matrix.length; m++) {
-                    if (String(matrix[m].tierId || matrix[m].id) === String(tier)) {
-                        return '$' + (matrix[m].amount || matrix[m].price);
+                    var row = matrix[m];
+                    if (String(row.tier) !== String(tier)) continue;
+                    /* The web payment service requests USD.
+                     * The price-matrix row stores currencies as direct properties. */
+                    var amount = row.USD;
+                    if (amount !== undefined && amount !== null && isFinite(Number(amount))) {
+                        return '$' + Number(amount).toFixed(2);
                     }
                 }
             }
-            return priceMap[tier] || ('Tier ' + tier);
+            /* Never expose the internal tier identifier as a price.
+             * Xsolla will still provide the authoritative checkout amount. */
+            return 'Price at checkout';
         })(deal.priceTier);
         var desc = (bundleInfo.description && bundleInfo.description !== 'na')
             ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
