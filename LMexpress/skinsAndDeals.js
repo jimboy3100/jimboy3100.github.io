@@ -2872,147 +2872,1002 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm) {
 }
 
 /**
- * Resolve the payment service created and configured by the real Agar.io
- * client. The service contains the current xsolla_endpoint and must be used
- * instead of the obsolete hardcoded payments.agar.io hostname.
+ * Accept only the Xsolla Pay Station URL returned by Agar.io's payment
+ * endpoint. Fail closed if the response redirects anywhere else.
  */
-function getOfficialAgarPaymentService() {
+function _getTrustedXsollaPaymentUrl(rawUrl) {
     try {
-        var serviceManager =
-            window.oaktree_ext_services_ServiceManager ||
-            (window.$hxClasses && window.$hxClasses['oaktree.ext.services.ServiceManager']) ||
-            (typeof oaktree_ext_services_ServiceManager !== 'undefined' ? oaktree_ext_services_ServiceManager : null);
+        var parsed =
+            new URL(
+                String(
+                    rawUrl || ''
+                ).trim()
+            );
 
-        var paymentInterface =
-            window.agario_services_IPayment ||
-            (window.$hxClasses && window.$hxClasses['agario.services.IPayment']) ||
-            (typeof agario_services_IPayment !== 'undefined' ? agario_services_IPayment : null);
-
-        if (!serviceManager || typeof serviceManager.getService !== 'function' || !paymentInterface) {
+        /*
+         * Real-money production payments must use Xsolla's production
+         * Pay Station host. Do not permit sandbox, lookalike domains,
+         * credentials in the URL, HTTP, or arbitrary ports.
+         */
+        if (
+            parsed.protocol !== 'https:' ||
+            parsed.hostname.toLowerCase() !==
+                'secure.xsolla.com' ||
+            parsed.port !== '' ||
+            parsed.username !== '' ||
+            parsed.password !== ''
+        ) {
             return null;
         }
 
-        var paymentService = serviceManager.getService(paymentInterface);
-        if (!paymentService || typeof paymentService.buyProduct !== 'function') {
+        /*
+         * Accept Xsolla Pay Station versions used by both the historical
+         * Agar.io integration and the current Xsolla integration:
+         *
+         * /paystation3/...
+         * /paystation4/...
+         *
+         * This deliberately rejects unrelated secure.xsolla.com pages.
+         */
+        if (
+            !/^\/paystation\d*(?:\/|$)/i.test(
+                parsed.pathname
+            )
+        ) {
             return null;
         }
 
-        return paymentService;
+        /*
+         * Legacy Agar.io/Xsolla URLs use access_token.
+         * Current Pay Station 4 URLs use token.
+         *
+         * Accept either, but require a meaningful token value.
+         */
+        var paymentToken =
+            parsed.searchParams.get(
+                'token'
+            ) ||
+            parsed.searchParams.get(
+                'access_token'
+            );
+
+        if (
+            !paymentToken ||
+            paymentToken.length < 16
+        ) {
+            return null;
+        }
+
+        return parsed.href;
     } catch (error) {
-        console.error('[SHOP] Could not resolve official Agar.io payment service:', error);
         return null;
     }
 }
 
 /**
- * Open an Agar.io real-money purchase.
- *
- * Current products use the public official purchase API so the normal
- * catalogue and purchase lifecycle remain intact.
- *
- * Historical products that are absent from the current catalogue are sent
- * directly through the official, currently configured IPayment service.
- * The archived purchaseId is preserved, but the obsolete archived payment
- * host is never reused.
+ * Require explicit, per-purchase acceptance before contacting Agar.io's
+ * Xsolla endpoint. Consent is never remembered automatically.
  */
-function openOfficialAgarIAP(purchaseId, options) {
-    options = options || {};
-    purchaseId = String(purchaseId || '').trim();
+function _showIAPBetaRiskModal(
+    title,
+    purchaseId,
+    onAgree
+) {
+    var old =
+        document.getElementById(
+            'iap-beta-risk-modal'
+        );
 
-    if (!purchaseId) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> Missing purchase ID.');
-        return false;
+    if (old) {
+        old.remove();
     }
 
-    var officialUser = (window.Core && window.Core.user) ? window.Core.user : null;
+    var t =
+        getShopTheme();
 
-    /* xsollaToken is already encoded by the official client.
-     * Do not pass it through encodeURIComponent(). */
-    var xsollaToken = (officialUser && officialUser.xsollaToken) ||
-        window.agarioEncodedUID || '';
+    var modal =
+        document.createElement(
+            'div'
+        );
 
-    if (!xsollaToken) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> The Agar.io payment token is unavailable. Log out, log in again, and wait for the profile to load.');
-        return false;
-    }
+    modal.id =
+        'iap-beta-risk-modal';
 
-    /* Check if the product exists in the current official catalogue */
-    var currentPurchase = null;
-    try {
-        var purchaseModel = (window.Core && window.Core.models) ? window.Core.models.shopPurchasesModel : null;
-        if (purchaseModel && typeof purchaseModel.getPurchaseByPurchaseId === 'function') {
-            currentPurchase = purchaseModel.getPurchaseByPurchaseId(purchaseId);
+    modal.className =
+        'lm-modal-overlay';
+
+    modal.setAttribute(
+        'role',
+        'dialog'
+    );
+
+    modal.setAttribute(
+        'aria-modal',
+        'true'
+    );
+
+    modal.setAttribute(
+        'aria-labelledby',
+        'iap-beta-risk-title'
+    );
+
+    modal.style.cssText =
+        'position:fixed;' +
+        'inset:0;' +
+        'z-index:2100000;' +
+        'display:flex;' +
+        'align-items:center;' +
+        'justify-content:center;' +
+        'background:rgba(0,0,0,0.82);' +
+        'backdrop-filter:blur(5px);' +
+        'pointer-events:auto;';
+
+    modal.innerHTML =
+        '<div style="' +
+            'background:' + t.pc + ';' +
+            'border:2px solid #ff5252;' +
+            'width:460px;' +
+            'max-width:calc(100vw - 30px);' +
+            'border-radius:12px;' +
+            'overflow:hidden;' +
+            'box-shadow:0 14px 40px rgba(0,0,0,0.65);' +
+            'font-family:\'Roboto Condensed\',sans-serif;' +
+        '">' +
+
+            '<div id="iap-beta-risk-title" style="' +
+                'background:#b71c1c;' +
+                'color:#fff;' +
+                'padding:14px 18px;' +
+                'font-size:17px;' +
+                'font-weight:900;' +
+                'text-align:center;' +
+                'letter-spacing:0.5px;' +
+            '">' +
+                '\u26A0 BETA REAL-MONEY PURCHASE' +
+            '</div>' +
+
+            '<div style="' +
+                'padding:18px 22px;' +
+                'color:' + t.tc + ';' +
+                'font-size:13px;' +
+                'line-height:1.45;' +
+            '">' +
+
+                '<div id="iap-beta-deal-name" style="' +
+                    'font-size:15px;' +
+                    'font-weight:900;' +
+                    'margin-bottom:8px;' +
+                '"></div>' +
+
+                '<div id="iap-beta-purchase-id" style="' +
+                    'font-size:11px;' +
+                    'color:' + t.tc2 + ';' +
+                    'margin-bottom:14px;' +
+                    'word-break:break-all;' +
+                '"></div>' +
+
+                '<div style="' +
+                    'background:rgba(255,82,82,0.12);' +
+                    'border:1px solid rgba(255,82,82,0.55);' +
+                    'border-radius:8px;' +
+                    'padding:12px;' +
+                    'margin-bottom:14px;' +
+                '">' +
+                    '<b>This purchase route is experimental.</b><br>' +
+                    'You may be charged but not receive the displayed deal, skin, coins, or other items. ' +
+                    'Legend Mod cannot guarantee delivery, correction, or a refund. ' +
+                    '<b>Proceed only at your own responsibility.</b>' +
+                '</div>' +
+
+                '<label style="' +
+                    'display:flex;' +
+                    'gap:9px;' +
+                    'align-items:flex-start;' +
+                    'cursor:pointer;' +
+                    'font-weight:700;' +
+                '">' +
+                    '<input id="iap-beta-risk-checkbox" type="checkbox" style="margin-top:3px;">' +
+                    '<span>I understand the BETA risk and accept full responsibility for continuing.</span>' +
+                '</label>' +
+
+            '</div>' +
+
+            '<div style="' +
+                'display:flex;' +
+                'gap:10px;' +
+                'padding:13px 18px;' +
+                'background:' + t.pc2 + ';' +
+                'border-top:1px solid rgba(255,255,255,0.1);' +
+            '">' +
+
+                '<button id="iap-beta-disagree" type="button" style="' +
+                    'flex:1;' +
+                    'padding:11px;' +
+                    'border-radius:8px;' +
+                    'font-weight:900;' +
+                    'font-size:13px;' +
+                    'cursor:pointer;' +
+                    'background:rgba(255,255,255,0.08);' +
+                    'color:' + t.tc + ';' +
+                    'border:1px solid rgba(255,255,255,0.18);' +
+                '">' +
+                    'Disagree \u2014 Cancel' +
+                '</button>' +
+
+                '<button id="iap-beta-agree" type="button" disabled style="' +
+                    'flex:1;' +
+                    'padding:11px;' +
+                    'border-radius:8px;' +
+                    'font-weight:900;' +
+                    'font-size:13px;' +
+                    'cursor:not-allowed;' +
+                    'background:#d32f2f;' +
+                    'color:#fff;' +
+                    'border:none;' +
+                    'opacity:0.45;' +
+                '">' +
+                    'I Agree \u2014 Open Xsolla' +
+                '</button>' +
+
+            '</div>' +
+
+        '</div>';
+
+    document.body.appendChild(
+        modal
+    );
+
+    document
+        .getElementById(
+            'iap-beta-deal-name'
+        )
+        .textContent =
+            String(
+                title ||
+                purchaseId ||
+                'Agar.io deal'
+            );
+
+    document
+        .getElementById(
+            'iap-beta-purchase-id'
+        )
+        .textContent =
+            'Purchase ID: ' +
+            String(
+                purchaseId || ''
+            );
+
+    var checkbox =
+        document.getElementById(
+            'iap-beta-risk-checkbox'
+        );
+
+    var agreeBtn =
+        document.getElementById(
+            'iap-beta-agree'
+        );
+
+    var disagreeBtn =
+        document.getElementById(
+            'iap-beta-disagree'
+        );
+
+    function removeModal() {
+        document.removeEventListener(
+            'keydown',
+            onKeyDown,
+            true
+        );
+
+        if (modal.parentNode) {
+            modal.parentNode
+                .removeChild(
+                    modal
+                );
         }
-    } catch (lookupError) {
-        console.warn('[SHOP] Current catalogue lookup failed; continuing through the official payment service:', lookupError);
-        currentPurchase = null;
     }
 
-    /* Current catalogue product: use the public Agar.io purchase API */
-    if (currentPurchase && currentPurchase.type === 'INAPP' &&
-        window.agarApp && window.agarApp.API &&
-        typeof window.agarApp.API.makePurchase === 'function') {
-        try {
-            var officialResult = window.agarApp.API.makePurchase(purchaseId, true, true);
-            if (officialResult !== false) {
-                console.log('[SHOP] Current IAP submitted through agarApp.API:', { purchaseId: purchaseId, historical: false });
-                return true;
+    function disagree(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        removeModal();
+    }
+
+    function agree(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        if (
+            !checkbox ||
+            !checkbox.checked
+        ) {
+            return;
+        }
+
+        removeModal();
+
+        if (
+            typeof onAgree ===
+                'function'
+        ) {
+            onAgree();
+        }
+    }
+
+    function onKeyDown(event) {
+        if (
+            event.key ===
+            'Escape'
+        ) {
+            disagree(
+                event
+            );
+        }
+    }
+
+    checkbox.addEventListener(
+        'change',
+        function() {
+            var enabled =
+                checkbox.checked ===
+                true;
+
+            agreeBtn.disabled =
+                !enabled;
+
+            agreeBtn.style.opacity =
+                enabled
+                    ? '1'
+                    : '0.45';
+
+            agreeBtn.style.cursor =
+                enabled
+                    ? 'pointer'
+                    : 'not-allowed';
+        }
+    );
+
+    disagreeBtn.addEventListener(
+        'click',
+        disagree
+    );
+
+    agreeBtn.addEventListener(
+        'click',
+        agree
+    );
+
+    modal.addEventListener(
+        'click',
+        function(event) {
+            if (
+                event.target ===
+                modal
+            ) {
+                disagree(
+                    event
+                );
             }
-        } catch (officialApiError) {
-            console.warn('[SHOP] Public purchase API failed; falling back to the official IPayment service:', officialApiError);
         }
-    }
+    );
 
-    /* Archived catalogue product, or public-API fallback:
-     * resolve the live IPayment service. This preserves an archived SKU while
-     * using the currently configured xsolla_endpoint. */
-    var paymentService = getOfficialAgarPaymentService();
-    if (!paymentService) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> Official Agar.io payment service is not ready. Wait for the Agar.io shop configuration to load and try again.');
-        return false;
-    }
+    document.addEventListener(
+        'keydown',
+        onKeyDown,
+        true
+    );
 
-    if (!paymentService.payment_endpoint) {
-        console.error('[SHOP] Official payment service has no configured endpoint:', paymentService);
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io has not supplied a payment endpoint yet. Wait for the official client to finish loading.');
-        return false;
-    }
-
-    var currency = (typeof paymentService.getCurrencyCode === 'function')
-        ? paymentService.getCurrencyCode() : '';
-    if (!currency) currency = $('#BuyDealCurrency').val() || 'USD';
-
-    console.log('[SHOP] Opening IAP through official IPayment service:', {
-        purchaseId: purchaseId, historical: !currentPurchase, currency: currency, endpointReady: true
-    });
-
-    try {
-        paymentService.buyProduct(xsollaToken, purchaseId, currency);
-        return true;
-    } catch (paymentError) {
-        console.error('[SHOP] Official Agar.io payment service rejected the request:', paymentError);
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> Agar.io could not open this payment.');
-        return false;
-    }
+    checkbox.focus();
 }
-window.openOfficialAgarIAP = openOfficialAgarIAP;
 
 /**
- * Buy an IAP deal after explicit user confirmation.
+ * Reproduce the payment request used by the supplied original Agar.io client.
+ * The Haxe payment service itself is private inside agario.js, so Legend Mod
+ * uses the same current endpoint and validates the returned Xsolla URL before
+ * opening it.
+ *
+ * Official flow (agario.js line ~39678-39690):
+ *   buyProduct(token, productId, currencyCode)
+ *     -> doShowPaymentModal(endpoint + "/pay/" + token + "/" + productId + "/" + currencyCode)
+ *     -> agarApp.utils.load(url, callback)
+ *     -> callback parses JSON, gets iframe_url
+ *     -> sets #modal-payment-link.href = iframe_url
+ *     -> .xsolla_container.magnificPopup({ type: "iframe" })
+ *     -> modalPaymentLink.click()
  */
-function buyDealIAP(dealId, dealDesc) {
-    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy deal')) {
-        return;
+function getOfficialAgarPaymentService() {
+    var agarUtils =
+        window.agarApp &&
+        window.agarApp.utils;
+
+    if (
+        !agarUtils ||
+        typeof agarUtils.load !==
+            'function'
+    ) {
+        return null;
     }
 
-    _showDealBuyConfirmationModal(dealDesc || dealId, null, function() {
-        var started = openOfficialAgarIAP(dealId, { description: dealDesc || dealId });
-        if (started && window.toastr) {
-            toastr.info('<b>[SHOP]:</b> Agar.io payment window requested.');
-        }
-    });
+    /*
+     * Current endpoint in the supplied original agario.js (line ~105732).
+     * This endpoint creates the Xsolla session. It is not the final
+     * Xsolla payment-page URL.
+     */
+    var paymentEndpoint =
+        'https://payments-dev.agario.miniclippt.com';
+
+    return {
+        payment_endpoint:
+            paymentEndpoint,
+
+        getCurrencyCode:
+            function() {
+                var selected =
+                    String(
+                        $(
+                            '#BuyDealCurrency'
+                        ).val() ||
+                        'USD'
+                    )
+                    .trim()
+                    .toUpperCase();
+
+                return /^[A-Z]{3}$/
+                    .test(
+                        selected
+                    )
+                        ? selected
+                        : 'USD';
+            },
+
+        buyProduct:
+            function(
+                token,
+                productId,
+                currencyCode
+            ) {
+                token =
+                    String(
+                        token || ''
+                    ).trim();
+
+                productId =
+                    String(
+                        productId || ''
+                    ).trim();
+
+                currencyCode =
+                    String(
+                        currencyCode ||
+                        'USD'
+                    )
+                    .trim()
+                    .toUpperCase();
+
+                if (!token) {
+                    throw new Error(
+                        'Missing Agar.io Xsolla token.'
+                    );
+                }
+
+                if (
+                    !/^[A-Za-z0-9._-]+$/
+                        .test(
+                            productId
+                        )
+                ) {
+                    throw new Error(
+                        'Invalid purchase ID.'
+                    );
+                }
+
+                if (
+                    !/^[A-Z]{3}$/
+                        .test(
+                            currencyCode
+                        )
+                ) {
+                    currencyCode =
+                        'USD';
+                }
+
+                /*
+                 * Exact request shape from the original client (agario.js line ~39679):
+                 *
+                 *   endpoint + "/pay/" + token + "/" + productId + "/" + currencyCode
+                 *
+                 * The token is already encoded by Agar.io. Do not pass it
+                 * through encodeURIComponent().
+                 */
+                var paymentRequestUrl =
+                    paymentEndpoint +
+                    '/pay/' +
+                    token +
+                    '/' +
+                    productId +
+                    '/' +
+                    currencyCode;
+
+                console.log(
+                    '[SHOP] Requesting official Agar.io Xsolla session:',
+                    {
+                        purchaseId:
+                            productId,
+                        currency:
+                            currencyCode
+                    }
+                );
+
+                agarUtils.load(
+                    paymentRequestUrl,
+
+                    function(data) {
+                        try {
+                            var response =
+                                typeof data ===
+                                    'string'
+                                    ? JSON.parse(
+                                        data
+                                    )
+                                    : data;
+
+                            var trustedXsollaUrl =
+                                _getTrustedXsollaPaymentUrl(
+                                    response &&
+                                    response
+                                        .iframe_url
+                                );
+
+                            if (
+                                !trustedXsollaUrl
+                            ) {
+                                throw new Error(
+                                    'Rejected payment URL: expected an HTTPS secure.xsolla.com Pay Station URL with an access token. Got: ' +
+                                    String(response && response.iframe_url || '(empty)')
+                                );
+                            }
+
+                            /* Reproduce exact official flow: #modal-payment-link + .xsolla_container magnificPopup */
+                            var modalPaymentLink =
+                                typeof agarUtils
+                                    .get ===
+                                    'function'
+                                    ? agarUtils.get(
+                                        '#modal-payment-link'
+                                    )
+                                    : document
+                                        .querySelector(
+                                            '#modal-payment-link'
+                                        );
+
+                            var xsollaContainer =
+                                window.jQuery
+                                    ? window
+                                        .jQuery(
+                                            '.xsolla_container'
+                                        )
+                                    : null;
+
+                            if (
+                                modalPaymentLink &&
+                                xsollaContainer &&
+                                xsollaContainer
+                                    .length &&
+                                typeof xsollaContainer
+                                    .magnificPopup ===
+                                    'function'
+                            ) {
+                                modalPaymentLink
+                                    .href =
+                                    trustedXsollaUrl;
+
+                                modalPaymentLink
+                                    .rel =
+                                    'noopener noreferrer';
+
+                                xsollaContainer
+                                    .magnificPopup({
+                                        type:
+                                            'iframe',
+
+                                        mainClass:
+                                            'mfp-fade',
+
+                                        preloader:
+                                            true,
+
+                                        fixedContentPos:
+                                            false
+                                    });
+
+                                modalPaymentLink
+                                    .click();
+
+                                console.log(
+                                    '[SHOP] Official Xsolla iframe opened:',
+                                    { purchaseId: productId }
+                                );
+
+                                return;
+                            }
+
+                            /* Secondary Magnific Popup path */
+                            if (
+                                window.jQuery &&
+                                window.jQuery
+                                    .magnificPopup &&
+                                typeof window
+                                    .jQuery
+                                    .magnificPopup
+                                    .open ===
+                                    'function'
+                            ) {
+                                window.jQuery
+                                    .magnificPopup
+                                    .open({
+                                        items: {
+                                            src:
+                                                trustedXsollaUrl
+                                        },
+
+                                        type:
+                                            'iframe',
+
+                                        mainClass:
+                                            'mfp-fade',
+
+                                        preloader:
+                                            true,
+
+                                        fixedContentPos:
+                                            false
+                                    });
+
+                                console.log(
+                                    '[SHOP] Xsolla iframe opened through Magnific Popup fallback:',
+                                    { purchaseId: productId }
+                                );
+
+                                return;
+                            }
+
+                            /* Last-resort browser tab fallback */
+                            var fallbackLink =
+                                document
+                                    .createElement(
+                                        'a'
+                                    );
+
+                            fallbackLink.href =
+                                trustedXsollaUrl;
+
+                            fallbackLink.target =
+                                '_blank';
+
+                            fallbackLink.rel =
+                                'noopener noreferrer';
+
+                            document.body
+                                .appendChild(
+                                    fallbackLink
+                                );
+
+                            fallbackLink.click();
+                            fallbackLink.remove();
+                        } catch (
+                            responseError
+                        ) {
+                            console.error(
+                                '[SHOP] Agar.io returned an invalid or untrusted Xsolla response:',
+                                responseError
+                            );
+
+                            if (
+                                window.toastr
+                            ) {
+                                toastr.error(
+                                    '<b>[SHOP]:</b> Payment blocked because Agar.io did not return a trusted Xsolla Pay Station URL.'
+                                );
+                            }
+                        }
+                    }
+                );
+
+                return true;
+            }
+    };
 }
-window.buyDealIAP = buyDealIAP;
+
+/**
+ * Open an Agar.io real-money purchase only after explicit BETA-risk consent.
+ * Every Xsolla URL is validated before it is opened.
+ */
+function openOfficialAgarIAP(
+    purchaseId,
+    options
+) {
+    options =
+        options || {};
+
+    purchaseId =
+        String(
+            purchaseId || ''
+        ).trim();
+
+    if (
+        !purchaseId ||
+        !/^[A-Za-z0-9._-]+$/
+            .test(
+                purchaseId
+            )
+    ) {
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> Missing or invalid purchase ID.'
+            );
+        }
+
+        return false;
+    }
+
+    var officialUser =
+        window.Core &&
+        window.Core.user
+            ? window.Core.user
+            : null;
+
+    /*
+     * xsollaToken is already encoded by the official client.
+     */
+    var xsollaToken =
+        (
+            officialUser &&
+            officialUser
+                .xsollaToken
+        ) ||
+        window.agarioEncodedUID ||
+        '';
+
+    if (!xsollaToken) {
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> The Agar.io payment token is unavailable. Log out, log in again, and wait for the profile to load.'
+            );
+        }
+
+        return false;
+    }
+
+    /*
+     * Always ask the official public API first.
+     *
+     * The API performs its own internal live-catalogue lookup. Do not gate
+     * this call behind window.Core because Core is private inside agario.js.
+     */
+    if (
+        window.agarApp &&
+        window.agarApp.API &&
+        typeof window.agarApp.API
+            .makePurchase ===
+            'function'
+    ) {
+        try {
+            var officialResult =
+                window.agarApp.API
+                    .makePurchase(
+                        purchaseId,
+                        true,
+                        true
+                    );
+
+            if (
+                officialResult !==
+                false
+            ) {
+                console.log(
+                    '[SHOP] Current IAP submitted through agarApp.API:',
+                    {
+                        purchaseId:
+                            purchaseId,
+                        historical:
+                            false
+                    }
+                );
+
+                return true;
+            }
+
+            console.warn(
+                '[SHOP] Purchase was not accepted by the current official catalogue; trying the original Xsolla endpoint:',
+                { purchaseId: purchaseId }
+            );
+        } catch (
+            officialApiError
+        ) {
+            console.warn(
+                '[SHOP] Public purchase API could not resolve this purchase ID; trying the original Xsolla endpoint:',
+                officialApiError
+            );
+        }
+    }
+
+    var paymentService =
+        getOfficialAgarPaymentService();
+
+    if (
+        !paymentService ||
+        !paymentService
+            .payment_endpoint
+    ) {
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> Official Agar.io payment service is not ready. Wait for the Agar.io client to load and try again.'
+            );
+        }
+
+        return false;
+    }
+
+    var currency =
+        typeof paymentService
+            .getCurrencyCode ===
+            'function'
+            ? paymentService
+                .getCurrencyCode()
+            : 'USD';
+
+    /*
+     * No request is sent to Agar.io and no Xsolla page is opened until the
+     * user checks the responsibility box and presses Agree.
+     */
+    if (
+        options.riskAccepted !==
+        true
+    ) {
+        _showIAPBetaRiskModal(
+            options.description ||
+                purchaseId,
+
+            purchaseId,
+
+            function() {
+                var acceptedOptions =
+                    {};
+
+                var optionKey;
+
+                for (
+                    optionKey in
+                    options
+                ) {
+                    if (
+                        Object.prototype
+                            .hasOwnProperty
+                            .call(
+                                options,
+                                optionKey
+                            )
+                    ) {
+                        acceptedOptions[
+                            optionKey
+                        ] =
+                            options[
+                                optionKey
+                            ];
+                    }
+                }
+
+                acceptedOptions
+                    .riskAccepted =
+                    true;
+
+                var started =
+                    openOfficialAgarIAP(
+                        purchaseId,
+                        acceptedOptions
+                    );
+
+                if (
+                    started &&
+                    window.toastr
+                ) {
+                    toastr.info(
+                        '<b>[SHOP]:</b> Trusted Xsolla payment window requested.'
+                    );
+                }
+            }
+        );
+
+        return false;
+    }
+
+    console.log(
+        '[SHOP] User accepted BETA purchase risk; requesting Xsolla session:',
+        {
+            purchaseId:
+                purchaseId,
+            currency:
+                currency,
+            endpoint:
+                paymentService
+                    .payment_endpoint
+        }
+    );
+
+    try {
+        return paymentService
+            .buyProduct(
+                xsollaToken,
+                purchaseId,
+                currency
+            ) === true;
+    } catch (
+        paymentError
+    ) {
+        console.error(
+            '[SHOP] Agar.io payment request failed:',
+            paymentError
+        );
+
+        if (
+            window.toastr
+        ) {
+            toastr.error(
+                '<b>[SHOP]:</b> Agar.io could not create this payment session.'
+            );
+        }
+
+        return false;
+    }
+}
+
+window.openOfficialAgarIAP =
+    openOfficialAgarIAP;
+
+/**
+ * Start an IAP purchase. openOfficialAgarIAP enforces the mandatory BETA
+ * agreement itself, so no caller can bypass the warning accidentally.
+ */
+function buyDealIAP(
+    dealId,
+    dealDesc
+) {
+    if (
+        typeof window
+            .validateShopIntegrity ===
+            'function' &&
+        !window
+            .validateShopIntegrity(
+                'buy deal'
+            )
+    ) {
+        return false;
+    }
+
+    return openOfficialAgarIAP(
+        dealId,
+        {
+            description:
+                dealDesc ||
+                dealId
+        }
+    );
+}
+
+window.buyDealIAP =
+    buyDealIAP;
 
 /**
  * Buy a deal via soft purchase (DNA/Coins) — opcode 70
