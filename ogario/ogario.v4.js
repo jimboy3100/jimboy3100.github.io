@@ -2546,39 +2546,38 @@ window.activateQuest = function () {
     window.core.proxyMobileData(bytes);
 }
 window.changeSkin = function (productID) {
-    //console.log("quchange skin", productID)
+    if (productID == null) return;
 
-    if (productID == null) return
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_empty"}
-    //8, 1, 18, 23, 8, 80, 130, 5, 18, 10, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
-    //8, 1, 18, 23, 8, 80, 130, 5, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_kraken"}
-    //8, 1, 18, 24, 8, 80, 130, 5, 19, 10, 17, 8, 1, 16, 1, 26, 11, 115, 107, 105, 110, 95, 107, 114, 97, 107, 101, 110
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_custom_50b62972-d334-4878-b4c8-8ea5f3fade18_4b5dadc9-2543-4401-8ce5-1cf220dba247"}
-    //8, 1, 18, 98, 8, 80, 130, 5, 93, 10, 91, 8, 1, 16, 1, 26, 85, 115, 107, 105, 110, 95, 99, 117, 115, 116, 111, 109, 95, 53, 48, 98, 54, 50, 57, 55, 50, 45, 100, 51, 51, 52, 45, 52, 56, 55, 56, 45, 98, 52, 99, 56, 45, 56, 101, 97, 53, 102, 51, 102, 97, 100, 101, 49, 56, 95, 52, 98, 53, 100, 97, 100, 99, 57, 45, 50, 53, 52, 51, 45, 52, 52, 48, 49, 45, 56, 99, 101, 53, 45, 49, 99, 102, 50, 50, 48, 100, 98, 97, 50, 52, 55
-
-    var encode = function (str) {
-        bytes.push(str.length);
-        for (var i = 0; i < str.length; i++) {
-            bytes.push(str.charCodeAt(i));
-        }
-    };
-    var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
-    encode(productID);
-
-    // Send opcode 80 first — this is the critical server-side equip.
-    // The cosmetic URL block below is optional and must never prevent
-    // the protobuf from being sent.
-    window.core.proxyMobileData(bytes);
-
-    // Tell the game engine to load the skin immediately.
-    // Official client uses '%name' for standard skins, raw productId for custom.
+    // ─── Primary: use the official Agar.io setSkin API ───
+    // This updates Core.ui.settings.skinId (preventing the official client
+    // from resending the old skin), sends opcode 80 via the proper Haxe
+    // protobuf serializer, calls window.core.loadSkin(), and updates all views.
     try {
-        var skinName = productID.indexOf('skin_custom_') === 0
-            ? productID
-            : '%' + productID.replace('skin_', '');
-        window.core.loadSkin(skinName);
-    } catch (lsErr) {}
+        if (typeof MiniclipAPI !== 'undefined' && MiniclipAPI.instance && typeof MiniclipAPI.instance.setSkin === 'function') {
+            MiniclipAPI.instance.setSkin(productID);
+            console.log('[SKIN] Equipped via MiniclipAPI.setSkin:', productID);
+        } else {
+            // Fallback: hand-craft the protobuf bytes (opcode 80)
+            var encode = function (str) {
+                bytes.push(str.length);
+                for (var i = 0; i < str.length; i++) {
+                    bytes.push(str.charCodeAt(i));
+                }
+            };
+            var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
+            encode(productID);
+            window.core.proxyMobileData(bytes);
+
+            // Also tell the game engine to load the skin
+            var skinName = productID.indexOf('skin_custom_') === 0
+                ? productID
+                : '%' + productID.replace('skin_', '');
+            window.core.loadSkin(skinName);
+            console.log('[SKIN] Equipped via proxyMobileData fallback:', productID);
+        }
+    } catch (err) {
+        console.warn('[SKIN] changeSkin error:', err);
+    }
 
     try {
         var skinLink = legendmod.getLink(productID);
