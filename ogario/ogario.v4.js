@@ -10734,11 +10734,16 @@ function thelegendmodproject() {
                             url.includes('jimboy3000.github.io');
 
                         if (isCustomSkin) {
-                            /* Custom skin direct loading from official Agar.io CDN */
-                            if (url.includes('configs.agario.miniclippt.com') && !url.includes('configs-web')) {
-                                app.loadSkin(img, 'https://configs-web.agario.miniclippt.com/live/custom_skins/' + filename + '?', animated, isPriority);
-                            } else if (url.includes('configs-web.agario.miniclippt.com')) {
-                                app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename + '?', animated, isPriority);
+                            /*
+                             * Only migrate obsolete configs.agario to configs-web.
+                             * An already-configs-web failure has no alternative CDN
+                             * and must not be retried recursively.
+                             */
+                            if (
+                                url.includes('configs.agario.miniclippt.com') &&
+                                !url.includes('configs-web.agario.miniclippt.com')
+                            ) {
+                                app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename, animated, isPriority);
                             }
                             return;
                         }
@@ -21539,13 +21544,31 @@ function thelegendmodproject() {
                 //console.log("error loading image: "+ url);
                 var rawFileName = url.split('/').pop().replace(/\?.*$/, '');
                 if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
-                    var newURL;
+                    var newURL = null;
+
                     if (url.includes('/custom_skins/')) {
-                        /* Custom skin CDN fallback: miniclippt → LM_CUSTOM_SKINS_CDN */
-                        newURL = window.LM_CUSTOM_SKINS_CDN + "/" + rawFileName + "?";
+                        /*
+                         * Only the old non-web host may fall back to configs-web.
+                         * Never retry an already-configs-web URL through the same
+                         * configs-web URL — that causes an infinite request storm.
+                         */
+                        if (
+                            url.includes('configs.agario.miniclippt.com') &&
+                            !url.includes('configs-web.agario.miniclippt.com')
+                        ) {
+                            newURL = window.LM_CUSTOM_SKINS_CDN + '/' + rawFileName;
+                        } else {
+                            console.warn('[LM] Custom skin unavailable; duplicate CDN retry suppressed: ' + url);
+                            return null;
+                        }
                     } else {
-                        newURL = "https://jimboy3000.github.io/vanillaskins/" + rawFileName;
+                        newURL = 'https://jimboy3000.github.io/vanillaskins/' + rawFileName;
                     }
+
+                    if (newURL.replace(/\?.*$/, '') === url.replace(/\?.*$/, '')) {
+                        return null;
+                    }
+
                     app.urlReplaces[url] = newURL;
                     if (app.user && app.user.skins && app.user.skins[url]) {
                         app.user.skins[url].url = newURL;

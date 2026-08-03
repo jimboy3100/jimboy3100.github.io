@@ -4460,9 +4460,12 @@ function equipSkin(productId, imageName) {
         }
     }
 
-    // Update ogario custom skin URL
     if (window.ogario && imageName) {
-        window.ogario.customSkinUrl = cdnBase + imageName;
+        window.ogario.customSkinUrl =
+            resolveSkinAssetUrl(
+                productId,
+                imageName
+            );
     }
 
     var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
@@ -4524,21 +4527,34 @@ function updateEquippedSkinUI() {
         var cellColor = '';
 
         if (skinData) {
-            // Standard skin from config
-            if (skinData.image) {
-                imgSrc = cdnBase + skinData.image;
-            }
+            imgSrc =
+                resolveSkinAssetUrl(
+                    equippedId,
+                    skinData.image
+                );
+
             if (skinData.cellColor) {
-                cellColor = skinData.cellColor;
+                cellColor =
+                    skinData.cellColor;
             }
-        } else if (equippedId.startsWith('skin_custom_')) {
-            // Custom skin — load from custom skins CDN
-            imgSrc = 'https://configs.agar.io/live/custom_skins/' + equippedId + '.png';
+        } else if (
+            equippedId.indexOf(
+                'skin_custom_'
+            ) === 0
+        ) {
+            imgSrc =
+                resolveSkinAssetUrl(
+                    equippedId,
+                    equippedId + '.png'
+                );
         }
 
-        // Fallback: use saved image name or placeholder
         if (!imgSrc && equippedImg) {
-            imgSrc = cdnBase + equippedImg;
+            imgSrc =
+                resolveSkinAssetUrl(
+                    equippedId,
+                    equippedImg
+                );
         }
         if (!imgSrc) {
             imgSrc = 'https://jimboy3100.github.io/banners/icondeal2.png';
@@ -4738,6 +4754,66 @@ function getSkinPrice(productId) {
 }
 window.getSkinPrice = getSkinPrice;
 
+/**
+ * Resolve a skin asset URL correctly:
+ * - Custom skins (skin_custom_*) → LM_CUSTOM_SKINS_CDN (not versioned cdnBase)
+ * - Standard skins → LM_CDN_BASE() + image
+ * - Already absolute URLs → pass through
+ * This prevents CORB errors from requesting custom skin PNGs through
+ * the versioned configuration directory.
+ */
+function resolveSkinAssetUrl(productId, imageName) {
+    var id =
+        typeof productId === 'string'
+            ? productId.trim()
+            : '';
+
+    var image =
+        typeof imageName === 'string'
+            ? imageName.trim()
+            : '';
+
+    var isCustomSkin =
+        id.indexOf('skin_custom_') === 0 ||
+        image.indexOf('skin_custom_') !== -1;
+
+    if (isCustomSkin) {
+        var fileName = image
+            ? image.split('/').pop().replace(/\?.*$/, '')
+            : '';
+
+        if (!fileName || fileName === 'uses_spine') {
+            fileName = id;
+        }
+
+        if (!/\.(?:png|jpe?g|webp)$/i.test(fileName)) {
+            fileName += '.png';
+        }
+
+        return (
+            window.LM_CUSTOM_SKINS_CDN +
+            '/' +
+            fileName
+        );
+    }
+
+    if (!image || image === 'uses_spine') {
+        return '';
+    }
+
+    if (/^https?:\/\//i.test(image)) {
+        return image;
+    }
+
+    return (
+        window.LM_CDN_BASE() +
+        image.replace(/^\/+/, '')
+    );
+}
+
+window.resolveSkinAssetUrl =
+    resolveSkinAssetUrl;
+
 function loadSkinShopImage(image) {
     if (!image) return;
 
@@ -4928,20 +5004,11 @@ function renderSkinPage(appendNextPage) {
         if (skin.image === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
             imgFile = window.SpineSkinMap[skin.productId] + '.png';
         }
-        var imgUrl = '';
-
-        if (
-            imgFile &&
-            imgFile !== 'uses_spine'
-        ) {
-            imgUrl =
-                /^https?:\/\//i.test(
-                    imgFile
-                )
-                    ? imgFile
-                    : cdnBase +
-                        imgFile;
-        }
+        var imgUrl =
+            resolveSkinAssetUrl(
+                skin.productId,
+                imgFile
+            );
 
         var isEquipped = (currentEquippedId === skin.productId);
         var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);
