@@ -2814,9 +2814,15 @@ var UIDfunction = new Function(UIDInstructions);
 window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
-window.updateOfficialXpPanel = function(level, expPercent) {
+window.updateOfficialXpPanel = function(level, expPercent, currentXp, targetXp) {
     if (level !== undefined && level !== null) {
         window.agarioLEVEL = level;
+    }
+    if (currentXp !== undefined && currentXp !== null) {
+        window.agarioXP = currentXp;
+    }
+    if (targetXp !== undefined && targetXp !== null) {
+        window.agarioNextXP = targetXp;
     }
     var lvlVal = window.agarioLEVEL || 1;
     var officialXpPanel = $('#exp-bar');
@@ -2842,12 +2848,13 @@ window.updateOfficialXpPanel = function(level, expPercent) {
     /* Sync the original profile panel's exp bar (not the LM #exp-bar elements) */
     var profilePanels = $('.agario-profile-panel').not('#exp-bar');
     profilePanels.find('.progress-bar-star').text(lvlVal);
-    profilePanels.find('.progress-bar-text').each(function() {
-        var txt = $(this).text().trim();
-        if (txt === '' || /^\d+$/.test(txt) || /Level|★|⭐/.test(txt) || /^\d+\s*\//.test(txt)) {
-            $(this).text(lvlVal);
-        }
-    });
+
+    var cXp = (window.agarioXP !== undefined && window.agarioXP !== null) ? window.agarioXP : 0;
+    var tXp = (window.agarioNextXP !== undefined && window.agarioNextXP !== null) ? window.agarioNextXP : 1000;
+    var xpDisplayText = (cXp !== undefined && cXp !== null && tXp) ? (cXp + '/' + tXp) : lvlVal;
+
+    profilePanels.find('.progress-bar-text').text(xpDisplayText);
+
     if (expPercent !== undefined && expPercent !== null) {
         var clampedPercent = Math.max(0, Math.min(100, Number(expPercent) || 0));
         profilePanels.find('.progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', clampedPercent + '%');

@@ -4500,14 +4500,14 @@
         }
 
         // 3. XP Progress Bar & Level
-        var xp = appUser.xp || 0;
-        var nextXp = appUser.nextLevelXp || appUser.nextXp || 1000;
-        var level = appUser.level || 1;
+        var xp = (window.agarioXP !== undefined && window.agarioXP !== null) ? window.agarioXP : (appUser.xp || 0);
+        var nextXp = (window.agarioNextXP !== undefined && window.agarioNextXP !== null) ? window.agarioNextXP : (appUser.nextLevelXp || appUser.nextXp || 1000);
+        var level = appUser.level || window.agarioLEVEL || 1;
 
         var percent = Math.min(100, Math.max(0, Math.round((xp / nextXp) * 100))) || 0;
 
         if (typeof window.updateOfficialXpPanel === 'function') {
-            window.updateOfficialXpPanel(level, percent);
+            window.updateOfficialXpPanel(level, percent, xp, nextXp);
         } else {
             var officialXpPanel = $('#exp-bar').eq(0);
             officialXpPanel.find('.progress-bar').css('width', percent + '%');
@@ -4519,18 +4519,11 @@
          * Directly sync the #profile tab's own agario-exp-bar.
          * The official profile panel (.agario-profile-panel) has its own
          * .progress-bar-text and .progress-bar-star inside .agario-exp-bar.
-         * These are separate from the Legend Mod #exp-bar elements.
          * Scope to only the original .agario-profile-panel that is NOT #exp-bar.
          */
         var profileExpBars = $('.agario-profile-panel').not('#exp-bar');
-        profileExpBars.find('.progress-bar-text').each(function() {
-            var $this = $(this);
-            /* Only update if it looks like a level display (contains a number or star) */
-            var currentText = $this.text().trim();
-            if (currentText === '' || /^\d+$/.test(currentText) || /Level|★|⭐/.test(currentText) || /^\d+\s*\//.test(currentText)) {
-                $this.text(level);
-            }
-        });
+        var xpRatioText = (xp !== undefined && xp !== null && nextXp) ? (xp + '/' + nextXp) : level;
+        profileExpBars.find('.progress-bar-text').text(xpRatioText);
         profileExpBars.find('.progress-bar-star').text(level);
         profileExpBars.find('.progress-bar-active, .progress-bar, .progress-bar-striped').not('.progress-bar-striped2').css('width', percent + '%');
 
