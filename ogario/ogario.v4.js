@@ -15547,10 +15547,10 @@ function thelegendmodproject() {
                         <div style="text-align: center; margin-bottom: 15px;">
                             <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; background-color: #000;"></canvas>
                         </div>
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose Image</label>
-                        <input type="file" id="legendUploadInput" accept="image/*" style="display:none;" />
+                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose PNG Image (max 100KB)</label>
+                        <input type="file" id="legendUploadInput" accept="image/png" style="display:none;" />
                         <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
-                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">Ready</div>
+                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">PNG only, max 100KB</div>
                     </div>`;
 
                 $("body").append(panelHTML);
@@ -15638,11 +15638,29 @@ function thelegendmodproject() {
 
             $("#legendUploadInput").off("change").on("change", function (e) {
                 var file = e.target.files && e.target.files[0];
-                if (file) {
-                    cleanupObjectUrl();
-                    currentObjectUrl = URL.createObjectURL(file);
-                    processAndFormat(currentObjectUrl, true);
+                if (!file) return;
+
+                /* Validate file type: PNG only */
+                if (file.type !== 'image/png') {
+                    var ext = file.name.split('.').pop().toUpperCase();
+                    status.text("❌ Only PNG images allowed! You selected a " + ext + " file.").css("color", "red");
+                    saveBtn.prop("disabled", true).css("opacity", 0.5);
+                    e.target.value = '';
+                    return;
                 }
+
+                /* Validate file size: max 100KB */
+                if (file.size > 102400) {
+                    var fileSizeKB = (file.size / 1024).toFixed(1);
+                    status.text("❌ File too large: " + fileSizeKB + "KB (max 100KB). Use a smaller PNG.").css("color", "red");
+                    saveBtn.prop("disabled", true).css("opacity", 0.5);
+                    e.target.value = '';
+                    return;
+                }
+
+                cleanupObjectUrl();
+                currentObjectUrl = URL.createObjectURL(file);
+                processAndFormat(currentObjectUrl, true);
             });
 
             $(".quick-custom-skin").off("click").on("click", function (e) {
