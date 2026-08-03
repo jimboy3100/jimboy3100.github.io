@@ -3023,60 +3023,284 @@ function deleteCustomSkin(skinId) {
 window.deleteCustomSkin = deleteCustomSkin;
 
 function equipSkin(productId, imageName) {
-    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('equip skins')) {
-        return;
+    if (
+        typeof window.validateShopIntegrity ===
+            'function' &&
+        !window.validateShopIntegrity(
+            'equip skins'
+        )
+    ) {
+        return false;
     }
 
-    var cdnBase = window.LM_CDN_BASE();
-    localStorage.setItem('equippedSkinId', productId);
-    if (imageName) localStorage.setItem('equippedSkinImage', imageName);
+    if (!productId) {
+        return false;
+    }
 
-    // Update server tracking so updateEquippedSkinUI stays in sync
-    window.serverEquippedSkinId = productId;
+    var equippedThroughOfficialClient =
+        false;
 
-    // ─── Send opcode 80 via window.changeSkin() ───
-    if (typeof window.changeSkin === 'function') {
+    var officialApi =
+        window.agarApp &&
+        window.agarApp.API;
+
+    /*
+     * Use Agar.io's real equip path.
+     *
+     * This updates:
+     * - Core.ui.settings.skinId;
+     * - Core.user.selectedSkin;
+     * - official shop inUse state;
+     * - current game skin;
+     * - official shop/profile views;
+     * - server setting key 1 through opcode 80.
+     */
+    if (
+        officialApi &&
+        typeof officialApi.setSkin ===
+            'function'
+    ) {
         try {
-            window.changeSkin(productId);
-        } catch (e) {
-            console.warn('[SKIN] changeSkin call exception:', e);
+            officialApi.setSkin(
+                productId
+            );
+
+            equippedThroughOfficialClient =
+                true;
+        } catch (
+            officialEquipError
+        ) {
+            console.warn(
+                '[SKIN] Official Agar.io setSkin failed; using protocol fallback:',
+                officialEquipError
+            );
         }
     }
 
-    // Update ogario custom skin URL
-    if (window.ogario && imageName) {
-        window.ogario.customSkinUrl = cdnBase + imageName;
+    /*
+     * Preserve the existing raw protocol method only as a fallback
+     * when the official Agar.io API bridge is unavailable.
+     */
+    if (
+        !equippedThroughOfficialClient
+    ) {
+        if (
+            typeof window.changeSkin !==
+                'function'
+        ) {
+            toastr &&
+                toastr.error(
+                    '<b>[SKIN]:</b> Agar.io skin service is unavailable.'
+                );
+
+            return false;
+        }
+
+        try {
+            window.changeSkin(
+                productId
+            );
+        } catch (
+            fallbackEquipError
+        ) {
+            console.error(
+                '[SKIN] Protocol skin equip failed:',
+                fallbackEquipError
+            );
+
+            toastr &&
+                toastr.error(
+                    '<b>[SKIN]:</b> Could not equip this skin.'
+                );
+
+            return false;
+        }
     }
 
-    var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-    console.log('[SKIN]: Equipped ' + displayName);
+    /*
+     * Update Legend Mod's mirror only after an equip route ran.
+     */
+    localStorage.setItem(
+        'equippedSkinId',
+        productId
+    );
+
+    if (imageName) {
+        localStorage.setItem(
+            'equippedSkinImage',
+            imageName
+        );
+    } else {
+        localStorage.removeItem(
+            'equippedSkinImage'
+        );
+    }
+
+    window.serverEquippedSkinId =
+        productId;
+
+    /*
+     * Preserve Legend Mod's own renderer URL.
+     * Do not prepend the normal CDN to an already absolute URL.
+     */
+    if (
+        window.ogario &&
+        imageName &&
+        imageName !== 'uses_spine'
+    ) {
+        var cdnBase =
+            window.LM_CDN_BASE();
+
+        window.ogario.customSkinUrl =
+            /^https?:\/\//i.test(
+                imageName
+            )
+                ? imageName
+                : cdnBase +
+                    imageName;
+    }
+
+    var displayName =
+        productId
+            .replace(
+                'skin_',
+                ''
+            )
+            .replace(
+                /_/g,
+                ' '
+            )
+            .replace(
+                /\b\w/g,
+                function(character) {
+                    return character
+                        .toUpperCase();
+                }
+            );
+
+    console.log(
+        '[SKIN] Equipped through ' +
+        (
+            equippedThroughOfficialClient
+                ? 'official Agar.io client: '
+                : 'protocol fallback: '
+        ) +
+        displayName
+    );
 
     updateEquippedSkinUI();
+
+    return true;
 }
 
 function unequipSkin() {
-    if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('unequip skins')) {
-        return;
+    if (
+        typeof window.validateShopIntegrity ===
+            'function' &&
+        !window.validateShopIntegrity(
+            'unequip skins'
+        )
+    ) {
+        return false;
     }
 
-    localStorage.removeItem('equippedSkinId');
-    localStorage.removeItem('equippedSkinImage');
+    var unequippedThroughOfficialClient =
+        false;
 
-    // Update server tracking
-    window.serverEquippedSkinId = '';
+    var officialApi =
+        window.agarApp &&
+        window.agarApp.API;
 
-    // ─── Send opcode 80 via window.changeSkin('skin_empty') ───
-    // changeSkin() already encodes and sends User_setting { type:1, key:1, valueString: "skin_empty" }
-    if (typeof window.changeSkin === 'function') {
-        try { window.changeSkin('skin_empty'); } catch (e) {}
+    /*
+     * Keep Agar.io's selectedSkin, shop state, game UI and server
+     * setting synchronized when returning to the default skin.
+     */
+    if (
+        officialApi &&
+        typeof officialApi.setSkin ===
+            'function'
+    ) {
+        try {
+            officialApi.setSkin(
+                'skin_empty'
+            );
+
+            unequippedThroughOfficialClient =
+                true;
+        } catch (
+            officialUnequipError
+        ) {
+            console.warn(
+                '[SKIN] Official Agar.io unequip failed; using protocol fallback:',
+                officialUnequipError
+            );
+        }
     }
+
+    if (
+        !unequippedThroughOfficialClient
+    ) {
+        if (
+            typeof window.changeSkin !==
+                'function'
+        ) {
+            toastr &&
+                toastr.error(
+                    '<b>[SKIN]:</b> Agar.io skin service is unavailable.'
+                );
+
+            return false;
+        }
+
+        try {
+            window.changeSkin(
+                'skin_empty'
+            );
+        } catch (
+            fallbackUnequipError
+        ) {
+            console.error(
+                '[SKIN] Protocol skin unequip failed:',
+                fallbackUnequipError
+            );
+
+            toastr &&
+                toastr.error(
+                    '<b>[SKIN]:</b> Could not unequip the skin.'
+                );
+
+            return false;
+        }
+    }
+
+    localStorage.removeItem(
+        'equippedSkinId'
+    );
+
+    localStorage.removeItem(
+        'equippedSkinImage'
+    );
+
+    window.serverEquippedSkinId =
+        'skin_empty';
+
     if (window.ogario) {
-        window.ogario.customSkinUrl = '';
+        window.ogario.customSkinUrl =
+            '';
     }
 
-    console.log('[SKIN]: Unequipped skin');
+    console.log(
+        '[SKIN] Unequipped through ' +
+        (
+            unequippedThroughOfficialClient
+                ? 'official Agar.io client'
+                : 'protocol fallback'
+        )
+    );
 
     updateEquippedSkinUI();
+
+    return true;
 }
 
 function updateEquippedSkinUI() {
