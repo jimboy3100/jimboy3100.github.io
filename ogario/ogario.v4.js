@@ -24227,13 +24227,26 @@ Most cells eaten   : ${mostCellsEaten}
                 in vec2 v_worldPos;
                 uniform float u_gridSpacing;
                 uniform vec4 u_gridColor;
+                uniform float u_gridScreenSpacing;  // grid spacing in screen pixels
                 out vec4 fragColor;
                 void main() {
+                    /* Fade out completely when grid cells are smaller than ~8 px on screen.
+                     * This prevents grid lines from merging into a solid dark fill at high zoom. */
+                    float fadeAlpha = smoothstep(4.0, 12.0, u_gridScreenSpacing);
+                    if (fadeAlpha <= 0.001) discard;
+
                     vec2 coord = fract(v_worldPos / u_gridSpacing);
                     vec2 grid = abs(coord - 0.5);
-                    float line = step(0.48, max(grid.x, grid.y));
+
+                    /* Scale line width proportionally so lines stay ~1-2 px on screen.
+                     * At normal zoom (gridScreenSpacing ~50-200 px), threshold ≈ 0.48 (4% line width).
+                     * At high zoom (gridScreenSpacing ~12 px), threshold ≈ 0.42 (thinner lines). */
+                    float lineThickness = clamp(1.5 / u_gridScreenSpacing, 0.005, 0.08);
+                    float threshold = 0.5 - lineThickness;
+
+                    float line = smoothstep(threshold - 0.005, threshold + 0.005, max(grid.x, grid.y));
                     if (line <= 0.0) discard;
-                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line);
+                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line * fadeAlpha);
                 }`;
 
                 var gridProgram = createAndLinkProgram(gl, gridVsSource, gridFsSource);
@@ -24244,6 +24257,7 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_grid_viewScale = gl.getUniformLocation(gridProgram, 'u_viewScale');
                 this.u_gridSpacing = gl.getUniformLocation(gridProgram, 'u_gridSpacing');
                 this.u_gridColor = gl.getUniformLocation(gridProgram, 'u_gridColor');
+                this.u_gridScreenSpacing = gl.getUniformLocation(gridProgram, 'u_gridScreenSpacing');
 
                 // --- WebGL2 Procedural Border Shader ---
                 // Uses view-relative coordinates to avoid float precision loss on huge maps.
@@ -25776,6 +25790,11 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform2f(this.u_grid_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
             gl.uniform1f(this.u_gridSpacing, gridSpacing);
             gl.uniform4f(this.u_gridColor, 1.0, 1.0, 1.0, 0.08);
+
+            /* How many screen pixels one grid cell occupies.
+             * Used by the shader to fade out + thin lines at high zoom. */
+            var gridScreenSpacing = gridSpacing * viewScale * (this.canvasWidth / 2.0);
+            gl.uniform1f(this.u_gridScreenSpacing, gridScreenSpacing);
 
             gl.bindVertexArray(this.glVAO);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
