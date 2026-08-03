@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LegendArc WebGPU Phase 1 Benchmark</title>
+    <style>
+        body { margin: 0; background: #111; color: #fff; font-family: monospace; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        #overlay { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div id="overlay">
+        <h2>LegendArc WebGPU Phase 1 Benchmark</h2>
+        <div id="fps">FPS: --</div>
+        <div id="count">Arcs: 10,000</div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script type="module" src="benchmark.js"></script>
+</body>
+</html>
