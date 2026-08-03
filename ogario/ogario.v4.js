@@ -2575,11 +2575,9 @@ window.changeSkin = function (productID) {
         var skinLink = legendmod.getLink(productID);
         var skinUrl = skinLink ? skinLink[0] : null;
         if (skinUrl) {
-            // Use the current nick input as primary source — profiles[] is often empty
-            var nick = ($('#nick').val() || '').trim();
-            if (!nick && profiles && profiles[application.selectedProfile]) {
-                nick = profiles[application.selectedProfile].nick || '';
-            }
+            var nick = (profiles && profiles[application.selectedProfile])
+                ? profiles[application.selectedProfile].nick
+                : '';
             if (nick) {
                 application.customSkinsMap[nick] = skinUrl;
             }
@@ -2587,7 +2585,6 @@ window.changeSkin = function (productID) {
         }
     } catch (skinLinkErr) {
         // Non-critical: the skin is already equipped server-side
-        console.warn('[SKIN] Cosmetic URL mapping failed:', skinLinkErr);
     }
 }
 
