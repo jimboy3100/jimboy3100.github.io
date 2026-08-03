@@ -1090,21 +1090,27 @@ function SpecialDeals(defaultTab) {
                     'anonymous';
 
                 /*
-                 * Agar.io's webpack runtime defines a global `module` object.
-                 * Libraries like UPNG.js check `typeof module == "object"` and
-                 * route their exports through `module.exports` instead of
-                 * setting a window global.  Temporarily hide `module` so the
-                 * script falls through to its `var UPNG = {}` global path.
+                 * Agar.io's webpack runtime defines global `module` and
+                 * `require`.  Libraries like UPNG.js check these and route
+                 * their exports through CommonJS instead of setting window
+                 * globals.  Temporarily hide both so the scripts fall
+                 * through to their browser-global code paths.
                  */
                 var savedModule =
                     window.module;
+                var savedRequire =
+                    window.require;
 
                 window.module =
+                    undefined;
+                window.require =
                     undefined;
 
                 script.onload = function() {
                     window.module =
                         savedModule;
+                    window.require =
+                        savedRequire;
 
                     if (readyCheck()) {
                         resolve();
@@ -1121,6 +1127,8 @@ function SpecialDeals(defaultTab) {
                 script.onerror = function() {
                     window.module =
                         savedModule;
+                    window.require =
+                        savedRequire;
 
                     reject(
                         new Error(
