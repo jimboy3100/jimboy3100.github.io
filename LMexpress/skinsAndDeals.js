@@ -1246,6 +1246,236 @@ function SpecialDeals(defaultTab) {
                 ._lmAgarUPNGLoadPromise;
         }
 
+        /*
+         * ── Web Worker PNG8 encoder ──
+         *
+         * Moves UPNG.encode() off the main thread so the
+         * UI stays responsive during colour quantization
+         * (~100-500ms on a 512×512 image).
+         *
+         * Uses Transferable ArrayBuffers for zero-copy
+         * transfer in both directions.
+         *
+         * Falls back to main-thread encoding if:
+         *   • Workers are unavailable
+         *   • CSP blocks blob-URL or importScripts
+         */
+        var _lmPNG8Worker = null;
+        var _lmPNG8WorkerIdleTimer = null;
+
+        function terminatePNG8Worker() {
+            if (_lmPNG8Worker) {
+                try {
+                    _lmPNG8Worker.terminate();
+                } catch (e) { }
+                _lmPNG8Worker = null;
+            }
+            if (_lmPNG8WorkerIdleTimer) {
+                clearTimeout(
+                    _lmPNG8WorkerIdleTimer
+                );
+                _lmPNG8WorkerIdleTimer = null;
+            }
+        }
+
+        function getOrCreatePNG8Worker() {
+            if (_lmPNG8Worker) {
+                return _lmPNG8Worker;
+            }
+
+            /* Inline worker source as a string */
+            var workerSource = [
+                'self.onmessage = function(e) {',
+                '  try {',
+                '    if (!self.UPNG) {',
+                '      importScripts(',
+                '        "https://cdn.jsdelivr.net/npm/pako@1.0.11/dist/pako.min.js",',
+                '        "https://cdn.jsdelivr.net/npm/upng-js@2.1.0/UPNG.js"',
+                '      );',
+                '    }',
+                '    var result = UPNG.encode(',
+                '      [e.data.buffer], 512, 512, 16',
+                '    );',
+                '    var bytes = new Uint8Array(result);',
+                '    self.postMessage(',
+                '      { png: bytes },',
+                '      [bytes.buffer]',
+                '    );',
+                '  } catch (err) {',
+                '    self.postMessage({',
+                '      error: err.message || String(err)',
+                '    });',
+                '  }',
+                '};'
+            ].join('\n');
+
+            var blob = new Blob(
+                [workerSource],
+                { type: 'application/javascript' }
+            );
+
+            _lmPNG8Worker = new Worker(
+                URL.createObjectURL(blob)
+            );
+
+            return _lmPNG8Worker;
+        }
+
+        function encodePNG8InWorker(rgbaBuffer) {
+            return new Promise(
+                function(resolve, reject) {
+                    var worker;
+
+                    try {
+                        worker =
+                            getOrCreatePNG8Worker();
+                    } catch (workerCreateErr) {
+                        reject(workerCreateErr);
+                        return;
+                    }
+
+                    var timedOut = false;
+
+                    /* 15s timeout for very slow devices */
+                    var timeout = setTimeout(
+                        function() {
+                            timedOut = true;
+                            terminatePNG8Worker();
+                            reject(
+                                new Error(
+                                    'PNG8 worker timed out'
+                                )
+                            );
+                        },
+                        15000
+                    );
+
+                    worker.onmessage =
+                        function(e) {
+                            clearTimeout(timeout);
+
+                            if (timedOut) return;
+
+                            /* Reset idle auto-terminate */
+                            if (_lmPNG8WorkerIdleTimer) {
+                                clearTimeout(
+                                    _lmPNG8WorkerIdleTimer
+                                );
+                            }
+                            _lmPNG8WorkerIdleTimer =
+                                setTimeout(
+                                    terminatePNG8Worker,
+                                    30000
+                                );
+
+                            if (e.data.error) {
+                                reject(
+                                    new Error(
+                                        e.data.error
+                                    )
+                                );
+                            } else {
+                                resolve(
+                                    e.data.png
+                                );
+                            }
+                        };
+
+                    worker.onerror =
+                        function(err) {
+                            clearTimeout(timeout);
+                            if (timedOut) return;
+                            terminatePNG8Worker();
+                            reject(
+                                err || new Error(
+                                    'PNG8 worker error'
+                                )
+                            );
+                        };
+
+                    /*
+                     * Transfer the RGBA buffer
+                     * (zero-copy to worker).
+                     */
+                    worker.postMessage(
+                        { buffer: rgbaBuffer },
+                        [rgbaBuffer]
+                    );
+                }
+            );
+        }
+
+        /*
+         * Shared post-encode handler: validates the
+         * PNG8 output, stores it, and updates the UI.
+         * Used by both Worker and main-thread paths.
+         */
+        function handleEncodedPNG8(
+            pngBytes,
+            encodeJobId
+        ) {
+            if (
+                encodeJobId !==
+                window._lmSkinEncodeJobId
+            ) {
+                return;
+            }
+
+            var validation =
+                validateAgarPNG8(pngBytes);
+
+            if (!validation.valid) {
+                throw new Error(
+                    validation.error
+                );
+            }
+
+            var kb = (
+                pngBytes.length / 1024
+            ).toFixed(1);
+
+            if (pngBytes.length > 102400) {
+                throw new Error(
+                    'Agar PNG8 is too large: ' +
+                    kb +
+                    'KB; maximum is 100KB'
+                );
+            }
+
+            processedBufferModal = pngBytes;
+
+            console.log(
+                '[LM SKIN] UPNG encode IHDR:' +
+                ' bitDepth=' + pngBytes[24] +
+                ' colorType=' + pngBytes[25] +
+                ' paletteEntries=' +
+                validation.paletteEntries +
+                ' size=' + kb + 'KB'
+            );
+
+            $('#legendStatusModal')
+                .text(
+                    'Agar PNG8 Ready: ' +
+                    kb +
+                    'KB (512x512, ' +
+                    validation
+                        .paletteEntries +
+                    ' colors)' +
+                    (pngBytes[25] !== 3
+                        ? ' ⚠ colorType=' +
+                          pngBytes[25]
+                        : '')
+                )
+                .css(
+                    'color',
+                    pngBytes[25] === 3
+                        ? getShopTheme().b2
+                        : '#ff5252'
+                );
+
+            updateShopLoginState();
+        }
+
         function validateAgarPNG8(pngBytes) {
             if (
                 !(pngBytes instanceof Uint8Array) ||
@@ -1544,8 +1774,65 @@ function SpecialDeals(defaultTab) {
                 window._lmSkinEncodeJobId =
                     encodeJobId;
 
-                ensureAgarUPNG()
-                    .then(function(upng) {
+                /*
+                 * ── PNG8 encoding (Worker → fallback) ──
+                 *
+                 * Try the Web Worker path first (non-blocking).
+                 * If Workers are unavailable or CSP blocks
+                 * importScripts, fall back to main-thread
+                 * UPNG.encode (same as before, synchronous).
+                 */
+                var rgba =
+                    ctx.getImageData(
+                        0, 0, 512, 512
+                    );
+
+                var workerSucceeded = false;
+
+                var encodePromise;
+
+                try {
+                    /*
+                     * Transfer the RGBA buffer to the
+                     * worker (zero-copy). After this call
+                     * rgba.data.buffer is detached and
+                     * cannot be re-read on the main thread.
+                     */
+                    encodePromise =
+                        encodePNG8InWorker(
+                            rgba.data.buffer
+                        )
+                        .then(function(pngBytes) {
+                            workerSucceeded = true;
+                            console.log(
+                                '[LM SKIN] PNG8 encoded via Worker'
+                            );
+                            handleEncodedPNG8(
+                                pngBytes,
+                                encodeJobId
+                            );
+                        });
+                } catch (workerInitErr) {
+                    /*
+                     * Worker creation itself threw
+                     * (e.g. no Worker support).
+                     */
+                    encodePromise =
+                        Promise.reject(
+                            workerInitErr
+                        );
+                }
+
+                encodePromise
+                    .catch(function(workerErr) {
+                        /*
+                         * Worker failed — fall back to
+                         * main-thread UPNG.encode.
+                         *
+                         * The original RGBA buffer was
+                         * transferred (detached), so we
+                         * must re-read from the canvas.
+                         */
                         if (
                             encodeJobId !==
                             window
@@ -1554,85 +1841,57 @@ function SpecialDeals(defaultTab) {
                             return;
                         }
 
-                        var rgba =
-                            ctx.getImageData(
-                                0,
-                                0,
-                                512,
-                                512
+                        console.warn(
+                            '[LM SKIN] Worker encode failed,' +
+                            ' falling back to main thread:',
+                            workerErr
+                        );
+
+                        return ensureAgarUPNG()
+                            .then(
+                                function(upng) {
+                                    if (
+                                        encodeJobId !==
+                                        window
+                                            ._lmSkinEncodeJobId
+                                    ) {
+                                        return;
+                                    }
+
+                                    var rgba2 =
+                                        ctx.getImageData(
+                                            0, 0,
+                                            512, 512
+                                        );
+
+                                    var encodedPng =
+                                        upng.encode(
+                                            [
+                                                rgba2
+                                                    .data
+                                                    .buffer
+                                            ],
+                                            512,
+                                            512,
+                                            16
+                                        );
+
+                                    var pngBytes =
+                                        new Uint8Array(
+                                            encodedPng
+                                        );
+
+                                    console.log(
+                                        '[LM SKIN] PNG8 encoded' +
+                                        ' via main thread (fallback)'
+                                    );
+
+                                    handleEncodedPNG8(
+                                        pngBytes,
+                                        encodeJobId
+                                    );
+                                }
                             );
-
-                        /*
-                         * Exact image encoding call used by the original
-                         * Agar.io custom-skin editor.
-                         */
-                        var encodedPng =
-                            upng.encode(
-                                [
-                                    rgba.data
-                                        .buffer
-                                ],
-                                512,
-                                512,
-                                16
-                            );
-
-                        var pngBytes =
-                            new Uint8Array(
-                                encodedPng
-                            );
-
-                        /*
-                         * Never enable payment/upload until the output has
-                         * been proven to be an indexed 512x512 PNG8 with no
-                         * more than 16 palette entries.
-                         */
-                        var validation =
-                            validateAgarPNG8(
-                                pngBytes
-                            );
-
-                        if (!validation.valid) {
-                            throw new Error(
-                                validation.error
-                            );
-                        }
-
-                        var kb =
-                            (
-                                pngBytes.length /
-                                1024
-                            ).toFixed(1);
-
-                        if (
-                            pngBytes.length >
-                            102400
-                        ) {
-                            throw new Error(
-                                'Agar PNG8 is too large: ' +
-                                kb +
-                                'KB; maximum is 100KB'
-                            );
-                        }
-
-                        processedBufferModal =
-                            pngBytes;
-
-                        $('#legendStatusModal')
-                            .text(
-                                'Agar PNG8 Ready: ' +
-                                kb +
-                                'KB (512x512, ' +
-                                validation
-                                    .paletteEntries +
-                                ' colors)'
-                            )
-                            .css(
-                                'color',
-                                getShopTheme().b2
-                            );
-
-                        updateShopLoginState();
                     })
                     .catch(function(error) {
                         if (
@@ -1891,23 +2150,7 @@ function SpecialDeals(defaultTab) {
                 }
             }, 1000);
 
-            // Method 1: Inject into official skin-editor-canvas (most reliable)
-            var skinEditorCanvas = document.getElementById('skin-editor-canvas');
-            if (skinEditorCanvas) {
-                var legendCanvas = document.getElementById("legendCanvasModal");
-                if (legendCanvas) {
-                    var ctx = skinEditorCanvas.getContext('2d');
-                    ctx.clearRect(0, 0, skinEditorCanvas.width, skinEditorCanvas.height);
-                    ctx.drawImage(legendCanvas, 0, 0, skinEditorCanvas.width, skinEditorCanvas.height);
-                    skinEditorCanvas.dispatchEvent(new Event('change', { bubbles: true }));
-                    skinEditorCanvas.dispatchEvent(new Event('input', { bubbles: true }));
-                    toastr.success("<b>[SERVER]:</b> Image injected into skin editor! Click the Save button in the editor to upload.");
-                    console.log("[LM] Injected image into skin-editor-canvas (" + skinEditorCanvas.width + "x" + skinEditorCanvas.height + ")");
-                    return;
-                }
-            }
-
-            // Method 2: Protocol upload via uploadCustomSkin (uses protobuf encoder)
+            // Always use autonomous protocol upload (no canvas injection)
             if (window.application && typeof window.application.uploadCustomSkin === 'function') {
                 window.application.uploadCustomSkin(processedBufferModal, name, color);
             } else {

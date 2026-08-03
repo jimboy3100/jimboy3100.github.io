@@ -3703,6 +3703,8 @@ setTimeout(function () {
             window.PricesMatrixConfig = LMAgarGameConfiguration.gameConfig["Prices - Matrix"] || null;
             window.PotionHelpConfig = LMAgarGameConfiguration.gameConfig["Visual - Potion Help"] || null;
             window.MysterySkinTypesConfig = LMAgarGameConfiguration.gameConfig["Mystery Skins - Types"] || null;
+            window.WalletSoftPurchasesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Soft Purchases"] || null;
+            if (window.WalletSoftPurchasesConfig) console.log("[LM] Loaded Wallet Soft Purchases config: " + window.WalletSoftPurchasesConfig.length + " entries");
             if (window.LeaguesPrizesConfig) console.log("[LM] Loaded Leagues Prizes config: " + window.LeaguesPrizesConfig.length + " entries");
             if (window.LeaguesTiersConfig) console.log("[LM] Loaded Leagues Tiers config: " + window.LeaguesTiersConfig.length + " tiers");
             if (window.OfferableBundlesConfig) console.log("[LM] Loaded Offerable Bundles config: " + window.OfferableBundlesConfig.length + " bundles");
@@ -14377,405 +14379,335 @@ function thelegendmodproject() {
                 return false;
             }
         },
-        /* ─── §4.21 Skin Upload ─── */
+        /* ─── §4.21 Skin Upload (Autonomous — always uses mesega protobuf) ─── */
         uploadCustomSkin(imageUint8Array, skinName, skinColorHex) {
             console.log(
                 "[LM] Upload Started. Name: " +
                 skinName +
                 " Image Size: " +
-                imageUint8Array.length +
+                (imageUint8Array ? imageUint8Array.length : 0) +
                 " bytes"
             );
 
+            /* ── Pre-flight: basic argument validation ── */
             if (
                 !imageUint8Array ||
+                !(imageUint8Array instanceof Uint8Array) ||
                 !imageUint8Array.length
             ) {
                 toastr.error(
                     "<b>[SKIN]:</b> No image data is available."
                 );
+                return false;
+            }
 
+            if (imageUint8Array.length > 102400) {
+                toastr.error(
+                    "<b>[STRICT]:</b> Image is over 100KB (" +
+                    (imageUint8Array.length / 1024).toFixed(1) +
+                    "KB)."
+                );
+                return false;
+            }
+
+            if (imageUint8Array.length < 33) {
+                toastr.error(
+                    "<b>[SKIN]:</b> Image data is too small to be a valid PNG (" +
+                    imageUint8Array.length + " bytes)."
+                );
+                return false;
+            }
+
+            /* ── PNG signature check ── */
+            var pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+            for (var si = 0; si < pngSignature.length; si++) {
+                if (imageUint8Array[si] !== pngSignature[si]) {
+                    console.error(
+                        "[SKIN] Invalid PNG signature:",
+                        Array.from(imageUint8Array.slice(0, 8))
+                    );
+                    toastr.error(
+                        "<b>[SKIN]:</b> Encoded image is not a valid PNG file."
+                    );
+                    return false;
+                }
+            }
+
+            /* ── IHDR validation (bytes 8–24 after 8-byte signature) ── */
+            var ihdrView = new DataView(
+                imageUint8Array.buffer,
+                imageUint8Array.byteOffset,
+                imageUint8Array.byteLength
+            );
+
+            /* First chunk must be IHDR: 4-byte length + "IHDR" */
+            var ihdrChunkType = String.fromCharCode(
+                imageUint8Array[12],
+                imageUint8Array[13],
+                imageUint8Array[14],
+                imageUint8Array[15]
+            );
+
+            if (ihdrChunkType !== "IHDR") {
+                toastr.error(
+                    "<b>[SKIN]:</b> PNG first chunk is '" +
+                    ihdrChunkType +
+                    "' instead of IHDR — invalid PNG."
+                );
+                return false;
+            }
+
+            var pngWidth = ihdrView.getUint32(16, false);
+            var pngHeight = ihdrView.getUint32(20, false);
+            var pngBitDepth = imageUint8Array[24];
+            var pngColorType = imageUint8Array[25];
+
+            console.log(
+                "[SKIN] IHDR: " + pngWidth + "x" + pngHeight +
+                " bitDepth=" + pngBitDepth +
+                " colorType=" + pngColorType
+            );
+
+            if (pngWidth !== 512 || pngHeight !== 512) {
+                toastr.error(
+                    "<b>[SKIN]:</b> PNG dimensions are " +
+                    pngWidth + "x" + pngHeight +
+                    " — must be 512x512."
+                );
+                return false;
+            }
+
+            /*
+             * PNG color type 3 = indexed/palette (PNG8).
+             * The Agar.io server requires this exact type.
+             */
+            if (pngColorType !== 3) {
+                var colorTypeName = {
+                    0: "Greyscale",
+                    2: "Truecolor (RGB)",
+                    4: "Greyscale+Alpha",
+                    6: "Truecolor+Alpha (RGBA)"
+                }[pngColorType] || ("Unknown (" + pngColorType + ")");
+
+                toastr.error(
+                    "<b>[SKIN]:</b> PNG color type is " +
+                    colorTypeName +
+                    " — Agar.io requires indexed PNG8 (color type 3). " +
+                    "The UPNG encoder may have failed to quantize."
+                );
                 return false;
             }
 
             if (
-                imageUint8Array.length >
-                102400
+                pngBitDepth !== 1 &&
+                pngBitDepth !== 2 &&
+                pngBitDepth !== 4 &&
+                pngBitDepth !== 8
             ) {
                 toastr.error(
-                    "<b>[STRICT]:</b> Image is over 100KB."
+                    "<b>[SKIN]:</b> PNG bit depth " +
+                    pngBitDepth +
+                    " is invalid for an indexed image."
                 );
-
                 return false;
             }
 
-            var officialApi =
-                (
-                    window.agarApp &&
-                    window.agarApp.API
-                ) ||
-                window.MC ||
-                null;
+            /* ── Walk PNG chunks: validate PLTE, warn on tRNS ── */
+            var paletteEntries = 0;
+            var hasTRNS = false;
+            var chunkOffset = 8; /* after 8-byte signature */
 
-            var app =
-                this;
-
-            /*
-             * Official Agar.io does not charge DNA directly during
-             * opcode 150.
-             *
-             * It first obtains:
-             *   create_skin_token
-             *
-             * using the soft purchase:
-             *   1_create_skin_token
-             */
-            var standardTokenId =
-                "create_skin_token";
-
-            var standardTokenPurchaseId =
-                "1_create_skin_token";
-
-            var vipTokenId =
-                "create_skin_token_for_vip_weekly";
-
-            var indexedSubscriptions =
-                [];
-
-            function getWalletBalance(
-                productId
-            ) {
-                if (
-                    !officialApi ||
-                    typeof officialApi
-                        .getProductFromWallet !==
-                    "function"
-                ) {
-                    return 0;
-                }
-
-                try {
-                    var walletItem =
-                        officialApi
-                            .getProductFromWallet(
-                                productId
-                            );
-
-                    if (!walletItem) {
-                        return 0;
-                    }
-
-                    if (
-                        typeof walletItem
-                            .get_balance ===
-                        "function"
-                    ) {
-                        return (
-                            Number(
-                                walletItem
-                                    .get_balance()
-                            ) || 0
-                        );
-                    }
-
-                    if (
-                        walletItem.balance !==
-                        undefined
-                    ) {
-                        return (
-                            Number(
-                                walletItem.balance
-                            ) || 0
-                        );
-                    }
-
-                    if (
-                        walletItem._balance !==
-                        undefined
-                    ) {
-                        return (
-                            Number(
-                                walletItem._balance
-                            ) || 0
-                        );
-                    }
-
-                    return 0;
-                } catch (walletError) {
-                    console.warn(
-                        "[LM SKIN] Wallet token lookup failed:",
-                        walletError
-                    );
-
-                    return 0;
-                }
-            }
-
-            var standardTokenBalance =
-                getWalletBalance(
-                    standardTokenId
+            while (chunkOffset + 12 <= imageUint8Array.length) {
+                var chunkLen = ihdrView.getUint32(chunkOffset, false);
+                var chunkType = String.fromCharCode(
+                    imageUint8Array[chunkOffset + 4],
+                    imageUint8Array[chunkOffset + 5],
+                    imageUint8Array[chunkOffset + 6],
+                    imageUint8Array[chunkOffset + 7]
                 );
 
-            var vipTokenBalance =
-                getWalletBalance(
-                    vipTokenId
-                );
-
-            var hasVipSubscription =
-                false;
-
-            if (
-                officialApi &&
-                typeof officialApi
-                    .getUserInfo ===
-                "function"
-            ) {
-                try {
-                    var officialUserInfo =
-                        officialApi
-                            .getUserInfo();
-
-                    hasVipSubscription =
-                        !!(
-                            officialUserInfo &&
-                            officialUserInfo
-                                .hasVIPSubscription
-                        );
-                } catch (userInfoError) {
-                    console.warn(
-                        "[LM SKIN] VIP state lookup failed:",
-                        userInfoError
-                    );
-                }
-            }
-
-            /*
-             * Match official Agar.io:
-             *
-             * 1. Prefer an existing VIP weekly token.
-             * 2. Otherwise use an existing normal token.
-             * 3. Otherwise buy one normal token using the configured
-             *    soft-purchase price.
-             */
-            if (
-                hasVipSubscription &&
-                vipTokenBalance > 0
-            ) {
-                indexedSubscriptions.push(
-                    "vip_weekly"
-                );
-
-                console.log(
-                    "[LM SKIN] Using existing VIP skin token."
-                );
-            } else if (
-                standardTokenBalance > 0
-            ) {
-                console.log(
-                    "[LM SKIN] Using existing skin creation token."
-                );
-            } else {
-                var configuredPurchase =
-                    null;
-
-                if (
-                    officialApi &&
-                    typeof officialApi
-                        .getSoftPurchaseById ===
-                    "function"
-                ) {
-                    try {
-                        configuredPurchase =
-                            officialApi
-                                .getSoftPurchaseById(
-                                    standardTokenPurchaseId
-                                );
-                    } catch (
-                    purchaseConfigError
-                    ) {
-                        console.warn(
-                            "[LM SKIN] Skin-token price lookup failed:",
-                            purchaseConfigError
-                        );
-                    }
-                }
-
-                var configuredCost =
-                    configuredPurchase
-                        ? Number(
-                            configuredPurchase
-                                .currencyAmount
-                        ) || 0
-                        : 0;
-
-                var configuredCurrency =
-                    configuredPurchase
-                        ? String(
-                            configuredPurchase
-                                .currencyProductId ||
-                            ""
-                        ).toLowerCase()
-                        : "";
-
-                var currentBalance =
-                    0;
-
-                if (
-                    officialApi &&
-                    configuredCurrency ===
-                    "dna" &&
-                    typeof officialApi
-                        .get_dna ===
-                    "function"
-                ) {
-                    currentBalance =
-                        Number(
-                            officialApi.get_dna()
-                        ) || 0;
-                } else if (
-                    officialApi &&
-                    configuredCurrency ===
-                    "coin" &&
-                    typeof officialApi
-                        .get_coins ===
-                    "function"
-                ) {
-                    currentBalance =
-                        Number(
-                            officialApi.get_coins()
-                        ) || 0;
-                }
-
-                if (
-                    configuredCost > 0 &&
-                    currentBalance <
-                    configuredCost
-                ) {
+                if (chunkOffset + 12 + chunkLen > imageUint8Array.length) {
                     toastr.error(
-                        "<b>[SKIN]:</b> " +
-                        "The official skin-token price is " +
-                        configuredCost.toLocaleString() +
-                        " " +
-                        (
-                            configuredCurrency ||
-                            "currency"
-                        ).toUpperCase() +
-                        ", but Agar.io reports only " +
-                        currentBalance.toLocaleString() +
-                        "."
+                        "<b>[SKIN]:</b> PNG contains a truncated '" +
+                        chunkType + "' chunk."
                     );
-
-                    console.error(
-                        "[LM SKIN] Official balance check failed:",
-                        {
-                            cost:
-                                configuredCost,
-
-                            currency:
-                                configuredCurrency,
-
-                            balance:
-                                currentBalance
-                        }
-                    );
-
                     return false;
                 }
 
-                var purchaseSent =
-                    false;
+                if (chunkType === "PLTE") {
+                    paletteEntries = chunkLen / 3;
+                }
 
-                /*
-                 * Primary path: exact official Agar.io purchase
-                 * dispatcher.
-                 */
-                if (
-                    officialApi &&
-                    typeof officialApi
-                        .makePurchase ===
-                    "function"
-                ) {
-                    try {
-                        purchaseSent =
-                            officialApi.makePurchase(
-                                standardTokenPurchaseId,
-                                false,
-                                true
-                            ) === true;
-                    } catch (
-                    officialPurchaseError
-                    ) {
-                        console.warn(
-                            "[LM SKIN] Official token purchase failed:",
-                            officialPurchaseError
-                        );
+                if (chunkType === "tRNS") {
+                    hasTRNS = true;
+                }
+
+                chunkOffset += 12 + chunkLen;
+
+                if (chunkType === "IEND") {
+                    break;
+                }
+            }
+
+            if (paletteEntries < 1 || paletteEntries > 16) {
+                toastr.error(
+                    "<b>[SKIN]:</b> PNG palette has " +
+                    paletteEntries +
+                    " entries — must be 1–16 for Agar.io."
+                );
+                return false;
+            }
+
+            if (hasTRNS) {
+                console.warn(
+                    "[SKIN] PNG contains a tRNS (transparency) chunk. " +
+                    "This may cause issues with the Agar.io server."
+                );
+            }
+
+            /* ── Empty/uniform image check ── */
+            /* Quick heuristic: if the compressed data is very small,
+             * the image is likely all one color / empty. */
+            if (imageUint8Array.length < 200) {
+                console.warn(
+                    "[SKIN] PNG file is suspiciously small (" +
+                    imageUint8Array.length +
+                    " bytes). Image may be empty."
+                );
+            }
+
+            console.log(
+                "[SKIN] PNG8 validated: 512x512, " +
+                paletteEntries + " palette colors, " +
+                "bitDepth=" + pngBitDepth +
+                ", tRNS=" + hasTRNS +
+                ", size=" + (imageUint8Array.length / 1024).toFixed(1) + "KB"
+            );
+
+            /* ── Protocol availability ── */
+            if (!window.mesega || !window.core || !window.core.proxyMobileData) {
+                toastr.error(
+                    "<b>[ERROR]:</b> Skin upload protocol is unavailable. " +
+                    "Join a game first."
+                );
+                return false;
+            }
+
+            /*
+             * ── Wallet/token purchase logic (fully autonomous) ──
+             *
+             * Uses LM's own tracked state:
+             *   this.user.dna / this.user.coins — currency balance
+             *   this.user.skinCreateTokens — standard skin token balance
+             *   this.user.skinCreateVIPTokens — VIP skin token balance
+             *   window.WalletSoftPurchasesConfig — price config table
+             *   app.softPurchase() — sends opcode 70 via mesega
+             */
+            var app = this;
+
+            var standardTokenId = "create_skin_token";
+            var standardTokenPurchaseId = "1_create_skin_token";
+            var vipTokenId = "create_skin_token_for_vip_weekly";
+            var indexedSubscriptions = [];
+
+            var standardTokenBalance =
+                Number(app.user && app.user.skinCreateTokens) || 0;
+            var vipTokenBalance =
+                Number(app.user && app.user.skinCreateVIPTokens) || 0;
+            var needsTokenPurchase = false;
+
+            if (vipTokenBalance > 0) {
+                indexedSubscriptions.push("vip_weekly");
+                console.log("[LM SKIN] Using existing VIP skin token (" + vipTokenBalance + ").");
+            } else if (standardTokenBalance > 0) {
+                console.log("[LM SKIN] Using existing skin creation token (" + standardTokenBalance + ").");
+            } else {
+                /* Need to buy a token first — look up price from GameConfiguration */
+                var configuredCost = 0;
+                var configuredCurrency = "dna";
+
+                if (Array.isArray(window.WalletSoftPurchasesConfig)) {
+                    for (var spIdx = 0; spIdx < window.WalletSoftPurchasesConfig.length; spIdx++) {
+                        var sp = window.WalletSoftPurchasesConfig[spIdx];
+                        if (sp && sp.productId === standardTokenPurchaseId) {
+                            configuredCost = Number(sp.currencyAmount) || 0;
+                            configuredCurrency = String(
+                                sp.currencyProductId || "dna"
+                            ).toLowerCase();
+                            break;
+                        }
                     }
                 }
 
-                /*
-                 * Fallback: send the same soft-purchase request through
-                 * Legend Mod's protocol implementation.
-                 */
-                if (
-                    !purchaseSent &&
-                    typeof app.softPurchase ===
-                    "function"
-                ) {
+                /* Fall back to a known default if config not loaded yet */
+                if (!configuredCost) {
+                    configuredCost = 90;
+                    configuredCurrency = "dna";
+                    console.warn(
+                        "[LM SKIN] Soft purchase config not found; using default: 90 DNA."
+                    );
+                }
+
+                var currentBalance = 0;
+                if (configuredCurrency === "dna") {
+                    currentBalance = Number(app.user && app.user.dna) || 0;
+                } else if (configuredCurrency === "coin") {
+                    currentBalance = Number(app.user && app.user.coins) || 0;
+                }
+
+                if (configuredCost > 0 && currentBalance < configuredCost) {
+                    toastr.error(
+                        "<b>[SKIN]:</b> " +
+                        "Skin token costs " +
+                        configuredCost.toLocaleString() +
+                        " " +
+                        configuredCurrency.toUpperCase() +
+                        ", but you only have " +
+                        currentBalance.toLocaleString() + "."
+                    );
+                    console.error(
+                        "[LM SKIN] Balance check failed:",
+                        {
+                            cost: configuredCost,
+                            currency: configuredCurrency,
+                            balance: currentBalance
+                        }
+                    );
+                    return false;
+                }
+
+                /* Send the token purchase via LM's own soft purchase (opcode 70) */
+                var purchaseSent = false;
+
+                if (typeof app.softPurchase === "function") {
                     purchaseSent =
-                        app.softPurchase(
-                            standardTokenPurchaseId
-                        ) === true;
+                        app.softPurchase(standardTokenPurchaseId) === true;
                 }
 
                 if (!purchaseSent) {
                     toastr.error(
                         "<b>[SKIN]:</b> Could not purchase the required skin creation token."
                     );
-
                     return false;
                 }
+
+                needsTokenPurchase = true;
 
                 console.log(
                     "[LM SKIN] Sent token purchase before skin creation:",
                     {
-                        purchaseId:
-                            standardTokenPurchaseId,
-
-                        cost:
-                            configuredCost,
-
-                        currency:
-                            configuredCurrency
+                        purchaseId: standardTokenPurchaseId,
+                        cost: configuredCost,
+                        currency: configuredCurrency
                     }
                 );
             }
 
-            var pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-            if (!imageUint8Array || imageUint8Array.length < pngSignature.length) {
-                toastr.error("<b>[SKIN]:</b> Invalid or empty PNG payload.");
-                return false;
-            }
-            for (var signatureIndex = 0; signatureIndex < pngSignature.length; signatureIndex++) {
-                if (imageUint8Array[signatureIndex] !== pngSignature[signatureIndex]) {
-                    console.error("[SKIN] Invalid PNG signature:", Array.from(imageUint8Array.slice(0, 8)));
-                    toastr.error("<b>[SKIN]:</b> Encoded image is not a valid PNG.");
-                    return false;
-                }
-            }
-
-            /*
-             * Convert the PNG byte array to the Base64 string for the
-             * official Haxe API (which calls Haxe Base64.decode internally).
-             */
-            var binary = "";
-            var chunkSize = 8192;
-            for (var offset = 0; offset < imageUint8Array.length; offset += chunkSize) {
-                var chunk = imageUint8Array.subarray(offset, Math.min(offset + chunkSize, imageUint8Array.length));
-                binary += String.fromCharCode.apply(null, chunk);
-            }
-            var base64Content = btoa(binary);
-
-            var colorInt = parseInt((skinColorHex || "#FFFF00").replace("#", ""), 16);
+            /* ── Build the plist meta XML ── */
+            var colorInt = parseInt(
+                (skinColorHex || "#FFFF00").replace("#", ""),
+                16
+            );
             if (!Number.isFinite(colorInt)) {
                 colorInt = 14703104;
             }
@@ -14820,79 +14752,121 @@ function thelegendmodproject() {
                 '\t<string>' + safeName + '</string>\n' +
                 '\t<key>color</key>\n' +
                 '\t<integer>' + colorInt + '</integer>\n' +
-                '\t<key>indexedSubscriptions</key>\n\t' + subscriptionsXml + '\n' +
+                '\t<key>indexedSubscriptions</key>\n\t' +
+                subscriptionsXml + '\n' +
                 '\t<key>creationDate</key>\n' +
-                '\t<integer>' + Math.round(Date.now() / 1000) + '</integer>\n' +
+                '\t<integer>' + Math.round(Date.now() / 1000) +
+                '</integer>\n' +
                 '</dict>\n' +
                 '</plist>';
 
-            /*
-             * Primary save path: official CreateSkinService.
-             * This registers opcode 151 and sends opcode 150.
-             */
-            if (officialApi && typeof officialApi.saveUserSkin === "function") {
+            /* ── Send opcode 150 (always via mesega) ── */
+            function sendSkinUpload() {
                 try {
-                    officialApi.saveUserSkin(base64Content, xmlMeta);
-                    console.log("[LM SKIN] Skin submitted through official saveUserSkin().");
-                    toastr.info("<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server...");
-                    return true;
-                } catch (officialSaveError) {
-                    console.warn("[LM SKIN] Official saveUserSkin failed; using protocol fallback:", officialSaveError);
-                }
-            }
-
-            /*
-             * Protocol fallback equivalent to official saveUserSkin().
-             */
-            if (!window.mesega || !window.core || !window.core.proxyMobileData) {
-                toastr.error("<b>[ERROR]:</b> Skin upload protocol is unavailable.");
-                return false;
-            }
-
-            try {
-                var buffer = window.mesega.encode({
-                    contentType: 1,
-                    uncompressedData: {
-                        type: 150,
-                        userSkinsCreateRequestField: {
-                            content: imageUint8Array, // Pass Uint8Array directly for protobuf bytes field
-                            meta: xmlMeta
+                    var buffer = window.mesega.encode({
+                        contentType: 1,
+                        uncompressedData: {
+                            type: 150,
+                            userSkinsCreateRequestField: {
+                                content: imageUint8Array,
+                                meta: xmlMeta
+                            }
                         }
-                    }
-                }).finish();
+                    }).finish();
 
-                /* Round-trip packet validation assertion */
-                try {
-                    var decodedUpload = window.mesega.decode(buffer);
-                    var decodedContent = decodedUpload && decodedUpload.uncompressedData && decodedUpload.uncompressedData.userSkinsCreateRequestField && decodedUpload.uncompressedData.userSkinsCreateRequestField.content;
-                    var decodedSignature = decodedContent ? Array.from(decodedContent.slice(0, 8)) : [];
-                    console.log("[SKIN] Encoded payload PNG signature:", decodedSignature);
-                    if (decodedSignature.length !== 8 || decodedSignature[0] !== 137 || decodedSignature[1] !== 80 || decodedSignature[2] !== 78 || decodedSignature[3] !== 71 || decodedSignature[4] !== 13 || decodedSignature[5] !== 10 || decodedSignature[6] !== 26 || decodedSignature[7] !== 10) {
-                        throw new Error("Opcode 150 content is not raw PNG bytes");
+                    /* Round-trip packet validation */
+                    try {
+                        var decodedUpload =
+                            window.mesega.decode(buffer);
+                        var decodedContent =
+                            decodedUpload &&
+                            decodedUpload.uncompressedData &&
+                            decodedUpload.uncompressedData
+                                .userSkinsCreateRequestField &&
+                            decodedUpload.uncompressedData
+                                .userSkinsCreateRequestField.content;
+                        var decodedSig = decodedContent
+                            ? Array.from(decodedContent.slice(0, 8))
+                            : [];
+
+                        console.log(
+                            "[SKIN] Encoded payload PNG signature:",
+                            decodedSig
+                        );
+
+                        if (
+                            decodedSig.length !== 8 ||
+                            decodedSig[0] !== 137 ||
+                            decodedSig[1] !== 80 ||
+                            decodedSig[2] !== 78 ||
+                            decodedSig[3] !== 71 ||
+                            decodedSig[4] !== 13 ||
+                            decodedSig[5] !== 10 ||
+                            decodedSig[6] !== 26 ||
+                            decodedSig[7] !== 10
+                        ) {
+                            throw new Error(
+                                "Opcode 150 content is not raw PNG bytes"
+                            );
+                        }
+                    } catch (packetValidationError) {
+                        console.error(
+                            "[SKIN] Refusing malformed opcode 150:",
+                            packetValidationError
+                        );
+                        toastr.error(
+                            "<b>[SKIN]:</b> Upload packet validation " +
+                            "failed; opcode 150 was not sent."
+                        );
+                        return false;
                     }
-                } catch (packetValidationError) {
-                    console.error("[SKIN] Refusing malformed opcode 150:", packetValidationError);
-                    toastr.error("<b>[SKIN]:</b> Upload packet validation failed; opcode 150 was not sent.");
+
+                    window.core.proxyMobileData(buffer);
+
+                    console.log(
+                        "[LM SKIN] Sent opcode 150 via autonomous " +
+                        "protocol: " +
+                        imageUint8Array.length +
+                        " PNG bytes, meta length: " +
+                        xmlMeta.length
+                    );
+
+                    toastr.info(
+                        "<b>[SERVER]:</b> Skin upload sent via " +
+                        "LM protocol. Waiting for server response..."
+                    );
+                    return true;
+                } catch (encodeError) {
+                    console.error(
+                        "[LM SKIN] Skin upload encode failed:",
+                        encodeError
+                    );
+                    toastr.error(
+                        "<b>[ERROR]:</b> Failed to encode skin data: " +
+                        encodeError.message
+                    );
                     return false;
                 }
-
-                window.core.proxyMobileData(buffer);
-                console.log("[LM SKIN] Sent opcode 150 after token purchase: " + imageUint8Array.length + " PNG bytes, meta length: " + xmlMeta.length);
-                toastr.info("<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server...");
-                return true;
-            } catch (encodeError) {
-                console.error(
-                    "[LM SKIN] Skin upload encode failed:",
-                    encodeError
-                );
-
-                toastr.error(
-                    "<b>[ERROR]:</b> Failed to encode skin data: " +
-                    encodeError.message
-                );
-
-                return false;
             }
+
+            /*
+             * If we just purchased a token, delay the skin upload by
+             * 500ms to give the server time to process the token
+             * purchase before receiving the skin create request.
+             */
+            if (needsTokenPurchase) {
+                console.log(
+                    "[LM SKIN] Delaying skin upload 500ms for " +
+                    "token purchase to process..."
+                );
+                toastr.info(
+                    "<b>[SERVER]:</b> Token purchased. Uploading skin..."
+                );
+                setTimeout(sendSkinUpload, 500);
+                return true;
+            }
+
+            return sendSkinUpload();
         },
         setupSkinUploadInterface() {
             if ($("#custom-skin-uploader").length === 0) {
@@ -20746,18 +20720,6 @@ function thelegendmodproject() {
                                     this.updateProducts(skinProducts);
                                 }
 
-                                var officialSkinApi = window.agarApp && window.agarApp.API;
-
-                                if (officialSkinApi) {
-                                    if (typeof officialSkinApi.handleUserUpdates === 'function') {
-                                        officialSkinApi.handleUserUpdates(skinProducts);
-                                    }
-
-                                    if (typeof officialSkinApi.addCustomSkin === 'function') {
-                                        officialSkinApi.addCustomSkin(createdSkinId, true, true);
-                                    }
-                                }
-
                                 /*
                                  * Agar.io inserts custom skins dynamically,
                                  * while the LM grid starts from a static
@@ -21061,8 +21023,13 @@ function thelegendmodproject() {
                                 $("#dna").html(`🧬` + this.user.dna);
                                 if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState();
                                 break;
+                            case "create_skin_token":
+                                this.user.skinCreateTokens = items[i].amount;
+                                console.log("[LM] Skin creation tokens: " + items[i].amount);
+                                break;
                             case "create_skin_token_for_vip_weekly":
-                                //this.user.skinCreateVIPTokens = items[i].amount;
+                                this.user.skinCreateVIPTokens = items[i].amount;
+                                console.log("[LM] VIP skin creation tokens: " + items[i].amount);
                                 break;
                             default:
                                 console.log("unknown item", items[i])
