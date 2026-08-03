@@ -3657,6 +3657,12 @@ function updateEquippedSkinUI() {
 function syncEquippedSkinFromServer() {
     if (!window.application || !window.application.user) return;
 
+    // If we recently equipped a skin via our UI (within 5s), don't let
+    // the stale server response overwrite our pending change.
+    if (window._lmSkinEquipTime && (Date.now() - window._lmSkinEquipTime) < 5000) {
+        return;
+    }
+
     // window.serverEquippedSkinId is set by ogario.v4.js updateUserSettings
     // when key=1 (skinId) arrives from the server (opcode 11 login or opcode 81 settings response)
     var serverSkinId = window.serverEquippedSkinId;

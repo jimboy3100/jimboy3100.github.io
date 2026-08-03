@@ -2545,17 +2545,14 @@ window.activateQuest = function () {
     var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104];
     window.core.proxyMobileData(bytes);
 }
-window.changeSkin = function (productID) {
-    //console.log("quchange skin", productID)
+// Timestamp of the last skin equip via our UI.
+// Used to suppress opcode 81 from overwriting localStorage for a few seconds,
+// because the server response reflects the BEFORE state, not our pending change.
+window._lmSkinEquipTime = 0;
+window._lmSkinEquipId = '';
 
-    if (productID == null) return
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_empty"}
-    //8, 1, 18, 23, 8, 80, 130, 5, 18, 10, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
-    //8, 1, 18, 23, 8, 80, 130, 5, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_kraken"}
-    //8, 1, 18, 24, 8, 80, 130, 5, 19, 10, 17, 8, 1, 16, 1, 26, 11, 115, 107, 105, 110, 95, 107, 114, 97, 107, 101, 110
-    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_custom_50b62972-d334-4878-b4c8-8ea5f3fade18_4b5dadc9-2543-4401-8ce5-1cf220dba247"}
-    //8, 1, 18, 98, 8, 80, 130, 5, 93, 10, 91, 8, 1, 16, 1, 26, 85, 115, 107, 105, 110, 95, 99, 117, 115, 116, 111, 109, 95, 53, 48, 98, 54, 50, 57, 55, 50, 45, 100, 51, 51, 52, 45, 52, 56, 55, 56, 45, 98, 52, 99, 56, 45, 56, 101, 97, 53, 102, 51, 102, 97, 100, 101, 49, 56, 95, 52, 98, 53, 100, 97, 100, 99, 57, 45, 50, 53, 52, 51, 45, 52, 52, 48, 49, 45, 56, 99, 101, 53, 45, 49, 99, 102, 50, 50, 48, 100, 98, 97, 50, 52, 55
+window.changeSkin = function (productID) {
+    if (productID == null) return;
 
     var encode = function (str) {
         bytes.push(str.length);
@@ -2566,9 +2563,10 @@ window.changeSkin = function (productID) {
     var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
     encode(productID);
 
-    // Send opcode 80 first — this is the critical server-side equip.
-    // The cosmetic URL block below is optional and must never prevent
-    // the protobuf from being sent.
+    // Mark that WE just equipped — suppress opcode 81 overwrites for 5 seconds
+    window._lmSkinEquipTime = Date.now();
+    window._lmSkinEquipId = productID;
+
     window.core.proxyMobileData(bytes);
 
     try {
@@ -21442,6 +21440,19 @@ function thelegendmodproject() {
                 switch (key) {
                     case 1:
                         var skinVal = s[i].valueString || '';
+                        // If we recently equipped a skin via our UI (within 5s),
+                        // the opcode 81 response still contains the OLD skin.
+                        // Don't let it overwrite our pending equip.
+                        var suppressOverwrite = (
+                            window._lmSkinEquipTime &&
+                            (Date.now() - window._lmSkinEquipTime) < 5000 &&
+                            window._lmSkinEquipId &&
+                            skinVal !== window._lmSkinEquipId
+                        );
+                        if (suppressOverwrite) {
+                            console.log('[SKIN] Suppressed opcode 81 overwrite: server=' + skinVal + ', keeping=' + window._lmSkinEquipId);
+                            break;
+                        }
                         window.serverEquippedSkinId = skinVal;
                         if (!skinVal || skinVal === 'skin_empty') {
                             localStorage.removeItem('equippedSkinId');
