@@ -23,18 +23,18 @@ function isFiniteNumber(...vals) {
     return vals.every((v) => typeof v === 'number' && Number.isFinite(v));
 }
 
-function packRGBA8(r, g, b, a) {
+export function packRGBA8(r, g, b, a) {
     return ((a & 0xFF) << 24) | ((b & 0xFF) << 16) | ((g & 0xFF) << 8) | (r & 0xFF);
 }
 
-function packSnorm16x2(x, y) {
-    const nx = Math.round(clamp01((x + 1) * 0.5) * 65535);
-    const ny = Math.round(clamp01((y + 1) * 0.5) * 65535);
-    return ((ny & 0xFFFF) << 16) | (nx & 0xFFFF);
+export function packSnorm16x2(x, y) {
+    const sx = Math.round(Math.max(-1, Math.min(1, x)) * 32767);
+    const sy = Math.round(Math.max(-1, Math.min(1, y)) * 32767);
+    return ((sx & 0xFFFF) | ((sy & 0xFFFF) << 16)) >>> 0;
 }
 
-function parseHexColor(style) {
-    if (!style.startsWith('#')) return null;
+export function parseHexColor(style) {
+    if (!style || !style.startsWith('#')) return null;
     const hex = style.slice(1);
     if (hex.length === 3 || hex.length === 4) {
         const r = parseInt(hex[0] + hex[0], 16);
@@ -53,7 +53,8 @@ function parseHexColor(style) {
     return null;
 }
 
-function parseFunctionalColor(style) {
+export function parseFunctionalColor(style) {
+    if (!style) return null;
     const match = style.match(/^rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)$/);
     if (!match) return null;
     const r = parseInt(match[1], 10);
@@ -76,11 +77,11 @@ function normalizeClearColor(color) {
     return { r: 0, g: 0, b: 0, a: 0 };
 }
 
-function identityTransform() {
+export function identityTransform() {
     return [1, 0, 0, 1, 0, 0];
 }
 
-function multiplyTransforms(t1, t2) {
+export function multiplyTransforms(t1, t2) {
     return [
         t1[0] * t2[0] + t1[2] * t2[1],
         t1[1] * t2[0] + t1[3] * t2[1],
@@ -91,14 +92,14 @@ function multiplyTransforms(t1, t2) {
     ];
 }
 
-function transformPoint(t, x, y) {
+export function transformPoint(t, x, y) {
     return [
         t[0] * x + t[2] * y + t[4],
         t[1] * x + t[3] * y + t[5],
     ];
 }
 
-function transformVector(t, vx, vy) {
+export function transformVector(t, vx, vy) {
     return [
         t[0] * vx + t[2] * vy,
         t[1] * vx + t[3] * vy,
@@ -106,24 +107,23 @@ function transformVector(t, vx, vy) {
 }
 
 export function normalizeArc(startAngle, endAngle, anticlockwise = false) {
-    let sweep = endAngle - startAngle;
+    const rawDelta = endAngle - startAngle;
+    if (!anticlockwise && rawDelta >= TWO_PI - EPSILON) {
+        return { startAngle, endAngle: startAngle + TWO_PI, sweep: TWO_PI, fullCircle: true };
+    }
+    if (anticlockwise && rawDelta <= -TWO_PI + EPSILON) {
+        return { startAngle, endAngle: startAngle - TWO_PI, sweep: TWO_PI, fullCircle: true };
+    }
+    let sweep = rawDelta;
     if (anticlockwise) {
         sweep = -sweep;
-    }
-    if (Math.abs(sweep) >= TWO_PI - EPSILON) {
-        return {
-            startAngle,
-            endAngle: startAngle + TWO_PI,
-            sweep: TWO_PI,
-            fullCircle: true,
-        };
     }
     sweep = ((sweep % TWO_PI) + TWO_PI) % TWO_PI;
     if (Math.abs(sweep) < EPSILON) {
         sweep = 0;
     }
-    let actualStart = startAngle;
-    let actualEnd = startAngle + (anticlockwise ? -sweep : sweep);
+    const actualStart = startAngle;
+    const actualEnd = startAngle + (anticlockwise ? -sweep : sweep);
     return {
         startAngle: actualStart,
         endAngle: actualEnd,
@@ -337,6 +337,10 @@ export class LegendArcEngine {
             [PIPELINE_KIND.PARTIAL_ARC]: this.#createPartialArcPipeline(),
             [PIPELINE_KIND.ARC_SEGMENT]: this.#createArcSegmentPipeline(),
         };
+
+        this.device.lost.then((info) => {
+            console.error('[LegendArc] WebGPU device lost:', info.message, info.reason);
+        });
     }
 
     #createPipeline(label, shaderSource, vertexBuffers) {
@@ -416,6 +420,14 @@ export class LegendArcEngine {
         }]);
     }
 
+    resize(cssWidth = this.canvas.clientWidth, cssHeight = this.canvas.clientHeight, dpr = globalThis.devicePixelRatio || 1) {
+        const width = Math.max(1, Math.round((cssWidth || this.canvas.width || 800) * dpr));
+        const height = Math.max(1, Math.round((cssHeight || this.canvas.height || 600) * dpr));
+        if (this.canvas.width !== width) this.canvas.width = width;
+        if (this.canvas.height !== height) this.canvas.height = height;
+        return { width, height, dpr };
+    }
+
     beginFrame(clearColor = this.clearColor) {
         this.clearColor = normalizeClearColor(clearColor);
         for (const batch of Object.values(this.batches)) batch.reset();
@@ -467,6 +479,268 @@ export class LegendArcEngine {
         this.frameOpen = false;
         return this;
     }
+
+    async flushAndWait() {
+        this.flush();
+        if (this.device.queue.onSubmittedWorkDone) {
+            await this.device.queue.onSubmittedWorkDone();
+        }
+        return this;
+    }
+
+    #record(kind, index) {
+        const previous = this.sequence[this.sequence.length - 1];
+        if (previous && previous.kind === kind && previous.start + previous.count === index) {
+            previous.count++;
+        } else {
+            this.sequence.push({ kind, start: index, count: 1 });
+        }
+    }
+
+    #ensureFrame() {
+        if (!this.frameOpen) {
+            this.beginFrame(this.clearColor);
+        }
+    }
+
+    #addCircle(centerX, centerY, radius, packedColor) {
+        this.#ensureFrame();
+        if (!(radius > 0) || !isFiniteNumber(centerX, centerY, radius)) return;
+        const batch = this.batches[PIPELINE_KIND.CIRCLE];
+        const index = batch.reserveOne();
+        const base = index * 4;
+        batch.floatView[base] = centerX;
+        batch.floatView[base + 1] = centerY;
+        batch.floatView[base + 2] = radius;
+        batch.uintView[base + 3] = packedColor;
+        this.#record(PIPELINE_KIND.CIRCLE, index);
+    }
+
+    #addEllipseRing(command, innerRatio, packedColor) {
+        this.#ensureFrame();
+        const batch = this.batches[PIPELINE_KIND.ELLIPSE_RING];
+        const index = batch.reserveOne();
+        const base = index * 8;
+        writeAxes(batch.floatView, base, command);
+        batch.floatView[base + 6] = clamp01(innerRatio);
+        batch.uintView[base + 7] = packedColor;
+        this.#record(PIPELINE_KIND.ELLIPSE_RING, index);
+    }
+
+    #addPartialArc(command, innerRatio, packedColor, sectorFill = false) {
+        this.#ensureFrame();
+        const batch = this.batches[PIPELINE_KIND.PARTIAL_ARC];
+        const index = batch.reserveOne();
+        const baseBytes = index * 44;
+        const baseFloat = baseBytes >>> 2;
+        writeAxes(batch.floatView, baseFloat, command);
+        batch.floatView[baseFloat + 6] = sectorFill ? 0 : clamp01(innerRatio);
+        batch.uintView[baseFloat + 7] = packSnorm16x2(command.startDirection[0], command.startDirection[1]);
+        batch.uintView[baseFloat + 8] = packSnorm16x2(command.endDirection[0], command.endDirection[1]);
+        batch.uintView[baseFloat + 9] = command.sweep > Math.PI ? 1 : 0;
+        batch.uintView[baseFloat + 10] = packedColor;
+        this.#record(PIPELINE_KIND.PARTIAL_ARC, index);
+    }
+
+    #addArcSegment(command, packedColor) {
+        this.#ensureFrame();
+        const batch = this.batches[PIPELINE_KIND.ARC_SEGMENT];
+        const index = batch.reserveOne();
+        const base = index * 9;
+        writeAxes(batch.floatView, base, command);
+
+        const midX = (command.startDirection[0] + command.endDirection[0]) * 0.5;
+        const midY = (command.startDirection[1] + command.endDirection[1]) * 0.5;
+        const midLen = Math.hypot(midX, midY) || 1;
+        const normMidX = midX / midLen;
+        const normMidY = midY / midLen;
+        const chordOffset = Math.cos(command.sweep * 0.5);
+
+        batch.uintView[base + 6] = packSnorm16x2(normMidX, normMidY);
+        batch.floatView[base + 7] = chordOffset;
+        batch.uintView[base + 8] = packedColor;
+        this.#record(PIPELINE_KIND.ARC_SEGMENT, index);
+    }
+
+    fillCircle(x, y, radius, color = this.fillStyle, alpha = this.globalAlpha) {
+        const packedColor = this.colorCache.parse(color, alpha);
+        const command = createCircleCommand(x, y, radius, 0, TWO_PI, false, this.transformMatrix);
+        if (command.isCircle) {
+            this.#addCircle(command.centerX, command.centerY, command.worldRadius, packedColor);
+        } else {
+            this.#addEllipseRing(command, 0, packedColor);
+        }
+        return this;
+    }
+
+    fillEllipse(x, y, radiusX, radiusY, rotation = 0, color = this.fillStyle, alpha = this.globalAlpha) {
+        const command = createEllipseCommand(x, y, radiusX, radiusY, rotation, 0, TWO_PI, false, this.transformMatrix);
+        const packedColor = this.colorCache.parse(color, alpha);
+        if (command.isCircle) {
+            this.#addCircle(command.centerX, command.centerY, command.worldRadius, packedColor);
+        } else {
+            this.#addEllipseRing(command, 0, packedColor);
+        }
+        return this;
+    }
+
+    strokeCircle(x, y, radius, width = this.lineWidth, color = this.strokeStyle, alpha = this.globalAlpha) {
+        if (!(radius > 0) || !(width > 0)) return this;
+        const command = createCircleCommand(x, y, radius, 0, TWO_PI, false, this.transformMatrix);
+        const innerRatio = Math.max(0, 1 - width / radius);
+        this.#addEllipseRing(command, innerRatio, this.colorCache.parse(color, alpha));
+        return this;
+    }
+
+    strokeArc(x, y, radius, startAngle, endAngle, width = this.lineWidth, color = this.strokeStyle, alpha = this.globalAlpha, anticlockwise = false) {
+        if (!(width > 0)) return this;
+        const command = createCircleCommand(x, y, radius, startAngle, endAngle, anticlockwise, this.transformMatrix);
+        const innerRatio = Math.max(0, 1 - width / radius);
+        const packedColor = this.colorCache.parse(color, alpha);
+
+        if (command.fullCircle) {
+            this.#addEllipseRing(command, innerRatio, packedColor);
+        } else if (command.sweep > EPSILON) {
+            this.#addPartialArc(command, innerRatio, packedColor, false);
+        }
+        return this;
+    }
+
+    fillSector(x, y, radius, startAngle, endAngle, color = this.fillStyle, alpha = this.globalAlpha, anticlockwise = false) {
+        const command = createCircleCommand(x, y, radius, startAngle, endAngle, anticlockwise, this.transformMatrix);
+        const packedColor = this.colorCache.parse(color, alpha);
+
+        if (command.fullCircle) {
+            if (command.isCircle) {
+                this.#addCircle(command.centerX, command.centerY, command.worldRadius, packedColor);
+            } else {
+                this.#addEllipseRing(command, 0, packedColor);
+            }
+        } else if (command.sweep > EPSILON) {
+            this.#addPartialArc(command, 0, packedColor, true);
+        }
+        return this;
+    }
+
+    beginPath() {
+        this.currentPath.length = 0;
+        return this;
+    }
+
+    arc(x, y, radius, startAngle = 0, endAngle = TWO_PI, anticlockwise = false) {
+        if (!(radius >= 0)) throw new RangeError('arc radius must be non-negative.');
+        this.currentPath.push(createCircleCommand(x, y, radius, startAngle, endAngle, anticlockwise, this.transformMatrix));
+        return this;
+    }
+
+    ellipse(x, y, radiusX, radiusY, rotation = 0, startAngle = 0, endAngle = TWO_PI, anticlockwise = false) {
+        if (!(radiusX >= 0) || !(radiusY >= 0)) throw new RangeError('ellipse radii must be non-negative.');
+        this.currentPath.push(createEllipseCommand(x, y, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise, this.transformMatrix));
+        return this;
+    }
+
+    closePath() {
+        return this;
+    }
+
+    fill() {
+        const packedColor = this.colorCache.parse(this.fillStyle, this.globalAlpha);
+        for (const command of this.currentPath) {
+            if (command.fullCircle) {
+                if (command.isCircle) {
+                    this.#addCircle(command.centerX, command.centerY, command.worldRadius, packedColor);
+                } else {
+                    this.#addEllipseRing(command, 0, packedColor);
+                }
+            } else if (command.sweep > EPSILON) {
+                this.#addArcSegment(command, packedColor);
+            }
+        }
+        return this;
+    }
+
+    stroke() {
+        if (!(this.lineWidth > 0)) return this;
+        const packedColor = this.colorCache.parse(this.strokeStyle, this.globalAlpha);
+        for (const command of this.currentPath) {
+            const referenceRadius = Math.max(command.localRadiusX, command.localRadiusY, EPSILON);
+            const innerRatio = Math.max(0, 1 - this.lineWidth / referenceRadius);
+            if (command.fullCircle) {
+                this.#addEllipseRing(command, innerRatio, packedColor);
+            } else if (command.sweep > EPSILON) {
+                this.#addPartialArc(command, innerRatio, packedColor, false);
+            }
+        }
+        return this;
+    }
+
+    save() {
+        this.stateStack.push({
+            fillStyle: this.fillStyle,
+            strokeStyle: this.strokeStyle,
+            globalAlpha: this.globalAlpha,
+            lineWidth: this.lineWidth,
+            lineCap: this.lineCap,
+            transformMatrix: [...this.transformMatrix],
+        });
+        return this;
+    }
+
+    restore() {
+        const state = this.stateStack.pop();
+        if (!state) return this;
+        this.fillStyle = state.fillStyle;
+        this.strokeStyle = state.strokeStyle;
+        this.globalAlpha = state.globalAlpha;
+        this.lineWidth = state.lineWidth;
+        this.lineCap = state.lineCap;
+        this.transformMatrix = state.transformMatrix;
+        return this;
+    }
+
+    resetTransform() {
+        this.transformMatrix = identityTransform();
+        return this;
+    }
+
+    setTransform(a, b, c, d, e, f) {
+        if (typeof a === 'object' && a !== null) {
+            this.transformMatrix = [
+                Number(a.a ?? 1),
+                Number(a.b ?? 0),
+                Number(a.c ?? 0),
+                Number(a.d ?? 1),
+                Number(a.e ?? 0),
+                Number(a.f ?? 0),
+            ];
+        } else {
+            this.transformMatrix = [a, b, c, d, e, f].map(Number);
+        }
+        return this;
+    }
+
+    transform(a, b, c, d, e, f) {
+        this.transformMatrix = multiplyTransforms(this.transformMatrix, [a, b, c, d, e, f].map(Number));
+        return this;
+    }
+
+    translate(x, y) {
+        return this.transform(1, 0, 0, 1, x, y);
+    }
+
+    scale(x, y = x) {
+        return this.transform(x, 0, 0, y, 0, 0);
+    }
+
+    rotate(angle) {
+        const cosine = Math.cos(angle);
+        const sine = Math.sin(angle);
+        return this.transform(cosine, sine, -sine, cosine, 0, 0);
+    }
+
+    clearRect(x = 0, y = 0, width = this.canvas?.width || 800, height = this.canvas?.height || 600) {
+        return this.beginFrame({ r: 0, g: 0, b: 0, a: 0 });
+    }
 }
 
 export const LegendArc = Object.freeze({
@@ -474,6 +748,15 @@ export const LegendArc = Object.freeze({
 });
 
 export default LegendArc;
+
+function writeAxes(floatView, base, command) {
+    floatView[base] = command.centerX;
+    floatView[base + 1] = command.centerY;
+    floatView[base + 2] = command.axisXx;
+    floatView[base + 3] = command.axisXy;
+    floatView[base + 4] = command.axisYx;
+    floatView[base + 5] = command.axisYy;
+}
 
 function createCircleCommand(x, y, radius, startAngle, endAngle, anticlockwise, transform) {
     return createEllipseCommand(x, y, radius, radius, 0, startAngle, endAngle, anticlockwise, transform);

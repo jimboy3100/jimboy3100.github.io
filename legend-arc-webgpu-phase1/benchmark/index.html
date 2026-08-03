@@ -2,20 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LegendArc WebGPU Phase 1 Benchmark</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegendArc WebGPU Phase 1B Rigorous Benchmark</title>
     <style>
-        body { margin: 0; background: #111; color: #fff; font-family: monospace; }
-        canvas { display: block; width: 100vw; height: 100vh; }
-        #overlay { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 6px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0a0a0c; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
+        #canvas { display: block; width: 100vw; height: 100vh; }
+        
+        #overlay {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(16, 18, 24, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 16px;
+            width: 340px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            font-size: 13px;
+        }
+
+        h2 { font-size: 16px; color: #40c4ff; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .control-group { margin-bottom: 10px; }
+        label { display: block; font-size: 11px; color: #8a8a9a; margin-bottom: 4px; text-transform: uppercase; }
+        select {
+            width: 100%;
+            background: #181b24;
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+        select:focus { border-color: #40c4ff; }
+
+        .stats-panel {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .stat-label { color: #aaaaaa; }
+        .stat-val { font-weight: bold; color: #00e676; font-family: monospace; font-size: 13px; }
+        .stat-val.highlight { color: #ff4081; }
+
+        #error-msg {
+            display: none;
+            margin-top: 10px;
+            color: #ff5252;
+            font-weight: bold;
+            background: rgba(255,82,82,0.15);
+            padding: 8px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div id="overlay">
-        <h2>LegendArc WebGPU Phase 1 Benchmark</h2>
-        <div id="fps">FPS: --</div>
-        <div id="count">Arcs: 10,000</div>
+        <h2>LegendArc WebGPU Phase 1B Benchmark</h2>
+
+        <div class="control-group">
+            <label>Primitive Count</label>
+            <select id="count-select">
+                <option value="10000">10,000 Primitives</option>
+                <option value="50000">50,000 Primitives</option>
+                <option value="100000">100,000 Primitives</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Primitive Type</label>
+            <select id="type-select">
+                <option value="circle">Filled Circles</option>
+                <option value="ring">Full Rings</option>
+                <option value="arc5">5° Partial Arcs</option>
+                <option value="arc30">30° Partial Arcs</option>
+                <option value="arc180">180° Partial Arcs</option>
+                <option value="mixed" selected>Mixed Scene (All Types)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Off-Screen Ratio</label>
+            <select id="offscreen-select">
+                <option value="0">0% Off-Screen (All Visible)</option>
+                <option value="0.5">50% Off-Screen</option>
+                <option value="0.9">90% Off-Screen</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Radius Profile</label>
+            <select id="radius-select">
+                <option value="small">Small (5px – 20px)</option>
+                <option value="large">Large (50px – 200px)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Render Mode</label>
+            <select id="mode-select">
+                <option value="fast">Fast (Pipeline Grouped)</option>
+                <option value="ordered">Ordered (Strict Draw Order)</option>
+            </select>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-row">
+                <span class="stat-label">FPS:</span>
+                <span class="stat-val highlight" id="stat-fps">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Throughput (MPrims/s):</span>
+                <span class="stat-val" id="stat-mprims">--</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">CPU Record Time:</span>
+                <span class="stat-val" id="stat-cpu-rec">-- ms</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">CPU Submit Time:</span>
+                <span class="stat-val" id="stat-cpu-sub">-- ms</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">GPU Completion Time:</span>
+                <span class="stat-val" id="stat-gpu-done">-- ms</span>
+            </div>
+        </div>
+
+        <div id="error-msg"></div>
     </div>
+
     <canvas id="canvas"></canvas>
+
     <script type="module" src="benchmark.js"></script>
 </body>
 </html>
