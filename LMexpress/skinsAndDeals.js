@@ -3282,17 +3282,11 @@ function _showIAPBetaRiskModal(
  *     -> modalPaymentLink.click()
  */
 function getOfficialAgarPaymentService() {
-    var agarUtils =
-        window.agarApp &&
-        window.agarApp.utils;
-
-    if (
-        !agarUtils ||
-        typeof agarUtils.load !==
-            'function'
-    ) {
-        return null;
-    }
+    /*
+     * agarApp.utils.load is defined in bundle_start.js which Legend Mod
+     * does not load. Use a plain XMLHttpRequest instead — it is exactly
+     * what the original utils.load() wraps internally.
+     */
 
     /*
      * Current endpoint in the supplied original agario.js (line ~105732).
@@ -3404,11 +3398,20 @@ function getOfficialAgarPaymentService() {
                     }
                 );
 
-                agarUtils.load(
-                    paymentRequestUrl,
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', paymentRequestUrl, true);
+                xhr.timeout = 15000;
+                xhr.onload = function() {
+                    if (xhr.status < 200 || xhr.status >= 300) {
+                        console.error('[SHOP] Agar.io payment endpoint returned HTTP ' + xhr.status);
+                        if (window.toastr) {
+                            toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint returned HTTP ' + xhr.status + '.');
+                        }
+                        return;
+                    }
 
-                    function(data) {
-                        try {
+                    var data = xhr.responseText;
+                    try {
                             var response =
                                 typeof data ===
                                     'string'
@@ -3435,16 +3438,10 @@ function getOfficialAgarPaymentService() {
 
                             /* Reproduce exact official flow: #modal-payment-link + .xsolla_container magnificPopup */
                             var modalPaymentLink =
-                                typeof agarUtils
-                                    .get ===
-                                    'function'
-                                    ? agarUtils.get(
+                                document
+                                    .querySelector(
                                         '#modal-payment-link'
-                                    )
-                                    : document
-                                        .querySelector(
-                                            '#modal-payment-link'
-                                        );
+                                    );
 
                             var xsollaContainer =
                                 window.jQuery
@@ -3576,8 +3573,20 @@ function getOfficialAgarPaymentService() {
                                 );
                             }
                         }
+                };
+                xhr.onerror = function() {
+                    console.error('[SHOP] Network error contacting Agar.io payment endpoint');
+                    if (window.toastr) {
+                        toastr.error('<b>[SHOP]:</b> Network error contacting Agar.io payment endpoint.');
                     }
-                );
+                };
+                xhr.ontimeout = function() {
+                    console.error('[SHOP] Agar.io payment endpoint timed out');
+                    if (window.toastr) {
+                        toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint timed out.');
+                    }
+                };
+                xhr.send();
 
                 return true;
             }
