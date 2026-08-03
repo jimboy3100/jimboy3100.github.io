@@ -2819,6 +2819,19 @@ window.getOfficialAgarXpState = function(
     fallbackXp,
     fallbackLimit
 ) {
+    function calculateAgarExp(q) {
+        var lvl = Math.max(1, Number(q) || 1);
+        if (lvl === 1) return 50;
+        if (lvl === 2) return 125;
+        if (lvl === 3) return 250;
+        if (lvl === 4) return 500;
+        var exp = 0;
+        for (var i = 1; i <= lvl; i++) {
+            exp += i * 100;
+        }
+        return exp - 500;
+    }
+
     var level =
         Number(fallbackLevel) ||
         Number(window.agarioLEVEL) ||
@@ -2826,6 +2839,10 @@ window.getOfficialAgarXpState = function(
 
     var currentXp =
         Number(fallbackXp);
+
+    if (!isFinite(currentXp) || currentXp < 0) {
+        currentXp = Number(window.agarioXP) || 0;
+    }
 
     var totalXp = 0;
 
@@ -2895,35 +2912,42 @@ window.getOfficialAgarXpState = function(
     }
 
     /*
-     * Secondary source: Agar.io's cached official account data.
+     * GameConfiguration table source
      */
-    try {
-        var storedUserInfo =
-            window.agarApp &&
-            agarApp.storageInfo &&
-            agarApp.storageInfo.userInfo
-                ? agarApp.storageInfo.userInfo
-                : null;
+    if (!(totalXp > 0)) {
+        try {
+            var xpList =
+                window.GameConfiguration &&
+                window.GameConfiguration.gameConfig &&
+                window.GameConfiguration.gameConfig['Gameplay - XP to Level'];
 
-        if (storedUserInfo) {
-            if (
-                !isFinite(currentXp) ||
-                currentXp < 0
-            ) {
-                var storedXp =
-                    Number(
-                        storedUserInfo.xp
-                    );
-
-                if (
-                    isFinite(storedXp) &&
-                    storedXp >= 0
-                ) {
-                    currentXp = storedXp;
+            if (Array.isArray(xpList)) {
+                for (var k = 0; k < xpList.length; k++) {
+                    if (xpList[k] && Number(xpList[k].level) === Number(level)) {
+                        var gcXp = Number(xpList[k].xp || xpList[k].xpNeeded || xpList[k].maxXp);
+                        if (isFinite(gcXp) && gcXp > 0) {
+                            totalXp = gcXp;
+                            break;
+                        }
+                    }
                 }
             }
+        } catch (gcError) {}
+    }
 
-            if (!(totalXp > 0)) {
+    /*
+     * Secondary source: Agar.io's cached official account data.
+     */
+    if (!(totalXp > 0)) {
+        try {
+            var storedUserInfo =
+                window.agarApp &&
+                agarApp.storageInfo &&
+                agarApp.storageInfo.userInfo
+                    ? agarApp.storageInfo.userInfo
+                    : null;
+
+            if (storedUserInfo) {
                 var storedLimit =
                     Number(
                         storedUserInfo.xpNeeded
@@ -2936,32 +2960,32 @@ window.getOfficialAgarXpState = function(
                     totalXp = storedLimit;
                 }
             }
+        } catch (storedXpError) {
+            console.warn(
+                '[XP] Could not read cached Agar.io XP data:',
+                storedXpError
+            );
         }
-    } catch (storedXpError) {
-        console.warn(
-            '[XP] Could not read cached Agar.io XP data:',
-            storedXpError
-        );
     }
 
     /*
-     * Legend Mod fallback: calculate the level limit instead of
-     * inventing 1000.
+     * Legend Mod application fallback
      */
     if (!(totalXp > 0)) {
-        var lmApplication =
+        var lmApp =
             window.application ||
             window.legendmod ||
+            window.agarApp ||
             null;
 
         if (
-            lmApplication &&
-            typeof lmApplication.agarExp ===
+            lmApp &&
+            typeof lmApp.agarExp ===
                 'function'
         ) {
             var calculatedLimit =
                 Number(
-                    lmApplication.agarExp(
+                    lmApp.agarExp(
                         level
                     )
                 );
@@ -2976,7 +3000,7 @@ window.getOfficialAgarXpState = function(
     }
 
     /*
-     * Last valid fallback. Never hardcode 1000 here.
+     * Supplied limit fallback (only if valid and >= currentXp)
      */
     if (!(totalXp > 0)) {
         var suppliedLimit =
@@ -2984,19 +3008,18 @@ window.getOfficialAgarXpState = function(
 
         if (
             isFinite(suppliedLimit) &&
-            suppliedLimit > 0
+            suppliedLimit > 0 &&
+            suppliedLimit >= currentXp
         ) {
             totalXp = suppliedLimit;
         }
     }
 
-    if (
-        !isFinite(currentXp) ||
-        currentXp < 0
-    ) {
-        currentXp =
-            Number(window.agarioXP) ||
-            0;
+    /*
+     * Algorithmic XP limit calculation for the level (guarantees valid totalXp)
+     */
+    if (!(totalXp > 0) || totalXp < currentXp || (level > 5 && totalXp === 1000)) {
+        totalXp = calculateAgarExp(level);
     }
 
     var percent =
