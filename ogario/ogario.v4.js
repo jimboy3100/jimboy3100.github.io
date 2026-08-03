@@ -14765,106 +14765,62 @@ function thelegendmodproject() {
                 );
             }
 
+            var pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+            if (!imageUint8Array || imageUint8Array.length < pngSignature.length) {
+                toastr.error("<b>[SKIN]:</b> Invalid or empty PNG payload.");
+                return false;
+            }
+            for (var signatureIndex = 0; signatureIndex < pngSignature.length; signatureIndex++) {
+                if (imageUint8Array[signatureIndex] !== pngSignature[signatureIndex]) {
+                    console.error("[SKIN] Invalid PNG signature:", Array.from(imageUint8Array.slice(0, 8)));
+                    toastr.error("<b>[SKIN]:</b> Encoded image is not a valid PNG.");
+                    return false;
+                }
+            }
+
             /*
-             * Convert the PNG byte array to the Base64 string required
-             * by User_skins_create_request.content.
+             * Convert the PNG byte array to the Base64 string for the
+             * official Haxe API (which calls Haxe Base64.decode internally).
              */
-            var binary =
-                "";
+            var binary = "";
+            var chunkSize = 8192;
+            for (var offset = 0; offset < imageUint8Array.length; offset += chunkSize) {
+                var chunk = imageUint8Array.subarray(offset, Math.min(offset + chunkSize, imageUint8Array.length));
+                binary += String.fromCharCode.apply(null, chunk);
+            }
+            var base64Content = btoa(binary);
 
-            var chunkSize =
-                8192;
-
-            for (
-                var offset = 0;
-                offset <
-                imageUint8Array.length;
-                offset += chunkSize
-            ) {
-                var chunk =
-                    imageUint8Array.subarray(
-                        offset,
-                        Math.min(
-                            offset +
-                            chunkSize,
-                            imageUint8Array
-                                .length
-                        )
-                    );
-
-                binary +=
-                    String.fromCharCode
-                        .apply(
-                            null,
-                            chunk
-                        );
+            var colorInt = parseInt((skinColorHex || "#FFFF00").replace("#", ""), 16);
+            if (!Number.isFinite(colorInt)) {
+                colorInt = 14703104;
             }
 
-            var base64Content =
-                btoa(binary);
-
-            var colorInt =
-                parseInt(
-                    (
-                        skinColorHex ||
-                        "#FFFF00"
-                    ).replace(
-                        "#",
-                        ""
-                    ),
-                    16
-                );
-
-            if (
-                !Number.isFinite(
-                    colorInt
-                )
-            ) {
-                colorInt =
-                    14703104;
+            function escapeSkinXml(value) {
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&apos;");
             }
 
-            var safeName =
-                String(
-                    skinName ||
-                    "My Skin"
-                )
-                    .replace(
-                        /[^\x20-\x7E]/g,
-                        ""
-                    )
-                    .substring(
-                        0,
-                        15
-                    );
-
-            if (
-                safeName.trim() ===
-                ""
-            ) {
-                safeName =
-                    "My Skin";
+            var safeName = escapeSkinXml(
+                String(skinName || "My Skin")
+                    .replace(/[^\x20-\x7E]/g, "")
+                    .substring(0, 15)
+            );
+            if (safeName.trim() === "") {
+                safeName = "My Skin";
             }
 
-            var subscriptionsXml =
-                "<array/>";
-
-            if (
-                indexedSubscriptions
-                    .length
-            ) {
+            var subscriptionsXml = "<array/>";
+            if (indexedSubscriptions.length) {
                 subscriptionsXml =
                     "<array>" +
                     indexedSubscriptions
-                        .map(
-                            function (item) {
-                                return (
-                                    "<string>" +
-                                    item +
-                                    "</string>"
-                                );
-                            }
-                        )
+                        .map(function (item) {
+                            return "<string>" + escapeSkinXml(item) + "</string>";
+                        })
                         .join("") +
                     "</array>";
             }
@@ -14876,118 +14832,68 @@ function thelegendmodproject() {
                 '<plist version="1.0">\n' +
                 '<dict>\n' +
                 '\t<key>name</key>\n' +
-                '\t<string>' +
-                safeName +
-                '</string>\n' +
+                '\t<string>' + safeName + '</string>\n' +
                 '\t<key>color</key>\n' +
-                '\t<integer>' +
-                colorInt +
-                '</integer>\n' +
-                '\t<key>indexedSubscriptions</key>\n\t' +
-                subscriptionsXml +
-                '\n' +
+                '\t<integer>' + colorInt + '</integer>\n' +
+                '\t<key>indexedSubscriptions</key>\n\t' + subscriptionsXml + '\n' +
                 '\t<key>creationDate</key>\n' +
-                '\t<integer>' +
-                Math.round(
-                    Date.now() /
-                    1000
-                ) +
-                '</integer>\n' +
+                '\t<integer>' + Math.round(Date.now() / 1000) + '</integer>\n' +
                 '</dict>\n' +
                 '</plist>';
 
             /*
              * Primary save path: official CreateSkinService.
-             *
-             * This registers opcode 151 and sends opcode 150 exactly
-             * like the real Agar.io skin editor.
+             * This registers opcode 151 and sends opcode 150.
              */
-            if (
-                officialApi &&
-                typeof officialApi
-                    .saveUserSkin ===
-                "function"
-            ) {
+            if (officialApi && typeof officialApi.saveUserSkin === "function") {
                 try {
-                    officialApi.saveUserSkin(
-                        base64Content,
-                        xmlMeta
-                    );
-
-                    console.log(
-                        "[LM SKIN] Skin submitted through official saveUserSkin()."
-                    );
-
-                    toastr.info(
-                        "<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server..."
-                    );
-
+                    officialApi.saveUserSkin(base64Content, xmlMeta);
+                    console.log("[LM SKIN] Skin submitted through official saveUserSkin().");
+                    toastr.info("<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server...");
                     return true;
-                } catch (
-                officialSaveError
-                ) {
-                    console.warn(
-                        "[LM SKIN] Official saveUserSkin failed; using protocol fallback:",
-                        officialSaveError
-                    );
+                } catch (officialSaveError) {
+                    console.warn("[LM SKIN] Official saveUserSkin failed; using protocol fallback:", officialSaveError);
                 }
             }
 
             /*
              * Protocol fallback equivalent to official saveUserSkin().
              */
-            if (
-                !window.mesega ||
-                !window.core ||
-                !window.core
-                    .proxyMobileData
-            ) {
-                toastr.error(
-                    "<b>[ERROR]:</b> Skin upload protocol is unavailable."
-                );
-
+            if (!window.mesega || !window.core || !window.core.proxyMobileData) {
+                toastr.error("<b>[ERROR]:</b> Skin upload protocol is unavailable.");
                 return false;
             }
 
             try {
-                var buffer =
-                    window.mesega
-                        .encode({
-                            contentType:
-                                1,
+                var buffer = window.mesega.encode({
+                    contentType: 1,
+                    uncompressedData: {
+                        type: 150,
+                        userSkinsCreateRequestField: {
+                            content: imageUint8Array, // Pass Uint8Array directly for protobuf bytes field
+                            meta: xmlMeta
+                        }
+                    }
+                }).finish();
 
-                            uncompressedData:
-                            {
-                                type:
-                                    150,
+                /* Round-trip packet validation assertion */
+                try {
+                    var decodedUpload = window.mesega.decode(buffer);
+                    var decodedContent = decodedUpload && decodedUpload.uncompressedData && decodedUpload.uncompressedData.userSkinsCreateRequestField && decodedUpload.uncompressedData.userSkinsCreateRequestField.content;
+                    var decodedSignature = decodedContent ? Array.from(decodedContent.slice(0, 8)) : [];
+                    console.log("[SKIN] Encoded payload PNG signature:", decodedSignature);
+                    if (decodedSignature.length !== 8 || decodedSignature[0] !== 137 || decodedSignature[1] !== 80 || decodedSignature[2] !== 78 || decodedSignature[3] !== 71 || decodedSignature[4] !== 13 || decodedSignature[5] !== 10 || decodedSignature[6] !== 26 || decodedSignature[7] !== 10) {
+                        throw new Error("Opcode 150 content is not raw PNG bytes");
+                    }
+                } catch (packetValidationError) {
+                    console.error("[SKIN] Refusing malformed opcode 150:", packetValidationError);
+                    toastr.error("<b>[SKIN]:</b> Upload packet validation failed. DNA was not charged by this attempt.");
+                    return false;
+                }
 
-                                userSkinsCreateRequestField:
-                                {
-                                    content:
-                                        base64Content,
-
-                                    meta:
-                                        xmlMeta
-                                }
-                            }
-                        })
-                        .finish();
-
-                window.core
-                    .proxyMobileData(
-                        buffer
-                    );
-
-                console.log(
-                    "[LM SKIN] Sent opcode 150 after token purchase:",
-                    buffer.length +
-                    " bytes"
-                );
-
-                toastr.info(
-                    "<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server..."
-                );
-
+                window.core.proxyMobileData(buffer);
+                console.log("[LM SKIN] Sent opcode 150 after token purchase: " + imageUint8Array.length + " PNG bytes, meta length: " + xmlMeta.length);
+                toastr.info("<b>[SERVER]:</b> Skin token purchased and upload sent. Waiting for the server...");
                 return true;
             } catch (encodeError) {
                 console.error(
