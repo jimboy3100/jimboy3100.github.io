@@ -2402,9 +2402,12 @@ function populateDealsGrid() {
     // Build product lookup for bundle contents
     var productLookup = {};
     for (var bp = 0; bp < bundleProducts.length; bp++) {
-        var bpId = bundleProducts[bp].bundleId;
+        var bundleProduct = bundleProducts[bp];
+        if (!bundleProduct) continue;
+        var bpId = bundleProduct.id || bundleProduct.bundleId;
+        if (!bpId) continue;
         if (!productLookup[bpId]) productLookup[bpId] = [];
-        productLookup[bpId].push(bundleProducts[bp]);
+        productLookup[bpId].push(bundleProduct);
     }
 
     // --- IAP Deals (real money) ---
@@ -2670,7 +2673,11 @@ function getDealSkinEntries(bundleId) {
 
             var imageUrl = '';
             if (imgFile && imgFile !== 'uses_spine') {
-                imageUrl = cdnBase + imgFile;
+                if (imgFile.indexOf('http://') === 0 || imgFile.indexOf('https://') === 0) {
+                    imageUrl = imgFile;
+                } else {
+                    imageUrl = cdnBase + imgFile;
+                }
             }
 
             var cleanPid = skinItem.productId.replace(/^(shop_skin_|skin_)/, '');
@@ -2692,12 +2699,25 @@ function getDealSkinEntries(bundleId) {
 
         for (var bp = 0; bp < bundleProducts.length; bp++) {
             var item = bundleProducts[bp];
-            if (!item || !item.bundleId || !item.productId) continue;
+            if (!item || !item.productId) continue;
 
-            var bId = item.bundleId;
+            var bId = item.id || item.bundleId;
+            if (!bId) continue;
+
             var pId = item.productId;
             var cleanPId = pId.replace(/^(shop_skin_|skin_)/, '');
             var meta = skinMetaMap[pId] || skinMetaMap[cleanPId];
+
+            if (!meta && (pId.indexOf('skin_') === 0 || pId.indexOf('shop_skin_') === 0)) {
+                var imgUrl = (pId.indexOf('http://') === 0 || pId.indexOf('https://') === 0) ? pId : (cdnBase + pId + '.png');
+                var dName = cleanPId.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                meta = {
+                    productId: pId,
+                    cleanProductId: cleanPId,
+                    name: dName,
+                    imageUrl: imgUrl
+                };
+            }
 
             if (!meta) continue;
 
