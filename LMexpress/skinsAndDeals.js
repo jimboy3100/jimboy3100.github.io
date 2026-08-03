@@ -3289,12 +3289,69 @@ function getOfficialAgarPaymentService() {
      */
 
     /*
-     * Current endpoint in the supplied original agario.js (line ~105732).
-     * This endpoint creates the Xsolla session. It is not the final
-     * Xsolla payment-page URL.
+     * Production Agar.io Xsolla-session endpoint.
+     *
+     * agario.js contains a compiled development default, but the production
+     * environment config uses payments.agario.miniclippt.com.
      */
+    var productionPaymentOrigin =
+        'https://payments.agario.miniclippt.com';
+
+    var runtimePaymentEndpoint =
+        window.EnvConfig &&
+        typeof window.EnvConfig
+            .xsolla_endpoint ===
+            'string'
+            ? window.EnvConfig
+                .xsolla_endpoint
+                .trim()
+            : '';
+
     var paymentEndpoint =
-        'https://payments-dev.agario.miniclippt.com';
+        productionPaymentOrigin;
+
+    if (runtimePaymentEndpoint) {
+        try {
+            var parsedPaymentEndpoint =
+                new URL(
+                    runtimePaymentEndpoint
+                );
+
+            /*
+             * Accept only Agar.io's exact HTTPS production payment origin.
+             * Never silently use payments-dev or another hostname.
+             */
+            if (
+                parsedPaymentEndpoint.protocol ===
+                    'https:' &&
+                parsedPaymentEndpoint.hostname
+                    .toLowerCase() ===
+                    'payments.agario.miniclippt.com' &&
+                parsedPaymentEndpoint.port === '' &&
+                (
+                    parsedPaymentEndpoint.pathname ===
+                        '/' ||
+                    parsedPaymentEndpoint.pathname ===
+                        ''
+                )
+            ) {
+                paymentEndpoint =
+                    parsedPaymentEndpoint.origin;
+            } else {
+                console.warn(
+                    '[SHOP] Ignoring non-production Agar.io payment endpoint:',
+                    runtimePaymentEndpoint
+                );
+            }
+        } catch (
+            paymentEndpointError
+        ) {
+            console.warn(
+                '[SHOP] Invalid runtime Agar.io payment endpoint; using production:',
+                paymentEndpointError
+            );
+        }
+    }
 
     return {
         payment_endpoint:
@@ -3657,58 +3714,6 @@ function openOfficialAgarIAP(
         return false;
     }
 
-    /*
-     * Always ask the official public API first.
-     *
-     * The API performs its own internal live-catalogue lookup. Do not gate
-     * this call behind window.Core because Core is private inside agario.js.
-     */
-    if (
-        window.agarApp &&
-        window.agarApp.API &&
-        typeof window.agarApp.API
-            .makePurchase ===
-            'function'
-    ) {
-        try {
-            var officialResult =
-                window.agarApp.API
-                    .makePurchase(
-                        purchaseId,
-                        true,
-                        true
-                    );
-
-            if (
-                officialResult !==
-                false
-            ) {
-                console.log(
-                    '[SHOP] Current IAP submitted through agarApp.API:',
-                    {
-                        purchaseId:
-                            purchaseId,
-                        historical:
-                            false
-                    }
-                );
-
-                return true;
-            }
-
-            console.warn(
-                '[SHOP] Purchase was not accepted by the current official catalogue; trying the original Xsolla endpoint:',
-                { purchaseId: purchaseId }
-            );
-        } catch (
-            officialApiError
-        ) {
-            console.warn(
-                '[SHOP] Public purchase API could not resolve this purchase ID; trying the original Xsolla endpoint:',
-                officialApiError
-            );
-        }
-    }
 
     var paymentService =
         getOfficialAgarPaymentService();
@@ -3793,7 +3798,7 @@ function openOfficialAgarIAP(
                     window.toastr
                 ) {
                     toastr.info(
-                        '<b>[SHOP]:</b> Trusted Xsolla payment window requested.'
+                        '<b>[SHOP]:</b> Agar.io payment request started. Waiting for Xsolla...'
                     );
                 }
             }
@@ -3803,12 +3808,82 @@ function openOfficialAgarIAP(
     }
 
     console.log(
-        '[SHOP] User accepted BETA purchase risk; requesting Xsolla session:',
+        '[SHOP] User accepted BETA purchase risk:',
         {
             purchaseId:
                 purchaseId,
+
+            currency:
+                currency
+        }
+    );
+
+    /*
+     * Current catalogue products must go through Agar.io's own purchase API.
+     * It uses the payment model already configured by the live production
+     * environment.
+     */
+    if (
+        window.agarApp &&
+        window.agarApp.API &&
+        typeof window.agarApp.API
+            .makePurchase ===
+            'function'
+    ) {
+        try {
+            var officialPurchaseResult =
+                window.agarApp.API
+                    .makePurchase(
+                        purchaseId,
+                        true,
+                        true
+                    );
+
+            if (
+                officialPurchaseResult !==
+                false
+            ) {
+                console.log(
+                    '[SHOP] Purchase accepted by official Agar.io API:',
+                    {
+                        purchaseId:
+                            purchaseId
+                    }
+                );
+
+                return true;
+            }
+
+            console.warn(
+                '[SHOP] Product was not accepted by the current Agar.io catalogue; trying production payment fallback:',
+                {
+                    purchaseId:
+                        purchaseId
+                }
+            );
+        } catch (
+            officialPurchaseError
+        ) {
+            console.warn(
+                '[SHOP] Official Agar.io API could not open this purchase; trying production payment fallback:',
+                officialPurchaseError
+            );
+        }
+    }
+
+    /*
+     * This fallback is only for historical IDs not recognized by the current
+     * catalogue. It now uses the production payment origin, never payments-dev.
+     */
+    console.log(
+        '[SHOP] Requesting production Agar.io Xsolla session:',
+        {
+            purchaseId:
+                purchaseId,
+
             currency:
                 currency,
+
             endpoint:
                 paymentService
                     .payment_endpoint
@@ -3830,9 +3905,7 @@ function openOfficialAgarIAP(
             paymentError
         );
 
-        if (
-            window.toastr
-        ) {
+        if (window.toastr) {
             toastr.error(
                 '<b>[SHOP]:</b> Agar.io could not create this payment session.'
             );
