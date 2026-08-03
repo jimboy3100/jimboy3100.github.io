@@ -1060,35 +1060,6 @@ function SpecialDeals(defaultTab) {
                     return;
                 }
 
-                var upng =
-                    getOfficialAgarUPNG();
-
-                if (!upng) {
-                    processedBufferModal =
-                        null;
-
-                    $('#legendStatusModal')
-                        .text(
-                            'Agar.io PNG8 encoder is not ready'
-                        )
-                        .css(
-                            'color',
-                            getShopTheme().b4
-                        );
-
-                    $('#legendSaveBtnModal')
-                        .prop(
-                            'disabled',
-                            true
-                        )
-                        .css(
-                            'opacity',
-                            0.5
-                        );
-
-                    return;
-                }
-
                 canvas.width =
                     512;
 
@@ -1128,6 +1099,39 @@ function SpecialDeals(defaultTab) {
                     512,
                     512
                 );
+
+                /*
+                 * Always display the selected image in the preview.
+                 * PNG8 availability controls uploading, not previewing.
+                 */
+                var upng =
+                    getOfficialAgarUPNG();
+
+                if (!upng) {
+                    processedBufferModal =
+                        null;
+
+                    $('#legendStatusModal')
+                        .text(
+                            'Image loaded — Agar.io PNG8 encoder is not ready'
+                        )
+                        .css(
+                            'color',
+                            getShopTheme().b4
+                        );
+
+                    $('#legendSaveBtnModal')
+                        .prop(
+                            'disabled',
+                            true
+                        )
+                        .css({
+                            opacity: 0.5,
+                            cursor: 'not-allowed'
+                        });
+
+                    return;
+                }
 
                 try {
                     var rgba =
