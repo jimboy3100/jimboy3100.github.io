@@ -206,6 +206,13 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 uid
             );
 
+            if (
+                typeof window.syncProfileTabUI ===
+                "function"
+            ) {
+                window.syncProfileTabUI();
+            }
+
             changed = true;
         }
 
@@ -299,6 +306,13 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 "agarioUID",
                 uid
             );
+
+            if (
+                typeof window.syncProfileTabUI ===
+                "function"
+            ) {
+                window.syncProfileTabUI();
+            }
 
             var profileName =
                 cleanIdentityValue(
@@ -18805,6 +18819,12 @@ function thelegendmodproject() {
                                 //window.UserVanillaSkin = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + temp.charAt(0).toUpperCase() + temp.slice(1) + '.png'
                             }
                             window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);
+                            if (
+                                typeof window.syncProfileTabUI ===
+                                'function'
+                            ) {
+                                window.syncProfileTabUI();
+                            }
                             window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
                             window.agarioLEVEL = window.testobjects2.split('$')[1].split("(")[0].slice(-1).charCodeAt();
                             setLevelProgressBar();

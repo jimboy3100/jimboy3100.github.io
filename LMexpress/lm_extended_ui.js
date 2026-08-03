@@ -4362,87 +4362,56 @@
                 .val('');
         }
 
-        // Disable Skins, Deals, Leagues, Buy & Use Boost buttons if not logged in or missing UID
-        var isLoggedIn;
+        /*
+         * Enable Agar.io shop/profile buttons only when:
+         * 1. the account is logged in; and
+         * 2. Agar.io has supplied a valid UID.
+         */
+        var uid =
+            typeof window.agarioUID === 'string'
+                ? window.agarioUID.trim()
+                : '';
 
-        if (
-            typeof window.checkUserLoggedIn ===
-            'function'
-        ) {
-            isLoggedIn =
-                window.checkUserLoggedIn();
+        var normalizedUID =
+            uid.toLowerCase();
+
+        var buttonsEnabled =
+            window.loggedIn === true &&
+            uid.length >= 8 &&
+            uid !== '0' &&
+            uid.indexOf('$') === -1 &&
+            normalizedUID !== 'null' &&
+            normalizedUID !== 'undefined';
+
+        var menuBtns = $(
+            '#SpecialDealsBtn, ' +
+            '#SpecialDealsQuickBtn, ' +
+            '.lm-skins-btn, ' +
+            '#lm-extended-menu-btns button'
+        );
+
+        menuBtns
+            .prop('disabled', !buttonsEnabled)
+            .attr(
+                'aria-disabled',
+                buttonsEnabled ? 'false' : 'true'
+            );
+
+        if (buttonsEnabled) {
+            menuBtns.css({
+                opacity: 1,
+                cursor: 'pointer',
+                pointerEvents: 'auto'
+            }).removeAttr('title');
         } else {
-            var fallbackUserId =
-                appUser.userId !== undefined &&
-                appUser.userId !== null
-                    ? String(
-                        appUser.userId
-                    ).trim()
-                    : '';
-
-            var normalizedFallbackUserId =
-                fallbackUserId.toLowerCase();
-
-            isLoggedIn =
-                !!(
-                    window.loggedIn === true ||
-                    appUser.authenticated ===
-                        true ||
-                    (
-                        fallbackUserId &&
-                        fallbackUserId !== '0' &&
-                        normalizedFallbackUserId !==
-                            'null' &&
-                        normalizedFallbackUserId !==
-                            'undefined'
-                    )
-                );
-        }
-
-        var hasUID;
-
-        if (
-            typeof window.checkUserUID ===
-            'function'
-        ) {
-            hasUID =
-                window.checkUserUID();
-        } else {
-            var fallbackUID =
-                typeof window.agarioUID ===
-                'string'
-                    ? window.agarioUID.trim()
-                    : '';
-
-            var normalizedFallbackUID =
-                fallbackUID.toLowerCase();
-
-            hasUID =
-                !!(
-                    isLoggedIn &&
-                    fallbackUID &&
-                    fallbackUID.length >= 8 &&
-                    fallbackUID.indexOf('$') ===
-                        -1 &&
-                    fallbackUID !== '0' &&
-                    normalizedFallbackUID !==
-                        'null' &&
-                    normalizedFallbackUID !==
-                        'undefined'
-                );
-        }
-        var agarioUidDirect = typeof window.agarioUID === 'string' ? window.agarioUID.trim() : '';
-        if (agarioUidDirect && agarioUidDirect.length >= 8 && agarioUidDirect !== '0' && agarioUidDirect.indexOf('$') === -1 && agarioUidDirect.toLowerCase() !== 'null' && agarioUidDirect.toLowerCase() !== 'undefined') {
-            isLoggedIn = true;
-            hasUID = true;
-        }
-        var menuBtnEnabled = isLoggedIn && hasUID;
-        var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, #lm-extended-menu-btns button, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-official-offer-btn, #adRewardBtn');
-        menuBtns.prop('disabled', !menuBtnEnabled);
-        if (!menuBtnEnabled) {
-            menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals, Boosts & Leagues');
-        } else {
-            menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+            menuBtns.css({
+                opacity: 0.5,
+                cursor: 'not-allowed',
+                pointerEvents: 'none'
+            }).attr(
+                'title',
+                'Log in and play once to receive your Agar.io UID'
+            );
         }
 
         // Friends requires an authenticated Facebook Agar.io account.
