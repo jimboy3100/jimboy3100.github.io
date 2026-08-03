@@ -14770,13 +14770,11 @@ function thelegendmodproject() {
             function sendSkinUpload() {
                 try {
                     /*
-                     * The official stores content as a Base64 string internally,
-                     * but writeToBuffer() calls haxe_crypto_Base64.decode(content)
-                     * before write__TYPE_BYTES (agario.js:37203).  So the WIRE
-                     * content is raw PNG binary bytes, not Base64 ASCII.
-                     *
-                     * With protobufjs "bytes content = 1", passing a Uint8Array
-                     * writes the raw bytes directly — identical wire format.
+                     * Autonomous encoding using mesega (protobufjs).
+                     * Matches the official Haxe pipeline:
+                     *   Envelope { contentType=1, uncompressedData=Req }
+                     *   Req { type=150, userSkinsCreateRequestField=msg }
+                     *   msg { content=pngBytes, meta=xmlString }
                      */
                     var buffer = window.mesega.encode({
                         contentType: 1,
@@ -14789,74 +14787,57 @@ function thelegendmodproject() {
                         }
                     }).finish();
 
-                    /* Round-trip packet validation */
-                    try {
-                        var decodedUpload =
-                            window.mesega.decode(buffer);
-                        var decodedContent =
-                            decodedUpload &&
-                            decodedUpload.uncompressedData &&
-                            decodedUpload.uncompressedData
-                                .userSkinsCreateRequestField &&
-                            decodedUpload.uncompressedData
-                                .userSkinsCreateRequestField.content;
-                        var decodedSig = decodedContent
-                            ? Array.from(decodedContent.slice(0, 8))
-                            : [];
-
-                        console.log(
-                            "[SKIN] Encoded payload PNG signature:",
-                            decodedSig
-                        );
-
-                        if (
-                            decodedSig.length !== 8 ||
-                            decodedSig[0] !== 137 ||
-                            decodedSig[1] !== 80 ||
-                            decodedSig[2] !== 78 ||
-                            decodedSig[3] !== 71 ||
-                            decodedSig[4] !== 13 ||
-                            decodedSig[5] !== 10 ||
-                            decodedSig[6] !== 26 ||
-                            decodedSig[7] !== 10
-                        ) {
-                            throw new Error(
-                                "Opcode 150 content is not raw PNG bytes"
-                            );
-                        }
-                    } catch (packetValidationError) {
-                        console.error(
-                            "[SKIN] Refusing malformed opcode 150:",
-                            packetValidationError
-                        );
-                        toastr.error(
-                            "<b>[SKIN]:</b> Upload packet validation " +
-                            "failed; opcode 150 was not sent."
-                        );
-                        return false;
-                    }
-
                     console.log(
                         "[LM SKIN] Opcode 150 buffer ready:",
                         {
                             totalBytes: buffer.length,
                             pngBytes: imageUint8Array.length,
                             metaLength: xmlMeta.length,
-                            first30: Array.from(buffer.slice(0, 30))
+                            first40: Array.from(buffer.slice(0, 40)),
+                            pngSig: Array.from(imageUint8Array.slice(0, 8))
                         }
                     );
+
+                    /*
+                     * Intercept WebSocket.send to verify our data
+                     * actually reaches the WebSocket and check the
+                     * exact bytes being sent.
+                     */
+                    var origSend = WebSocket.prototype.send;
+                    var intercepted = false;
+                    WebSocket.prototype.send = function(data) {
+                        if (!intercepted && data && data.byteLength && data.byteLength > 10000) {
+                            intercepted = true;
+                            var view = new Uint8Array(
+                                data.buffer || data,
+                                data.byteOffset || 0,
+                                data.byteLength || data.length
+                            );
+                            console.log(
+                                "[LM SKIN] WebSocket.send intercepted!",
+                                {
+                                    type: Object.prototype.toString.call(data),
+                                    byteLength: data.byteLength,
+                                    first30: Array.from(view.slice(0, 30)),
+                                    last10: Array.from(view.slice(-10))
+                                }
+                            );
+                        }
+                        return origSend.call(this, data);
+                    };
+
+                    /* Restore after 2 seconds */
+                    setTimeout(function() {
+                        WebSocket.prototype.send = origSend;
+                    }, 2000);
 
                     window.core.proxyMobileData(buffer);
 
                     console.log(
-                        "[LM SKIN] Sent opcode 150 via autonomous " +
-                        "protocol: " +
-                        buffer.length +
-                        " total bytes (" +
-                        imageUint8Array.length +
-                        " PNG + " +
-                        xmlMeta.length +
-                        " meta)"
+                        "[LM SKIN] Sent opcode 150: " +
+                        buffer.length + " bytes (" +
+                        imageUint8Array.length + " PNG + " +
+                        xmlMeta.length + " meta)"
                     );
 
                     toastr.info(
