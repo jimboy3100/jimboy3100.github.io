@@ -17092,6 +17092,23 @@ function thelegendmodproject() {
             /* Cancel any pending auto-reconnect timer from a previous onClose */
             if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
             this._reconnAttempts = 0;
+
+            /*
+             * Capture the old socket BEFORE closeConnection() nulls it.
+             * If we're switching between two agario arena servers, we need
+             * to wait for the old socket's TCP close to reach the server
+             * before authenticating on the new one. Otherwise the backend
+             * sees two concurrent authenticated sessions and fires
+             * disconnect reason 3 ("logged in elsewhere").
+             */
+            var _oldSocket = this.socket;
+            var _needCloseWait = Boolean(
+                _oldSocket &&
+                _oldSocket.readyState <= WebSocket.OPEN &&
+                this.serverType === 'agario' &&
+                _earlyType === 'agario'
+            );
+
             this.closeConnection();
             this.flushCellsData();
             this.protocolKey = null;
@@ -17200,9 +17217,48 @@ function thelegendmodproject() {
                     self.replayfunctions();
                 })();
                 return;
-            } else {
-                this.socket = new WebSocket(t);
             }
+
+            /*
+             * Agario-to-agario server switch: wait for the old socket's
+             * close frame to reach the server before creating the new one.
+             * This prevents the brief dual-session overlap that triggers
+             * disconnect reason 3 ("logged in elsewhere").
+             *
+             * Non-agario paths and first connections (_needCloseWait=false)
+             * proceed immediately.
+             */
+            if (_needCloseWait && _oldSocket.readyState !== WebSocket.CLOSED) {
+                var _self = this;
+                var _connectUrl = t;
+                var _resumed = false;
+
+                function _resumeConnect() {
+                    if (_resumed) return;
+                    _resumed = true;
+                    clearTimeout(_fallbackTimer);
+                    _oldSocket.onclose = null;
+                    console.log('[LM] Old socket closed, creating new connection to: ' + _connectUrl);
+                    _self._finishConnect(_connectUrl, app);
+                }
+
+                _oldSocket.onclose = _resumeConnect;
+                var _fallbackTimer = setTimeout(_resumeConnect, 300);
+                return;
+            }
+
+            this._finishConnect(t, app);
+
+        },
+        /*
+         * _finishConnect — create the WebSocket and run post-connect setup.
+         *
+         * Extracted from connect() so it can be called either immediately
+         * (non-agario, first connection) or after the old agario socket's
+         * onclose fires (agario-to-agario server switch).
+         */
+        _finishConnect(url, app) {
+            this.socket = new WebSocket(url);
             this.connectionIntegrity = typeof this.socket._lwIntegrity === "boolean" ? this.socket._lwIntegrity : Boolean(this.integrity);
             this.socket.binaryType = 'arraybuffer';
             this.socket.onopen = function () {
@@ -17256,7 +17312,6 @@ function thelegendmodproject() {
                 if (this.totalPlayerMassBigFFA === "NaN" || !this.totalPlayerMassBigFFA) this.totalPlayerMassBigFFA = 0 //fix
             }
             this.replayfunctions();
-
         },
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
