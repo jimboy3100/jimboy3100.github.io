@@ -2465,9 +2465,16 @@ function populateDealsGrid() {
         var skinImgs = getDealSkinImages(deal.bundleId);
         var skinMiniIconsHtml = renderDealSkinMiniIcons(deal.bundleId, 6);
 
-        // Build the icon area — 0, 1, or 2 stacked skin previews
+        // Build the icon area — 0, 1, 2, or 3 skin previews
         var iconHtml = '';
-        if (skinImgs.length >= 2) {
+        if (skinImgs.length >= 3) {
+            // Three skins — triangle arrangement: two on top, one centered below
+            iconHtml += '<div style="position: relative; min-width: 60px; width: 60px; height: 56px;">';
+            iconHtml += '<img src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 3;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img src="' + skinImgs[1] + '" style="position: absolute; top: 0; right: 0; width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b3 + '; z-index: 2;" onerror="this.style.display=\'none\'">';
+            iconHtml += '<img src="' + skinImgs[2] + '" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.b1 + '; z-index: 1;" onerror="this.style.display=\'none\'">';
+            iconHtml += '</div>';
+        } else if (skinImgs.length === 2) {
             // Two skins stacked/overlapping
             iconHtml += '<div style="position: relative; min-width: 56px; width: 56px; height: 56px;">';
             iconHtml += '<img src="' + skinImgs[0] + '" style="position: absolute; top: 0; left: 0; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid ' + t.mc + '; z-index: 2;" onerror="this.style.display=\'none\'">';
