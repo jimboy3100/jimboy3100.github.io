@@ -24376,12 +24376,7 @@ Most cells eaten   : ${mostCellsEaten}
                 void main() {
                     vec2 coord = fract(v_worldPos / u_gridSpacing);
                     vec2 grid = abs(coord - 0.5);
-                    /* Use derivative-based antialiasing instead of hard step().
-                     * fwidth gives a pixel-width feather that adapts to zoom. */
-                    vec2 fw = fwidth(coord);
-                    float lineX = smoothstep(0.5 - fw.x, 0.5, grid.x);
-                    float lineY = smoothstep(0.5 - fw.y, 0.5, grid.y);
-                    float line = max(lineX, lineY);
+                    float line = step(0.48, max(grid.x, grid.y));
                     if (line <= 0.0) discard;
                     fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line);
                 }`;
