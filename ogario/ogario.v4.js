@@ -10735,13 +10735,11 @@ function thelegendmodproject() {
 
                         if (isCustomSkin) {
                             /*
-                             * Only migrate obsolete configs.agario to configs-web.
-                             * An already-configs-web failure has no alternative CDN
-                             * and must not be retried recursively.
+                             * Uploaded custom skins are hosted on configs.agario,
+                             * not configs-web.agario.
                              */
                             if (
-                                url.includes('configs.agario.miniclippt.com') &&
-                                !url.includes('configs-web.agario.miniclippt.com')
+                                url.includes('configs-web.agario.miniclippt.com')
                             ) {
                                 app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename, animated, isPriority);
                             }
@@ -21548,17 +21546,21 @@ function thelegendmodproject() {
 
                     if (url.includes('/custom_skins/')) {
                         /*
-                         * Only the old non-web host may fall back to configs-web.
-                         * Never retry an already-configs-web URL through the same
-                         * configs-web URL — that causes an infinite request storm.
+                         * configs-web returns 403 for uploaded custom skins.
+                         * Retry once through the actual custom-skin host.
                          */
                         if (
-                            url.includes('configs.agario.miniclippt.com') &&
-                            !url.includes('configs-web.agario.miniclippt.com')
+                            url.includes('configs-web.agario.miniclippt.com')
                         ) {
-                            newURL = window.LM_CUSTOM_SKINS_CDN + '/' + rawFileName;
+                            newURL =
+                                window.LM_CUSTOM_SKINS_CDN +
+                                '/' +
+                                rawFileName;
                         } else {
-                            console.warn('[LM] Custom skin unavailable; duplicate CDN retry suppressed: ' + url);
+                            /*
+                             * The real custom-skin host also failed.
+                             * Do not recurse or create another request.
+                             */
                             return null;
                         }
                     } else {

@@ -5,7 +5,13 @@ var consoleMsgLMMaster = "[Master] ";
 // ── Centralized URL constants (single source of truth) ──
 // All other files must use these instead of hardcoding domains.
 window.LM_CONFIG_CDN = "https://configs-web.agario.miniclippt.com/live";
-window.LM_CUSTOM_SKINS_CDN = window.LM_CONFIG_CDN + "/custom_skins";
+
+/*
+ * Normal configuration assets use configs-web.
+ * Uploaded user skins use the separate non-web host.
+ */
+window.LM_CUSTOM_SKINS_CDN =
+    "https://configs.agario.miniclippt.com/live/custom_skins";
 // Computed after agarversion is known:
 window.LM_CDN_BASE = function() {
     var v = window.agarversion || (typeof Lmagarversion !== 'undefined' && Lmagarversion) || "v15/10913/";
