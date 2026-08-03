@@ -46,7 +46,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
         if (key === 'agarioUID' || key === 'agarioEncodedUID') {
             try {
                 window.localStorage.removeItem(key);
-            } catch (e) {}
+            } catch (e) { }
             return;
         }
 
@@ -180,7 +180,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
 
         var userInfo =
             officialUser.userInfo &&
-            typeof officialUser.userInfo ===
+                typeof officialUser.userInfo ===
                 "object"
                 ? officialUser.userInfo
                 : {};
@@ -235,7 +235,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
         if (
             profileName &&
             profileName.toLowerCase() !==
-                "guest"
+            "guest"
         ) {
             window.agarioProfileName =
                 profileName;
@@ -322,7 +322,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             if (
                 profileName &&
                 profileName.toLowerCase() !==
-                    "guest"
+                "guest"
             ) {
                 window.agarioProfileName =
                     profileName;
@@ -430,7 +430,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             !agarApp ||
             !agarApp.core ||
             typeof agarApp.core.bind !==
-                "function"
+            "function"
         ) {
             return false;
         }
@@ -480,7 +480,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
             window._lmNativeUserLoggedBound ||
             !window.Core ||
             typeof window.Core.get_events !==
-                "function"
+            "function"
         ) {
             return false;
         }
@@ -497,7 +497,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
         if (
             !events ||
             typeof events.addEventListener !==
-                "function"
+            "function"
         ) {
             return false;
         }
@@ -553,7 +553,7 @@ console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgV
                 (
                     window.Core &&
                     typeof window.Core.get_events !==
-                        "function"
+                    "function"
                 )
             )
         ) {
@@ -595,7 +595,7 @@ function readLocalStorageJSON(key, fallbackValue) {
 
         try {
             window.localStorage.removeItem(key);
-        } catch (removeError) {}
+        } catch (removeError) { }
 
         return fallbackValue;
     }
@@ -730,10 +730,10 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var store = tx.objectStore("skins");
                 var req = store.get(url);
                 var self = this;
-                req.onsuccess = function () { 
+                req.onsuccess = function () {
                     if (req.result && req.result.data) {
                         cb(req.result.data);
-                        setTimeout(function() { self._touch("skins", url); }, 0);
+                        setTimeout(function () { self._touch("skins", url); }, 0);
                     } else {
                         cb(null);
                     }
@@ -748,8 +748,8 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var store = tx.objectStore("skins");
                 store.put({ data: data, timestamp: Date.now() }, url);
                 var self = this;
-                tx.oncomplete = function() {
-                    setTimeout(function() { self.evictIfNeeded("skins", 1000); }, 0);
+                tx.oncomplete = function () {
+                    setTimeout(function () { self.evictIfNeeded("skins", 1000); }, 0);
                 };
             } catch (e) { }
         },
@@ -764,10 +764,10 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var store = tx.objectStore("audio");
                 var req = store.get(url);
                 var self = this;
-                req.onsuccess = function () { 
+                req.onsuccess = function () {
                     if (req.result && req.result.data) {
                         cb(req.result.data);
-                        setTimeout(function() { self._touch("audio", url); }, 0);
+                        setTimeout(function () { self._touch("audio", url); }, 0);
                     } else {
                         cb(null);
                     }
@@ -782,8 +782,8 @@ function readLocalStorageJSON(key, fallbackValue) {
                 var store = tx.objectStore("audio");
                 store.put({ data: data, timestamp: Date.now() }, url);
                 var self = this;
-                tx.oncomplete = function() {
-                    setTimeout(function() { self.evictIfNeeded("audio", 100); }, 0);
+                tx.oncomplete = function () {
+                    setTimeout(function () { self.evictIfNeeded("audio", 100); }, 0);
                 };
             } catch (e) { }
         },
@@ -1149,7 +1149,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                         user = JSON.parse(saved);
                         window.legendmod_discordUser = user;
                     }
-                } catch(e) {}
+                } catch (e) { }
             }
             var auth = window._lwAuth;
             if (user && user.token && auth && (auth.provider === 'discord' || !auth.provider)) {
@@ -1245,7 +1245,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     window._loginRetryCount = 0;
     var MAX_LOGIN_RETRIES = 3;
 
-    $(document).on('click', '#logoutbtn, .btn-logout, [data-itr="page_logout"]', function() {
+    $(document).on('click', '#logoutbtn, .btn-logout, [data-itr="page_logout"]', function () {
         console.log('[LW AUTH] User manually clicked Logout button');
         window._isUserManualLogout = true;
     });
@@ -1497,7 +1497,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
         try {
             localStorage.removeItem("agarioUID");
             localStorage.removeItem("agarioEncodedUID");
-        } catch (e) {}
+        } catch (e) { }
 
         if (typeof refreshIdentityUI === 'function') {
             refreshIdentityUI();
@@ -1593,7 +1593,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             /* Clear LM level on logout — it must come from server, not localStorage */
             window.LMscore = 0;
             window._lastAllTimeScore = 0;
-            try { localStorage.removeItem('LMscore'); } catch(e) {}
+            try { localStorage.removeItem('LMscore'); } catch (e) { }
             if (typeof window.updateLegendXpPanel === 'function') {
                 window.updateLegendXpPanel();
             }
@@ -1614,24 +1614,24 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 toastr.warning('<b>[AUTH]:</b> Unexpected disconnect detected. Attempting auto-login (' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + ')...');
             }
 
-            var tryRelogin = function() {
+            var tryRelogin = function () {
                 var reloginAttempted = false;
 
                 if (typeof window.gplusRelogin === 'function') {
                     try {
-                        window.gplusRelogin(function() { reloginAttempted = true; });
-                    } catch(e) {}
+                        window.gplusRelogin(function () { reloginAttempted = true; });
+                    } catch (e) { }
                 }
                 if (!reloginAttempted && typeof window.facebookRelogin === 'function') {
                     try {
-                        window.facebookRelogin(function() { reloginAttempted = true; });
-                    } catch(e) {}
+                        window.facebookRelogin(function () { reloginAttempted = true; });
+                    } catch (e) { }
                 }
                 if (!reloginAttempted && window.master && typeof window.master.reconnect === 'function') {
-                    try { window.master.reconnect(); reloginAttempted = true; } catch(e) {}
+                    try { window.master.reconnect(); reloginAttempted = true; } catch (e) { }
                 }
 
-                setTimeout(function() {
+                setTimeout(function () {
                     var isLoggedInNow = (window._lwAuth && (window._lwAuth.state === 'logged_in' || window._lwAuth.state === 'waiting_server')) ||
                         (window.master && (window.master.context === 'facebook' || window.master.context === 'google')) ||
                         !!(window.application && window.application.user && window.application.user.userId);
@@ -1677,7 +1677,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
      * which sends it to the game server via opcode 102 — same path as Google. */
     (function () {
         /* Generate a one-time nonce for CSRF protection on OAuth state */
-        var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+        var _discordOAuthNonce = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function (b) { return b.toString(16).padStart(2, '0') }).join('');
         var _discordOAuthState = window.location.origin + '|' + _discordOAuthNonce;
         sessionStorage.setItem('discord_oauth_nonce', _discordOAuthNonce);
         var DISCORD_AUTH_URL = 'https://discord.com/oauth2/authorize?client_id=1483502380661346396&response_type=code&redirect_uri=https%3A%2F%2Fexpanding.land%2Fauth%2Fdiscord%2Fcallback%2F&scope=identify+email&state=' + encodeURIComponent(_discordOAuthState);
@@ -1753,14 +1753,14 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 if (window._lwDiscordBroadcastChannel) {
                     // Listener is already installed for this page lifecycle.
                 } else {
-                var bc = new BroadcastChannel('legendmod_discord');
-                bc.onmessage = function (event) {
-                    if (!event.data || event.data.type !== 'legendmod_discord_login') return;
-                    var discordUser = event.data.data;
-                    acceptDiscordUser(discordUser, 'BroadcastChannel');
-                };
-                window._lwDiscordBroadcastChannel = bc;
-                console.log('[LW Discord] BroadcastChannel listener registered');
+                    var bc = new BroadcastChannel('legendmod_discord');
+                    bc.onmessage = function (event) {
+                        if (!event.data || event.data.type !== 'legendmod_discord_login') return;
+                        var discordUser = event.data.data;
+                        acceptDiscordUser(discordUser, 'BroadcastChannel');
+                    };
+                    window._lwDiscordBroadcastChannel = bc;
+                    console.log('[LW Discord] BroadcastChannel listener registered');
                 }
             } catch (e) {
                 console.log('[LW Discord] BroadcastChannel not supported:', e.message);
@@ -2546,10 +2546,17 @@ window.activateQuest = function () {
     window.core.proxyMobileData(bytes);
 }
 window.changeSkin = function (productID) {
-    if (productID == null) return;
+    //console.log("quchange skin", productID)
 
-    // ─── 1. Send the raw protobuf (opcode 80) immediately ───
-    // This works from the moment the WebSocket is open — no shop data needed.
+    if (productID == null) return
+    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_empty"}
+    //8, 1, 18, 23, 8, 80, 130, 5, 18, 10, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
+    //8, 1, 18, 23, 8, 80, 130, 5, 16, 8, 1, 16, 1, 26, 10, 115, 107, 105, 110, 95, 101, 109, 112, 116, 121
+    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_kraken"}
+    //8, 1, 18, 24, 8, 80, 130, 5, 19, 10, 17, 8, 1, 16, 1, 26, 11, 115, 107, 105, 110, 95, 107, 114, 97, 107, 101, 110
+    //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_custom_50b62972-d334-4878-b4c8-8ea5f3fade18_4b5dadc9-2543-4401-8ce5-1cf220dba247"}
+    //8, 1, 18, 98, 8, 80, 130, 5, 93, 10, 91, 8, 1, 16, 1, 26, 85, 115, 107, 105, 110, 95, 99, 117, 115, 116, 111, 109, 95, 53, 48, 98, 54, 50, 57, 55, 50, 45, 100, 51, 51, 52, 45, 52, 56, 55, 56, 45, 98, 52, 99, 56, 45, 56, 101, 97, 53, 102, 51, 102, 97, 100, 101, 49, 56, 95, 52, 98, 53, 100, 97, 100, 99, 57, 45, 50, 53, 52, 51, 45, 52, 52, 48, 49, 45, 56, 99, 101, 53, 45, 49, 99, 102, 50, 50, 48, 100, 98, 97, 50, 52, 55
+
     var encode = function (str) {
         bytes.push(str.length);
         for (var i = 0; i < str.length; i++) {
@@ -2558,30 +2565,11 @@ window.changeSkin = function (productID) {
     };
     var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
     encode(productID);
+
+    // Send opcode 80 first — this is the critical server-side equip.
+    // The cosmetic URL block below is optional and must never prevent
+    // the protobuf from being sent.
     window.core.proxyMobileData(bytes);
-
-    // ─── 2. Tell the game engine to load the skin texture immediately ───
-    try {
-        var skinName = productID.indexOf('skin_custom_') === 0
-            ? productID
-            : '%' + productID.replace('skin_', '');
-        window.core.loadSkin(skinName);
-    } catch (lsErr) {}
-
-    // ─── 3. Sync Core's internal skinId to prevent it from overwriting ───
-    // Core.ui.settings._settings.skinId is what the official client uses
-    // to decide which skin to send on periodic settings saves. If we don't
-    // update it, Core resends the OLD skin and overwrites our change.
-    try {
-        if (typeof Core !== 'undefined' && Core.ui && Core.ui.settings && Core.ui.settings._settings) {
-            Core.ui.settings._settings.skinId = productID;
-        }
-        if (typeof Core !== 'undefined' && Core.user && typeof Core.user.set_selectedSkin === 'function') {
-            Core.user.set_selectedSkin(productID);
-        }
-    } catch (coreErr) {}
-
-    console.log('[SKIN] changeSkin:', productID);
 
     try {
         var skinLink = legendmod.getLink(productID);
@@ -2601,24 +2589,24 @@ window.changeSkin = function (productID) {
 }
 
 // ─── Expose application protocol functions on window for UI use ───
-window.sendGifts = function(giftIds) { if (window.application) return window.application.sendGifts(giftIds); };
-window.consumeGiftRequests = function(ids) { if (window.application) return window.application.consumeGiftRequests(ids); };
-window.requestGifts = function(giftIds) { if (window.application) return window.application.requestGifts(giftIds); };
-window.openPotionForProduct = function(productId) { if (window.application) return window.application.openPotionForProduct(productId); };
-window.activateRewardLink = function(token) { if (window.application) return window.application.activateRewardLink(token); };
-window.requestAdRewardToken = function() { if (window.application) return window.application.requestAdRewardToken(); };
-window.inspectUserStats = function(userId) { if (window.application) return window.application.inspectUserStats(userId); };
-window.claimGifts = function(giftIds) { if (window.application) return window.application.claimGifts(giftIds); };
-window.softPurchase = function(purchaseId) { if (window.application) return window.application.softPurchase(purchaseId); };
-window.activateTimedEvent = function(eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
-window.activateUserRewards = function(rewardIds) { if (window.application) return window.application.activateUserRewards(rewardIds); };
-window.requestLeaguesInfo = function(type) { if (window.application) return window.application.requestLeaguesInfo(type); };
-window.updateLeaguesPass = function(data) { if (window.application) return window.application.updateLeaguesPass(data); };
-window.sendFacebookInvite = function(friendIds) { if (window.application) return window.application.sendFacebookInvite(friendIds); };
-window.requestFriendListUpdate = function() { if (window.application) return window.application.requestFriendListUpdate(); };
-window.sendAutomationUpdate = function(eventFinished) { if (window.application) return window.application.sendAutomationUpdate(eventFinished); };
-window.sendActionCountersUpdate = function(counters) { if (window.application) return window.application.sendActionCountersUpdate(counters); };
-window.sendAbTestGroupsUpdate = function(groups) { if (window.application) return window.application.sendAbTestGroupsUpdate(groups); };
+window.sendGifts = function (giftIds) { if (window.application) return window.application.sendGifts(giftIds); };
+window.consumeGiftRequests = function (ids) { if (window.application) return window.application.consumeGiftRequests(ids); };
+window.requestGifts = function (giftIds) { if (window.application) return window.application.requestGifts(giftIds); };
+window.openPotionForProduct = function (productId) { if (window.application) return window.application.openPotionForProduct(productId); };
+window.activateRewardLink = function (token) { if (window.application) return window.application.activateRewardLink(token); };
+window.requestAdRewardToken = function () { if (window.application) return window.application.requestAdRewardToken(); };
+window.inspectUserStats = function (userId) { if (window.application) return window.application.inspectUserStats(userId); };
+window.claimGifts = function (giftIds) { if (window.application) return window.application.claimGifts(giftIds); };
+window.softPurchase = function (purchaseId) { if (window.application) return window.application.softPurchase(purchaseId); };
+window.activateTimedEvent = function (eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
+window.activateUserRewards = function (rewardIds) { if (window.application) return window.application.activateUserRewards(rewardIds); };
+window.requestLeaguesInfo = function (type) { if (window.application) return window.application.requestLeaguesInfo(type); };
+window.updateLeaguesPass = function (data) { if (window.application) return window.application.updateLeaguesPass(data); };
+window.sendFacebookInvite = function (friendIds) { if (window.application) return window.application.sendFacebookInvite(friendIds); };
+window.requestFriendListUpdate = function () { if (window.application) return window.application.requestFriendListUpdate(); };
+window.sendAutomationUpdate = function (eventFinished) { if (window.application) return window.application.sendAutomationUpdate(eventFinished); };
+window.sendActionCountersUpdate = function (counters) { if (window.application) return window.application.sendActionCountersUpdate(counters); };
+window.sendAbTestGroupsUpdate = function (groups) { if (window.application) return window.application.sendAbTestGroupsUpdate(groups); };
 
 var root = protobuf.parse(proto, { keepCase: true }).root;
 window.mesega = root.lookupType("Data");
@@ -2681,14 +2669,14 @@ function buyBoost(req) {
     var bytes = [];
     var type = "1_" + req;
     switch (type) {
-        case "1_mass_boost_2x_1h":  bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "1_mass_boost_2x_1h": bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
         case "1_mass_boost_2x_24h": bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
-        case "1_mass_boost_3x_1h":  bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "1_mass_boost_3x_1h": bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
         case "1_mass_boost_3x_24h": bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
-        case "1_xp_boost_2x_1h":    bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
-        case "1_xp_boost_2x_24h":   bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
-        case "1_xp_boost_3x_1h":    bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
-        case "1_xp_boost_3x_24h":   bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        case "1_xp_boost_2x_1h": bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "1_xp_boost_2x_24h": bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "1_xp_boost_3x_1h": bytes = [8, 1, 18, 23, 8, 70, 178, 4, 18, 10, 16, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "1_xp_boost_3x_24h": bytes = [8, 1, 18, 24, 8, 70, 178, 4, 19, 10, 17, 49, 95, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
         default: console.log('unknown boost: ' + type); return;
     }
     window.core.proxyMobileData(bytes);
@@ -2703,14 +2691,14 @@ function useBoost(type) {
     // Fallback: hardcoded bytes for known boosts
     var bytes = [];
     switch (type) {
-        case "mass_boost_2x_1h":  bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "mass_boost_2x_1h": bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
         case "mass_boost_2x_24h": bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
-        case "mass_boost_3x_1h":  bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "mass_boost_3x_1h": bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
         case "mass_boost_3x_24h": bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
-        case "xp_boost_2x_1h":    bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
-        case "xp_boost_2x_24h":   bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
-        case "xp_boost_3x_1h":    bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
-        case "xp_boost_3x_24h":   bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
+        case "xp_boost_2x_1h": bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]; break;
+        case "xp_boost_2x_24h": bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]; break;
+        case "xp_boost_3x_1h": bytes = [8, 1, 18, 21, 8, 112, 130, 7, 16, 10, 14, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]; break;
+        case "xp_boost_3x_24h": bytes = [8, 1, 18, 22, 8, 112, 130, 7, 17, 10, 15, 120, 112, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]; break;
         default: console.log('unknown boost: ' + type); return;
     }
     window.core.proxyMobileData(bytes);
@@ -2818,16 +2806,16 @@ var UIDfunction = new Function(UIDInstructions);
 
     document.addEventListener(
         'promo_badge_create',
-        function(event) {
+        function (event) {
             var detail = event && event.detail ? event.detail : null;
             if (!detail) return;
 
             window._lmOfficialPromotion = {
-                offerId:    detail.offerId,
-                config:     detail.config || null,
-                delegate:   detail.delegate || null,
-                system:     detail.system || null,
-                callback:   typeof detail.callback === 'function' ? detail.callback : null,
+                offerId: detail.offerId,
+                config: detail.config || null,
+                delegate: detail.delegate || null,
+                system: detail.system || null,
+                callback: typeof detail.callback === 'function' ? detail.callback : null,
                 receivedAt: Date.now()
             };
 
@@ -2840,7 +2828,7 @@ var UIDfunction = new Function(UIDInstructions);
 window.preSetanimateSkincheck = 6000;
 window.anualTop = 0;
 
-window.getOfficialAgarXpState = function(
+window.getOfficialAgarXpState = function (
     fallbackLevel,
     fallbackXp,
     fallbackLimit
@@ -2913,7 +2901,7 @@ window.getOfficialAgarXpState = function(
             Core.models.xpModel &&
             typeof Core.models.xpModel
                 .getMaxXpForLevel ===
-                'function'
+            'function'
         ) {
             var officialLimit =
                 Number(
@@ -2958,7 +2946,7 @@ window.getOfficialAgarXpState = function(
                     }
                 }
             }
-        } catch (gcError) {}
+        } catch (gcError) { }
     }
 
     /*
@@ -2968,8 +2956,8 @@ window.getOfficialAgarXpState = function(
         try {
             var storedUserInfo =
                 window.agarApp &&
-                agarApp.storageInfo &&
-                agarApp.storageInfo.userInfo
+                    agarApp.storageInfo &&
+                    agarApp.storageInfo.userInfo
                     ? agarApp.storageInfo.userInfo
                     : null;
 
@@ -3007,7 +2995,7 @@ window.getOfficialAgarXpState = function(
         if (
             lmApp &&
             typeof lmApp.agarExp ===
-                'function'
+            'function'
         ) {
             var calculatedLimit =
                 Number(
@@ -3055,7 +3043,7 @@ window.getOfficialAgarXpState = function(
                 Math.min(
                     100,
                     currentXp * 100 /
-                        totalXp
+                    totalXp
                 )
             )
             : 0;
@@ -3068,7 +3056,7 @@ window.getOfficialAgarXpState = function(
     };
 };
 
-window.updateOfficialXpPanel = function(
+window.updateOfficialXpPanel = function (
     level,
     expPercent
 ) {
@@ -3094,7 +3082,7 @@ window.updateOfficialXpPanel = function(
 
     var resolvedPercent =
         expPercent !== undefined &&
-        expPercent !== null
+            expPercent !== null
             ? Number(expPercent)
             : xpState.percent;
 
@@ -3195,7 +3183,7 @@ window.updateOfficialXpPanel = function(
         );
 };
 
-window.updateLegendXpPanel = function() {
+window.updateLegendXpPanel = function () {
     var lmScoreVal = window.LMscore || 0;
     var legendXpPanel = $('.progress-bar-striped2').closest('#exp-bar');
 
@@ -3720,7 +3708,7 @@ setTimeout(function () {
             if (window.LeaguesTiersConfig) console.log("[LM] Loaded Leagues Tiers config: " + window.LeaguesTiersConfig.length + " tiers");
             if (window.OfferableBundlesConfig) console.log("[LM] Loaded Offerable Bundles config: " + window.OfferableBundlesConfig.length + " bundles");
             if (window.PotionHelpConfig) console.log("[LM] Loaded Potion Help config: " + window.PotionHelpConfig.length + " entries");
-        } catch(e) { console.warn("[LM] Could not load Leagues/Deals config:", e); }
+        } catch (e) { console.warn("[LM] Could not load Leagues/Deals config:", e); }
 
         for (var player = 0; player < window.FreeSkins.length; player++) {
             window.FreskinsMap[player] = window.FreeSkins[player].id
@@ -3777,7 +3765,7 @@ function userLeaguesInfoResponse() {
 
         console.log('[LM] Leagues data dispatched (' + entries.length + ' entries, isLastWeek=' + isLastWeek + ')');
         document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: detail }));
-    } catch(e) {
+    } catch (e) {
         console.warn('[LM] userLeaguesInfoResponse error:', e);
     }
 }
@@ -8746,13 +8734,13 @@ function thelegendmodproject() {
             /* Noop ad display functions if they exist on the Core/UI objects */
             try {
                 if (window.Core && window.Core.ui && window.Core.ui.mainUI) {
-                    window.Core.ui.mainUI.showAds = function() {};
-                    if (window.Core.ui.mainUI.showInterstitial) window.Core.ui.mainUI.showInterstitial = function() {};
+                    window.Core.ui.mainUI.showAds = function () { };
+                    if (window.Core.ui.mainUI.showInterstitial) window.Core.ui.mainUI.showInterstitial = function () { };
                 }
-            } catch(e) {}
+            } catch (e) { }
             /* MutationObserver: catch dynamically injected ad containers */
             var _adSelectors = ['advertisement', 'adbg', 'a320x250', 'g320x250', 's320x250', 'adsBottom', 'adContainer', 'preroll-container', 'agario-promo-container'];
-            var _adObserver = new MutationObserver(function(mutations) {
+            var _adObserver = new MutationObserver(function (mutations) {
                 for (var m = 0; m < mutations.length; m++) {
                     var added = mutations[m].addedNodes;
                     for (var n = 0; n < added.length; n++) {
@@ -9610,7 +9598,7 @@ function thelegendmodproject() {
                     legendmod.ws ||
                     (
                         typeof app.ws ===
-                        "string"
+                            "string"
                             ? app.ws
                             : ""
                     ) ||
@@ -9619,9 +9607,9 @@ function thelegendmodproject() {
 
                 var isLegend =
                     legendmod.serverType ===
-                        "expandingland" ||
+                    "expandingland" ||
                     app.serverType ===
-                        "expandingland" ||
+                    "expandingland" ||
                     gameUrl.includes(
                         "legendmod.ml"
                     ) ||
@@ -9666,9 +9654,9 @@ function thelegendmodproject() {
                     if (
                         !gameSocket ||
                         gameSocket.readyState ===
-                            WebSocket.CLOSING ||
+                        WebSocket.CLOSING ||
                         gameSocket.readyState ===
-                            WebSocket.CLOSED
+                        WebSocket.CLOSED
                     ) {
                         core.connect(
                             gameUrl
@@ -10607,7 +10595,7 @@ function thelegendmodproject() {
                                 if (
                                     img &&
                                     img[url] ===
-                                        timedOutImage
+                                    timedOutImage
                                 ) {
                                     delete img[url];
                                 }
@@ -10692,7 +10680,7 @@ function thelegendmodproject() {
                             if (
                                 img &&
                                 img[url] ===
-                                    loadedImage
+                                loadedImage
                             ) {
                                 delete img[url];
                             }
@@ -12190,7 +12178,7 @@ function thelegendmodproject() {
                 return (
                     count >= 0 &&
                     offset + count <=
-                        view.byteLength
+                    view.byteLength
                 );
             }
 
@@ -12555,9 +12543,9 @@ function thelegendmodproject() {
                 } else if (activeNick) {
                     var skinName =
                         ":party" ===
-                        this.gameMode
+                            this.gameMode
                             ? activeNick +
-                                activeColor
+                            activeColor
                             : activeNick;
 
                     var map =
@@ -12972,13 +12960,13 @@ function thelegendmodproject() {
             for (
                 var stringIndex = 0;
                 stringIndex <
-                    strings.length;
+                strings.length;
                 stringIndex++
             ) {
                 bufferSize +=
                     strings[stringIndex]
                         .length *
-                        2 +
+                    2 +
                     2;
             }
 
@@ -13030,7 +13018,7 @@ function thelegendmodproject() {
                 this.privateMode &&
                 window.ogarioWS &&
                 window.ogarioWS.readyState ===
-                    WebSocket.OPEN
+                WebSocket.OPEN
             ) {
                 window.ogarioWS.send(
                     view.buffer
@@ -13455,7 +13443,7 @@ function thelegendmodproject() {
                 this.cacheCustomSkin(
                     nick,
                     defaultColor ||
-                        "#000000",
+                    "#000000",
                     skinUrl
                 );
             }
@@ -14459,7 +14447,7 @@ function thelegendmodproject() {
                     !officialApi ||
                     typeof officialApi
                         .getProductFromWallet !==
-                        "function"
+                    "function"
                 ) {
                     return 0;
                 }
@@ -14538,7 +14526,7 @@ function thelegendmodproject() {
                 officialApi &&
                 typeof officialApi
                     .getUserInfo ===
-                    "function"
+                "function"
             ) {
                 try {
                     var officialUserInfo =
@@ -14592,7 +14580,7 @@ function thelegendmodproject() {
                     officialApi &&
                     typeof officialApi
                         .getSoftPurchaseById ===
-                        "function"
+                    "function"
                 ) {
                     try {
                         configuredPurchase =
@@ -14601,7 +14589,7 @@ function thelegendmodproject() {
                                     standardTokenPurchaseId
                                 );
                     } catch (
-                        purchaseConfigError
+                    purchaseConfigError
                     ) {
                         console.warn(
                             "[LM SKIN] Skin-token price lookup failed:",
@@ -14633,10 +14621,10 @@ function thelegendmodproject() {
                 if (
                     officialApi &&
                     configuredCurrency ===
-                        "dna" &&
+                    "dna" &&
                     typeof officialApi
                         .get_dna ===
-                        "function"
+                    "function"
                 ) {
                     currentBalance =
                         Number(
@@ -14645,10 +14633,10 @@ function thelegendmodproject() {
                 } else if (
                     officialApi &&
                     configuredCurrency ===
-                        "coin" &&
+                    "coin" &&
                     typeof officialApi
                         .get_coins ===
-                        "function"
+                    "function"
                 ) {
                     currentBalance =
                         Number(
@@ -14659,7 +14647,7 @@ function thelegendmodproject() {
                 if (
                     configuredCost > 0 &&
                     currentBalance <
-                        configuredCost
+                    configuredCost
                 ) {
                     toastr.error(
                         "<b>[SKIN]:</b> " +
@@ -14703,7 +14691,7 @@ function thelegendmodproject() {
                     officialApi &&
                     typeof officialApi
                         .makePurchase ===
-                        "function"
+                    "function"
                 ) {
                     try {
                         purchaseSent =
@@ -14713,7 +14701,7 @@ function thelegendmodproject() {
                                 true
                             ) === true;
                     } catch (
-                        officialPurchaseError
+                    officialPurchaseError
                     ) {
                         console.warn(
                             "[LM SKIN] Official token purchase failed:",
@@ -14729,7 +14717,7 @@ function thelegendmodproject() {
                 if (
                     !purchaseSent &&
                     typeof app.softPurchase ===
-                        "function"
+                    "function"
                 ) {
                     purchaseSent =
                         app.softPurchase(
@@ -14773,7 +14761,7 @@ function thelegendmodproject() {
             for (
                 var offset = 0;
                 offset <
-                    imageUint8Array.length;
+                imageUint8Array.length;
                 offset += chunkSize
             ) {
                 var chunk =
@@ -14781,7 +14769,7 @@ function thelegendmodproject() {
                         offset,
                         Math.min(
                             offset +
-                                chunkSize,
+                            chunkSize,
                             imageUint8Array
                                 .length
                         )
@@ -14852,7 +14840,7 @@ function thelegendmodproject() {
                     "<array>" +
                     indexedSubscriptions
                         .map(
-                            function(item) {
+                            function (item) {
                                 return (
                                     "<string>" +
                                     item +
@@ -14901,7 +14889,7 @@ function thelegendmodproject() {
                 officialApi &&
                 typeof officialApi
                     .saveUserSkin ===
-                    "function"
+                "function"
             ) {
                 try {
                     officialApi.saveUserSkin(
@@ -14919,7 +14907,7 @@ function thelegendmodproject() {
 
                     return true;
                 } catch (
-                    officialSaveError
+                officialSaveError
                 ) {
                     console.warn(
                         "[LM SKIN] Official saveUserSkin failed; using protocol fallback:",
@@ -14952,19 +14940,19 @@ function thelegendmodproject() {
                                 1,
 
                             uncompressedData:
+                            {
+                                type:
+                                    150,
+
+                                userSkinsCreateRequestField:
                                 {
-                                    type:
-                                        150,
+                                    content:
+                                        base64Content,
 
-                                    userSkinsCreateRequestField:
-                                        {
-                                            content:
-                                                base64Content,
-
-                                            meta:
-                                                xmlMeta
-                                        }
+                                    meta:
+                                        xmlMeta
                                 }
+                            }
                         })
                         .finish();
 
@@ -15047,7 +15035,7 @@ function thelegendmodproject() {
                 if (currentObjectUrl) {
                     try {
                         URL.revokeObjectURL(currentObjectUrl);
-                    } catch (e) {}
+                    } catch (e) { }
                     currentObjectUrl = null;
                 }
             }
@@ -15191,10 +15179,10 @@ function thelegendmodproject() {
     };
 
     Object.defineProperty(application, 'user', {
-        get: function() {
+        get: function () {
             return (window.legendmod && window.legendmod.user) ? window.legendmod.user : (this._user || (this._user = { coins: 0, dna: 0, trophy: 0, boosts: {}, rushBoosts: {}, skins: {}, skinPieces: {}, potions: {}, potionsStatus: {}, skipBrew: {} }));
         },
-        set: function(val) {
+        set: function (val) {
             if (window.legendmod) window.legendmod.user = val;
             this._user = val;
         },
@@ -16938,11 +16926,11 @@ function thelegendmodproject() {
              */
             var _preserveWorldSpectatePending =
                 this._worldSpectatePending ===
-                    true &&
+                true &&
                 this._worldSpectatePendingUrl ===
-                    t &&
+                t &&
                 _earlyType ===
-                    'expandingland';
+                'expandingland';
 
             if (
                 !_preserveWorldSpectatePending
@@ -17358,9 +17346,9 @@ function thelegendmodproject() {
             if (
                 this._worldSpectatePending &&
                 this._worldSpectatePendingUrl ===
-                    this.ws &&
+                this.ws &&
                 this.serverType ===
-                    'expandingland' &&
+                'expandingland' &&
                 this.isSocketOpen() &&
                 this.connectionOpened
             ) {
@@ -18312,7 +18300,7 @@ function thelegendmodproject() {
             if (!Number.isSafeInteger(outputSize) ||
                 outputSize <= 0 ||
                 outputSize >
-                    MAX_DECOMPRESSED_PACKET_SIZE) {
+                MAX_DECOMPRESSED_PACKET_SIZE) {
                 throw new RangeError(
                     "Invalid decompressed packet size"
                 );
@@ -18320,8 +18308,8 @@ function thelegendmodproject() {
 
             if (compressedSize <= 0 ||
                 outputSize >
-                    compressedSize *
-                    MAX_COMPRESSION_RATIO) {
+                compressedSize *
+                MAX_COMPRESSION_RATIO) {
                 throw new RangeError(
                     "Invalid compressed packet ratio"
                 );
@@ -19174,7 +19162,7 @@ function thelegendmodproject() {
                         this.onMobileData(msg);
                     } catch (e102) {
                         console.error('[LW 102 DBG] onMobileData error:', e102);
-                    }				
+                    }
                     if (data.byteLength < 20) {
                         //this["loggedIn"] = ![];
                         //if (window["logout"]) {
@@ -19264,7 +19252,7 @@ function thelegendmodproject() {
                         try {
                             localStorage.removeItem("agarioUID");
                             localStorage.removeItem("agarioEncodedUID");
-                        } catch (e) {}
+                        } catch (e) { }
 
                         if (window.agarioUID && window.agarioUID !== "0" && window.agarioUID.length >= 8) {
                             $("#UserProfileUUID1").val(window.agarioUID);
@@ -20229,7 +20217,7 @@ function thelegendmodproject() {
                                 setTimeout(window.LoadGameConfiguration, 1000);
                             }
                         }
-                    } catch(ccErr) {
+                    } catch (ccErr) {
                         console.warn("[LM] Error parsing configuration change:", ccErr);
                     }
                     break;
@@ -20280,16 +20268,16 @@ function thelegendmodproject() {
                                     console.log("[LM] Auto-equipping purchased skin: " + pendingSkin);
                                     // Set as equipped in localStorage and send opcode 80
                                     if (typeof window.equipSkin === 'function') {
-                                        try { window.equipSkin(pendingSkin); } catch(eqe) {}
+                                        try { window.equipSkin(pendingSkin); } catch (eqe) { }
                                     } else {
                                         localStorage.setItem('equippedSkinId', pendingSkin);
                                         if (typeof window.changeSkin === 'function') {
-                                            try { window.changeSkin(pendingSkin); } catch(cse) {}
+                                            try { window.changeSkin(pendingSkin); } catch (cse) { }
                                         }
                                     }
                                     window._pendingSkinPurchaseId = null;
                                 }
-                                try { this.createSkinsHTML(); } catch(e) {}
+                                try { this.createSkinsHTML(); } catch (e) { }
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (spResult === 2) {
@@ -20300,7 +20288,7 @@ function thelegendmodproject() {
                                 toastr.warning('<b>[SERVER]:</b> Purchase response: code ' + spResult);
                             }
                         }
-                    } catch(spErr) {
+                    } catch (spErr) {
                         console.warn("[LM] Error parsing soft purchase response:", spErr);
                     }
                     break;
@@ -20321,7 +20309,7 @@ function thelegendmodproject() {
                                 toastr.error('<b>[SERVER]:</b> In-app purchase failed (code ' + iap.result + ')');
                             }
                         }
-                    } catch(iapErr) {
+                    } catch (iapErr) {
                         console.warn("[LM] Error parsing IAP response:", iapErr);
                     }
                     break;
@@ -20332,11 +20320,11 @@ function thelegendmodproject() {
                         if (wu && wu.productUpdates && wu.productUpdates.length) {
                             console.log("[LM] Wallet update — " + wu.productUpdates.length + " items changed");
                             this.updateProducts(wu.productUpdates);
-                            try { this.createSkinsHTML(); } catch(e) {}
+                            try { this.createSkinsHTML(); } catch (e) { }
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(wuErr) {
+                    } catch (wuErr) {
                         console.warn("[LM] Error parsing wallet updates:", wuErr);
                     }
                     break;
@@ -20351,7 +20339,7 @@ function thelegendmodproject() {
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(pwuErr) {
+                    } catch (pwuErr) {
                         console.warn("[LM] Error parsing purchase wallet updates:", pwuErr);
                     }
                     break;
@@ -20367,7 +20355,7 @@ function thelegendmodproject() {
                                 if (ob.productUpdates && ob.productUpdates.length) {
                                     this.updateProducts(ob.productUpdates);
                                 }
-                                try { this.createSkinsHTML(); } catch(e) {}
+                                try { this.createSkinsHTML(); } catch (e) { }
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (obResult === 2) {
@@ -20378,7 +20366,7 @@ function thelegendmodproject() {
                         } else {
                             console.log("returnMessage = r.get_offerBundleResponseField(); (no data)");
                         }
-                    } catch(obErr) {
+                    } catch (obErr) {
                         console.warn("[LM] Error parsing offer bundle response:", obErr);
                     }
                     break;
@@ -20387,12 +20375,9 @@ function thelegendmodproject() {
                     try {
                         var u = r.uncompressedData.updateUserSettingsResponseField;
                         if (u && u.updatedUserSettings) {
-                            console.log('[LM] ✓ Opcode 81 — Server confirmed user settings update:', JSON.stringify(u.updatedUserSettings.map(function(s) { return { key: s.key, val: s.valueString || s.valueInt32 }; })));
                             this.updateUserSettings(u.updatedUserSettings);
-                        } else {
-                            console.log('[LM] ✓ Opcode 81 — Server responded but no updatedUserSettings field');
                         }
-                    } catch(usErr) { console.warn("[LM] Error parsing user settings response:", usErr); }
+                    } catch (usErr) { console.warn("[LM] Error parsing user settings response:", usErr); }
                     break;
                 case 83:
                     // User stats response
@@ -20402,7 +20387,7 @@ function thelegendmodproject() {
                             console.log("[LM] Inspected User Stats for " + st.userId + ":", st.userStats);
                             toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + (st.userStats.massConsumed || 0).toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
                         }
-                    } catch(stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
+                    } catch (stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
                     break;
                 case 101:
                     // Claim gifts response
@@ -20414,7 +20399,7 @@ function thelegendmodproject() {
                             this.updateProducts(puArr);
                             toastr.success('<b>[SERVER]:</b> Gift claimed successfully! &#x2714;');
                         }
-                    } catch(cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
+                    } catch (cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
                     break;
                 case 103:
                     // Consume gift requests response (echo-back confirmation)
@@ -20422,7 +20407,7 @@ function thelegendmodproject() {
                         var cgr = r.uncompressedData.consumeRequestsField;
                         console.log("[LM] Consume Gift Requests confirmed", cgr);
                         toastr.info('<b>[SERVER]:</b> Gift requests consumed');
-                    } catch(cgrErr) { console.warn("[LM] Error parsing consume requests:", cgrErr); }
+                    } catch (cgrErr) { console.warn("[LM] Error parsing consume requests:", cgrErr); }
                     break;
                 case 104:
                     // Request gifts response (echo-back confirmation)
@@ -20430,7 +20415,7 @@ function thelegendmodproject() {
                         var rgr = r.uncompressedData.requestGiftsField;
                         console.log("[LM] Request Gifts confirmed", rgr);
                         toastr.info('<b>[SERVER]:</b> Gift requests sent');
-                    } catch(rgrErr) { console.warn("[LM] Error parsing request gifts:", rgrErr); }
+                    } catch (rgrErr) { console.warn("[LM] Error parsing request gifts:", rgrErr); }
                     break;
                 case 105:
                     // Facebook invitation reward updates
@@ -20444,7 +20429,7 @@ function thelegendmodproject() {
                                 toastr.success('<b>[SERVER]:</b> Invitation reward received! &#x1F381;');
                             }
                         }
-                    } catch(fbrErr) {
+                    } catch (fbrErr) {
                         console.warn("[LM] Error parsing FB invitation reward:", fbrErr);
                     }
                     break;
@@ -20467,7 +20452,7 @@ function thelegendmodproject() {
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(teErr) {
+                    } catch (teErr) {
                         console.warn("[LM] Error parsing timed event response:", teErr);
                     }
                     break;
@@ -20488,7 +20473,7 @@ function thelegendmodproject() {
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(baErr) {
+                    } catch (baErr) {
                         console.warn("[LM] Error parsing boost response:", baErr);
                     }
                     break;
@@ -20508,7 +20493,7 @@ function thelegendmodproject() {
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(qaErr) {
+                    } catch (qaErr) {
                         console.warn("[LM] Error parsing quest response:", qaErr);
                     }
                     break;
@@ -20523,14 +20508,14 @@ function thelegendmodproject() {
                             for (var tei = 0; tei < teu.userTimedEvents.length; tei++) {
                                 var evt = teu.userTimedEvents[tei];
                                 if (evt.eventId === 'hourlyBonus' && evt.nextAvailableInSeconds > 0) {
-                                var mins = Math.floor(evt.nextAvailableInSeconds / 60);
-                                var secs = evt.nextAvailableInSeconds % 60;
-                                console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
-                            }
+                                    var mins = Math.floor(evt.nextAvailableInSeconds / 60);
+                                    var secs = evt.nextAvailableInSeconds % 60;
+                                    console.log('[LM] Hourly bonus next in: ' + mins + 'm ' + secs + 's');
+                                }
                             }
                             console.log("[LM] Timed Event Updates — no events in payload");
                         }
-                    } catch(teuErr) {
+                    } catch (teuErr) {
                         console.warn("[LM] Error parsing timed event updates:", teuErr);
                     }
                     break;
@@ -20551,7 +20536,7 @@ function thelegendmodproject() {
                                 toastr.success('<b>[SERVER]:</b> Potion opened! &#x1F9EA;');
                             }
                         }
-                    } catch(opprErr) {
+                    } catch (opprErr) {
                         console.warn("[LM] Error parsing open potion (product) response:", opprErr);
                     }
                     break;
@@ -20565,7 +20550,7 @@ function thelegendmodproject() {
                             }
                             console.log('[LM] Potion brewing started!');
                         }
-                    } catch(brewErr) {
+                    } catch (brewErr) {
                         console.warn("[LM] Error parsing brew potion response:", brewErr);
                     }
                     break;
@@ -20586,7 +20571,7 @@ function thelegendmodproject() {
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
-                    } catch(openPErr) {
+                    } catch (openPErr) {
                         console.warn("[LM] Error parsing open potion response:", openPErr);
                     }
                     break;
@@ -20602,9 +20587,9 @@ function thelegendmodproject() {
                             if (urr.userTimedEvents && urr.userTimedEvents.length) {
                                 this.updateEvents(urr.userTimedEvents);
                             }
-                            try { document.dispatchEvent(new CustomEvent('userRewardsActivated', { detail: urr })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('userRewardsActivated', { detail: urr })); } catch (e) { }
                         }
-                    } catch(urrErr) {
+                    } catch (urrErr) {
                         console.warn("[LM] Error parsing bulk user rewards response:", urrErr);
                     }
                     break;
@@ -20636,9 +20621,9 @@ function thelegendmodproject() {
                             }
                             // Preserve the existing UI event contract without synthesizing leagueEntries.
                             lr.isLastWeek = isLastWeek;
-                            try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('leaguesInfoUpdate', { detail: lr })); } catch (e) { }
                         }
-                    } catch(lrErr) {
+                    } catch (lrErr) {
                         console.warn("[LM] Error parsing leagues info response:", lrErr);
                     }
                     break;
@@ -20658,9 +20643,9 @@ function thelegendmodproject() {
                                 this.user.leaguePosition = lpu.newPosition;
                                 console.log("[LM] New league position: " + lpu.newPosition);
                             }
-                            try { document.dispatchEvent(new CustomEvent('leaguesPassUpdate', { detail: lpu })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('leaguesPassUpdate', { detail: lpu })); } catch (e) { }
                         }
-                    } catch(lpuErr) {
+                    } catch (lpuErr) {
                         console.warn("[LM] Error parsing leagues pass update:", lpuErr);
                     }
                     break;
@@ -20674,9 +20659,9 @@ function thelegendmodproject() {
                             var totalOnline = flu.totalOnlineFriends || 0;
                             window._friendListData = { friends: friendArr, totalOnline: totalOnline };
                             this.user.friendList = friendArr;
-                            try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: { friends: friendArr, totalOnline: totalOnline } })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('friendListUpdate', { detail: { friends: friendArr, totalOnline: totalOnline } })); } catch (e) { }
                         }
-                    } catch(fluErr) {
+                    } catch (fluErr) {
                         console.warn("[LM] Error parsing friend list update:", fluErr);
                     }
                     break;
@@ -20687,9 +20672,9 @@ function thelegendmodproject() {
                         if (sa) {
                             LM.safeAreaRing = { x: sa.x || 0, y: sa.y || 0, radius: sa.radius || 0 };
                             console.log("[LM] Battle Royale Safe Area Ring updated:", LM.safeAreaRing);
-                            try { document.dispatchEvent(new CustomEvent('battleRoyaleSafeAreaUpdate', { detail: sa })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('battleRoyaleSafeAreaUpdate', { detail: sa })); } catch (e) { }
                         }
-                    } catch(saErr) {
+                    } catch (saErr) {
                         console.warn("[LM] Error parsing Battle Royale safe area:", saErr);
                     }
                     break;
@@ -20700,9 +20685,9 @@ function thelegendmodproject() {
                         if (brp) {
                             LM.battleRoyalePhase = brp;
                             console.log("[LM] Battle Royale Arena Phase updated:", brp);
-                            try { document.dispatchEvent(new CustomEvent('battleRoyalePhaseUpdate', { detail: brp })); } catch(e) {}
+                            try { document.dispatchEvent(new CustomEvent('battleRoyalePhaseUpdate', { detail: brp })); } catch (e) { }
                         }
-                    } catch(brpErr) {
+                    } catch (brpErr) {
                         console.warn("[LM] Error parsing Battle Royale arena phase:", brpErr);
                     }
                     break;
@@ -20742,12 +20727,12 @@ function thelegendmodproject() {
                             for (
                                 var skinProductIndex = 0;
                                 skinProductIndex <
-                                    skinProducts.length;
+                                skinProducts.length;
                                 skinProductIndex++
                             ) {
                                 var skinProductUpdate =
                                     skinProducts[
-                                        skinProductIndex
+                                    skinProductIndex
                                     ];
 
                                 var skinWalletItem =
@@ -20757,8 +20742,8 @@ function thelegendmodproject() {
 
                                 var skinProductId =
                                     skinWalletItem &&
-                                    skinWalletItem
-                                        .productId
+                                        skinWalletItem
+                                            .productId
                                         ? String(
                                             skinWalletItem
                                                 .productId
@@ -20847,7 +20832,7 @@ function thelegendmodproject() {
                                         skinProducts.length &&
                                         typeof officialSkinApi
                                             .handleUserUpdates ===
-                                            'function'
+                                        'function'
                                     ) {
                                         officialSkinApi
                                             .handleUserUpdates(
@@ -20858,7 +20843,7 @@ function thelegendmodproject() {
                                     if (
                                         typeof officialSkinApi
                                             .addCustomSkin ===
-                                            'function'
+                                        'function'
                                     ) {
                                         officialSkinApi
                                             .addCustomSkin(
@@ -20884,8 +20869,8 @@ function thelegendmodproject() {
                                     window
                                         .GameConfiguration
                                         .gameConfig[
-                                            'Gameplay - Equippable Skins'
-                                        ];
+                                    'Gameplay - Equippable Skins'
+                                    ];
 
                                 if (
                                     Array.isArray(
@@ -20895,14 +20880,14 @@ function thelegendmodproject() {
                                     var customSkinExists =
                                         customSkinConfig
                                             .some(
-                                                function(
+                                                function (
                                                     item
                                                 ) {
                                                     return (
                                                         item &&
                                                         item
                                                             .productId ===
-                                                            createdSkinId
+                                                        createdSkinId
                                                     );
                                                 }
                                             );
@@ -20924,7 +20909,7 @@ function thelegendmodproject() {
                                             customSkinBase &&
                                             customSkinBase
                                                 .slice(-1) !==
-                                                '/'
+                                            '/'
                                         ) {
                                             customSkinBase +=
                                                 '/';
@@ -20959,7 +20944,7 @@ function thelegendmodproject() {
 
                                 try {
                                     this.createSkinsHTML();
-                                } catch(e) {}
+                                } catch (e) { }
 
                                 if (
                                     window
@@ -20997,7 +20982,7 @@ function thelegendmodproject() {
                                 'returnMessage = r.get_userSkinsCreateResponseField(); (no data)'
                             );
                         }
-                    } catch(skinErr) {
+                    } catch (skinErr) {
                         console.warn(
                             '[LM] Error parsing skin create response:',
                             skinErr
@@ -21028,11 +21013,11 @@ function thelegendmodproject() {
                             console.log("[LM] Skin Delete — opcode 152 received (no response data)");
                             toastr.info('<b>[SERVER]:</b> Custom skin deleted');
                         }
-                        try { this.createSkinsHTML(); } catch(e) {}
+                        try { this.createSkinsHTML(); } catch (e) { }
                         if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                         // Clear delete timeout
                         if (window._deleteTimeout) { clearTimeout(window._deleteTimeout); window._deleteTimeout = null; }
-                    } catch(sdErr) {
+                    } catch (sdErr) {
                         console.warn("[LM] Error handling skin delete:", sdErr);
                     }
                     break;
@@ -21047,7 +21032,7 @@ function thelegendmodproject() {
                             if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
                             this.user.actionCounters = u;
                         }
-                    } catch(acErr) { console.warn("[LM] Error parsing action counters:", acErr); }
+                    } catch (acErr) { console.warn("[LM] Error parsing action counters:", acErr); }
                     break;
                 case 184:
                     // Reward link activation response
@@ -21058,14 +21043,14 @@ function thelegendmodproject() {
                             if (rlr.productUpdates && rlr.productUpdates.length) {
                                 this.updateProducts(rlr.productUpdates);
                                 toastr.success('<b>[SERVER]:</b> Reward link activated! &#x2714; ' + rlr.productUpdates.length + ' item(s) claimed');
-                                try { this.createSkinsHTML(); } catch(e) {}
+                                try { this.createSkinsHTML(); } catch (e) { }
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else {
                                 toastr.info('<b>[SERVER]:</b> Reward link processed (no items)');
                             }
                         }
-                    } catch(rlrErr) {
+                    } catch (rlrErr) {
                         console.warn("[LM] Error parsing reward link response:", rlrErr);
                     }
                     break;
@@ -21085,7 +21070,7 @@ function thelegendmodproject() {
                         var arBtn = document.getElementById('adRewardBtn');
                         if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
                         if (window._adRewardTimeout) { clearTimeout(window._adRewardTimeout); window._adRewardTimeout = null; }
-                    } catch(vatrErr) {
+                    } catch (vatrErr) {
                         console.warn("[LM] Error parsing video ad token response:", vatrErr);
                     }
                     break;
@@ -21465,7 +21450,7 @@ function thelegendmodproject() {
                             localStorage.setItem('equippedSkinId', skinVal);
                         }
                         if (typeof window.updateEquippedSkinUI === 'function') {
-                            try { window.updateEquippedSkinUI(); } catch (e) {}
+                            try { window.updateEquippedSkinUI(); } catch (e) { }
                         }
                         break;
                     case 2:
@@ -22422,8 +22407,8 @@ Most cells eaten   : ${mostCellsEaten}
                     var expiryDay = expiryDate.getDate();
                     var expiryMonth = expiryDate.toLocaleString('default', { month: 'long' });
                     var daySuffix = (expiryDay === 1 || expiryDay === 21 || expiryDay === 31) ? "st" :
-                                    (expiryDay === 2 || expiryDay === 22) ? "nd" :
-                                    (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
+                        (expiryDay === 2 || expiryDay === 22) ? "nd" :
+                            (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
                     var tempdateNow2 = expiryDay + daySuffix + " of " + expiryMonth;
                     toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b>. Thank you for using our mod!").css("width", "350px");
                 }
@@ -23482,14 +23467,14 @@ Most cells eaten   : ${mostCellsEaten}
             }
             console.group('%c ⚡ LegendMod Subsystem Performance Profiler ⚡ ', 'background: #1e1e2e; color: #00e5ff; font-weight: bold; font-size: 14px; padding: 4px;');
             console.table({
-                '0. Main Thread CPU Load':    { 'Last': this.stats.cpuPct.toFixed(1) + '%', 'Avg': this.stats.cpuAvgPct + '%', 'Min': '-', 'Max': '-', '% Frame': 'Main Thread %' },
-                '1. Total Frame Draw':        { 'Last': this.stats.frameMs.toFixed(2) + 'ms', 'Avg': this.stats.frameAvgMs + 'ms', 'Min': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2) + 'ms', 'Max': this.stats.frameMaxMs.toFixed(2) + 'ms', '% Frame': '100%' },
-                '2. WebGL2 Batch Draw':      { 'Last': this.stats.webglMs.toFixed(2) + 'ms', 'Avg': this.stats.webglAvgMs + 'ms', 'Min': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2) + 'ms', 'Max': this.stats.webglMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.webglAvgMs) },
-                '3. Grid & Map Borders':      { 'Last': this.stats.gridMs.toFixed(2) + 'ms', 'Avg': this.stats.gridAvgMs + 'ms', 'Min': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2) + 'ms', 'Max': this.stats.gridMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.gridAvgMs) },
-                '4. Nick & Mass Text':        { 'Last': this.stats.textMs.toFixed(2) + 'ms', 'Avg': this.stats.textAvgMs + 'ms', 'Min': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2) + 'ms', 'Max': this.stats.textMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.textAvgMs) },
-                '5. Minimap & Radar':        { 'Last': this.stats.minimapMs.toFixed(2) + 'ms', 'Avg': this.stats.minimapAvgMs + 'ms', 'Min': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2) + 'ms', 'Max': this.stats.minimapMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.minimapAvgMs) },
-                '6. Leaderboard Processing':  { 'Last': this.stats.lbMs.toFixed(2) + 'ms', 'Avg': this.stats.lbAvgMs + 'ms', 'Min': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2) + 'ms', 'Max': this.stats.lbMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.lbAvgMs) },
-                '7. Packet 16 Decode (WS)':   { 'Last': this.stats.packetMs.toFixed(2) + 'ms', 'Avg': this.stats.packetAvgMs + 'ms', 'Min': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2) + 'ms', 'Max': this.stats.packetMaxMs.toFixed(2) + 'ms', '% Frame': 'Async' },
+                '0. Main Thread CPU Load': { 'Last': this.stats.cpuPct.toFixed(1) + '%', 'Avg': this.stats.cpuAvgPct + '%', 'Min': '-', 'Max': '-', '% Frame': 'Main Thread %' },
+                '1. Total Frame Draw': { 'Last': this.stats.frameMs.toFixed(2) + 'ms', 'Avg': this.stats.frameAvgMs + 'ms', 'Min': (this.stats.frameMinMs === 999 ? 0 : this.stats.frameMinMs).toFixed(2) + 'ms', 'Max': this.stats.frameMaxMs.toFixed(2) + 'ms', '% Frame': '100%' },
+                '2. WebGL2 Batch Draw': { 'Last': this.stats.webglMs.toFixed(2) + 'ms', 'Avg': this.stats.webglAvgMs + 'ms', 'Min': (this.stats.webglMinMs === 999 ? 0 : this.stats.webglMinMs).toFixed(2) + 'ms', 'Max': this.stats.webglMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.webglAvgMs) },
+                '3. Grid & Map Borders': { 'Last': this.stats.gridMs.toFixed(2) + 'ms', 'Avg': this.stats.gridAvgMs + 'ms', 'Min': (this.stats.gridMinMs === 999 ? 0 : this.stats.gridMinMs).toFixed(2) + 'ms', 'Max': this.stats.gridMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.gridAvgMs) },
+                '4. Nick & Mass Text': { 'Last': this.stats.textMs.toFixed(2) + 'ms', 'Avg': this.stats.textAvgMs + 'ms', 'Min': (this.stats.textMinMs === 999 ? 0 : this.stats.textMinMs).toFixed(2) + 'ms', 'Max': this.stats.textMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.textAvgMs) },
+                '5. Minimap & Radar': { 'Last': this.stats.minimapMs.toFixed(2) + 'ms', 'Avg': this.stats.minimapAvgMs + 'ms', 'Min': (this.stats.minimapMinMs === 999 ? 0 : this.stats.minimapMinMs).toFixed(2) + 'ms', 'Max': this.stats.minimapMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.minimapAvgMs) },
+                '6. Leaderboard Processing': { 'Last': this.stats.lbMs.toFixed(2) + 'ms', 'Avg': this.stats.lbAvgMs + 'ms', 'Min': (this.stats.lbMinMs === 999 ? 0 : this.stats.lbMinMs).toFixed(2) + 'ms', 'Max': this.stats.lbMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.lbAvgMs) },
+                '7. Packet 16 Decode (WS)': { 'Last': this.stats.packetMs.toFixed(2) + 'ms', 'Avg': this.stats.packetAvgMs + 'ms', 'Min': (this.stats.packetMinMs === 999 ? 0 : this.stats.packetMinMs).toFixed(2) + 'ms', 'Max': this.stats.packetMaxMs.toFixed(2) + 'ms', '% Frame': 'Async' },
                 '8. Physics & Jelly Motion': { 'Last': this.stats.physicsMs.toFixed(2) + 'ms', 'Avg': this.stats.physicsAvgMs + 'ms', 'Min': (this.stats.physicsMinMs === 999 ? 0 : this.stats.physicsMinMs).toFixed(2) + 'ms', 'Max': this.stats.physicsMaxMs.toFixed(2) + 'ms', '% Frame': calcPct(this.stats.physicsAvgMs) }
             });
             console.log('Total Frames Sampled:', this.stats.frameCount, '| Packets Processed:', this.stats.packetCount);
@@ -23642,7 +23627,7 @@ Most cells eaten   : ${mostCellsEaten}
             } catch (error) {
                 try {
                     gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-                } catch (unbindError) {}
+                } catch (unbindError) { }
 
                 return false;
             }
@@ -23731,7 +23716,7 @@ Most cells eaten   : ${mostCellsEaten}
                     cell.color,
                     cell.skin
                 );
-            } catch (error) {}
+            } catch (error) { }
 
             if (
                 !node ||
@@ -23930,7 +23915,7 @@ Most cells eaten   : ${mostCellsEaten}
                     var videoUrl =
                         application.gameMode === ':party'
                             ? application.customSkinsMap[
-                                cell.targetNick + cell.color
+                            cell.targetNick + cell.color
                             ]
                             : application.customSkinsMap[cell.targetNick];
 
@@ -25741,7 +25726,7 @@ Most cells eaten   : ${mostCellsEaten}
             } catch (error) {
                 try {
                     gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-                } catch (unbindError) {}
+                } catch (unbindError) { }
                 if (typeof sourceNode === 'string' && this.glSkinMap) {
                     this.glSkinMap[sourceNode] = -1;
                 }
@@ -26007,14 +25992,14 @@ Most cells eaten   : ${mostCellsEaten}
 
             var halfW =
                 this.canvasWidth /
-                    viewScale /
-                    2 +
+                viewScale /
+                2 +
                 500;
 
             var halfH =
                 this.canvasHeight /
-                    viewScale /
-                    2 +
+                viewScale /
+                2 +
                 500;
 
             var minX =
@@ -26050,7 +26035,7 @@ Most cells eaten   : ${mostCellsEaten}
                         player.size ||
                         10
                     ) *
-                        sizeMultiplierValue +
+                    sizeMultiplierValue +
                     (
                         scaleOffset ||
                         0
@@ -26075,13 +26060,13 @@ Most cells eaten   : ${mostCellsEaten}
 
                 if (
                     x + outerRadius <
-                        minX ||
+                    minX ||
                     x - outerRadius >
-                        maxX ||
+                    maxX ||
                     y + outerRadius <
-                        minY ||
+                    minY ||
                     y - outerRadius >
-                        maxY
+                    maxY
                 ) {
                     continue;
                 }
@@ -26121,7 +26106,7 @@ Most cells eaten   : ${mostCellsEaten}
                         Math.min(
                             0.95,
                             lineWidth /
-                                outerRadius
+                            outerRadius
                         )
                     );
 
@@ -26145,11 +26130,11 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform2f(
                 this.u_solidRing_viewScale,
                 2 *
-                    viewScale /
-                    this.canvasWidth,
+                viewScale /
+                this.canvasWidth,
                 2 *
-                    viewScale /
-                    this.canvasHeight
+                viewScale /
+                this.canvasHeight
             );
 
             gl.bindBuffer(
@@ -26487,11 +26472,11 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform2f(
                 this.u_line_viewScale,
                 2 *
-                    viewScale /
-                    this.canvasWidth,
+                viewScale /
+                this.canvasWidth,
                 2 *
-                    viewScale /
-                    this.canvasHeight
+                viewScale /
+                this.canvasHeight
             );
 
             gl.uniform1f(
@@ -26645,7 +26630,7 @@ Most cells eaten   : ${mostCellsEaten}
          * then draws as a textured quad on the GL canvas with correct depth Z. */
         getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth) {
             if (!this.gl || !this.glTextProgram) return null;
-            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle||'') + '|' + (strokeWidth||0);
+            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
             if (cached) { cached.lastUsed = now; return cached; }
@@ -26699,7 +26684,7 @@ Most cells eaten   : ${mostCellsEaten}
             /* Evict oldest entries until cache is back within limits */
             while (this.glTextCache.size > this.glTextCacheMaxSize) {
                 var oldest = null, oldestKey = null;
-                this.glTextCache.forEach(function(v, k) {
+                this.glTextCache.forEach(function (v, k) {
                     if (!oldest || v.lastUsed < oldest.lastUsed) { oldest = v; oldestKey = k; }
                 });
                 if (oldestKey) {
@@ -27009,21 +26994,21 @@ Most cells eaten   : ${mostCellsEaten}
                         var mode = _isParty ? cell.targetNick + cell.color : cell.targetNick;
                         var cleanNick = cell.targetNick.replace(/\[.*?\]/g, '').trim();
                         skinUrl = application.customSkinsMap[mode] ||
-                                  application.customSkinsMap[cell.targetNick] ||
-                                  application.customSkinsMap[cell.targetNick + '#000000'] ||
-                                  (cleanNick ? (
-                                      application.customSkinsMap[cleanNick] ||
-                                      application.customSkinsMap[cleanNick + '#000000'] ||
-                                      application.customSkinsMap[cleanNick + cell.color]
-                                  ) : null);
+                            application.customSkinsMap[cell.targetNick] ||
+                            application.customSkinsMap[cell.targetNick + '#000000'] ||
+                            (cleanNick ? (
+                                application.customSkinsMap[cleanNick] ||
+                                application.customSkinsMap[cleanNick + '#000000'] ||
+                                application.customSkinsMap[cleanNick + cell.color]
+                            ) : null);
                     }
                     if (!skinUrl && cell.skin) {
                         skinUrl = application.customSkinsMap[cell.skin] ||
-                                  (window.VanillaSkinUrlMap ? (
-                                      window.VanillaSkinUrlMap[cell.skin] ||
-                                      window.VanillaSkinUrlMap['%' + cell.skin] ||
-                                      window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
-                                  ) : null);
+                            (window.VanillaSkinUrlMap ? (
+                                window.VanillaSkinUrlMap[cell.skin] ||
+                                window.VanillaSkinUrlMap['%' + cell.skin] ||
+                                window.VanillaSkinUrlMap[cell.skin.toLowerCase()]
+                            ) : null);
                     }
                     if (skinUrl) {
                         /* A video URL found through an alternate skin-map key must
@@ -27433,7 +27418,7 @@ Most cells eaten   : ${mostCellsEaten}
                         for (var ti = 0; ti < LM.cells.length; ti++) {
                             var tCell = LM.cells[ti];
                             if (tCell && tCell._webglRendered) {
-                                try { this.drawWebGLCellText(tCell); } catch(eText) {}
+                                try { this.drawWebGLCellText(tCell); } catch (eText) { }
                             }
                         }
                         gl.bindVertexArray(null);
@@ -29882,7 +29867,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (
                 window.LM &&
                 typeof window.LM.closeConnection ===
-                    "function"
+                "function"
             ) {
                 window.LM.closeConnection();
                 return;
@@ -31261,7 +31246,7 @@ Array.prototype.stDev = function stDev() {
         extUiScript.type = 'text/javascript';
         extUiScript.src = 'https://www.legendmod.ml/LMexpress/lm_extended_ui.js';
         document.body.appendChild(extUiScript);
-    } catch(e) {
+    } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
     }
 })();
