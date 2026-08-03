@@ -8589,19 +8589,24 @@ function thelegendmodproject() {
             }
 
             /*
-             * CRITICAL: Preserve the official Vue Offers component BEFORE
-             * #mainPanel is destroyed.  #mainui-app (the Vue root) lives
-             * inside #mainPanel — .empty().remove() would destroy it and
-             * all promo/deal buttons (e.g. button_ArcadeGamesSkins_*).
+             * CRITICAL: Preserve the Vue mount point BEFORE #mainPanel is destroyed.
              *
-             * We detach the entire #mainui-app and re-attach it to body
-             * off-screen so Vue reactivity and promoCallback stay alive.
+             * Timeline:
+             *   1. Our mod (ogario.v4.js) runs  → destroys #mainPanel
+             *   2. bundle_end.js mounts Vue on `el: '#home'` (AFTER us)
+             *
+             * #home is inside #mainPanel.  If we destroy #mainPanel first,
+             * #home is gone and Vue silently fails to mount, so #mainui-app
+             * (which contains the promo buttons) is never created.
+             *
+             * Fix: detach #home into a hidden container on body so Vue
+             * can still find and mount on it later.
              */
-            var mainuiApp =
-                document.getElementById('mainui-app');
+            var homeEl = document.getElementById('home');
+            var mainuiApp = document.getElementById('mainui-app');
 
+            /* If #mainui-app already exists (Vue already mounted), save it directly */
             if (mainuiApp) {
-                /* Move #mainui-app out of #mainPanel before it's destroyed */
                 mainuiApp.style.position = 'fixed';
                 mainuiApp.style.left = '-10000px';
                 mainuiApp.style.top = '-10000px';
@@ -8610,56 +8615,47 @@ function thelegendmodproject() {
                 mainuiApp.style.overflow = 'hidden';
                 mainuiApp.style.pointerEvents = 'none';
                 mainuiApp.setAttribute('aria-hidden', 'true');
-
                 document.body.appendChild(mainuiApp);
 
                 console.log(
-                    '[LM] Preserved #mainui-app (Vue offers root) before #mainPanel destroy'
+                    '[LM] Preserved #mainui-app (already mounted) before #mainPanel destroy'
                 );
-            } else {
+            } else if (homeEl) {
                 /*
-                 * Fallback: try to preserve just #mainui-offers or
-                 * .promo-badge-container if #mainui-app doesn't exist.
+                 * Vue hasn't mounted yet. Move #home to body (hidden)
+                 * so Vue can mount on it after #mainPanel is destroyed.
                  */
-                var officialPromoNode =
-                    document.querySelector('.promo-badge-container');
-                var officialPromoRoot =
-                    document.getElementById('mainui-offers');
+                homeEl.style.position = 'fixed';
+                homeEl.style.left = '-10000px';
+                homeEl.style.top = '-10000px';
+                homeEl.style.width = '1px';
+                homeEl.style.height = '1px';
+                homeEl.style.overflow = 'hidden';
+                homeEl.style.pointerEvents = 'none';
+                homeEl.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(homeEl);
 
-                if (
-                    !officialPromoRoot &&
-                    officialPromoNode &&
-                    typeof officialPromoNode.closest === 'function'
-                ) {
-                    officialPromoRoot =
-                        officialPromoNode.closest('#mainui-offers');
-                }
-                if (!officialPromoRoot) {
-                    officialPromoRoot = officialPromoNode;
-                }
+                console.log(
+                    '[LM] Preserved #home (Vue mount point) before #mainPanel destroy'
+                );
 
-                if (officialPromoRoot) {
-                    var officialPromoHost =
-                        document.createElement('div');
-                    officialPromoHost.id =
-                        'lm-preserved-official-promo';
-                    officialPromoHost.setAttribute(
-                        'aria-hidden', 'true'
-                    );
-                    officialPromoHost.style.position = 'fixed';
-                    officialPromoHost.style.left = '-10000px';
-                    officialPromoHost.style.top = '-10000px';
-                    officialPromoHost.style.width = '1px';
-                    officialPromoHost.style.height = '1px';
-                    officialPromoHost.style.overflow = 'hidden';
-                    officialPromoHost.style.pointerEvents = 'none';
-                    document.body.appendChild(officialPromoHost);
-                    officialPromoHost.appendChild(officialPromoRoot);
-
-                    console.log(
-                        '[LM] Preserved promo node before #mainPanel destroy'
-                    );
-                }
+                /*
+                 * Watch for Vue to mount and create #mainui-app inside #home.
+                 * Once it appears, we know the promo buttons will be available.
+                 */
+                var vueObserver = new MutationObserver(function(mutations) {
+                    var app = document.getElementById('mainui-app');
+                    if (app) {
+                        vueObserver.disconnect();
+                        console.log(
+                            '[LM] Vue mounted #mainui-app — promo buttons now available'
+                        );
+                    }
+                });
+                vueObserver.observe(homeEl, {
+                    childList: true,
+                    subtree: true
+                });
             }
 
             $("#mainPanel").empty().remove();

@@ -3718,6 +3718,8 @@
                         receivedAt: window._lmOfficialPromotion.receivedAt
                     }
                     : null,
+            homeEl:
+                !!document.getElementById('home'),
             preservedHost:
                 !!document.getElementById(
                     'lm-preserved-official-promo'
