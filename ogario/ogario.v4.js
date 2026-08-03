@@ -2565,13 +2565,27 @@ window.changeSkin = function (productID) {
     };
     var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
     encode(productID);
-    var skinLink = legendmod.getLink(productID);
-    var skinUrl = skinLink ? skinLink[0] : null;
-    if (skinUrl) {
-        application.customSkinsMap[profiles[application.selectedProfile].nick] = skinUrl;
-        application.loadSkin(application.customSkinsCache, skinUrl);
-    }
+
+    // Send opcode 80 first — this is the critical server-side equip.
+    // The cosmetic URL block below is optional and must never prevent
+    // the protobuf from being sent.
     window.core.proxyMobileData(bytes);
+
+    try {
+        var skinLink = legendmod.getLink(productID);
+        var skinUrl = skinLink ? skinLink[0] : null;
+        if (skinUrl) {
+            var nick = (profiles && profiles[application.selectedProfile])
+                ? profiles[application.selectedProfile].nick
+                : '';
+            if (nick) {
+                application.customSkinsMap[nick] = skinUrl;
+            }
+            application.loadSkin(application.customSkinsCache, skinUrl);
+        }
+    } catch (skinLinkErr) {
+        // Non-critical: the skin is already equipped server-side
+    }
 }
 
 // ─── Expose application protocol functions on window for UI use ───

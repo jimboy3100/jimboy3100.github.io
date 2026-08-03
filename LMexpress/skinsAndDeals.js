@@ -3608,7 +3608,6 @@ function updateEquippedSkinUI() {
     if (equippedId) {
         $('.skin-card[data-product-id="' + equippedId + '"]').each(function() {
             $(this).addClass('equipped');
-            $(this).prepend('<div class="equipped-badge">&#x2714; Equipped</div>');
             $(this).find('.skin-btn-equip').text('Equipped');
         });
     }
