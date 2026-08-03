@@ -2383,7 +2383,7 @@ function populateDealsGrid() {
     var bundles = window.GameConfiguration.gameConfig['Visual - Bundles'] || [];
     var softPurchases = window.GameConfiguration.gameConfig['Wallet - Soft Purchases'] || [];
     var offerableBundles = window.GameConfiguration.gameConfig['Wallet - Offerable Bundles'] || [];
-    var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
+    var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Product Bundles'] || window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
 
     if (iaps.length === 0 && softPurchases.length === 0 && offerableBundles.length === 0) {
         grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">No deals available.</div>';
@@ -2427,16 +2427,34 @@ function populateDealsGrid() {
             ? bundleInfo.description.replace(/_/g, ' ').replace(' name', '')
             : deal.bundleId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
 
+        // Resolve skins via Gameplay - Equippable Skins for proper names
+        var resolvedSkins = getDealSkinEntries(deal.bundleId);
+        var resolvedSkinPids = {};
+        for (var rs = 0; rs < resolvedSkins.length; rs++) {
+            if (resolvedSkins[rs].productId) resolvedSkinPids[resolvedSkins[rs].productId] = true;
+            if (resolvedSkins[rs].cleanProductId) resolvedSkinPids[resolvedSkins[rs].cleanProductId] = true;
+        }
+
         // Figure out what's in the bundle
         var contents = productLookup[deal.bundleId] || [];
         var contentText = '';
+
+        // Show resolved skin names first (proper titles from config)
+        for (var rs2 = 0; rs2 < resolvedSkins.length; rs2++) {
+            contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">🎨 ' + resolvedSkins[rs2].name + '</span> ';
+        }
+
+        // Show non-skin products (coins, DNA, boosts, etc.)
         for (var c = 0; c < contents.length; c++) {
             var pid = contents[c].productId || '';
             var qty = contents[c].quantity || 1;
+            // Skip skin products already shown with resolved names above
+            var cleanPid = pid.replace(/^(shop_skin_|skin_)/, '');
+            if (resolvedSkinPids[pid] || resolvedSkinPids[cleanPid]) continue;
             var label = pid.replace(/_/g, ' ');
             if (pid.indexOf('coins') !== -1) label = '💰 ' + qty.toLocaleString() + ' Coins';
             else if (pid.indexOf('dna') !== -1) label = '🧬 ' + qty.toLocaleString() + ' DNA';
-            else if (pid.indexOf('skin') !== -1) label = '🎨 ' + pid.replace(/^(shop_skin_|skin_)/, '').replace(/_/g, ' ');
+            else if (pid.indexOf('skin') !== -1) label = '🎨 ' + cleanPid.replace(/_/g, ' ');
             else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
             contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + label + '</span> ';
@@ -2620,7 +2638,7 @@ function getDealSkinEntries(bundleId) {
         window._bundleSkinEntriesCache = {};
         window._bundleSkinImagesCache = {};
 
-        var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
+        var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Product Bundles'] || window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
         var skins = window.GameConfiguration.gameConfig['Gameplay - Equippable Skins'] || [];
         var cdnBase = window.LM_CDN_BASE();
 
