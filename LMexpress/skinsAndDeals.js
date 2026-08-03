@@ -778,12 +778,17 @@ function SpecialDeals(defaultTab) {
         function getOfficialAgarUPNG() {
             if (
                 window._lmOfficialAgarUPNG &&
-                typeof window._lmOfficialAgarUPNG.encode ===
-                    'function'
+                typeof window
+                    ._lmOfficialAgarUPNG
+                    .encode === 'function'
             ) {
-                return window._lmOfficialAgarUPNG;
+                return window
+                    ._lmOfficialAgarUPNG;
             }
 
+            /*
+             * Some builds may expose UPNG globally.
+             */
             if (
                 window.UPNG &&
                 typeof window.UPNG.encode ===
@@ -792,25 +797,64 @@ function SpecialDeals(defaultTab) {
                 window._lmOfficialAgarUPNG =
                     window.UPNG;
 
-                return window._lmOfficialAgarUPNG;
+                return window
+                    ._lmOfficialAgarUPNG;
             }
 
+            var requireCandidates = [];
+
+            function rememberWebpackRequire(
+                webpackRequire
+            ) {
+                if (
+                    !webpackRequire ||
+                    typeof webpackRequire !==
+                        'function' ||
+                    !webpackRequire.m
+                ) {
+                    return;
+                }
+
+                if (
+                    requireCandidates.indexOf(
+                        webpackRequire
+                    ) === -1
+                ) {
+                    requireCandidates.push(
+                        webpackRequire
+                    );
+                }
+            }
+
+            rememberWebpackRequire(
+                window._lmAgarWebpackRequire
+            );
+
             /*
-             * The currently supplied original Agar.io bundle stores UPNG
-             * in webpack module 647. Capture webpack's private require
-             * function without modifying an existing Agar.io module.
+             * bundle_commons installs the old webpackJsonp callback.
+             *
+             * Inject a temporary module. Every webpack runtime in the callback
+             * chain executes it with its own __webpack_require__. We retain the
+             * runtime containing Agar.io's UPNG module.
              */
             if (
-                !window._lmAgarWebpackRequire &&
                 typeof window.webpackJsonp ===
                     'function'
             ) {
                 try {
-                    var bridgeId =
-                        '__lm_capture_agar_require__';
+                    window._lmAgarWebpackBridgeCounter =
+                        (
+                            window
+                                ._lmAgarWebpackBridgeCounter ||
+                            0
+                        ) + 1;
 
-                    var bridgeModules =
-                        {};
+                    var bridgeId =
+                        900000 +
+                        window
+                            ._lmAgarWebpackBridgeCounter;
+
+                    var bridgeModules = {};
 
                     bridgeModules[
                         bridgeId
@@ -819,8 +863,9 @@ function SpecialDeals(defaultTab) {
                         exports,
                         __webpack_require__
                     ) {
-                        window._lmAgarWebpackRequire =
-                            __webpack_require__;
+                        rememberWebpackRequire(
+                            __webpack_require__
+                        );
                     };
 
                     window.webpackJsonp(
@@ -829,48 +874,157 @@ function SpecialDeals(defaultTab) {
                         [bridgeId]
                     );
                 } catch (
-                    webpackBridgeError
+                    webpackCaptureError
                 ) {
                     console.warn(
-                        '[LM SKIN] Could not capture Agar.io webpack require:',
-                        webpackBridgeError
+                        '[LM SKIN] Could not capture Agar.io webpack runtime:',
+                        webpackCaptureError
                     );
                 }
             }
 
-            if (
-                window._lmAgarWebpackRequire
+            for (
+                var requireIndex = 0;
+                requireIndex <
+                    requireCandidates.length;
+                requireIndex++
             ) {
+                var webpackRequire =
+                    requireCandidates[
+                        requireIndex
+                    ];
+
+                var possibleModuleIds = [
+                    647
+                ];
+
+                /*
+                 * Module 647 is correct for the supplied original bundle.
+                 * Also scan module source so this survives a future numeric-ID
+                 * change without executing every webpack module.
+                 */
                 try {
-                    var upngModule =
-                        window
-                            ._lmAgarWebpackRequire(
-                                647
-                            );
+                    var moduleMap =
+                        webpackRequire.m;
 
-                    var upng =
-                        upngModule &&
-                        upngModule.default
-                            ? upngModule.default
-                            : upngModule;
+                    var moduleIds =
+                        Object.keys(
+                            moduleMap
+                        );
 
-                    if (
-                        upng &&
-                        typeof upng.encode ===
-                            'function'
+                    for (
+                        var sourceIndex = 0;
+                        sourceIndex <
+                            moduleIds.length;
+                        sourceIndex++
                     ) {
-                        window._lmOfficialAgarUPNG =
-                            upng;
+                        var moduleId =
+                            moduleIds[
+                                sourceIndex
+                            ];
 
-                        return upng;
+                        var moduleFactory =
+                            moduleMap[
+                                moduleId
+                            ];
+
+                        if (
+                            typeof moduleFactory !==
+                                'function'
+                        ) {
+                            continue;
+                        }
+
+                        var moduleSource =
+                            Function.prototype
+                                .toString.call(
+                                    moduleFactory
+                                );
+
+                        if (
+                            moduleSource.indexOf(
+                                'UPNG.encode = function'
+                            ) !== -1 &&
+                            moduleSource.indexOf(
+                                'module.exports = UPNG'
+                            ) !== -1
+                        ) {
+                            possibleModuleIds.push(
+                                moduleId
+                            );
+                        }
                     }
                 } catch (
-                    upngLoadError
+                    moduleScanError
                 ) {
                     console.warn(
-                        '[LM SKIN] Could not load Agar.io UPNG module:',
-                        upngLoadError
+                        '[LM SKIN] Could not scan Agar.io webpack modules:',
+                        moduleScanError
                     );
+                }
+
+                for (
+                    var moduleIndex = 0;
+                    moduleIndex <
+                        possibleModuleIds.length;
+                    moduleIndex++
+                ) {
+                    var possibleModuleId =
+                        possibleModuleIds[
+                            moduleIndex
+                        ];
+
+                    try {
+                        if (
+                            !webpackRequire.m[
+                                possibleModuleId
+                            ]
+                        ) {
+                            continue;
+                        }
+
+                        var exportedModule =
+                            webpackRequire(
+                                possibleModuleId
+                            );
+
+                        var upng =
+                            exportedModule &&
+                            exportedModule.default
+                                ? exportedModule
+                                    .default
+                                : exportedModule;
+
+                        if (
+                            upng &&
+                            typeof upng.encode ===
+                                'function'
+                        ) {
+                            window
+                                ._lmAgarWebpackRequire =
+                                webpackRequire;
+
+                            window
+                                ._lmOfficialAgarUPNG =
+                                upng;
+
+                            console.log(
+                                '[LM SKIN] Official Agar.io UPNG loaded from webpack module:',
+                                possibleModuleId
+                            );
+
+                            return upng;
+                        }
+                    } catch (
+                        moduleLoadError
+                    ) {
+                        console.warn(
+                            '[LM SKIN] Could not load possible UPNG module ' +
+                            possibleModuleId +
+                            ':',
+                            moduleLoadError
+                        );
+                    }
                 }
             }
 
