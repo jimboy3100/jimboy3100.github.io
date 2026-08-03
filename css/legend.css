@@ -299,7 +299,7 @@ label:hover {
 
 .progress-bar-star {
     font-weight: 700;
-    right: -5px
+    right: 22px
 }
 
 .agario-panel-freecoins,
@@ -761,7 +761,7 @@ input.stream-mode::selection {
     text-shadow: none;
     line-height: normal;
     top: 6px;
-    right: 10px
+    right: 22px
 }
 
 #skins-panel {
