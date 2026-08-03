@@ -4846,15 +4846,13 @@
 
         // Friends requires an authenticated Facebook Agar.io account.
         var isFacebook =
-            isLoggedIn &&
-            hasUID &&
+            buttonsEnabled &&
             typeof window.isFacebookAgarAccount ===
                 'function' &&
             window.isFacebookAgarAccount();
 
         var friendsBtnEnabled =
-            isLoggedIn &&
-            hasUID &&
+            buttonsEnabled &&
             isFacebook;
         var friendsBtn = $('#lm-friends-btn');
         friendsBtn.prop('disabled', !friendsBtnEnabled);
