@@ -14799,71 +14799,83 @@ function thelegendmodproject() {
                     );
 
                     /*
-                     * Send directly through the cp5 WebSocket,
-                     * bypassing WASM _ac_proxy_mobile_data which
-                     * may internally parse/validate the message
-                     * and reject opcode 150 from external sources.
-                     *
-                     * cp5.sockets[] is the WASM's socket array.
-                     * The game server socket is the one that's open.
+                     * Strategy: Use proxyMobileData (WASM path)
+                     * with a WebSocket interceptor to verify the
+                     * bytes actually reach the WebSocket. If the
+                     * WASM drops/modifies them, fall back to
+                     * direct cp5.sockets[] send.
                      */
-                    var sent = false;
-                    if (typeof cp5 !== 'undefined' && cp5.sockets) {
-                        for (var si = 0; si < cp5.sockets.length; si++) {
-                            var ws = cp5.sockets[si];
-                            if (ws && ws.readyState === 1) {
-                                /*
-                                 * Monitor for disconnect after sending.
-                                 * Wrap onclose/onerror to capture details.
-                                 */
-                                var origOnClose = ws.onclose;
-                                var origOnError = ws.onerror;
-                                ws.onclose = function(event) {
-                                    console.error(
-                                        "[LM SKIN] WebSocket CLOSED after send!",
-                                        {
-                                            code: event.code,
-                                            reason: event.reason,
-                                            wasClean: event.wasClean,
-                                            timeAfterSend: Date.now()
-                                        }
-                                    );
-                                    toastr.error(
-                                        "<b>[SKIN]:</b> Socket closed (code " +
-                                        event.code + "): " +
-                                        (event.reason || "no reason")
-                                    );
-                                    if (origOnClose) origOnClose.call(ws, event);
-                                };
-                                ws.onerror = function(event) {
-                                    console.error(
-                                        "[LM SKIN] WebSocket ERROR after send!",
-                                        event
-                                    );
-                                    if (origOnError) origOnError.call(ws, event);
-                                };
+                    var wasmSent = false;
 
-                                console.log(
-                                    "[LM SKIN] Sending via cp5.sockets[" +
-                                    si + "] directly (" +
-                                    buffer.length + " bytes)"
-                                );
-                                ws.send(buffer);
-                                sent = true;
-                                break;
+                    /* Install interceptor to detect the WS.send */
+                    var origSend = WebSocket.prototype.send;
+                    WebSocket.prototype.send = function(data) {
+                        if (data && data.byteLength > 10000) {
+                            wasmSent = true;
+                            var view = new Uint8Array(
+                                data.buffer || data,
+                                data.byteOffset || 0,
+                                data.byteLength
+                            );
+                            console.log(
+                                "[LM SKIN] WS.send from WASM:",
+                                {
+                                    sameAsInput: (
+                                        view.length === buffer.length &&
+                                        view[0] === buffer[0] &&
+                                        view[1] === buffer[1] &&
+                                        view[view.length-1] ===
+                                            buffer[buffer.length-1]
+                                    ),
+                                    inputLen: buffer.length,
+                                    outputLen: view.length,
+                                    first10in: Array.from(buffer.slice(0,10)),
+                                    first10out: Array.from(view.slice(0,10))
+                                }
+                            );
+                        }
+                        return origSend.call(this, data);
+                    };
+
+                    /* Try proxyMobileData (WASM path) first */
+                    try {
+                        window.core.proxyMobileData(buffer);
+                        console.log(
+                            "[LM SKIN] proxyMobileData called (" +
+                            buffer.length + " bytes)"
+                        );
+                    } catch (pmErr) {
+                        console.error(
+                            "[LM SKIN] proxyMobileData error:", pmErr
+                        );
+                    }
+
+                    /* Restore interceptor after brief delay */
+                    setTimeout(function() {
+                        WebSocket.prototype.send = origSend;
+
+                        if (!wasmSent) {
+                            console.warn(
+                                "[LM SKIN] WASM did NOT send our data!" +
+                                " Trying direct cp5 send..."
+                            );
+                            /* Direct cp5.sockets fallback */
+                            if (typeof cp5 !== 'undefined' && cp5.sockets) {
+                                for (var si = 0; si < cp5.sockets.length; si++) {
+                                    var ws = cp5.sockets[si];
+                                    if (ws && ws.readyState === 1) {
+                                        console.log(
+                                            "[LM SKIN] Direct cp5.sockets[" +
+                                            si + "] send (" +
+                                            buffer.length + " bytes)"
+                                        );
+                                        ws.send(buffer);
+                                        break;
+                                    }
+                                }
                             }
                         }
-                    }
-
-                    if (!sent) {
-                        /* Fallback to proxyMobileData */
-                        console.log(
-                            "[LM SKIN] cp5 direct send failed, " +
-                            "falling back to proxyMobileData"
-                        );
-                        window.core.proxyMobileData(buffer);
-                        sent = true;
-                    }
+                    }, 100);
 
                     console.log(
                         "[LM SKIN] Sent opcode 150: " +
