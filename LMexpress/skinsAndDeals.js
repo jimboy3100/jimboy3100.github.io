@@ -3392,15 +3392,46 @@ function updateEquippedSkinUI() {
     }
 
     // Highlight cards in the grid
-    $('.skin-card').removeClass('equipped');
-    $('.skin-card .equipped-badge').remove();
+    $('.skin-card.equipped').each(function() {
+        var card = $(this);
+
+        card.removeClass('equipped');
+        card.find('.equipped-badge').remove();
+        card.find('.skin-btn-equip').text('Equip');
+
+        /*
+         * The previously equipped skin remains owned.
+         * Restore its normal Owned badge.
+         */
+        if (card.find('.owned-badge').length === 0) {
+            card.prepend(
+                '<div class="owned-badge">&#x2B50; Owned</div>'
+            );
+        }
+    });
+
     $('.skin-card .skin-btn-equip').text('Equip');
 
     if (equippedId) {
         $('.skin-card[data-product-id="' + equippedId + '"]').each(function() {
-            $(this).addClass('equipped');
-            $(this).prepend('<div class="equipped-badge">&#x2714; Equipped</div>');
-            $(this).find('.skin-btn-equip').text('Equipped');
+            var card = $(this);
+
+            /*
+             * Never display Owned and Equipped badges together.
+             */
+            card.find(
+                '.owned-badge, .equipped-badge'
+            ).remove();
+
+            card.addClass('equipped');
+
+            card.prepend(
+                '<div class="equipped-badge">&#x2714; Equipped</div>'
+            );
+
+            card.find(
+                '.skin-btn-equip'
+            ).text('Equipped');
         });
     }
 }
