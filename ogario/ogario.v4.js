@@ -1152,6 +1152,7 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 } catch (e) { }
             }
             var auth = window._lwAuth;
+            var attempted = false;
             if (user && user.token && auth && (auth.provider === 'discord' || !auth.provider)) {
                 var newAttemptId = window._lwBeginLogin('discord');
                 window._lwAuth.discordAttemptId = newAttemptId;
@@ -1162,9 +1163,11 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 }
                 _lw_sendDiscordProfile(user, newAttemptId);
                 window._lwAuth.state = 'waiting_server';
+                attempted = true;
                 console.log('[LW Discord] gplusRelogin: re-authenticating attempt #' + newAttemptId);
             }
-            if (callback) callback();
+            if (callback) callback(attempted);
+            return attempted;
         };
 
         console.log('[LW Discord] Applied login for', discordUser.globalName || discordUser.username);
@@ -1551,13 +1554,25 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
     /* Reset ALL login state on logout so provider switching works */
     var _origLogout = window.logout;
     window.logout = function () {
-        if (window._lwReconnecting) {
-            console.log('[LW AUTH] logout() blocked — reconnecting');
+        var intendedLogout = !!(
+            window._isUserManualLogout ||
+            window._isChangingToPrivateServer
+        );
+
+        if (!intendedLogout && window._lwReconnecting) {
+            console.log(
+                '[LW AUTH] Duplicate unexpected logout ignored while reconnecting'
+            );
             return;
         }
 
-        // 1. If logout is manual by user or due to switching to a private server, perform clean logout immediately
-        if (window._isUserManualLogout || window._isChangingToPrivateServer) {
+        // Manual logout/private-server switch must always win over reconnect state.
+        if (intendedLogout) {
+            window._lwLoginRetryGeneration =
+                (window._lwLoginRetryGeneration || 0) + 1;
+
+            window._lwReconnecting = false;
+
             console.log('[LW AUTH] Intended logout (user manual or private server switch)');
             window._isUserManualLogout = false;
             window._isChangingToPrivateServer = false;
@@ -1614,31 +1629,128 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
                 toastr.warning('<b>[AUTH]:</b> Unexpected disconnect detected. Attempting auto-login (' + window._loginRetryCount + '/' + MAX_LOGIN_RETRIES + ')...');
             }
 
+            var retryGeneration =
+                (window._lwLoginRetryGeneration || 0) + 1;
+
+            window._lwLoginRetryGeneration =
+                retryGeneration;
+
             var executeRetryStep = function () {
+                if (
+                    retryGeneration !==
+                        window._lwLoginRetryGeneration ||
+                    !window._lwReconnecting
+                ) {
+                    return;
+                }
+
                 var reloginAttempted = false;
 
-                if (typeof window.gplusRelogin === 'function') {
+                var authProvider =
+                    window._lwAuth &&
+                    window._lwAuth.provider
+                        ? window._lwAuth.provider
+                        : window.master &&
+                            window.master.context
+                            ? window.master.context
+                            : '';
+
+                if (
+                    (
+                        authProvider === 'discord' ||
+                        !authProvider
+                    ) &&
+                    typeof window.gplusRelogin ===
+                        'function'
+                ) {
                     try {
-                        window.gplusRelogin(function () { reloginAttempted = true; });
-                    } catch (e) { }
+                        reloginAttempted =
+                            window.gplusRelogin() ===
+                            true;
+                    } catch (e) {
+                        console.warn(
+                            '[LW AUTH] Discord relogin failed to start:',
+                            e
+                        );
+                    }
                 }
-                if (!reloginAttempted && typeof window.facebookRelogin === 'function') {
+
+                if (
+                    !reloginAttempted &&
+                    (
+                        authProvider === 'facebook' ||
+                        !authProvider
+                    ) &&
+                    typeof window.facebookRelogin ===
+                        'function'
+                ) {
                     try {
-                        window.facebookRelogin(function () { reloginAttempted = true; });
-                    } catch (e) { }
+                        reloginAttempted =
+                            window.facebookRelogin() ===
+                            true;
+                    } catch (e) {
+                        console.warn(
+                            '[LW AUTH] Facebook relogin failed to start:',
+                            e
+                        );
+                    }
                 }
-                if (!reloginAttempted && window.master && typeof window.master.reconnect === 'function') {
-                    try { window.master.reconnect(); reloginAttempted = true; } catch (e) { }
+
+                if (
+                    !reloginAttempted &&
+                    window.master &&
+                    typeof window.master.reconnect ===
+                        'function'
+                ) {
+                    try {
+                        window.master.reconnect();
+                        reloginAttempted = true;
+                    } catch (e) {
+                        console.warn(
+                            '[LW AUTH] Generic reconnect failed to start:',
+                            e
+                        );
+                    }
+                }
+
+                if (!reloginAttempted) {
+                    console.warn(
+                        '[LW AUTH] No valid relogin method was available.'
+                    );
                 }
 
                 setTimeout(function () {
-                    var isLoggedInNow = (window._lwAuth && (window._lwAuth.state === 'logged_in' || window._lwAuth.state === 'waiting_server')) ||
-                        (window.master && (window.master.context === 'facebook' || window.master.context === 'google')) ||
-                        !!(window.application && window.application.user && window.application.user.userId);
+                    if (
+                        retryGeneration !==
+                            window._lwLoginRetryGeneration ||
+                        !window._lwReconnecting
+                    ) {
+                        return;
+                    }
+
+                    var isLoggedInNow = !!(
+                        (
+                            window._lwAuth &&
+                            window._lwAuth.state ===
+                                'logged_in'
+                        ) ||
+                        (
+                            window.loggedIn &&
+                            window.application &&
+                            window.application.user &&
+                            window.application.user.userId
+                        )
+                    );
 
                     if (isLoggedInNow) {
                         console.log('[LW AUTH] Auto-login retry ' + window._loginRetryCount + ' succeeded!');
-                        if (window.toastr) toastr.success('<b>[AUTH]:</b> Re-authenticated successfully!');
+
+                        if (window.toastr) {
+                            toastr.success(
+                                '<b>[AUTH]:</b> Re-authenticated successfully!'
+                            );
+                        }
+
                         window._lwReconnecting = false;
                         window._loginRetryCount = 0;
                     } else if (window._loginRetryCount < MAX_LOGIN_RETRIES) {
@@ -2596,7 +2708,239 @@ window.activateRewardLink = function (token) { if (window.application) return wi
 window.requestAdRewardToken = function () { if (window.application) return window.application.requestAdRewardToken(); };
 window.inspectUserStats = function (userId) { if (window.application) return window.application.inspectUserStats(userId); };
 window.claimGifts = function (giftIds) { if (window.application) return window.application.claimGifts(giftIds); };
-window.softPurchase = function (purchaseId) { if (window.application) return window.application.softPurchase(purchaseId); };
+
+function normalizeSoftPurchaseId(purchaseId) {
+    return String(purchaseId || '')
+        .trim()
+        .replace(
+            /^com\.miniclip\.agar\.io\./i,
+            ''
+        )
+        .toLowerCase();
+}
+
+window.normalizeSoftPurchaseId =
+    normalizeSoftPurchaseId;
+
+window._lmPendingSoftPurchases =
+    window._lmPendingSoftPurchases ||
+    Object.create(null);
+
+window._lmHasPendingSoftPurchase =
+    function (purchaseId) {
+        var key =
+            normalizeSoftPurchaseId(
+                purchaseId
+            );
+
+        return !!(
+            key &&
+            window._lmPendingSoftPurchases[
+                key
+            ]
+        );
+    };
+
+window._lmRegisterSoftPurchase =
+    function (purchaseId, context) {
+        var key =
+            normalizeSoftPurchaseId(
+                purchaseId
+            );
+
+        if (!key) {
+            return false;
+        }
+
+        if (
+            window._lmPendingSoftPurchases[
+                key
+            ]
+        ) {
+            return false;
+        }
+
+        var entry = {
+            purchaseId: String(
+                purchaseId || ''
+            ).trim(),
+            context: context || null,
+            createdAt: Date.now(),
+            timeoutId: null
+        };
+
+        entry.timeoutId =
+            setTimeout(function () {
+                if (
+                    window
+                        ._lmPendingSoftPurchases[
+                            key
+                        ] !== entry
+                ) {
+                    return;
+                }
+
+                delete window
+                    ._lmPendingSoftPurchases[
+                        key
+                    ];
+
+                var timeoutHandler =
+                    entry.context &&
+                    entry.context.onTimeout;
+
+                if (
+                    typeof timeoutHandler ===
+                    'function'
+                ) {
+                    try {
+                        timeoutHandler(entry);
+                    } catch (error) {
+                        console.error(
+                            '[LM] Soft-purchase timeout handler failed:',
+                            error
+                        );
+                    }
+                }
+            }, 20000);
+
+        window._lmPendingSoftPurchases[
+            key
+        ] = entry;
+
+        return true;
+    };
+
+window._lmTakeSoftPurchase =
+    function (purchaseId) {
+        var key =
+            normalizeSoftPurchaseId(
+                purchaseId
+            );
+
+        if (!key) {
+            return null;
+        }
+
+        var entry =
+            window
+                ._lmPendingSoftPurchases[
+                    key
+                ] ||
+            null;
+
+        if (!entry) {
+            return null;
+        }
+
+        delete window
+            ._lmPendingSoftPurchases[key];
+
+        if (entry.timeoutId) {
+            clearTimeout(
+                entry.timeoutId
+            );
+
+            entry.timeoutId = null;
+        }
+
+        return entry;
+    };
+
+window._lmCancelSoftPurchase =
+    function (
+        purchaseId,
+        reason
+    ) {
+        var entry =
+            window._lmTakeSoftPurchase(
+                purchaseId
+            );
+
+        if (!entry) {
+            return null;
+        }
+
+        var failureHandler =
+            entry.context &&
+            entry.context.onFailure;
+
+        if (
+            typeof failureHandler ===
+            'function'
+        ) {
+            try {
+                failureHandler(
+                    reason || 'cancelled',
+                    entry
+                );
+            } catch (error) {
+                console.error(
+                    '[LM] Soft-purchase failure handler failed:',
+                    error
+                );
+            }
+        }
+
+        return entry;
+    };
+
+window.softPurchase =
+    function (
+        purchaseId,
+        context
+    ) {
+        if (!purchaseId) {
+            return false;
+        }
+
+        if (window._lmRegisterSoftPurchase) {
+            window._lmRegisterSoftPurchase(purchaseId, context);
+        }
+
+        if (
+            window.application &&
+            typeof window.application.softPurchase === 'function'
+        ) {
+            try {
+                return window.application.softPurchase(purchaseId) !== false;
+            } catch (appErr) {
+                console.warn('[LM] application.softPurchase threw error, falling back to mesega:', appErr);
+            }
+        }
+
+        if (
+            window.mesega &&
+            window.core &&
+            typeof window.core.proxyMobileData === 'function'
+        ) {
+            try {
+                var buffer = window.mesega.encode({
+                    contentType: 1,
+                    uncompressedData: {
+                        type: 70,
+                        softPurchaseRequestField: {
+                            purchaseId: String(purchaseId).trim()
+                        }
+                    }
+                }).finish();
+                window.core.proxyMobileData(buffer);
+                console.log('[LM] Sent softPurchase (opcode 70) via proxyMobileData:', purchaseId);
+                return true;
+            } catch (encErr) {
+                console.error('[LM] Failed to encode softPurchase opcode 70:', encErr);
+                if (window._lmCancelSoftPurchase) {
+                    window._lmCancelSoftPurchase(purchaseId, 'encode_error');
+                }
+                return false;
+            }
+        }
+
+        if (window._lmCancelSoftPurchase) {
+            window._lmCancelSoftPurchase(purchaseId, 'network_not_ready');
+        }
+        return false;
+    };
 window.activateTimedEvent = function (eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
 window.activateUserRewards = function (rewardIds) { if (window.application) return window.application.activateUserRewards(rewardIds); };
 window.requestLeaguesInfo = function (type) { if (window.application) return window.application.requestLeaguesInfo(type); };
@@ -2611,28 +2955,108 @@ var root = protobuf.parse(proto, { keepCase: true }).root;
 window.mesega = root.lookupType("Data");
 var compressed = root.lookupType("uncompressedData");
 function decodeMobileData(data) {
-    return window.mesega.decode(data)
+    /*
+     * Decode exactly what was received.
+     * Never hide a malformed packet by
+     * deleting bytes from its tail.
+     */
+    return window.mesega.decode(data);
 }
-/*function autocoinsAsPing(slot) {
-    if (false && legendmod.integrity && window.loggedIn){
-        window.agarpingstarted = Date.now()
-        var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11]
-        let massBoostName = "hourlyBonus";
-        for (let i = 0; i < massBoostName.length; i++) {
-            bytes.push(massBoostName.charCodeAt(i));
-        }
-        window.core.proxyMobileData(bytes);
+
+function encodeProtoVarint(value) {
+    var number = Number(value);
+
+    if (
+        !Number.isSafeInteger(number) ||
+        number < 0
+    ) {
+        throw new RangeError(
+            'Invalid protobuf varint value: ' +
+            value
+        );
     }
-}*/
+
+    var bytes = [];
+
+    do {
+        var byte = number % 128;
+
+        number =
+            Math.floor(number / 128);
+
+        if (number > 0) {
+            byte |= 0x80;
+        }
+
+        bytes.push(byte);
+    } while (number > 0);
+
+    return bytes;
+}
+
 function ReqPing() {
-    if (legendmod.integrity) {
-        //console.log('ping');
-        const pingId = ~~(Math.random() * 127);
-        const pingId3 = ~~(Math.random() * 999999);
-        var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, pingId3, 7, 16, pingId];
-        //var bytes = [8, 1, 18, 10, 8, 30, 242, 1, 5, 8, 169, 7, 16, 1];
-        window.agarpingstarted = Date.now();
-        window.core.proxyMobileData(bytes);
+    if (
+        !legendmod.integrity ||
+        !window.core ||
+        typeof window.core
+            .proxyMobileData !==
+            'function'
+    ) {
+        return;
+    }
+
+    var pingId =
+        Math.floor(
+            Math.random() *
+            0x7fffffff
+        );
+
+    var previousRoundtrip =
+        Math.floor(
+            Math.random() *
+            0x7fffffff
+        );
+
+    var pingPayload = [8]
+        .concat(
+            encodeProtoVarint(
+                previousRoundtrip
+            )
+        )
+        .concat([16])
+        .concat(
+            encodeProtoVarint(
+                pingId
+            )
+        );
+
+    var uncompressedPayload =
+        [8, 30, 242, 1]
+            .concat(
+                encodeProtoVarint(
+                    pingPayload.length
+                )
+            )
+            .concat(pingPayload);
+
+    var packet = [8, 1, 18]
+        .concat(
+            encodeProtoVarint(
+                uncompressedPayload
+                    .length
+            )
+        )
+        .concat(
+            uncompressedPayload
+        );
+
+    window.agarpingstarted =
+        Date.now();
+
+    window.core.proxyMobileData(
+        new Uint8Array(packet)
+    );
+}
 
 
         /*const pingId = ~~(Math.random()*1000);const ping = Date.now();
@@ -15406,84 +15830,14 @@ function thelegendmodproject() {
                         }
                     );
 
-                    /*
-                     * Strategy: Use proxyMobileData (WASM path)
-                     * with a WebSocket interceptor to verify the
-                     * bytes actually reach the WebSocket. If the
-                     * WASM drops/modifies them, fall back to
-                     * direct cp5.sockets[] send.
-                     */
-                    var wasmSent = false;
-
-                    /* Install interceptor to detect the WS.send */
-                    var origSend = WebSocket.prototype.send;
-                    WebSocket.prototype.send = function(data) {
-                        if (data && data.byteLength > 10000) {
-                            wasmSent = true;
-                            var view = new Uint8Array(
-                                data.buffer || data,
-                                data.byteOffset || 0,
-                                data.byteLength
-                            );
-                            console.log(
-                                "[LM SKIN] WS.send from WASM:",
-                                {
-                                    sameAsInput: (
-                                        view.length === buffer.length &&
-                                        view[0] === buffer[0] &&
-                                        view[1] === buffer[1] &&
-                                        view[view.length-1] ===
-                                            buffer[buffer.length-1]
-                                    ),
-                                    inputLen: buffer.length,
-                                    outputLen: view.length,
-                                    first10in: Array.from(buffer.slice(0,10)),
-                                    first10out: Array.from(view.slice(0,10))
-                                }
-                            );
-                        }
-                        return origSend.call(this, data);
-                    };
-
-                    /* Try proxyMobileData (WASM path) first */
-                    try {
+                    /* Send directly through standard proxyMobileData without monkey-patching WebSocket */
+                    if (window.core && typeof window.core.proxyMobileData === 'function') {
                         window.core.proxyMobileData(buffer);
-                        console.log(
-                            "[LM SKIN] proxyMobileData called (" +
-                            buffer.length + " bytes)"
-                        );
-                    } catch (pmErr) {
-                        console.error(
-                            "[LM SKIN] proxyMobileData error:", pmErr
-                        );
+                        console.log("[LM SKIN] proxyMobileData sent (" + buffer.length + " bytes)");
+                    } else {
+                        toastr.error("<b>[ERROR]:</b> Network core not initialized. Connect to a server first.");
+                        return false;
                     }
-
-                    /* Restore interceptor after brief delay */
-                    setTimeout(function() {
-                        WebSocket.prototype.send = origSend;
-
-                        if (!wasmSent) {
-                            console.warn(
-                                "[LM SKIN] WASM did NOT send our data!" +
-                                " Trying direct cp5 send..."
-                            );
-                            /* Direct cp5.sockets fallback */
-                            if (typeof cp5 !== 'undefined' && cp5.sockets) {
-                                for (var si = 0; si < cp5.sockets.length; si++) {
-                                    var ws = cp5.sockets[si];
-                                    if (ws && ws.readyState === 1) {
-                                        console.log(
-                                            "[LM SKIN] Direct cp5.sockets[" +
-                                            si + "] send (" +
-                                            buffer.length + " bytes)"
-                                        );
-                                        ws.send(buffer);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }, 100);
 
                     console.log(
                         "[LM SKIN] Sent opcode 150: " +
@@ -15511,19 +15865,32 @@ function thelegendmodproject() {
             }
 
             /*
-             * If we just purchased a token, delay the skin upload by
-             * 500ms to give the server time to process the token
-             * purchase before receiving the skin create request.
+             * Token purchasing flow: check if user has custom_skin_token in inventory,
+             * otherwise issue softPurchase('custom_skin_token') with tracked callback context.
              */
             if (needsTokenPurchase) {
                 console.log(
-                    "[LM SKIN] Delaying skin upload 500ms for " +
-                    "token purchase to process..."
+                    "[LM SKIN] Requesting custom_skin_token soft purchase before upload..."
                 );
                 toastr.info(
-                    "<b>[SERVER]:</b> Token purchased. Uploading skin..."
+                    "<b>[SERVER]:</b> Purchasing custom skin token..."
                 );
-                setTimeout(sendSkinUpload, 500);
+                var purchased = window.softPurchase("custom_skin_token", {
+                    onSuccess: function() {
+                        console.log("[LM SKIN] Token purchase confirmed, executing upload.");
+                        sendSkinUpload();
+                    },
+                    onFailure: function(reason) {
+                        toastr.error("<b>[ERROR]:</b> Skin token purchase failed: " + reason);
+                    },
+                    onTimeout: function() {
+                        toastr.error("<b>[ERROR]:</b> Skin token purchase timed out.");
+                    }
+                });
+                if (!purchased) {
+                    /* Fallback: attempt direct upload if softPurchase is pending or unneeded */
+                    setTimeout(sendSkinUpload, 500);
+                }
                 return true;
             }
 
@@ -20890,9 +21257,13 @@ function thelegendmodproject() {
                             var spId = sp.purchaseId || '';
                             console.log("[LM] Soft Purchase Response — result: " + spResult + ", id: " + spId);
                             if (spResult === 1 || spResult === 0) {
+                                var pendingEntry = window._lmTakeSoftPurchase ? window._lmTakeSoftPurchase(spId) : null;
                                 toastr.success('<b>[SERVER]:</b> Purchase successful! &#x2714; ' + spId.replace('com.miniclip.agar.io.', ''));
                                 if (sp.productUpdates && sp.productUpdates.length) {
                                     this.updateProducts(sp.productUpdates);
+                                }
+                                if (pendingEntry && pendingEntry.context && typeof pendingEntry.context.onSuccess === 'function') {
+                                    try { pendingEntry.context.onSuccess(sp); } catch (cbErr) { console.error("[LM] Soft-purchase onSuccess callback error:", cbErr); }
                                 }
                                 // Auto-equip the purchased skin (like the original client)
                                 var pendingSkin = window._pendingSkinPurchaseId;
@@ -20913,10 +21284,13 @@ function thelegendmodproject() {
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (spResult === 2) {
+                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'insufficient_funds');
                                 toastr.error('<b>[SERVER]:</b> Purchase failed — not enough DNA/coins.');
                             } else if (spResult === 3) {
+                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'item_unavailable');
                                 toastr.error('<b>[SERVER]:</b> Purchase failed — item not available.');
                             } else {
+                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'result_code_' + spResult);
                                 toastr.warning('<b>[SERVER]:</b> Purchase response: code ' + spResult);
                             }
                         }
