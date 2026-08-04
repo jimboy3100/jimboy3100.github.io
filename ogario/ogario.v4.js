@@ -2941,6 +2941,131 @@ window.softPurchase =
         }
         return false;
     };
+
+window._lmSkinUploadState =
+    window._lmSkinUploadState || {
+        busy: false,
+        originalButtonText: null
+    };
+
+window._lmSetSkinUploadBusy =
+    function (message) {
+        var state =
+            window._lmSkinUploadState;
+
+        state.busy = true;
+
+        if (!window.jQuery) {
+            return;
+        }
+
+        var button =
+            window.jQuery(
+                '#legendSaveBtnModal'
+            );
+
+        if (!button.length) {
+            return;
+        }
+
+        if (!state.originalButtonText) {
+            state.originalButtonText =
+                button.text() ||
+                'Upload & Buy (90 DNA)';
+        }
+
+        button
+            .prop('disabled', true)
+            .attr(
+                'aria-busy',
+                'true'
+            )
+            .css({
+                opacity: 0.5,
+                cursor: 'not-allowed'
+            })
+            .text(
+                message ||
+                'Working...'
+            );
+    };
+
+window._lmFinishSkinUploadUi =
+    function (
+        success,
+        message
+    ) {
+        var state =
+            window._lmSkinUploadState;
+
+        state.busy = false;
+
+        if (!window.jQuery) {
+            return;
+        }
+
+        var button =
+            window.jQuery(
+                '#legendSaveBtnModal'
+            );
+
+        if (button.length) {
+            button
+                .removeAttr(
+                    'aria-busy'
+                )
+                .text(
+                    state.originalButtonText ||
+                    'Upload & Buy (90 DNA)'
+                );
+        }
+
+        if (message) {
+            window.jQuery(
+                '#legendStatusModal'
+            )
+                .text(message)
+                .css(
+                    'color',
+                    success
+                        ? '#00e676'
+                        : '#ff5252'
+                );
+        }
+
+        if (
+            typeof window
+                .updateShopLoginState ===
+                'function'
+        ) {
+            window
+                .updateShopLoginState();
+        }
+    };
+
+window._lmClearSkinCreatePending =
+    function () {
+        var pending =
+            window._lmSkinCreatePending ||
+            null;
+
+        window._lmSkinCreatePending =
+            null;
+
+        if (
+            pending &&
+            pending.timeoutId
+        ) {
+            clearTimeout(
+                pending.timeoutId
+            );
+
+            pending.timeoutId = null;
+        }
+
+        return pending;
+    };
+
 window.activateTimedEvent = function (eventId) { if (window.application) return window.application.activateTimedEvent(eventId); };
 window.activateUserRewards = function (rewardIds) { if (window.application) return window.application.activateUserRewards(rewardIds); };
 window.requestLeaguesInfo = function (type) { if (window.application) return window.application.requestLeaguesInfo(type); };
@@ -15632,102 +15757,161 @@ function thelegendmodproject() {
              */
             var app = this;
 
-            var standardTokenId = "create_skin_token";
-            var standardTokenPurchaseId = "1_create_skin_token";
-            var vipTokenId = "create_skin_token_for_vip_weekly";
+            var standardTokenPurchaseId =
+                "1_create_skin_token";
+
             var indexedSubscriptions = [];
 
             var standardTokenBalance =
-                Number(app.user && app.user.skinCreateTokens) || 0;
+                Number(
+                    app.user &&
+                    app.user.skinCreateTokens
+                ) || 0;
+
             var vipTokenBalance =
-                Number(app.user && app.user.skinCreateVIPTokens) || 0;
-            var needsTokenPurchase = false;
+                Number(
+                    app.user &&
+                    app.user
+                        .skinCreateVIPTokens
+                ) || 0;
+
+            var needsTokenPurchase =
+                false;
+
+            var configuredCost = 0;
+            var configuredCurrency =
+                "dna";
 
             if (vipTokenBalance > 0) {
-                indexedSubscriptions.push("vip_weekly");
-                console.log("[LM SKIN] Using existing VIP skin token (" + vipTokenBalance + ").");
-            } else if (standardTokenBalance > 0) {
-                console.log("[LM SKIN] Using existing skin creation token (" + standardTokenBalance + ").");
-            } else {
-                /* Need to buy a token first — look up price from GameConfiguration */
-                var configuredCost = 0;
-                var configuredCurrency = "dna";
+                indexedSubscriptions.push(
+                    "vip_weekly"
+                );
 
-                if (Array.isArray(window.WalletSoftPurchasesConfig)) {
-                    for (var spIdx = 0; spIdx < window.WalletSoftPurchasesConfig.length; spIdx++) {
-                        var sp = window.WalletSoftPurchasesConfig[spIdx];
-                        if (sp && sp.productId === standardTokenPurchaseId) {
-                            configuredCost = Number(sp.currencyAmount) || 0;
-                            configuredCurrency = String(
-                                sp.currencyProductId || "dna"
-                            ).toLowerCase();
+                console.log(
+                    "[LM SKIN] Using existing VIP skin token (" +
+                    vipTokenBalance +
+                    ")."
+                );
+            } else if (
+                standardTokenBalance > 0
+            ) {
+                console.log(
+                    "[LM SKIN] Using existing skin creation token (" +
+                    standardTokenBalance +
+                    ")."
+                );
+            } else {
+                needsTokenPurchase =
+                    true;
+
+                if (
+                    Array.isArray(
+                        window
+                            .WalletSoftPurchasesConfig
+                    )
+                ) {
+                    for (
+                        var spIdx = 0;
+                        spIdx <
+                        window
+                            .WalletSoftPurchasesConfig
+                            .length;
+                        spIdx++
+                    ) {
+                        var sp =
+                            window
+                                .WalletSoftPurchasesConfig[
+                                spIdx
+                            ];
+
+                        if (
+                            sp &&
+                            sp.productId ===
+                                standardTokenPurchaseId
+                        ) {
+                            configuredCost =
+                                Number(
+                                    sp.currencyAmount
+                                ) || 0;
+
+                            configuredCurrency =
+                                String(
+                                    sp.currencyProductId ||
+                                    "dna"
+                                )
+                                    .trim()
+                                    .toLowerCase();
+
                             break;
                         }
                     }
                 }
 
-                /* Fall back to a known default if config not loaded yet */
                 if (!configuredCost) {
                     configuredCost = 90;
-                    configuredCurrency = "dna";
+                    configuredCurrency =
+                        "dna";
+
                     console.warn(
-                        "[LM SKIN] Soft purchase config not found; using default: 90 DNA."
+                        "[LM SKIN] Soft-purchase config not found; using default: 90 DNA."
                     );
                 }
 
                 var currentBalance = 0;
-                if (configuredCurrency === "dna") {
-                    currentBalance = Number(app.user && app.user.dna) || 0;
-                } else if (configuredCurrency === "coin") {
-                    currentBalance = Number(app.user && app.user.coins) || 0;
+
+                if (
+                    configuredCurrency ===
+                    "dna"
+                ) {
+                    currentBalance =
+                        Number(
+                            app.user &&
+                            app.user.dna
+                        ) || 0;
+                } else if (
+                    configuredCurrency ===
+                    "coin"
+                ) {
+                    currentBalance =
+                        Number(
+                            app.user &&
+                            app.user.coins
+                        ) || 0;
                 }
 
-                if (configuredCost > 0 && currentBalance < configuredCost) {
+                if (
+                    configuredCost > 0 &&
+                    currentBalance <
+                        configuredCost
+                ) {
                     toastr.error(
                         "<b>[SKIN]:</b> " +
                         "Skin token costs " +
-                        configuredCost.toLocaleString() +
+                        configuredCost
+                            .toLocaleString() +
                         " " +
-                        configuredCurrency.toUpperCase() +
+                        configuredCurrency
+                            .toUpperCase() +
                         ", but you only have " +
-                        currentBalance.toLocaleString() + "."
+                        currentBalance
+                            .toLocaleString() +
+                        "."
                     );
+
                     console.error(
                         "[LM SKIN] Balance check failed:",
                         {
-                            cost: configuredCost,
-                            currency: configuredCurrency,
-                            balance: currentBalance
+                            cost:
+                                configuredCost,
+                            currency:
+                                configuredCurrency,
+                            balance:
+                                currentBalance
                         }
                     );
+
                     return false;
                 }
-
-                /* Send the token purchase via LM's own soft purchase (opcode 70) */
-                var purchaseSent = false;
-
-                if (typeof app.softPurchase === "function") {
-                    purchaseSent =
-                        app.softPurchase(standardTokenPurchaseId) === true;
-                }
-
-                if (!purchaseSent) {
-                    toastr.error(
-                        "<b>[SKIN]:</b> Could not purchase the required skin creation token."
-                    );
-                    return false;
-                }
-
-                needsTokenPurchase = true;
-
-                console.log(
-                    "[LM SKIN] Sent token purchase before skin creation:",
-                    {
-                        purchaseId: standardTokenPurchaseId,
-                        cost: configuredCost,
-                        currency: configuredCurrency
-                    }
-                );
             }
 
             /* ── Build the plist meta XML ── */
@@ -15798,258 +15982,384 @@ function thelegendmodproject() {
                 '  </dict>\n' +
                 '</plist>';
 
-            /* ── Send opcode 150 (always via mesega) ── */
+            /* ── Send opcode 150 through the active Agar.io protocol path ── */
             function sendSkinUpload() {
+                if (
+                    window
+                        ._lmSkinCreatePending
+                ) {
+                    toastr.warning(
+                        "<b>[SKIN]:</b> A custom-skin upload is already pending."
+                    );
+
+                    return false;
+                }
+
                 try {
-                    /*
-                     * Autonomous encoding using mesega (protobufjs).
-                     * Matches the official Haxe pipeline:
-                     *   Envelope { contentType=1, uncompressedData=Req }
-                     *   Req { type=150, userSkinsCreateRequestField=msg }
-                     *   msg { content=pngBytes, meta=xmlString }
-                     */
-                    var buffer = window.mesega.encode({
-                        contentType: 1,
-                        uncompressedData: {
-                            type: 150,
-                            userSkinsCreateRequestField: {
-                                content: imageUint8Array,
-                                meta: xmlMeta
-                            }
-                        }
-                    }).finish();
+                    var buffer =
+                        window.mesega
+                            .encode({
+                                contentType:
+                                    1,
+
+                                uncompressedData:
+                                    {
+                                        type:
+                                            150,
+
+                                        userSkinsCreateRequestField:
+                                            {
+                                                content:
+                                                    imageUint8Array,
+
+                                                meta:
+                                                    xmlMeta
+                                            }
+                                    }
+                            })
+                            .finish();
 
                     console.log(
                         "[LM SKIN] Opcode 150 buffer ready:",
                         {
-                            totalBytes: buffer.length,
-                            pngBytes: imageUint8Array.length,
-                            metaLength: xmlMeta.length,
-                            first40: Array.from(buffer.slice(0, 40)),
-                            pngSig: Array.from(imageUint8Array.slice(0, 8))
+                            totalBytes:
+                                buffer.length,
+
+                            pngBytes:
+                                imageUint8Array
+                                    .length,
+
+                            metaLength:
+                                xmlMeta.length,
+
+                            first40:
+                                Array.from(
+                                    buffer.slice(
+                                        0,
+                                        40
+                                    )
+                                ),
+
+                            pngSig:
+                                Array.from(
+                                    imageUint8Array
+                                        .slice(
+                                            0,
+                                            8
+                                        )
+                                )
                         }
                     );
 
-                    /* Send directly through standard proxyMobileData without monkey-patching WebSocket */
-                    if (window.core && typeof window.core.proxyMobileData === 'function') {
-                        window.core.proxyMobileData(buffer);
-                        console.log("[LM SKIN] proxyMobileData sent (" + buffer.length + " bytes)");
-                    } else {
-                        toastr.error("<b>[ERROR]:</b> Network core not initialized. Connect to a server first.");
-                        return false;
+                    var pendingUpload = {
+                        createdAt:
+                            Date.now(),
+
+                        skinName:
+                            safeName,
+
+                        timeoutId:
+                            null
+                    };
+
+                    window
+                        ._lmSkinCreatePending =
+                        pendingUpload;
+
+                    if (
+                        typeof window
+                            ._lmSetSkinUploadBusy ===
+                            "function"
+                    ) {
+                        window
+                            ._lmSetSkinUploadBusy(
+                                "Uploading skin..."
+                            );
                     }
+
+                    /*
+                     * Send exactly once through the authenticated Agar.io
+                     * mobile-protocol path.
+                     *
+                     * Do not replace WebSocket.prototype.send.
+                     * Do not select an arbitrary cp5 socket.
+                     * Do not resend the packet through a second transport.
+                     */
+                    window.core
+                        .proxyMobileData(
+                            buffer
+                        );
+
+                    pendingUpload.timeoutId =
+                        setTimeout(
+                            function () {
+                                if (
+                                    window
+                                        ._lmSkinCreatePending !==
+                                    pendingUpload
+                                ) {
+                                    return;
+                                }
+
+                                if (
+                                    typeof window
+                                        ._lmClearSkinCreatePending ===
+                                        "function"
+                                ) {
+                                    window
+                                        ._lmClearSkinCreatePending();
+                                } else {
+                                    window
+                                        ._lmSkinCreatePending =
+                                        null;
+                                }
+
+                                toastr.error(
+                                    "<b>[SKIN]:</b> Agar.io did not answer the skin upload within 30 seconds."
+                                );
+
+                                if (
+                                    typeof window
+                                        ._lmFinishSkinUploadUi ===
+                                        "function"
+                                ) {
+                                    window
+                                        ._lmFinishSkinUploadUi(
+                                            false,
+                                            "Upload timed out. Try again."
+                                        );
+                                }
+                            },
+                            30000
+                        );
 
                     console.log(
                         "[LM SKIN] Sent opcode 150: " +
-                        buffer.length + " bytes (" +
-                        imageUint8Array.length + " PNG + " +
-                        xmlMeta.length + " meta)"
+                        buffer.length +
+                        " bytes (" +
+                        imageUint8Array
+                            .length +
+                        " PNG + " +
+                        xmlMeta.length +
+                        " meta)"
                     );
 
                     toastr.info(
-                        "<b>[SERVER]:</b> Skin upload sent via " +
-                        "LM protocol. Waiting for server response..."
+                        "<b>[SERVER]:</b> Skin upload sent. Waiting for Agar.io response..."
                     );
+
                     return true;
-                } catch (encodeError) {
+                } catch (
+                    encodeOrSendError
+                ) {
+                    if (
+                        typeof window
+                            ._lmClearSkinCreatePending ===
+                            "function"
+                    ) {
+                        window
+                            ._lmClearSkinCreatePending();
+                    } else {
+                        window
+                            ._lmSkinCreatePending =
+                            null;
+                    }
+
                     console.error(
-                        "[LM SKIN] Skin upload encode failed:",
-                        encodeError
+                        "[LM SKIN] Skin upload failed before completion:",
+                        encodeOrSendError
                     );
+
                     toastr.error(
-                        "<b>[ERROR]:</b> Failed to encode skin data: " +
-                        encodeError.message
+                        "<b>[ERROR]:</b> Failed to send skin data: " +
+                        encodeOrSendError
+                            .message
                     );
+
+                    if (
+                        typeof window
+                            ._lmFinishSkinUploadUi ===
+                            "function"
+                    ) {
+                        window
+                            ._lmFinishSkinUploadUi(
+                                false,
+                                "Upload could not be sent."
+                            );
+                    }
+
                     return false;
                 }
             }
 
             /*
-             * Token purchasing flow: check if user has custom_skin_token in inventory,
-             * otherwise issue softPurchase('custom_skin_token') with tracked callback context.
+             * Do not guess that 500ms is enough.
+             *
+             * Opcode 150 is sent only after the matching opcode 71 confirms
+             * that 1_create_skin_token was actually purchased.
              */
             if (needsTokenPurchase) {
-                console.log(
-                    "[LM SKIN] Requesting custom_skin_token soft purchase before upload..."
-                );
-                toastr.info(
-                    "<b>[SERVER]:</b> Purchasing custom skin token..."
-                );
-                var purchased = window.softPurchase("custom_skin_token", {
-                    onSuccess: function() {
-                        console.log("[LM SKIN] Token purchase confirmed, executing upload.");
-                        sendSkinUpload();
-                    },
-                    onFailure: function(reason) {
-                        toastr.error("<b>[ERROR]:</b> Skin token purchase failed: " + reason);
-                    },
-                    onTimeout: function() {
-                        toastr.error("<b>[ERROR]:</b> Skin token purchase timed out.");
-                    }
-                });
-                if (!purchased) {
-                    /* Fallback: attempt direct upload if softPurchase is pending or unneeded */
-                    setTimeout(sendSkinUpload, 500);
+                if (
+                    typeof window
+                        ._lmSetSkinUploadBusy ===
+                        "function"
+                ) {
+                    window
+                        ._lmSetSkinUploadBusy(
+                            "Buying skin token..."
+                        );
                 }
+
+                var purchaseSent =
+                    app.softPurchase(
+                        standardTokenPurchaseId,
+                        {
+                            kind:
+                                "skin-token",
+
+                            onSuccess:
+                                function (
+                                    response
+                                ) {
+                                    console.log(
+                                        "[LM SKIN] Skin-token purchase confirmed:",
+                                        response
+                                    );
+
+                                    toastr.success(
+                                        "<b>[SERVER]:</b> Skin token purchased. Uploading skin..."
+                                    );
+
+                                    if (
+                                        !sendSkinUpload() &&
+                                        typeof window
+                                            ._lmFinishSkinUploadUi ===
+                                            "function"
+                                    ) {
+                                        window
+                                            ._lmFinishSkinUploadUi(
+                                                false,
+                                                "Token purchased, but the upload could not start."
+                                            );
+                                    }
+                                },
+
+                            onFailure:
+                                function (
+                                    resultCode
+                                ) {
+                                    console.error(
+                                        "[LM SKIN] Skin-token purchase failed:",
+                                        resultCode
+                                    );
+
+                                    if (
+                                        typeof window
+                                            ._lmFinishSkinUploadUi ===
+                                            "function"
+                                    ) {
+                                        window
+                                            ._lmFinishSkinUploadUi(
+                                                false,
+                                                "Skin-token purchase failed."
+                                            );
+                                    }
+                                },
+
+                            onTimeout:
+                                function () {
+                                    toastr.error(
+                                        "<b>[SKIN]:</b> Skin-token purchase timed out."
+                                    );
+
+                                    if (
+                                        typeof window
+                                            ._lmFinishSkinUploadUi ===
+                                            "function"
+                                    ) {
+                                        window
+                                            ._lmFinishSkinUploadUi(
+                                                false,
+                                                "Skin-token purchase timed out."
+                                            );
+                                    }
+                                }
+                        }
+                    ) === true;
+
+                if (!purchaseSent) {
+                    if (
+                        typeof window
+                            ._lmFinishSkinUploadUi ===
+                            "function"
+                    ) {
+                        window
+                            ._lmFinishSkinUploadUi(
+                                false,
+                                "Could not start the skin-token purchase."
+                            );
+                    }
+
+                    return false;
+                }
+
+                console.log(
+                    "[LM SKIN] Waiting for opcode 71 before sending opcode 150:",
+                    {
+                        purchaseId:
+                            standardTokenPurchaseId,
+                        cost:
+                            configuredCost,
+                        currency:
+                            configuredCurrency
+                    }
+                );
+
                 return true;
             }
 
             return sendSkinUpload();
         },
         setupSkinUploadInterface() {
-            if ($("#custom-skin-uploader").length === 0) {
-                var panelHTML = `
-                    <div id="custom-skin-uploader" class="agario-panel agario-side-panel" style="display:none; padding: 15px; width: 350px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; border-radius: 8px; background-color: #00243e; border: 2px solid #01d9cc;">
-                        <div class="clearfix" style="margin-bottom: 10px;">
-                            <div id="close-custom-skin" style="float: right; cursor: pointer; font-weight: bold; color: #fff;">✕</div>
-                            <center><h5 class="menu-main-color" style="margin: 0; font-size: 16px;">Custom Skin Uploader</h5></center>
-                        </div>
-                        <div style="display: flex; gap: 5px; margin-bottom: 15px;">
-                            <input id="legendSkinName" class="form-control" placeholder="Skin Name" style="width: 70%;" maxlength="15">
-                            <div class="input-group color-picker" style="width: 30%;">
-                                <input id="legendSkinColor" type="hidden" value="#FFFF00">
-                                <span class="input-group-addon" style="cursor:pointer;"><i style="background-color: #FFFF00;"></i></span>
-                            </div>
-                        </div>
-                        <div style="text-align: center; margin-bottom: 15px;">
-                            <canvas id="legendCanvas" width="512" height="512" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid #333; background-color: #000;"></canvas>
-                        </div>
-                        <label for="legendUploadInput" class="btn btn-primary btn-block" style="margin-bottom: 10px;">📂 Choose PNG Image (max 100KB)</label>
-                        <input type="file" id="legendUploadInput" accept="image/png" style="display:none;" />
-                        <button id="legendSaveBtn" class="btn btn-success btn-block" disabled>Upload & Buy (90 DNA)</button>
-                        <div id="legendStatus" style="font-size: 11px; margin-top: 5px; color: #aaa; text-align: center;">PNG only, max 100KB</div>
-                    </div>`;
+            /*
+             * Keep only the uploader inside #specialShopModal.
+             *
+             * The deleted legacy uploader encoded the canvas using
+             * canvas.toBlob("image/png"). That does not guarantee indexed
+             * PNG8, while uploadCustomSkin() correctly requires color type 3.
+             */
+            $(".quick-custom-skin")
+                .off(
+                    "click.lmCustomSkinUploader"
+                )
+                .on(
+                    "click.lmCustomSkinUploader",
+                    function (event) {
+                        event.preventDefault();
 
-                $("body").append(panelHTML);
-
-                if ($.fn && $.fn.colorpicker) {
-                    $("#custom-skin-uploader .color-picker")
-                        .colorpicker({ format: "hex" })
-                        .off("changeColor.colorpicker")
-                        .on("changeColor.colorpicker", function (e) {
-                            var hexColor = e && e.color ? e.color.toHex() : "#FFFF00";
-                            $("#legendSkinColor").val(hexColor);
-                            $("#legendCanvas").css("border-color", hexColor);
-                        });
-                }
-            }
-
-            var panel = $("#custom-skin-uploader");
-            var saveBtn = $("#legendSaveBtn");
-            var status = $("#legendStatus");
-            var app = this;
-            var processedBuffer = null;
-            var currentObjectUrl = null;
-
-            function cleanupObjectUrl() {
-                if (currentObjectUrl) {
-                    try {
-                        URL.revokeObjectURL(currentObjectUrl);
-                    } catch (e) { }
-                    currentObjectUrl = null;
-                }
-            }
-
-            function processAndFormat(src, isObjectUrl) {
-                var img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.onload = function () {
-                    var canvas = document.getElementById("legendCanvas");
-                    if (!canvas) {
-                        cleanupObjectUrl();
-                        return;
-                    }
-                    var ctx = canvas.getContext("2d");
-                    ctx.clearRect(0, 0, 512, 512);
-                    ctx.drawImage(img, 0, 0, 512, 512);
-
-                    if (isObjectUrl) {
-                        cleanupObjectUrl();
-                    }
-
-                    canvas.toBlob(function (blob) {
-                        if (!blob) {
-                            status.text("Image Conversion Failed").css("color", "red");
-                            return;
+                        if (
+                            typeof window
+                                .SpecialDeals ===
+                                "function"
+                        ) {
+                            window
+                                .SpecialDeals(
+                                    "upload"
+                                );
+                        } else if (
+                            typeof SpecialDeals ===
+                                "function"
+                        ) {
+                            SpecialDeals(
+                                "upload"
+                            );
+                        } else {
+                            toastr.error(
+                                "<b>[SKIN]:</b> The custom-skin uploader is not available."
+                            );
                         }
-                        var reader = new FileReader();
-                        reader.onload = function () {
-                            processedBuffer = new Uint8Array(reader.result);
-                            var kb = (processedBuffer.length / 1024).toFixed(1);
-
-                            if (processedBuffer.length > 102400) {
-                                status.text("Too Big: " + kb + "KB (Limit 100KB)").css("color", "red");
-                                saveBtn.prop("disabled", true).css("opacity", 0.5);
-                            } else {
-                                status.text("PNG Ready: " + kb + "KB").css("color", "#0f0");
-                                saveBtn.prop("disabled", false).css({ opacity: 1, cursor: "pointer" });
-                            }
-                        };
-                        reader.readAsArrayBuffer(blob);
-                    }, "image/png");
-                };
-                img.onerror = function () {
-                    status.text("Failed to load image").css("color", "red");
-                    cleanupObjectUrl();
-                };
-                img.src = src;
-            }
-
-            saveBtn.off("click").on("click", function () {
-                var name = $("#legendSkinName").val() || "test";
-                var color = $("#legendSkinColor").val() || "#FFFF00";
-                if (processedBuffer) {
-                    app.uploadCustomSkin(processedBuffer, name, color);
-                }
-            });
-
-            $("#legendUploadInput").off("change").on("change", function (e) {
-                var file = e.target.files && e.target.files[0];
-                if (!file) return;
-
-                /* Validate file type: PNG only */
-                if (file.type !== 'image/png') {
-                    var ext = file.name.split('.').pop().toUpperCase();
-                    status.text("❌ Only PNG images allowed! You selected a " + ext + " file.").css("color", "red");
-                    saveBtn.prop("disabled", true).css("opacity", 0.5);
-                    e.target.value = '';
-                    return;
-                }
-
-                /* Validate file size: max 100KB */
-                if (file.size > 102400) {
-                    var fileSizeKB = (file.size / 1024).toFixed(1);
-                    status.text("❌ File too large: " + fileSizeKB + "KB (max 100KB). Use a smaller PNG.").css("color", "red");
-                    saveBtn.prop("disabled", true).css("opacity", 0.5);
-                    e.target.value = '';
-                    return;
-                }
-
-                cleanupObjectUrl();
-                currentObjectUrl = URL.createObjectURL(file);
-                processAndFormat(currentObjectUrl, true);
-            });
-
-            $(".quick-custom-skin").off("click").on("click", function (e) {
-                e.preventDefault();
-                panel.fadeIn(200);
-                if (!window.agarioUID) {
-                    status.text("Must be logged in to Agar.io to upload custom skins").css("color", "#ff5252");
-                    saveBtn.prop("disabled", true).css("opacity", 0.5);
-                    $('label[for="legendUploadInput"]').css({ opacity: 0.5, "pointer-events": "none" });
-                } else {
-                    $('label[for="legendUploadInput"]').css({ opacity: 1, "pointer-events": "auto" });
-                    var currentUrl = $("#skin").val();
-                    if (currentUrl && currentUrl.length > 5) {
-                        processAndFormat(currentUrl, false);
                     }
-                }
-            });
-
-            $("#close-custom-skin").off("click").on("click", function () {
-                cleanupObjectUrl();
-                panel.fadeOut(200);
-            });
+                );
         },
         /* ─── §4.22 Init ─── */
         init() {
@@ -21249,54 +21559,243 @@ function thelegendmodproject() {
                     }
                     break;
                 case 71:
-                    // Soft purchase response (DNA-based buy)
+                    // Soft purchase response (DNA/coin purchase)
                     try {
-                        var sp = r.uncompressedData.softPurchaseResponseField;
-                        if (sp) {
-                            var spResult = sp.result || 0;
-                            var spId = sp.purchaseId || '';
-                            console.log("[LM] Soft Purchase Response — result: " + spResult + ", id: " + spId);
-                            if (spResult === 1 || spResult === 0) {
-                                var pendingEntry = window._lmTakeSoftPurchase ? window._lmTakeSoftPurchase(spId) : null;
-                                toastr.success('<b>[SERVER]:</b> Purchase successful! &#x2714; ' + spId.replace('com.miniclip.agar.io.', ''));
-                                if (sp.productUpdates && sp.productUpdates.length) {
-                                    this.updateProducts(sp.productUpdates);
+                        var sp =
+                            r.uncompressedData
+                                .softPurchaseResponseField;
+
+                        if (!sp) {
+                            console.warn(
+                                "[LM] Opcode 71 contained no softPurchaseResponseField."
+                            );
+
+                            break;
+                        }
+
+                        /*
+                         * Do not convert a missing result into zero.
+                         *
+                         * Result zero may be a legitimate protocol value,
+                         * but an absent result is not a successful purchase.
+                         */
+                        var hasSoftPurchaseResult =
+                            sp.result !==
+                                undefined &&
+                            sp.result !==
+                                null;
+
+                        var spResult =
+                            hasSoftPurchaseResult
+                                ? Number(
+                                    sp.result
+                                )
+                                : NaN;
+
+                        var spId =
+                            String(
+                                sp.purchaseId ||
+                                ""
+                            ).trim();
+
+                        console.log(
+                            "[LM] Soft Purchase Response:",
+                            {
+                                result:
+                                    spResult,
+
+                                purchaseId:
+                                    spId,
+
+                                productUpdates:
+                                    sp.productUpdates ||
+                                    []
+                            }
+                        );
+
+                        if (
+                            !Number.isFinite(
+                                spResult
+                            )
+                        ) {
+                            console.error(
+                                "[LM] Soft-purchase response has no valid result code:",
+                                sp
+                            );
+
+                            toastr.error(
+                                "<b>[SERVER]:</b> Invalid purchase response."
+                            );
+
+                            break;
+                        }
+
+                        /*
+                         * Resolve only the request with the matching
+                         * purchaseId. An unrelated purchase response must
+                         * not trigger a skin-token upload or auto-equip.
+                         */
+                        var pendingPurchase =
+                            typeof window
+                                ._lmTakeSoftPurchase ===
+                                "function"
+                                ? window
+                                    ._lmTakeSoftPurchase(
+                                        spId
+                                    )
+                                : null;
+
+                        if (
+                            sp.productUpdates &&
+                            sp.productUpdates
+                                .length
+                        ) {
+                            this.updateProducts(
+                                sp.productUpdates
+                            );
+                        }
+
+                        var purchaseSucceeded =
+                            spResult === 0 ||
+                            spResult === 1;
+
+                        if (
+                            purchaseSucceeded
+                        ) {
+                            var handledSuccess =
+                                false;
+
+                            if (
+                                pendingPurchase &&
+                                pendingPurchase
+                                    .context &&
+                                typeof pendingPurchase
+                                    .context
+                                    .onSuccess ===
+                                    "function"
+                            ) {
+                                handledSuccess =
+                                    true;
+
+                                try {
+                                    pendingPurchase
+                                        .context
+                                        .onSuccess(
+                                            sp,
+                                            pendingPurchase
+                                        );
+                                } catch (
+                                    purchaseSuccessError
+                                ) {
+                                    console.error(
+                                        "[LM] Soft-purchase success callback failed:",
+                                        purchaseSuccessError
+                                    );
                                 }
-                                if (pendingEntry && pendingEntry.context && typeof pendingEntry.context.onSuccess === 'function') {
-                                    try { pendingEntry.context.onSuccess(sp); } catch (cbErr) { console.error("[LM] Soft-purchase onSuccess callback error:", cbErr); }
+                            }
+
+                            if (
+                                !handledSuccess
+                            ) {
+                                toastr.success(
+                                    "<b>[SERVER]:</b> Purchase successful! &#x2714; " +
+                                    spId.replace(
+                                        /^com\.miniclip\.agar\.io\./i,
+                                        ""
+                                    )
+                                );
+                            }
+
+                            try {
+                                this
+                                    .createSkinsHTML();
+                            } catch (e) { }
+
+                            if (
+                                window
+                                    .refreshSkinGrid
+                            ) {
+                                setTimeout(
+                                    window
+                                        .refreshSkinGrid,
+                                    500
+                                );
+                            }
+
+                            if (
+                                window
+                                    .refreshDealsTab
+                            ) {
+                                setTimeout(
+                                    window
+                                        .refreshDealsTab,
+                                    500
+                                );
+                            }
+                        } else {
+                            var handledFailure =
+                                false;
+
+                            if (
+                                pendingPurchase &&
+                                pendingPurchase
+                                    .context &&
+                                typeof pendingPurchase
+                                    .context
+                                    .onFailure ===
+                                    "function"
+                            ) {
+                                handledFailure =
+                                    true;
+
+                                try {
+                                    pendingPurchase
+                                        .context
+                                        .onFailure(
+                                            spResult,
+                                            sp,
+                                            pendingPurchase
+                                        );
+                                } catch (
+                                    purchaseFailureError
+                                ) {
+                                    console.error(
+                                        "[LM] Soft-purchase failure callback failed:",
+                                        purchaseFailureError
+                                    );
                                 }
-                                // Auto-equip the purchased skin (like the original client)
-                                var pendingSkin = window._pendingSkinPurchaseId;
-                                if (pendingSkin) {
-                                    console.log("[LM] Auto-equipping purchased skin: " + pendingSkin);
-                                    // Set as equipped in localStorage and send opcode 80
-                                    if (typeof window.equipSkin === 'function') {
-                                        try { window.equipSkin(pendingSkin); } catch (eqe) { }
-                                    } else {
-                                        localStorage.setItem('equippedSkinId', pendingSkin);
-                                        if (typeof window.changeSkin === 'function') {
-                                            try { window.changeSkin(pendingSkin); } catch (cse) { }
-                                        }
-                                    }
-                                    window._pendingSkinPurchaseId = null;
+                            }
+
+                            if (
+                                !handledFailure
+                            ) {
+                                if (
+                                    spResult === 2
+                                ) {
+                                    toastr.error(
+                                        "<b>[SERVER]:</b> Purchase failed — not enough DNA/coins."
+                                    );
+                                } else if (
+                                    spResult === 3
+                                ) {
+                                    toastr.error(
+                                        "<b>[SERVER]:</b> Purchase failed — item not available."
+                                    );
+                                } else {
+                                    toastr.warning(
+                                        "<b>[SERVER]:</b> Purchase response: code " +
+                                        spResult
+                                    );
                                 }
-                                try { this.createSkinsHTML(); } catch (e) { }
-                                if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
-                                if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
-                            } else if (spResult === 2) {
-                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'insufficient_funds');
-                                toastr.error('<b>[SERVER]:</b> Purchase failed — not enough DNA/coins.');
-                            } else if (spResult === 3) {
-                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'item_unavailable');
-                                toastr.error('<b>[SERVER]:</b> Purchase failed — item not available.');
-                            } else {
-                                window._lmCancelSoftPurchase && window._lmCancelSoftPurchase(spId, 'result_code_' + spResult);
-                                toastr.warning('<b>[SERVER]:</b> Purchase response: code ' + spResult);
                             }
                         }
                     } catch (spErr) {
-                        console.warn("[LM] Error parsing soft purchase response:", spErr);
+                        console.warn(
+                            "[LM] Error parsing soft purchase response:",
+                            spErr
+                        );
                     }
+
                     break;
                 case 74:
                     // In-app purchase response
@@ -21707,6 +22206,23 @@ function thelegendmodproject() {
                                 .userSkinsCreateResponseField;
 
                         if (skinResp) {
+                            var pendingUpload =
+                                window
+                                    ._lmSkinCreatePending;
+
+                            if (
+                                typeof window
+                                    ._lmClearSkinCreatePending ===
+                                    "function"
+                            ) {
+                                window
+                                    ._lmClearSkinCreatePending();
+                            } else {
+                                window
+                                    ._lmSkinCreatePending =
+                                    null;
+                            }
+
                             var skinResult =
                                 Number(
                                     skinResp.result ||
@@ -21725,13 +22241,6 @@ function thelegendmodproject() {
                             var createdSkinId =
                                 '';
 
-                            /*
-                             * Official Agar.io obtains the new skin ID from
-                             * the positive product update returned by opcode
-                             * 151. Normally it is:
-                             *
-                             * skin_custom_<uuid>_<uuid>
-                             */
                             for (
                                 var skinProductIndex = 0;
                                 skinProductIndex <
@@ -21783,6 +22292,18 @@ function thelegendmodproject() {
                                         skinResp
                                     );
 
+                                    if (
+                                        typeof window
+                                            ._lmFinishSkinUploadUi ===
+                                            "function"
+                                    ) {
+                                        window
+                                            ._lmFinishSkinUploadUi(
+                                                false,
+                                                "Server accepted upload but returned no skin ID."
+                                            );
+                                    }
+
                                     toastr.error(
                                         '<b>[SERVER]:</b> Agar.io accepted the transaction but did not return a published custom skin.'
                                     );
@@ -21794,12 +22315,6 @@ function thelegendmodproject() {
                                     this.updateProducts(skinProducts);
                                 }
 
-                                /*
-                                 * Agar.io inserts custom skins dynamically,
-                                 * while the LM grid starts from a static
-                                 * configuration array. Mirror the new skin
-                                 * into that runtime array once.
-                                 */
                                 var customSkinConfig =
                                     window
                                         .GameConfiguration &&
@@ -21877,6 +22392,18 @@ function thelegendmodproject() {
                                     }
                                 }
 
+                                if (
+                                    typeof window
+                                        ._lmFinishSkinUploadUi ===
+                                        "function"
+                                ) {
+                                    window
+                                        ._lmFinishSkinUploadUi(
+                                            true,
+                                            "Skin created successfully!"
+                                        );
+                                }
+
                                 toastr.success(
                                     '<b>[SERVER]:</b> Custom skin created and registered: ' +
                                     createdSkinId
@@ -21899,23 +22426,51 @@ function thelegendmodproject() {
 
                                 $('#custom-skin-uploader')
                                     .fadeOut(200);
-                            } else if (
-                                skinResult === 2
-                            ) {
-                                toastr.error(
-                                    '<b>[SERVER]:</b> Skin creation failed — insufficient funds.'
-                                );
-                            } else if (
-                                skinResult === 3
-                            ) {
-                                toastr.error(
-                                    '<b>[SERVER]:</b> Temporary transaction error. Please try again.'
-                                );
                             } else {
-                                toastr.warning(
-                                    '<b>[SERVER]:</b> Skin create response: code ' +
-                                    skinResult
-                                );
+                                var uploadErrorMessage =
+                                    "Skin creation failed.";
+
+                                if (
+                                    skinResult === 2
+                                ) {
+                                    uploadErrorMessage =
+                                        "Insufficient funds.";
+
+                                    toastr.error(
+                                        '<b>[SERVER]:</b> Skin creation failed — insufficient funds.'
+                                    );
+                                } else if (
+                                    skinResult === 3
+                                ) {
+                                    uploadErrorMessage =
+                                        "Temporary transaction error.";
+
+                                    toastr.error(
+                                        '<b>[SERVER]:</b> Temporary transaction error. Please try again.'
+                                    );
+                                } else {
+                                    uploadErrorMessage =
+                                        "Result code " +
+                                        skinResult +
+                                        ".";
+
+                                    toastr.warning(
+                                        '<b>[SERVER]:</b> Skin create response: code ' +
+                                        skinResult
+                                    );
+                                }
+
+                                if (
+                                    typeof window
+                                        ._lmFinishSkinUploadUi ===
+                                        "function"
+                                ) {
+                                    window
+                                        ._lmFinishSkinUploadUi(
+                                            false,
+                                            uploadErrorMessage
+                                        );
+                                }
                             }
                         } else {
                             console.log(
@@ -21923,6 +22478,31 @@ function thelegendmodproject() {
                             );
                         }
                     } catch (skinErr) {
+                        if (
+                            typeof window
+                                ._lmClearSkinCreatePending ===
+                                "function"
+                        ) {
+                            window
+                                ._lmClearSkinCreatePending();
+                        } else {
+                            window
+                                ._lmSkinCreatePending =
+                                null;
+                        }
+
+                        if (
+                            typeof window
+                                ._lmFinishSkinUploadUi ===
+                                "function"
+                        ) {
+                            window
+                                ._lmFinishSkinUploadUi(
+                                    false,
+                                    "Failed to process skin creation response."
+                                );
+                        }
+
                         console.warn(
                             '[LM] Error parsing skin create response:',
                             skinErr
