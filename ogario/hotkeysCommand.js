@@ -208,14 +208,82 @@
                 type: 'normal'
             },
             'hk-transparentSkins': {
-                label: textLanguage['hk-transparentSkins'],
+                label:
+                    textLanguage[
+                        'hk-transparentSkins'
+                    ],
+
                 defaultKey: '',
+
                 keyDown() {
-                    application && application.setTransparentSkins();
+                    application &&
+                        application
+                            .setTransparentSkins();
                 },
+
                 keyUp: null,
+
                 type: 'normal'
             },
+
+            /*
+             * ═══════════════════════════════════════════════════════════════
+             * HOLD SCAN TRICK
+             * ═══════════════════════════════════════════════════════════════
+             *
+             * This replaces the unusable Delta action:
+             *
+             *     hk-undefined
+             *
+             * The default key is intentionally empty to avoid overriding an
+             * existing Legend Mod command. It appears in the normal Hotkeys
+             * menu and can be assigned by the user.
+             */
+            'hk-scanTrick': {
+                label:
+                    textLanguage[
+                        'hk-scanTrick'
+                    ],
+
+                defaultKey: '',
+
+                keyDown() {
+                    var game =
+                        window.legendmod ||
+                        window.LM;
+
+                    if (
+                        game &&
+                        typeof game
+                            .setScanTrickHeld ===
+                            'function'
+                    ) {
+                        game.setScanTrickHeld(
+                            true
+                        );
+                    }
+                },
+
+                keyUp() {
+                    var game =
+                        window.legendmod ||
+                        window.LM;
+
+                    if (
+                        game &&
+                        typeof game
+                            .setScanTrickHeld ===
+                            'function'
+                    ) {
+                        game.setScanTrickHeld(
+                            false
+                        );
+                    }
+                },
+
+                type: 'normal'
+            },
+
             'hk-showSkins': {
                 label: textLanguage['hk-showSkins'],
                 defaultKey: 'S',

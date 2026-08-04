@@ -5634,6 +5634,53 @@ var SkinExplain = [{
     pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
 }
 ];
+/*
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SCAN TRICK — LANGUAGE FALLBACKS
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Language packs can override these later. These fallback strings prevent
+ * missing labels when an older language file does not know Scan Trick yet.
+ */
+if (typeof textLanguage === 'undefined') {
+    window.textLanguage = window.textLanguage || {};
+}
+textLanguage.scanTrickGroup =
+    textLanguage.scanTrickGroup ||
+    'Scan Trick';
+
+textLanguage.scanTrick =
+    textLanguage.scanTrick ||
+    'Enable Scan Trick';
+
+textLanguage.scanTrickRounded =
+    textLanguage.scanTrickRounded ||
+    'Snap movement direction';
+
+textLanguage.scanTrickOnlyWhileLMB =
+    textLanguage.scanTrickOnlyWhileLMB ||
+    'Snap only while left mouse is held';
+
+textLanguage.scanTrickDirections =
+    textLanguage.scanTrickDirections ||
+    'Snapped directions';
+
+textLanguage.scanTrickDistance =
+    textLanguage.scanTrickDistance ||
+    'Normal projection distance';
+
+textLanguage.scanTrickRoundedDistance =
+    textLanguage.scanTrickRoundedDistance ||
+    'Snapped projection distance';
+
+textLanguage.scanTrickStatus =
+    textLanguage.scanTrickStatus ||
+    'Show Scan Trick status';
+
+textLanguage['hk-scanTrick'] =
+    textLanguage['hk-scanTrick'] ||
+    'Hold Scan Trick';
+
 /* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
     positionClass: "toast-bottom-left",
@@ -5698,6 +5745,20 @@ var defaultmapsettings = {
     showMapBorders: true,
     showGhostCells: false,
     showGhostCellsInfo: false,
+
+    /*
+     * ═══════════════════════════════════════════════════════════════════════
+     * SCAN TRICK SETTINGS
+     * ═══════════════════════════════════════════════════════════════════════
+     */
+    scanTrick: true,
+    scanTrickRounded: true,
+    scanTrickOnlyWhileLMB: true,
+    scanTrickDirections: 16,
+    scanTrickDistance: 10000000,
+    scanTrickRoundedDistance: 20000,
+    scanTrickStatus: true,
+
     stickyCell: false,
     //showPartyBots: false,
     showMiniMap: true,
@@ -6066,6 +6127,135 @@ function thelegendmodproject() {
                     ogario[name] = t;
                 }
             });
+        },
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         * SCAN TRICK SETTINGS UI
+         * ═══════════════════════════════════════════════════════════════════
+         */
+        addScanTrickControls() {
+            var app =
+                this;
+
+            var section =
+                $('.scanTrickGroup');
+
+            if (!section.length) {
+                return;
+            }
+
+            /*
+             * Prevent duplication if the menu is rebuilt.
+             */
+            if (
+                $('#scanTrickDirections-select')
+                    .length
+            ) {
+                return;
+            }
+
+            section.append(
+                '<div class="input-box scan-trick-direction-box">' +
+                    '<span class="title-box">' +
+                        textLanguage
+                            .scanTrickDirections +
+                    '</span>' +
+                    '<select ' +
+                        'id="scanTrickDirections-select" ' +
+                        'class="form-control">' +
+                        '<option value="8">8 directions — 45°</option>' +
+                        '<option value="16">16 directions — 22.5°</option>' +
+                        '<option value="32">32 directions — 11.25°</option>' +
+                    '</select>' +
+                '</div>'
+            );
+
+            $('#scanTrickDirections-select')
+                .val(
+                    String(
+                        defaultmapsettings
+                            .scanTrickDirections ||
+                        16
+                    )
+                )
+                .on(
+                    'change',
+                    function () {
+                        var value =
+                            parseInt(
+                                this.value,
+                                10
+                            );
+
+                        if (
+                            value !== 8 &&
+                            value !== 16 &&
+                            value !== 32
+                        ) {
+                            value = 16;
+                        }
+
+                        defaultmapsettings
+                            .scanTrickDirections =
+                            value;
+
+                        app.saveSettings(
+                            defaultmapsettings,
+                            'ogarioSettings'
+                        );
+
+                        if (
+                            LM.scanTrickHeld
+                        ) {
+                            LM.getCursorPosition();
+                        }
+                    }
+                );
+
+            /*
+             * Exact-angle projection distance.
+             */
+            this.addSliderBox(
+                '.scanTrickGroup',
+                'scanTrickDistance',
+                100000,
+                10000000,
+                100000,
+                null
+            );
+
+            /*
+             * Snapped-angle projection distance.
+             */
+            this.addSliderBox(
+                '.scanTrickGroup',
+                'scanTrickRoundedDistance',
+                1000,
+                100000,
+                1000,
+                null
+            );
+
+            /*
+             * Explanation visible directly in the settings section.
+             */
+            section.append(
+                '<div class="scan-trick-help" ' +
+                    'style="' +
+                        'margin-top:8px;' +
+                        'padding:8px 10px;' +
+                        'font-size:11px;' +
+                        'line-height:1.45;' +
+                        'opacity:.82;' +
+                        'border-left:3px solid #00b9ff;' +
+                        'background:rgba(0,0,0,.18);' +
+                    '">' +
+                    '<strong>Usage:</strong> assign “Hold Scan Trick” ' +
+                    'in Hotkeys. Hold that key to send the cursor far in ' +
+                    'the mouse direction. Hold left mouse too to snap the ' +
+                    'movement direction.' +
+                '</div>'
+            );
         },
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultSettings[name] + '\" /></div>');
@@ -8812,7 +9002,37 @@ function thelegendmodproject() {
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
-            this.addOptions(["stickyCell", "mouseSplit", "mouseFeed", "mouseWheelClick", "mouseCommand4", "mouseCommand5"], "mouseGroup");
+            this.addOptions(
+                [
+                    'stickyCell',
+                    'mouseSplit',
+                    'mouseFeed',
+                    'mouseWheelClick',
+                    'mouseCommand4',
+                    'mouseCommand5'
+                ],
+                'mouseGroup'
+            );
+
+            /*
+             * Dedicated Scan Trick settings section.
+             *
+             * addOptions() creates:
+             *
+             *     <div class="options-box scanTrickGroup">
+             */
+            this.addOptions(
+                [
+                    'scanTrick',
+                    'scanTrickRounded',
+                    'scanTrickOnlyWhileLMB',
+                    'scanTrickStatus'
+                ],
+                'scanTrickGroup'
+            );
+
+            this.addScanTrickControls();
+
             //	
             Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
             $("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
@@ -16835,8 +17055,29 @@ function thelegendmodproject() {
         viewScale: 1,
         clientX: 0,
         clientY: 0,
+
+        /*
+         * Final movement cursor transmitted to the active connection.
+         */
         cursorX: 0,
         cursorY: 0,
+
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         * SCAN TRICK RUNTIME STATE
+         * ═══════════════════════════════════════════════════════════════════
+         */
+        scanTrickHeld: false,
+        scanTrickLMB: false,
+        scanTrickActive: false,
+        scanTrickSnapped: false,
+        scanTrickAngle: 0,
+        scanTrickCursorX: 0,
+        scanTrickCursorY: 0,
+        scanTrickDirectionX: 1,
+        scanTrickDirectionY: 0,
+        scanTrickRevision: 0,
+
         targetX: 0,
         targetY: 0,
         targetDistance: 0,
@@ -23249,10 +23490,488 @@ Most cells eaten   : ${mostCellsEaten}
                 else return defaultSettings.enemySSTEDColor
             }
         },
-        getCursorPosition() {
-            this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX;
-            this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
+
+        /*
+         * ═══════════════════════════════════════════════════════════════════
+         * SCAN TRICK MOVEMENT ENGINE
+         * ═══════════════════════════════════════════════════════════════════
+         */
+
+        getScanTrickDirectionCount() {
+            var directions =
+                parseInt(
+                    defaultmapsettings.scanTrickDirections,
+                    10
+                );
+
+            if (!Number.isFinite(directions)) {
+                directions = 16;
+            }
+
+            /*
+             * Restrict values to supported, predictable sector counts.
+             */
+            if (directions <= 8) {
+                return 8;
+            }
+
+            if (directions <= 16) {
+                return 16;
+            }
+
+            return 32;
         },
+
+        getScanTrickDistance(snapped) {
+            var distance =
+                snapped
+                    ? Number(
+                        defaultmapsettings
+                            .scanTrickRoundedDistance
+                    )
+                    : Number(
+                        defaultmapsettings
+                            .scanTrickDistance
+                    );
+
+            if (!Number.isFinite(distance)) {
+                distance =
+                    snapped
+                        ? 20000
+                        : 10000000;
+            }
+
+            /*
+             * Keep enough distance to create a stable direction, but remain
+             * safely inside signed Int32 packet coordinates.
+             */
+            return Math.max(
+                1000,
+                Math.min(
+                    100000000,
+                    distance
+                )
+            );
+        },
+
+        getScanTrickOrigin() {
+            var originX =
+                Number.isFinite(this.viewX)
+                    ? this.viewX
+                    : 0;
+
+            var originY =
+                Number.isFinite(this.viewY)
+                    ? this.viewY
+                    : 0;
+
+            /*
+             * While alive, movement should be projected from the controlled
+             * player's center rather than from a delayed camera position.
+             */
+            if (
+                this.play &&
+                this.playerCells &&
+                this.playerCells.length
+            ) {
+                if (
+                    Number.isFinite(
+                        this.playerX
+                    )
+                ) {
+                    originX =
+                        this.playerX;
+                }
+
+                if (
+                    Number.isFinite(
+                        this.playerY
+                    )
+                ) {
+                    originY =
+                        this.playerY;
+                }
+            }
+
+            return {
+                x: originX,
+                y: originY
+            };
+        },
+
+        setScanTrickHeld(enabled) {
+            enabled =
+                !!enabled;
+
+            /*
+             * Ignore duplicate keyboard-repeat events.
+             */
+            if (
+                this.scanTrickHeld ===
+                enabled
+            ) {
+                return;
+            }
+
+            this.scanTrickHeld =
+                enabled;
+
+            if (!enabled) {
+                this.scanTrickActive =
+                    false;
+
+                this.scanTrickSnapped =
+                    false;
+            }
+
+            this.scanTrickRevision =
+                (
+                    this.scanTrickRevision +
+                    1
+                ) >>> 0;
+
+            /*
+             * Recalculate immediately.
+             *
+             * Without this, releasing the hotkey could leave the old far
+             * target active until the next mousemove or render frame.
+             */
+            this.getCursorPosition();
+        },
+
+        setScanTrickLMB(enabled) {
+            enabled =
+                !!enabled;
+
+            if (
+                this.scanTrickLMB ===
+                enabled
+            ) {
+                return;
+            }
+
+            this.scanTrickLMB =
+                enabled;
+
+            if (
+                this.scanTrickHeld
+            ) {
+                this.getCursorPosition();
+            }
+        },
+
+        releaseScanTrickInput() {
+            var wasActive =
+                this.scanTrickHeld ||
+                this.scanTrickLMB ||
+                this.scanTrickActive;
+
+            this.scanTrickHeld =
+                false;
+
+            this.scanTrickLMB =
+                false;
+
+            this.scanTrickActive =
+                false;
+
+            this.scanTrickSnapped =
+                false;
+
+            if (wasActive) {
+                this.scanTrickRevision =
+                    (
+                        this.scanTrickRevision +
+                        1
+                    ) >>> 0;
+
+                this.getCursorPosition();
+            }
+        },
+
+        /*
+         * Return the current direction as a normalized vector.
+         *
+         * Multibox, split and eject code can use this without deriving the
+         * direction again from very large coordinates.
+         */
+        getScanTrickDirection() {
+            var directionX =
+                Number(
+                    this.scanTrickDirectionX
+                );
+
+            var directionY =
+                Number(
+                    this.scanTrickDirectionY
+                );
+
+            var length =
+                Math.hypot(
+                    directionX,
+                    directionY
+                );
+
+            if (
+                !Number.isFinite(length) ||
+                length < 0.000001
+            ) {
+                return {
+                    x: 1,
+                    y: 0
+                };
+            }
+
+            return {
+                x:
+                    directionX /
+                    length,
+
+                y:
+                    directionY /
+                    length
+            };
+        },
+
+        /*
+         * Central cursor calculation.
+         *
+         * Normal:
+         *
+         *     physical screen cursor
+         *              ↓
+         *     ordinary world cursor
+         *
+         * Scan Trick:
+         *
+         *     angle from screen center to mouse
+         *              ↓
+         *     optional angular quantization
+         *              ↓
+         *     far target from player/view origin
+         */
+        getCursorPosition() {
+            var canvasWidth =
+                Number.isFinite(
+                    this.canvasWidth
+                )
+                    ? this.canvasWidth
+                    : 0;
+
+            var canvasHeight =
+                Number.isFinite(
+                    this.canvasHeight
+                )
+                    ? this.canvasHeight
+                    : 0;
+
+            var halfWidth =
+                canvasWidth * 0.5;
+
+            var halfHeight =
+                canvasHeight * 0.5;
+
+            var clientX =
+                Number.isFinite(
+                    this.clientX
+                )
+                    ? this.clientX
+                    : halfWidth;
+
+            var clientY =
+                Number.isFinite(
+                    this.clientY
+                )
+                    ? this.clientY
+                    : halfHeight;
+
+            var screenDX =
+                clientX -
+                halfWidth;
+
+            var screenDY =
+                clientY -
+                halfHeight;
+
+            var viewScale =
+                Number.isFinite(
+                    this.viewScale
+                ) &&
+                Math.abs(
+                    this.viewScale
+                ) > 0.000001
+                    ? this.viewScale
+                    : 1;
+
+            var viewX =
+                Number.isFinite(
+                    this.viewX
+                )
+                    ? this.viewX
+                    : 0;
+
+            var viewY =
+                Number.isFinite(
+                    this.viewY
+                )
+                    ? this.viewY
+                    : 0;
+
+            /*
+             * Calculate the ordinary cursor every time so key release can
+             * return to normal movement immediately.
+             */
+            var normalCursorX =
+                screenDX /
+                viewScale +
+                viewX;
+
+            var normalCursorY =
+                screenDY /
+                viewScale +
+                viewY;
+
+            if (
+                !defaultmapsettings
+                    .scanTrick ||
+                !this.scanTrickHeld
+            ) {
+                this.scanTrickActive =
+                    false;
+
+                this.scanTrickSnapped =
+                    false;
+
+                this.cursorX =
+                    normalCursorX;
+
+                this.cursorY =
+                    normalCursorY;
+
+                return;
+            }
+
+            /*
+             * Preserve the last valid angle while the mouse is within two
+             * pixels of screen center.
+             */
+            var angle =
+                Number.isFinite(
+                    this.scanTrickAngle
+                )
+                    ? this.scanTrickAngle
+                    : 0;
+
+            var distanceSquared =
+                screenDX *
+                    screenDX +
+                screenDY *
+                    screenDY;
+
+            if (distanceSquared > 4) {
+                angle =
+                    Math.atan2(
+                        screenDY,
+                        screenDX
+                    );
+            }
+
+            /*
+             * Stage.js snaps only while LMB is held. The setting allows users
+             * to make snapping permanent whenever the Scan Trick key is held.
+             */
+            var snapped =
+                !!defaultmapsettings
+                    .scanTrickRounded &&
+                (
+                    !defaultmapsettings
+                        .scanTrickOnlyWhileLMB ||
+                    this.scanTrickLMB
+                );
+
+            if (snapped) {
+                var directions =
+                    this
+                        .getScanTrickDirectionCount();
+
+                var step =
+                    Math.PI *
+                    2 /
+                    directions;
+
+                angle =
+                    Math.round(
+                        angle /
+                        step
+                    ) *
+                    step;
+            }
+
+            /*
+             * Normalize to [0, 2π).
+             */
+            angle %=
+                Math.PI * 2;
+
+            if (angle < 0) {
+                angle +=
+                    Math.PI * 2;
+            }
+
+            var directionX =
+                Math.cos(angle);
+
+            var directionY =
+                Math.sin(angle);
+
+            var projectionDistance =
+                this
+                    .getScanTrickDistance(
+                        snapped
+                    );
+
+            var origin =
+                this
+                    .getScanTrickOrigin();
+
+            var cursorX =
+                origin.x +
+                directionX *
+                projectionDistance;
+
+            var cursorY =
+                origin.y +
+                directionY *
+                projectionDistance;
+
+            this.scanTrickAngle =
+                angle;
+
+            this.scanTrickDirectionX =
+                directionX;
+
+            this.scanTrickDirectionY =
+                directionY;
+
+            this.scanTrickCursorX =
+                cursorX;
+
+            this.scanTrickCursorY =
+                cursorY;
+
+            this.scanTrickActive =
+                true;
+
+            this.scanTrickSnapped =
+                snapped;
+
+            this.cursorX =
+                cursorX;
+
+            this.cursorY =
+                cursorY;
+        },
+
         setZoom(t) {
             //t.preventDefault(), this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
             this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
@@ -23297,6 +24016,67 @@ Most cells eaten   : ${mostCellsEaten}
         },
         init() {
             var app = this;
+
+            /*
+             * ═══════════════════════════════════════════════════════════════
+             * SCAN TRICK / CURSOR EVENT LISTENERS
+             * ═══════════════════════════════════════════════════════════════
+             *
+             * Capture mouse raw client coordinates and LMB state globally so
+             * angle calculations update cleanly regardless of active UI focus.
+             */
+            window.addEventListener(
+                'mousemove',
+                function (e) {
+                    app.clientX =
+                        e.clientX;
+
+                    app.clientY =
+                        e.clientY;
+
+                    app.getCursorPosition();
+                },
+                true
+            );
+
+            window.addEventListener(
+                'mousedown',
+                function (e) {
+                    if (
+                        e.button ===
+                        0
+                    ) {
+                        app.setScanTrickLMB(
+                            true
+                        );
+                    }
+                },
+                true
+            );
+
+            window.addEventListener(
+                'mouseup',
+                function (e) {
+                    if (
+                        e.button ===
+                        0
+                    ) {
+                        app.setScanTrickLMB(
+                            false
+                        );
+                    }
+                },
+                true
+            );
+
+            window.addEventListener(
+                'blur',
+                function () {
+                    app.releaseScanTrickInput();
+                },
+                true
+            );
+
             /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function (e) {
                 app.setZoom(e);
             }, false) : document.body.onmousewheel = function (e) {
