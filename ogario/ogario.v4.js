@@ -9031,7 +9031,36 @@ function thelegendmodproject() {
                 'scanTrickGroup'
             );
 
-            this.addScanTrickControls();
+            /*
+             * addScanTrickControls() is defined on Settings, but it must run
+             * with application as `this`.
+             *
+             * The function internally calls:
+             *
+             *     this.addSliderBox(...)
+             *     app.saveSettings(...)
+             *
+             * Both of those methods belong to application. Calling the method
+             * normally as Settings.addScanTrickControls() would make `this`
+             * equal Settings and would cause another failure when the setting
+             * changes.
+             */
+            if (
+                typeof Settings !==
+                    'undefined' &&
+                Settings &&
+                typeof Settings
+                    .addScanTrickControls ===
+                    'function'
+            ) {
+                Settings
+                    .addScanTrickControls
+                    .call(this);
+            } else {
+                console.warn(
+                    '[SCAN TRICK] Settings.addScanTrickControls is unavailable.'
+                );
+            }
 
             //	
             Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
@@ -14374,28 +14403,350 @@ function thelegendmodproject() {
             }
         },
         changeTarget() {
-            var targetId = this.checkPlayerID(this.targetID);
-            for (target = null, length = 0; length < this.teamPlayers.length; length++)
-                if (this.teamPlayers[length].alive) {
-                    if (null === targetId) {
-                        targetId = length;
-                        break;
-                    }
-                    if (length < targetId && null === target) target = length;
-                    else if (length > targetId) {
-                        target = length;
-                        break;
-                    }
+            var targetId =
+                this.checkPlayerID(
+                    this.targetID
+                );
+
+            var target =
+                null;
+
+            for (
+                var length = 0;
+                length <
+                    this.teamPlayers.length;
+                length++
+            ) {
+                var teamPlayer =
+                    this.teamPlayers[
+                        length
+                    ];
+
+                if (
+                    !teamPlayer ||
+                    !teamPlayer.alive
+                ) {
+                    continue;
                 }
-            if (target !== null) {
-                targetId = target;
+
+                if (targetId === null) {
+                    targetId =
+                        length;
+
+                    break;
+                }
+
+                if (
+                    length <
+                        targetId &&
+                    target === null
+                ) {
+                    target =
+                        length;
+
+                    continue;
+                }
+
+                if (
+                    length >
+                    targetId
+                ) {
+                    target =
+                        length;
+
+                    break;
+                }
             }
-            if (targetId !== null) {
-                this.setTarget(this.teamPlayers[targetId].id);
+
+            if (target !== null) {
+                targetId =
+                    target;
+            }
+
+            if (
+                targetId !== null &&
+                this.teamPlayers[
+                    targetId
+                ]
+            ) {
+                this.setTarget(
+                    this.teamPlayers[
+                        targetId
+                    ].id
+                );
             } else {
-                this.setTargetStatus(0);
+                this.setTargetStatus(
+                    0
+                );
             }
         },
+
+        /*
+         * Update the selected teammate target HUD and target coordinates.
+         *
+         * This method was still called by setTarget() and
+         * updateTeamPlayerPosition(), but its implementation had been removed.
+         */
+        updateTarget(
+            nick,
+            skinUrl,
+            x,
+            y,
+            mass,
+            color,
+            lbgpi
+        ) {
+            var safeX =
+                Number(x);
+
+            var safeY =
+                Number(y);
+
+            var safeMass =
+                Number(mass);
+
+            if (
+                !Number.isFinite(
+                    safeX
+                )
+            ) {
+                safeX =
+                    0;
+            }
+
+            if (
+                !Number.isFinite(
+                    safeY
+                )
+            ) {
+                safeY =
+                    0;
+            }
+
+            if (
+                !Number.isFinite(
+                    safeMass
+                ) ||
+                safeMass < 0
+            ) {
+                safeMass =
+                    0;
+            }
+
+            /*
+             * Keep the targeting vector used by the game renderer and HUD.
+             */
+            if (
+                ogario &&
+                typeof ogario
+                    .setTargetPosition ===
+                    'function'
+            ) {
+                ogario.setTargetPosition(
+                    safeX,
+                    safeY
+                );
+            }
+
+            var safeNick =
+                nick == null
+                    ? ''
+                    : String(nick);
+
+            if (
+                this.targetNick !==
+                safeNick
+            ) {
+                this.targetNick =
+                    safeNick;
+
+                $('#target-nick')
+                    .html(
+                        this.escapeHTML(
+                            safeNick
+                        )
+                    );
+            }
+
+            var safeColor =
+                color ||
+                '#000000';
+
+            $('#target-skin')
+                .css(
+                    'background-color',
+                    safeColor
+                );
+
+            /*
+             * Resolve whichever skin-cache representation is currently ready.
+             */
+            var cachedSkin =
+                null;
+
+            if (skinUrl) {
+                cachedSkin =
+                    this.customSkinsCache[
+                        skinUrl +
+                        '_cached2'
+                    ] ||
+                    this.customSkinsCache[
+                        skinUrl +
+                        '_cached'
+                    ] ||
+                    this.customSkinsCache[
+                        skinUrl
+                    ] ||
+                    null;
+            }
+
+            if (
+                skinUrl &&
+                cachedSkin
+            ) {
+                $('#target-skin img')
+                    .attr(
+                        'src',
+                        skinUrl
+                    );
+
+                this.targetSkinURL =
+                    skinUrl;
+            } else if (
+                skinUrl &&
+                this.targetSkinURL !==
+                    skinUrl
+            ) {
+                /*
+                 * Start loading the target skin without blocking HUD updates.
+                 */
+                if (
+                    typeof this.loadSkin ===
+                    'function'
+                ) {
+                    this.loadSkin(
+                        this.customSkinsCache,
+                        skinUrl
+                    );
+                }
+
+                $('#target-skin img')
+                    .attr(
+                        'src',
+                        'https://cdn.ogario.ovh/static/img/blank.png'
+                    );
+
+                this.targetSkinURL =
+                    '';
+            } else if (!skinUrl) {
+                $('#target-skin img')
+                    .attr(
+                        'src',
+                        'https://cdn.ogario.ovh/static/img/blank.png'
+                    );
+
+                this.targetSkinURL =
+                    '';
+            }
+
+            $('#target-status')
+                .text(
+                    '[' +
+                    this.shortMassFormat(
+                        safeMass
+                    ) +
+                    ']'
+                );
+
+            var mapSector =
+                this.calculateMapSector(
+                    safeX,
+                    safeY
+                );
+
+            var targetDistance =
+                ogario &&
+                Number.isFinite(
+                    Number(
+                        ogario
+                            .targetDistance
+                    )
+                )
+                    ? Number(
+                        ogario
+                            .targetDistance
+                    )
+                    : 0;
+
+            var summaryHtml =
+                textLanguage
+                    .targetDistance +
+                ': <span class="hud-main-color">' +
+                targetDistance +
+                ' [' +
+                mapSector +
+                ']</span>';
+
+            if (
+                ogario &&
+                ogario.play
+            ) {
+                var playerMass =
+                    Number(
+                        ogario
+                            .playerMass
+                    );
+
+                if (
+                    !Number.isFinite(
+                        playerMass
+                    )
+                ) {
+                    playerMass =
+                        0;
+                }
+
+                summaryHtml +=
+                    ' | ' +
+                    textLanguage
+                        .targetMass +
+                    ': <span class="hud-main-color">' +
+                    this.shortMassFormat(
+                        safeMass +
+                        playerMass
+                    ) +
+                    '</span>';
+            }
+
+            /*
+             * Preserve the optional source/quadrant information for callers
+             * that supply lbgpi, without making it required.
+             */
+            if (
+                lbgpi !==
+                    undefined &&
+                lbgpi !==
+                    null
+            ) {
+                this.targetLbgpi =
+                    lbgpi;
+            }
+
+            $('#target-summary')
+                .html(
+                    summaryHtml
+                );
+
+            if (
+                this.targetStatus !==
+                1
+            ) {
+                this.setTargetStatus(
+                    1
+                );
+            }
+        },
+
         // --- 1. STRICT PROTOCOL HANDLER (VER 4.4 - FINAL) ---
         writeVarint(value) {
             let bytes = [];
@@ -24132,15 +24483,71 @@ Most cells eaten   : ${mostCellsEaten}
         // Cross-origin restriction blocks this unless CORS is disabled
     }
 
-    window.sendAction = function (action) {
-        LM.sendAction(action);
+    window.sendAction = function (
+        action
+    ) {
+        if (
+            window.LM &&
+            typeof window.LM
+                .sendAction ===
+                'function'
+        ) {
+            window.LM.sendAction(
+                action
+            );
+        }
     };
-    window.switchToPrevLivingUnit = function () {
-        LM.switchToPrevLivingUnit();
-    };
-    window.switchToNextLivingUnit = function () {
-        LM.switchToNextLivingUnit();
-    };
+
+    /*
+     * LM does not define switchToPrevLivingUnit() or
+     * switchToNextLivingUnit().
+     *
+     * The real previous/next multibox implementations are application:
+     *
+     *     multiboxback()
+     *     multiboxchange()
+     */
+    window.switchToPrevLivingUnit =
+        function () {
+            if (
+                window.application &&
+                typeof window.application
+                    .multiboxback ===
+                    'function'
+            ) {
+                window.application
+                    .multiboxback();
+
+                return true;
+            }
+
+            console.warn(
+                '[MULTIBOX] application.multiboxback is unavailable.'
+            );
+
+            return false;
+        };
+
+    window.switchToNextLivingUnit =
+        function () {
+            if (
+                window.application &&
+                typeof window.application
+                    .multiboxchange ===
+                    'function'
+            ) {
+                window.application
+                    .multiboxchange();
+
+                return true;
+            }
+
+            console.warn(
+                '[MULTIBOX] application.multiboxchange is unavailable.'
+            );
+
+            return false;
+        };
 
     /* ═══════════════════════════════════════════════════════════════════════════
      * §7.5 CLIENT-SIDE PROFILER SYSTEM
