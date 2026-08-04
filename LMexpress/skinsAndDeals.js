@@ -2220,17 +2220,25 @@ function SpecialDeals(defaultTab) {
         }
 
         $("#ss-select-agarVersionDestinations").change(function() {
-            var newUrl = window.LM_CONFIG_CDN + "/" + $("#ss-select-agarVersionDestinations").val() + "GameConfiguration.json";
+            var selectedVer = $("#ss-select-agarVersionDestinations").val();
+            var newUrl = window.LM_CONFIG_CDN + "/" + selectedVer + "GameConfiguration.json";
             $("#GameConfigurationUrl").val(newUrl);
 
             /* Invalidate cached config so LoadGameConfiguration fetches fresh data
              * from the new library path instead of returning the stale cache. */
             window.GameConfiguration = null;
             window.LMGameConfiguration = null;
+            window.LMGameConfigurationReady = null;
             window._isLoadingGameConfig = false;
             window._dealsShopBuilt = false;
             window._skinShopBuilt = false;
             window.MiniclipConfigDestination = newUrl;
+
+            /* Clear current deals grid immediately so user sees loading indicator */
+            var grid = document.getElementById('dealsGrid');
+            if (grid) {
+                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals for version ' + selectedVer + '...</div>';
+            }
 
             LoadGameConfiguration();
         });
@@ -2241,9 +2249,16 @@ function SpecialDeals(defaultTab) {
             /* Invalidate cached config so a fresh fetch is forced */
             window.GameConfiguration = null;
             window.LMGameConfiguration = null;
+            window.LMGameConfigurationReady = null;
             window._isLoadingGameConfig = false;
             window._dealsShopBuilt = false;
             window._skinShopBuilt = false;
+
+            /* Clear current deals grid immediately */
+            var grid = document.getElementById('dealsGrid');
+            if (grid) {
+                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals from custom URL...</div>';
+            }
 
             LoadGameConfiguration();
         });
@@ -4945,90 +4960,774 @@ function findSkinInConfig(productId) {
 window.findSkinInConfig = findSkinInConfig;
 
 /**
- * Look up the price for a skin from the GameConfiguration.
- * The pricing chain is:
- *   "Shop - Skins" → find entry by productId → get referenceValue (= purchaseId)
- *   "Wallet - Soft Purchases" → find entry by purchaseId → { currencyAmount, currencyProductId }
- * Returns { amount: number, currency: 'coin'|'dna' } or null if not found.
+ * Return a stable canonical key for a gameplay skin.
+ *
+ * shop_skin_pig and skin_pig refer to the same gameplay skin.
  */
-function getSkinPrice(productId) {
-    if (!productId) return null;
-    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
+function normalizeSkinProductId(productId) {
+    var normalized =
+        String(productId || '')
+            .trim()
+            .toLowerCase();
 
-    var cleanId = productId.replace(/^(shop_skin_|skin_)/, '');
+    if (
+        normalized.indexOf(
+            'shop_skin_'
+        ) === 0
+    ) {
+        normalized =
+            'skin_' +
+            normalized.substring(
+                'shop_skin_'.length
+            );
+    }
 
-    // Build the lookup caches on first call
-    if (!window._skinPriceCache) {
-        window._skinPriceCache = {};
+    return normalized;
+}
 
-        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"] || [];
-        var softPurchases = window.GameConfiguration.gameConfig["Wallet - Soft Purchases"] || [];
+/**
+ * Normalize only for comparisons.
+ *
+ * The original configured purchaseId is retained and sent to Agar.io.
+ */
+function normalizePurchaseLookupId(purchaseId) {
+    return String(purchaseId || '')
+        .trim()
+        .toLowerCase()
+        .replace(
+            /^com\.miniclip\.agar\.io\./,
+            ''
+        );
+}
 
-        // Index soft purchases by all possible purchaseId variations
-        var purchaseMap = {};
-        for (var p = 0; p < softPurchases.length; p++) {
-            var sp = softPurchases[p];
-            if (!sp) continue;
-            var pKeys = [sp.purchaseId, sp.id, sp.productId].filter(Boolean);
-            for (var k = 0; k < pKeys.length; k++) {
-                var pk = String(pKeys[k]);
-                purchaseMap[pk] = sp;
-                purchaseMap[pk.toLowerCase()] = sp;
-            }
+function isInvalidConfiguredPurchaseId(purchaseId) {
+    var normalized =
+        normalizePurchaseLookupId(
+            purchaseId
+        );
+
+    return (
+        !normalized ||
+        normalized === 'none' ||
+        normalized === 'null' ||
+        normalized === 'undefined'
+    );
+}
+
+/**
+ * Build strict lookup indexes from the current GameConfiguration.
+ *
+ * A skin is directly soft-purchasable only when:
+ *
+ * 1. "Shop - Skins" contains the skin;
+ * 2. that row contains a non-placeholder referenceValue;
+ * 3. "Wallet - Soft Purchases" contains that exact referenced purchase.
+ *
+ * No purchase identifiers are fabricated.
+ */
+function getSkinPurchaseIndex() {
+    var configuration =
+        window.GameConfiguration;
+
+    if (
+        !configuration ||
+        !configuration.gameConfig ||
+        typeof configuration.gameConfig !==
+            'object'
+    ) {
+        return null;
+    }
+
+    if (
+        window._skinPurchaseIndex &&
+        window._skinPurchaseIndexConfiguration ===
+            configuration
+    ) {
+        return window
+            ._skinPurchaseIndex;
+    }
+
+    var gameConfig =
+        configuration.gameConfig;
+
+    var shopSkins =
+        Array.isArray(
+            gameConfig[
+                'Shop - Skins'
+            ]
+        )
+            ? gameConfig[
+                'Shop - Skins'
+            ]
+            : [];
+
+    var softPurchases =
+        Array.isArray(
+            gameConfig[
+                'Wallet - Soft Purchases'
+            ]
+        )
+            ? gameConfig[
+                'Wallet - Soft Purchases'
+            ]
+            : [];
+
+    var shopEntriesBySkin =
+        Object.create(null);
+
+    var softPurchasesById =
+        Object.create(null);
+
+    function addShopEntry(
+        productId,
+        shopEntry
+    ) {
+        var key =
+            normalizeSkinProductId(
+                productId
+            );
+
+        if (!key) {
+            return;
         }
 
-        // Map skin productId AND productIdToQuantify → price info
-        for (var s = 0; s < shopSkins.length; s++) {
-            var shopSkin = shopSkins[s];
-            if (!shopSkin) continue;
-            var pid = shopSkin.productId || '';
-            var gameplayPid = shopSkin.productIdToQuantify || '';
-            var refVal = shopSkin.referenceValue || '';
-            var skinType = shopSkin.type || '';
+        if (
+            !shopEntriesBySkin[key]
+        ) {
+            shopEntriesBySkin[key] = [];
+        }
 
-            var purchase = purchaseMap[refVal] || purchaseMap[refVal.toLowerCase()] ||
-                            purchaseMap[pid] || purchaseMap[gameplayPid];
-
-            var priceEntry = null;
-
-            if (skinType === 'REWARD') {
-                priceEntry = { amount: 0, currency: 'free', type: 'REWARD' };
-            } else if (purchase) {
-                priceEntry = {
-                    amount: purchase.currencyAmount || 0,
-                    currency: (purchase.currencyProductId === 'dna' || purchase.currency === 'dna') ? 'dna' : 'coin',
-                    type: 'SOFT'
-                };
-            } else if (skinType === 'SOFT' && refVal) {
-                // Soft purchase with referenceValue
-                priceEntry = { amount: 90, currency: 'coin', type: 'SOFT' };
-            } else if (skinType === 'INAPP') {
-                priceEntry = { amount: 0, currency: 'real', type: 'INAPP' };
-            }
-
-            if (priceEntry) {
-                var keysToStore = [
-                    pid, pid.toLowerCase(),
-                    gameplayPid, gameplayPid.toLowerCase(),
-                    pid.replace(/^shop_skin_/, 'skin_'),
-                    pid.replace(/^shop_skin_/, ''),
-                    gameplayPid.replace(/^skin_/, '')
-                ].filter(Boolean);
-
-                for (var iKey = 0; iKey < keysToStore.length; iKey++) {
-                    window._skinPriceCache[keysToStore[iKey]] = priceEntry;
-                }
-            }
+        if (
+            shopEntriesBySkin[
+                key
+            ].indexOf(shopEntry) === -1
+        ) {
+            shopEntriesBySkin[
+                key
+            ].push(shopEntry);
         }
     }
 
-    return window._skinPriceCache[productId] ||
-           window._skinPriceCache[productId.toLowerCase()] ||
-           window._skinPriceCache['skin_' + cleanId] ||
-           window._skinPriceCache[cleanId] ||
-           null;
+    function addSoftPurchaseKey(
+        purchaseId,
+        purchaseEntry
+    ) {
+        var raw =
+            String(purchaseId || '')
+                .trim()
+                .toLowerCase();
+
+        var normalized =
+            normalizePurchaseLookupId(
+                purchaseId
+            );
+
+        if (raw) {
+            softPurchasesById[
+                raw
+            ] = purchaseEntry;
+        }
+
+        if (normalized) {
+            softPurchasesById[
+                normalized
+            ] = purchaseEntry;
+        }
+    }
+
+    for (
+        var shopIndex = 0;
+        shopIndex <
+        shopSkins.length;
+        shopIndex++
+    ) {
+        var shopEntry =
+            shopSkins[shopIndex];
+
+        if (!shopEntry) {
+            continue;
+        }
+
+        addShopEntry(
+            shopEntry.productId,
+            shopEntry
+        );
+
+        addShopEntry(
+            shopEntry
+                .productIdToQuantify,
+            shopEntry
+        );
+    }
+
+    for (
+        var purchaseIndex = 0;
+        purchaseIndex <
+        softPurchases.length;
+        purchaseIndex++
+    ) {
+        var purchaseEntry =
+            softPurchases[
+                purchaseIndex
+            ];
+
+        if (!purchaseEntry) {
+            continue;
+        }
+
+        addSoftPurchaseKey(
+            purchaseEntry.id,
+            purchaseEntry
+        );
+
+        addSoftPurchaseKey(
+            purchaseEntry.purchaseId,
+            purchaseEntry
+        );
+
+        addSoftPurchaseKey(
+            purchaseEntry.productId,
+            purchaseEntry
+        );
+    }
+
+    var index = {
+        shopEntriesBySkin:
+            shopEntriesBySkin,
+
+        softPurchasesById:
+            softPurchasesById
+    };
+
+    window._skinPurchaseIndex =
+        index;
+
+    window
+        ._skinPurchaseIndexConfiguration =
+        configuration;
+
+    return index;
 }
-window.getSkinPrice = getSkinPrice;
+
+/**
+ * Return the complete purchase classification for one skin.
+ *
+ * Result:
+ *
+ * {
+ *     purchasable: boolean,
+ *     purchaseId: string|null,
+ *     amount: number|null,
+ *     currency: "dna"|"coin"|"unknown",
+ *     type: "SOFT"|"REWARD"|"INAPP"|"UNAVAILABLE",
+ *     reason: string
+ * }
+ */
+function getSkinPurchaseInfo(
+    productId,
+    gameplaySkin
+) {
+    var result = {
+        productId:
+            String(productId || '')
+                .trim(),
+
+        purchasable: false,
+        purchaseId: null,
+        amount: null,
+        currency: 'unknown',
+        type: 'UNAVAILABLE',
+        reason:
+            'No direct purchase is configured.',
+        shopEntry: null,
+        purchaseEntry: null
+    };
+
+    var skinKey =
+        normalizeSkinProductId(
+            productId
+        );
+
+    if (!skinKey) {
+        result.reason =
+            'Invalid skin product ID.';
+
+        return result;
+    }
+
+    var index =
+        getSkinPurchaseIndex();
+
+    if (!index) {
+        result.reason =
+            'Game configuration is unavailable.';
+
+        return result;
+    }
+
+    var candidates =
+        index.shopEntriesBySkin[
+            skinKey
+        ] || [];
+
+    var fallbackType =
+        gameplaySkin &&
+        gameplaySkin.type
+            ? String(
+                gameplaySkin.type
+            ).trim().toUpperCase()
+            : '';
+
+    /*
+     * Prefer a candidate with a real matching Wallet - Soft Purchases row.
+     */
+    for (
+        var candidateIndex = 0;
+        candidateIndex <
+        candidates.length;
+        candidateIndex++
+    ) {
+        var candidate =
+            candidates[
+                candidateIndex
+            ];
+
+        if (!candidate) {
+            continue;
+        }
+
+        var referenceValue =
+            String(
+                candidate.referenceValue ||
+                ''
+            ).trim();
+
+        if (
+            isInvalidConfiguredPurchaseId(
+                referenceValue
+            )
+        ) {
+            continue;
+        }
+
+        var rawReferenceKey =
+            referenceValue
+                .toLowerCase();
+
+        var normalizedReferenceKey =
+            normalizePurchaseLookupId(
+                referenceValue
+            );
+
+        var purchaseEntry =
+            index
+                .softPurchasesById[
+                    rawReferenceKey
+                ] ||
+            index
+                .softPurchasesById[
+                    normalizedReferenceKey
+                ] ||
+            null;
+
+        if (!purchaseEntry) {
+            continue;
+        }
+
+        var amount = null;
+
+        if (
+            purchaseEntry
+                .currencyAmount !==
+                undefined &&
+            purchaseEntry
+                .currencyAmount !==
+                null &&
+            Number.isFinite(
+                Number(
+                    purchaseEntry
+                        .currencyAmount
+                )
+            )
+        ) {
+            amount =
+                Number(
+                    purchaseEntry
+                        .currencyAmount
+                );
+        }
+
+        var rawCurrency =
+            String(
+                purchaseEntry
+                    .currencyProductId ||
+                purchaseEntry.currency ||
+                ''
+            )
+                .trim()
+                .toLowerCase();
+
+        var currency =
+            rawCurrency.indexOf(
+                'dna'
+            ) !== -1
+                ? 'dna'
+                : rawCurrency.indexOf(
+                    'coin'
+                ) !== -1
+                    ? 'coin'
+                    : 'unknown';
+
+        result.purchasable =
+            true;
+
+        result.purchaseId =
+            referenceValue;
+
+        result.amount =
+            amount;
+
+        result.currency =
+            currency;
+
+        result.type =
+            'SOFT';
+
+        result.reason = '';
+
+        result.shopEntry =
+            candidate;
+
+        result.purchaseEntry =
+            purchaseEntry;
+
+        return result;
+    }
+
+    /*
+     * No direct soft-purchase route was found.
+     * Classify the entry without inventing a route.
+     */
+    for (
+        var typeIndex = 0;
+        typeIndex <
+        candidates.length;
+        typeIndex++
+    ) {
+        var typeCandidate =
+            candidates[typeIndex];
+
+        if (!typeCandidate) {
+            continue;
+        }
+
+        var configuredType =
+            String(
+                typeCandidate.type ||
+                fallbackType ||
+                ''
+            )
+                .trim()
+                .toUpperCase();
+
+        if (
+            configuredType ===
+            'REWARD'
+        ) {
+            result.type =
+                'REWARD';
+
+            result.reason =
+                'This skin is unlocked as a reward, not bought directly.';
+
+            result.shopEntry =
+                typeCandidate;
+
+            return result;
+        }
+
+        if (
+            configuredType ===
+                'INAPP' ||
+            configuredType ===
+                'IAP'
+        ) {
+            result.type =
+                'INAPP';
+
+            result.reason =
+                'This skin is available only through an official offer or bundle.';
+
+            result.shopEntry =
+                typeCandidate;
+
+            return result;
+        }
+    }
+
+    if (
+        fallbackType === 'REWARD'
+    ) {
+        result.type =
+            'REWARD';
+
+        result.reason =
+            'This skin is unlocked as a reward, not bought directly.';
+    } else if (
+        fallbackType === 'INAPP' ||
+        fallbackType === 'IAP'
+    ) {
+        result.type =
+            'INAPP';
+
+        result.reason =
+            'This skin is available only through an official offer or bundle.';
+    } else if (
+        candidates.length
+    ) {
+        result.reason =
+            'The skin exists in the catalog but has no valid soft-purchase mapping.';
+    }
+
+    return result;
+}
+
+window.getSkinPurchaseInfo =
+    getSkinPurchaseInfo;
+
+/**
+ * Compatibility helper used by existing shop UI.
+ *
+ * It never supplies a made-up price.
+ */
+function getSkinPrice(productId) {
+    var skinData =
+        typeof window
+            .findSkinInConfig ===
+            'function'
+            ? window
+                .findSkinInConfig(
+                    productId
+                )
+            : null;
+
+    var info =
+        getSkinPurchaseInfo(
+            productId,
+            skinData
+        );
+
+    if (info.purchasable) {
+        return {
+            amount:
+                info.amount,
+
+            currency:
+                info.currency,
+
+            type:
+                info.type,
+
+            purchasable:
+                true,
+
+            purchaseId:
+                info.purchaseId
+        };
+    }
+
+    if (
+        info.type === 'REWARD'
+    ) {
+        return {
+            amount: 0,
+            currency: 'free',
+            type: 'REWARD',
+            purchasable: false,
+            purchaseId: null
+        };
+    }
+
+    return null;
+}
+
+window.getSkinPrice =
+    getSkinPrice;
+
+/**
+ * Avoid placing arbitrary product IDs inside CSS selectors.
+ */
+function getSkinCardByProductId(
+    productId
+) {
+    var cards =
+        document.querySelectorAll(
+            '.skin-card'
+        );
+
+    var requestedId =
+        String(productId || '');
+
+    for (
+        var cardIndex = 0;
+        cardIndex <
+        cards.length;
+        cardIndex++
+    ) {
+        if (
+            cards[cardIndex]
+                .getAttribute(
+                    'data-product-id'
+                ) === requestedId
+        ) {
+            return cards[
+                cardIndex
+            ];
+        }
+    }
+
+    return null;
+}
+
+window.getSkinCardByProductId =
+    getSkinCardByProductId;
+
+function getSkinBuyButton(
+    productId
+) {
+    var card =
+        getSkinCardByProductId(
+            productId
+        );
+
+    if (!card) {
+        return null;
+    }
+
+    return card.querySelector(
+        '.skin-btn-buy[data-skin-action="buy"]'
+    );
+}
+
+function setSkinBuyButtonPending(
+    productId,
+    pending
+) {
+    var button =
+        getSkinBuyButton(
+            productId
+        );
+
+    if (!button) {
+        return;
+    }
+
+    var info =
+        getSkinPurchaseInfo(
+            productId,
+            findSkinInConfig(
+                productId
+            )
+        );
+
+    if (pending) {
+        button.disabled = true;
+
+        button.setAttribute(
+            'data-purchase-state',
+            'pending'
+        );
+
+        button.style.opacity =
+            '0.5';
+
+        button.style.cursor =
+            'not-allowed';
+
+        button.style.pointerEvents =
+            'none';
+
+        button.textContent =
+            'Buying...';
+
+        return;
+    }
+
+    button.setAttribute(
+        'data-purchase-state',
+        info.purchasable
+            ? 'available'
+            : 'unavailable'
+    );
+
+    button.disabled =
+        !info.purchasable;
+
+    button.style.opacity =
+        info.purchasable
+            ? '1'
+            : '0.55';
+
+    button.style.cursor =
+        info.purchasable
+            ? 'pointer'
+            : 'not-allowed';
+
+    button.style.pointerEvents =
+        info.purchasable
+            ? 'auto'
+            : 'none';
+
+    if (!info.purchasable) {
+        if (
+            info.type ===
+            'REWARD'
+        ) {
+            button.textContent =
+                'Reward';
+        } else if (
+            info.type ===
+            'INAPP'
+        ) {
+            button.textContent =
+                'Offer Only';
+        } else {
+            button.textContent =
+                'Unavailable';
+        }
+
+        return;
+    }
+
+    if (
+        info.amount !== null &&
+        info.amount !== undefined
+    ) {
+        if (info.amount === 0) {
+            button.textContent =
+                'Get';
+        } else {
+            button.textContent =
+                info.amount
+                    .toLocaleString() +
+                (
+                    info.currency ===
+                    'dna'
+                        ? ' 🧬'
+                        : info.currency ===
+                            'coin'
+                            ? ' 🪙'
+                            : ''
+                );
+        }
+    } else {
+        button.textContent =
+            'Buy';
+    }
+}
+
+window.setSkinBuyButtonPending =
+    setSkinBuyButtonPending;
 
 /**
  * Resolve a skin asset URL correctly:
@@ -5234,345 +5933,1644 @@ function updatePaginationUI() {
     }
 }
 
-function renderSkinPage(appendNextPage) {
-    var grid = document.getElementById('skinGrid');
-    if (!grid) return;
+function renderSkinPage(
+    appendNextPage
+) {
+    var grid =
+        document.getElementById(
+            'skinGrid'
+        );
 
-    if (!skinShopFiltered) skinShopFiltered = [];
-    if (!skinShopLoadedPages || skinShopLoadedPages < 1) skinShopLoadedPages = 1;
+    if (!grid) {
+        return;
+    }
+
+    if (
+        !Array.isArray(
+            skinShopFiltered
+        )
+    ) {
+        skinShopFiltered = [];
+    }
+
+    if (
+        !skinShopLoadedPages ||
+        skinShopLoadedPages < 1
+    ) {
+        skinShopLoadedPages = 1;
+    }
 
     var start = 0;
     var end = 0;
 
-    if (appendNextPage === true) {
-        start = grid.querySelectorAll('.skin-card').length;
-        if (start >= skinShopFiltered.length) {
+    if (
+        appendNextPage === true
+    ) {
+        start =
+            grid.querySelectorAll(
+                '.skin-card'
+            ).length;
+
+        if (
+            start >=
+            skinShopFiltered.length
+        ) {
             updatePaginationUI();
+
             return;
         }
-        end = Math.min(start + skinShopPerPage, skinShopFiltered.length);
-        skinShopLoadedPages = Math.ceil(end / skinShopPerPage);
-    } else {
-        grid.innerHTML = '';
-        start = 0;
-        end = Math.min(skinShopLoadedPages * skinShopPerPage, skinShopFiltered.length);
-    }
 
-    var cdnBase = window.LM_CDN_BASE();
-    var currentEquippedId = localStorage.getItem('equippedSkinId');
-    var ownedSkinsObj = (window.application && window.application.user && window.application.user.skins) || {};
-
-    for (var i = start; i < end; i++) {
-        var skin = skinShopFiltered[i];
-        if (!skin || !skin.productId) continue;
-        var name = skin.productId.indexOf('skin_custom_') === 0
-            ? 'custom skin'
-            : skin.productId.replace('skin_', '').replace(/_/g, ' ');
-        var displayName = name.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-        var colorHex = skin.cellColor || '0x88888800';
-        var r = parseInt(colorHex.substring(2, 4), 16);
-        var g = parseInt(colorHex.substring(4, 6), 16);
-        var b = parseInt(colorHex.substring(6, 8), 16);
-        var cssColor = 'rgb(' + r + ',' + g + ',' + b + ')';
-
-        // Resolve image URL: spine skins use SpineSkinMap, others use image directly
-        var imgFile = skin.image;
-        if (skin.image === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
-            imgFile = window.SpineSkinMap[skin.productId] + '.png';
-        }
-        var imgUrl =
-            resolveSkinAssetUrl(
-                skin.productId,
-                imgFile
+        end =
+            Math.min(
+                start +
+                skinShopPerPage,
+                skinShopFiltered
+                    .length
             );
 
-        var isEquipped = (currentEquippedId === skin.productId);
-        var isOwned = isEquipped || isSkinOwned(skin, ownedSkinsObj);
-
-        var card = document.createElement('div');
-        card.className = 'skin-card' + (isEquipped ? ' equipped' : (isOwned ? ' owned-card' : ''));
-        card.setAttribute('data-product-id', skin.productId);
-        card.setAttribute('data-gameplay-id', skin.gameplayId);
-        card.setAttribute('data-image', imgFile);
-
-        // Top-left badge: show "Equipped", "Owned", or the real price tag (Coins/DNA/Free)
-        var priceInfo = getSkinPrice(skin.productId);
-        var skinType = skin.type || '';
-        var topBadgeHtml = '';
-
-        if (isEquipped) {
-            topBadgeHtml = '<div class="equipped-badge">&#x2714; Equipped</div>';
-        } else if (isOwned) {
-            topBadgeHtml = '<div class="owned-badge">&#x2B50; Owned</div>';
-        } else if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
-            topBadgeHtml = '<div class="owned-badge" style="background: rgba(46,125,50,0.9); color: #fff;">Free</div>';
-        } else if (priceInfo && priceInfo.amount > 0) {
-            if (priceInfo.currency === 'dna') {
-                topBadgeHtml = '<div class="owned-badge" style="background: rgba(150,0,220,0.9); color: #fff;">&#x1F9EC; ' + priceInfo.amount.toLocaleString() + '</div>';
-            } else {
-                topBadgeHtml = '<div class="owned-badge" style="background: rgba(210,140,0,0.9); color: #fff;">&#x1FA99; ' + priceInfo.amount.toLocaleString() + '</div>';
-            }
+        skinShopLoadedPages =
+            Math.ceil(
+                end /
+                skinShopPerPage
+            );
+    } else {
+        while (
+            grid.firstChild
+        ) {
+            grid.removeChild(
+                grid.firstChild
+            );
         }
 
-        var actionBtnHtml;
-        if (isOwned) {
-            actionBtnHtml = '<button class="skin-btn-equip" onclick="equipSkin(\'' + skin.productId + '\', \'' + imgFile + '\');event.stopPropagation();">' + (isEquipped ? 'Equipped' : 'Equip') + '</button>';
-            // Add Delete button for custom skins
-            if (skin.productId && skin.productId.indexOf('skin_custom_') === 0) {
-                actionBtnHtml += '<button class="skin-btn-buy" onclick="deleteCustomSkin(\'' + skin.productId + '\');event.stopPropagation();" style="flex: 0.6; background: ' + getShopTheme().b4 + ' !important; font-size: 9px;">Delete</button>';
-            }
-        } else {
-            // Buy button with price label
-            var btnLabel = 'Buy';
-            if (skinType === 'REWARD' || (priceInfo && priceInfo.amount === 0)) {
-                btnLabel = 'Get Free';
-            } else if (priceInfo && priceInfo.amount > 0) {
-                var coinIcon = priceInfo.currency === 'dna' ? '&#x1F9EC;' : '&#x1FA99;';
-                btnLabel = priceInfo.amount.toLocaleString() + ' ' + coinIcon;
-            }
-            actionBtnHtml = '<button class="skin-btn-buy" onclick="buySkin(\'' + skin.productId + '\');event.stopPropagation();">' + btnLabel + '</button>';
-        }
+        start = 0;
 
-        // Build image HTML with cell color circle behind it (like agar.io)
-        var imgHtml = imgUrl
-            ? '<img data-src="' + imgUrl + '" alt="' + displayName + '" loading="lazy" decoding="async" fetchpriority="low" onerror="this.removeAttribute(\'data-src\');this.style.opacity=\'0\';">'
-            : '';
-
-        card.innerHTML = topBadgeHtml +
-            '<div class="skin-cell-wrap">' +
-                '<div class="skin-color" style="background:' + cssColor + '"></div>' +
-                imgHtml +
-            '</div>' +
-            '<div class="skin-name" title="' + displayName + '">' + displayName + '</div>' +
-            '<div class="skin-card-actions">' +
-            actionBtnHtml +
-            '</div>';
-
-        // Click card body to equip (if owned) or buy (if unowned)
-        card.addEventListener('click', (function(skinData, owned) {
-            return function() {
-                if (owned) {
-                    equipSkin(skinData.productId, skinData.image);
-                } else {
-                    buySkin(skinData.productId);
-                }
-            };
-        })(skin, isOwned));
-
-        grid.appendChild(card);
+        end =
+            Math.min(
+                skinShopLoadedPages *
+                skinShopPerPage,
+                skinShopFiltered
+                    .length
+            );
     }
 
-    observeSkinShopImages(grid);
+    var currentEquippedId =
+        localStorage.getItem(
+            'equippedSkinId'
+        );
+
+    var ownedSkinsObj =
+        (
+            window.application &&
+            window.application.user &&
+            window.application.user
+                .skins
+        ) || {};
+
+    function createElement(
+        tagName,
+        className,
+        text
+    ) {
+        var element =
+            document.createElement(
+                tagName
+            );
+
+        if (className) {
+            element.className =
+                className;
+        }
+
+        if (
+            text !== undefined &&
+            text !== null
+        ) {
+            element.textContent =
+                String(text);
+        }
+
+        return element;
+    }
+
+    function getDisplayName(
+        productId
+    ) {
+        if (
+            String(productId)
+                .indexOf(
+                    'skin_custom_'
+                ) === 0
+        ) {
+            return 'Custom Skin';
+        }
+
+        return String(
+            productId || ''
+        )
+            .replace(
+                /^skin_/,
+                ''
+            )
+            .replace(
+                /_/g,
+                ' '
+            )
+            .replace(
+                /\b\w/g,
+                function (
+                    character
+                ) {
+                    return character
+                        .toUpperCase();
+                }
+            );
+    }
+
+    function getCellCssColor(
+        cellColor
+    ) {
+        var hex =
+            String(
+                cellColor ||
+                '0x88888800'
+            )
+                .replace(
+                    /^0x/i,
+                    ''
+                )
+                .replace(
+                    /[^0-9a-f]/gi,
+                    ''
+                );
+
+        while (
+            hex.length < 6
+        ) {
+            hex =
+                '0' + hex;
+        }
+
+        var red =
+            parseInt(
+                hex.substring(
+                    0,
+                    2
+                ),
+                16
+            );
+
+        var green =
+            parseInt(
+                hex.substring(
+                    2,
+                    4
+                ),
+                16
+            );
+
+        var blue =
+            parseInt(
+                hex.substring(
+                    4,
+                    6
+                ),
+                16
+            );
+
+        if (!Number.isFinite(red)) {
+            red = 136;
+        }
+
+        if (!Number.isFinite(green)) {
+            green = 136;
+        }
+
+        if (!Number.isFinite(blue)) {
+            blue = 136;
+        }
+
+        return (
+            'rgb(' +
+            red +
+            ',' +
+            green +
+            ',' +
+            blue +
+            ')'
+        );
+    }
+
+    for (
+        var skinIndex = start;
+        skinIndex < end;
+        skinIndex++
+    ) {
+        var skin =
+            skinShopFiltered[
+                skinIndex
+            ];
+
+        if (
+            !skin ||
+            !skin.productId
+        ) {
+            continue;
+        }
+
+        var productId =
+            String(
+                skin.productId
+            );
+
+        var displayName =
+            getDisplayName(
+                productId
+            );
+
+        var cssColor =
+            getCellCssColor(
+                skin.cellColor
+            );
+
+        var imageFile =
+            skin.image;
+
+        if (
+            skin.image ===
+                'uses_spine' &&
+            window.SpineSkinMap &&
+            window.SpineSkinMap[
+                productId
+            ]
+        ) {
+            imageFile =
+                window.SpineSkinMap[
+                    productId
+                ] +
+                '.png';
+        }
+
+        var imageUrl =
+            resolveSkinAssetUrl(
+                productId,
+                imageFile
+            );
+
+        var isEquipped =
+            currentEquippedId ===
+            productId;
+
+        var isOwned =
+            isEquipped ||
+            isSkinOwned(
+                skin,
+                ownedSkinsObj
+            );
+
+        var purchaseInfo =
+            getSkinPurchaseInfo(
+                productId,
+                skin
+            );
+
+        var isPurchasePending =
+            !!(
+                purchaseInfo
+                    .purchaseId &&
+                typeof window
+                    ._lmHasPendingSoftPurchase ===
+                    'function' &&
+                window
+                    ._lmHasPendingSoftPurchase(
+                        purchaseInfo
+                            .purchaseId
+                    )
+            );
+
+        var card =
+            createElement(
+                'div',
+                'skin-card'
+            );
+
+        if (isEquipped) {
+            card.classList.add(
+                'equipped'
+            );
+        } else if (isOwned) {
+            card.classList.add(
+                'owned-card'
+            );
+        }
+
+        card.setAttribute(
+            'data-product-id',
+            productId
+        );
+
+        card.setAttribute(
+            'data-gameplay-id',
+            String(
+                skin.gameplayId ||
+                ''
+            )
+        );
+
+        card.setAttribute(
+            'data-image',
+            String(
+                imageFile || ''
+            )
+        );
+
+        /*
+         * Top badge
+         */
+        var badge = null;
+
+        if (isEquipped) {
+            badge =
+                createElement(
+                    'div',
+                    'equipped-badge',
+                    '✓ Equipped'
+                );
+        } else if (isOwned) {
+            badge =
+                createElement(
+                    'div',
+                    'owned-badge',
+                    '★ Owned'
+                );
+        } else if (
+            purchaseInfo
+                .purchasable &&
+            purchaseInfo.amount !==
+                null
+        ) {
+            var priceLabel = '';
+
+            if (
+                purchaseInfo.amount ===
+                0
+            ) {
+                priceLabel =
+                    'Available';
+            } else if (
+                purchaseInfo.currency ===
+                'dna'
+            ) {
+                priceLabel =
+                    '🧬 ' +
+                    purchaseInfo
+                        .amount
+                        .toLocaleString();
+            } else if (
+                purchaseInfo.currency ===
+                'coin'
+            ) {
+                priceLabel =
+                    '🪙 ' +
+                    purchaseInfo
+                        .amount
+                        .toLocaleString();
+            } else {
+                priceLabel =
+                    purchaseInfo
+                        .amount
+                        .toLocaleString();
+            }
+
+            badge =
+                createElement(
+                    'div',
+                    'owned-badge',
+                    priceLabel
+                );
+
+            badge.style.color =
+                '#ffffff';
+
+            badge.style.background =
+                purchaseInfo.currency ===
+                'dna'
+                    ? 'rgba(150,0,220,0.9)'
+                    : 'rgba(210,140,0,0.9)';
+        } else if (
+            purchaseInfo.type ===
+            'REWARD'
+        ) {
+            badge =
+                createElement(
+                    'div',
+                    'owned-badge',
+                    'Reward'
+                );
+
+            badge.style.color =
+                '#ffffff';
+
+            badge.style.background =
+                'rgba(46,125,50,0.9)';
+        } else if (
+            purchaseInfo.type ===
+            'INAPP'
+        ) {
+            badge =
+                createElement(
+                    'div',
+                    'owned-badge',
+                    'Offer'
+                );
+        }
+
+        if (badge) {
+            card.appendChild(
+                badge
+            );
+        }
+
+        /*
+         * Skin image and cell-color background
+         */
+        var cellWrap =
+            createElement(
+                'div',
+                'skin-cell-wrap'
+            );
+
+        var colorCircle =
+            createElement(
+                'div',
+                'skin-color'
+            );
+
+        colorCircle.style.background =
+            cssColor;
+
+        cellWrap.appendChild(
+            colorCircle
+        );
+
+        if (imageUrl) {
+            var image =
+                createElement(
+                    'img'
+                );
+
+            image.setAttribute(
+                'data-src',
+                imageUrl
+            );
+
+            image.alt =
+                displayName;
+
+            image.loading =
+                'lazy';
+
+            image.decoding =
+                'async';
+
+            image.setAttribute(
+                'fetchpriority',
+                'low'
+            );
+
+            image.addEventListener(
+                'error',
+                function () {
+                    this.removeAttribute(
+                        'data-src'
+                    );
+
+                    this.style.opacity =
+                        '0';
+                }
+            );
+
+            cellWrap.appendChild(
+                image
+            );
+        }
+
+        card.appendChild(
+            cellWrap
+        );
+
+        var nameElement =
+            createElement(
+                'div',
+                'skin-name',
+                displayName
+            );
+
+        nameElement.title =
+            displayName;
+
+        card.appendChild(
+            nameElement
+        );
+
+        /*
+         * Action buttons
+         */
+        var actions =
+            createElement(
+                'div',
+                'skin-card-actions'
+            );
+
+        if (isOwned) {
+            var equipButton =
+                createElement(
+                    'button',
+                    'skin-btn-equip',
+                    isEquipped
+                        ? 'Equipped'
+                        : 'Equip'
+                );
+
+            equipButton.type =
+                'button';
+
+            equipButton.setAttribute(
+                'data-skin-action',
+                'equip'
+            );
+
+            equipButton.addEventListener(
+                'click',
+                (
+                    function (
+                        selectedProductId,
+                        selectedImage
+                    ) {
+                        return function (
+                            event
+                        ) {
+                            event
+                                .preventDefault();
+
+                            event
+                                .stopPropagation();
+
+                            equipSkin(
+                                selectedProductId,
+                                selectedImage
+                            );
+                        };
+                    }
+                )(
+                    productId,
+                    imageFile
+                )
+            );
+
+            actions.appendChild(
+                equipButton
+            );
+
+            if (
+                productId.indexOf(
+                    'skin_custom_'
+                ) === 0
+            ) {
+                var deleteButton =
+                    createElement(
+                        'button',
+                        'skin-btn-buy skin-btn-delete',
+                        'Delete'
+                    );
+
+                deleteButton.type =
+                    'button';
+
+                deleteButton.setAttribute(
+                    'data-skin-action',
+                    'delete'
+                );
+
+                deleteButton.style.flex =
+                    '0.6';
+
+                deleteButton.style.background =
+                    getShopTheme().b4;
+
+                deleteButton.style.fontSize =
+                    '9px';
+
+                deleteButton.addEventListener(
+                    'click',
+                    (
+                        function (
+                            selectedProductId
+                        ) {
+                            return function (
+                                event
+                            ) {
+                                event
+                                    .preventDefault();
+
+                                event
+                                    .stopPropagation();
+
+                                deleteCustomSkin(
+                                    selectedProductId
+                                );
+                            };
+                        }
+                    )(productId)
+                );
+
+                actions.appendChild(
+                    deleteButton
+                );
+            }
+        } else {
+            var buyButton =
+                createElement(
+                    'button',
+                    'skin-btn-buy'
+                );
+
+            buyButton.type =
+                'button';
+
+            buyButton.setAttribute(
+                'data-skin-action',
+                'buy'
+            );
+
+            if (
+                purchaseInfo
+                    .purchasable
+            ) {
+                buyButton.setAttribute(
+                    'data-purchase-state',
+                    isPurchasePending
+                        ? 'pending'
+                        : 'available'
+                );
+
+                if (
+                    isPurchasePending
+                ) {
+                    buyButton.textContent =
+                        'Buying...';
+
+                    buyButton.disabled =
+                        true;
+
+                    buyButton.style.opacity =
+                        '0.5';
+
+                    buyButton.style.cursor =
+                        'not-allowed';
+
+                    buyButton.style.pointerEvents =
+                        'none';
+                } else {
+                    if (
+                        purchaseInfo
+                            .amount === 0
+                    ) {
+                        buyButton.textContent =
+                            'Get';
+                    } else if (
+                        purchaseInfo
+                            .amount !== null
+                    ) {
+                        buyButton.textContent =
+                            purchaseInfo
+                                .amount
+                                .toLocaleString() +
+                            (
+                                purchaseInfo
+                                    .currency ===
+                                'dna'
+                                    ? ' 🧬'
+                                    : purchaseInfo
+                                        .currency ===
+                                        'coin'
+                                        ? ' 🪙'
+                                        : ''
+                            );
+                    } else {
+                        buyButton.textContent =
+                            'Buy';
+                    }
+
+                    buyButton.addEventListener(
+                        'click',
+                        (
+                            function (
+                                selectedProductId
+                            ) {
+                                return function (
+                                    event
+                                ) {
+                                    event
+                                        .preventDefault();
+
+                                    event
+                                        .stopPropagation();
+
+                                    buySkin(
+                                        selectedProductId
+                                    );
+                                };
+                            }
+                        )(productId)
+                    );
+                }
+            } else {
+                buyButton.setAttribute(
+                    'data-purchase-state',
+                    'unavailable'
+                );
+
+                buyButton.disabled =
+                    true;
+
+                buyButton.title =
+                    purchaseInfo.reason;
+
+                buyButton.style.opacity =
+                    '0.55';
+
+                buyButton.style.cursor =
+                    'not-allowed';
+
+                buyButton.style.pointerEvents =
+                    'none';
+
+                if (
+                    purchaseInfo.type ===
+                    'REWARD'
+                ) {
+                    buyButton.textContent =
+                        'Reward';
+                } else if (
+                    purchaseInfo.type ===
+                    'INAPP'
+                ) {
+                    buyButton.textContent =
+                        'Offer Only';
+                } else {
+                    buyButton.textContent =
+                        'Unavailable';
+                }
+            }
+
+            actions.appendChild(
+                buyButton
+            );
+        }
+
+        card.appendChild(
+            actions
+        );
+
+        /*
+         * The card body may equip or buy.
+         * Clicking any button is handled only by that button.
+         */
+        card.addEventListener(
+            'click',
+            (
+                function (
+                    selectedProductId,
+                    selectedImage,
+                    owned,
+                    canPurchase
+                ) {
+                    return function (
+                        event
+                    ) {
+                        if (
+                            event.target &&
+                            typeof event.target
+                                .closest ===
+                                'function' &&
+                            event.target
+                                .closest(
+                                    'button'
+                                )
+                        ) {
+                            return;
+                        }
+
+                        if (owned) {
+                            equipSkin(
+                                selectedProductId,
+                                selectedImage
+                            );
+
+                            return;
+                        }
+
+                        if (canPurchase) {
+                            buySkin(
+                                selectedProductId
+                            );
+                        }
+                    };
+                }
+            )(
+                productId,
+                imageFile,
+                isOwned,
+                purchaseInfo
+                    .purchasable &&
+                !isPurchasePending
+            )
+        );
+
+        grid.appendChild(
+            card
+        );
+    }
+
+    observeSkinShopImages(
+        grid
+    );
+
     updatePaginationUI();
     updateEquippedSkinUI();
 
     if (
-        typeof window.updateShopLoginState ===
-        'function'
+        typeof window
+            .updateShopLoginState ===
+            'function'
     ) {
-        window.updateShopLoginState();
+        window
+            .updateShopLoginState();
     }
 }
 
 function buySkin(productId) {
+    productId =
+        String(productId || '')
+            .trim();
+
+    if (!productId) {
+        toastr.error(
+            '<b>[SHOP]:</b> Invalid skin product ID.'
+        );
+
+        return false;
+    }
+
     if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to buy skins');
-        return;
+        toastr.error(
+            '<b>[SHOP]:</b> You must be logged in to buy skins.'
+        );
+
+        return false;
     }
+
     if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No payment UID. Log out and log in again.');
-        return;
-    }
-    if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
-        return;
+        toastr.error(
+            '<b>[SHOP]:</b> No payment UID. Log out and log in again.'
+        );
+
+        return false;
     }
 
-    // Look up price and purchaseId from config
-    var priceInfo = getSkinPrice(productId);
-    var purchaseId = getSkinPurchaseId(productId);
-    var displayName = productId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+    if (
+        !(
+            window.core &&
+            typeof window.core
+                .proxyMobileData ===
+                'function'
+        )
+    ) {
+        toastr.error(
+            '<b>[SHOP]:</b> No server connection. Join a game first.'
+        );
 
-    // Resolve skin image for the confirmation modal
-    var cdnBase = window.LM_CDN_BASE ? window.LM_CDN_BASE() : 'https://jimboy3000.github.io/vanillaskins/';
-    var skinData = findSkinInConfig(productId);
-    var skinImgUrl = '';
-    if (skinData) {
-        var imgF = skinData.image;
-        if (imgF === 'uses_spine' && window.SpineSkinMap && window.SpineSkinMap[productId]) {
-            imgF = window.SpineSkinMap[productId] + '.png';
+        return false;
+    }
+
+    var skinData =
+        findSkinInConfig(
+            productId
+        );
+
+    var purchaseInfo =
+        getSkinPurchaseInfo(
+            productId,
+            skinData
+        );
+
+    if (
+        !purchaseInfo
+            .purchasable ||
+        !purchaseInfo
+            .purchaseId
+    ) {
+        console.warn(
+            '[SHOP] Skin is not directly purchasable:',
+            {
+                productId:
+                    productId,
+
+                purchaseInfo:
+                    purchaseInfo
+            }
+        );
+
+        toastr.warning(
+            '<b>[SHOP]:</b> ' +
+            (
+                purchaseInfo.reason ||
+                'This skin cannot be purchased directly.'
+            )
+        );
+
+        return false;
+    }
+
+    if (
+        typeof window
+            ._lmHasPendingSoftPurchase ===
+            'function' &&
+        window
+            ._lmHasPendingSoftPurchase(
+                purchaseInfo
+                    .purchaseId
+            )
+    ) {
+        toastr.warning(
+            '<b>[SHOP]:</b> This skin purchase is already pending.'
+        );
+
+        return false;
+    }
+
+    var displayName =
+        productId
+            .replace(
+                /^skin_/,
+                ''
+            )
+            .replace(
+                /_/g,
+                ' '
+            )
+            .replace(
+                /\b\w/g,
+                function (
+                    character
+                ) {
+                    return character
+                        .toUpperCase();
+                }
+            );
+
+    var imageFile =
+        skinData &&
+        skinData.image
+            ? skinData.image
+            : '';
+
+    if (
+        imageFile ===
+            'uses_spine' &&
+        window.SpineSkinMap &&
+        window.SpineSkinMap[
+            productId
+        ]
+    ) {
+        imageFile =
+            window.SpineSkinMap[
+                productId
+            ] +
+            '.png';
+    }
+
+    var skinImageUrl =
+        resolveSkinAssetUrl(
+            productId,
+            imageFile
+        );
+
+    if (!skinImageUrl) {
+        skinImageUrl =
+            'https://jimboy3100.github.io/banners/icondeal2.png';
+    }
+
+    var cellColor =
+        String(
+            skinData &&
+            skinData.cellColor
+                ? skinData.cellColor
+                : '0x88888800'
+        )
+            .replace(
+                /^0x/i,
+                ''
+            )
+            .replace(
+                /[^0-9a-f]/gi,
+                ''
+            );
+
+    while (
+        cellColor.length < 6
+    ) {
+        cellColor =
+            '0' + cellColor;
+    }
+
+    var red =
+        parseInt(
+            cellColor.substring(
+                0,
+                2
+            ),
+            16
+        );
+
+    var green =
+        parseInt(
+            cellColor.substring(
+                2,
+                4
+            ),
+            16
+        );
+
+    var blue =
+        parseInt(
+            cellColor.substring(
+                4,
+                6
+            ),
+            16
+        );
+
+    if (!Number.isFinite(red)) {
+        red = 136;
+    }
+
+    if (!Number.isFinite(green)) {
+        green = 136;
+    }
+
+    if (!Number.isFinite(blue)) {
+        blue = 136;
+    }
+
+    var ringColor =
+        'rgb(' +
+        red +
+        ',' +
+        green +
+        ',' +
+        blue +
+        ')';
+
+    var currentBalance = null;
+
+    if (
+        window.application &&
+        window.application.user
+    ) {
+        if (
+            purchaseInfo.currency ===
+            'dna'
+        ) {
+            currentBalance =
+                Number(
+                    window.application
+                        .user.dna
+                ) || 0;
+        } else if (
+            purchaseInfo.currency ===
+            'coin'
+        ) {
+            currentBalance =
+                Number(
+                    window.application
+                        .user.coins
+                ) || 0;
         }
-        if (imgF && imgF !== 'uses_spine') skinImgUrl = cdnBase + imgF;
-    }
-    if (!skinImgUrl) skinImgUrl = 'https://jimboy3100.github.io/banners/icondeal2.png';
-
-    // Cell color for visual ring
-    var cellColor = (skinData && skinData.cellColor) || '0x88888800';
-    var hexC = cellColor.replace('0x', '');
-    while (hexC.length < 6) hexC = '0' + hexC;
-    var rC = parseInt(hexC.substring(0, 2), 16);
-    var gC = parseInt(hexC.substring(2, 4), 16);
-    var bC = parseInt(hexC.substring(4, 6), 16);
-    var ringColor = 'rgb(' + rC + ',' + gC + ',' + bC + ')';
-
-    // Price info
-    var costHtml = '<div style="color: ' + (getShopTheme().mc) + '; font-weight: 800; font-size: 16px;">Price unavailable</div>';
-    var balanceWarning = '';
-    if (priceInfo && priceInfo.amount > 0) {
-        var currencyIcon = priceInfo.currency === 'dna' ? '🧬' : '💰';
-        var currencyLabel = priceInfo.currency === 'dna' ? 'DNA' : 'Coins';
-        var currentBalance = 0;
-        if (window.application && window.application.user) {
-            currentBalance = priceInfo.currency === 'dna' ? (window.application.user.dna || 0) : (window.application.user.coins || 0);
-        }
-        costHtml = '<div style="font-size: 22px; font-weight: 900; color: ' + (getShopTheme().tc) + ';">' + priceInfo.amount.toLocaleString() + ' <span style="font-size: 18px;">' + currencyIcon + '</span></div>' +
-            '<div style="font-size: 11px; color: ' + (getShopTheme().tc2) + '; margin-top: 2px;">Your ' + currencyLabel + ': ' + currentBalance.toLocaleString() + '</div>';
-        if (currentBalance < priceInfo.amount) {
-            balanceWarning = '<div style="color: #ff9800; font-size: 12px; font-weight: 700; margin-top: 8px; padding: 6px 12px; border-radius: 6px; background: rgba(255,152,0,0.12); border: 1px solid rgba(255,152,0,0.3);">⚠️ You may not have enough ' + currencyLabel + '!</div>';
-        }
-    } else if (priceInfo && priceInfo.type === 'REWARD') {
-        costHtml = '<div style="color: #4caf50; font-weight: 800; font-size: 18px;">Free (Level Reward)</div>';
     }
 
-    // Remove old confirm modal if any
-    var old = document.getElementById('skin-confirm-modal');
-    if (old) old.remove();
+    var insufficientBalance =
+        (
+            purchaseInfo.amount !==
+                null &&
+            purchaseInfo.amount > 0 &&
+            currentBalance !== null &&
+            currentBalance <
+                purchaseInfo.amount
+        );
 
-    var t = getShopTheme();
-    var modal = document.createElement('div');
-    modal.id = 'skin-confirm-modal';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
+    var oldModal =
+        document.getElementById(
+            'skin-confirm-modal'
+        );
+
+    if (oldModal) {
+        oldModal.remove();
+    }
+
+    var theme =
+        getShopTheme();
+
+    var modal =
+        document.createElement(
+            'div'
+        );
+
+    modal.id =
+        'skin-confirm-modal';
+
+    modal.style.cssText =
+        'position:fixed;' +
+        'inset:0;' +
+        'z-index:2000000;' +
+        'display:flex;' +
+        'align-items:center;' +
+        'justify-content:center;' +
+        'background:rgba(0,0,0,0.7);' +
+        'backdrop-filter:blur(4px);' +
+        'pointer-events:auto;';
+
+    /*
+     * The HTML below is static.
+     * Product/config values are assigned later using textContent or attributes.
+     */
     modal.innerHTML =
-        '<div style="background: ' + t.pc + '; border: 2px solid ' + t.mc + '; border-radius: 14px; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); overflow: hidden; font-family: \'Roboto Condensed\', sans-serif;">' +
-            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
-                '<div style="font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 1px;">Confirm Purchase</div>' +
-            '</div>' +
-            '<div style="padding: 20px; text-align: center;">' +
-                '<div style="width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 12px; background: ' + ringColor + '; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px ' + ringColor + '40; border: 3px solid rgba(255,255,255,0.15);">' +
-                    '<img src="' + skinImgUrl + '" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover;" onerror="this.style.opacity=\'0\';">' +
+        '<div id="skin-confirm-panel" ' +
+            'style="border-radius:14px;width:340px;' +
+            'box-shadow:0 20px 60px rgba(0,0,0,0.6);' +
+            'overflow:hidden;font-family:\'Roboto Condensed\',sans-serif;">' +
+
+            '<div id="skin-confirm-header" ' +
+                'style="padding:14px 20px;text-align:center;' +
+                'border-bottom:1px solid rgba(255,255,255,0.1);">' +
+
+                '<div id="skin-confirm-title" ' +
+                    'style="font-size:16px;font-weight:900;' +
+                    'text-transform:uppercase;letter-spacing:1px;">' +
+                    'Confirm Purchase' +
                 '</div>' +
-                '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 14px;">' + displayName + '</div>' +
-                '<div style="padding: 10px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;">' +
-                    costHtml +
-                '</div>' +
-                balanceWarning +
             '</div>' +
-            '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="skin-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15); transition: all 0.15s;">Cancel</button>' +
-                '<button id="skin-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none; transition: all 0.15s;">Buy Now</button>' +
+
+            '<div style="padding:20px;text-align:center;">' +
+                '<div id="skin-confirm-ring" ' +
+                    'style="width:90px;height:90px;border-radius:50%;' +
+                    'margin:0 auto 12px;display:flex;align-items:center;' +
+                    'justify-content:center;border:3px solid rgba(255,255,255,0.15);">' +
+
+                    '<img id="skin-confirm-image" ' +
+                        'style="width:72px;height:72px;border-radius:50%;object-fit:cover;">' +
+                '</div>' +
+
+                '<div id="skin-confirm-name" ' +
+                    'style="font-size:15px;font-weight:800;margin-bottom:14px;">' +
+                '</div>' +
+
+                '<div id="skin-confirm-cost-box" ' +
+                    'style="padding:10px 16px;border-radius:8px;' +
+                    'background:rgba(255,255,255,0.05);' +
+                    'border:1px solid rgba(255,255,255,0.08);' +
+                    'margin-bottom:8px;">' +
+
+                    '<div id="skin-confirm-cost" ' +
+                        'style="font-size:22px;font-weight:900;">' +
+                    '</div>' +
+
+                    '<div id="skin-confirm-balance" ' +
+                        'style="font-size:11px;margin-top:2px;">' +
+                    '</div>' +
+                '</div>' +
+
+                '<div id="skin-confirm-warning" ' +
+                    'style="display:none;color:#ff9800;font-size:12px;' +
+                    'font-weight:700;margin-top:8px;padding:6px 12px;' +
+                    'border-radius:6px;background:rgba(255,152,0,0.12);' +
+                    'border:1px solid rgba(255,152,0,0.3);">' +
+                '</div>' +
+            '</div>' +
+
+            '<div id="skin-confirm-footer" ' +
+                'style="display:flex;gap:10px;padding:12px 20px;' +
+                'border-top:1px solid rgba(255,255,255,0.1);">' +
+
+                '<button id="skin-confirm-cancel" type="button" ' +
+                    'style="flex:1;padding:10px;border-radius:8px;' +
+                    'font-weight:800;font-size:14px;cursor:pointer;' +
+                    'background:rgba(255,255,255,0.08);' +
+                    'border:1px solid rgba(255,255,255,0.15);">' +
+                    'Cancel' +
+                '</button>' +
+
+                '<button id="skin-confirm-buy" type="button" ' +
+                    'style="flex:1;padding:10px;border-radius:8px;' +
+                    'font-weight:900;font-size:14px;border:none;">' +
+                    'Buy Now' +
+                '</button>' +
             '</div>' +
         '</div>';
-    document.body.appendChild(modal);
 
-    function doSkinConfirm(e) {
-        if (e) { e.preventDefault(); e.stopPropagation(); }
-        modal.remove();
-        _executeSkinPurchase(productId, purchaseId, displayName);
+    document.body.appendChild(
+        modal
+    );
+
+    var panel =
+        document.getElementById(
+            'skin-confirm-panel'
+        );
+
+    var header =
+        document.getElementById(
+            'skin-confirm-header'
+        );
+
+    var title =
+        document.getElementById(
+            'skin-confirm-title'
+        );
+
+    var ring =
+        document.getElementById(
+            'skin-confirm-ring'
+        );
+
+    var image =
+        document.getElementById(
+            'skin-confirm-image'
+        );
+
+    var nameElement =
+        document.getElementById(
+            'skin-confirm-name'
+        );
+
+    var costElement =
+        document.getElementById(
+            'skin-confirm-cost'
+        );
+
+    var balanceElement =
+        document.getElementById(
+            'skin-confirm-balance'
+        );
+
+    var warningElement =
+        document.getElementById(
+            'skin-confirm-warning'
+        );
+
+    var footer =
+        document.getElementById(
+            'skin-confirm-footer'
+        );
+
+    var cancelButton =
+        document.getElementById(
+            'skin-confirm-cancel'
+        );
+
+    var buyButton =
+        document.getElementById(
+            'skin-confirm-buy'
+        );
+
+    panel.style.background =
+        theme.pc;
+
+    panel.style.border =
+        '2px solid ' +
+        theme.mc;
+
+    header.style.background =
+        theme.pc2;
+
+    footer.style.background =
+        theme.pc2;
+
+    title.style.color =
+        theme.mc;
+
+    nameElement.style.color =
+        theme.tc;
+
+    costElement.style.color =
+        theme.tc;
+
+    balanceElement.style.color =
+        theme.tc2;
+
+    cancelButton.style.color =
+        theme.tc;
+
+    buyButton.style.background =
+        theme.b1;
+
+    buyButton.style.color =
+        theme.btc;
+
+    ring.style.background =
+        ringColor;
+
+    ring.style.boxShadow =
+        '0 0 20px ' +
+        ringColor;
+
+    image.src =
+        skinImageUrl;
+
+    image.alt =
+        displayName;
+
+    image.addEventListener(
+        'error',
+        function () {
+            this.style.opacity =
+                '0';
+        }
+    );
+
+    nameElement.textContent =
+        displayName;
+
+    if (
+        purchaseInfo.amount !==
+        null
+    ) {
+        var currencyName =
+            purchaseInfo.currency ===
+            'dna'
+                ? 'DNA'
+                : purchaseInfo
+                    .currency ===
+                    'coin'
+                    ? 'Coins'
+                    : 'Currency';
+
+        var currencyIcon =
+            purchaseInfo.currency ===
+            'dna'
+                ? '🧬'
+                : purchaseInfo
+                    .currency ===
+                    'coin'
+                    ? '🪙'
+                    : '';
+
+        costElement.textContent =
+            purchaseInfo.amount.toLocaleString() +
+            (currencyIcon
+                ? ' ' + currencyIcon
+                : '');
+
+        if (
+            currentBalance !== null
+        ) {
+            balanceElement.textContent =
+                'Your ' +
+                currencyName +
+                ': ' +
+                currentBalance.toLocaleString();
+        } else {
+            balanceElement.textContent =
+                '';
+        }
+
+        if (insufficientBalance) {
+            warningElement.style.display =
+                'block';
+
+            warningElement.textContent =
+                '⚠️ You may not have enough ' +
+                currencyName +
+                '!';
+        }
+    } else {
+        costElement.textContent =
+            'Available';
+
+        balanceElement.textContent =
+            '';
     }
 
-    function doSkinCancel(e) {
-        if (e) { e.preventDefault(); e.stopPropagation(); }
-        modal.remove();
+    function closeModal() {
+        if (
+            modal &&
+            modal.parentNode
+        ) {
+            modal.parentNode.removeChild(
+                modal
+            );
+        }
     }
 
-    modal.addEventListener('click', function(e) { if (e.target === modal) doSkinCancel(e); });
-    var sCancel = document.getElementById('skin-confirm-cancel');
-    var sBuy = document.getElementById('skin-confirm-buy');
-    if (sCancel) {
-        sCancel.addEventListener('click', doSkinCancel);
-        sCancel.addEventListener('touchstart', doSkinCancel, { passive: false });
+    function onCancel(event) {
+        if (event) {
+            event.preventDefault();
+
+            event.stopPropagation();
+        }
+
+        closeModal();
     }
-    if (sBuy) {
-        sBuy.addEventListener('click', doSkinConfirm);
-        sBuy.addEventListener('touchstart', doSkinConfirm, { passive: false });
+
+    function onConfirm(event) {
+        if (event) {
+            event.preventDefault();
+
+            event.stopPropagation();
+        }
+
+        closeModal();
+
+        _executeSkinPurchase(
+            productId,
+            purchaseInfo
+        );
     }
+
+    modal.addEventListener(
+        'click',
+        function (event) {
+            if (
+                event.target ===
+                modal
+            ) {
+                onCancel(event);
+            }
+        }
+    );
+
+    cancelButton.addEventListener(
+        'click',
+        onCancel
+    );
+
+    buyButton.addEventListener(
+        'click',
+        onConfirm
+    );
+
+    return true;
 }
 
 /**
  * Execute the actual skin purchase after confirmation.
- * Separated from buySkin() so the confirmation modal can call it async.
+ *
+ * It uses the correlated soft-purchase handler added in Part 1.
  */
-function _executeSkinPurchase(productId, purchaseId, displayName) {
-    // Store pending purchase so opcode 71 handler can auto-equip
-    window._pendingSkinPurchaseId = productId;
+function _executeSkinPurchase(
+    productId,
+    purchaseInfo
+) {
+    if (
+        !purchaseInfo ||
+        !purchaseInfo.purchasable ||
+        !purchaseInfo.purchaseId
+    ) {
+        toastr.error(
+            '<b>[SHOP]:</b> This skin is not available for direct purchase.'
+        );
 
-    // Resolve valid purchaseId (e.g. "1_skin_pig" / "1_pig") required by opcode 70
-    var validPurchaseId = purchaseId || getSkinPurchaseId(productId);
-    if (!validPurchaseId) {
-        if (productId.startsWith('1_')) {
-            validPurchaseId = productId;
-        } else if (productId.startsWith('skin_')) {
-            validPurchaseId = '1_' + productId;
-        } else {
-            validPurchaseId = '1_skin_' + productId;
-        }
+        return false;
     }
 
-    // Disable the clicked button temporarily (10s cooldown)
-    var btn = $('.skin-card[data-product-id="' + productId + '"] .skin-btn-buy');
-    if (btn.data('buying')) return; // already in progress
-    btn.data('buying', true).css({ opacity: 0.5, pointerEvents: 'none' }).text('Buying...');
-    setTimeout(function() {
-        btn.data('buying', false).css({ opacity: 1, pointerEvents: 'auto' });
-        // Restore original text if still showing "Buying..."
-        if (btn.text() === 'Buying...') {
-            var pi = getSkinPrice(productId);
-            var label = 'Buy';
-            if (pi && pi.amount > 0) {
-                var ci = pi.currency === 'dna' ? '🧬' : '💰';
-                label = pi.amount.toLocaleString() + ' ' + ci;
+    if (
+        !(
+            window.application &&
+            typeof window.application
+                .softPurchase ===
+                'function'
+        )
+    ) {
+        toastr.error(
+            '<b>[SHOP]:</b> Application purchase interface is not available.'
+        );
+
+        return false;
+    }
+
+    setSkinBuyButtonPending(
+        productId,
+        true
+    );
+
+    console.log(
+        '[SHOP] Requesting strict skin purchase:',
+        {
+            productId:
+                productId,
+
+            purchaseId:
+                purchaseInfo
+                    .purchaseId,
+
+            amount:
+                purchaseInfo.amount,
+
+            currency:
+                purchaseInfo.currency
+        }
+    );
+
+    var requested =
+        window.application.softPurchase(
+            purchaseInfo.purchaseId,
+            function (
+                result
+            ) {
+                setSkinBuyButtonPending(
+                    productId,
+                    false
+                );
+
+                if (
+                    result &&
+                    result.success
+                ) {
+                    toastr.success(
+                        '<b>[SHOP]:</b> Purchase successful!'
+                    );
+
+                    equipSkin(
+                        productId
+                    );
+
+                    if (
+                        typeof window
+                            .renderSkinPage ===
+                            'function'
+                    ) {
+                        window.renderSkinPage(
+                            false
+                        );
+                    }
+                } else {
+                    toastr.error(
+                        '<b>[SHOP]:</b> ' +
+                        (
+                            (
+                                result &&
+                                result.error
+                            ) ||
+                            'Purchase failed.'
+                        )
+                    );
+                }
             }
-            btn.html(label);
-        }
-        window._pendingSkinPurchaseId = null;
-    }, 10000);
+        );
 
-    // Try protocol-based soft purchase (DNA/coin buy — opcode 70) with verified purchaseId
-    if (window.application && typeof window.application.softPurchase === 'function') {
-        console.log('[SHOP]: Sending soft purchase for ' + validPurchaseId + ' (skin: ' + productId + ')');
-        var sent = window.application.softPurchase(validPurchaseId);
-        if (sent) return;
+    if (!requested) {
+        setSkinBuyButtonPending(
+            productId,
+            false
+        );
+
+        toastr.error(
+            '<b>[SHOP]:</b> Could not send purchase request.'
+        );
+
+        return false;
     }
 
-    // Fallback: real-money purchase via official IPayment service
-    console.log('[SHOP]: Opening official payment for ' + productId);
-    var started = openOfficialAgarIAP(productId, { description: productId });
-    if (!started) {
-        toastr && toastr.error('<b>[SHOP]:</b> Could not open the official payment flow for this skin');
-    }
+    return true;
 }
 
 /**
- * Get the correct purchaseId for a skin from the "Shop - Skins" config.
- * The official client uses referenceValue as the purchaseId for soft purchases (e.g. 1_skin_pig).
+ * Compatibility accessor.
+ *
+ * Delegates to getSkinPurchaseInfo().
  */
-function getSkinPurchaseId(productId) {
-    if (!productId) return null;
-    if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
-        var shopSkins = window.GameConfiguration.gameConfig["Shop - Skins"] || [];
-        var cleanId = productId.replace(/^(shop_skin_|skin_)/, '');
+function getSkinPurchaseId(
+    productId
+) {
+    var info =
+        getSkinPurchaseInfo(
+            productId,
+            typeof window
+                .findSkinInConfig ===
+                'function'
+                ? window
+                    .findSkinInConfig(
+                        productId
+                    )
+                : null
+        );
 
-        for (var i = 0; i < shopSkins.length; i++) {
-            var item = shopSkins[i];
-            if (!item) continue;
-            var pId = item.productId || '';
-            var pQuantify = item.productIdToQuantify || '';
-            var refVal = item.referenceValue || '';
-
-            if (pId === productId || pQuantify === productId ||
-                pId.replace(/^(shop_skin_|skin_)/, '') === cleanId ||
-                pQuantify.replace(/^(shop_skin_|skin_)/, '') === cleanId) {
-                if (refVal) return refVal;
-            }
-        }
-    }
-
-    // Fallback heuristic matching official Agar.io naming: "1_skin_" + cleanId or "1_" + productId
-    if (productId.startsWith('1_')) return productId;
-    if (productId.startsWith('skin_')) return '1_' + productId;
-    return '1_skin_' + productId;
+    return info.purchasable
+        ? info.purchaseId
+        : null;
 }
-window.getSkinPurchaseId = getSkinPurchaseId;
+
+window.getSkinPurchaseId =
+    getSkinPurchaseId;
 
 function populateSDlines(select, i) {
     var item = GameConfiguration.gameConfig["Wallet - In-App Purchases"][i];
@@ -5645,14 +7643,20 @@ function letterCount(string, letter, caseSensitive) {
 
 function LoadGameConfiguration() {
     function _onConfigReady() {
-        window._isLoadingGameConfig =
-            false;
+        window._isLoadingGameConfig = false;
 
         /*
-         * Legacy select/config metadata remains available, but do not build
-         * both large visual tabs when only one is visible.
+         * Legacy select/config metadata remains available.
          */
         populateSD();
+
+        /* Always clear and re-populate dealsGrid and skinsGrid when new config is loaded */
+        var dealsGrid = document.getElementById('dealsGrid');
+        if (dealsGrid) {
+            dealsGrid.innerHTML = '';
+        }
+        window._dealsShopBuilt = false;
+        populateDealsGrid();
 
         var activeTab =
             $('#specialShopModal .shop-tab.active')
@@ -5660,26 +7664,12 @@ function LoadGameConfiguration() {
             'skins';
 
         if (activeTab === 'deals') {
-            if (!window._dealsShopBuilt) {
-                populateDealsGrid();
-            }
-
             updateDealsBalance();
         } else if (
             activeTab === 'skins'
         ) {
-            if (!window._skinShopBuilt) {
-                populateSkins();
-            } else {
-                if (
-                    typeof window.resumeSkinGridImages ===
-                    'function'
-                ) {
-                    window.resumeSkinGridImages();
-                }
-
-                updateEquippedSkinUI();
-            }
+            window._skinShopBuilt = false;
+            populateSkins();
         } else if (
             activeTab === 'upload'
         ) {
@@ -5688,6 +7678,7 @@ function LoadGameConfiguration() {
     }
 
     if (
+        !window.MiniclipConfigDestination &&
         window.GameConfiguration &&
         window.GameConfiguration.gameConfig
     ) {
@@ -5696,6 +7687,7 @@ function LoadGameConfiguration() {
     }
 
     if (
+        !window.MiniclipConfigDestination &&
         window.master &&
         window.master.GameConfiguration &&
         window.master.GameConfiguration
@@ -5710,6 +7702,7 @@ function LoadGameConfiguration() {
     }
 
     if (
+        !window.MiniclipConfigDestination &&
         window.LMGameConfiguration &&
         window.LMGameConfiguration
             .gameConfig
@@ -5759,6 +7752,7 @@ function LoadGameConfiguration() {
     );
 
     if (
+        !window.MiniclipConfigDestination &&
         window.LMGameConfigurationReady &&
         typeof window
             .LMGameConfigurationReady
