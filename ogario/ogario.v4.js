@@ -30154,9 +30154,11 @@ Most cells eaten   : ${mostCellsEaten}
         drawFBTracking(ctx, players, x, y) { //Yahnych
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
+                if (!t) continue;
                 let r = t.size / 3;
                 //distance to target
                 var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
+                if (dis < 0.001) continue; // prevent NaN from division by zero
                 //angle 
                 var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
                 //if target on left side
@@ -31075,7 +31077,7 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.globalAlpha = _ctAlpha;
             ctx.strokeStyle = defaultSettings.cursorTrackingColor;
             ctx.beginPath();
-            for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
+            for (var o = 0; o < players.length; o++) { if (!players[o]) continue; ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY); }
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
@@ -31105,6 +31107,7 @@ Most cells eaten   : ${mostCellsEaten}
             var _pi2 = 6.283185307179586;
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
+                if (!t) continue;
                 let r = t.size / 3;
                 /* Use atan2 directly → radians, no sqrt/acos/degrees/back-to-radians */
                 var rad = Math.atan2(t.targetX - t.x, t.y - t.targetY);
