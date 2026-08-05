@@ -1,3 +1,17 @@
+/* Suppress noisy ad-SDK console spam from agar.io's AdinPlay/prebid scripts */
+(function() {
+    var _origLog = console.log;
+    var _origWarn = console.warn;
+    var _adFilter = /adinplay|prebid|properlib|ads\s*by/i;
+    console.log = function() {
+        if (arguments.length && typeof arguments[0] === 'string' && _adFilter.test(arguments[0])) return;
+        return _origLog.apply(console, arguments);
+    };
+    console.warn = function() {
+        if (arguments.length && typeof arguments[0] === 'string' && _adFilter.test(arguments[0])) return;
+        return _origWarn.apply(console, arguments);
+    };
+})();
 window.spects = window.spects || [];
 var spects = window.spects;
 /* Look up a multibox unit by its .number property.
