@@ -11,7 +11,7 @@ function getActiveSpect(unitNumber) {
     return null;
 }
 window.OgVer = 3.499;
-console.log("Legend mod is checking if old Agar.io JS works fine: " + window.OgVer);
+
 
 /*
  * Capture the authenticated Agar.io account identifiers from the
@@ -9414,10 +9414,7 @@ function thelegendmodproject() {
                 newHome.setAttribute('aria-hidden', 'true');
                 document.body.appendChild(newHome);
 
-                console.log(
-                    '[LM] Created #home placeholder (did not exist yet) ' +
-                    'before #mainPanel destroy'
-                );
+
 
                 /* Watch for Vue to mount on it */
                 var placeholderObserver = new MutationObserver(function() {
@@ -26265,7 +26262,7 @@ Most cells eaten   : ${mostCellsEaten}
                         var workerCode = "self.onmessage=function(e){var d=e.data;if(d.type==='CULL'){var c=d.coords,mX=d.minX,mY=d.minY,MX=d.maxX,MY=d.maxY,v=[];for(var i=0;i<c.length;i+=3){var x=c[i],y=c[i+1],r=c[i+2];if(x+r>=mX&&x-r<=MX&&y+r>=mY&&y-r<=MY)v.push(i/3);}self.postMessage({type:'CULL_RES',visible:v});}};";
                         var blob = new Blob([workerCode], { type: 'application/javascript' });
                         window.legendClientWorker = new Worker(URL.createObjectURL(blob));
-                        console.log('[LegendMod Client Engine] Background Web Worker Thread online.');
+
 
                         // High-Speed Wasm SIMD API Fallback
                         window.legendWasmMemory = new WebAssembly.Memory({ initial: 256, maximum: 256 }); // 16MB
@@ -26338,7 +26335,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 }
                             }
                         };
-                        console.log('[LegendMod Client Engine] Wasm SIMD Memory API active.');
+
                     } catch (we) { }
                 }
 

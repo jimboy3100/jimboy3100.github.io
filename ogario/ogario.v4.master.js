@@ -1552,7 +1552,7 @@ function legendmaster(self) {
                 $("#UserProfileName1").text(savedName);
             }
             $("#helloContainer").attr("data-logged-in", "1");
-            console.log("[Master] Restored saved login state: " + options.context);
+
         }
     })();
 	
