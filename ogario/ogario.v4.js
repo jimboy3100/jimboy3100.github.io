@@ -3202,8 +3202,7 @@ function ReqPing() {
             this.client.ping = pong - ping
             this.client.emit('ping')
         })*/
-    }
-}
+
 // openPotionForSlotRequest: removed (superseded by application.openPotion)
 
 function buyBoost(req) {
@@ -12122,7 +12121,7 @@ function thelegendmodproject() {
                     this.miniMap.height = s;
                 }
                 //var n = o / ogario.mapSize;
-                const n = o / LM.mapSize;
+                const n = (LM.mapSize > 0) ? (o / LM.mapSize) : 0;
                 /*
                  * setMapOffset() already derives normal private-server
                  * translation from the actual border packet.
@@ -24710,8 +24709,9 @@ Most cells eaten   : ${mostCellsEaten}
                 var _integrity = LM.integrity;
                 var _sizeThreshold = _integrity ? 13 : 14;
                 var _mass;
-                if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                    _mass = this.selectBiggestCell ? getActiveSpect(window.multiboxPlayerEnabled).playerMaxMass : getActiveSpect(window.multiboxPlayerEnabled).playerMinMass;
+                var _activeSpect2 = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+                if (_activeSpect2) {
+                    _mass = this.selectBiggestCell ? _activeSpect2.playerMaxMass : _activeSpect2.playerMinMass;
                 } else {
                     _mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 }
@@ -24736,7 +24736,7 @@ Most cells eaten   : ${mostCellsEaten}
 
                 for (var t = 0; t < _len; t++) {
                     var cell = _cells[t];
-                    if (cell.isVirus || cell.invisible) continue;
+                    if (!cell || cell.isVirus || cell.invisible) continue;
                     /* Skip cells outside viewport + ring margin */
                     var _cx = cell.x, _cy = cell.y, _cs = cell.size;
                     if (_cx + _cs < _cullMinX || _cx - _cs > _cullMaxX ||
@@ -28006,7 +28006,19 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform2f(this.u_grid_viewCenter, gridPhaseX, gridPhaseY);
             gl.uniform2f(this.u_grid_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
             gl.uniform1f(this.u_gridSpacing, gridSpacing);
-            gl.uniform4f(this.u_gridColor, 1.0, 1.0, 1.0, 0.08);
+            /* Read grid color from the user's theme instead of hardcoding white.
+             * parseWebGLOverlayColor returns [r,g,b,1.0]; we override alpha to
+             * match the subtle look the Canvas2D fallback achieves via strokeStyle. */
+            var _gc = defaultSettings.gridColor || '#00243e';
+            var _gcRGBA = this.parseWebGLOverlayColor(_gc, '#ffffff');
+            /* Detect if the user's color string carries its own alpha (rgba format).
+             * If it does, honour it; otherwise use a subtle 0.08 base alpha. */
+            var _gcAlpha = 0.08;
+            if (typeof _gc === 'string') {
+                var _rgbaMatch = _gc.match(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/i);
+                if (_rgbaMatch) _gcAlpha = parseFloat(_rgbaMatch[1]);
+            }
+            gl.uniform4f(this.u_gridColor, _gcRGBA[0], _gcRGBA[1], _gcRGBA[2], _gcAlpha);
 
             /* How many screen pixels one grid cell occupies.
              * Used by the shader to fade out + thin lines at high zoom. */
@@ -28763,6 +28775,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var coords = new Float32Array(wasmMem, 0, cellsArray.length * 3);
                 for (var i = 0; i < cellsArray.length; i++) {
                     var cell = cellsArray[i];
+                    if (!cell) continue;
                     coords[i * 3] = cell.x || 0;
                     coords[i * 3 + 1] = cell.y || 0;
                     coords[i * 3 + 2] = (cell.size || 10) + (typeof defaultSettings !== "undefined" && defaultSettings.foodSize ? defaultSettings.foodSize : 0);
@@ -29356,9 +29369,10 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            var activeHasCells = LM.playerCells.length || (window.multiboxPlayerEnabled && spects && getActiveSpect(window.multiboxPlayerEnabled) && getActiveSpect(window.multiboxPlayerEnabled).playerCellIDs && getActiveSpect(window.multiboxPlayerEnabled).playerCellIDs.length);
+            var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+            var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
             if (activeHasCells) {
-                if (!this.camX || !this.camY || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
+                if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
                 } else {
@@ -29443,6 +29457,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             LM.time = _now;
             for (i = 0; i < LM.cells.length; i++) {
+                if (!LM.cells[i]) continue;
                 LM.cells[i].moveCell();
             }
             this.setView();
@@ -29743,7 +29758,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (window.clientProfiler) window.clientProfiler.recordFrame(performance.now() - this.renderStarted);
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
-            if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
+            if ((drawRender.fps > 0 && drawRender.counterTime >= drawRender.fps) || drawRender.counterTime >= 500) {
                 if (drawRender.counterTime < 500 && drawRender.counterTime > 8) {
                     this.averageRenderTime = (drawRender.renderTime / drawRender.counterTime).toFixed(2)
 
@@ -29871,7 +29886,7 @@ Most cells eaten   : ${mostCellsEaten}
                 if (defaultmapsettings.bubbleCursorTracker) {
                     this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                 }
-                if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
+                if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
                     this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }
@@ -30704,6 +30719,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var i = 0, len4 = len & ~3;
                 for (; i < len4; i += 4) {
                     var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
+                    if (!f0 || !f1 || !f2 || !f3) continue;
                     var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
                     if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
                     if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
@@ -30722,6 +30738,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 for (; i < len; i++) {
                     var f = food[i];
+                    if (!f) continue;
                     var x = f.x - foodOffset, y = f.y - foodOffset;
                     if (x < minX) minX = x; if (x > maxX) maxX = x;
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
@@ -30743,6 +30760,7 @@ Most cells eaten   : ${mostCellsEaten}
             var i = 0, len4 = len & ~3;
             for (; i < len4; i += 4) {
                 var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
+                if (!f0 || !f1 || !f2 || !f3) continue;
                 if (!f0.spectator) {
                     var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
                     if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
@@ -30766,6 +30784,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
             for (; i < len; i++) {
                 var f = food[i];
+                if (!f) continue;
                 if (!f.spectator) {
                     var x = f.x - foodOffset, y = f.y - foodOffset;
                     if (x < minX) minX = x; if (x > maxX) maxX = x;
@@ -30832,7 +30851,7 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
-                    if (f.invisible) continue;
+                    if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
                     ctx.moveTo(f.x, f.y);
@@ -30843,7 +30862,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var batches = {};
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
-                    if (f.invisible) continue;
+                    if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
                     var color = f.color || defaultFoodColor;
@@ -31067,6 +31086,7 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.strokeStyle = stroke;
             ctx.beginPath();
             for (var length = 0; length < players.length; length++) {
+                if (!players[length]) continue;
                 ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
                 ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
             }
