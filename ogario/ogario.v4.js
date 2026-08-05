@@ -17635,8 +17635,15 @@ function thelegendmodproject() {
                                 }
                             }
                             else {
-                                if (LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
-                                    this.color = this.oppColor;
+                                if (LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams" && this.oppColor) {
+                                    /* Draw oppColor as a ring BEHIND the cell so the skin stays visible */
+                                    style.save();
+                                    style.beginPath();
+                                    style.arc(this.x, this.y, y + 10, 0, this.pi2, false);
+                                    style.fillStyle = this.oppColor;
+                                    style.globalAlpha = 0.45;
+                                    style.fill();
+                                    style.restore();
                                 }
                             }
                         }
