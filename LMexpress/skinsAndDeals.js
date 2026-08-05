@@ -727,7 +727,8 @@ function SpecialDeals(defaultTab) {
                     if (!isLoggedIn) reasons.push('Log in with Google/Facebook');
                     if (!hasUID) reasons.push('Play a game to get your UID');
                     if (!hasConnection) reasons.push('Join a server first');
-                    loginBanner.innerHTML = '⚠️ ' + reasons.join(' &bull; ') + ' — to buy/equip skins';
+                    var debugInfo = ' <span style="font-size:9px;opacity:0.6;">[L:' + (isLoggedIn?1:0) + ' U:' + (hasUID?1:0) + ' C:' + (hasConnection?1:0) + ' O:' + (window.legendmod ? (window.legendmod.connectionOpened?1:0) : 'X') + ' S:' + (window.legendmod && typeof window.legendmod.isSocketOpen==='function' ? (window.legendmod.isSocketOpen()?1:0) : 'X') + ' T:' + (window.legendmod ? (window.legendmod.serverType||'?') : 'X') + ']</span>';
+                    loginBanner.innerHTML = '⚠️ ' + reasons.join(' &bull; ') + ' — to buy/equip skins' + debugInfo;
                     loginBanner.style.display = 'block';
                 } else {
                     loginBanner.style.display = 'none';
