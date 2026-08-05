@@ -18391,6 +18391,11 @@ function thelegendmodproject() {
             this.garixProtocol = 6;
             this.garixHandshakeDone = false;
             this.garixPingCounter = 0;
+            // Clear any existing ping interval on reconnect
+            if (this.pingInterval) {
+                clearInterval(this.pingInterval);
+                this.pingInterval = null;
+            }
             // Clear any existing Garix ping interval
             if (this.garixPingInterval) {
                 clearInterval(this.garixPingInterval);
@@ -18702,7 +18707,7 @@ function thelegendmodproject() {
             this.elBotCount = null;
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
-            //clearInterval(this.pingInterval);
+            if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
@@ -30931,9 +30936,10 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },*/
         drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
-                //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
+            this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor); //Sonia2
+            if (players.length) {
                 var current = currentBiggestCell ? players.length - 1 : 0;
+                if (!players[current]) { ctx.globalAlpha = 1; return; }
                 /* WebGL2 fast path for the player's own split range circle */
                 var _splitAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
                 if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
@@ -30955,13 +30961,10 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#BE00FF'), players.length) {
-            if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), players.length) { //Sonia2
-                //if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, '#8000ff'), players.length) { //Sonia
-                //this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
-
+            this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor); //Sonia2
+            if (players.length) {
                 var current = currentBiggestCell ? players.length - 1 : 0;
-                //console.log(currentBiggestCell[current].size);
+                if (!players[current]) { ctx.globalAlpha = 1; return; }
                 if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
                     /* WebGL2 fast path for player's double-split range circle (2x size) */
                     var _dsAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
@@ -31137,6 +31140,7 @@ Most cells eaten   : ${mostCellsEaten}
                     ctx.strokeStyle = color;
                     ctx.beginPath();
                     for (var n = 0; n < players.length; n++) {
+                        if (!players[n]) continue;
                         ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
                         ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
                     }
@@ -31155,6 +31159,7 @@ Most cells eaten   : ${mostCellsEaten}
                     ctx.strokeStyle = color;
                     ctx.beginPath();
                     for (var n = 0; n < players.length; n++) {
+                        if (!players[n]) continue;
                         ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
                         ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
                     }
