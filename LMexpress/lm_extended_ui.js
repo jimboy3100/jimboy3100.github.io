@@ -409,10 +409,16 @@
         if (!entry) return false;
 
         if (isOfficialEntry) {
+            /* Primary: match by authoritative UID */
             var authoritativeUid =
                 typeof window.agarioUID === 'string'
                     ? window.agarioUID.trim()
                     : '';
+
+            /* Secondary UID source */
+            if (!authoritativeUid && typeof window.agarioEncodedUID === 'string') {
+                authoritativeUid = window.agarioEncodedUID.trim();
+            }
 
             var entryUid = '';
             if (typeof entry.uid === 'string') {
@@ -421,11 +427,23 @@
                 entryUid = entry.id.trim();
             }
 
-            return Boolean(
-                authoritativeUid &&
-                entryUid &&
-                authoritativeUid === entryUid
-            );
+            if (authoritativeUid && entryUid && authoritativeUid === entryUid) {
+                return true;
+            }
+
+            /* Server-side flag (some API responses set this) */
+            if (entry.isCurrentUser === true || entry.isUser === true) {
+                return true;
+            }
+
+            /* If UID is available but doesn't match, don't fall through to name match */
+            if (authoritativeUid && entryUid) {
+                return false;
+            }
+
+            /* UID not available — do NOT match by name for official entries
+             * because different players can share display names */
+            return false;
         }
 
         return (
@@ -1371,7 +1389,7 @@
         // Tab changes use the one cached response for this modal generation.
         window.renderLeaguesContent(
             normalizedTab,
-            window.lastLeaguesResponse || {}
+            window.currentLeaguesResponse || window.lastLeaguesResponse || {}
         );
 
         if (!window._hasUsableCurrentLeaguesCache()) {
