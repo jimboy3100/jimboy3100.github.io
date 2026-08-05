@@ -24185,6 +24185,7 @@ Most cells eaten   : ${mostCellsEaten}
                                 this.viruses.push(cellObj);
                             }
                             this.cells.push(cellObj);
+                            this._cellsDirty = true;
                             if (!isEjected && (this._playerCellIDSet ? this._playerCellIDSet.has(id) : this.playerCellIDs.indexOf(id) != -1) && this.playerCells.indexOf(cellObj) === -1) {
                                 cellObj.isPlayerCell = true;
                                 this.playerColor = color;
@@ -24498,6 +24499,7 @@ Most cells eaten   : ${mostCellsEaten}
                             this.viruses.push(cellUpdateCells);
                         }
                         this.cells.push(cellUpdateCells);
+                        this._cellsDirty = true;
 
                         /* Fast Player Cell & Fragment Detection */
                         var isOwnPlayerCell = (this._playerCellIDSet ? this._playerCellIDSet.has(id) : (this.playerCellIDs.indexOf(id) != -1));
@@ -29516,22 +29518,25 @@ Most cells eaten   : ${mostCellsEaten}
                 this.camX = LM.viewX;
                 this.camY = LM.viewY;
             }
-            /* Diagnostic cell array deduplication — only when actual duplicates exist.
-             * In full-map spectate, LM.cells can legitimately hold 5000+ food dots;
-             * we must NOT rebuild the array or spam console.warn every frame. */
-            if (LM.cells.length > 2500) {
+            /* Deduplication: only run when packet handler flagged dirty (avoids
+             * creating a new Map + Array every frame — major GC pressure source). */
+            if (LM._cellsDirty && LM.cells.length > 2500) {
+                LM._cellsDirty = false;
                 var _cellsBefore = LM.cells.length;
-                var uniqueCellsMap = new Map();
+                var _dedupMap = this._dedupMap || (this._dedupMap = new Map());
+                _dedupMap.clear();
                 for (var ci = 0; ci < _cellsBefore; ci++) {
                     var cellItem = LM.cells[ci];
-                    if (cellItem && cellItem.id && !uniqueCellsMap.has(cellItem.id)) {
-                        uniqueCellsMap.set(cellItem.id, cellItem);
+                    if (cellItem && cellItem.id && !_dedupMap.has(cellItem.id)) {
+                        _dedupMap.set(cellItem.id, cellItem);
                     }
                 }
-                if (uniqueCellsMap.size < _cellsBefore) {
-                    LM.cells = Array.from(uniqueCellsMap.values());
+                if (_dedupMap.size < _cellsBefore) {
+                    var _w = 0;
+                    _dedupMap.forEach(function(v) { LM.cells[_w++] = v; });
+                    LM.cells.length = _w;
                     if (!this._lastDedupLog || _now - this._lastDedupLog > 5000) {
-                        console.warn('[DIAGNOSTIC] Pruned', _cellsBefore - uniqueCellsMap.size, 'duplicate cells. Active:', LM.cells.length);
+                        console.warn('[DIAGNOSTIC] Pruned', _cellsBefore - _w, 'duplicate cells. Active:', _w);
                         this._lastDedupLog = _now;
                     }
                 }
@@ -29565,8 +29570,18 @@ Most cells eaten   : ${mostCellsEaten}
             var _chatMap = this._chatLookup || (this._chatLookup = new Map());
             _chatMap.clear();
             var _now = LM.time;
-            var _myNick = null;
-            try { _myNick = $('#nick').val(); } catch (_e) { }
+            /* Cache nick from DOM — avoid jQuery DOM query every frame.
+             * Updated on input change via event listener (set up once below). */
+            if (!this._nickCacheInit) {
+                this._nickCacheInit = true;
+                try {
+                    this._cachedNick = $('#nick').val() || null;
+                    $('#nick').on('input change', function() {
+                        drawRender._cachedNick = $(this).val() || null;
+                    });
+                } catch (_e) { this._cachedNick = null; }
+            }
+            var _myNick = this._cachedNick;
             var _lastSentNick = application.lastSentNick;
             var _showOwn = defaultmapsettings.showChatMyOwn;
             var _ch = application.chatHistory;
@@ -29600,14 +29615,14 @@ Most cells eaten   : ${mostCellsEaten}
 
             /* Precompute per-frame constants for cell draw (#2, #3) */
             this._skinHalf = (_now % 60000) >= 30000; /* animated skin frame toggle: 30 seconds per frame (vanilla Agar.io) */
-            this._drawSettings = {
-                optimizedNames: defaultmapsettings.optimizedNames,
-                optimizedMass: defaultmapsettings.optimizedMass,
-                shortMass: defaultmapsettings.shortMass,
-                virMassShots: defaultmapsettings.virMassShots,
-                namesStroke: defaultmapsettings.namesStroke,
-                massStroke: defaultmapsettings.massStroke
-            };
+            /* Reuse the same object instead of allocating a new one every frame */
+            var _ds = this._drawSettings || (this._drawSettings = {});
+            _ds.optimizedNames = defaultmapsettings.optimizedNames;
+            _ds.optimizedMass = defaultmapsettings.optimizedMass;
+            _ds.shortMass = defaultmapsettings.shortMass;
+            _ds.virMassShots = defaultmapsettings.virMassShots;
+            _ds.namesStroke = defaultmapsettings.namesStroke;
+            _ds.massStroke = defaultmapsettings.massStroke;
             this.ctx.clearRect(0, 0, this.canvasWidth * (this.dpr || 1), this.canvasHeight * (this.dpr || 1));
             this.ctx.save();
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
@@ -29695,22 +29710,8 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
 
-                /* Ensure cells are rendered in size-ascending order (smaller first, larger on top).
-                 * Use the SAME stable insertion sort as sortCells() with id tiebreaker.
-                 * Array.sort is unstable for equal-size cells and caused z-fighting. */
-                if (LM.cells && LM.cells.length > 1) {
-                    var _a = LM.cells;
-                    for (var _si = 1, _slen = _a.length; _si < _slen; _si++) {
-                        var _tmp = _a[_si];
-                        if (!_tmp) continue;
-                        var _tSize = _tmp.size || 0, _tId = _tmp.id || 0;
-                        var _sj = _si - 1;
-                        while (_sj >= 0 && _a[_sj] && ((_a[_sj].size || 0) > _tSize || ((_a[_sj].size || 0) === _tSize && (_a[_sj].id || 0) > _tId))) {
-                            _a[_sj + 1] = _a[_sj]; _sj--;
-                        }
-                        _a[_sj + 1] = _tmp;
-                    }
-                }
+                /* sortCells() already sorted LM.cells earlier in this frame (line 29547).
+                 * No need to re-sort — removed redundant O(N²) insertion sort. */
 
                 /* WebGL2 cell body+skin batch — draws all eligible cell bodies on GPU in 1 draw call.
                  * Cells rendered by WebGL get _webglRendered=true so cell.draw() skips body/skin.
@@ -30180,13 +30181,14 @@ Most cells eaten   : ${mostCellsEaten}
             if (!waves || !waves.length) return;
 
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-            for (let length = waves.length - 1; length >= 0; length--) {
-                var wave = waves[length];
-                if (!wave || !wave.time) {
-                    LM.Waves.splice(length, 1);
-                    continue;
-                }
-                let r = Math.max(1, (Date.now() - wave.time) / 2);
+            var _ww = 0; /* compact-in-place write cursor */
+            var _dnow = Date.now();
+            for (var _wi = 0; _wi < waves.length; _wi++) {
+                var wave = waves[_wi];
+                if (!wave || !wave.time) continue; /* skip invalid — don't keep */
+                let r = Math.max(1, (_dnow - wave.time) / 2);
+                if (r > (wave.wavelength || 1000)) continue; /* expired — don't keep */
+
                 let innerR = Math.max(0.1, r - r / 4);
 
                 let wColor = wave.color || "#00e6ff";
@@ -30214,10 +30216,11 @@ Most cells eaten   : ${mostCellsEaten}
                 this.ctx.arc(wave.x, wave.y, r, 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
-                if (r > (wave.wavelength || 1000)) {
-                    LM.Waves.splice(length, 1);
-                }
+                /* Keep this wave */
+                if (_ww !== _wi) waves[_ww] = wave;
+                _ww++;
             }
+            if (_ww < waves.length) waves.length = _ww;
             this.ctx.globalAlpha = 1;
             /*
             var wave = {
