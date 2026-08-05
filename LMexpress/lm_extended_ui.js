@@ -1159,7 +1159,7 @@
                             <img src="${icon}" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
                             <span class="country-icon flag-icon flag-icon-${country}" style="border-radius: 2px;"></span>
-                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${window._escapeLeagueHtmlText(name)}</span>
+                            <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${window._escapeLeagueHtmlText(name)}${isUser ? ' (You)' : ''}</span>
                         </div>
                         <div style="width: 140px; text-align: right; font-weight: 800; color: ${t.tc}; font-size: 13px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
                             ${score} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
@@ -1185,15 +1185,15 @@
             `;
         }
 
-        // Show the fallback user row only when complete legacy summary data exists.
-        var hasCompleteLegacyUserSummary =
-            !isOfficialResponse &&
+        // Show the user's own position at the bottom when they are not in the visible list.
+        var hasUserSummary =
+            data &&
             data.userPosition !== undefined &&
             (
                 data.userScore !== undefined ||
                 data.userWinnings !== undefined
             );
-        if (!userFoundInList && hasCompleteLegacyUserSummary) {
+        if (!userFoundInList && hasUserSummary) {
             html += `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 10px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); border: 2px solid #00e676; box-shadow: 0 0 12px rgba(0,230,118,0.2);">
                     <div style="width: 70px;">
@@ -1203,7 +1203,7 @@
                         <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
                         <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${currentUserLevel}</span>
                         <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius: 2px;"></span>
-                        <span style="font-weight: 800; color: #00e676; font-size: 14px;">${window._escapeLeagueHtmlText(currentUserName)}</span>
+                        <span style="font-weight: 800; color: #00e676; font-size: 14px;">${window._escapeLeagueHtmlText(currentUserName)} (You)</span>
                     </div>
                     <div style="width: 140px; text-align: right; font-weight: 800; color: #00e676; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
                         ${currentUserScore} <i class="fa fa-trophy" style="color: ${t.mc};"></i>
