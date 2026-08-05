@@ -1765,7 +1765,7 @@ input.hide-url::selection,input.stream-mode::selection{
    margin-right: 6px
 }
 #potions {
-   display: none;
+   display: none !important;
    width: 160px;
    height: 80px;
    margin: auto;
