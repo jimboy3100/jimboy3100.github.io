@@ -204,7 +204,7 @@ function SpecialDeals(defaultTab) {
         var styleEl = document.createElement('style');
         styleEl.id = 'skinShopStyles';
         styleEl.textContent = [
-            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; }',
+            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 10px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }',
             '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; padding: 12px 15px; position: relative; }',
             '#CloseSpecialDeals { float: right; position: relative; z-index: 1050; opacity: 0.85; color: ' + tc + ' !important; font-size: 22px; line-height: 1; margin-left: 12px; cursor: pointer; padding: 2px 8px; border: none; background: transparent; transition: all 0.2s; outline: none; }',
             '#CloseSpecialDeals:hover { opacity: 1; color: ' + b4 + ' !important; transform: scale(1.15); }',
@@ -226,7 +226,7 @@ function SpecialDeals(defaultTab) {
             '#skinSearchBar { width: 100%; padding: 8px 12px; margin-bottom: 10px; border: 1px solid ' + pc2 + '; border-radius: 4px; background: rgba(0,0,0,0.4); color: ' + tc + '; font-size: 14px; outline: none; box-sizing: border-box; }',
             '#skinSearchBar:focus { border-color: ' + mc + '; box-shadow: 0 0 5px ' + mc + '44; }',
             '#skinSearchBar::placeholder { color: ' + tc2 + '; }',
-            '.skin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 320px; overflow-y: auto; padding: 4px; }',
+            '.skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 50vh; overflow-y: auto; padding: 4px; }',
             '.skin-grid::-webkit-scrollbar { width: 6px; }',
             '.skin-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 3px; }',
             '.skin-grid::-webkit-scrollbar-thumb { background: ' + pc2 + '; border-radius: 3px; }',
@@ -299,7 +299,7 @@ function SpecialDeals(defaultTab) {
         $('#helloContainer').after(
             '<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
-            '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; margin: 0;">' +
+            '<div class="modal-dialog" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; max-width: 90vw; margin: 0;">' +
             '<div class="modal-content">' +
 
         // Header
@@ -443,6 +443,27 @@ function SpecialDeals(defaultTab) {
                 }
             }
         });
+        // Make modal resizable
+        if ($.fn.resizable) {
+            $dlg.resizable({
+                minWidth: 340,
+                minHeight: 300,
+                maxWidth: Math.min(window.innerWidth - 40, 900),
+                maxHeight: window.innerHeight - 40,
+                handles: 'se',
+                start: function() {
+                    var el = $(this);
+                    if (el.css('transform') && el.css('transform') !== 'none') {
+                        var rect = el[0].getBoundingClientRect();
+                        el.css({
+                            top: rect.top + 'px',
+                            left: rect.left + 'px',
+                            transform: 'none'
+                        });
+                    }
+                }
+            });
+        }
         // populateLibConfig runs immediately if config is ready, or waits for it
         if (window.GameConfiguration && window.GameConfiguration.gameConfig) {
             try { populateLibConfig(); } catch(e) { console.warn('[Shop] populateLibConfig error:', e); }
