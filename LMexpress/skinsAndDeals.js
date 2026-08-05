@@ -787,7 +787,10 @@ function SpecialDeals(defaultTab) {
                 }
             } else {
                 skinsTab.show();
-                skinsPane.show();
+                // Only show the pane if the skins tab is the active tab
+                if (skinsTab.hasClass('active')) {
+                    skinsPane.show();
+                }
             }
         }
 
