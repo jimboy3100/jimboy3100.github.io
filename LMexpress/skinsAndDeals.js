@@ -4539,6 +4539,13 @@ function populateSkins() {
         });
 
         skinShopFiltered.sort(function(a, b) {
+            /* Unavailable skins go to the very end */
+            var aInfo = getSkinPurchaseInfo(a.productId, a);
+            var bInfo = getSkinPurchaseInfo(b.productId, b);
+            var aUnavail = (!aInfo.purchasable && !isSkinOwned(a, ownedSkinsObj)) ? 1 : 0;
+            var bUnavail = (!bInfo.purchasable && !isSkinOwned(b, ownedSkinsObj)) ? 1 : 0;
+            if (aUnavail !== bUnavail) return aUnavail - bUnavail;
+            /* Owned skins after unowned */
             var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
             var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
             if (aOwned !== bOwned) return aOwned - bOwned;
