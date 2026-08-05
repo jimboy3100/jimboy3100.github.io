@@ -17642,7 +17642,7 @@ function thelegendmodproject() {
                                 }
                             }
                             else {
-                                if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
+                                if (LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
                                     this.color = this.oppColor;
                                 }
                             }
@@ -24731,7 +24731,8 @@ Most cells eaten   : ${mostCellsEaten}
 
         },
         compareCells() {
-            if ((this.play || LM.playerCellsMulti.length) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+            var _isPlaying = (this.play && this.playerCells && this.playerCells.length > 0) || (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled) && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
+            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
                 /* Reset cache write cursors instead of .length=0 + push(new obj).
                  * Reuses pooled objects to avoid GC pressure (~200 allocs/frame → 0). */
@@ -24848,6 +24849,16 @@ Most cells eaten   : ${mostCellsEaten}
                     this.smallerCellsCache.length = _wS;
                     this.STECellsCache.length = _wSTE;
                     this.STEDCellsCache.length = _wSTED;
+                }
+            } else {
+                if (this.biggerSTEDCellsCache) {
+                    this.biggerSTEDCellsCache.length = 0;
+                    this.biggerSTECellsCache.length = 0;
+                    this.biggerCellsCache.length = 0;
+                    this.SSCellsCache.length = 0;
+                    this.smallerCellsCache.length = 0;
+                    this.STECellsCache.length = 0;
+                    this.STEDCellsCache.length = 0;
                 }
             }
         },
@@ -29229,7 +29240,8 @@ Most cells eaten   : ${mostCellsEaten}
 
                 // Color resolution
                 var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
-                if (LM.play || LM.playerCellsMulti.length) {
+                var isPlaying = (LM.play && LM.playerCells && LM.playerCells.length > 0) || (window.multiboxPlayerEnabled && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
+                if (isPlaying) {
                     if ((cell.isPlayerCell || cell.playerCellsMulti) && defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ':teams') {
                         colorHex = ogarcopythelb.color;
                     } else if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !cell.isFood && !defaultmapsettings.cellContours && LM.gameMode != ':teams' && cell.oppColor) {
