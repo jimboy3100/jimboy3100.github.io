@@ -10818,6 +10818,12 @@ function thelegendmodproject() {
             // Validate basic URL structure (must contain a valid domain dot e.g. http(s)://domain.com/...)
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
+            /* Video URLs (mp4/webm/ogv) cannot be loaded as Image elements.
+             * They are handled by checkVideos1() which creates a <video> element.
+             * Attempting to load them here wastes bandwidth and creates a
+             * fail→30s-cooldown→retry loop visible in the Network tab. */
+            if (/\.(mp4|webm|ogv)(?:[?#]|$)/i.test(url)) return;
+
             // Auto-sanitize legacy typo domains and unescaped spaces in skin URLs
             if (url.includes('agario.miniclip.com') || url.includes('configs-web.agar.io.miniclip.com')) {
                 url = url.replace(/(?:configs-web|configs)\.agar\.io\.miniclip\.com/g, 'configs-web.agario.miniclippt.com');
@@ -17662,7 +17668,10 @@ function thelegendmodproject() {
                                 //this.drawCircle(style, this.x, this.y, y, this.color)
                                 if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
                                     style.arc(this.x, this.y, y, 0, this.pi2, false);
-                                    if (!this.isVirus && !defaultmapsettings.cellContours && !node2IsVideo) {
+                                    if (!this.isVirus && !defaultmapsettings.cellContours) {
+                                        /* Always fill the body color, even for video/gif skins.
+                                         * This ensures the cell is visible while the skin loads
+                                         * and provides a solid background behind cropped/transparent skins. */
                                         style.fillStyle = color2;
                                         style.fill();
                                     }
@@ -28022,7 +28031,7 @@ Most cells eaten   : ${mostCellsEaten}
             /* Read grid color from the user's theme instead of hardcoding white.
              * parseWebGLOverlayColor returns [r,g,b,1.0]; we override alpha to
              * match the subtle look the Canvas2D fallback achieves via strokeStyle. */
-            var _gc = defaultSettings.gridColor || '#00243e';
+            var _gc = defaultSettings.gridColor || '#ffffff';
             var _gcRGBA = this.parseWebGLOverlayColor(_gc, '#ffffff');
             /* Detect if the user's color string carries its own alpha (rgba format).
              * If it does, honour it; otherwise use a subtle 0.08 base alpha. */
