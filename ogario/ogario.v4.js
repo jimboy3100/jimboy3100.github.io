@@ -5928,6 +5928,10 @@ var defaultSettings = {
     backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
     virusGlowSize: 14,
+    cellShadowColor: 'rgba(0,0,0,0.35)',
+    cellShadowBlur: 20,
+    cellShadowOffsetX: 4,
+    cellShadowOffsetY: 4,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
     virusStrokeSize: 14,
@@ -6293,6 +6297,7 @@ var defaultmapsettings = {
     showMapBorders: true,
     showGhostCells: false,
     showGhostCellsInfo: false,
+    showCellShadows: false,
 
     /*
      * ═══════════════════════════════════════════════════════════════════════
@@ -17616,6 +17621,20 @@ function thelegendmodproject() {
                             s = true;
                         }
 
+                        /* ── Cell Shadows ──────────────────────────────────────────
+                         * Canvas2D drop shadow beneath non-food, non-ejected cells.
+                         * Applied before body fill so the shadow renders underneath.
+                         * The existing style.save()/restore() in the try/finally
+                         * block ensures shadowBlur is reset even on error. */
+                        var _appliedShadow = false;
+                        if (defaultmapsettings.showCellShadows && !this.isFood && !this.isEjected) {
+                            style.shadowColor = defaultSettings.cellShadowColor || 'rgba(0,0,0,0.35)';
+                            style.shadowBlur = defaultSettings.cellShadowBlur || 20;
+                            style.shadowOffsetX = (defaultSettings.cellShadowOffsetX || 0);
+                            style.shadowOffsetY = (defaultSettings.cellShadowOffsetY || 0);
+                            _appliedShadow = true;
+                        }
+
                         if (LM.play || LM.playerCellsMulti.length) {
                             if (this.isPlayerCell || this.playerCellsMulti) {
                                 if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
@@ -17775,6 +17794,14 @@ function thelegendmodproject() {
                         if (s) {
                             style.globalAlpha = value;
                             s = false;
+                        }
+                        /* Clear cell shadow after body fill — shadow must not
+                         * bleed into text, skin overlays, or nick labels. */
+                        if (_appliedShadow) {
+                            style.shadowColor = 'transparent';
+                            style.shadowBlur = 0;
+                            style.shadowOffsetX = 0;
+                            style.shadowOffsetY = 0;
                         }
 
                         /*if (dyinglight1load != "yes"){
@@ -29562,14 +29589,14 @@ Most cells eaten   : ${mostCellsEaten}
             try {
                 var _tGrid = performance.now();
                 if (defaultmapsettings.showGrid) {
-                    /* WebGL2 procedural grid renders on GL layer (behind food).
-                     * Canvas2D grid/image is only used as fallback when WebGL unavailable. */
-                    if (!this.gl || (typeof defaultmapsettings.webgl2Acceleration !== "undefined" && !defaultmapsettings.webgl2Acceleration) || !this.drawWebGLGridShader()) {
-                        if (defaultmapsettings.showOptimisedGrid) {
-                            this.drawCustomNewGrid();
-                        } else {
-                            this.drawGrid(this.ctx);
-                        }
+                    /* Grid MUST render on Canvas2D (same layer as background) so
+                     * it's visible regardless of theme colors. WebGL grid would
+                     * render on the GL overlay canvas (z-index:2) where dark grid
+                     * colors at low alpha are invisible on the transparent GL surface. */
+                    if (defaultmapsettings.showOptimisedGrid) {
+                        this.drawCustomNewGrid();
+                    } else {
+                        this.drawGrid(this.ctx);
                     }
                 }
                 if (defaultmapsettings.showBgSectors) {
@@ -29992,15 +30019,7 @@ Most cells eaten   : ${mostCellsEaten}
         },
         /* Native C SIMD Map Grid Engine Fallback / Procedural Grid */
         drawGrid(ctx) {
-            if (
-                (
-                    typeof defaultmapsettings.webgl2Acceleration === "undefined" ||
-                    defaultmapsettings.webgl2Acceleration
-                ) &&
-                this.drawWebGLGridShader()
-            ) {
-                return;
-            }
+            /* Always use Canvas2D grid — see renderFrame grid comment. */
 
             var gridColor =
                 defaultSettings.gridColor ||
