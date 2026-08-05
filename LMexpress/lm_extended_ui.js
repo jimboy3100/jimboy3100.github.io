@@ -1134,6 +1134,21 @@
         var validCount = 0;
         var userFoundInList = false;
 
+        /* DEBUG — temporary log to identify correct UID source */
+        if (entries && entries.length) {
+            var _dbgUids = entries.slice(0, 5).map(function(e, i) {
+                return '#' + (i+1) + ' userId=' + JSON.stringify(e && e.userId) + ' uid=' + JSON.stringify(e && e.uid) + ' id=' + JSON.stringify(e && e.id) + ' name=' + JSON.stringify(e && e.displayName);
+            });
+            console.warn('[LEAGUE DEBUG] tab=' + tabType +
+                ' | agarioUID=' + JSON.stringify(window.agarioUID) +
+                ' | app.user.id=' + JSON.stringify(currentUser.id) +
+                ' | agarioEncodedUID=' + JSON.stringify(window.agarioEncodedUID) +
+                ' | agarioID=' + JSON.stringify(window.agarioID) +
+                ' | isOfficial=' + isOfficialResponse +
+                '\n  entries[0..4]:\n  ' + _dbgUids.join('\n  ')
+            );
+        }
+
         if (entries && entries.length) {
             entries.forEach(function(entry, idx) {
                 if (!entry || (!entry.displayName && !entry.id && !entry.uid)) return;
