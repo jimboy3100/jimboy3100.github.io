@@ -27981,7 +27981,8 @@ Most cells eaten   : ${mostCellsEaten}
             return [
                 ((cInt >> 16) & 255) / 255,
                 ((cInt >> 8) & 255) / 255,
-                (cInt & 255) / 255
+                (cInt & 255) / 255,
+                1.0
             ];
         },
         drawWebGLGridShader() {
