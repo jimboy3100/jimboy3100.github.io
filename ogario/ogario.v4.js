@@ -21304,8 +21304,8 @@ function thelegendmodproject() {
                             console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
                         }
-                    } else if (LM.isLegendWorld && _lwOp === 200) {
-                        /* Map Event */
+                    } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
+                        /* Map Event (needs 42 bytes: 1 opcode + 1 type + 4×8 f64 + 2×4 u32) */
                         var s2 = 1;
                         var eventType = data.getUint8(s2++);
                         var buf2 = data.buffer || data;
@@ -23288,13 +23288,13 @@ Most cells eaten   : ${mostCellsEaten}
                 this.user.level = level;
                 this.user.xp = xp;
                 this.user.nextLevelXp = nextLevelXp;
+                this.user.actionCounters = i.actionCounters;
             }
             window.agarioLEVEL = level;
             window.agarioXP = xp;
             window.agarioNextXP = nextLevelXp;
 
             window.updateOfficialXpPanel(level, exp);
-            this.user.actionCounters = i.actionCounters;
 
             /* LW: Extract UID and social ID from decoded protobuf userInfo.
              * Server sends userId="provider$UUID" (e.g. "discord$abc-123-def").
@@ -23471,7 +23471,7 @@ Most cells eaten   : ${mostCellsEaten}
                 var html = '<span>';
                 if (this.leaderboard[temp].id === 'isPlayer') {
                     html = '<span class=\"me\">';
-                } else if (LM.multiBoxPlayerExists && this.leaderboard[temp].nick === profiles[application.selectedOldProfile].nick && this.leaderboard[temp].nick != "") {
+                } else if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && this.leaderboard[temp].nick === profiles[application.selectedOldProfile].nick && this.leaderboard[temp].nick != "") {
                     html = '<span class=\"me\">';
                 } else {
                     if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[temp].nick)) {
@@ -30840,8 +30840,12 @@ Most cells eaten   : ${mostCellsEaten}
                 return;
             }
             /* WebGL2 GPU batch: 1 draw call for all food dots.
-             * Falls back to Canvas2D when custom background is set for compositing consistency. */
-            if (this.gl && !defaultSettings.customBackground && this.drawWebGLFoodBatch(LM.food)) return;
+             * DISABLED: WebGL food renders on the GL canvas (z-index:2) which overlays
+             * the Canvas2D canvas. Since viruses are drawn on Canvas2D (they need
+             * glow/spikes), WebGL food would appear ON TOP of viruses.
+             * Canvas2D food is drawn first (before cell loop), so it correctly
+             * appears behind viruses on the same compositing layer. */
+            // if (this.gl && !defaultSettings.customBackground && this.drawWebGLFoodBatch(LM.food)) return;
             this.drawCachedFood(this.ctx, LM.food, this.scale);
             //return;
             //}
