@@ -22807,7 +22807,7 @@ function thelegendmodproject() {
                                 url: '',
                                 productId: fbPID
                             };
-                            console.log("[LM] Skin not in map, stored by productId:", fbPID);
+
                         };
                         break;
                     case 4:
