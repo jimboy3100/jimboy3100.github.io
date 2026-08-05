@@ -18973,6 +18973,9 @@ function thelegendmodproject() {
         },
         sendNick(nick) {
             window.multiboxPlayerEnabled = null;
+            window.fullSpectator = false;
+            window.ingameSpectator = false;
+            this.fullSpectator = false;
             /* LW: Don't send spawn if already alive — flushCellsData clears
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
