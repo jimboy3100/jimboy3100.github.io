@@ -1,16 +1,20 @@
 /* Suppress noisy ad-SDK console spam from agar.io's AdinPlay/prebid scripts */
 (function() {
-    var _origLog = console.log;
-    var _origWarn = console.warn;
-    var _adFilter = /adinplay|prebid|properlib|ads\s*by/i;
-    console.log = function() {
-        if (arguments.length && typeof arguments[0] === 'string' && _adFilter.test(arguments[0])) return;
-        return _origLog.apply(console, arguments);
-    };
-    console.warn = function() {
-        if (arguments.length && typeof arguments[0] === 'string' && _adFilter.test(arguments[0])) return;
-        return _origWarn.apply(console, arguments);
-    };
+    var _adFilter = /adinplay|prebid|properlib|ads\s*by|adserver|googletag|gpt\.js/i;
+    var _methods = ['log', 'warn', 'info', 'debug'];
+    for (var i = 0; i < _methods.length; i++) {
+        (function(method) {
+            var _orig = console[method];
+            if (!_orig) return;
+            console[method] = function() {
+                for (var j = 0; j < arguments.length; j++) {
+                    var a = arguments[j];
+                    if (typeof a === 'string' && _adFilter.test(a)) return;
+                }
+                return _orig.apply(console, arguments);
+            };
+        })(_methods[i]);
+    }
 })();
 window.spects = window.spects || [];
 var spects = window.spects;
