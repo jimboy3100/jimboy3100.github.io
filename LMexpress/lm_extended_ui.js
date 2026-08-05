@@ -408,51 +408,34 @@
     ) {
         if (!entry) return false;
 
-        if (isOfficialEntry) {
-            /* Primary: match by authoritative UID */
-            var authoritativeUid =
-                typeof window.agarioUID === 'string'
-                    ? window.agarioUID.trim()
-                    : '';
+        /*
+         * Primary: match by the user's agar.io game name (e.g. "jimboy_80").
+         * window.agarioID is the server-assigned display name captured during login.
+         * This is the same name the server puts into league entry displayName fields.
+         */
+        var myGameName = (typeof window.agarioID === 'string') ? window.agarioID.trim() : '';
+        var entryName = (typeof entry.displayName === 'string') ? entry.displayName.trim() : '';
 
-            /* Secondary UID source */
-            if (!authoritativeUid && typeof window.agarioEncodedUID === 'string') {
-                authoritativeUid = window.agarioEncodedUID.trim();
-            }
-
-            var entryUid = '';
-            if (typeof entry.uid === 'string') {
-                entryUid = entry.uid.trim();
-            } else if (typeof entry.id === 'string') {
-                entryUid = entry.id.trim();
-            }
-
-            if (authoritativeUid && entryUid && authoritativeUid === entryUid) {
-                return true;
-            }
-
-            /* Server-side flag (some API responses set this) */
-            if (entry.isCurrentUser === true || entry.isUser === true) {
-                return true;
-            }
-
-            /* If UID is available but doesn't match, don't fall through to name match */
-            if (authoritativeUid && entryUid) {
-                return false;
-            }
-
-            /* UID not available — do NOT match by name for official entries
-             * because different players can share display names */
-            return false;
+        if (myGameName && entryName && myGameName === entryName) {
+            return true;
         }
 
-        return (
-            entry.isUser === true ||
-            (
-                Boolean(entry.displayName) &&
-                entry.displayName === currentUserName
-            )
-        );
+        /* Secondary: UID match as fallback */
+        var myUid = (typeof window.agarioUID === 'string') ? window.agarioUID.trim() : '';
+        var entryUid = '';
+        if (typeof entry.uid === 'string') entryUid = entry.uid.trim();
+        else if (typeof entry.id === 'string') entryUid = entry.id.trim();
+
+        if (myUid && entryUid && myUid === entryUid) {
+            return true;
+        }
+
+        /* Server-side flag */
+        if (entry.isCurrentUser === true || entry.isUser === true) {
+            return true;
+        }
+
+        return false;
     };
 
     window._normalizeLeagueAvatarUrl = function(value) {
@@ -1092,19 +1075,7 @@
                             : [];
                     break;
             }
-            if (!Array.isArray(officialEntries)) {
-                officialEntries = [];
             }
-            /* DEBUG — temporary: show data source for each tab switch */
-            console.warn('[LEAGUE TAB ' + tabType + '] isOfficial=' + isOfficialResponse +
-                ' | entries=' + officialEntries.length +
-                ' | data.league=' + (data.league ? data.league.length : 'null') +
-                ' | data.country=' + (data.country ? data.country.length : 'null') +
-                ' | data.world=' + (data.world ? data.world.length : 'null') +
-                ' | data.friends=' + (data.friends ? data.friends.length : 'null') +
-                ' | agarioUID=' + JSON.stringify(window.agarioUID) +
-                (officialEntries.length > 0 ? ' | first.userId=' + JSON.stringify(officialEntries[0] && officialEntries[0].userId) + ' first.displayName=' + JSON.stringify(officialEntries[0] && officialEntries[0].displayName) : '')
-            );
             entries = officialEntries.map(function(entry, index) {
                 if (!entry) return null;
                 var officialUserId = entry.userId || '';
