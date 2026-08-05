@@ -8323,6 +8323,7 @@ function thelegendmodproject() {
                         app.displayStats();
                     }, 250);
                 }
+
             } else {
                 $('#stats-hud').hide();
                 if (this._displayStatsInterval) {
@@ -8352,7 +8353,7 @@ function thelegendmodproject() {
         displayParties() {
             let text = '';
             for (let length = 0; length < this.parties.length; length++) {
-                text += '<li><a href=\"https://agar.io/#' + this.parties[e] + '\" onclick=\"$(\'#party-token\').val(\'' + this.parties[e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this.parties[e] + '</a></li>';
+                text += '<li><a href=\"https://agar.io/#' + this.parties[length] + '\" onclick=\"$(\'#party-token\').val(\'' + this.parties[length] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this.parties[length] + '</a></li>';
             }
             if (text === '') {
                 this.activeParties.className = 'no-parties';
@@ -23625,6 +23626,9 @@ Most cells eaten   : ${mostCellsEaten}
             this.playerCellsMulti = []; //for multi fix
             this.playerCellIDs = [];
             if (this._playerCellIDSet) this._playerCellIDSet.clear();
+            /* Clear stale server-color → team-color mappings to prevent
+             * colors from a previous server leaking into a new one */
+            if (this._colorByRawMap) this._colorByRawMap.clear();
             this.ghostCells = [];
             this.food = [];
             this.foodMulti = []; //for multi fix
@@ -24594,9 +24598,11 @@ Most cells eaten   : ${mostCellsEaten}
              * Avoids Array.sort callback overhead (~2000 function-pointer calls). */
             var a = this.cells;
             for (var i = 1, len = a.length; i < len; i++) {
-                var tmp = a[i], tSize = tmp.size, tId = tmp.id;
+                var tmp = a[i];
+                if (!tmp) continue;
+                var tSize = tmp.size, tId = tmp.id;
                 var j = i - 1;
-                while (j >= 0 && (a[j].size > tSize || (a[j].size === tSize && a[j].id > tId))) {
+                while (j >= 0 && a[j] && (a[j].size > tSize || (a[j].size === tSize && a[j].id > tId))) {
                     a[j + 1] = a[j]; j--;
                 }
                 a[j + 1] = tmp;
