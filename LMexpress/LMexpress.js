@@ -1,7 +1,7 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "24"; // the version 1.1-> 1.11
+var semimodVersion = "30"; // the version 1.1-> 1.11
 
 
 loadericon();
@@ -7102,7 +7102,7 @@ function initializeLM(modVersion) {
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
     $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion +
-        ' <span style="color: #018cf6; font-weight: bold; font-size: 10px;">Login&Play</span></a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>' +
+        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
