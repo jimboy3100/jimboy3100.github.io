@@ -4539,7 +4539,10 @@ function populateSkins() {
             var aOwned = isSkinOwned(a, ownedSkinsObj) ? 1 : 0;
             var bOwned = isSkinOwned(b, ownedSkinsObj) ? 1 : 0;
             if (bOwned !== aOwned) return bOwned - aOwned;
-            return 0;
+            /* Newest skins first: higher original index = added later to the config */
+            var aIdx = skins.indexOf(a);
+            var bIdx = skins.indexOf(b);
+            return bIdx - aIdx;
         });
 
         return skinShopFiltered;
