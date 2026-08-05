@@ -104,6 +104,23 @@
 				},
 				type: 'normal'
 			},	
+			'hk-scanTrick': {
+				label: textLanguage['hk-scanTrick'],
+				defaultKey: '',
+				keyDown() {
+					var game = window.legendmod || window.LM;
+					if (game && typeof game.setScanTrickHeld === 'function') {
+						game.setScanTrickHeld(true);
+					}
+				},
+				keyUp() {
+					var game = window.legendmod || window.LM;
+					if (game && typeof game.setScanTrickHeld === 'function') {
+						game.setScanTrickHeld(false);
+					}
+				},
+				type: 'normal'
+			},
 			'hk-limitposition': {
 				label: textLanguage['hk-limitposition'],
 				defaultKey: '',
@@ -226,63 +243,6 @@
                 type: 'normal'
             },
 
-            /*
-             * ═══════════════════════════════════════════════════════════════
-             * HOLD SCAN TRICK
-             * ═══════════════════════════════════════════════════════════════
-             *
-             * This replaces the unusable Delta action:
-             *
-             *     hk-undefined
-             *
-             * The default key is intentionally empty to avoid overriding an
-             * existing Legend Mod command. It appears in the normal Hotkeys
-             * menu and can be assigned by the user.
-             */
-            'hk-scanTrick': {
-                label:
-                    textLanguage[
-                        'hk-scanTrick'
-                    ],
-
-                defaultKey: '',
-
-                keyDown() {
-                    var game =
-                        window.legendmod ||
-                        window.LM;
-
-                    if (
-                        game &&
-                        typeof game
-                            .setScanTrickHeld ===
-                            'function'
-                    ) {
-                        game.setScanTrickHeld(
-                            true
-                        );
-                    }
-                },
-
-                keyUp() {
-                    var game =
-                        window.legendmod ||
-                        window.LM;
-
-                    if (
-                        game &&
-                        typeof game
-                            .setScanTrickHeld ===
-                            'function'
-                    ) {
-                        game.setScanTrickHeld(
-                            false
-                        );
-                    }
-                },
-
-                type: 'normal'
-            },
 
             'hk-showSkins': {
                 label: textLanguage['hk-showSkins'],
