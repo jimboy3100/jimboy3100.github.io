@@ -772,25 +772,18 @@ function SpecialDeals(defaultTab) {
                 window.legendmod.serverType === 'agario'
             );
             var skinsTab = $('.shop-tabs [data-tab="skins"]');
-            var skinsPane = $('#tab-skins');
             if (!isOfficialAgario) {
                 skinsTab.hide();
-                skinsPane.hide();
                 // If the skins tab was active, switch to upload tab
                 if (skinsTab.hasClass('active')) {
                     skinsTab.removeClass('active');
-                    skinsPane.removeClass('active');
+                    $('#tab-skins').removeClass('active');
                     var uploadTab = $('.shop-tabs [data-tab="upload"]');
-                    var uploadPane = $('#tab-upload');
-                    uploadTab.addClass('active').show();
-                    uploadPane.addClass('active').show();
+                    uploadTab.addClass('active');
+                    $('#tab-upload').addClass('active');
                 }
             } else {
                 skinsTab.show();
-                // Only show the pane if the skins tab is the active tab
-                if (skinsTab.hasClass('active')) {
-                    skinsPane.show();
-                }
             }
         }
 
