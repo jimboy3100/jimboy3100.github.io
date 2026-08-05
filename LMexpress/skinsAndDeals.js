@@ -5949,7 +5949,7 @@ function updatePaginationUI() {
 
     var loadMoreButton = $('#skinLoadMore');
 
-    console.log('[SKIN SHOP] updatePaginationUI: rendered=' + renderedCount + ' total=' + total + ' buttonLength=' + loadMoreButton.length);
+
 
     if (renderedCount < total) {
         loadMoreButton

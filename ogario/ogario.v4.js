@@ -4252,11 +4252,7 @@ setTimeout(function () {
             window.PotionHelpConfig = LMAgarGameConfiguration.gameConfig["Visual - Potion Help"] || null;
             window.MysterySkinTypesConfig = LMAgarGameConfiguration.gameConfig["Mystery Skins - Types"] || null;
             window.WalletSoftPurchasesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Soft Purchases"] || null;
-            if (window.WalletSoftPurchasesConfig) console.log("[LM] Loaded Wallet Soft Purchases config: " + window.WalletSoftPurchasesConfig.length + " entries");
-            if (window.LeaguesPrizesConfig) console.log("[LM] Loaded Leagues Prizes config: " + window.LeaguesPrizesConfig.length + " entries");
-            if (window.LeaguesTiersConfig) console.log("[LM] Loaded Leagues Tiers config: " + window.LeaguesTiersConfig.length + " tiers");
-            if (window.OfferableBundlesConfig) console.log("[LM] Loaded Offerable Bundles config: " + window.OfferableBundlesConfig.length + " bundles");
-            if (window.PotionHelpConfig) console.log("[LM] Loaded Potion Help config: " + window.PotionHelpConfig.length + " entries");
+
         } catch (e) { console.warn("[LM] Could not load Leagues/Deals config:", e); }
 
         for (var player = 0; player < window.FreeSkins.length; player++) {
@@ -12491,7 +12487,7 @@ function thelegendmodproject() {
                 var view = legendmod.createView(1);
                 view.setUint8(0, 206); /* 0xCE = resync request */
                 legendmod.sendMessage(view);
-                console.log('%c[LM]%c Tab visible — sent resync request (opcode 206)', 'color:#3f3', 'color:inherit');
+
             } catch (e) { /* ignore if socket not ready */ }
         },
         flushSkinsMap() {
@@ -15534,7 +15530,7 @@ function thelegendmodproject() {
                     uncompressedData: Object.assign({ type: type }, payload)
                 }).finish();
                 window.core.proxyMobileData(buffer);
-                console.log("%c[LM] SUCCESS: Sent opcode " + type + " (" + buffer.length + " bytes)", "color: #00FF00;");
+
                 return true;
             } catch (e) {
                 console.error("[LM] Protobuf encode error (type " + type + "):", e);
@@ -21527,7 +21523,7 @@ function thelegendmodproject() {
 
                     if (u.userUnapprovedSkinsIds && u.userUnapprovedSkinsIds.length) {
                         this.user.unapprovedSkins = u.userUnapprovedSkinsIds;
-                        console.log('[LM] Pending/Unapproved Custom Skins:', u.userUnapprovedSkinsIds);
+
                     }
 
                     /* LW: Show agar.io-style login notification after confirmed
@@ -32351,7 +32347,7 @@ Most cells eaten   : ${mostCellsEaten}
                     data = new Uint8Array(arr.length + 1);
                     data.set([102]);
                     data.set(arr, 1);
-                    console.log(data);
+
                 }
                 else {
                     data = new Uint8Array(arr);
