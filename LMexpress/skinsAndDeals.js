@@ -553,8 +553,7 @@ function SpecialDeals(defaultTab) {
             // Function existence does not prove that a socket is connected.
             var hasGameConnection = !!(
                 window.legendmod &&
-                (window.legendmod.connectionOpened === true ||
-                 (typeof window.legendmod.isSocketOpen === 'function' && window.legendmod.isSocketOpen()))
+                window.legendmod.connectionOpened === true
             );
 
             if (!hasGameConnection) {
