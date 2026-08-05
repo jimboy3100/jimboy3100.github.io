@@ -17609,7 +17609,6 @@ function thelegendmodproject() {
                             s = true;
                         }
 
-                        var color2 = this.color;
                         if (LM.play || LM.playerCellsMulti.length) {
                             if (this.isPlayerCell || this.playerCellsMulti) {
                                 if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
@@ -17622,6 +17621,9 @@ function thelegendmodproject() {
                                 }
                             }
                         }
+                        /* color2 must be captured AFTER oppColor/myCustomColor override
+                         * so the body fill uses the correct opponent/player color */
+                        var color2 = this.color;
 
                         if (!node) style.beginPath();
                         if (defaultmapsettings.jellyPhisycs && this.points.length) {
@@ -29720,6 +29722,8 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (_cW < LM.cells.length) LM.cells.length = _cW;
 
+                /* Opponent rings + cursor overlays: drawn after cells so they're visible on top */
+                this.drawPostCellOverlays();
                 var _tMini = performance.now();
                 this.drawMiscRings();
                 if (defaultmapsettings.jellyPhisycs) {
@@ -29804,6 +29808,12 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                     }
                 }
+            }
+        },
+        /* Post-cell overlays: drawn AFTER cells so they appear ON TOP of cell bodies.
+         * With WebGL hybrid, oppRings drawn before cells were occluded by opaque cell bodies. */
+        drawPostCellOverlays() {
+            if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
                 if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
                     this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache);
                 }
