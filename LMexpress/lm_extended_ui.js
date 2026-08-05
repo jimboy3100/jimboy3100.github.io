@@ -1095,6 +1095,16 @@
             if (!Array.isArray(officialEntries)) {
                 officialEntries = [];
             }
+            /* DEBUG — temporary: show data source for each tab switch */
+            console.warn('[LEAGUE TAB ' + tabType + '] isOfficial=' + isOfficialResponse +
+                ' | entries=' + officialEntries.length +
+                ' | data.league=' + (data.league ? data.league.length : 'null') +
+                ' | data.country=' + (data.country ? data.country.length : 'null') +
+                ' | data.world=' + (data.world ? data.world.length : 'null') +
+                ' | data.friends=' + (data.friends ? data.friends.length : 'null') +
+                ' | agarioUID=' + JSON.stringify(window.agarioUID) +
+                (officialEntries.length > 0 ? ' | first.userId=' + JSON.stringify(officialEntries[0] && officialEntries[0].userId) + ' first.displayName=' + JSON.stringify(officialEntries[0] && officialEntries[0].displayName) : '')
+            );
             entries = officialEntries.map(function(entry, index) {
                 if (!entry) return null;
                 var officialUserId = entry.userId || '';
