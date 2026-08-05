@@ -577,7 +577,8 @@ function SpecialDeals(defaultTab) {
             var hasUID = window.checkUserUID();
             var hasConnection = !!(
                 window.legendmod &&
-                window.legendmod.connectionOpened === true
+                (window.legendmod.connectionOpened === true ||
+                 (typeof window.legendmod.isSocketOpen === 'function' && window.legendmod.isSocketOpen()))
             );
             var allReady = isLoggedIn && hasUID && hasConnection;
 
