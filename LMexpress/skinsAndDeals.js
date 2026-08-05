@@ -760,6 +760,32 @@ function SpecialDeals(defaultTab) {
                 menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
                         .removeAttr('title');
             }
+
+            // Hide the "Agar.io Skins" tab when not on an official agar.io server.
+            // Agar.io skins can only be purchased/equipped on official servers.
+            var isOfficialAgario = !!(
+                window.legendmod &&
+                window.legendmod.connectionOpened === true &&
+                window.legendmod.serverType === 'agario'
+            );
+            var skinsTab = $('.shop-tabs [data-tab="skins"]');
+            var skinsPane = $('#tab-skins');
+            if (!isOfficialAgario) {
+                skinsTab.hide();
+                skinsPane.hide();
+                // If the skins tab was active, switch to upload tab
+                if (skinsTab.hasClass('active')) {
+                    skinsTab.removeClass('active');
+                    skinsPane.removeClass('active');
+                    var uploadTab = $('.shop-tabs [data-tab="upload"]');
+                    var uploadPane = $('#tab-upload');
+                    uploadTab.addClass('active').show();
+                    uploadPane.addClass('active').show();
+                }
+            } else {
+                skinsTab.show();
+                skinsPane.show();
+            }
         }
 
         /*
