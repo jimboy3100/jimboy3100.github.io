@@ -31529,6 +31529,7 @@ Most cells eaten   : ${mostCellsEaten}
                 /* Snap all cells to target positions */
                 for (var i = 0; i < LM.cells.length; i++) {
                     var c = LM.cells[i];
+                    if (!c) continue;
                     c.x = c.targetX;
                     c.y = c.targetY;
                     c.size = c.targetSize;
@@ -31537,6 +31538,7 @@ Most cells eaten   : ${mostCellsEaten}
                 /* Snap all food to target positions */
                 for (var j = 0; j < LM.food.length; j++) {
                     var f = LM.food[j];
+                    if (!f) continue;
                     f.x = f.targetX;
                     f.y = f.targetY;
                     f.size = f.targetSize;
