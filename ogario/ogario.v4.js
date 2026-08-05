@@ -29396,6 +29396,10 @@ Most cells eaten   : ${mostCellsEaten}
             if (this.gl) {
                 this.gl.clearColor(0, 0, 0, 0.0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+                /* Enable blending once for the entire frame so rings, food, and
+                 * other overlays drawn before the cell batch are alpha-correct. */
+                this.gl.enable(this.gl.BLEND);
+                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
             }
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
@@ -30985,15 +30989,15 @@ Most cells eaten   : ${mostCellsEaten}
             //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
             var width = 14 + 2 / scale;
             var alpha = 12 + 1 / scale;
-            /* Keep opponent rings on the lower Canvas2D layer so every cell skin,
-             * including Canvas2D fallbacks, is composited above them. */
-            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor, true); //Sonia2
-            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor, true); //Sonia2
-            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor, true); //Sonia2
+            /* Render opponent rings via WebGL ring batch (same layer as cell bodies).
+             * Canvas2D fallback kicks in automatically when WebGL is unavailable. */
+            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
+            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
+            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor); //Sonia2
             //this.drawCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);						
-            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor, true); //Sonia2
-            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor, true); //Sonia2
-            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor, true); //Sonia2
+            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor); //Sonia2
+            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor); //Sonia2
+            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
             if (reset) {
                 biggerSte = [];
                 biggetCell = [];
