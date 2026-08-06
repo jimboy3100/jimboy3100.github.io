@@ -21736,12 +21736,20 @@ function thelegendmodproject() {
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
                     if (window.mainPlayerDeadMbActive) break;
-                    // Garix: use dedicated parser for protocol 6-10 format
-                    if (this.serverType === 'garix') {
-                        this.garixUpdateCells(data, s);
-                    } else {
-                        //this.updateCells(new LMbuffer(data['buffer']), s);
-                        this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                    try {
+                        // Garix: use dedicated parser for protocol 6-10 format
+                        if (this.serverType === 'garix') {
+                            this.garixUpdateCells(data, s);
+                        } else {
+                            //this.updateCells(new LMbuffer(data['buffer']), s);
+                            this.updateCells(new window.buffer.Buffer(data.buffer), s);
+                        }
+                    } catch (e) {
+                        if (e instanceof RangeError) {
+                            // Buffer overread — malformed or unexpected cell data format; skip this packet
+                        } else {
+                            throw e;
+                        }
                     }
                     //this.countPps()
                     break;
