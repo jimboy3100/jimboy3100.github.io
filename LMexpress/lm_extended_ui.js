@@ -1099,12 +1099,6 @@
                     Date.now()
             };
 
-            console.log(
-                '[LM LEAGUES] Current-user identity locked from My League:',
-                window
-                    ._leagueCurrentUserIdentity
-            );
-
             return window
                 ._leagueCurrentUserIdentity;
         };

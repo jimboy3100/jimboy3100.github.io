@@ -15449,11 +15449,9 @@ function thelegendmodproject() {
             return this.sendProto(100, { claimGiftsRequestField: { giftIds: giftIds } });
         },
         brewPotion(slot) {
-            console.log("[LM] Brew Potion in slot " + slot);
             return this.sendProto(122, { brewPotionForSlotRequestField: { slot: parseInt(slot) } });
         },
         openPotion(slot, isUserAction) {
-            console.log("[LM] Open Potion in slot " + slot);
             if (isUserAction === false) {
                 window._userInitiatedPotionOpen = false;
             } else {
@@ -22393,7 +22391,6 @@ function thelegendmodproject() {
                             if (u.userPotions && u.userPotions.length) {
                                 this.updatePotions(u.userPotions);
                             }
-                            console.log('[LM] Potion brewing started!');
                         }
                     } catch (brewErr) {
                         console.warn("[LM] Error parsing brew potion response:", brewErr);
@@ -22425,7 +22422,6 @@ function thelegendmodproject() {
                     try {
                         var urr = r.uncompressedData.activateUserRewardsResponseField;
                         if (urr) {
-                            console.log("[LM] Bulk User Rewards Response received");
                             if (urr.productUpdates && urr.productUpdates.length) {
                                 this.updateProducts(urr.productUpdates);
                             }
@@ -22452,13 +22448,6 @@ function thelegendmodproject() {
                                 break;
                             }
                             var isLastWeek = (responseRequestType === 2);
-                            console.log(
-                                "[LM] Leagues Info Response received (requestType=" +
-                                responseRequestType +
-                                ", isLastWeek=" +
-                                isLastWeek +
-                                ")"
-                            );
                             if (isLastWeek) {
                                 window.lastWeekLeaguesResponse = lr;
                             } else {
