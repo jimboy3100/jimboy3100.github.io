@@ -23617,16 +23617,15 @@ function thelegendmodproject() {
 
             var html = '<div id="lm-gameover-modal" style="' +
                 'position:fixed;top:50%;right:20px;transform:translateY(-50%);' +
-                'width:280px;z-index:99999;pointer-events:auto;' +
+                'width:280px;z-index:2147483647;pointer-events:auto;' +
                 'animation:lmGoSlideIn 0.4s cubic-bezier(.22,1,.36,1) forwards;' +
                 'opacity:0;font-family:inherit;">' +
 
                 /* Card */
-                '<div style="' +
+                '<div class="lm-go-card" style="' +
                 'background:' + pc + ';border:1px solid ' + pc2 + ';' +
                 'border-top:3px solid ' + mc + ';border-radius:6px;' +
-                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;cursor:pointer;" ' +
-                'onclick="var el=document.getElementById(\'lm-gameover-modal\');if(el){el.style.animation=\'lmGoSlideOut 0.3s ease forwards\';setTimeout(function(){el.remove()},300)}">' +
+                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;cursor:pointer;">' +
 
                 /* Header */
                 '<div style="' +
@@ -23643,6 +23642,14 @@ function thelegendmodproject() {
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
 
                 '</div></div>';
+
+            /* Dismiss helper */
+            function dismissGameOver() {
+                var el = document.getElementById('lm-gameover-modal');
+                if (!el) return;
+                el.style.animation = 'lmGoSlideOut 0.3s ease forwards';
+                setTimeout(function () { if (el && el.parentNode) el.parentNode.removeChild(el); }, 350);
+            }
 
             /* Inject keyframes if not yet */
             if (!document.getElementById('lm-go-keyframes')) {
@@ -23664,16 +23671,14 @@ function thelegendmodproject() {
             /* Inject into DOM */
             var container = document.createElement('div');
             container.innerHTML = html;
-            document.body.appendChild(container.firstChild);
+            var modal = container.firstChild;
+            document.body.appendChild(modal);
+
+            /* Attach click-to-dismiss via event listener (not inline onclick) */
+            modal.addEventListener('click', dismissGameOver);
 
             /* Auto-dismiss after 8 seconds */
-            setTimeout(function () {
-                var el = document.getElementById('lm-gameover-modal');
-                if (el) {
-                    el.style.animation = 'lmGoSlideOut 0.3s ease forwards';
-                    setTimeout(function () { if (el.parentNode) el.remove(); }, 300);
-                }
-            }, 8000);
+            setTimeout(dismissGameOver, 8000);
         },
         updateEvents(event) {
             if (event.length === 0) window.questActivationReq()
