@@ -8300,9 +8300,10 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
-                if (defaultmapsettings.showStatsServerHz && ogario.serverHz > 0) {
-                    var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
-                    t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
+                var _sHz = ogario.serverHz || LM.serverHz || 0;
+                if (defaultmapsettings.showStatsServerHz && _sHz > 0) {
+                    var hzColor = _sHz >= 25 ? '#4f4' : _sHz >= 20 ? '#ff0' : '#f44';
+                    t += '⚡ Hz: <span style="color:' + hzColor + '">' + _sHz + '</span> | ';
                 }
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
@@ -20430,8 +20431,7 @@ function thelegendmodproject() {
             };
             var s = 0;
             var opcode = data.getUint8(s++);
-            /* LW DEBUG: trace all opcodes > 90 to find the 102 response */
-            if (opcode >= 200) console.log('[LW DBG] handleMessage opcode=' + opcode + ' len=' + data.byteLength);
+            /* LW: opcode >= 200 are Expanding Land custom opcodes */
 
             switch (54 === opcode && (opcode = 53), opcode) {
 
@@ -20883,7 +20883,7 @@ function thelegendmodproject() {
                     break;
 
                 case 203: // 0xCB — Expanding Land Unified Stats (shared + per-player decay)
-                    {
+                    try {
                         if (data.byteLength < 5) {
                             console.warn('[Protocol] Ignoring truncated opcode 203 packet:', data.byteLength);
                             break;
@@ -20894,14 +20894,16 @@ function thelegendmodproject() {
                         var elBots = data.getUint16(s, true); s += 2;
                         ogario.elPlayerCount = elHumans;
                         ogario.elBotCount = elBots;
+                        LM.elPlayerCount = elHumans;
+                        LM.elBotCount = elBots;
 
                         if (s < data.byteLength) {
-                            ogario.serverHz = data.getUint8(s++);
-                            console.log('[EL Stats] opcode 203 received, serverHz=' + ogario.serverHz);
+                            var _hz = data.getUint8(s++);
+                            ogario.serverHz = _hz;
+                            LM.serverHz = _hz;
                         }
                         if (s + 2 <= data.byteLength) {
                             var aliveTotal = data.getUint16(s, true); s += 2;
-                            /* Update LM Stats UI (was old opcode 0xC9) */
                             if (this.top5totalPlayers) {
                                 this.top5totalPlayers.textContent = aliveTotal;
                             }
@@ -20913,7 +20915,6 @@ function thelegendmodproject() {
                             di.totalScore = data.getUint16(s, true); s += 2;
                             di.threshold = data.getUint16(s, true); s += 2;
                             di.multiplier = data.getUint16(s, true); s += 2;
-                            /* Per-type: virus(1), split(2), eject(3), danger(4), decay(5) */
                             di.virusCount = data.getUint8(s++); di.virusScore = data.getUint16(s, true); s += 2; di.virusMaxSecs = data.getUint16(s, true); s += 2;
                             di.splitCount = data.getUint8(s++); di.splitScore = data.getUint16(s, true); s += 2; di.splitMaxSecs = data.getUint16(s, true); s += 2;
                             di.ejectCount = data.getUint8(s++); di.ejectScore = data.getUint16(s, true); s += 2; di.ejectMaxSecs = data.getUint16(s, true); s += 2;
@@ -20924,6 +20925,8 @@ function thelegendmodproject() {
                             di.decayIntervalSecs = data.getUint8(s++);
                             di.active = true;
                         }
+                    } catch (e203) {
+                        console.error('[EL Stats] opcode 203 parse error:', e203);
                     }
                     break;
 
@@ -22056,8 +22059,11 @@ function thelegendmodproject() {
                         var elBots2 = data.getUint16(_off, true); _off += 2;
                         ogario.elPlayerCount = elHumans2;
                         ogario.elBotCount = elBots2;
-                        ogario.serverHz = data.getUint8(_off++);
-                        console.log('[EL Stats2] opcode 203 via ogarioWS, serverHz=' + ogario.serverHz);
+                        LM.elPlayerCount = elHumans2;
+                        LM.elBotCount = elBots2;
+                        var _hz2 = data.getUint8(_off++);
+                        ogario.serverHz = _hz2;
+                        LM.serverHz = _hz2;
                         var aliveTotal2 = data.getUint16(_off, true); _off += 2;
                         if (this.top5totalPlayers) {
                             this.top5totalPlayers.textContent = aliveTotal2;
