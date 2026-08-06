@@ -22278,7 +22278,7 @@ function thelegendmodproject() {
                     if (u.potionInfo && u.potionInfo.newUserPotion) {
                         this.newPotion(u.potionInfo.newUserPotion);
                     };
-                    if (defaultmapsettings.gameOverStats || window._forceGameOverStats) {
+                    if ((defaultmapsettings.gameOverStats || window._forceGameOverStats) && u.gameSessionStats) {
                         this.showSessionStats(u.gameSessionStats);
                         window._forceGameOverStats = false;
                     }
