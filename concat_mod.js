@@ -29,10 +29,18 @@ for (const file of clientFiles) {
 
 fs.writeFileSync(path.join(garbadgeDir, 'AllFiles'), clientOutput, 'utf8');
 fs.writeFileSync(path.join(garbadgeDir, 'AllFiles.txt'), clientOutput, 'utf8');
-fs.writeFileSync(path.join(garbadgeDir, 'AllFilesNew.txt'), clientOutput, 'utf8');
 fs.writeFileSync(path.join(garbadgeDir, 'LegendMod.txt'), clientOutput, 'utf8');
 fs.writeFileSync(path.join(garbadgeDir, 'LegendModNew.txt'), clientOutput, 'utf8');
 console.log('Generated Client Code bundles (AllFiles, LegendMod.txt, etc.)');
+
+// --- 1b. UserScript Client Bundle (client.js, c.txt) ---
+const userScriptPath = 'C:/Github_repos/jimboy3100.github.io/LMexpress/LMexpress.user.js';
+if (fs.existsSync(userScriptPath)) {
+  const userScriptOutput = fs.readFileSync(userScriptPath, 'utf8');
+  fs.writeFileSync(path.join(garbadgeDir, 'client.js'), userScriptOutput, 'utf8');
+  fs.writeFileSync(path.join(garbadgeDir, 'c.txt'), userScriptOutput, 'utf8');
+  console.log('Generated UserScript Client bundles (client.js, c.txt)');
+}
 
 // --- 2. C Server Code (LegendWorld) ---
 const serverSrcDir = 'C:/Github_repos/LegendWorld/src';
@@ -55,9 +63,19 @@ fs.writeFileSync(path.join(garbadgeDir, 'LegendWorld.txt'), serverOutput, 'utf8'
 fs.writeFileSync(path.join(garbadgeDir, 'LegendWorldNew.txt'), serverOutput, 'utf8');
 fs.writeFileSync(path.join(garbadgeDir, 'ServerCode.txt'), serverOutput, 'utf8');
 fs.writeFileSync(path.join(garbadgeDir, 'ServerCodeNew.txt'), serverOutput, 'utf8');
-console.log('Generated C Server Code bundles (cServer.txt, cServerNew.txt, LegendWorld.txt, etc.)');
+console.log('Generated C Server Code bundles (ServerCode.txt, cServer.txt, LegendWorld.txt, etc.)');
 
-// --- 3. Discord Bot Code ---
+// --- 3. Render Code (ogario.v4.js -> render.js, rend.txt, rendering.txt) ---
+const ogarioPath = 'C:/Github_repos/jimboy3100.github.io/ogario/ogario.v4.js';
+if (fs.existsSync(ogarioPath)) {
+  const renderOutput = fs.readFileSync(ogarioPath, 'utf8');
+  fs.writeFileSync(path.join(garbadgeDir, 'render.js'), renderOutput, 'utf8');
+  fs.writeFileSync(path.join(garbadgeDir, 'rend.txt'), renderOutput, 'utf8');
+  fs.writeFileSync(path.join(garbadgeDir, 'rendering.txt'), renderOutput, 'utf8');
+  console.log('Generated Render Code bundles (render.js, rend.txt, rendering.txt)');
+}
+
+// --- 4. Discord Bot Code ---
 const botSrcDir = 'C:/Github_repos/discord-bot-server/src';
 let botOutput = '';
 if (fs.existsSync(botSrcDir)) {
