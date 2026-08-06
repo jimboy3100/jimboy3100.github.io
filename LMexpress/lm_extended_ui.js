@@ -4763,16 +4763,17 @@
         var profileTab = $('#profile');
         if (!profileTab.length) return;
 
+        var profilePanels = profileTab.find('.agario-profile-panel').not('#exp-bar');
+        var targetContainer = profilePanels.length ? profilePanels.first() : profileTab;
+
         if (document.getElementById('lm-daily-deal-btn')) {
-            // Ensure button group is inside #profile.
-            if (!$.contains(profileTab[0], document.getElementById('lm-daily-deal-btn'))) {
-                $('#lm-extended-menu-btns').appendTo(profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab);
+            // Ensure button group is inside #profile / targetContainer.
+            if (!$.contains(profileTab[0], document.getElementById('lm-daily-deal-btn')) || $('#lm-extended-menu-btns').closest('#exp-bar').length) {
+                $('#lm-extended-menu-btns').appendTo(targetContainer);
             }
 
             return;
         }
-
-        var targetContainer = profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab;
 
         var btnGroup = document.createElement('div');
         btnGroup.id = 'lm-extended-menu-btns';
@@ -4792,8 +4793,8 @@
             </button>
         `;
 
-        if (targetContainer.find('#potions').length) {
-            targetContainer.find('#potions').before(btnGroup);
+        if (targetContainer.find('#potions, .potions-container').length) {
+            targetContainer.find('#potions, .potions-container').first().before(btnGroup);
         } else {
             targetContainer.prepend(btnGroup);
         }
@@ -5297,7 +5298,8 @@
             return;
         }
 
-        var targetContainer = profileTab.find('.agario-profile-panel').length ? profileTab.find('.agario-profile-panel') : profileTab;
+        var profilePanels = profileTab.find('.agario-profile-panel').not('#exp-bar');
+        var targetContainer = profilePanels.length ? profilePanels.first() : profileTab;
 
         if (!bannerEl) {
             bannerEl = document.createElement('div');
