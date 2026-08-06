@@ -16539,13 +16539,61 @@ function thelegendmodproject() {
                     this.remeasure = true;
                 }
             },
-            this.setFontSize = function (ogariofontsizesetter) {
-                if (Math.abs(this.fontSize - ogariofontsizesetter) > 3) {
-                    this.fontSize = ogariofontsizesetter;
-                    this.margin = ~~(0.2 * ogariofontsizesetter);
-                    this.setFont();
-                    this.redraw = true;
+            this.setFontSize = function (
+                ogariofontsizesetter
+            ) {
+                /*
+                 * Text canvases are rasterized at the current screen-space
+                 * font size and are later divided by the same view scale when
+                 * drawn back into world space.
+                 *
+                 * Never retain a canvas generated for an older font size.
+                 * A dead zone such as "> 3" causes small mass text to keep an
+                 * old texture while drawMass() uses the new zoom divisor.
+                 */
+                var nextFontSize =
+                    Number(
+                        ogariofontsizesetter
+                    );
+
+                if (
+                    !Number.isFinite(
+                        nextFontSize
+                    )
+                ) {
+                    return;
                 }
+
+                nextFontSize =
+                    Math.max(
+                        1,
+                        nextFontSize
+                    );
+
+                if (
+                    this.fontSize ===
+                    nextFontSize
+                ) {
+                    return;
+                }
+
+                this.fontSize =
+                    nextFontSize;
+
+                this.margin =
+                    ~~(
+                        0.2 *
+                        nextFontSize
+                    );
+
+                this.setFont();
+
+                /*
+                 * Width is proportional to fontSize, so the canvas dimensions
+                 * and glyph raster must both be rebuilt.
+                 */
+                this.redraw =
+                    true;
             },
             this.setMargin = function (ogariomarginsetter) {
                 if (this.margin !== ogariomarginsetter) {
@@ -17182,29 +17230,117 @@ function thelegendmodproject() {
                 //window.counterCell++;
             }
         };
-        this.drawMass = function (context) {
-            if (this.massCanvas && !(this.size <= 40)) {
-                var massCanvas = this.massCanvas;
-                massCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
-                //
-                if (this.redrawMass) {
-                    massCanvas.setTxt(this.massTxt);
-                    this.lastMass = this.mass;
-                }
-                massCanvas.setFontSize(this.massSize);
-                massCanvas.setScale(this.scale);
+        this.drawMass = function (
+            context
+        ) {
+            if (
+                !context ||
+                !this.massCanvas ||
+                this.size <= 40
+            ) {
+                return;
+            }
 
-                var data = massCanvas.drawTxt();
-                var _dpr4 = window.LM_DPR || 1;
-                var width = ~~(data.width / (this.scale * _dpr4));
-                //console.log("m:"+data.width, this.scale, width, this.x - width / 2);
-                var height = ~~(data.height / (this.scale * _dpr4))
-                var textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
-                if (width > 1 && height > 1) {
-                    try {
-                        context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                    } catch (e) { }
-                }
+            var massCanvas =
+                this.massCanvas;
+
+            massCanvas.setDrawing(
+                defaultSettings.massColor,
+                defaultSettings.massFontFamily,
+                defaultSettings.massFontWeight,
+                this.strokeMass,
+                this.massStrokeSize,
+                defaultSettings.massStrokeColor
+            );
+
+            if (this.redrawMass) {
+                massCanvas.setTxt(
+                    this.massTxt
+                );
+
+                this.lastMass =
+                    this.mass;
+            }
+
+            /*
+             * Update font size before scale so drawTxt() always represents
+             * this exact zoom generation.
+             */
+            massCanvas.setFontSize(
+                this.massSize
+            );
+
+            massCanvas.setScale(
+                this.scale
+            );
+
+            var data =
+                massCanvas.drawTxt();
+
+            if (!data) {
+                return;
+            }
+
+            var dpr =
+                window.LM_DPR ||
+                1;
+
+            /*
+             * Use the scale stored by the same renderer that produced data.
+             * This keeps texture generation and world-size conversion atomic.
+             */
+            var rasterScale =
+                massCanvas.scale > 0
+                    ? massCanvas.scale
+                    : 1;
+
+            var divisor =
+                rasterScale *
+                dpr;
+
+            var width =
+                Math.max(
+                    1,
+                    Math.round(
+                        data.width /
+                        divisor
+                    )
+                );
+
+            var height =
+                Math.max(
+                    1,
+                    Math.round(
+                        data.height /
+                        divisor
+                    )
+                );
+
+            var textureY =
+                this.margin === 0
+                    ? Math.round(
+                        this.y -
+                        height * 0.5
+                    )
+                    : Math.round(
+                        this.y +
+                        this.margin
+                    );
+
+            try {
+                context.drawImage(
+                    data,
+                    Math.round(
+                        this.x -
+                        width * 0.5
+                    ),
+                    textureY,
+                    width,
+                    height
+                );
+            } catch (
+                massDrawError
+            ) {
             }
         };
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
