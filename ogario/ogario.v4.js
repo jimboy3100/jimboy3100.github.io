@@ -8297,6 +8297,10 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
+                if (LM.isLegendWorld && ogario.serverHz > 0) {
+                    var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
+                    t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
+                }
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
                     var atStr = '';
@@ -20730,17 +20734,47 @@ function thelegendmodproject() {
                     }
                     break;
 
-                case 203: // 0xCB — Expanding Land Player Stats (human + bot counts)
+                case 203: // 0xCB — Expanding Land Unified Stats (shared + per-player decay)
                     {
                         if (data.byteLength < 5) {
                             console.warn('[Protocol] Ignoring truncated opcode 203 packet:', data.byteLength);
                             break;
                         }
 
+                        /* Section 1: Shared stats (old 0xCB + 0xC9) */
                         var elHumans = data.getUint16(s, true); s += 2;
                         var elBots = data.getUint16(s, true); s += 2;
                         ogario.elPlayerCount = elHumans;
                         ogario.elBotCount = elBots;
+
+                        if (s < data.byteLength) {
+                            ogario.serverHz = data.getUint8(s++);
+                        }
+                        if (s + 2 <= data.byteLength) {
+                            var aliveTotal = data.getUint16(s, true); s += 2;
+                            /* Update LM Stats UI (was old opcode 0xC9) */
+                            if (this.top5totalPlayers) {
+                                this.top5totalPlayers.textContent = aliveTotal;
+                            }
+                        }
+
+                        /* Section 2: Per-player decay info (old 0xCA) */
+                        if (s + 31 <= data.byteLength) {
+                            var di = LM.decayInfo;
+                            di.totalScore = data.getUint16(s, true); s += 2;
+                            di.threshold = data.getUint16(s, true); s += 2;
+                            di.multiplier = data.getUint16(s, true); s += 2;
+                            /* Per-type: virus(1), split(2), eject(3), danger(4), decay(5) */
+                            di.virusCount = data.getUint8(s++); di.virusScore = data.getUint16(s, true); s += 2; di.virusMaxSecs = data.getUint16(s, true); s += 2;
+                            di.splitCount = data.getUint8(s++); di.splitScore = data.getUint16(s, true); s += 2; di.splitMaxSecs = data.getUint16(s, true); s += 2;
+                            di.ejectCount = data.getUint8(s++); di.ejectScore = data.getUint16(s, true); s += 2; di.ejectMaxSecs = data.getUint16(s, true); s += 2;
+                            di.dangerCount = data.getUint8(s++); di.dangerScore = data.getUint16(s, true); s += 2; di.dangerMaxSecs = data.getUint16(s, true); s += 2;
+                            di.decayCount = data.getUint8(s++); di.decayScore = data.getUint16(s, true); s += 2; di.decayMaxSecs = data.getUint16(s, true); s += 2;
+                            di.inDangerZone = data.getUint8(s++) === 1;
+                            di.dangerPhaseSecs = data.getUint16(s, true); s += 2;
+                            di.decayIntervalSecs = data.getUint8(s++);
+                            di.active = true;
+                        }
                     }
                     break;
 
@@ -21866,34 +21900,34 @@ function thelegendmodproject() {
                         var warningDur = data.getUint32(s2, true); s2 += 4;
                         var currentTier = (s2 < data.byteLength) ? data.getUint8(s2++) : -1;
                         this.handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier);
-                    } else if (LM.isLegendWorld && _lwOp === 201 && data.byteLength >= 5) {
-                        /* LM Stats */
-                        var alivePlayers2 = data.getUint16(1, true);
-                        var botCount2 = data.getUint16(3, true);
-                        if (this.top5totalPlayers) {
-                            this.top5totalPlayers.textContent = alivePlayers2;
-                        }
-                        var botEl2 = document.getElementById('botCount');
-                        if (botEl2) {
-                            botEl2.textContent = botCount2;
-                        }
-                    } else if (LM.isLegendWorld && _lwOp === 202 && data.byteLength >= 36) {
-                        /* Opcode 0xCA: LM Decay Info — per-player anti-team breakdown */
-                        var di = LM.decayInfo;
+                    } else if (LM.isLegendWorld && _lwOp === 203 && data.byteLength >= 8) {
+                        /* Unified Expanding Land Stats (opcode 0xCB) */
                         var _off = 1;
-                        di.totalScore = data.getUint16(_off, true); _off += 2;
-                        di.threshold = data.getUint16(_off, true); _off += 2;
-                        di.multiplier = data.getUint16(_off, true); _off += 2;
-                        /* Per-type: virus(1), split(2), eject(3), danger(4), decay(5) */
-                        di.virusCount = data.getUint8(_off++); di.virusScore = data.getUint16(_off, true); _off += 2; di.virusMaxSecs = data.getUint16(_off, true); _off += 2;
-                        di.splitCount = data.getUint8(_off++); di.splitScore = data.getUint16(_off, true); _off += 2; di.splitMaxSecs = data.getUint16(_off, true); _off += 2;
-                        di.ejectCount = data.getUint8(_off++); di.ejectScore = data.getUint16(_off, true); _off += 2; di.ejectMaxSecs = data.getUint16(_off, true); _off += 2;
-                        di.dangerCount = data.getUint8(_off++); di.dangerScore = data.getUint16(_off, true); _off += 2; di.dangerMaxSecs = data.getUint16(_off, true); _off += 2;
-                        di.decayCount = data.getUint8(_off++); di.decayScore = data.getUint16(_off, true); _off += 2; di.decayMaxSecs = data.getUint16(_off, true); _off += 2;
-                        di.inDangerZone = data.getUint8(_off++) === 1;
-                        di.dangerPhaseSecs = data.getUint16(_off, true); _off += 2;
-                        di.decayIntervalSecs = data.getUint8(_off++);
-                        di.active = true;
+                        var elHumans2 = data.getUint16(_off, true); _off += 2;
+                        var elBots2 = data.getUint16(_off, true); _off += 2;
+                        ogario.elPlayerCount = elHumans2;
+                        ogario.elBotCount = elBots2;
+                        ogario.serverHz = data.getUint8(_off++);
+                        var aliveTotal2 = data.getUint16(_off, true); _off += 2;
+                        if (this.top5totalPlayers) {
+                            this.top5totalPlayers.textContent = aliveTotal2;
+                        }
+                        /* Per-player decay info */
+                        if (_off + 31 <= data.byteLength) {
+                            var di = LM.decayInfo;
+                            di.totalScore = data.getUint16(_off, true); _off += 2;
+                            di.threshold = data.getUint16(_off, true); _off += 2;
+                            di.multiplier = data.getUint16(_off, true); _off += 2;
+                            di.virusCount = data.getUint8(_off++); di.virusScore = data.getUint16(_off, true); _off += 2; di.virusMaxSecs = data.getUint16(_off, true); _off += 2;
+                            di.splitCount = data.getUint8(_off++); di.splitScore = data.getUint16(_off, true); _off += 2; di.splitMaxSecs = data.getUint16(_off, true); _off += 2;
+                            di.ejectCount = data.getUint8(_off++); di.ejectScore = data.getUint16(_off, true); _off += 2; di.ejectMaxSecs = data.getUint16(_off, true); _off += 2;
+                            di.dangerCount = data.getUint8(_off++); di.dangerScore = data.getUint16(_off, true); _off += 2; di.dangerMaxSecs = data.getUint16(_off, true); _off += 2;
+                            di.decayCount = data.getUint8(_off++); di.decayScore = data.getUint16(_off, true); _off += 2; di.decayMaxSecs = data.getUint16(_off, true); _off += 2;
+                            di.inDangerZone = data.getUint8(_off++) === 1;
+                            di.dangerPhaseSecs = data.getUint16(_off, true); _off += 2;
+                            di.decayIntervalSecs = data.getUint8(_off++);
+                            di.active = true;
+                        }
                     } else {
 
                     }
