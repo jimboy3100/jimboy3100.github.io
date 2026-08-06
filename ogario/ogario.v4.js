@@ -16542,15 +16542,6 @@ function thelegendmodproject() {
             this.setFontSize = function (
                 ogariofontsizesetter
             ) {
-                /*
-                 * Text canvases are rasterized at the current screen-space
-                 * font size and are later divided by the same view scale when
-                 * drawn back into world space.
-                 *
-                 * Never retain a canvas generated for an older font size.
-                 * A dead zone such as "> 3" causes small mass text to keep an
-                 * old texture while drawMass() uses the new zoom divisor.
-                 */
                 var nextFontSize =
                     Number(
                         ogariofontsizesetter
@@ -16570,6 +16561,13 @@ function thelegendmodproject() {
                         nextFontSize
                     );
 
+                /*
+                 * Every cell has its own massCanvas.
+                 *
+                 * Never use a tolerance here. A tolerance allows different
+                 * cells to retain different historical raster sizes even
+                 * though they currently request the same mass font size.
+                 */
                 if (
                     this.fontSize ===
                     nextFontSize
@@ -16589,8 +16587,9 @@ function thelegendmodproject() {
                 this.setFont();
 
                 /*
-                 * Width is proportional to fontSize, so the canvas dimensions
-                 * and glyph raster must both be rebuilt.
+                 * Recreate the texture immediately at the exact requested
+                 * size. Width measurement itself is performed at 10px and
+                 * scaled later, so no unnecessary remeasurement is needed.
                  */
                 this.redraw =
                     true;
@@ -17085,18 +17084,92 @@ function thelegendmodproject() {
             this.strokeScale = strokeScale;
         };
         this.setFontSize = function () {
+            /*
+             * Virus text remains controlled by the dedicated Virus Mass Scale
+             * setting. It is not a normal player-cell mass label.
+             */
             if (this.isVirus) {
-                this.massSize = Math.ceil(this.virMassSize * this.scale * this.virMassScale);
+                this.massSize =
+                    Math.max(
+                        4,
+                        Math.round(
+                            this.virMassSize *
+                            this.scale *
+                            this.virMassScale
+                        )
+                    );
+
                 return;
             }
-            this.fontSize = Math.max(this.size * 0.3, 26) * this.scale;
-            this.nickSize = ~~(this.fontSize * this.nickScale);
-            this.massSize = ~~(this.fontSize * 0.5 * this.massScale);
+
+            /*
+             * Preserve the existing nickname behavior.
+             *
+             * Nicknames may continue growing with cell radius because the user
+             * reported that nickname rendering is already correct.
+             */
+            var nicknameWorldFontSize =
+                Math.max(
+                    this.size * 0.3,
+                    26
+                );
+
+            this.fontSize =
+                nicknameWorldFontSize *
+                this.scale;
+
+            this.nickSize =
+                Math.max(
+                    6,
+                    Math.round(
+                        this.fontSize *
+                        this.nickScale
+                    )
+                );
+
+            /*
+             * FIXED MASS SIZE
+             *
+             * Do not derive mass size from this.size or this.fontSize.
+             * Every ordinary cell now requests exactly the same world-space
+             * mass font size at the same camera zoom.
+             *
+             * The value 26 * 0.5 preserves the original minimum mass size.
+             * defaultSettings.massScale remains fully respected.
+             */
+            var fixedMassWorldFontSize =
+                26 *
+                0.5 *
+                this.massScale;
+
+            this.massSize =
+                Math.max(
+                    4,
+                    Math.round(
+                        fixedMassWorldFontSize *
+                        this.scale
+                    )
+                );
+
             if (this.optimizedNames) {
-                this.redrawNick = Math.abs((this.nickSize - this.lastNickSize) / this.nickSize) >= 0.3 || this.rescale;
+                this.redrawNick =
+                    Math.abs(
+                        (
+                            this.nickSize -
+                            this.lastNickSize
+                        ) /
+                        Math.max(
+                            1,
+                            this.nickSize
+                        )
+                    ) >= 0.3 ||
+                    this.rescale;
+
                 return;
             }
-            this.redrawNick = true;
+
+            this.redrawNick =
+                true;
         };
         this.setStrokeSize = function () {
             if (this.strokeNick && !this.isVirus) {
@@ -17263,8 +17336,8 @@ function thelegendmodproject() {
             }
 
             /*
-             * Update font size before scale so drawTxt() always represents
-             * this exact zoom generation.
+             * Every normal cell receives the same this.massSize from
+             * setFontSize(). The mass canvas must accept that exact value.
              */
             massCanvas.setFontSize(
                 this.massSize
@@ -17286,8 +17359,8 @@ function thelegendmodproject() {
                 1;
 
             /*
-             * Use the scale stored by the same renderer that produced data.
-             * This keeps texture generation and world-size conversion atomic.
+             * Use the scale stored on the renderer that produced this exact
+             * raster instead of independently reading another value.
              */
             var rasterScale =
                 massCanvas.scale > 0
