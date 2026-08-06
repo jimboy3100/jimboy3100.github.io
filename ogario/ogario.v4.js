@@ -23556,19 +23556,124 @@ function thelegendmodproject() {
         },
         showSessionStats(u) {
             if (!u) return;
-            toastr.info('<b>[' + Premadeletter123 + ']:</b><br> ' +
-                '<b class="message-nick">Final mass:</b> ' + u.finalMass + '<br>' +
-                '<b class="message-nick">Final position:</b> ' + u.finalPosition + '<br>' +
-                '<b class="message-nick">Food eaten:</b> ' + u.foodEaten + '<br>' +
-                '<b class="message-nick">Highest mass:</b> ' + u.highestMass + '<br>' +
-                '<b class="message-nick">Longest time alive:</b> ' + u.longestTimeAlive + '<br>' +
-                '<b class="message-nick">Mass consumed:</b> ' + u.massConsumed + '<br>' +
-                '<b class="message-nick">Normal cells eaten:</b> ' + u.normalCellsEaten + '<br>' +
-                '<b class="message-nick">Players eaten:</b> ' + u.playersEaten + '<br>' +
-                '<b class="message-nick">Time on leaderboard:</b> ' + u.timeInLeaderboard + '<br>' +
-                '<b class="message-nick">Total time:</b> ' + u.timeTotal + '<br>' +
-                '<b class="message-nick">Top position:</b> ' + u.topPosition + '<br>' +
-                '<b class="message-nick">Viruses eaten:</b> ' + u.virusesEaten)
+
+            /* Remove any previous modal */
+            var old = document.getElementById('lm-gameover-modal');
+            if (old) old.remove();
+
+            /* Theme colors from user settings */
+            var mc = defaultSettings.menuMainColor || '#01d9cc';
+            var pc = defaultSettings.menuPanelColor || '#00243e';
+            var pc2 = defaultSettings.menuPanelColor2 || '#002f52';
+            var tc = defaultSettings.menuTextColor || '#ffffff';
+            var tc2 = defaultSettings.menuTextColor2 || '#8096a7';
+
+            /* Format time helper */
+            function fmtTime(secs) {
+                if (!secs && secs !== 0) return '—';
+                var s = parseInt(secs, 10);
+                if (s < 60) return s + 's';
+                var m = Math.floor(s / 60);
+                var r = s % 60;
+                return m + 'm ' + r + 's';
+            }
+
+            /* Format mass helper */
+            function fmtMass(m) {
+                if (!m && m !== 0) return '0';
+                m = parseInt(m, 10);
+                if (m >= 1000000) return (m / 1000000).toFixed(1) + 'M';
+                if (m >= 10000) return (m / 1000).toFixed(1) + 'K';
+                return m.toLocaleString();
+            }
+
+            /* Stat rows data */
+            var stats = [
+                { icon: '💀', label: 'Final Mass',       value: fmtMass(u.finalMass),        accent: true },
+                { icon: '👑', label: 'Highest Mass',     value: fmtMass(u.highestMass),       accent: true },
+                { icon: '🏆', label: 'Top Position',     value: '#' + (u.topPosition || '—') },
+                { icon: '📍', label: 'Final Position',   value: '#' + (u.finalPosition || '—') },
+                { icon: '⏱️', label: 'Time Alive',       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
+                { icon: '📊', label: 'Time on LB',       value: fmtTime(u.timeInLeaderboard) },
+                { icon: '🍽️', label: 'Mass Consumed',    value: fmtMass(u.massConsumed) },
+                { icon: '🔵', label: 'Food Eaten',       value: (u.foodEaten || 0).toLocaleString() },
+                { icon: '⚔️', label: 'Players Eaten',    value: (u.playersEaten || 0).toLocaleString() },
+                { icon: '🟢', label: 'Cells Eaten',      value: (u.normalCellsEaten || 0).toLocaleString() },
+                { icon: '🦠', label: 'Viruses Eaten',    value: (u.virusesEaten || 0).toLocaleString() }
+            ];
+
+            /* Build HTML */
+            var rows = '';
+            for (var i = 0; i < stats.length; i++) {
+                var s = stats[i];
+                var valColor = s.accent ? mc : tc;
+                var delay = (i * 0.06).toFixed(2);
+                rows += '<div class="lm-go-row" style="animation-delay:' + delay + 's">' +
+                    '<span class="lm-go-icon">' + s.icon + '</span>' +
+                    '<span class="lm-go-label">' + s.label + '</span>' +
+                    '<span class="lm-go-value" style="color:' + valColor + '">' + s.value + '</span>' +
+                    '</div>';
+            }
+
+            var html = '<div id="lm-gameover-modal" style="' +
+                'position:fixed;top:50%;right:20px;transform:translateY(-50%);' +
+                'width:280px;z-index:99999;pointer-events:auto;' +
+                'animation:lmGoSlideIn 0.4s cubic-bezier(.22,1,.36,1) forwards;' +
+                'opacity:0;font-family:inherit;">' +
+
+                /* Card */
+                '<div style="' +
+                'background:' + pc + ';border:1px solid ' + pc2 + ';' +
+                'border-top:3px solid ' + mc + ';border-radius:6px;' +
+                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;cursor:pointer;" ' +
+                'onclick="var el=document.getElementById(\'lm-gameover-modal\');if(el){el.style.animation=\'lmGoSlideOut 0.3s ease forwards\';setTimeout(function(){el.remove()},300)}">' +
+
+                /* Header */
+                '<div style="' +
+                'padding:12px 16px 8px;text-align:center;' +
+                'border-bottom:1px solid ' + pc2 + ';' +
+                'background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);">' +
+                '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
+                '☠️ Game Over</div>' +
+                '<div style="font-size:10px;color:' + tc2 + ';margin-top:2px;">' +
+                'Click to dismiss</div>' +
+                '</div>' +
+
+                /* Stats */
+                '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
+
+                '</div></div>';
+
+            /* Inject keyframes if not yet */
+            if (!document.getElementById('lm-go-keyframes')) {
+                var style = document.createElement('style');
+                style.id = 'lm-go-keyframes';
+                style.textContent =
+                    '@keyframes lmGoSlideIn{from{opacity:0;transform:translateY(-50%) translateX(40px)}to{opacity:1;transform:translateY(-50%) translateX(0)}}' +
+                    '@keyframes lmGoSlideOut{from{opacity:1;transform:translateY(-50%) translateX(0)}to{opacity:0;transform:translateY(-50%) translateX(40px)}}' +
+                    '@keyframes lmGoRowIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}' +
+                    '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:4px;' +
+                    'animation:lmGoRowIn 0.35s ease forwards;opacity:0;transition:background 0.15s}' +
+                    '.lm-go-row:hover{background:rgba(255,255,255,0.05)}' +
+                    '.lm-go-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0}' +
+                    '.lm-go-label{flex:1;font-size:11px;color:' + tc2 + ';padding-left:6px}' +
+                    '.lm-go-value{font-size:13px;font-weight:700;text-align:right;min-width:60px}';
+                document.head.appendChild(style);
+            }
+
+            /* Inject into DOM */
+            var container = document.createElement('div');
+            container.innerHTML = html;
+            document.body.appendChild(container.firstChild);
+
+            /* Auto-dismiss after 8 seconds */
+            setTimeout(function () {
+                var el = document.getElementById('lm-gameover-modal');
+                if (el) {
+                    el.style.animation = 'lmGoSlideOut 0.3s ease forwards';
+                    setTimeout(function () { if (el.parentNode) el.remove(); }, 300);
+                }
+            }, 8000);
         },
         updateEvents(event) {
             if (event.length === 0) window.questActivationReq()
