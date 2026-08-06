@@ -5696,17 +5696,17 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 🔥 Official Offer
-                <div style="position: absolute; right: -16px; top: 5px; background: #018cf6; color: white; font-size: 7px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">Login&Play</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 6px; right: -22px; width: 80px; padding: 2px 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; line-height: 1; transform: rotate(45deg); box-shadow: 0 2px 4px rgba(0,0,0,0.6); text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
             </button>
-            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
+            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 <i class="fa fa-trophy"></i> Leagues
-                <div style="position: absolute; right: -16px; top: 5px; background: #018cf6; color: white; font-size: 7px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">Login&Play</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 6px; right: -22px; width: 80px; padding: 2px 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; line-height: 1; transform: rotate(45deg); box-shadow: 0 2px 4px rgba(0,0,0,0.6); text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
             </button>
-            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
+            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
                 <i class="fa fa-users"></i> Friends
-                <div style="position: absolute; right: -16px; top: 5px; background: #018cf6; color: white; font-size: 7px; font-weight: bold; padding: 1px 16px; transform: rotate(45deg); box-shadow: 0 1px 3px rgba(0,0,0,0.5); pointer-events: none;">Login&Play</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 6px; right: -22px; width: 80px; padding: 2px 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; line-height: 1; transform: rotate(45deg); box-shadow: 0 2px 4px rgba(0,0,0,0.6); text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
             </button>
         `;
 
@@ -5970,21 +5970,33 @@
                 buttonsEnabled ? 'false' : 'true'
             );
 
+        var ribbonBadgeHtml = '<div class="lm-ribbon-badge" style="position: absolute; top: 6px; right: -22px; width: 80px; padding: 2px 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: center; line-height: 1; transform: rotate(45deg); box-shadow: 0 2px 4px rgba(0,0,0,0.6); text-shadow: 0 1px 2px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>';
+
         if (buttonsEnabled) {
             menuBtns.css({
                 opacity: 1,
                 cursor: 'pointer',
                 pointerEvents: 'auto'
             }).removeAttr('title');
+            menuBtns.find('.lm-ribbon-badge').remove();
         } else {
             menuBtns.css({
-                opacity: 0.5,
+                opacity: 0.85,
                 cursor: 'not-allowed',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                position: 'relative',
+                overflow: 'hidden'
             }).attr(
                 'title',
                 'Log in and play once to receive your Agar.io UID'
             );
+
+            menuBtns.each(function() {
+                var $btn = $(this);
+                if (!$btn.find('.lm-ribbon-badge').length) {
+                    $btn.append(ribbonBadgeHtml);
+                }
+            });
         }
 
         // Friends requires an authenticated Facebook Agar.io account.
