@@ -19240,14 +19240,19 @@ function thelegendmodproject() {
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
-            if (window.master && window.master.onDisconnect) {
+            // Only trigger agar.io reconnect logic for official servers.
+            // For private servers (agar2, imsolo, garix), master.onDisconnect()
+            // would redirect to agar.io servers instead of staying on the private server.
+            if (this.integrity && window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
             /* ── Auto-reconnect on server restart ── */
             var lastWs = this.ws;
             if (lastWs && (lastWs.indexOf('legendmod.ml') !== -1 ||
                 lastWs.indexOf('expanding.land') !== -1 ||
-                lastWs.indexOf('ffa.legendmod') !== -1)) {
+                lastWs.indexOf('ffa.legendmod') !== -1 ||
+                lastWs.indexOf('agar2.com') !== -1 ||
+                lastWs.indexOf('imsolo.pro') !== -1)) {
                 if (!this._reconnAttempts) this._reconnAttempts = 0;
                 var maxAttempts = 5;
                 if (this._reconnAttempts < maxAttempts) {
