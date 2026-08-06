@@ -9840,8 +9840,13 @@ function thelegendmodproject() {
                 app.setQuest();
                 if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
                 if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
-                if (window.master && typeof window.master.setGameMode === 'function') {
-                    window.master.setGameMode(modeVal);
+                // Don't call master.setGameMode for private/agar2 servers (numeric IDs) —
+                // it triggers Core.ui.network.reconnect() which reconnects to agar.io
+                // Only call for original agar.io modes (":ffa", ":teams", etc.)
+                if (typeof dummy === 'string' && dummy.charAt(0) === ':') {
+                    if (window.master && typeof window.master.setGameMode === 'function') {
+                        window.master.setGameMode(modeVal);
+                    }
                 }
             });
             $(document).on("change", "#quality", function () {
