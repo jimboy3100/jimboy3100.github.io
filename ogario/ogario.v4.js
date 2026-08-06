@@ -8137,9 +8137,9 @@ function thelegendmodproject() {
             }
         },
         setAnimatedRainbowColor() {
-            if (defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
+            if (typeof tcm2 !== 'undefined' && defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
                 tcm2.f.override();
-            } else if (tcm2 && tcm2.f && typeof tcm2.f.restore === 'function') {
+            } else if (typeof tcm2 !== 'undefined' && tcm2 && tcm2.f && typeof tcm2.f.restore === 'function') {
                 tcm2.f.restore();
             }
         },
