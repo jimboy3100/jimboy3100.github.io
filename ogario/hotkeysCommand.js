@@ -106,7 +106,7 @@
 			},	
 			'hk-scanTrick': {
 				get label() {
-					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Scan Trick';
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Macro Scan trick';
 				},
 				defaultKey: '',
 				keyDown() {

@@ -6258,7 +6258,7 @@ textLanguage.scanTrickStatus =
 
 textLanguage['hk-scanTrick'] =
     textLanguage['hk-scanTrick'] ||
-    'Hold Scan Trick';
+    'Macro Scan trick';
 
 /* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
