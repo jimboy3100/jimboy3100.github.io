@@ -5696,17 +5696,17 @@
         btnGroup.id = 'lm-extended-menu-btns';
         btnGroup.style.cssText = 'display: flex; gap: 6px; margin: 10px 0; justify-content: space-between; width: 100%; box-sizing: border-box; clear: both;';
         btnGroup.innerHTML = `
-            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
+            <button id="lm-daily-deal-btn" class="btn btn-danger btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 🔥 Official Offer
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY</div>
             </button>
-            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
+            <button id="lm-leagues-btn" class="btn btn-warning btn-shop" disabled="disabled" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first">
                 <i class="fa fa-trophy"></i> Leagues
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY</div>
             </button>
-            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.85; cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
+            <button id="lm-friends-btn" class="btn btn-info btn-shop" disabled="disabled" style="display: none; flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Facebook and play a game session first">
                 <i class="fa fa-users"></i> Friends
-                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>
+                <div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY</div>
             </button>
         `;
 
@@ -5970,18 +5970,20 @@
                 buttonsEnabled ? 'false' : 'true'
             );
 
-        var ribbonBadgeHtml = '<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;">LOGIN & PLAY</div>';
+        var ribbonBadgeHtml = '<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7.5px; font-weight: 800; padding: 2px 5px; border-bottom-left-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY</div>';
 
         if (buttonsEnabled) {
             menuBtns.css({
                 opacity: 1,
+                filter: 'none',
                 cursor: 'pointer',
                 pointerEvents: 'auto'
             }).removeAttr('title');
             menuBtns.find('.lm-ribbon-badge').remove();
         } else {
             menuBtns.css({
-                opacity: 0.85,
+                opacity: 0.5,
+                filter: 'grayscale(35%)',
                 cursor: 'not-allowed',
                 pointerEvents: 'none',
                 position: 'relative',
@@ -6012,9 +6014,10 @@
         var friendsBtn = $('#lm-friends-btn');
         friendsBtn.prop('disabled', !friendsBtnEnabled);
         if (!friendsBtnEnabled) {
-            friendsBtn.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Facebook and play a game session first to access Friends');
+            friendsBtn.css({ opacity: 0.5, filter: 'grayscale(35%)', cursor: 'not-allowed', pointerEvents: 'none' }).attr('title', 'Log in with Facebook and play a game session first to access Friends');
         } else {
-            friendsBtn.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+            friendsBtn.css({ opacity: 1, filter: 'none', cursor: 'pointer', pointerEvents: 'auto' }).removeAttr('title');
+            friendsBtn.find('.lm-ribbon-badge').remove();
         }
 
         // 3. Official Agar.io XP Progress Bar & Level
