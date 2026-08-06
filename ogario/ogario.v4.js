@@ -18688,7 +18688,7 @@ function thelegendmodproject() {
              * This duplicates the detection below but runs BEFORE anything else. */
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
-                    : t.includes('agar2.com') ? 'imsolo'
+                    : t.includes('agar2.com') ? 'agar2'
                         : t.includes('garix.io') ? 'garix'
                             : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                                 : 'private';
@@ -18929,7 +18929,7 @@ function thelegendmodproject() {
                 this.garixPingInterval = null;
             }
             this.ws = t;
-            this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || this.ws.indexOf('live-arena') > -1); // 2026 JIMBOY3100
+            this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || (this.ws.indexOf('live-arena') > -1 && this.ws.indexOf('agar2.com') === -1)); // 2026 JIMBOY3100
             this.serverType = _earlyType;
 
             this._worldSpectatePending =
