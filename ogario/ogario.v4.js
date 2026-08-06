@@ -20878,6 +20878,7 @@ function thelegendmodproject() {
 
                         if (s < data.byteLength) {
                             ogario.serverHz = data.getUint8(s++);
+                            console.log('[EL Stats] opcode 203 received, serverHz=' + ogario.serverHz);
                         }
                         if (s + 2 <= data.byteLength) {
                             var aliveTotal = data.getUint16(s, true); s += 2;
@@ -22037,6 +22038,7 @@ function thelegendmodproject() {
                         ogario.elPlayerCount = elHumans2;
                         ogario.elBotCount = elBots2;
                         ogario.serverHz = data.getUint8(_off++);
+                        console.log('[EL Stats2] opcode 203 via ogarioWS, serverHz=' + ogario.serverHz);
                         var aliveTotal2 = data.getUint16(_off, true); _off += 2;
                         if (this.top5totalPlayers) {
                             this.top5totalPlayers.textContent = aliveTotal2;
