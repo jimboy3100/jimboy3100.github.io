@@ -17928,152 +17928,407 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        /* color2 must be captured AFTER oppColor/myCustomColor override
-                         * so the body fill uses the correct opponent/player color */
+                        /*
+                         * Resolve the body color after all player/opponent overrides.
+                         *
+                         * A missing, malformed or explicitly transparent color must
+                         * never produce an invisible ordinary cell.
+                         */
                         var color2 = this.color;
 
-                        if (!node) style.beginPath();
-                        if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                            var point = this.points[0];
-                            style.moveTo(point.x, point.y);
-                            for (var i = 0; i < this.points.length; ++i) {
-                                var point = this.points[i];
-                                style.lineTo(point.x, point.y);
-                            }
-                        }
-                        else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
-                            style.lineJoin = "miter";
-                            if (!window._virusSinTable) {
-                                window._virusSinTable = new Float32Array(120);
-                                window._virusCosTable = new Float32Array(120);
-                                for (var _vIdx = 0; _vIdx < 120; _vIdx++) {
-                                    var _vAng = _vIdx * (Math.PI * 2 / 120);
-                                    window._virusSinTable[_vIdx] = Math.sin(_vAng);
-                                    window._virusCosTable[_vIdx] = Math.cos(_vAng);
-                                }
-                            }
-                            var _vSin = window._virusSinTable, _vCos = window._virusCosTable;
-                            style.moveTo(this.x, this.y + this.size + 3);
-                            for (var i = 1; i < 120; i++) {
-                                var dist = this.size - 3 + ((i & 1) ? 0 : 6);
-                                style.lineTo(
-                                    this.x + dist * _vSin[i],
-                                    this.y + dist * _vCos[i]
-                                );
-                            }
-                            style.lineTo(this.x, this.y + this.size + 3);
+                        if (typeof color2 !== "string") {
+                            color2 = "#808080";
                         }
                         else {
-                            if (!node) {
-                                //this.drawCircle(style, this.x, this.y, y, this.color)
-                                if (this.isVirus || node2IsVideo || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)) { //this is the normal function
-                                    style.arc(this.x, this.y, y, 0, this.pi2, false);
-                                    if (!this.isVirus && !defaultmapsettings.cellContours) {
-                                        /* Always fill the body color, even for video/gif skins.
-                                         * This ensures the cell is visible while the skin loads
-                                         * and provides a solid background behind cropped/transparent skins. */
-                                        style.fillStyle = color2;
-                                        style.fill();
-                                    }
-                                    if (!this.isVirus && defaultmapsettings.cellContours) {
-                                        style.lineWidth = 20; ///
-                                        style.strokeStyle = color2; ///
-                                        style.stroke(); ///
-                                    }
-                                }
-                                else {
-                                    this.drawCircle(style, this.x, this.y, y, color2)
-                                }
+                            color2 = color2.trim();
+
+                            var _cellColorLower =
+                                color2
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "");
+
+                            if (
+                                !color2 ||
+                                _cellColorLower === "transparent" ||
+                                /^rgba\([^)]*,0(?:\.0+)?\)$/.test(
+                                    _cellColorLower
+                                )
+                            ) {
+                                color2 = "#808080";
                             }
                         }
-                        if (!node) style.closePath();
-                        //17/12/2020
-                        if (!node && this.size <= 38 && this.nick === "" && !this.isVirus && !this.isPlayerCell) {
-                            if (defaultmapsettings.jellyPhisycs) {
-                                style.fillStyle = this.color;
-                                style.fill();
+
+                        /*
+                         * Build the body path for EVERY cell.
+                         *
+                         * Never guard this with `if (!node)`.
+                         *
+                         * getCustomSkin() may return a valid-sized cached canvas
+                         * whose pixels are still entirely transparent. In that
+                         * situation `node` is truthy, but drawing the node produces
+                         * nothing. The old code consequently skipped both the body
+                         * color and the visible skin.
+                         *
+                         * The invariant is now:
+                         *
+                         *     body color first
+                         *     skin second
+                         *
+                         * A skin is always an overlay, never the only cell body.
+                         */
+                        style.beginPath();
+
+                        if (
+                            defaultmapsettings.jellyPhisycs &&
+                            this.points.length
+                        ) {
+                            var point =
+                                this.points[0];
+
+                            style.moveTo(
+                                point.x,
+                                point.y
+                            );
+
+                            for (
+                                var i = 1;
+                                i < this.points.length;
+                                ++i
+                            ) {
+                                point =
+                                    this.points[i];
+
+                                style.lineTo(
+                                    point.x,
+                                    point.y
+                                );
                             }
-                            return;
                         }
-                        //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
-                        //    return style.fillStyle = this.color, style.fill(), void style.restore();
-                        //}						
+                        else if (
+                            defaultmapsettings.jellyPhisycs &&
+                            this.isVirus
+                        ) {
+                            style.lineJoin =
+                                "miter";
+
+                            if (
+                                !window
+                                    ._virusSinTable
+                            ) {
+                                window._virusSinTable =
+                                    new Float32Array(
+                                        120
+                                    );
+
+                                window._virusCosTable =
+                                    new Float32Array(
+                                        120
+                                    );
+
+                                for (
+                                    var _vIdx = 0;
+                                    _vIdx < 120;
+                                    _vIdx++
+                                ) {
+                                    var _vAng =
+                                        _vIdx *
+                                        (
+                                            Math.PI *
+                                            2 /
+                                            120
+                                        );
+
+                                    window
+                                        ._virusSinTable[
+                                            _vIdx
+                                        ] =
+                                        Math.sin(
+                                            _vAng
+                                        );
+
+                                    window
+                                        ._virusCosTable[
+                                            _vIdx
+                                        ] =
+                                        Math.cos(
+                                            _vAng
+                                        );
+                                }
+                            }
+
+                            var _vSin =
+                                window
+                                    ._virusSinTable;
+
+                            var _vCos =
+                                window
+                                    ._virusCosTable;
+
+                            style.moveTo(
+                                this.x,
+                                this.y +
+                                this.size +
+                                3
+                            );
+
+                            for (
+                                var i = 1;
+                                i < 120;
+                                i++
+                            ) {
+                                var dist =
+                                    this.size -
+                                    3 +
+                                    (
+                                        (i & 1)
+                                            ? 0
+                                            : 6
+                                    );
+
+                                style.lineTo(
+                                    this.x +
+                                    dist *
+                                    _vSin[i],
+
+                                    this.y +
+                                    dist *
+                                    _vCos[i]
+                                );
+                            }
+
+                            style.lineTo(
+                                this.x,
+                                this.y +
+                                this.size +
+                                3
+                            );
+                        }
+                        else {
+                            style.arc(
+                                this.x,
+                                this.y,
+                                y,
+                                0,
+                                this.pi2,
+                                false
+                            );
+                        }
+
+                        style.closePath();
+
+                        /*
+                         * Viruses retain their dedicated fill, stroke, alpha,
+                         * spikes and glow implementation.
+                         */
                         if (this.isVirus) {
-                            //console.log("is not jelly");
-                            /*if (dyinglight1load === "yes") {
-                                try {
-                                    style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
-                                } catch (e) {}
-                            }*/
-                            if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
-                                style.globalAlpha *= defaultSettings.virusAlpha;
+                            if (
+                                defaultmapsettings
+                                    .transparentViruses &&
+                                defaultSettings
+                                    .virusAlpha <
+                                    0.99
+                            ) {
+                                style.globalAlpha *=
+                                    defaultSettings
+                                        .virusAlpha;
+
                                 s = true;
                             }
-                            if (defaultmapsettings.virColors && LM.play) {
-                                style.fillStyle = application.setVirusColor(y);
-                                style.strokeStyle = application.setVirusStrokeColor(y);
+
+                            if (
+                                defaultmapsettings
+                                    .virColors &&
+                                LM.play
+                            ) {
+                                style.fillStyle =
+                                    application
+                                        .setVirusColor(
+                                            y
+                                        );
+
+                                style.strokeStyle =
+                                    application
+                                        .setVirusStrokeColor(
+                                            y
+                                        );
                             }
                             else {
-                                style.fillStyle = this.virusColor
-                                style.strokeStyle = this.virusStroke
+                                style.fillStyle =
+                                    this.virusColor ||
+                                    defaultSettings
+                                        .virusColor ||
+                                    "#33ff33";
+
+                                style.strokeStyle =
+                                    this.virusStroke ||
+                                    defaultSettings
+                                        .virusStrokeColor ||
+                                    "#2ca52c";
                             }
-                            style.fill()
+
+                            style.fill();
+
                             if (s) {
-                                style.globalAlpha = value;
+                                style.globalAlpha =
+                                    value;
+
                                 s = false;
                             }
-                            style.lineWidth = defaultSettings.virusStrokeSize
-                            if (defaultmapsettings.virusGlow) {
-                                style.shadowBlur = defaultSettings.virusGlowSize;
-                                style.shadowColor = defaultSettings.virusGlowColor;
+
+                            style.lineWidth =
+                                defaultSettings
+                                    .virusStrokeSize;
+
+                            if (
+                                defaultmapsettings
+                                    .virusGlow
+                            ) {
+                                style.shadowBlur =
+                                    defaultSettings
+                                        .virusGlowSize;
+
+                                style.shadowColor =
+                                    defaultSettings
+                                        .virusGlowColor;
                             }
-                            if (defaultmapsettings.virusSpikes) {
-                                style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+
+                            if (
+                                defaultmapsettings
+                                    .virusSpikes
+                            ) {
+                                style.stroke(
+                                    this
+                                        .createStrokeVirusPath(
+                                            this.x,
+                                            this.y,
+                                            this.size -
+                                            2,
+                                            defaultSettings
+                                                .virusSpikesSize
+                                        )
+                                );
                             }
                             else {
-                                style.stroke()
+                                style.stroke();
                             }
-                            if (defaultmapsettings.showMass) {
+
+                            if (
+                                defaultmapsettings
+                                    .showMass
+                            ) {
                                 this.setDrawing();
                                 this.setDrawingScale();
-                                this.setMass(this.size);
-                                this.drawMass(style);
+                                this.setMass(
+                                    this.size
+                                );
+                                this.drawMass(
+                                    style
+                                );
                             }
+
                             return;
                         }
 
+                        /*
+                         * Unconditional ordinary-cell body pass.
+                         *
+                         * This runs whether:
+                         *
+                         * - no skin exists;
+                         * - a normal skin exists;
+                         * - the skin is transparent;
+                         * - the skin cache contains a blank canvas;
+                         * - image decoding is incomplete;
+                         * - drawing the skin later throws.
+                         */
+                        if (
+                            defaultmapsettings
+                                .cellContours
+                        ) {
+                            style.lineWidth =
+                                20;
 
+                            style.strokeStyle =
+                                color2;
 
-                        /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
-                            style.lineWidth = 20; ///
-                            style.strokeStyle = this.color; ///
-                            style.stroke(); //
-                        } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
-                            style.lineWidth = 20; ///
-                            style.strokeStyle = this.color; ///
-                            style.stroke(); //
-                        } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick === profiles[application.selectedProfile].nick && LM.play) {
-                            style.lineWidth = 20; ///
-                            style.strokeStyle = this.color; ///
-                            style.stroke(); //
-                        }*/
-                        if (defaultmapsettings.cellContours) {
+                            style.stroke();
                         }
-                        else if (!node) {
-                            if (!window.drawRender.cellsColored[color2]) {
-                                window.drawRender.preDrawCellsColors(color2);
-                            }
-                            else {
-                                style.drawImage(window.drawRender.cellsColored[color2], this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
-                            }
-                        }
-                        else if (defaultmapsettings.jellyPhisycs && this.points.length) {
-                            style.fillStyle = color2;
+                        else if (
+                            defaultmapsettings
+                                .jellyPhisycs &&
+                            this.points.length
+                        ) {
+                            style.fillStyle =
+                                color2;
+
                             style.fill();
                         }
-                        //}
+                        else {
+                            var _bodyTexture =
+                                window
+                                    .drawRender
+                                    .cellsColored[
+                                        color2
+                                    ];
+
+                            /*
+                             * preDrawCellsColors() is synchronous because it now
+                             * stores the canvas directly. Retrieve and draw it
+                             * during the same frame instead of waiting until the
+                             * next frame.
+                             */
+                            if (!_bodyTexture) {
+                                window
+                                    .drawRender
+                                    .preDrawCellsColors(
+                                        color2
+                                    );
+
+                                _bodyTexture =
+                                    window
+                                        .drawRender
+                                        .cellsColored[
+                                            color2
+                                        ];
+                            }
+
+                            if (_bodyTexture) {
+                                style.drawImage(
+                                    _bodyTexture,
+                                    this.x - y,
+                                    this.y - y,
+                                    y * 2,
+                                    y * 2
+                                );
+                            }
+                            else {
+                                /*
+                                 * Last-resort synchronous fill. Even if cache
+                                 * creation fails, the cell remains visible.
+                                 */
+                                style.fillStyle =
+                                    color2;
+
+                                style.fill();
+                            }
+                        }
+
+                        /*
+                         * Food and other tiny unnamed ordinary cells can return
+                         * only after their body has actually been painted.
+                         */
+                        if (
+                            this.size <= 38 &&
+                            this.nick === "" &&
+                            !this.isPlayerCell
+                        ) {
+                            return;
+                        }
+
                         if (s) {
-                            style.globalAlpha = value;
+                            style.globalAlpha =
+                                value;
+
                             s = false;
                         }
                         /* Clear cell shadow after body fill — shadow must not
@@ -26995,43 +27250,161 @@ Most cells eaten   : ${mostCellsEaten}
                 in float a_radius;
                 in vec4 a_color;
                 in float a_skinLayer;
+                in float a_skinAlpha;
                 in float a_z;
+
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
+
                 out vec4 v_color;
                 out vec2 v_unitPos;
+
                 flat out float v_skinLayer;
+                flat out float v_skinAlpha;
+
                 void main() {
                     v_color = a_color;
                     v_unitPos = a_unitPos;
                     v_skinLayer = a_skinLayer;
-                    vec2 worldPos = a_cellPos + a_unitPos * a_radius;
-                    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
-                    gl_Position = vec4(clipPos.x, -clipPos.y, a_z, 1.0);
+                    v_skinAlpha = a_skinAlpha;
+
+                    vec2 worldPos =
+                        a_cellPos +
+                        a_unitPos *
+                        a_radius;
+
+                    vec2 clipPos =
+                        (
+                            worldPos -
+                            u_viewCenter
+                        ) *
+                        u_viewScale;
+
+                    gl_Position = vec4(
+                        clipPos.x,
+                        -clipPos.y,
+                        a_z,
+                        1.0
+                    );
                 }`;
 
                 var cellFsSource = `#version 300 es
                 precision highp float;
                 precision highp sampler2DArray;
+
                 in vec4 v_color;
                 in vec2 v_unitPos;
+
                 flat in float v_skinLayer;
+                flat in float v_skinAlpha;
+
                 uniform sampler2DArray u_skinArray;
+
                 out vec4 fragColor;
+
                 void main() {
-                    float distSq = dot(v_unitPos, v_unitPos);
-                    if (distSq > 1.0) discard;
-                    float edgeAlpha = 1.0 - smoothstep(0.95, 1.0, distSq);
-                    if (v_skinLayer >= 0.0) {
-                        vec2 skinUV = v_unitPos * 0.5 + 0.5;
-                        vec4 skinSample = texture(u_skinArray, vec3(skinUV, v_skinLayer));
-                        /* Blend skin over cell color — Canvas2D draws color first, skin on top.
-                         * If skin is transparent/broken, cell color shows through. */
-                        fragColor = vec4(mix(v_color.rgb, skinSample.rgb, skinSample.a), 1.0);
-                    } else {
-                        fragColor = vec4(v_color.rgb, 1.0);
+                    float distSq =
+                        dot(
+                            v_unitPos,
+                            v_unitPos
+                        );
+
+                    if (distSq > 1.0) {
+                        discard;
                     }
-                    fragColor.a *= v_color.a * edgeAlpha;
+
+                    float edgeAlpha =
+                        1.0 -
+                        smoothstep(
+                            0.95,
+                            1.0,
+                            distSq
+                        );
+
+                    /*
+                     * The body exists independently from the skin.
+                     */
+                    float bodyAlpha =
+                        clamp(
+                            v_color.a,
+                            0.0,
+                            1.0
+                        );
+
+                    vec3 outRgb =
+                        v_color.rgb;
+
+                    float outAlpha =
+                        bodyAlpha;
+
+                    if (
+                        v_skinLayer >=
+                        0.0
+                    ) {
+                        vec2 skinUV =
+                            v_unitPos *
+                            0.5 +
+                            0.5;
+
+                        vec4 skinSample =
+                            texture(
+                                u_skinArray,
+                                vec3(
+                                    skinUV,
+                                    v_skinLayer
+                                )
+                            );
+
+                        /*
+                         * Skin transparency affects only the skin overlay.
+                         * It can reveal the body, but can never erase it.
+                         */
+                        float skinAlpha =
+                            clamp(
+                                skinSample.a *
+                                v_skinAlpha,
+                                0.0,
+                                1.0
+                            );
+
+                        /*
+                         * Straight-alpha source-over composition:
+                         *
+                         *     skin over body
+                         */
+                        outAlpha =
+                            skinAlpha +
+                            bodyAlpha *
+                            (
+                                1.0 -
+                                skinAlpha
+                            );
+
+                        if (
+                            outAlpha >
+                            0.00001
+                        ) {
+                            vec3 outPremultiplied =
+                                skinSample.rgb *
+                                skinAlpha +
+                                v_color.rgb *
+                                bodyAlpha *
+                                (
+                                    1.0 -
+                                    skinAlpha
+                                );
+
+                            outRgb =
+                                outPremultiplied /
+                                outAlpha;
+                        }
+                    }
+
+                    fragColor = vec4(
+                        outRgb,
+                        outAlpha *
+                        edgeAlpha
+                    );
                 }`;
 
                 var cellProgram = createAndLinkProgram(gl, cellVsSource, cellFsSource);
@@ -27042,50 +27415,229 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_cell_viewScale = gl.getUniformLocation(cellProgram, 'u_viewScale');
                 this.u_skinArray = gl.getUniformLocation(cellProgram, 'u_skinArray');
 
-                // Cell VAO (separate from food VAO — 9-float instance stride with Z for depth)
-                this.glCellVAO = gl.createVertexArray();
-                gl.bindVertexArray(this.glCellVAO);
+                // Cell VAO:
+                // 10-float instance stride with independent body and skin alpha.
+                this.glCellVAO =
+                    gl.createVertexArray();
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
-                var a_cell_unitPos = gl.getAttribLocation(cellProgram, 'a_unitPos');
-                gl.enableVertexAttribArray(a_cell_unitPos);
-                gl.vertexAttribPointer(a_cell_unitPos, 2, gl.FLOAT, false, 0, 0);
+                gl.bindVertexArray(
+                    this.glCellVAO
+                );
 
-                // Instance VBO: [x, y, radius, r, g, b, alpha, skinLayer, z] = 9 floats
-                this.glCellInstanceVBO = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
-                this.glCellMaxInstances = 8192;
-                gl.bufferData(gl.ARRAY_BUFFER, this.glCellMaxInstances * 9 * 4, gl.DYNAMIC_DRAW);
-                var cellStride = 9 * 4;
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    quadVBO
+                );
 
-                var a_cell_cellPos = gl.getAttribLocation(cellProgram, 'a_cellPos');
-                gl.enableVertexAttribArray(a_cell_cellPos);
-                gl.vertexAttribPointer(a_cell_cellPos, 2, gl.FLOAT, false, cellStride, 0);
-                gl.vertexAttribDivisor(a_cell_cellPos, 1);
+                var a_cell_unitPos =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_unitPos"
+                    );
 
-                var a_cell_radius = gl.getAttribLocation(cellProgram, 'a_radius');
-                gl.enableVertexAttribArray(a_cell_radius);
-                gl.vertexAttribPointer(a_cell_radius, 1, gl.FLOAT, false, cellStride, 2 * 4);
-                gl.vertexAttribDivisor(a_cell_radius, 1);
+                gl.enableVertexAttribArray(
+                    a_cell_unitPos
+                );
 
-                var a_cell_color = gl.getAttribLocation(cellProgram, 'a_color');
-                gl.enableVertexAttribArray(a_cell_color);
-                gl.vertexAttribPointer(a_cell_color, 4, gl.FLOAT, false, cellStride, 3 * 4);
-                gl.vertexAttribDivisor(a_cell_color, 1);
+                gl.vertexAttribPointer(
+                    a_cell_unitPos,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+                );
 
-                var a_cell_skinLayer = gl.getAttribLocation(cellProgram, 'a_skinLayer');
-                gl.enableVertexAttribArray(a_cell_skinLayer);
-                gl.vertexAttribPointer(a_cell_skinLayer, 1, gl.FLOAT, false, cellStride, 7 * 4);
-                gl.vertexAttribDivisor(a_cell_skinLayer, 1);
+                /*
+                 * Instance layout:
+                 *
+                 *  0 x
+                 *  1 y
+                 *  2 radius
+                 *  3 red
+                 *  4 green
+                 *  5 blue
+                 *  6 body alpha
+                 *  7 skin layer
+                 *  8 skin alpha
+                 *  9 depth Z
+                 */
+                this.glCellInstanceVBO =
+                    gl.createBuffer();
 
-                var a_cell_z = gl.getAttribLocation(cellProgram, 'a_z');
-                gl.enableVertexAttribArray(a_cell_z);
-                gl.vertexAttribPointer(a_cell_z, 1, gl.FLOAT, false, cellStride, 8 * 4);
-                gl.vertexAttribDivisor(a_cell_z, 1);
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glCellInstanceVBO
+                );
 
-                gl.bindVertexArray(null);
+                this.glCellMaxInstances =
+                    8192;
 
-                this.glCellInstanceData = new Float32Array(this.glCellMaxInstances * 9);
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    this.glCellMaxInstances *
+                    10 *
+                    4,
+                    gl.DYNAMIC_DRAW
+                );
+
+                var cellStride =
+                    10 *
+                    4;
+
+                var a_cell_cellPos =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_cellPos"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_cellPos
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_cellPos,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    0
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_cellPos,
+                    1
+                );
+
+                var a_cell_radius =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_radius"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_radius
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_radius,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    2 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_radius,
+                    1
+                );
+
+                var a_cell_color =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_color"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_color
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_color,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    3 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_color,
+                    1
+                );
+
+                var a_cell_skinLayer =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_skinLayer"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_skinLayer
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_skinLayer,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    7 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_skinLayer,
+                    1
+                );
+
+                var a_cell_skinAlpha =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_skinAlpha"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_skinAlpha
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_skinAlpha,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    8 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_skinAlpha,
+                    1
+                );
+
+                var a_cell_z =
+                    gl.getAttribLocation(
+                        cellProgram,
+                        "a_z"
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_cell_z
+                );
+
+                gl.vertexAttribPointer(
+                    a_cell_z,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    cellStride,
+                    9 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    a_cell_z,
+                    1
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                this.glCellInstanceData =
+                    new Float32Array(
+                        this.glCellMaxInstances *
+                        10
+                    );
 
                 // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~128 MB VRAM)
                 this.glSkinArray = gl.createTexture();
@@ -29600,25 +30152,149 @@ Most cells eaten   : ${mostCellsEaten}
                     return abortCellBatch();
                 }
 
-                // Color resolution
-                var colorHex = cell.color || (typeof defaultSettings !== "undefined" && defaultSettings.foodColor ? defaultSettings.foodColor : '#ff0000');
-                var isPlaying = (LM.play && LM.playerCells && LM.playerCells.length > 0) || (window.multiboxPlayerEnabled && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
+                /*
+                 * Every GPU cell receives a valid RGB body color.
+                 *
+                 * Do not use `parsed || fallback`, because black is the valid
+                 * integer value 0x000000 and would incorrectly be replaced.
+                 */
+                var colorHex =
+                    cell.color ||
+                    "#808080";
+
+                var isPlaying =
+                    (
+                        LM.play &&
+                        LM.playerCells &&
+                        LM.playerCells.length >
+                        0
+                    ) ||
+                    (
+                        window
+                            .multiboxPlayerEnabled &&
+                        LM.playerCellsMulti &&
+                        LM.playerCellsMulti
+                            .length >
+                        0
+                    );
+
                 if (isPlaying) {
-                    if ((cell.isPlayerCell || cell.playerCellsMulti) && defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ':teams') {
-                        colorHex = ogarcopythelb.color;
-                    } else if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !cell.isFood && !defaultmapsettings.cellContours && LM.gameMode != ':teams' && cell.oppColor) {
-                        colorHex = cell.oppColor;
+                    if (
+                        (
+                            cell.isPlayerCell ||
+                            cell.playerCellsMulti
+                        ) &&
+                        defaultmapsettings
+                            .myCustomColor &&
+                        ogarcopythelb.color &&
+                        LM.gameMode !==
+                        ":teams"
+                    ) {
+                        colorHex =
+                            ogarcopythelb
+                                .color;
+                    }
+                    else if (
+                        defaultmapsettings
+                            .oppColors &&
+                        !defaultmapsettings
+                            .oppRings &&
+                        !cell.isFood &&
+                        !defaultmapsettings
+                            .cellContours &&
+                        LM.gameMode !==
+                        ":teams" &&
+                        cell.oppColor
+                    ) {
+                        colorHex =
+                            cell.oppColor;
                     }
                 }
-                if (!colorHex || typeof colorHex !== 'string') {
-                    colorHex = '#ff0000';
+
+                if (
+                    typeof colorHex !==
+                    "string"
+                ) {
+                    colorHex =
+                        "#808080";
+                }
+                else {
+                    colorHex =
+                        colorHex.trim();
+
+                    var _gpuColorLower =
+                        colorHex
+                            .toLowerCase()
+                            .replace(
+                                /\s+/g,
+                                ""
+                            );
+
+                    if (
+                        !colorHex ||
+                        _gpuColorLower ===
+                            "transparent" ||
+                        /^rgba\([^)]*,0(?:\.0+)?\)$/.test(
+                            _gpuColorLower
+                        )
+                    ) {
+                        colorHex =
+                            "#808080";
+                    }
                 }
 
-                var cInt = cell._colorInt;
-                if (cInt === undefined || cell._colorStr !== colorHex) {
-                    cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
-                    cell._colorInt = cInt;
-                    cell._colorStr = colorHex;
+                var cInt =
+                    cell._colorInt;
+
+                if (
+                    cInt === undefined ||
+                    cell._colorStr !==
+                        colorHex
+                ) {
+                    var _hex =
+                        colorHex.charAt(0) ===
+                        "#"
+                            ? colorHex.slice(
+                                1
+                            )
+                            : colorHex;
+
+                    if (
+                        /^[0-9a-f]{3}$/i.test(
+                            _hex
+                        )
+                    ) {
+                        _hex =
+                            _hex.charAt(0) +
+                            _hex.charAt(0) +
+                            _hex.charAt(1) +
+                            _hex.charAt(1) +
+                            _hex.charAt(2) +
+                            _hex.charAt(2);
+                    }
+
+                    var _parsedColor =
+                        /^[0-9a-f]{6}$/i.test(
+                            _hex
+                        )
+                            ? parseInt(
+                                _hex,
+                                16
+                            )
+                            : NaN;
+
+                    cInt =
+                        Number.isFinite(
+                            _parsedColor
+                        )
+                            ? _parsedColor
+                            : 0x808080;
+
+                    cell._colorInt =
+                        cInt;
+
+                    cell._colorStr =
+                        colorHex;
                 }
 
                 /* Ensure mass is computed even if cell.draw() hasn't run yet.
@@ -29628,13 +30304,35 @@ Most cells eaten   : ${mostCellsEaten}
                     cell.mass = ~~(cell.size * cell.size / 100);
                 }
 
-                // Alpha: transparent cells setting
-                var alpha = 1.0;
-                if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) alpha *= defaultSettings.cellsAlpha;
+                /*
+                 * Body transparency and skin transparency are separate.
+                 *
+                 * transparentSkins must reveal the body color. It must not
+                 * reduce the body color itself.
+                 */
+                var bodyAlpha =
+                    1.0;
 
-                // Skin layer lookup
-                var skinLayer = -1.0;
-                var skinRequested = false;
+                if (
+                    defaultmapsettings
+                        .transparentCells &&
+                    defaultSettings
+                        .cellsAlpha <
+                        0.99
+                ) {
+                    bodyAlpha *=
+                        defaultSettings
+                            .cellsAlpha;
+                }
+
+                var skinLayer =
+                    -1.0;
+
+                var skinAlpha =
+                    1.0;
+
+                var skinRequested =
+                    false;
                 if (_showSkins && !cell.isEjected && (cell.targetNick || cell.skin)) {
                     /* Chat socket skins (nick-based) take priority over vanilla skins */
                     var skinUrl = null;
@@ -29678,11 +30376,44 @@ Most cells eaten   : ${mostCellsEaten}
                             mappedLayer = this.uploadSkinTexture(activeKey, skinNode);
                         }
 
-                        if (typeof mappedLayer === 'number' && mappedLayer >= 0) {
-                            skinLayer = mappedLayer;
-                            // Transparent skin alpha
-                            if ((defaultmapsettings.transparentSkins && !(cell.isPlayerCell && !defaultmapsettings.myTransparentSkin)) || (cell.isPlayerCell && defaultmapsettings.myTransparentSkin)) {
-                                if (defaultSettings.skinsAlpha < 0.99) alpha *= defaultSettings.skinsAlpha;
+                        if (
+                            typeof mappedLayer ===
+                                "number" &&
+                            mappedLayer >=
+                                0
+                        ) {
+                            skinLayer =
+                                mappedLayer;
+
+                            /*
+                             * Fade only the skin overlay.
+                             * bodyAlpha remains untouched.
+                             */
+                            if (
+                                (
+                                    defaultmapsettings
+                                        .transparentSkins &&
+                                    !(
+                                        cell.isPlayerCell &&
+                                        !defaultmapsettings
+                                            .myTransparentSkin
+                                    )
+                                ) ||
+                                (
+                                    cell.isPlayerCell &&
+                                    defaultmapsettings
+                                        .myTransparentSkin
+                                )
+                            ) {
+                                if (
+                                    defaultSettings
+                                        .skinsAlpha <
+                                    0.99
+                                ) {
+                                    skinAlpha =
+                                        defaultSettings
+                                            .skinsAlpha;
+                                }
                             }
                         }
                     }
@@ -29694,38 +30425,122 @@ Most cells eaten   : ${mostCellsEaten}
                     return abortCellBatch();
                 }
 
-                var idx = count * 9;
-                data[idx] = x;
-                data[idx + 1] = y;
-                data[idx + 2] = r;
-                data[idx + 3] = ((cInt >> 16) & 255) / 255;
-                data[idx + 4] = ((cInt >> 8) & 255) / 255;
-                data[idx + 5] = (cInt & 255) / 255;
-                data[idx + 6] = alpha;
-                data[idx + 7] = skinLayer;
-                // Z depth placeholder — filled in post-pass below
-                data[idx + 8] = 0;
-                cell._webglCellIdx = count;
+                var idx =
+                    count *
+                    10;
+
+                data[idx] =
+                    x;
+
+                data[idx + 1] =
+                    y;
+
+                data[idx + 2] =
+                    r;
+
+                data[idx + 3] =
+                    (
+                        (cInt >> 16) &
+                        255
+                    ) /
+                    255;
+
+                data[idx + 4] =
+                    (
+                        (cInt >> 8) &
+                        255
+                    ) /
+                    255;
+
+                data[idx + 5] =
+                    (
+                        cInt &
+                        255
+                    ) /
+                    255;
+
+                data[idx + 6] =
+                    bodyAlpha;
+
+                data[idx + 7] =
+                    skinLayer;
+
+                data[idx + 8] =
+                    skinAlpha;
+
+                // Z placeholder.
+                data[idx + 9] =
+                    0;
+
+                cell._webglCellIdx =
+                    count;
+
                 count++;
-                cell._webglRendered = true;
+
+                cell._webglRendered =
+                    true;
             }
 
-            /* Post-pass: compute Z depth using actual rendered count.
-             * Cells sorted small→large (index 0=smallest, count-1=largest).
-             * Larger cells IN FRONT (lower Z). Z range: 0.9 (back) → 0.01 (front). */
-            for (var ci = 0; ci < count; ci++) {
-                var zDepth = count > 1
-                    ? 0.9 - (ci / (count - 1)) * 0.89
-                    : 0.45;
-                data[ci * 9 + 8] = zDepth;
+            /*
+             * Cells are sorted small to large.
+             * Larger cells receive the lower/closer Z value.
+             */
+            for (
+                var ci = 0;
+                ci < count;
+                ci++
+            ) {
+                var zDepth =
+                    count > 1
+                        ? 0.9 -
+                            (
+                                ci /
+                                (
+                                    count -
+                                    1
+                                )
+                            ) *
+                            0.89
+                        : 0.45;
+
+                data[
+                    ci *
+                    10 +
+                    9
+                ] =
+                    zDepth;
             }
-            /* Store Z on cells for text pass (second loop over original array) */
-            for (var i = 0; i < cellsArray.length; i++) {
-                var cell = cellsArray[i];
-                if (cell && cell._webglRendered && cell._webglCellIdx !== undefined) {
-                    var ci2 = cell._webglCellIdx;
-                    cell._webglZ = data[ci2 * 9 + 8];
-                    delete cell._webglCellIdx;
+
+            /*
+             * Preserve the depth value for the WebGL text pass.
+             */
+            for (
+                var i = 0;
+                i < cellsArray.length;
+                i++
+            ) {
+                var cell =
+                    cellsArray[i];
+
+                if (
+                    cell &&
+                    cell._webglRendered &&
+                    cell._webglCellIdx !==
+                        undefined
+                ) {
+                    var ci2 =
+                        cell
+                            ._webglCellIdx;
+
+                    cell._webglZ =
+                        data[
+                            ci2 *
+                            10 +
+                            9
+                        ];
+
+                    delete cell
+                        ._webglCellIdx;
                 }
             }
 
@@ -29746,7 +30561,14 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform1i(this.u_skinArray, 0);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 9));
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                data.subarray(
+                    0,
+                    count * 10
+                )
+            );
 
             gl.bindVertexArray(this.glCellVAO);
             gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
