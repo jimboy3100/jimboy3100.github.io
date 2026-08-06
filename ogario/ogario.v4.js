@@ -2144,11 +2144,8 @@ function deleteGamemode(temp) {
             text: 'Dagestan',
             value: 7
         }, {
-            text: 'Beta Party #1',
-            value: 14
-        }, {
-            text: 'Beta Party v2 #2',
-            value: 18
+            text: 'Rookery',
+            value: 8
         }, {
             text: 'Agar2 EU FFA',
             value: 8001
@@ -2317,11 +2314,12 @@ function deleteGamemode(temp) {
         }
         // Imsolo & Agar2 private server connections (multi-protocol support)
         // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
-        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7) {
+        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7 || $('#gamemode').val() == 8) {
             (function connectImsolo(val) {
                 var imsoloLbMap = {
                     6: { url: 'https://loadbalancer.static.imsolo.pro/getserver/selfeed', fallback: 'wss://imsolo.pro:2109/' },
-                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://imsolo.pro:2108/' }
+                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://imsolo.pro:2108/' },
+                    8: { url: 'https://loadbalancer.static.imsolo.pro/getserver/rookery', fallback: 'wss://rookery.ws.imsolo.pro/' }
                 };
                 var cfg = imsoloLbMap[val];
                 if (!cfg) return;
@@ -2340,48 +2338,14 @@ function deleteGamemode(temp) {
             })(parseInt($('#gamemode').val()));
         } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
-        } else if ($('#gamemode').val() == 14) {
-            core.connect('wss://imsolo.pro:2104/');
-        } else if ($('#gamemode').val() == 15) {
-            core.connect('wss://imsolo.pro:2105/');
-        } else if ($('#gamemode').val() == 16) {
-            core.connect('wss://imsolo.pro:2107/');
-        } else if ($('#gamemode').val() == 17) {
-            core.connect('wss://imsolo.pro:2110/');
-        } else if ($('#gamemode').val() == 18) {
-            core.connect('wss://imsolo.pro:2111/');
-        } else if ($('#gamemode').val() == 19) {
-            core.connect('wss://imsolo.pro:4110');
-        } else if ($('#gamemode').val() == 20) {
-            core.connect('wss://imsolo.pro:4101');
         } else if ($('#gamemode').val() == 21) {
             core.connect('wss://eatcells.com/api/~');
         } else if ($('#gamemode').val() == 22) {
             core.connect('wss://ogar.eatcells.com/api/~');
-        } else if ($('#gamemode').val() == 23) {
-            core.connect('wss://imsolo.pro:4102');
-        } else if ($('#gamemode').val() == 24) {
-            core.connect('wss://imsolo.pro:4104');
-        } else if ($('#gamemode').val() == 25) {
-            core.connect('wss://imsolo.pro:4105');
-        } else if ($('#gamemode').val() == 26) {
-            core.connect('wss://imsolo.pro:4111');
-        } else if ($('#gamemode').val() == 27) {
-            core.connect('wss://imsolo.pro:4112');
-        } else if ($('#gamemode').val() == 28) {
-            core.connect('wss://imsolo.pro:4113');
-        } else if ($('#gamemode').val() == 29) {
-            core.connect('wss://imsolo.pro:4103');
-        } else if ($('#gamemode').val() == 30) {
-            core.connect('wss://imsolo.pro:4109');
         } else if ($('#gamemode').val() == 31) {
             core.connect('wss://delta-selffeed.glitch.me');
-        } else if ($('#gamemode').val() == 32) {
-            core.connect('wss://imsolo.pro:2100');
         } else if ($('#gamemode').val() == 33) {
             core.connect('wss://lm-bots-ps.glitch.me');
-        } else if ($('#gamemode').val() == 34) {
-            core.connect('wss://imsolo.pro:2102');
         } else if ($('#gamemode').val() == 35) {
             core.connect('wss://delta-server.glitch.me');
         } else if ($('#gamemode').val() == 36) {
@@ -2552,7 +2516,7 @@ wss://myagar.pro:1445/ crazy
         */
     });
     if (temp === true) {
-        $('#gamemode option[value=34]').prop('selected', 'selected').change();
+        $('#gamemode option[value=5001]').prop('selected', 'selected').change();
     }
 }
 
@@ -9846,10 +9810,13 @@ function thelegendmodproject() {
                 app.region = this.value;
                 if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
                 if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
-                if (window.master && typeof window.master.setRegion === 'function') {
-                    window.master.setRegion(this.value);
-                }
+                changeregion();
             });
+            /* If Private was already selected before this handler was bound
+             * (e.g. LMexpress set it on page load), swap gamemode now. */
+            if ($('#region').val() === 'Private') {
+                changeregion();
+            }
             $(document).on("change", "#gamemode", function () {
                 var dummy = this.value;
                 if (":party" !== dummy) {
