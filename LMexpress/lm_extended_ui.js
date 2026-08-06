@@ -406,32 +406,142 @@
         currentUserName,
         isOfficialEntry
     ) {
-        if (!entry) return false;
+        if (!entry) {
+            return false;
+        }
 
         /*
-         * Primary: match by the user's agar.io game name (e.g. "jimboy_80").
-         * window.agarioID is the server-assigned display name captured during login.
-         * This is the same name the server puts into league entry displayName fields.
+         * Agar.io's own leaderboard marker is authoritative.
+         *
+         * Check it first and preserve it through every tab re-render.
          */
-        var myGameName = (typeof window.agarioID === 'string') ? window.agarioID.trim() : '';
-        var entryName = (typeof entry.displayName === 'string') ? entry.displayName.trim() : '';
-
-        if (myGameName && entryName && myGameName === entryName) {
+        if (
+            entry.isUser === true ||
+            entry.isCurrentUser === true
+        ) {
             return true;
         }
 
-        /* Secondary: UID match as fallback */
-        var myUid = (typeof window.agarioUID === 'string') ? window.agarioUID.trim() : '';
-        var entryUid = '';
-        if (typeof entry.uid === 'string') entryUid = entry.uid.trim();
-        else if (typeof entry.id === 'string') entryUid = entry.id.trim();
+        function normalizeValue(value) {
+            if (
+                value === undefined ||
+                value === null
+            ) {
+                return '';
+            }
 
-        if (myUid && entryUid && myUid === entryUid) {
-            return true;
+            return String(value).trim();
         }
 
-        /* Server-side flag */
-        if (entry.isCurrentUser === true || entry.isUser === true) {
+        /*
+         * Resolve the authenticated Agar.io account ID from the official API.
+         *
+         * Do not use window.agarioID as a nickname. In the current login code,
+         * it can contain realmInfo.userId/social ID rather than displayName.
+         */
+        var officialUser = null;
+
+        try {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API
+                    .getUserInfo === 'function'
+            ) {
+                officialUser =
+                    window.agarApp.API
+                        .getUserInfo();
+            }
+        } catch (officialUserError) {
+            officialUser = null;
+        }
+
+        var officialUserId =
+            normalizeValue(
+                officialUser &&
+                (
+                    officialUser.id ||
+                    officialUser.userId
+                )
+            );
+
+        var applicationUser =
+            window.application &&
+            window.application.user
+                ? window.application.user
+                : null;
+
+        var applicationUserId =
+            normalizeValue(
+                applicationUser &&
+                (
+                    applicationUser.userId ||
+                    applicationUser.id
+                )
+            );
+
+        var capturedUid =
+            normalizeValue(
+                window.agarioUID
+            );
+
+        var entryUserId =
+            normalizeValue(
+                entry.userId ||
+                entry.uid ||
+                entry.id
+            );
+
+        /*
+         * ID matching is safe and stable across My League, Friends, Country
+         * and World tabs.
+         */
+        if (entryUserId) {
+            if (
+                officialUserId &&
+                entryUserId === officialUserId
+            ) {
+                return true;
+            }
+
+            if (
+                applicationUserId &&
+                entryUserId === applicationUserId
+            ) {
+                return true;
+            }
+
+            if (
+                capturedUid &&
+                entryUserId === capturedUid
+            ) {
+                return true;
+            }
+        }
+
+        /*
+         * Name matching is only the final fallback.
+         *
+         * It is useful for old legacy responses which do not contain IDs, but
+         * must never override a mismatching official ID.
+         */
+        var entryName =
+            normalizeValue(
+                entry.displayName ||
+                entry.name
+            );
+
+        var resolvedCurrentUserName =
+            normalizeValue(
+                currentUserName
+            );
+
+        if (
+            !entryUserId &&
+            entryName &&
+            resolvedCurrentUserName &&
+            entryName === resolvedCurrentUserName
+        ) {
             return true;
         }
 
@@ -1075,24 +1185,78 @@
                             : [];
                     break;
             }
-            }
-            entries = officialEntries.map(function(entry, index) {
-                if (!entry) return null;
-                var officialUserId = entry.userId || '';
-                return {
-                    displayName: entry.displayName || '',
-                    id: officialUserId,
-                    uid: officialUserId,
-                    level: entry.level,
-                    country: entry.countryCode || 'us',
-                    icon: window._normalizeLeagueAvatarUrl(
-                        entry.avatarUrl
-                    ),
-                    rank: entry.rank !== undefined ? entry.rank : (index + 1),
-                    score: entry.trophies !== undefined ? entry.trophies : 0,
-                    leagueName: entry.leagueName || ''
-                };
-            });
+            entries =
+                officialEntries.map(
+                    function(
+                        entry,
+                        index
+                    ) {
+                        if (!entry) {
+                            return null;
+                        }
+
+                        var officialUserId =
+                            entry.userId ||
+                            entry.id ||
+                            entry.uid ||
+                            '';
+
+                        return {
+                            displayName:
+                                entry.displayName ||
+                                '',
+
+                            userId:
+                                officialUserId,
+
+                            id:
+                                officialUserId,
+
+                            uid:
+                                officialUserId,
+
+                            /*
+                             * Preserve Agar.io's authoritative current-user
+                             * marker. Previously this was discarded during
+                             * normalization, so switching tabs had to guess
+                             * the current user again.
+                             */
+                            isUser:
+                                entry.isUser === true,
+
+                            isCurrentUser:
+                                entry.isCurrentUser ===
+                                true,
+
+                            level:
+                                entry.level,
+
+                            country:
+                                entry.countryCode ||
+                                'us',
+
+                            icon:
+                                window
+                                    ._normalizeLeagueAvatarUrl(
+                                        entry.avatarUrl
+                                    ),
+
+                            rank:
+                                entry.rank !== undefined
+                                    ? entry.rank
+                                    : index + 1,
+
+                            score:
+                                entry.trophies !== undefined
+                                    ? entry.trophies
+                                    : 0,
+
+                            leagueName:
+                                entry.leagueName ||
+                                ''
+                        };
+                    }
+                );
         } else if (
             data.leagueEntries &&
             data.leagueEntries.length
@@ -1104,10 +1268,72 @@
         ) {
             entries = window.RecordPlayers;
         }
-        var currentUser = (window.application && window.application.user) || {};
-        var currentUserName = currentUser.displayName || window.agarioProfileName || 'You';
-        var currentUserLevel = currentUser.level || userLevel;
-        var currentUserAvatar = currentUser.picture || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+        var currentUser =
+            (
+                window.application &&
+                window.application.user
+            ) ||
+            {};
+
+        var officialCurrentUser =
+            null;
+
+        try {
+            if (
+                window.agarApp &&
+                window.agarApp.API &&
+                typeof window.agarApp.API
+                    .getUserInfo === 'function'
+            ) {
+                officialCurrentUser =
+                    window.agarApp.API
+                        .getUserInfo();
+            }
+        } catch (
+            officialCurrentUserError
+        ) {
+            officialCurrentUser =
+                null;
+        }
+
+        /*
+         * Use account/profile names only.
+         *
+         * Never use window.agarioID here: that variable currently receives
+         * realmInfo.userId/social ID in the login parser.
+         */
+        var currentUserName =
+            (
+                officialCurrentUser &&
+                (
+                    officialCurrentUser.displayName ||
+                    officialCurrentUser.name
+                )
+            ) ||
+            currentUser.displayName ||
+            currentUser.name ||
+            window.agarioProfileName ||
+            'You';
+
+        var currentUserLevel =
+            (
+                officialCurrentUser &&
+                officialCurrentUser.level
+            ) ||
+            currentUser.level ||
+            userLevel;
+
+        var currentUserAvatar =
+            (
+                officialCurrentUser &&
+                (
+                    officialCurrentUser.picture ||
+                    officialCurrentUser.avatarUrl
+                )
+            ) ||
+            currentUser.picture ||
+            currentUser.avatarUrl ||
+            'https://jimboy3100.github.io/banners/profilepic_guest.png';
         var currentUserCountry = userCountry;
         var currentUserRank = (data && data.userPosition !== undefined) ? ('#' + data.userPosition) : '?';
         var currentUserScore = (data && data.userScore !== undefined) ? data.userScore : ((data && data.userWinnings !== undefined) ? data.userWinnings : 0);
@@ -2270,7 +2496,11 @@
 
             return {
                 displayName:
-                    entry.displayName || '',
+                    entry.displayName ||
+                    '',
+
+                userId:
+                    officialUserId,
 
                 id:
                     officialUserId,
@@ -2278,20 +2508,31 @@
                 uid:
                     officialUserId,
 
+                isUser:
+                    entry.isUser === true,
+
+                isCurrentUser:
+                    entry.isCurrentUser ===
+                    true,
+
                 level:
                     entry.level,
 
                 country:
-                    entry.countryCode || 'us',
+                    entry.countryCode ||
+                    'us',
 
                 icon:
-                    typeof window._normalizeLeagueAvatarUrl ===
-                    'function'
-                        ? window._normalizeLeagueAvatarUrl(
-                            entry.avatarUrl
-                        )
+                    typeof window
+                        ._normalizeLeagueAvatarUrl ===
+                        'function'
+                        ? window
+                            ._normalizeLeagueAvatarUrl(
+                                entry.avatarUrl
+                            )
                         : (
-                            typeof entry.avatarUrl === 'string' &&
+                            typeof entry.avatarUrl ===
+                                'string' &&
                             entry.avatarUrl.trim()
                                 ? entry.avatarUrl.trim()
                                 : 'https://jimboy3100.github.io/banners/profilepic_guest.png'
@@ -2308,7 +2549,8 @@
                         : 0,
 
                 leagueName:
-                    entry.leagueName || ''
+                    entry.leagueName ||
+                    ''
             };
         }).filter(Boolean);
 
