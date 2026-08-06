@@ -23555,6 +23555,7 @@ function thelegendmodproject() {
             }
         },
         showSessionStats(u) {
+            if (!u) return;
             toastr.info('<b>[' + Premadeletter123 + ']:</b><br> ' +
                 '<b class="message-nick">Final mass:</b> ' + u.finalMass + '<br>' +
                 '<b class="message-nick">Final position:</b> ' + u.finalPosition + '<br>' +
