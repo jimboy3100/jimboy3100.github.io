@@ -17050,9 +17050,10 @@ function thelegendmodproject() {
             return true;
         };
         this.setScale = function (scale, nickScale, massScale, virusScale, strokeScale) {
-            var scale = Math.ceil(scale * 10) / 10;
+            /* Use exact scale instead of quantizing to 0.1 steps.
+             * Quantization caused visible text-size jumping during zoom. */
             this.rescale = false;
-            if (this.scale != scale) {
+            if (this.scale !== scale) {
                 this.scale = scale;
                 this.rescale = true;
             }
@@ -17146,6 +17147,9 @@ function thelegendmodproject() {
                 );
 
             if (this.optimizedNames) {
+                /* Tightened from 0.3 (30%) to 0.05 (5%) so text sprites
+                 * re-render more often during zoom, producing smooth scaling
+                 * instead of visible discrete jumps. */
                 this.redrawNick =
                     Math.abs(
                         (
@@ -17156,7 +17160,7 @@ function thelegendmodproject() {
                             1,
                             this.nickSize
                         )
-                    ) >= 0.3 ||
+                    ) >= 0.05 ||
                     this.rescale;
 
                 return;
