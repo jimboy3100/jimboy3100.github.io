@@ -8297,9 +8297,10 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
-                if (LM.isLegendWorld && ogario.serverHz > 0) {
-                    var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
-                    t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
+                var _hz = ogario.serverHz > 0 ? ogario.serverHz : (LM.pps || 0);
+                if (_hz > 0) {
+                    var hzColor = _hz >= 25 ? '#4f4' : _hz >= 20 ? '#ff0' : '#f44';
+                    t += '⚡ Hz: <span style="color:' + hzColor + '">' + _hz + '</span> | ';
                 }
                 if (defaultmapsettings.showStatsDecayInfo && LM.isLegendWorld && LM.decayInfo && LM.decayInfo.active) {
                     var di = LM.decayInfo;
