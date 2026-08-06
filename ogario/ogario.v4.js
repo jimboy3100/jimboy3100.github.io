@@ -16629,6 +16629,13 @@ function thelegendmodproject() {
     }
     //window.application = application;
 
+    /* O(1) array removal: swap target with last element, then pop.
+     * Only safe for unordered arrays (cells, food, viruses, playerCells). */
+    function quickSwapDelete(arr, index) {
+        arr[index] = arr[arr.length - 1];
+        arr.pop();
+    }
+
     var ogarCellPool = [];
     function getPooledCell(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
         if (ogarCellPool.length > 0) {
@@ -16861,33 +16868,33 @@ function thelegendmodproject() {
             this.removed = true;
             var cells = LM.cells.indexOf(this);
             if (cells !== -1) {
-                LM.cells.splice(cells, 1);
+                quickSwapDelete(LM.cells, cells);
             }
             if (this.isVirus || defaultmapsettings.virusesRange) {
                 var virIdx = LM.viruses.indexOf(this);
                 if (virIdx !== -1) {
-                    LM.viruses.splice(virIdx, 1);
+                    quickSwapDelete(LM.viruses, virIdx);
                 }
             }
             var foodIdx = LM.food.indexOf(this);
             if (foodIdx !== -1) {
-                LM.food.splice(foodIdx, 1);
+                quickSwapDelete(LM.food, foodIdx);
             }
             cells = LM.foodMulti.indexOf(this);
             if (cells !== -1) {
-                LM.foodMulti.splice(cells, 1);
+                quickSwapDelete(LM.foodMulti, cells);
             }
             cells = LM.playerCellsMulti.indexOf(this);
             if (cells !== -1) {
-                LM.playerCellsMulti.splice(cells, 1);
+                quickSwapDelete(LM.playerCellsMulti, cells);
             }
             cells = LM.playerCells.indexOf(this);
             if (cells !== -1) {
                 LM.removePlayerCell = true;
-                LM.playerCells.splice(cells, 1);
+                quickSwapDelete(LM.playerCells, cells);
                 cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells !== -1) {
-                    LM.playerCellIDs.splice(cells, 1);
+                    quickSwapDelete(LM.playerCellIDs, cells);
                     if (LM._playerCellIDSet) LM._playerCellIDSet.delete(this.id);
                 }
             }
@@ -25242,7 +25249,7 @@ Most cells eaten   : ${mostCellsEaten}
                             isOwnPlayerCell = false;
                             if (this._playerCellIDSet) this._playerCellIDSet.delete(id);
                             var _pIndex = this.playerCellIDs.indexOf(id);
-                            if (_pIndex !== -1) this.playerCellIDs.splice(_pIndex, 1);
+                            if (_pIndex !== -1) quickSwapDelete(this.playerCellIDs, _pIndex);
                         }
 
                         /*
