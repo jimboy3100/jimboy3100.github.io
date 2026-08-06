@@ -2375,15 +2375,57 @@ function universalchat() {
         "tool_symbol": ""
     };
     'use strict';
-    window.lalala = 5
+    window.lalala = 5;
+
+    // ====  Packet helper for AgarTool binary protocol (ported from Delta)  ====
+    function ATPacket(data) {
+        if (data instanceof ArrayBuffer) {
+            this._buf = new DataView(data);
+            this._bytes = new Uint8Array(data);
+            this._len = data.byteLength;
+            this._off = 0;
+        } else {
+            this._parts = [];  // list of Uint8Arrays to concat at the end
+            this._len = 0;
+        }
+    }
+    ATPacket.prototype.setCommandID = function (id) { this._pushU8(id); };
+    ATPacket.prototype._pushU8 = function (v) { var a = new Uint8Array(1); a[0] = v & 0xFF; this._parts.push(a); this._len++; };
+    ATPacket.prototype.writeUInt8 = function (v) { this._pushU8(v); };
+    ATPacket.prototype.writeUInt16 = function (v) { var a = new Uint8Array(2); var d = new DataView(a.buffer); d.setUint16(0, v, true); this._parts.push(a); this._len += 2; };
+    ATPacket.prototype.writeUInt32 = function (v) { var a = new Uint8Array(4); var d = new DataView(a.buffer); d.setUint32(0, v, true); this._parts.push(a); this._len += 4; };
+    ATPacket.prototype.writeInt32 = function (v) { var a = new Uint8Array(4); var d = new DataView(a.buffer); d.setInt32(0, v, true); this._parts.push(a); this._len += 4; };
+    ATPacket.prototype.writeBoolean = function (v) { this._pushU8(v ? 1 : 0); };
+    ATPacket.prototype.writeUTF8String = function (s) {
+        var enc = new TextEncoder();
+        var bytes = enc.encode(s || '');
+        this.writeUInt16(bytes.length);
+        if (bytes.length) { this._parts.push(bytes); this._len += bytes.length; }
+    };
+    ATPacket.prototype.get = function () {
+        var out = new Uint8Array(this._len), off = 0;
+        for (var i = 0; i < this._parts.length; i++) { out.set(this._parts[i], off); off += this._parts[i].length; }
+        return out.buffer;
+    };
+    // --- Reader methods ---
+    ATPacket.prototype.readUInt8 = function () { return this._buf.getUint8(this._off++); };
+    ATPacket.prototype.readUInt16 = function () { var v = this._buf.getUint16(this._off, true); this._off += 2; return v; };
+    ATPacket.prototype.readUInt32 = function () { var v = this._buf.getUint32(this._off, true); this._off += 4; return v; };
+    ATPacket.prototype.readInt32 = function () { var v = this._buf.getInt32(this._off, true); this._off += 4; return v; };
+    ATPacket.prototype.readBoolean = function () { return this.readUInt8() !== 0; };
+    ATPacket.prototype.readUTF8String = function () {
+        var len = this.readUInt16();
+        if (len === 0) return '';
+        var dec = new TextDecoder();
+        var s = dec.decode(this._bytes.subarray(this._off, this._off + len));
+        this._off += len;
+        return s;
+    };
+
     var stat = {
         "AgarToolVersion": window.lalala,
-
-        //"AgarToolServer": "wss://minimap.agartool.io:9000",
-        //"AgarToolServer": "wss://minimap.agartool.io",
         "AgarToolServer": "wss://minimap.agartool.io:443",
         minimapBalls: {},
-        "socketIoURL": "https://www.legendmod.ml/ExampleScripts/socket-io.min.js",
         "minimapNickFont": "700 11px Ubuntu",
         "minimapNickColor": "#ffffff",
         "minimapNickStrokeColor": "#000000",
@@ -2397,7 +2439,10 @@ function universalchat() {
         "messageBoxBottom": ["82px", "40%"],
         "keyCodeEnter": 13,
         "keyCodeA": 65,
-        "keyCodeR": 82
+        "keyCodeR": 82,
+        "comebackTimeout": 5000,
+        "playerID": null,
+        "atSocket": null
     };
     var cfg = {};
     var cfg_org = {
@@ -2570,7 +2615,7 @@ function universalchat() {
         stat.token = $('#server-token').val();
         // Use actual game WS URL so agartool works on agar2, private servers, etc.
         stat.ws = (typeof LM !== 'undefined' && LM.ws) ? LM.ws : ('wss://live-arena-' + stat.token + '.agar.io:80');
-        my.connect();
+        my.atConnect();
         if (stat.update_timerid) clearInterval(stat.update_timerid);
         stat.update_timerid = setInterval(my.update, cfg.update_interval);
     };
@@ -2610,13 +2655,7 @@ function universalchat() {
         var msgLM = $("#message").val();
         if (msgLM.indexOf('[url]') == -1 && msgLM.indexOf('[yut]') == -1 && msgLM.indexOf('[skype]') == -1 && msgLM.indexOf('[discord]') == -1 && msgLM.indexOf('[srv]') == -1 && msgLM.indexOf('[tag]') == -1 && msgLM.indexOf('Legend.Mod') == -1 && msgLM.indexOf('https://agar.io/sip=151.80.91.73:1511') == -1) {
             if (msgLM.length) {
-                my.sendMinimapServerCommand({
-                    name: "chat",
-                    //                nick: "LM: " + stat.nick,
-                    //				nick: stat.nick,
-                    nick: $('#nick').val(),
-                    message: "LM:" + msg
-                });
+                my.atSendChat(0, $('#nick').val(), 'LM:' + msg);
                 if (flg.ogar) {
                     $(document).trigger(jQuery.Event('keydown', {
                         keyCode: stat.keyCodeEnter,
@@ -2763,85 +2802,285 @@ function universalchat() {
             which: stat.keyCodeA
         }));
     };
-    // ====  Agar Tool Communication processing / connection  ====
-    my.connect = function () {
-        my.disconnect();
-        if (!global.io) {
-            //my.log(Premadeletter109b + " socket.io");
-            return loadScript(stat.socketIoURL, my.connect);
-        }
-        var grab_opt = {
-            query: "version=" + encodeURIComponent(stat.AgarToolVersion) +
-                "&server=" + encodeURIComponent(stat.ws)
-        };
-        stat.grab_socket = io.connect(stat.AgarToolServer, grab_opt);
-        stat.grab_socket.on("info", function (minimap_info) {
-            stat.minimap_info = minimap_info;
-            my.minimap_connect();
-        });
+    // ====  Agar Tool Communication — Raw WebSocket (Delta binary protocol)  ====
+    my.atIsOpen = function () {
+        return stat.atSocket !== null && stat.atSocket.readyState === WebSocket.OPEN;
     };
-    my.disconnect = function () {
+    my.atSendBuffer = function (pkt) {
+        if (!my.atIsOpen()) return;
+        stat.atSocket.send(new Uint8Array(pkt.get()));
+    };
+    my.atConnect = function () {
+        my.atDisconnect();
+        stat.comebackTimeout = 5000;
+        console.log("%c[LM AgarTool]%c Connecting to " + stat.AgarToolServer, "color:green", "color:inherit");
+        try {
+            stat.atSocket = new WebSocket(stat.AgarToolServer);
+        } catch (e) {
+            console.error('[LM AgarTool] WebSocket create error', e);
+            my.atScheduleReconnect();
+            return;
+        }
+        stat.atSocket.binaryType = 'arraybuffer';
+        stat.atSocket.onopen = function () {
+            stat.comebackTimeout = 5000;
+            console.log("%c[LM AgarTool]%c Connected", "color:green", "color:inherit");
+            // Send init: opcode 155, version byte
+            var p = new ATPacket();
+            p.setCommandID(155);
+            p.writeUInt8(stat.AgarToolVersion);
+            my.atSendBuffer(p);
+        };
+        stat.atSocket.onmessage = function (evt) {
+            my.atReadMessage(evt);
+        };
+        stat.atSocket.onclose = function (evt) {
+            console.log("%c[LM AgarTool]%c Disconnected", "color:orange", "color:inherit", evt.code, evt.reason);
+            stat.atSocket = null;
+            stat.connected = false;
+            stat.playerID = null;
+            if (stat.capture) {
+                my.atScheduleReconnect();
+            }
+        };
+        stat.atSocket.onerror = function (err) {
+            console.error('[LM AgarTool] WebSocket error', err);
+        };
+    };
+    my.atDisconnect = function () {
         if (stat.connected && stat.alive) {
             my.tgarAlive(false);
         }
         stat.connected = false;
         stat.alive = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if (save_grab_socket) {
-            save_grab_socket.disconnect();
-        }
-        if (save_minimap_socket) {
-            save_minimap_socket.disconnect();
+        stat.playerID = null;
+        if (stat.atSocket) {
+            try {
+                stat.atSocket.onopen = null;
+                stat.atSocket.onmessage = null;
+                stat.atSocket.onerror = null;
+                stat.atSocket.onclose = null;
+                stat.atSocket.close();
+            } catch (e) {}
+            stat.atSocket = null;
         }
     };
-    my.minimap_connect = function () {
+    my.atScheduleReconnect = function () {
+        setTimeout(function () { if (stat.capture) my.atConnect(); }, stat.comebackTimeout);
+        stat.comebackTimeout = Math.min(stat.comebackTimeout * 2, 40000);
+    };
+    // --- Binary protocol message handler ---
+    my.atReadMessage = function (evt) {
+        var p = new ATPacket(evt.data);
+        var opcode = p.readUInt8();
+        switch (opcode) {
+            case 155: { // Player ID assigned
+                stat.playerID = p.readUTF8String();
+                console.log("%c[LM AgarTool]%c Got playerID: " + stat.playerID, "color:green", "color:inherit");
+                my.atOnConnect();
+                break;
+            }
+            case 197: { // Ping — echo back
+                var pp = new ATPacket();
+                pp.setCommandID(197);
+                my.atSendBuffer(pp);
+                break;
+            }
+            case 97: { // Auth challenge — reply with identity
+                var pa = new ATPacket();
+                pa.setCommandID(97);
+                pa.writeUTF8String('legendmod@legendmod.ml - LegendMod - User - https://jimboy3100.github.io/banners/icon48.png');
+                my.atSendBuffer(pa);
+                break;
+            }
+            case 130: { // Full player list on room join
+                var total = p.readUInt16();
+                for (var i = 0; i < total; i++) {
+                    var plr = my.atReadFullPlayer(p);
+                    if (plr && stat.playerID !== plr.playerID) {
+                        my.atHandlePlayer(plr);
+                    }
+                }
+                break;
+            }
+            case 200: { // Delta player updates
+                var total = p.readUInt16();
+                for (var i = 0; i < total; i++) {
+                    var plr = my.atReadDeltaPlayer(p);
+                    if (plr && stat.playerID !== plr.playerID) {
+                        my.atHandlePlayer(plr);
+                    }
+                }
+                break;
+            }
+            case 201: { // Single new player joined
+                var plr = my.atReadFullPlayer(p);
+                if (plr && stat.playerID !== plr.playerID) {
+                    my.atHandlePlayer(plr);
+                }
+                break;
+            }
+            case 202: { // Player removed
+                var removedID = p.readUTF8String();
+                my.minimap_command({ name: 'remove', socketID: removedID });
+                break;
+            }
+            case 66: { // Chat message
+                var msgType = p.readUInt8();
+                var chatNick = p.readUTF8String();
+                var chatMsg = p.readUTF8String();
+                my.minimap_command({ name: msgType === 0 ? 'chat' : 'command', playerName: chatNick, message: chatMsg });
+                break;
+            }
+            default:
+                console.log('[LM AgarTool] Unknown opcode', opcode);
+        }
+    };
+    // --- Read a full player record (opcodes 130, 201) ---
+    my.atReadFullPlayer = function (p) {
+        try {
+            var plr = {};
+            plr.playerID = p.readUTF8String();
+            plr.nick = p.readUTF8String();
+            plr.skinURL = p.readUTF8String();
+            plr.skinID = p.readUTF8String();
+            plr.isAlive = p.readBoolean();
+            plr.x = p.readInt32();
+            plr.y = p.readInt32();
+            plr.mass = p.readUInt32();
+            plr.json = p.readUTF8String();
+            return plr;
+        } catch (e) { return null; }
+    };
+    // --- Read a delta player record (opcode 200) ---
+    my.atReadDeltaPlayer = function (p) {
+        try {
+            var plr = {};
+            plr.playerID = p.readUTF8String();
+            var flags = p.readUInt8();
+            if (flags & 1) plr.nick = p.readUTF8String();
+            if (flags & 2) plr.skinURL = p.readUTF8String();
+            if (flags & 4) plr.skinID = p.readUTF8String();
+            if (flags & 8) plr.isAlive = p.readBoolean();
+            if (flags & 16) plr.x = p.readInt32();
+            if (flags & 32) plr.y = p.readInt32();
+            if (flags & 64) plr.mass = p.readUInt32();
+            if (flags & 128) {
+                var flags2 = p.readUInt8();
+                if (flags2 & 1) plr.json = p.readUTF8String();
+            }
+            return plr;
+        } catch (e) { return null; }
+    };
+    // --- Map binary player data to existing minimap_command handlers ---
+    my.atHandlePlayer = function (plr) {
+        if (!plr.playerID) return;
+        var id = plr.playerID;
+        var name = plr.nick || '';
+        // Register custom skin if provided
+        if ((plr.skinURL || plr.skinID) && name && typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
+            core.registerSkin(name, null, plr.skinURL || plr.skinID, 1, null);
+        }
+        if (stat.minimapBalls[id]) {
+            // Update existing — position
+            if (plr.x !== undefined) stat.minimapBalls[id].x = plr.x;
+            if (plr.y !== undefined) stat.minimapBalls[id].y = plr.y;
+            if (plr.nick !== undefined) stat.minimapBalls[id].name = name;
+            if (plr.isAlive === false) {
+                my.minimap_command({ name: 'remove', socketID: id });
+            }
+        } else {
+            // New player — add to minimap
+            if (plr.isAlive !== false) {
+                my.minimap_command({ name: 'add', socketID: id, playerName: name, x: plr.x || 0, y: plr.y || 0 });
+            }
+        }
+    };
+    // --- Called after receiving playerID (opcode 155) ---
+    my.atOnConnect = function () {
+        if (!my.atIsOpen()) return;
+        stat.connected = true;
         if ($("#ao2t-hud").hasClass("OnceUsed") == false) {
-            //		toastr.warning('<b>[SERVER]: </b>Legend Mod and Agar Tool successfully connected. <br>Use {Send Text Universaly} button on chat box to send to Agar.io Tool');
             $("#ao2t-hud").addClass("OnceUsed");
         }
-        my.log(Languageletter82a + " " + Premadeletter123.toLowerCase() + "=" + stat.minimap_info.minimapServer);
         my.resetMinimap();
-        var minimap_opt = {
-            reconnection: !1,
-            query: "server=" + encodeURIComponent(stat.minimap_info.agarServer) +
-                "&tag=" + encodeURIComponent(stat.tag)
-        };
-        stat.minimap_socket = io.connect(stat.minimap_info.minimapServer, minimap_opt);
-        stat.minimap_socket.on("command", my.minimap_command);
-        stat.minimap_socket.on("connect", function () {
-            stat.connected = true;
-            //if(stat.alive){
-            //    my.sendMinimapServerCommand({
-            //        name: "alive",
-            //        playerName: stat.nick
-            //    });
-            //}
-        });
-        stat.minimap_socket.on("disconnect", function () {
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-        stat.minimap_socket.on("connect_error", function () {
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-    };
-    my.minimap_disconnect = function () {
-        stat.connected = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if (save_grab_socket) {
-            save_grab_socket.disconnect();
-        }
-        if (save_minimap_socket) {
-            save_minimap_socket.disconnect();
+        // Send room join: opcode 157 with clanTag + serverToken
+        var tag = stat.tag || $('#clantag').val() || '';
+        var serverToken = stat.ws || '';
+        var pj = new ATPacket();
+        pj.setCommandID(157);
+        pj.writeUTF8String(tag);
+        pj.writeUTF8String(serverToken);
+        my.atSendBuffer(pj);
+        // Send initial position if alive
+        if (global.ogario && global.ogario.play) {
+            my.atSendPosition(true);
         }
     };
+    // --- Send position update: opcode 161 ---
+    my.atSendPosition = function (force) {
+        if (!my.atIsOpen()) return;
+        var flags = 0;
+        flags |= 1;   // nick
+        flags |= 2;   // skinURL
+        flags |= 8;   // isAlive
+        flags |= 16;  // x
+        flags |= 32;  // y
+        flags |= 64;  // mass
+        var p = new ATPacket();
+        p.setCommandID(161);
+        p.writeUInt8(flags);
+        p.writeUTF8String(stat.nick || $('#nick').val() || '');
+        p.writeUTF8String($('#skin').val() || '');
+        p.writeBoolean(global.ogario ? global.ogario.play : false);
+        p.writeInt32(global.ogario ? Math.round(global.ogario.playerX + (global.ogario.mapOffsetX || 0)) : 0);
+        p.writeInt32(global.ogario ? Math.round(global.ogario.playerY + (global.ogario.mapOffsetY || 0)) : 0);
+        p.writeUInt32(global.ogario ? (global.ogario.playerMass || 0) : 0);
+        my.atSendBuffer(p);
+    };
+    // --- Send chat: opcode 66 ---
+    my.atSendChat = function (type, nick, message) {
+        if (!my.atIsOpen()) return;
+        var p = new ATPacket();
+        p.setCommandID(66);
+        p.writeUInt8(type || 0);
+        p.writeUTF8String(nick || '');
+        p.writeUTF8String(message || '');
+        my.atSendBuffer(p);
+    };
+    // --- Send disconnect: opcode 163 ---
+    my.atSendDisconnected = function () {
+        if (!my.atIsOpen()) return;
+        var p = new ATPacket();
+        p.setCommandID(163);
+        my.atSendBuffer(p);
+    };
+    // Legacy compat — keep sendMinimapServerCommand for any remaining callers
+    my.sendMinimapServerCommand = function (e) {
+        if (!my.atIsOpen()) return false;
+        if (e.name === 'chat' || e.name === 'command') {
+            my.atSendChat(e.name === 'command' ? 1 : 0, e.nick || e.playerName || '', e.message || '');
+            return true;
+        }
+        if (e.name === 'alive') {
+            my.atSendPosition(true);
+            return true;
+        }
+        if (e.name === 'dead') {
+            my.atSendPosition(true);
+            return true;
+        }
+        if (e.name === 'position') {
+            my.atSendPosition();
+            return true;
+        }
+        return false;
+    };
+    // Legacy compat aliases
+    my.connect = my.atConnect;
+    my.disconnect = my.atDisconnect;
+    my.minimap_connect = function () {}; // no-op, handled by atOnConnect
+    my.minimap_disconnect = my.atDisconnect;
     // ====  Agar Tool Communication processing / processing  ====
     my.minimap_command = function (cmd) {
         if (void 0 == cmd.name) {
@@ -2974,28 +3213,12 @@ function universalchat() {
     my.tgarAlive = function (alive) {
         stat.alive = alive;
         if (cfg.ogar_user) {
-            //my.log("alive -> "+ stat.alive +" name="+ cfg.ogar_prefix + stat.nick);
-            if (stat.alive) {
-                stat.alive = my.sendMinimapServerCommand({
-                    name: "alive",
-                    playerName: cfg.ogar_prefix + stat.nick,
-                    customSkins: $("#skin").val()
-                });
-                //my.log("alive >>"+ stat.alive);
-            } else {
-                my.sendMinimapServerCommand({
-                    name: "dead"
-                });
-            }
+            my.atSendPosition(true);
         }
     };
     my.tgarReposition = function () {
         if (cfg.ogar_user && global.ogario) {
-            my.sendMinimapServerCommand({
-                name: "position",
-                x: ogario.playerX + ogario.mapOffsetX,
-                y: ogario.playerY + ogario.mapOffsetY
-            });
+            my.atSendPosition();
         }
     };
 
