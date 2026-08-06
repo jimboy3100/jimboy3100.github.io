@@ -18555,7 +18555,7 @@ function thelegendmodproject() {
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
 
-        /* Expanding Land decay info — populated by opcode 202 (0xCA) */
+        /* Expanding Land decay info — populated by unified opcode 203 (0xCB) */
         decayInfo: {
             active: false,
             totalScore: 0,     // ×10 (350 = 35.0)
