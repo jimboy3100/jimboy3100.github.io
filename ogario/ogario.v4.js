@@ -18514,6 +18514,21 @@ function thelegendmodproject() {
             var h = drawRender.canvasHeight / drawRender.scale;
             var x = (this.viewX - w / 2);
             var y = (this.viewY - h / 2);
+
+            /* WASM fast path: zero-allocation flat-memory quadtree */
+            if (typeof WasmQuadTree !== 'undefined' && WasmQuadTree.ready) {
+                if (WasmQuadTree.rebuild(x, y, w, h, cells)) {
+                    /* Create a thin wrapper so existing LM.quadtree.some() calls work */
+                    this.quadtree = {
+                        some: function (aabb, test) {
+                            return WasmQuadTree.some(aabb, test);
+                        }
+                    };
+                    return;
+                }
+            }
+
+            /* JS fallback */
             this.quadtree = new PointQuadTree(x, y, w, h, 32);
             for (var i = 0; i < cells.length; ++i) {
                 var cell = cells[i];
@@ -25019,6 +25034,10 @@ Most cells eaten   : ${mostCellsEaten}
             //window.updateCellsClock=true;
             this.megaFFAscore();
 
+            /* ── WASM Performance Timing ────────────────────────────── */
+            var _wasmT0 = 0, _jsT0 = 0;
+            if (typeof performance !== 'undefined') _jsT0 = performance.now();
+
             var encode = function () {
                 for (var text = ''; ;) {
                     var string = view.readUInt8(offset++);
@@ -25385,6 +25404,21 @@ Most cells eaten   : ${mostCellsEaten}
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
             //if (window.historystate && legendmod.play) {historystate();}	
+
+            /* ── Performance timing report ──────────────────────── */
+            if (_jsT0 > 0) {
+                var _jsElapsed = performance.now() - _jsT0;
+                if (!this._updateCellsTimings) this._updateCellsTimings = { sum: 0, count: 0 };
+                this._updateCellsTimings.sum += _jsElapsed;
+                this._updateCellsTimings.count++;
+                if (this._updateCellsTimings.count >= 100) {
+                    var avg = (this._updateCellsTimings.sum / this._updateCellsTimings.count).toFixed(2);
+                    console.log('%c[PERF]%c updateCells avg: ' + avg + 'ms/tick (over 100 ticks)',
+                        'color: #ff0; font-weight: bold', 'color: inherit');
+                    this._updateCellsTimings.sum = 0;
+                    this._updateCellsTimings.count = 0;
+                }
+            }
 
         },
         color2Hex(number) {
@@ -34156,6 +34190,9 @@ Most cells eaten   : ${mostCellsEaten}
     LM.init();
     drawRender.init();
     if (window.master && window.master.init) window.master.init();
+    /* Initialize WASM acceleration modules (async, non-blocking) */
+    if (typeof WasmCellParser !== 'undefined') WasmCellParser.init().catch(function(e) { console.warn('[WASM] CellParser init failed:', e); });
+    if (typeof WasmQuadTree !== 'undefined') WasmQuadTree.init().catch(function(e) { console.warn('[WASM] QuadTree init failed:', e); });
     ogarhusettings();
     ogarhusettingsImportExportMobile();
     setGUIEvents();
