@@ -31054,7 +31054,11 @@ Most cells eaten   : ${mostCellsEaten}
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
             this.ctx.save();
 
-            this.ctx.translate((this.canvasWidth / 2) - (this.camX * this.scale), (this.canvasHeight / 2) - (this.camY * this.scale));
+            /* Round to integer pixels to prevent sub-pixel anti-aliasing
+             * shimmer on the background grid when moving. */
+            var _tx = (this.canvasWidth / 2) - (this.camX * this.scale);
+            var _ty = (this.canvasHeight / 2) - (this.camY * this.scale);
+            this.ctx.translate(Math.round(_tx), Math.round(_ty));
             this.ctx.scale(this.scale, this.scale);
             //this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
             //this.ctx.scale(this.scale, this.scale);
