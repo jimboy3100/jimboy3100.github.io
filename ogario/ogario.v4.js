@@ -12100,8 +12100,8 @@ function thelegendmodproject() {
         updateDeathLocations(t, e) {
             if (ogario.mapOffsetFixed) {
                 this.deathLocations.push({
-                    "x": t,
-                    "y": e
+                    "x": t + (LM.isLegendWorld ? 0 : ogario.mapOffsetX),
+                    "y": e + (LM.isLegendWorld ? 0 : ogario.mapOffsetY)
                 });
                 if (6 == this.deathLocations.length) {
                     this.deathLocations.shift();
@@ -12313,13 +12313,13 @@ function thelegendmodproject() {
                         this.teamPlayers.length) {
                         c = 0;
                         for (; c < this.teamPlayers.length; c++) {
-                            this.teamPlayers[c].drawPosition(this.miniMapCtx, r, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, LM.isLegendWorld ? ogario.mapOffsetX : LM.mapOffset, n, this.privateMiniMap, this.targetID, application.teamPlayers[c].color);
                         }
                     }
                     if (this.deathLocations.length > 0) {
-                        var _effDeathOff = r; // use same offset as player dot
+                        var _effDeathOff = (LM.isLegendWorld ? 0 : LM.mapOffset);
                         u = Math.round((this.deathLocations[this.lastDeath].x + _effDeathOff) * n);
-                        d = Math.round((this.deathLocations[this.lastDeath].y + l) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + _effDeathOff) * n);
                         var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
                         this.miniMapCtx.lineWidth = 1;
                         this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 === this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
