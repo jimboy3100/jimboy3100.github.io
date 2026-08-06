@@ -24299,32 +24299,14 @@ Most cells eaten   : ${mostCellsEaten}
             var pHeight = Math.abs(bottom - top);
 
             if (LM.isLegendWorld) {
-                /* Expanding Land: dynamic sizing from border values.
-                 * LW always sends full centered map borders, so we can
-                 * update bounds directly without resetting mapOffsetFixed.
-                 * This prevents a window where viewport-sized packets
-                 * would incorrectly set map bounds to the viewport. */
+                /* Expanding Land: dynamic sizing from border values */
                 var newMapSize = ~~pWidth;
                 this.mapOffset = 0;
                 LM.mapOffset = 0;
-                this.mapSize = newMapSize;
-
-                /* Force symmetric centering from mapSize/2 to avoid
-                 * floating-point asymmetry from server values */
-                var halfMap = newMapSize / 2;
-                this.mapOffsetX = halfMap;
-                this.mapOffsetY = halfMap;
-                this.mapMinX = -halfMap;
-                this.mapMinY = -halfMap;
-                this.mapMaxX = halfMap;
-                this.mapMaxY = halfMap;
-                this.mapMidX = 0;
-                this.mapMidY = 0;
-                if (!this.mapOffsetFixed) {
-                    this.viewX = 0;
-                    this.viewY = 0;
+                if (this.mapOffsetFixed && this.mapSize && newMapSize !== this.mapSize) {
+                    this.mapOffsetFixed = false;
                 }
-                this.mapOffsetFixed = true;
+                this.mapSize = newMapSize;
 
                 var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000, 226274, 320000, 452548];
                 var derivedTier = 0;
@@ -24360,12 +24342,28 @@ Most cells eaten   : ${mostCellsEaten}
                 } else {
                     var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
                     if (!this.mapOffsetFixed || pWidth >= currentWidth) {
-                        this.mapOffsetX =
-                            this.mapOffset -
-                            right;
-                        this.mapOffsetY =
-                            this.mapOffset -
-                            bottom;
+                        /*
+                         * Expanding Land uses centered coordinates while its
+                         * minimap intentionally omits LM.mapOffset.
+                         *
+                         * Other private servers must derive their origin from
+                         * the actual border packet. Their minimap adds
+                         * LM.mapOffset, so hardcoding another half-map here
+                         * double-shifts coordinates toward the lower-right.
+                         */
+                        if (LM.isLegendWorld) {
+                            this.mapOffsetX =
+                                this.mapSize / 2;
+                            this.mapOffsetY =
+                                this.mapSize / 2;
+                        } else {
+                            this.mapOffsetX =
+                                this.mapOffset -
+                                right;
+                            this.mapOffsetY =
+                                this.mapOffset -
+                                bottom;
+                        }
 
                         this.mapMinX = left;
                         this.mapMinY = top;
@@ -31415,16 +31413,6 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (this._staticGridPattern) {
                 ctx.save();
-                /* Anchor the pattern to world origin (0,0) so grid lines
-                 * stay fixed in world space instead of drifting with the
-                 * camera. The current CTM maps world coords to canvas;
-                 * applying it as the pattern transform makes the pattern
-                 * tile from world (0,0) at 50-unit intervals. */
-                if (typeof DOMMatrix !== 'undefined' && this._staticGridPattern.setTransform) {
-                    this._staticGridPattern.setTransform(
-                        ctx.getTransform()
-                    );
-                }
                 ctx.fillStyle = this._staticGridPattern;
                 ctx.fillRect(
                     LM.mapMinX != null ? LM.mapMinX : -7071,
