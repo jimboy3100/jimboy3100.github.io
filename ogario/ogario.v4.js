@@ -17184,7 +17184,7 @@ function thelegendmodproject() {
                     1,
                     Math.round(
                         this.nickSize *
-                        0.5 *
+                        1 *
                         normalizedMassScale
                     )
                 );
@@ -30048,7 +30048,7 @@ Most cells eaten   : ${mostCellsEaten}
                  */
                 var massWorldFontSize =
                     nickWorldFontSize *
-                    0.5 *
+                    1 *
                     normalizedMassScale;
 
                 /*
