@@ -33299,6 +33299,23 @@ Most cells eaten   : ${mostCellsEaten}
                 if (document.hidden) {
                     /* Track when the tab was hidden */
                     window._tabHiddenAt = Date.now();
+                    /* Immediately clear all pending animations to prevent CPU waste.
+                     * requestAnimationFrame pauses in hidden tabs, but WebSocket data
+                     * keeps arriving and queuing removedCells. When the user returns,
+                     * processing a massive stale animation queue causes a frame spike.
+                     * Delta does this exact cleanup in Stage.clearAnimations(). */
+                    if (LM) {
+                        /* Release removed/fading cells back to the pool */
+                        for (var ri = LM.removedCells.length - 1; ri >= 0; ri--) {
+                            var rc = LM.removedCells[ri];
+                            if (rc && typeof ogarCellPool !== 'undefined') {
+                                ogarCellPool.push(rc);
+                            }
+                        }
+                        LM.removedCells.length = 0;
+                        /* Clear wave animations */
+                        if (LM.Waves) LM.Waves.length = 0;
+                    }
                     return;
                 }
                 if (!LM) return;
