@@ -2568,7 +2568,8 @@ function universalchat() {
         stat.tag = $('#clantag').val();
         stat.nick = $('#nick').val();
         stat.token = $('#server-token').val();
-        stat.ws = 'wss://live-arena-' + stat.token + '.agar.io:80';
+        // Use actual game WS URL so agartool works on agar2, private servers, etc.
+        stat.ws = (typeof LM !== 'undefined' && LM.ws) ? LM.ws : ('wss://live-arena-' + stat.token + '.agar.io:80');
         my.connect();
         if (stat.update_timerid) clearInterval(stat.update_timerid);
         stat.update_timerid = setInterval(my.update, cfg.update_interval);
