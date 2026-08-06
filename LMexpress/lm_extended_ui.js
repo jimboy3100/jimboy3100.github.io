@@ -401,28 +401,18 @@
             : 'us';
     };
 
-    window._isLeagueCurrentUser = function(
-        entry,
-        currentUserName,
-        isOfficialEntry
-    ) {
-        if (!entry) {
-            return false;
-        }
+    /*
+     * The current-user identity is resolved exactly once from the authoritative
+     * My League rows and is then reused across every leaderboard category.
+     *
+     * Never independently guess the user again in Country, World or Friends.
+     */
+    window._leagueCurrentUserIdentity =
+        window._leagueCurrentUserIdentity ||
+        null;
 
-        /*
-         * Agar.io's own leaderboard marker is authoritative.
-         *
-         * Check it first and preserve it through every tab re-render.
-         */
-        if (
-            entry.isUser === true ||
-            entry.isCurrentUser === true
-        ) {
-            return true;
-        }
-
-        function normalizeValue(value) {
+    window._normalizeLeagueIdentityId =
+        function(value) {
             if (
                 value === undefined ||
                 value === null
@@ -430,123 +420,764 @@
                 return '';
             }
 
-            return String(value).trim();
-        }
+            var normalized =
+                String(value).trim();
 
-        /*
-         * Resolve the authenticated Agar.io account ID from the official API.
-         *
-         * Do not use window.agarioID as a nickname. In the current login code,
-         * it can contain realmInfo.userId/social ID rather than displayName.
-         */
-        var officialUser = null;
+            if (!normalized) {
+                return '';
+            }
 
-        try {
+            /*
+             * Some account sources contain:
+             *
+             *     google$UUID
+             *     facebook$UUID
+             *     discord$UUID
+             *
+             * League rows normally contain only the UUID section.
+             */
+            var dollarIndex =
+                normalized.lastIndexOf('$');
+
             if (
-                window.agarApp &&
-                window.agarApp.API &&
-                typeof window.agarApp.API
-                    .getUserInfo === 'function'
+                dollarIndex !== -1 &&
+                dollarIndex + 1 <
+                    normalized.length
+            ) {
+                normalized =
+                    normalized.substring(
+                        dollarIndex + 1
+                    );
+            }
+
+            return normalized
+                .trim()
+                .toLowerCase();
+        };
+
+    window._normalizeLeagueIdentityName =
+        function(value) {
+            if (
+                value === undefined ||
+                value === null
+            ) {
+                return '';
+            }
+
+            return String(value)
+                .trim()
+                .toLowerCase();
+        };
+
+    window._getLeagueEntryIdentityId =
+        function(entry) {
+            if (!entry) {
+                return '';
+            }
+
+            return window
+                ._normalizeLeagueIdentityId(
+                    entry.userId ||
+                    entry.uid ||
+                    entry.id ||
+                    ''
+                );
+        };
+
+    window._getLeagueEntryIdentityName =
+        function(entry) {
+            if (!entry) {
+                return '';
+            }
+
+            return window
+                ._normalizeLeagueIdentityName(
+                    entry.displayName ||
+                    entry.name ||
+                    ''
+                );
+        };
+
+    /*
+     * Capture the real user exclusively from My League.
+     *
+     * Other categories must never redefine the identity. In particular, an
+     * isUser flag found in Country or World is not trusted independently.
+     */
+    window._captureLeagueCurrentUserIdentity =
+        function(data) {
+            data =
+                data || {};
+
+            if (
+                Number(
+                    data.leagueRequestType
+                ) !== 1
+            ) {
+                return window
+                    ._leagueCurrentUserIdentity;
+            }
+
+            var leagueRows =
+                Array.isArray(data.league)
+                    ? data.league
+                    : [];
+
+            if (!leagueRows.length) {
+                return window
+                    ._leagueCurrentUserIdentity;
+            }
+
+            var selectedRow =
+                null;
+
+            var selectedSource =
+                '';
+
+            var knownIds =
+                [];
+
+            function addKnownId(value) {
+                var normalized =
+                    window
+                        ._normalizeLeagueIdentityId(
+                            value
+                        );
+
+                if (
+                    normalized &&
+                    knownIds.indexOf(
+                        normalized
+                    ) === -1
+                ) {
+                    knownIds.push(
+                        normalized
+                    );
+                }
+            }
+
+            function selectRow(
+                row,
+                source
+            ) {
+                if (
+                    selectedRow ||
+                    !row
+                ) {
+                    return;
+                }
+
+                selectedRow =
+                    row;
+
+                selectedSource =
+                    source || '';
+            }
+
+            /*
+             * 1. Read authoritative account IDs.
+             */
+            var officialUser =
+                null;
+
+            try {
+                if (
+                    window.agarApp &&
+                    window.agarApp.API &&
+                    typeof window.agarApp.API
+                        .getUserInfo ===
+                        'function'
+                ) {
+                    officialUser =
+                        window.agarApp.API
+                            .getUserInfo();
+                }
+            } catch (
+                officialUserError
             ) {
                 officialUser =
-                    window.agarApp.API
-                        .getUserInfo();
+                    null;
             }
-        } catch (officialUserError) {
-            officialUser = null;
-        }
 
-        var officialUserId =
-            normalizeValue(
-                officialUser &&
-                (
-                    officialUser.id ||
+            if (officialUser) {
+                addKnownId(
+                    officialUser.id
+                );
+
+                addKnownId(
                     officialUser.userId
-                )
-            );
+                );
 
-        var applicationUser =
-            window.application &&
-            window.application.user
-                ? window.application.user
-                : null;
+                if (
+                    officialUser.userInfo
+                ) {
+                    addKnownId(
+                        officialUser
+                            .userInfo
+                            .id
+                    );
 
-        var applicationUserId =
-            normalizeValue(
-                applicationUser &&
-                (
-                    applicationUser.userId ||
+                    addKnownId(
+                        officialUser
+                            .userInfo
+                            .userId
+                    );
+                }
+            }
+
+            var applicationUser =
+                window.application &&
+                window.application.user
+                    ? window.application.user
+                    : null;
+
+            if (applicationUser) {
+                addKnownId(
+                    applicationUser.userId
+                );
+
+                addKnownId(
                     applicationUser.id
-                )
-            );
+                );
+            }
 
-        var capturedUid =
-            normalizeValue(
+            try {
+                if (
+                    window.Core &&
+                    window.Core.user
+                ) {
+                    addKnownId(
+                        window.Core.user.id
+                    );
+
+                    addKnownId(
+                        window.Core.user.userId
+                    );
+
+                    if (
+                        window.Core.user
+                            .userInfo
+                    ) {
+                        addKnownId(
+                            window.Core.user
+                                .userInfo
+                                .id
+                        );
+
+                        addKnownId(
+                            window.Core.user
+                                .userInfo
+                                .userId
+                        );
+                    }
+                }
+            } catch (
+                coreIdentityError
+            ) {
+            }
+
+            addKnownId(
                 window.agarioUID
             );
 
-        var entryUserId =
-            normalizeValue(
-                entry.userId ||
-                entry.uid ||
-                entry.id
+            addKnownId(
+                window.expandingLandUID
             );
 
-        /*
-         * ID matching is safe and stable across My League, Friends, Country
-         * and World tabs.
-         */
-        if (entryUserId) {
-            if (
-                officialUserId &&
-                entryUserId === officialUserId
+            /*
+             * Match a known account ID against My League.
+             */
+            for (
+                var idIndex = 0;
+                idIndex <
+                    knownIds.length &&
+                !selectedRow;
+                idIndex++
             ) {
-                return true;
+                for (
+                    var rowIndex = 0;
+                    rowIndex <
+                        leagueRows.length;
+                    rowIndex++
+                ) {
+                    var row =
+                        leagueRows[
+                            rowIndex
+                        ];
+
+                    if (
+                        window
+                            ._getLeagueEntryIdentityId(
+                                row
+                            ) ===
+                        knownIds[idIndex]
+                    ) {
+                        selectRow(
+                            row,
+                            'account-id'
+                        );
+
+                        break;
+                    }
+                }
             }
 
-            if (
-                applicationUserId &&
-                entryUserId === applicationUserId
-            ) {
-                return true;
+            /*
+             * 2. Use Agar.io's cached My League row, if available.
+             */
+            if (!selectedRow) {
+                var cachedLeagueRow =
+                    null;
+
+                try {
+                    if (
+                        window.agarApp &&
+                        window.agarApp.API &&
+                        typeof window.agarApp.API
+                            .getCachedDataLeague ===
+                            'function'
+                    ) {
+                        cachedLeagueRow =
+                            window.agarApp.API
+                                .getCachedDataLeague();
+                    } else if (
+                        window.MC &&
+                        typeof window.MC
+                            .getCachedDataLeague ===
+                            'function'
+                    ) {
+                        cachedLeagueRow =
+                            window.MC
+                                .getCachedDataLeague();
+                    }
+                } catch (
+                    cachedLeagueError
+                ) {
+                    cachedLeagueRow =
+                        null;
+                }
+
+                var cachedLeagueId =
+                    window
+                        ._getLeagueEntryIdentityId(
+                            cachedLeagueRow
+                        );
+
+                if (cachedLeagueId) {
+                    for (
+                        var cachedIndex = 0;
+                        cachedIndex <
+                            leagueRows.length;
+                        cachedIndex++
+                    ) {
+                        if (
+                            window
+                                ._getLeagueEntryIdentityId(
+                                    leagueRows[
+                                        cachedIndex
+                                    ]
+                                ) ===
+                            cachedLeagueId
+                        ) {
+                            selectRow(
+                                leagueRows[
+                                    cachedIndex
+                                ],
+                                'official-cache'
+                            );
+
+                            break;
+                        }
+                    }
+                }
             }
 
-            if (
-                capturedUid &&
-                entryUserId === capturedUid
-            ) {
-                return true;
-            }
-        }
+            /*
+             * 3. Accept an explicit marker only inside My League.
+             *
+             * Require exactly one marked row. Multiple marked rows are treated
+             * as invalid instead of arbitrarily selecting the first row.
+             */
+            if (!selectedRow) {
+                var markedRows =
+                    [];
 
-        /*
-         * Name matching is only the final fallback.
-         *
-         * It is useful for old legacy responses which do not contain IDs, but
-         * must never override a mismatching official ID.
-         */
-        var entryName =
-            normalizeValue(
-                entry.displayName ||
-                entry.name
+                for (
+                    var markerIndex = 0;
+                    markerIndex <
+                        leagueRows.length;
+                    markerIndex++
+                ) {
+                    var markerRow =
+                        leagueRows[
+                            markerIndex
+                        ];
+
+                    if (
+                        markerRow &&
+                        (
+                            markerRow.isUser ===
+                                true ||
+                            markerRow.isCurrentUser ===
+                                true
+                        )
+                    ) {
+                        markedRows.push(
+                            markerRow
+                        );
+                    }
+                }
+
+                if (
+                    markedRows.length === 1
+                ) {
+                    selectRow(
+                        markedRows[0],
+                        'my-league-marker'
+                    );
+                }
+            }
+
+            /*
+             * 4. Use the authenticated display name only when it identifies
+             * exactly one My League row.
+             */
+            if (!selectedRow) {
+                var knownNames =
+                    [];
+
+                function addKnownName(
+                    value
+                ) {
+                    var normalizedName =
+                        window
+                            ._normalizeLeagueIdentityName(
+                                value
+                            );
+
+                    if (
+                        normalizedName &&
+                        normalizedName !==
+                            'guest' &&
+                        normalizedName !==
+                            'you' &&
+                        knownNames.indexOf(
+                            normalizedName
+                        ) === -1
+                    ) {
+                        knownNames.push(
+                            normalizedName
+                        );
+                    }
+                }
+
+                if (officialUser) {
+                    addKnownName(
+                        officialUser.displayName
+                    );
+
+                    addKnownName(
+                        officialUser.name
+                    );
+
+                    if (
+                        officialUser.userInfo
+                    ) {
+                        addKnownName(
+                            officialUser
+                                .userInfo
+                                .displayName
+                        );
+
+                        addKnownName(
+                            officialUser
+                                .userInfo
+                                .name
+                        );
+                    }
+                }
+
+                if (applicationUser) {
+                    addKnownName(
+                        applicationUser
+                            .displayName
+                    );
+
+                    addKnownName(
+                        applicationUser.name
+                    );
+                }
+
+                try {
+                    if (
+                        window.Core &&
+                        window.Core.user &&
+                        window.Core.user
+                            .userInfo
+                    ) {
+                        addKnownName(
+                            window.Core.user
+                                .userInfo
+                                .displayName
+                        );
+
+                        addKnownName(
+                            window.Core.user
+                                .userInfo
+                                .name
+                        );
+                    }
+                } catch (
+                    coreNameError
+                ) {
+                }
+
+                addKnownName(
+                    window.agarioProfileName
+                );
+
+                var profileNameElement =
+                    document.querySelector(
+                        '.agario-profile-name'
+                    );
+
+                if (profileNameElement) {
+                    addKnownName(
+                        profileNameElement
+                            .textContent
+                    );
+                }
+
+                var nameMatches =
+                    [];
+
+                for (
+                    var nameRowIndex = 0;
+                    nameRowIndex <
+                        leagueRows.length;
+                    nameRowIndex++
+                ) {
+                    var candidateName =
+                        window
+                            ._getLeagueEntryIdentityName(
+                                leagueRows[
+                                    nameRowIndex
+                                ]
+                            );
+
+                    if (
+                        candidateName &&
+                        knownNames.indexOf(
+                            candidateName
+                        ) !== -1
+                    ) {
+                        nameMatches.push(
+                            leagueRows[
+                                nameRowIndex
+                            ]
+                        );
+                    }
+                }
+
+                if (
+                    nameMatches.length === 1
+                ) {
+                    selectRow(
+                        nameMatches[0],
+                        'unique-profile-name'
+                    );
+                }
+            }
+
+            /*
+             * 5. Last authoritative fallback: the response's My League rank.
+             */
+            if (
+                !selectedRow &&
+                data.userPosition !==
+                    undefined &&
+                data.userPosition !==
+                    null
+            ) {
+                var userPosition =
+                    Number(
+                        data.userPosition
+                    );
+
+                if (
+                    Number.isFinite(
+                        userPosition
+                    ) &&
+                    userPosition >= 1
+                ) {
+                    for (
+                        var positionIndex = 0;
+                        positionIndex <
+                            leagueRows.length;
+                        positionIndex++
+                    ) {
+                        if (
+                            Number(
+                                leagueRows[
+                                    positionIndex
+                                ].rank
+                            ) ===
+                            userPosition
+                        ) {
+                            selectRow(
+                                leagueRows[
+                                    positionIndex
+                                ],
+                                'user-position-rank'
+                            );
+
+                            break;
+                        }
+                    }
+
+                    if (
+                        !selectedRow &&
+                        leagueRows[
+                            userPosition - 1
+                        ]
+                    ) {
+                        selectRow(
+                            leagueRows[
+                                userPosition - 1
+                            ],
+                            'user-position-index'
+                        );
+                    }
+                }
+            }
+
+            if (!selectedRow) {
+                console.warn(
+                    '[LM LEAGUES] Could not resolve current user from My League.'
+                );
+
+                return window
+                    ._leagueCurrentUserIdentity;
+            }
+
+            window._leagueCurrentUserIdentity = {
+                normalizedId:
+                    window
+                        ._getLeagueEntryIdentityId(
+                            selectedRow
+                        ),
+
+                userId:
+                    selectedRow.userId ||
+                    selectedRow.uid ||
+                    selectedRow.id ||
+                    '',
+
+                displayName:
+                    selectedRow.displayName ||
+                    selectedRow.name ||
+                    '',
+
+                level:
+                    selectedRow.level,
+
+                countryCode:
+                    selectedRow.countryCode ||
+                    selectedRow.country ||
+                    '',
+
+                avatarUrl:
+                    selectedRow.avatarUrl ||
+                    selectedRow.icon ||
+                    selectedRow.avatar ||
+                    '',
+
+                source:
+                    selectedSource,
+
+                capturedAt:
+                    Date.now()
+            };
+
+            console.log(
+                '[LM LEAGUES] Current-user identity locked from My League:',
+                window
+                    ._leagueCurrentUserIdentity
             );
 
-        var resolvedCurrentUserName =
-            normalizeValue(
-                currentUserName
-            );
+            return window
+                ._leagueCurrentUserIdentity;
+        };
 
-        if (
-            !entryUserId &&
-            entryName &&
-            resolvedCurrentUserName &&
-            entryName === resolvedCurrentUserName
+    window._isLeagueCurrentUser =
+        function(
+            entry,
+            currentUserName,
+            isOfficialEntry
         ) {
-            return true;
-        }
+            if (!entry) {
+                return false;
+            }
 
-        return false;
-    };
+            var identity =
+                window
+                    ._leagueCurrentUserIdentity;
+
+            if (!identity) {
+                return false;
+            }
+
+            var entryId =
+                window
+                    ._getLeagueEntryIdentityId(
+                        entry
+                    );
+
+            var identityId =
+                identity.normalizedId ||
+                '';
+
+            /*
+             * IDs are authoritative.
+             *
+             * When either side has an ID, never fall back to a name comparison.
+             * This prevents another player with a similar or duplicated name
+             * from receiving the green "(You)" marker.
+             */
+            if (
+                identityId ||
+                entryId
+            ) {
+                return !!(
+                    identityId &&
+                    entryId &&
+                    identityId ===
+                        entryId
+                );
+            }
+
+            /*
+             * Name matching exists only for legacy responses with no IDs.
+             */
+            var entryName =
+                window
+                    ._getLeagueEntryIdentityName(
+                        entry
+                    );
+
+            var identityName =
+                window
+                    ._normalizeLeagueIdentityName(
+                        identity.displayName
+                    );
+
+            return !!(
+                entryName &&
+                identityName &&
+                entryName ===
+                    identityName
+            );
+        };
 
     window._normalizeLeagueAvatarUrl = function(value) {
         var fallback =
@@ -1149,10 +1780,27 @@
         `;
 
         // Select and normalize official league rows without falling back to stale legacy data.
-        var entries = null;
+        var entries =
+            null;
+
         var isOfficialResponse =
-            Number(data.leagueRequestType) === 1;
+            Number(
+                data.leagueRequestType
+            ) === 1;
+
+        /*
+         * Always resolve identity from data.league before rendering whichever
+         * tab is currently selected.
+         *
+         * Country, World and Friends may display different players, but they
+         * are forbidden from changing who the logged-in user is.
+         */
         if (isOfficialResponse) {
+            window
+                ._captureLeagueCurrentUserIdentity(
+                    data
+                );
+
             var officialEntries;
 
             switch (Number(tabType)) {
@@ -1186,77 +1834,95 @@
                     break;
             }
             entries =
-                officialEntries.map(
-                    function(
-                        entry,
-                        index
-                    ) {
-                        if (!entry) {
-                            return null;
+                officialEntries
+                    .map(
+                        function(
+                            entry,
+                            index
+                        ) {
+                            if (!entry) {
+                                return null;
+                            }
+
+                            var officialUserId =
+                                entry.userId ||
+                                entry.uid ||
+                                entry.id ||
+                                '';
+
+                            return {
+                                displayName:
+                                    entry.displayName ||
+                                    entry.name ||
+                                    '',
+
+                                userId:
+                                    officialUserId,
+
+                                id:
+                                    officialUserId,
+
+                                uid:
+                                    officialUserId,
+
+                                level:
+                                    entry.level,
+
+                                country:
+                                    entry.countryCode ||
+                                    entry.country ||
+                                    'us',
+
+                                countryCode:
+                                    entry.countryCode ||
+                                    entry.country ||
+                                    'us',
+
+                                icon:
+                                    window
+                                        ._normalizeLeagueAvatarUrl(
+                                            entry.avatarUrl ||
+                                            entry.icon ||
+                                            entry.avatar
+                                        ),
+
+                                rank:
+                                    entry.rank !==
+                                        undefined
+                                        ? entry.rank
+                                        : index + 1,
+
+                                score:
+                                    entry.trophies !==
+                                        undefined
+                                        ? entry.trophies
+                                        : (
+                                            entry.score !==
+                                                undefined
+                                                ? entry.score
+                                                : 0
+                                        ),
+
+                                leagueName:
+                                    entry.leagueName ||
+                                    '',
+
+                                /*
+                                 * Retain markers for diagnostics and My League
+                                 * capture, but _isLeagueCurrentUser() does not
+                                 * blindly trust them in other tabs.
+                                 */
+                                isUser:
+                                    entry.isUser ===
+                                    true,
+
+                                isCurrentUser:
+                                    entry.isCurrentUser ===
+                                    true
+                            };
                         }
-
-                        var officialUserId =
-                            entry.userId ||
-                            entry.id ||
-                            entry.uid ||
-                            '';
-
-                        return {
-                            displayName:
-                                entry.displayName ||
-                                '',
-
-                            userId:
-                                officialUserId,
-
-                            id:
-                                officialUserId,
-
-                            uid:
-                                officialUserId,
-
-                            /*
-                             * Preserve Agar.io's authoritative current-user
-                             * marker. Previously this was discarded during
-                             * normalization, so switching tabs had to guess
-                             * the current user again.
-                             */
-                            isUser:
-                                entry.isUser === true,
-
-                            isCurrentUser:
-                                entry.isCurrentUser ===
-                                true,
-
-                            level:
-                                entry.level,
-
-                            country:
-                                entry.countryCode ||
-                                'us',
-
-                            icon:
-                                window
-                                    ._normalizeLeagueAvatarUrl(
-                                        entry.avatarUrl
-                                    ),
-
-                            rank:
-                                entry.rank !== undefined
-                                    ? entry.rank
-                                    : index + 1,
-
-                            score:
-                                entry.trophies !== undefined
-                                    ? entry.trophies
-                                    : 0,
-
-                            leagueName:
-                                entry.leagueName ||
-                                ''
-                        };
-                    }
-                );
+                    )
+                    .filter(Boolean);
         } else if (
             data.leagueEntries &&
             data.leagueEntries.length
@@ -1275,66 +1941,44 @@
             ) ||
             {};
 
-        var officialCurrentUser =
-            null;
+        var frozenLeagueIdentity =
+            window
+                ._leagueCurrentUserIdentity ||
+            {};
 
-        try {
-            if (
-                window.agarApp &&
-                window.agarApp.API &&
-                typeof window.agarApp.API
-                    .getUserInfo === 'function'
-            ) {
-                officialCurrentUser =
-                    window.agarApp.API
-                        .getUserInfo();
-            }
-        } catch (
-            officialCurrentUserError
-        ) {
-            officialCurrentUser =
-                null;
-        }
-
-        /*
-         * Use account/profile names only.
-         *
-         * Never use window.agarioID here: that variable currently receives
-         * realmInfo.userId/social ID in the login parser.
-         */
         var currentUserName =
-            (
-                officialCurrentUser &&
-                (
-                    officialCurrentUser.displayName ||
-                    officialCurrentUser.name
-                )
-            ) ||
+            frozenLeagueIdentity
+                .displayName ||
             currentUser.displayName ||
             currentUser.name ||
             window.agarioProfileName ||
             'You';
 
         var currentUserLevel =
-            (
-                officialCurrentUser &&
-                officialCurrentUser.level
-            ) ||
+            frozenLeagueIdentity
+                .level ||
             currentUser.level ||
             userLevel;
 
         var currentUserAvatar =
-            (
-                officialCurrentUser &&
-                (
-                    officialCurrentUser.picture ||
-                    officialCurrentUser.avatarUrl
-                )
-            ) ||
-            currentUser.picture ||
-            currentUser.avatarUrl ||
-            'https://jimboy3100.github.io/banners/profilepic_guest.png';
-        var currentUserCountry = userCountry;
+            window
+                ._normalizeLeagueAvatarUrl(
+                    frozenLeagueIdentity
+                        .avatarUrl ||
+                    currentUser.picture ||
+                    currentUser.avatarUrl ||
+                    ''
+                );
+
+        var currentUserCountry =
+            window
+                ._normalizeLeagueCountryCode(
+                    frozenLeagueIdentity
+                        .countryCode ||
+                    currentUser.country ||
+                    currentUser.countryCode ||
+                    userCountry
+                );
         var currentUserRank = (data && data.userPosition !== undefined) ? ('#' + data.userPosition) : '?';
         var currentUserScore = (data && data.userScore !== undefined) ? data.userScore : ((data && data.userWinnings !== undefined) ? data.userWinnings : 0);
 
@@ -1594,27 +2238,52 @@
             border: '1px solid ' + t.mc
         });
 
-        // Tab changes use the one cached response for this modal generation.
+        /*
+         * All four tabs belong to the same opcode-131 response.
+         *
+         * Reuse the exact accepted response. Do not launch another network
+         * request merely because the visible category changed.
+         */
+        var cachedLeagueResponse =
+            window.currentLeaguesResponse ||
+            window.lastLeaguesResponse ||
+            {};
+
         window.renderLeaguesContent(
             normalizedTab,
-            window.currentLeaguesResponse || window.lastLeaguesResponse || {}
+            cachedLeagueResponse
         );
 
-        if (!window._hasUsableCurrentLeaguesCache()) {
-            if (window._leaguesRequestState === 'failure') {
-                window._renderCurrentLeaguesRequestState(
-                    '⚠️',
-                    'Unable to request leaderboard data.'
-                );
-            } else if (window._leaguesRequestState === 'timeout') {
-                window._renderCurrentLeaguesRequestState(
-                    '⏱️',
-                    'Leaderboard request timed out.'
-                );
+        if (
+            !window
+                ._hasUsableCurrentLeaguesCache()
+        ) {
+            if (
+                window._leaguesRequestState ===
+                'failure'
+            ) {
+                window
+                    ._renderCurrentLeaguesRequestState(
+                        '⚠️',
+                        'Unable to request leaderboard data.'
+                    );
+            } else if (
+                window._leaguesRequestState ===
+                'timeout'
+            ) {
+                window
+                    ._renderCurrentLeaguesRequestState(
+                        '⏱️',
+                        'Leaderboard request timed out.'
+                    );
             }
-        }
 
-        window._startCurrentLeaguesRequest();
+            /*
+             * Request only when no accepted current-week response exists.
+             */
+            window
+                ._startCurrentLeaguesRequest();
+        }
     };
 
     window.showLeaguesModal = function() {
@@ -1714,14 +2383,26 @@
             window._leaguesRequestState = 'success';
 
             /*
-             * Preserve the exact accepted opcode-131 response.
-             * Friends prize brackets depend on the real number of entries.
+             * Preserve one exact accepted opcode-131 response for every tab.
              */
-            window.currentLeaguesResponse = detail;
+            window.currentLeaguesResponse =
+                detail;
 
-            // Current week — update leaderboard only for an accepted response.
+            window.lastLeaguesResponse =
+                detail;
+
+            /*
+             * Resolve and freeze the user from My League before rendering the
+             * currently selected category.
+             */
+            window
+                ._captureLeagueCurrentUserIdentity(
+                    detail
+                );
+
             window.renderLeaguesContent(
-                window.currentLeagueTab || 1,
+                window.currentLeagueTab ||
+                    1,
                 detail
             );
         }

@@ -1416,9 +1416,24 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             window.legendmod.userInfo = null;
         }
 
-        window.lastLeaguesResponse = null;
-        window.lastWeekLeaguesResponse = null;
-        window._leaguesRequestType = 0;
+        window.lastLeaguesResponse =
+            null;
+
+        window.currentLeaguesResponse =
+            null;
+
+        window.lastWeekLeaguesResponse =
+            null;
+
+        /*
+         * Never retain a resolved leaderboard identity after an account or
+         * domain reset.
+         */
+        window._leagueCurrentUserIdentity =
+            null;
+
+        window._leaguesRequestType =
+            0;
         window._leaguesRequestToken = null;
         window._leagueRequestToken = null;
         window._leagueRequestId = 0;
@@ -1597,8 +1612,17 @@ if (document.URL.includes('jimboy3100.github.io') || document.URL.includes('lege
             window._loginRetryCount = 0;
             window._lw_loginNotifShown = false;
             window.expandingLandUID = '';
-            window.lastLeaguesResponse = null;
-            window.lastWeekLeaguesResponse = null;
+            window.lastLeaguesResponse =
+                null;
+
+            window.currentLeaguesResponse =
+                null;
+
+            window.lastWeekLeaguesResponse =
+                null;
+
+            window._leagueCurrentUserIdentity =
+                null;
 
             try {
                 localStorage.removeItem('expandingLandUID');
@@ -18576,8 +18600,17 @@ function thelegendmodproject() {
                                 _previousDomain
                             );
                         } else {
-                            window.lastLeaguesResponse = null;
-                            window.lastWeekLeaguesResponse = null;
+                            window.lastLeaguesResponse =
+                                null;
+
+                            window.currentLeaguesResponse =
+                                null;
+
+                            window.lastWeekLeaguesResponse =
+                                null;
+
+                            window._leagueCurrentUserIdentity =
+                                null;
                         }
 
                         if (_previousDomain === 'expandingland') {
@@ -23574,10 +23607,76 @@ Most cells eaten   : ${mostCellsEaten}
             var exp = level >= 150 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
 
             if (this.user) {
-                this.user.level = level;
-                this.user.xp = xp;
-                this.user.nextLevelXp = nextLevelXp;
-                this.user.actionCounters = i.actionCounters;
+                this.user.level =
+                    level;
+
+                this.user.xp =
+                    xp;
+
+                this.user.nextLevelXp =
+                    nextLevelXp;
+
+                this.user.actionCounters =
+                    i.actionCounters;
+
+                /*
+                 * Keep the actual account identity on the shared user model.
+                 *
+                 * window.agarioID remains a realm/social ID and must never be
+                 * treated as the display name.
+                 */
+                if (i.userId) {
+                    this.user.userId =
+                        String(
+                            i.userId
+                        ).trim();
+                }
+
+                if (i.displayName) {
+                    this.user.displayName =
+                        String(
+                            i.displayName
+                        ).trim();
+
+                    this.user.name =
+                        this.user
+                            .displayName;
+                }
+
+                if (i.latestCountryCode) {
+                    this.user.country =
+                        String(
+                            i.latestCountryCode
+                        ).trim()
+                        .toLowerCase();
+
+                    this.user.countryCode =
+                        this.user.country;
+                }
+
+                if (
+                    i.realmInfo &&
+                    i.realmInfo.avatarUrl
+                ) {
+                    this.user.picture =
+                        i.realmInfo
+                            .avatarUrl;
+
+                    this.user.avatarUrl =
+                        i.realmInfo
+                            .avatarUrl;
+                }
+            }
+
+            /*
+             * Store the real display name in the dedicated profile-name
+             * variable. Do not store it in window.agarioID.
+             */
+            if (i.displayName) {
+                window.agarioProfileName =
+                    String(
+                        i.displayName
+                    ).trim();
             }
             window.agarioLEVEL = level;
             window.agarioXP = xp;
@@ -23619,10 +23718,25 @@ Most cells eaten   : ${mostCellsEaten}
                     var pics = document.querySelectorAll('.agario-profile-picture');
                     for (var pi = 0; pi < pics.length; pi++) pics[pi].src = i.realmInfo.avatarUrl;
                 }
-                /* Display name */
+                /*
+                 * Display name is separate from realmInfo.userId.
+                 */
                 if (i.displayName) {
-                    var profileName = document.querySelector('.agario-profile-name');
-                    if (profileName) profileName.textContent = i.displayName;
+                    window.agarioProfileName =
+                        String(
+                            i.displayName
+                        ).trim();
+
+                    var profileName =
+                        document.querySelector(
+                            '.agario-profile-name'
+                        );
+
+                    if (profileName) {
+                        profileName.textContent =
+                            window
+                                .agarioProfileName;
+                    }
                 }
             }
 
