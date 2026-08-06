@@ -300,6 +300,11 @@ var tcm2 = {
                     a.fillStyle = tcm2.f.gradient(a);
                 }
             });
+        },
+        restore: function () {
+            if (tcm2.prototypes.old.canvas && tcm2.prototypes.old.canvas.fillText) {
+                tcm2.prototypes.canvas.fillText = tcm2.prototypes.old.canvas.fillText;
+            }
         }
     }
 };
