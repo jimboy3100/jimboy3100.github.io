@@ -1428,6 +1428,9 @@ function legendmaster(self) {
                 o.html(self.i18n(i));
             });
             $("#gamemode").on("change", function() {
+                // When region is Private, the custom handler in ogario.v4.js manages connections
+                // (agar2, imsolo, garix, etc.) — don't let master.handleChangeMode redirect to agar.io
+                if ($('#region').val() === 'Private') return;
                 chat.handleChangeMode();
             });
             $(".btn-play, .btn-play-guest").on("click", function(result) {
