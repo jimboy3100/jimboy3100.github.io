@@ -18962,6 +18962,10 @@ function thelegendmodproject() {
             ogario.elBotCount = null;
             ogario.serverHz = 0;
             this.leaderboard = [];
+            /* Clear leaderboard/team-board DOM immediately so stale
+             * Expanding Land "Players: X Bots: Y" text does not persist
+             * in the HUD while the new server handshake completes. */
+            application.displayLeaderboard('');
             // Garix state reset
             this.garixTabID1 = 0;
             this.garixTabID2 = 0;
