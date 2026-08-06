@@ -4127,9 +4127,12 @@ function checkVideos2(a, b) {
             }, 500);
         }
     } else {
+        // Don't null out videoSkinPlayer[a] — keep the cached video element
+        // to prevent re-creating and re-fetching on next visibility.
+        // Only reset playback/interval flags.
         window.videoSkinPlayerflag[a] = null
         window.videoSkinPlayerflag2[b] = null
-        window.videoSkinPlayerflag3[b] = null
+        window.videoSkinPlayerflag3[a] = null  // was incorrectly keyed by 'b' (nick) instead of 'a' (url)
         clearInterval(window.timerVideoSkinsInterval[a]);
         window.timerVideoSkinsInterval[a] = null
     }
@@ -4159,11 +4162,19 @@ function checkIfPlayerIsInView(b, a) {
 function checkVideos1(a) {
 
     if (!videoSkinPlayerflag[a]) {
+        // Reuse existing video element if it already exists (prevents duplicate network fetches)
+        // .src returns fully resolved URL so use endsWith for comparison
+        if (window.videoSkinPlayer[a] && window.videoSkinPlayer[a].tagName === 'VIDEO') {
+            // Video element already exists for this URL — just re-flag it, don't recreate
+            window.videoSkinPlayerflag[a] = true;
+            return;
+        }
         console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Video skins activated");
         window.videoSkinPlayer[a] = document.createElement("video"); // create a video element
         window.videoSkinPlayer[a].crossOrigin = 'anonymous';
         window.videoSkinPlayer[a].src = a;
         window.videoSkinPlayer[a].volume = 0;
+        window.videoSkinPlayer[a].loop = true;
         window.videoSkinPlayerflag[a] = true;
     }
 };
