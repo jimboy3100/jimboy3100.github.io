@@ -20180,28 +20180,91 @@ function thelegendmodproject() {
                 );
             }
 
-            const readMessage =
-                new buffer(outputSize);
+            /* ── Optimized inline LZ4 block decoder (typed arrays) ── */
+            var src = new Uint8Array(
+                message.buffer,
+                (message.byteOffset || 0) + 5,
+                compressedSize
+            );
+            var dst = new Uint8Array(outputSize);
+            var sPos = 0, dPos = 0;
+            var sEnd = compressedSize;
 
-            const decodedSize =
-                LZ4.decodeBlock(
-                    messageBuffer.slice(5),
-                    readMessage
-                );
+            while (sPos < sEnd) {
+                var token = src[sPos++];
 
-            if (!Number.isFinite(decodedSize) ||
-                decodedSize < 0 ||
-                decodedSize > outputSize) {
+                /* ── Literals ── */
+                var litLen = token >>> 4;
+                if (litLen === 15) {
+                    var addByte;
+                    do {
+                        addByte = src[sPos++];
+                        litLen += addByte;
+                    } while (addByte === 255);
+                }
+                if (litLen > 0) {
+                    dst.set(
+                        src.subarray(sPos, sPos + litLen),
+                        dPos
+                    );
+                    sPos += litLen;
+                    dPos += litLen;
+                }
+                if (sPos >= sEnd) break;
+
+                /* ── Match offset (2 bytes LE) ── */
+                var offset =
+                    src[sPos] | (src[sPos + 1] << 8);
+                sPos += 2;
+                if (offset === 0) {
+                    throw new RangeError(
+                        "LZ4: zero match offset"
+                    );
+                }
+
+                /* ── Match length ── */
+                var matchLen = (token & 0xF) + 4;
+                if ((token & 0xF) === 15) {
+                    var addByte2;
+                    do {
+                        addByte2 = src[sPos++];
+                        matchLen += addByte2;
+                    } while (addByte2 === 255);
+                }
+
+                /* ── Copy match bytes ── */
+                var matchPos = dPos - offset;
+                if (offset >= matchLen) {
+                    /* Non-overlapping: bulk copy */
+                    dst.set(
+                        dst.subarray(
+                            matchPos,
+                            matchPos + matchLen
+                        ),
+                        dPos
+                    );
+                    dPos += matchLen;
+                } else {
+                    /* Overlapping: byte-by-byte
+                     * (RLE patterns like runs of
+                     * same byte) */
+                    var mEnd = dPos + matchLen;
+                    while (dPos < mEnd) {
+                        dst[dPos++] = dst[matchPos++];
+                    }
+                }
+            }
+
+            var readMessage = new buffer(0);
+            /* Re-wrap dst as a Buffer view so
+             * downstream DataView works unchanged */
+            readMessage = new buffer(dst.buffer);
+
+            if (dPos < 0 || dPos > outputSize) {
                 throw new RangeError(
                     "LZ4 decompression failed"
                 );
             }
-
-            /*
-             * Some LZ4 implementations return zero or undefined on success.
-             * Do not require decodedSize === outputSize unless this repository's
-             * exact LZ4 implementation documents that contract.
-             */
             return readMessage;
         },
         /* ── Expanding Land: Handle map resize events (opcode 200) ── */
