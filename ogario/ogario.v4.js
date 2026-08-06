@@ -30144,7 +30144,12 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (_cW < LM.cells.length) LM.cells.length = _cW;
 
-                /* Opponent rings + cursor overlays: drawn after cells so they're visible on top */
+                /*
+                 * Cursor and merge overlays remain above cells.
+                 *
+                 * Opponent rings and opponent bubbles were already rendered
+                 * underneath cells and viruses by drawHelpers().
+                 */
                 this.drawPostCellOverlays();
                 var _tMini = performance.now();
                 this.drawMiscRings();
@@ -30206,39 +30211,155 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawHelpers() {
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
+                /*
+                 * Opponent indicators must be below every cell and virus.
+                 *
+                 * drawHelpers() runs before:
+                 *
+                 *     drawFood()
+                 *     drawGhostCells()
+                 *     removed-cell drawing
+                 *     drawWebGLCellBatch()
+                 *     cell.draw()
+                 *
+                 * Therefore both normal opponent rings and bubble opponent
+                 * indicators belong here, never in a post-cell pass.
+                 *
+                 * drawOppRings() and drawBOppRings() are also forced onto
+                 * Canvas2D below, ensuring that:
+                 *
+                 *     GPU cells cover the indicators;
+                 *     Canvas2D cells cover the indicators;
+                 *     Canvas2D viruses cover the indicators;
+                 *     fallback rendering preserves the same order.
+                 */
+                if (defaultmapsettings.oppRings) {
+                    if (defaultmapsettings.bubbleInd) {
+                        this.drawBOppRings(
+                            this.ctx,
+                            this.scale,
+                            LM.biggerSTEDCellsCache,
+                            LM.biggerSTECellsCache,
+                            LM.biggerCellsCache,
+                            LM.smallerCellsCache,
+                            LM.STECellsCache,
+                            LM.STEDCellsCache,
+                            LM.SSCellsCache
+                        );
+                    } else {
+                        this.drawOppRings(
+                            this.ctx,
+                            this.scale,
+                            LM.biggerSTEDCellsCache,
+                            LM.biggerSTECellsCache,
+                            LM.biggerCellsCache,
+                            LM.smallerCellsCache,
+                            LM.STECellsCache,
+                            LM.STEDCellsCache
+                        );
+                    }
+                }
+
                 if (defaultmapsettings.splitRange) {
                     if (LM.playerCells && LM.playerCells.length) {
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell);
+                        this.drawSplitRange(
+                            this.ctx,
+                            LM.biggerSTECellsCache,
+                            LM.playerCells,
+                            LM.selectBiggestCell
+                        );
+
+                        this.drawSplitRange(
+                            this.ctx,
+                            LM.biggerSTEDCellsCache,
+                            LM.playerCells,
+                            LM.selectBiggestCell
+                        );
+
+                        this.drawDoubleSplitRange(
+                            this.ctx,
+                            LM.biggerSTEDCellsCache,
+                            LM.playerCells,
+                            LM.selectBiggestCell
+                        );
                     }
-                    if (typeof spects !== "undefined" && spects) {
-                        for (var s = 0; s < spects.length; s++) {
-                            var sp = spects[s];
-                            if (sp && sp.playerCellIDs && sp.playerCellIDs.length) {
-                                var unitCells = [];
-                                for (var c = 0; c < sp.playerCellIDs.length; c++) {
-                                    var cellObj = LM.indexedCells[sp.playerCellIDs[c]];
-                                    if (cellObj) unitCells.push(cellObj);
-                                }
-                                if (unitCells.length) {
-                                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, unitCells, LM.selectBiggestCell);
-                                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, unitCells, LM.selectBiggestCell);
-                                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, unitCells, LM.selectBiggestCell);
+
+                    if (
+                        typeof spects !== "undefined" &&
+                        spects
+                    ) {
+                        for (
+                            var s = 0;
+                            s < spects.length;
+                            s++
+                        ) {
+                            var sp =
+                                spects[s];
+
+                            if (
+                                !sp ||
+                                !sp.playerCellIDs ||
+                                !sp.playerCellIDs.length
+                            ) {
+                                continue;
+                            }
+
+                            var unitCells = [];
+
+                            for (
+                                var c = 0;
+                                c < sp.playerCellIDs.length;
+                                c++
+                            ) {
+                                var cellObj =
+                                    LM.indexedCells[
+                                        sp.playerCellIDs[c]
+                                    ];
+
+                                if (cellObj) {
+                                    unitCells.push(
+                                        cellObj
+                                    );
                                 }
                             }
+
+                            if (!unitCells.length) {
+                                continue;
+                            }
+
+                            this.drawSplitRange(
+                                this.ctx,
+                                LM.biggerSTECellsCache,
+                                unitCells,
+                                LM.selectBiggestCell
+                            );
+
+                            this.drawSplitRange(
+                                this.ctx,
+                                LM.biggerSTEDCellsCache,
+                                unitCells,
+                                LM.selectBiggestCell
+                            );
+
+                            this.drawDoubleSplitRange(
+                                this.ctx,
+                                LM.biggerSTEDCellsCache,
+                                unitCells,
+                                LM.selectBiggestCell
+                            );
                         }
                     }
                 }
             }
         },
-        /* Post-cell overlays: drawn AFTER cells so they appear ON TOP of cell bodies.
-         * With WebGL hybrid, oppRings drawn before cells were occluded by opaque cell bodies. */
+
+        /*
+         * Only overlays that intentionally belong above cell bodies remain
+         * here. Opponent rings and opponent bubbles are already rendered
+         * underneath cells by drawHelpers().
+         */
         drawPostCellOverlays() {
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
-                if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
-                    this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache);
-                }
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
@@ -30317,9 +30438,10 @@ Most cells eaten   : ${mostCellsEaten}
         },
         drawMiscRings() {
             if (LM.play || LM.playerCellsMulti.length) {
-                if (defaultmapsettings.bubbleInd) {
-                    this.drawBOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache);
-                }
+                /*
+                 * Opponent bubbles are rendered below cells by drawHelpers().
+                 * Do not draw them again in this post-cell overlay pass.
+                 */
                 if (defaultmapsettings.bubbleCursorTracker) {
                     this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                 }
@@ -31423,16 +31545,100 @@ Most cells eaten   : ${mostCellsEaten}
                 biggestCell = [];
             }
         },
-        drawBOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
-            const width = 14 + 2 / scale;
-            const alpha = 12 + 1 / scale;
-            this.drawBubbleCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
-            this.drawBubbleCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor);
-            this.drawBubbleCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor);
-            this.drawBubbleCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);
-            this.drawBubbleCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor);
-            this.drawBubbleCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor);
-            this.drawBubbleCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+        drawBOppRings(
+            ctx,
+            scale,
+            ip,
+            biggerSte,
+            biggetCell,
+            smallerCell,
+            smallSte,
+            ap,
+            ss,
+            reset
+        ) {
+            const width =
+                14 +
+                2 / scale;
+
+            const alpha =
+                12 +
+                1 / scale;
+
+            /*
+             * forceCanvas2D=true keeps every opponent bubble beneath both
+             * WebGL cell bodies and Canvas2D cell/virus fallbacks.
+             */
+            this.drawBubbleCircles(
+                ctx,
+                ip,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBSTEDColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                biggerSte,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBSTEColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                biggetCell,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                ss,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.splitRangeColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                smallerCell,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                smallSte,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySSTEColor,
+                true
+            );
+
+            this.drawBubbleCircles(
+                ctx,
+                ap,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySSTEDColor,
+                true
+            );
+
             if (reset) {
                 biggerSte = [];
                 biggetCell = [];
@@ -31444,19 +31650,103 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         //Sonia (entire function update)
-        drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, reset) {
-            //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
-            var width = 14 + 2 / scale;
-            var alpha = 12 + 1 / scale;
-            /* Render opponent rings via WebGL ring batch (same layer as cell bodies).
-             * Canvas2D fallback kicks in automatically when WebGL is unavailable. */
-            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
-            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
-            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor); //Sonia2
-            //this.drawCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);						
-            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor); //Sonia2
-            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor); //Sonia2
-            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+        drawOppRings(
+            ctx,
+            scale,
+            ip,
+            biggerSte,
+            biggetCell,
+            smallerCell,
+            smallSte,
+            ap,
+            reset
+        ) {
+            var width =
+                14 +
+                2 / scale;
+
+            var alpha =
+                12 +
+                1 / scale;
+
+            /*
+             * IMPORTANT:
+             *
+             * forceCanvas2D=true is intentional.
+             *
+             * The WebGL canvas is a separate DOM layer above the Canvas2D
+             * background canvas. If opponent rings are emitted through
+             * drawWebGLRingsBatch(), they can cover Canvas2D viruses and
+             * fallback cells regardless of JavaScript call order.
+             *
+             * Rendering the rings on Canvas2D before all bodies gives the
+             * required composition:
+             *
+             *     opponent ring
+             *     cell or virus body
+             *     skin
+             *     nickname and mass
+             */
+            this.drawCircles(
+                ctx,
+                ip,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBSTEDColor,
+                true
+            );
+
+            this.drawCircles(
+                ctx,
+                biggerSte,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBSTEColor,
+                true
+            );
+
+            this.drawCircles(
+                ctx,
+                biggetCell,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemyBColor,
+                true
+            );
+
+            this.drawCircles(
+                ctx,
+                smallerCell,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySColor,
+                true
+            );
+
+            this.drawCircles(
+                ctx,
+                smallSte,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySSTEColor,
+                true
+            );
+
+            this.drawCircles(
+                ctx,
+                ap,
+                width,
+                alpha,
+                0.75,
+                defaultSettings.enemySSTEDColor,
+                true
+            );
+
             if (reset) {
                 biggerSte = [];
                 biggetCell = [];
@@ -31464,7 +31754,6 @@ Most cells eaten   : ${mostCellsEaten}
                 smallSte = [];
                 ip = [];
                 ap = [];
-                //ss = [];
             }
         },
         drawBCursorTracking(ctx, players, cursorX, cursorY) {
@@ -31532,10 +31821,33 @@ Most cells eaten   : ${mostCellsEaten}
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
-        drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
-            /* WebGL2 fast path for gradient bubble indicators */
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                && this.drawWebGLBubbleBatch(players, stroke, alpha)) {
+        drawBubbleCircles(
+            ctx,
+            players,
+            scale,
+            width,
+            alpha,
+            stroke,
+            forceCanvas2D
+        ) { //Yahnych
+            /*
+             * WebGL remains available for overlays that are allowed above the
+             * Canvas2D layer. Opponent bubbles pass forceCanvas2D=true because
+             * every cell and virus must cover them.
+             */
+            if (
+                !forceCanvas2D &&
+                (
+                    typeof defaultmapsettings.webgl2Acceleration ===
+                        "undefined" ||
+                    defaultmapsettings.webgl2Acceleration
+                ) &&
+                this.drawWebGLBubbleBatch(
+                    players,
+                    stroke,
+                    alpha
+                )
+            ) {
                 return;
             }
             var _pi2 = 6.283185307179586;
