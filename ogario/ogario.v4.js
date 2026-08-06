@@ -4611,7 +4611,8 @@ var displayText = {
         showStatsWorldSize: 'World Size (Expanding Land)',
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'Statystyki: FPS',
-        //showStatsPPS: 'Statystyki: PPS',
+        showStatsPPS: 'Statystyki: PPS',
+        showStatsServerHz: 'Statystyki: Server Hz (Expanding Land)',
 
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
@@ -5105,7 +5106,8 @@ var displayText = {
         showStatsWorldSize: 'World Size (Expanding Land)',
         showStatsDecayInfo: 'Decay Info (Expanding Land)',
         showStatsFPS: 'FPS: Frames per second',
-        //showStatsPPS: 'Game stats: PPS',
+        showStatsPPS: 'PPS: Packets per second',
+        showStatsServerHz: 'Server Hz (Expanding Land)',
 
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
@@ -6413,7 +6415,8 @@ var defaultmapsettings = {
     showStatsWorldSize: true,
     showStatsDecayInfo: true,
     showStatsFPS: true,
-    //showStatsPPS: true,
+    showStatsPPS: true,
+    showStatsServerHz: true,
 
     blockPopups: false,
     gameOverStats: false,
@@ -8297,7 +8300,7 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
-                if (LM.isLegendWorld && ogario.serverHz > 0) {
+                if (defaultmapsettings.showStatsServerHz && LM.isLegendWorld && ogario.serverHz > 0) {
                     var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
                     t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
                 }
@@ -8351,7 +8354,7 @@ function thelegendmodproject() {
                         t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + (defaultmapsettings.multiboxAmount || 2) + ']</span>';
                     }
                 }
-                if (LM.pps > 0) {
+                if (defaultmapsettings.showStatsPPS && LM.pps > 0) {
                     if (defaultmapsettings.showStatsFPS || ogario.play) t += ' | ';
                     var color = '';
                     if (LM.pps < 23 || LM.pps > 29) color = 'color:#ff4c4c';
@@ -9617,7 +9620,7 @@ function thelegendmodproject() {
             //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsServerHz", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbRings", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -21931,7 +21934,7 @@ function thelegendmodproject() {
                             throw e;
                         }
                     }
-                    //this.countPps()
+                    this.countPps();
                     break;
                 case 64: //2020 jimboy3100 specific private servers
                     if (data.byteLength < 33) {
@@ -22058,10 +22061,7 @@ function thelegendmodproject() {
                     }
             }
         },
-        /*countPps() {
-            if (!defaultmapsettings.showStatsPPS) {
-                return;
-            }
+        countPps() {
             const Time = Date.now();
             if (!this.ppsLastRequest) {
                 this.ppsLastRequest = Time;
@@ -22072,7 +22072,7 @@ function thelegendmodproject() {
                 this.ppsLastRequest = Time;
             }
             this.totalPackets++;
-        },*/
+        },
         onMobileData: function (msg) {
             if (msg == null) {
                 return
