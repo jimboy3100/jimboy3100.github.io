@@ -23620,8 +23620,8 @@ function thelegendmodproject() {
             }
 
             var html = '<div id="lm-gameover-modal" style="' +
-                'position:fixed;top:50%;right:20px;transform:translateY(-50%);' +
-                'width:280px;z-index:2147483647;pointer-events:auto;' +
+                'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+                'width:300px;z-index:2147483647;pointer-events:auto;' +
                 'animation:lmGoSlideIn 0.4s cubic-bezier(.22,1,.36,1) forwards;' +
                 'opacity:0;font-family:inherit;">' +
 
@@ -23629,17 +23629,24 @@ function thelegendmodproject() {
                 '<div class="lm-go-card" style="' +
                 'background:' + pc + ';border:1px solid ' + pc2 + ';' +
                 'border-top:3px solid ' + mc + ';border-radius:6px;' +
-                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;cursor:pointer;">' +
+                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;">' +
 
-                /* Header */
+                /* Header with close button */
                 '<div style="' +
-                'padding:12px 16px 8px;text-align:center;' +
+                'padding:12px 16px 8px;text-align:center;position:relative;' +
                 'border-bottom:1px solid ' + pc2 + ';' +
                 'background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);">' +
+                '<div id="lm-go-close" style="' +
+                'position:absolute;top:8px;right:12px;cursor:pointer;' +
+                'font-size:18px;color:' + tc2 + ';line-height:1;' +
+                'transition:color 0.15s;width:24px;height:24px;' +
+                'display:flex;align-items:center;justify-content:center;' +
+                'border-radius:4px;background:rgba(255,255,255,0.05);"' +
+                ' onmouseover="this.style.color=\'' + mc + '\';this.style.background=\'rgba(255,255,255,0.1)\'"' +
+                ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
+                '>✕</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ Game Over</div>' +
-                '<div style="font-size:10px;color:' + tc2 + ';margin-top:2px;">' +
-                'Click to dismiss</div>' +
                 '</div>' +
 
                 /* Stats */
@@ -23660,8 +23667,8 @@ function thelegendmodproject() {
                 var style = document.createElement('style');
                 style.id = 'lm-go-keyframes';
                 style.textContent =
-                    '@keyframes lmGoSlideIn{from{opacity:0;transform:translateY(-50%) translateX(40px)}to{opacity:1;transform:translateY(-50%) translateX(0)}}' +
-                    '@keyframes lmGoSlideOut{from{opacity:1;transform:translateY(-50%) translateX(0)}to{opacity:0;transform:translateY(-50%) translateX(40px)}}' +
+                    '@keyframes lmGoSlideIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
+                    '@keyframes lmGoSlideOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(0.92)}}' +
                     '@keyframes lmGoRowIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}' +
                     '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:4px;' +
                     'animation:lmGoRowIn 0.35s ease forwards;opacity:0;transition:background 0.15s}' +
@@ -23678,11 +23685,12 @@ function thelegendmodproject() {
             var modal = container.firstChild;
             document.body.appendChild(modal);
 
-            /* Attach click-to-dismiss via event listener (not inline onclick) */
-            modal.addEventListener('click', dismissGameOver);
+            /* Attach close button click */
+            var closeBtn = document.getElementById('lm-go-close');
+            if (closeBtn) closeBtn.addEventListener('click', function(e) { e.stopPropagation(); dismissGameOver(); });
 
-            /* Auto-dismiss after 8 seconds */
-            setTimeout(dismissGameOver, 8000);
+            /* Auto-dismiss after 12 seconds */
+            setTimeout(dismissGameOver, 12000);
         },
         updateEvents(event) {
             if (event.length === 0) window.questActivationReq()
