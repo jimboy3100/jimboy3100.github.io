@@ -1716,8 +1716,8 @@
         dot.style.background = '#22c55e';
         dot.style.animation = 'elPulse 1.5s ease-in-out infinite';
         text.textContent = 'LIVE';
-        alive.textContent = (d.alive || '0') + '/1024';
-        specs.textContent = (d.spectators || '0') + '/200';
+        alive.textContent = d.alive || '0';
+        specs.textContent = d.spectators || '0';
         upt.textContent = fmtUptime(d.uptime || 0);
         if (d.map_scale) mapEl.textContent = fmtScale(d.map_scale);
       }

@@ -42,7 +42,7 @@ if (
 ) {
     $.ajax("//agar.io/index.html", {
         error(xhr, status, errorThrown) {
-            console.warn(
+            console.debug(
                 "[Master] Could not refresh EnvConfig:",
                 status,
                 errorThrown
