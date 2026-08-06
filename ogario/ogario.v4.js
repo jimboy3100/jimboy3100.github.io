@@ -24399,6 +24399,15 @@ Most cells eaten   : ${mostCellsEaten}
                     this.viewY = (bottom + top) / 2;
                 }
                 if (isFullPacket) {
+                    if (!this.mapOffsetFixed) {
+                        console.log('%c[MapOffset DEBUG]%c borders:', 'color:#ff0', 'color:inherit',
+                            'left=', left, 'top=', top, 'right=', right, 'bottom=', bottom,
+                            '| mapSize=', this.mapSize, 'mapOffset=', this.mapOffset,
+                            '| offsetX=', this.mapOffsetX, 'offsetY=', this.mapOffsetY,
+                            '| minX=', this.mapMinX, 'minY=', this.mapMinY, 'maxX=', this.mapMaxX, 'maxY=', this.mapMaxY,
+                            '| integrity=', this.connectionIntegrity, 'isLW=', LM.isLegendWorld,
+                            '| serverType=', this.serverType);
+                    }
                     this.mapOffsetFixed = true;
                 }
             }
