@@ -8300,7 +8300,7 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
-                if (defaultmapsettings.showStatsServerHz && LM.isLegendWorld && ogario.serverHz > 0) {
+                if (defaultmapsettings.showStatsServerHz && LM.isLegendWorld) {
                     var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
                     t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
                 }
@@ -8882,7 +8882,6 @@ function thelegendmodproject() {
                         break;
                     case 'showTime':
                         this.displayTime();
-                        $('#time-hud').show();
                         break;
                     case 'centeredLb':
                         this.setCenteredLb();
