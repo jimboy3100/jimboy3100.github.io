@@ -17150,26 +17150,42 @@ function thelegendmodproject() {
                 );
 
             /*
-             * FIXED MASS SIZE
+             * ONE ordinary-cell mass size model.
              *
-             * Do not derive mass size from this.size or this.fontSize.
-             * Every ordinary cell now requests exactly the same world-space
-             * mass font size at the same camera zoom.
+             * Legend Mod's normal massScale is 3. Normalize it to 1, then
+             * apply Delta's ordinary-mass half-size relationship.
              *
-             * The value 26 * 0.5 preserves the original minimum mass size.
-             * defaultSettings.massScale remains fully respected.
+             * The mass follows the ACTUAL nickname size. It is therefore the
+             * same proportion on every cell and at every camera zoom.
              */
-            var fixedMassWorldFontSize =
-                26 *
-                0.5 *
-                this.massScale;
+            var configuredMassScale =
+                Number(
+                    this.massScale
+                );
+
+            if (
+                !Number.isFinite(
+                    configuredMassScale
+                )
+            ) {
+                configuredMassScale =
+                    3;
+            }
+
+            var normalizedMassScale =
+                Math.max(
+                    0,
+                    configuredMassScale
+                ) /
+                3;
 
             this.massSize =
                 Math.max(
-                    4,
+                    1,
                     Math.round(
-                        fixedMassWorldFontSize *
-                        this.scale
+                        this.nickSize *
+                        0.5 *
+                        normalizedMassScale
                     )
                 );
 
@@ -29996,68 +30012,149 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
 
-            /* Draw mass — quantize the value to avoid cache thrashing. */
+            /*
+             * Draw ordinary-cell mass with one invariant relationship:
+             *
+             *     mass height = nickname height * 0.5 * normalizedMassScale
+             *
+             * Text width is never allowed to reduce text height. Therefore
+             * "12.4k" and "85" have the same height on equivalent cells.
+             */
             if (showMass) {
-                /* Mass is always subordinate to the nick. User massScale may
-                 * make it smaller, but never larger than 72% of nick size. */
-                var massWorldFontSize = Math.min(
-                    baseWorldFontSize * 0.5 * massScale,
-                    nickWorldFontSize * 0.72
-                );
-                var gapWorld = nickWorldH > 0
-                    ? Math.max(1, nickWorldFontSize * 0.04)
-                    : 0;
-                var massWorldH = massWorldFontSize * 1.4;
+                var configuredMassScale =
+                    Number(
+                        massScale
+                    );
 
-                if (nickWorldH > 0) {
-                    /* Keep the lower edge at least 10% of the radius inside the
-                     * cell. This prevents low-mass cells from showing their
-                     * mass outside the circle. */
-                    var maxMassWorldH = cellSize * 0.90 - nickWorldH * 0.5 - gapWorld;
-                    if (maxMassWorldH <= 1) return;
-                    if (massWorldH > maxMassWorldH) {
-                        massWorldH = maxMassWorldH;
-                        massWorldFontSize = massWorldH / 1.4;
-                    }
+                if (
+                    !Number.isFinite(
+                        configuredMassScale
+                    )
+                ) {
+                    configuredMassScale =
+                        3;
                 }
 
-                var massFontSize = Math.max(4, Math.round(massWorldFontSize * viewScale));
-                var massFontFamily = defaultSettings.massFontFamily || fontFamily;
-                var massFontWeight = defaultSettings.massFontWeight || fontWeight;
-                var massFont = massFontWeight + ' ' + massFontSize + 'px ' + massFontFamily;
-                var massStrokeW = defaultmapsettings.massStroke
-                    ? ~~(massFontSize * 0.1 * strokeScale) : 0;
+                var normalizedMassScale =
+                    Math.max(
+                        0,
+                        configuredMassScale
+                    ) /
+                    3;
 
-                /* Compute mass from cell.size directly — cell.mass may not be
-                 * set yet because setMass() only runs inside cell.draw(). */
-                var massVal = cell.mass > 0 ? ~~cell.mass : ~~(cellSize * cellSize / 100);
-                var massStr;
-                if (defaultmapsettings.shortMass && massVal >= 1000) {
-                    massStr = (Math.round(massVal / 100) / 10) + 'k';
-                } else {
-                    massStr = '' + massVal;
+                /*
+                 * Derive mass directly from the nickname's world-space size.
+                 * Camera zoom is applied later, once, by drawWebGLTextQuad().
+                 */
+                var massWorldFontSize =
+                    nickWorldFontSize *
+                    0.5 *
+                    normalizedMassScale;
+
+                /*
+                 * Prevent drawWebGLTextQuad() from activating its legacy
+                 * texture-height fallback when the configured scale is zero.
+                 */
+                if (
+                    !(massWorldFontSize > 0)
+                ) {
+                    return;
                 }
 
-                var massEntry = this.getOrCreateTextTexture(massStr, massFont, massColor, massStrokeColor, massStrokeW);
-                if (massEntry) {
-                    /* Fit the complete mass rectangle inside the circle at its
-                     * lower edge. This also handles wide values such as
-                     * "999.9k", not only two- or three-digit values. */
-                    var massBottomY = nickWorldH > 0
-                        ? nickWorldH * 0.5 + gapWorld + massWorldH
-                        : massWorldH * 0.5;
-                    var chordY = Math.min(cellSize * 0.90, Math.max(0, massBottomY));
-                    var safeChordW = 2 * Math.sqrt(
-                        Math.max(0, cellSize * cellSize - chordY * chordY)
-                    ) * 0.92;
-                    var massWorldW = massWorldH * (massEntry.w / massEntry.h);
-                    if (safeChordW > 0 && massWorldW > safeChordW) {
-                        massWorldH *= safeChordW / massWorldW;
-                    }
+                var massWorldH =
+                    massWorldFontSize *
+                    1.4;
 
-                    var massOffsetY = nickWorldH > 0
-                        ? nickWorldH * 0.5 + gapWorld + massWorldH * 0.5
+                /*
+                 * Delta rasterizes mass glyphs at a fixed resolution and then
+                 * scales their geometry. Keep one fixed texture font size here
+                 * so zoom does not generate different glyph metrics or cache
+                 * entries for the same mass value.
+                 */
+                var massFontSize =
+                    100;
+
+                var massFontFamily =
+                    defaultSettings.massFontFamily ||
+                    fontFamily;
+
+                var massFontWeight =
+                    defaultSettings.massFontWeight ||
+                    fontWeight;
+
+                var massFont =
+                    massFontWeight +
+                    ' ' +
+                    massFontSize +
+                    'px ' +
+                    massFontFamily;
+
+                var massStrokeW =
+                    defaultmapsettings.massStroke
+                        ? Math.max(
+                            1,
+                            Math.round(
+                                10 *
+                                strokeScale
+                            )
+                        )
                         : 0;
+
+                /*
+                 * cell.mass may not yet have been initialized by cell.draw().
+                 */
+                var massVal =
+                    cell.mass > 0
+                        ? ~~cell.mass
+                        : ~~(
+                            cellSize *
+                            cellSize /
+                            100
+                        );
+
+                var massStr;
+
+                if (
+                    defaultmapsettings.shortMass &&
+                    massVal >= 1000
+                ) {
+                    massStr =
+                        (
+                            Math.round(
+                                massVal /
+                                100
+                            ) /
+                            10
+                        ) +
+                        'k';
+                } else {
+                    massStr =
+                        '' +
+                        massVal;
+                }
+
+                var massEntry =
+                    this.getOrCreateTextTexture(
+                        massStr,
+                        massFont,
+                        massColor,
+                        massStrokeColor,
+                        massStrokeW
+                    );
+
+                if (massEntry) {
+                    /*
+                     * Stack mass below nickname without any circle-chord fit.
+                     * Width affects horizontal extent only, never height.
+                     */
+                    var massOffsetY =
+                        nickWorldH > 0
+                            ? nickWorldH *
+                                0.5 +
+                                massWorldH *
+                                0.5
+                            : 0;
+
                     this.drawWebGLTextQuad(
                         massEntry,
                         cell.x,
