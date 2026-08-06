@@ -30973,29 +30973,9 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             LM.time = _now;
-
-            /* WASM batch interpolation: single call interpolates all cells */
-            var _wasmMoved = false;
-            if (typeof WasmCellInterp !== 'undefined' && WasmCellInterp.ready) {
-                _wasmMoved = WasmCellInterp.batchMove(
-                    LM.cells, _now,
-                    defaultmapsettings.animation || 120,
-                    !!defaultmapsettings.suckAnimation
-                );
-            }
-            if (!_wasmMoved) {
-                /* JS fallback — original per-cell loop */
-                for (i = 0; i < LM.cells.length; i++) {
-                    if (!LM.cells[i]) continue;
-                    LM.cells[i].moveCell();
-                }
-            } else {
-                /* WASM handled normal cells; spectator cells still need JS */
-                for (i = 0; i < LM.cells.length; i++) {
-                    var _sc = LM.cells[i];
-                    if (!_sc || !_sc.spectator || _sc.spectator <= 0) continue;
-                    _sc.moveCell();
-                }
+            for (i = 0; i < LM.cells.length; i++) {
+                if (!LM.cells[i]) continue;
+                LM.cells[i].moveCell();
             }
             this.setView();
             LM.getCursorPosition();
@@ -34221,7 +34201,6 @@ Most cells eaten   : ${mostCellsEaten}
     /* Initialize WASM acceleration modules (async, non-blocking) */
     if (typeof WasmCellParser !== 'undefined') WasmCellParser.init().catch(function(e) { console.warn('[WASM] CellParser init failed:', e); });
     if (typeof WasmQuadTree !== 'undefined') WasmQuadTree.init().catch(function(e) { console.warn('[WASM] QuadTree init failed:', e); });
-    if (typeof WasmCellInterp !== 'undefined') WasmCellInterp.init();
     ogarhusettings();
     ogarhusettingsImportExportMobile();
     setGUIEvents();
