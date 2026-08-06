@@ -99,9 +99,7 @@ var imgHref = localStorage.getItem("imgHref");
 var showToken = localStorage.getItem("showTK");
 var showPlayer = localStorage.getItem("showPlayer");
 var SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-var XPBtn = localStorage.getItem("XPBtn");
 var MAINBTBtn = localStorage.getItem("MAINBTBtn");
-var AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
 
 var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
 
@@ -567,9 +565,7 @@ function enableshortcuts() {
     if ($("#MAINBTBtn").attr('aria-pressed') == "false") {
         $("#MAINBTBtn").click();
     }
-    if ($("#XPBtn").attr('aria-pressed') == "false") {
-        $("#XPBtn").click();
-    }
+
 
 
 }
@@ -1554,9 +1550,7 @@ function parseLegendJSONAPI(LegendJSON) {
     LegendJSON.legendSettings.showToken = localStorage.getItem("showTK");
     LegendJSON.legendSettings.showPlayer = localStorage.getItem("showPlayer");
     LegendJSON.legendSettings.SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-    LegendJSON.legendSettings.XPBtn = localStorage.getItem("XPBtn");
     LegendJSON.legendSettings.MAINBTBtn = localStorage.getItem("MAINBTBtn");
-    LegendJSON.legendSettings.AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
 
     LegendJSON.legendSettings.TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
     LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
@@ -1806,9 +1800,7 @@ function saveLegendJSONAPI() {
         localStorage.setItem("showTK", LegendJSON.legendSettings.showToken);
         localStorage.setItem("showPlayer", LegendJSON.legendSettings.showPlayer);
         localStorage.setItem("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
-        localStorage.setItem("XPBtn", LegendJSON.legendSettings.XPBtn);
         localStorage.setItem("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
-        localStorage.setItem("AnimatedSkinBtn", LegendJSON.legendSettings.AnimatedSkinBtn);
 
         localStorage.setItem("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
         localStorage.setItem("timesopened", LegendJSON.legendSettings.timesopened);
@@ -4788,13 +4780,7 @@ function triggerLMbtns() {
     if (MAINBTBtn == "true") {
         $("#MAINBTBtn").click();
     }
-    if (AnimatedSkinBtn == "true") {
-        $("#AnimatedSkinBtn").click();
-    }
 
-    if (XPBtn == "true") {
-        $("#XPBtn").click();
-    }
     if (TIMEcalBtn == "true") {
         $("#TIMEcalBtn").click();
     }
@@ -6499,9 +6485,7 @@ function initializeLM(modVersion) {
         '<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>' +
         '</div></div>' +*/
         '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-        '<button id="XPBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-gamepad"></i>' + Premadeletter44 + '</button>' +
-        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-        '<button id="AnimatedSkinBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-grav"></i>' + Premadeletter46 + '</button>' +
+        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
         '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
         '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
 
@@ -7193,18 +7177,6 @@ function initializeLM(modVersion) {
             return seticon = "YES";
         }
     });
-    $("#XPBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            localStorage.setItem("XPBtn", true);
-            $("#exp-bar").show();
-            $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter45);
-        } else {
-            localStorage.setItem("XPBtn", false);
-            $("#exp-bar").hide();
-            $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter44);
-        }
-    });
     $("#MAINBTBtn").click(function () {
         var checked = !($(this).attr('aria-pressed') == "true");
         if (checked) {
@@ -7229,31 +7201,6 @@ function initializeLM(modVersion) {
                 '#top5-hud, #target-hud, #legendAdImg, #stats-hud, ' +
                 '#time-hud { border-radius: 0 0 0 0 } </style>');
             $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45a);
-        }
-    });
-    $("#AnimatedSkinBtn").click(function () {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        //toastr.info("Function is not ready yet");
-        if (checked) {
-            localStorage.setItem("AnimatedSkinBtn", true);
-            var headID = document.getElementsByTagName("head")[0];
-            $(headID).append('<style type="text/css" id="MGx">	' +
-                '#top5-hud{top:10px!important;background:linear-gradient(to right,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#leaderboard-hud{top:10px!important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#chat-box{important;background:linear-gradient(to right,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#minimap-hud,#timertools-hud, #shortcuts-hud, #time-hud,#msgcommands-hud, #scripting-hud, #images-hud, #yt-hud{important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#leaderboard-hud{top:10px!important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#target-hud,#target-panel-hud {background:linear-gradient(to bottom,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#stats-hud{background:linear-gradient(to top,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#stats-hud{left: 50%!important; transform: translateX(-50%)!important; text-align: center;}' +
-                '.hud-top{top: 93%!important;}' +
-                '#chat-box{bottom: 2%!important;}' +
-                '</style>');
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter47);
-        } else {
-            localStorage.setItem("AnimatedSkinBtn", false);
-            $("#MGx").remove();
-            $(this).html('<i class="fa fa-grav"></i>' + Premadeletter46);
         }
     });
 
