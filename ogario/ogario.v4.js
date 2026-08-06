@@ -8300,7 +8300,7 @@ function thelegendmodproject() {
                     if (t) t += tierLabel + ' | ';
                     else t += tierLabel + ' | ';
                 }
-                if (defaultmapsettings.showStatsServerHz && LM.isLegendWorld) {
+                if (defaultmapsettings.showStatsServerHz && ogario.serverHz > 0) {
                     var hzColor = ogario.serverHz >= 25 ? '#4f4' : ogario.serverHz >= 20 ? '#ff0' : '#f44';
                     t += '⚡ Hz: <span style="color:' + hzColor + '">' + ogario.serverHz + '</span> | ';
                 }
