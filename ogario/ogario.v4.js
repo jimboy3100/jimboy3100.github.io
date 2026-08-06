@@ -20180,12 +20180,80 @@ function thelegendmodproject() {
                 );
             }
 
-            /* ── Optimized inline LZ4 block decoder (typed arrays) ── */
+            /* ── LZ4 WASM decoder (1.3 KB inline) ── */
+            if (!window._lz4wasm) {
+                /* One-time async init — first packet
+                 * uses JS fallback, then WASM takes over */
+                if (!window._lz4wasmLoading) {
+                    window._lz4wasmLoading = true;
+                    var WASM_B64 = "AGFzbQEAAAABDgNgAABgAAF/YAJ/fwF/AwUEAAEBAgUDAQAgBk4LfwFBgIjUAAt/AEGACAt/AEGAiNAAC38AQYCI0AALfwBBgIjUAAt/AEGACAt/AEGAiNQAC38AQYCAgAELfwBBAAt/AEEBC38AQYCABAsH6AEPBm1lbW9yeQIAEV9fd2FzbV9jYWxsX2N0b3JzAAALZ2V0X3NyY19wdHIAAQtnZXRfZHN0X3B0cgACEGx6NF9kZWNvZGVfYmxvY2sAAwxfX2Rzb19oYW5kbGUDAQpfX2RhdGFfZW5kAwILX19zdGFja19sb3cDAwxfX3N0YWNrX2hpZ2gDBA1fX2dsb2JhbF9iYXNlAwULX19oZWFwX2Jhc2UDBgpfX2hlYXBfZW5kAwcNX19tZW1vcnlfYmFzZQMIDF9fdGFibGVfYmFzZQMJFV9fd2FzbV9maXJzdF9wYWdlX2VuZAMKCvoEBAIACwgAQYCIgIAACwgAQYCIkIAAC+IEAQh/AkACQCAAQQFODQBBACECDAELQQAhA0EAIQIDQCACIQQgA0EBaiEFAkACQAJAAkAgA0GAiICAAGotAAAiBkEEdiIHQQ9HDQBBDyEHIAUhCANAIAcgCEGAiICAAGotAAAiAmohByAIQQFqIgUhCCACQf8BRg0ADAILCyAGQRBJDQELQX8hAiAHIARqIgkgAUoNAyAHIAVqIgggAEoNAyAHQQFIDQAgB0UNASAEQYCIkIAAaiAFQYCIgIAAaiAH/AoAAAwBCyAEIQkgBSEICwJAIAggAEgNACAJDwtBfyECIAhBAmoiAyAASg0BIAhBgIiAgABqLwAAIgRFDQECQAJAIAZBD3EiCEEPRg0AIAhBBGohBwwBC0ETIQcgAyEIA0AgByAIQYCIgIAAai0AACIFaiEHIAhBAWoiAyEIIAVB/wFGDQALCyAJIARrIgRBAEgNASAHIAlqIAFKDQEgB0EBIAdBAUobIghBA3EhBQJAAkAgB0EETg0AIAkhAgwBCyAIQfz///8HcSEGQQAhCANAIAkgCGoiAkGAiJCAAGogBCAIaiIHQYCIkIAAai0AADoAACACQYGIkIAAaiAHQYGIkIAAai0AADoAACACQYKIkIAAaiAHQYKIkIAAai0AADoAACACQYOIkIAAaiAHQYOIkIAAai0AADoAACAGIAhBBGoiCEcNAAsgCSAIaiECIAQgCGohBAsCQCAFRQ0AIARBgIiQgABqIQgDQCACQYCIkIAAaiAILQAAOgAAIAhBAWohCCACQQFqIQIgBUF/aiIFDQALCyADIABIDQALCyACCwBtBG5hbWUAEA9sejRfZGVjb2RlLndhc20BQAQAEV9fd2FzbV9jYWxsX2N0b3JzAQtnZXRfc3JjX3B0cgILZ2V0X2RzdF9wdHIDEGx6NF9kZWNvZGVfYmxvY2sHEgEAD19fc3RhY2tfcG9pbnRlcgA4CXByb2R1Y2VycwEMcHJvY2Vzc2VkLWJ5AQxVYnVudHUgY2xhbmcRMjEuMS44ICg2dWJ1bnR1MSkAlAEPdGFyZ2V0X2ZlYXR1cmVzCCsLYnVsay1tZW1vcnkrD2J1bGstbWVtb3J5LW9wdCsWY2FsbC1pbmRpcmVjdC1vdmVybG9uZysKbXVsdGl2YWx1ZSsPbXV0YWJsZS1nbG9iYWxzKxNub250cmFwcGluZy1mcHRvaW50Kw9yZWZlcmVuY2UtdHlwZXMrCHNpZ24tZXh0";
+                    try {
+                        var bin = Uint8Array.from(
+                            atob(WASM_B64),
+                            function(c) {
+                                return c.charCodeAt(0);
+                            }
+                        );
+                        WebAssembly.instantiate(
+                            bin.buffer, {}
+                        ).then(function(result) {
+                            var exp = result.instance.exports;
+                            window._lz4wasm = {
+                                decode: exp.lz4_decode_block,
+                                srcPtr: exp.get_src_ptr(),
+                                dstPtr: exp.get_dst_ptr(),
+                                mem: new Uint8Array(
+                                    exp.memory.buffer
+                                )
+                            };
+                            console.log(
+                                '%c[LZ4]%c WASM decoder ready (1.3 KB)',
+                                'color:#0f0', 'color:inherit'
+                            );
+                        }).catch(function(e) {
+                            console.warn(
+                                '[LZ4] WASM init failed, using JS fallback:', e
+                            );
+                        });
+                    } catch (e) {
+                        console.warn(
+                            '[LZ4] WASM load failed:', e
+                        );
+                    }
+                }
+            }
+
             var src = new Uint8Array(
                 message.buffer,
                 (message.byteOffset || 0) + 5,
                 compressedSize
             );
+
+            /* ── Try WASM path ── */
+            var wasm = window._lz4wasm;
+            if (wasm &&
+                compressedSize <= 262144 &&
+                outputSize <= 1048576) {
+                wasm.mem.set(src, wasm.srcPtr);
+                var decoded = wasm.decode(
+                    compressedSize, outputSize
+                );
+                if (decoded >= 0) {
+                    var out = new Uint8Array(outputSize);
+                    out.set(
+                        wasm.mem.subarray(
+                            wasm.dstPtr,
+                            wasm.dstPtr + decoded
+                        )
+                    );
+                    return new buffer(out.buffer);
+                }
+                throw new RangeError(
+                    "LZ4 WASM decompression failed"
+                );
+            }
+
+            /* ── JS fallback (typed arrays) ── */
             var dst = new Uint8Array(outputSize);
             var sPos = 0, dPos = 0;
             var sEnd = compressedSize;
@@ -20193,7 +20261,6 @@ function thelegendmodproject() {
             while (sPos < sEnd) {
                 var token = src[sPos++];
 
-                /* ── Literals ── */
                 var litLen = token >>> 4;
                 if (litLen === 15) {
                     var addByte;
@@ -20212,7 +20279,6 @@ function thelegendmodproject() {
                 }
                 if (sPos >= sEnd) break;
 
-                /* ── Match offset (2 bytes LE) ── */
                 var offset =
                     src[sPos] | (src[sPos + 1] << 8);
                 sPos += 2;
@@ -20222,7 +20288,6 @@ function thelegendmodproject() {
                     );
                 }
 
-                /* ── Match length ── */
                 var matchLen = (token & 0xF) + 4;
                 if ((token & 0xF) === 15) {
                     var addByte2;
@@ -20232,10 +20297,8 @@ function thelegendmodproject() {
                     } while (addByte2 === 255);
                 }
 
-                /* ── Copy match bytes ── */
                 var matchPos = dPos - offset;
                 if (offset >= matchLen) {
-                    /* Non-overlapping: bulk copy */
                     dst.set(
                         dst.subarray(
                             matchPos,
@@ -20245,9 +20308,6 @@ function thelegendmodproject() {
                     );
                     dPos += matchLen;
                 } else {
-                    /* Overlapping: byte-by-byte
-                     * (RLE patterns like runs of
-                     * same byte) */
                     var mEnd = dPos + matchLen;
                     while (dPos < mEnd) {
                         dst[dPos++] = dst[matchPos++];
@@ -20255,17 +20315,12 @@ function thelegendmodproject() {
                 }
             }
 
-            var readMessage = new buffer(0);
-            /* Re-wrap dst as a Buffer view so
-             * downstream DataView works unchanged */
-            readMessage = new buffer(dst.buffer);
-
             if (dPos < 0 || dPos > outputSize) {
                 throw new RangeError(
                     "LZ4 decompression failed"
                 );
             }
-            return readMessage;
+            return new buffer(dst.buffer);
         },
         /* ── Expanding Land: Handle map resize events (opcode 200) ── */
         handleMapEvent(eventType, currentSize, targetSize, centerX, centerY, transitionDur, warningDur, currentTier) {
