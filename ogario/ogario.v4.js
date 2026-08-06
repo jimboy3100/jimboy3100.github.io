@@ -18941,6 +18941,7 @@ function thelegendmodproject() {
             this.elBotCount = null;
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
+            ogario.serverHz = 0;
             this.leaderboard = [];
             // Garix state reset
             this.garixTabID1 = 0;
@@ -19264,6 +19265,7 @@ function thelegendmodproject() {
             this.elBotCount = null;
             ogario.elPlayerCount = null;
             ogario.elBotCount = null;
+            ogario.serverHz = 0;
             if (this.pingInterval) { clearInterval(this.pingInterval); this.pingInterval = null; }
             // Only trigger agar.io reconnect logic for official servers.
             // For private servers (agar2, imsolo, garix), master.onDisconnect()
