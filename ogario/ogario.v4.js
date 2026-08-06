@@ -2147,6 +2147,12 @@ function deleteGamemode(temp) {
             text: 'Rookery',
             value: 8
         }, {
+            text: 'Maxisplit',
+            value: 9
+        }, {
+            text: 'Exp Rookery',
+            value: 10
+        }, {
             text: 'Agar2 EU FFA',
             value: 8001
         }, {
@@ -2314,12 +2320,14 @@ function deleteGamemode(temp) {
         }
         // Imsolo & Agar2 private server connections (multi-protocol support)
         // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
-        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7 || $('#gamemode').val() == 8) {
+        else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7 || $('#gamemode').val() == 8 || $('#gamemode').val() == 9 || $('#gamemode').val() == 10) {
             (function connectImsolo(val) {
                 var imsoloLbMap = {
-                    6: { url: 'https://loadbalancer.static.imsolo.pro/getserver/selfeed', fallback: 'wss://imsolo.pro:2109/' },
-                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://imsolo.pro:2108/' },
-                    8: { url: 'https://loadbalancer.static.imsolo.pro/getserver/rookery', fallback: 'wss://rookery.ws.imsolo.pro/' }
+                    6: { url: 'https://loadbalancer.static.imsolo.pro/getserver/selfeed', fallback: 'wss://arctida.ws.imsolo.pro/' },
+                    7: { url: 'https://loadbalancer.static.imsolo.pro/getserver/megasplit', fallback: 'wss://dagestan.ws.imsolo.pro/' },
+                    8: { url: 'https://loadbalancer.static.imsolo.pro/getserver/rookery', fallback: 'wss://rookery.ws.imsolo.pro/' },
+                    9: { url: 'https://loadbalancer.static.imsolo.pro/getserver/maxisplit', fallback: 'wss://maxisplit.ws.imsolo.pro/' },
+                    10: { url: 'https://loadbalancer.static.imsolo.pro/getserver/exprookery', fallback: 'wss://exprookery.ws.imsolo.pro/' }
                 };
                 var cfg = imsoloLbMap[val];
                 if (!cfg) return;
@@ -18680,7 +18688,7 @@ function thelegendmodproject() {
              * This duplicates the detection below but runs BEFORE anything else. */
             var _earlyType = t.includes('agario.miniclippt') ? 'agario'
                 : t.includes('imsolo.pro') ? 'imsolo'
-                    : t.includes('agar2.com') ? 'agar2'
+                    : t.includes('agar2.com') ? 'imsolo'
                         : t.includes('garix.io') ? 'garix'
                             : (t.includes('legendmod.ml') || t.includes('expanding.land')) ? 'expandingland'
                                 : 'private';
