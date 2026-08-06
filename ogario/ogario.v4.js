@@ -20232,7 +20232,7 @@ function thelegendmodproject() {
                     window.legendClientWorker.postMessage({ type: 'NETWORK_PACKET', buffer: data.buffer.slice(0) });
                 } catch (e) { }
             }
-            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
