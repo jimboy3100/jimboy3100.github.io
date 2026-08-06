@@ -877,7 +877,7 @@
                     </div>
                     <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:110px;text-align:center;box-shadow:var(--shadow-xs);">
                         <div id="el-map" style="font-size:1.35rem;font-weight:800;color:#f472b6;line-height:1;animation:elCount 0.8s ease 0.8s both;">—</div>
-                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Map (up to 8×)</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">Map (up to Tier 13)</div>
                     </div>
                 </div>
 
@@ -1699,11 +1699,16 @@
         return m + 'm';
       }
 
-      function fmtScale(x100) {
-        if (x100 <= 25) return '1/4';
-        if (x100 <= 50) return '1/2';
-        if (x100 <= 100) return '1×';
-        return Math.round(x100 / 100) + '×';
+      function fmtScale(rawScale) {
+        /* Server map_scale = mapSize / 12.5 (e.g. 12800 → 160000 map).
+         * Convert to actual size, then match to tier 1-13. */
+        var mapSize = rawScale * 12.5;
+        var tierSizes = [7071, 10000, 14142, 20000, 28284, 40000, 56569, 80000, 113137, 160000, 226274, 320000, 452548];
+        var tier = 1;
+        for (var i = tierSizes.length - 1; i >= 0; i--) {
+          if (mapSize >= tierSizes[i] - 500) { tier = i + 1; break; }
+        }
+        return 'Tier ' + Math.min(tier, 13);
       }
 
       function setOnline(d) {
