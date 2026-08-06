@@ -2546,9 +2546,22 @@ var dyinglight1load = localStorage.getItem("dyinglight1load");
 //var MassBigFFAAnnouncement = localStorage.getItem("MassBigFFAAnnouncement");
 var PremiumLimitedDateStart = localStorage.getItem("PremiumLimitedDateStart");
 
+var _RE_EMOJI = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+/* Hoisted clan-tag strip regex — compiled once instead of per-cell per-frame */
+var _RE_CLAN_TAG = /^\[.*?\]\s*|^℄[^\s]*\s*/g;
+
+/* Hoisted skin validity check — was re-created as a closure per getCachedSkin call */
+function _isValidSkin(s) {
+    if (!s || s._failed) return false;
+    if (typeof s.videoWidth === "number" && s.videoWidth > 0) return true;
+    if (typeof s.naturalWidth === "number" && s.naturalWidth > 0) return true;
+    if (typeof s.width === "number" && s.width > 0) return true;
+    return false;
+}
+
 function removeEmojis(string) {
-    var regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
-    return string.replace(regex, '');
+    _RE_EMOJI.lastIndex = 0;
+    return string.replace(_RE_EMOJI, '');
 }
 
 function makeUpperCaseAfterUnderline(str) {
@@ -12001,31 +12014,25 @@ function thelegendmodproject() {
             }
         },
         getCachedSkin(skinCache, skinMap) {
-            function isValid(s) {
-                if (!s || s._failed) return false;
-                if (typeof s.videoWidth === "number" && s.videoWidth > 0) return true;
-                if (typeof s.naturalWidth === "number" && s.naturalWidth > 0) return true;
-                if (typeof s.width === "number" && s.width > 0) return true;
-                return false;
-            }
             if (!skinMap) return null;
             if (skinCache[skinMap + '_cached3']) {
                 /* Use per-frame _skinHalf (set in renderFrame) instead of new Date() per cell */
                 if (drawRender._skinHalf) {
-                    if (isValid(skinCache[skinMap + '_cached3'])) return skinCache[skinMap + '_cached3'];
+                    if (_isValidSkin(skinCache[skinMap + '_cached3'])) return skinCache[skinMap + '_cached3'];
                 } else {
-                    if (isValid(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
+                    if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
                 }
             }
-            if (isValid(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
-            if (isValid(skinCache[skinMap])) return skinCache[skinMap];
+            if (_isValidSkin(skinCache[skinMap + '_cached'])) return skinCache[skinMap + '_cached'];
+            if (_isValidSkin(skinCache[skinMap])) return skinCache[skinMap];
             return null;
         },
         cacheCustomSkin(nick, color, skinUrl) {
             if (!skinUrl) return;
             skinUrl = this.checkSkinURL(skinUrl);
             if (!skinUrl) return;
-            var cleanNick = nick ? nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim() : '';
+            _RE_CLAN_TAG.lastIndex = 0;
+            var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             const s = ':party' === this.gameMode ? nick + color : nick;
             if (s) this.customSkinsMap[s] = skinUrl;
             if (nick) {
@@ -12043,8 +12050,14 @@ function thelegendmodproject() {
         },
         checkSkinsMap(nick, color) {
             if (!nick) return false;
-            var cleanNick = nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim();
-            var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
+            _RE_CLAN_TAG.lastIndex = 0;
+            var cleanNick = nick.replace(_RE_CLAN_TAG, '').trim();
+            /* Cache lowered color to avoid per-call string allocation */
+            var hexColor;
+            if (color && typeof color === 'string') {
+                if (color === this._lastColor) { hexColor = this._lastColorLower; }
+                else { hexColor = this._lastColorLower = (this._lastColor = color).toLowerCase(); }
+            } else { hexColor = '#000000'; }
             return !!(
                 this.customSkinsMap.hasOwnProperty(nick) ||
                 this.customSkinsMap.hasOwnProperty(nick + hexColor) ||
@@ -12058,8 +12071,14 @@ function thelegendmodproject() {
         },
         getCustomSkin(nick, color, skinKey) {
             if (!nick && !skinKey) return null;
-            var cleanNick = nick ? nick.replace(/^\[.*?\]\s*|^℄[^\s]*\s*/g, '').trim() : '';
-            var hexColor = (color && typeof color === 'string') ? color.toLowerCase() : '#000000';
+            _RE_CLAN_TAG.lastIndex = 0;
+            var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
+            /* Cache lowered color to avoid per-call string allocation */
+            var hexColor;
+            if (color && typeof color === 'string') {
+                if (color === this._lastColor) { hexColor = this._lastColorLower; }
+                else { hexColor = this._lastColorLower = (this._lastColor = color).toLowerCase(); }
+            } else { hexColor = '#000000'; }
 
             var vanillaLookup = (skinKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
 
@@ -17189,6 +17208,12 @@ function thelegendmodproject() {
             }
         };
         this.createStrokeVirusPath = function (shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax) {
+            /* Cache Path2D on the cell — only rebuild when size changes */
+            var cacheKey = zeroSizeMax * 10000 + pixelSizeTargetMax;
+            if (this._virusCachedPath && this._virusCachedPathKey === cacheKey &&
+                this._virusCachedPathX === shadowXpos && this._virusCachedPathY === shadowYpos) {
+                return this._virusCachedPath;
+            }
             //const nAngelsOfVirus = ~~(zeroSizeMax * 45 / 98);
             const nAngelsOfVirus = ~~(zeroSizeMax * defaultSettings.virusSpikesRatio);
             const GROUPSIZE = this.pi2 / nAngelsOfVirus;
@@ -17202,6 +17227,10 @@ function thelegendmodproject() {
                 ctxfx.lineTo(~~(shadowXpos + radiusX * Math.sin(i)), ~~(shadowYpos + radiusX * Math.cos(i)));
                 ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
             }
+            this._virusCachedPath = ctxfx;
+            this._virusCachedPathKey = cacheKey;
+            this._virusCachedPathX = shadowXpos;
+            this._virusCachedPathY = shadowYpos;
             return ctxfx;
         };
         this.drawSpecialSkinDancer = function (style, y) {
@@ -17282,11 +17311,17 @@ function thelegendmodproject() {
             }
         };
         this.drawSpecialSkin = function (style, y) {
-            if (SpecialEffectPlayers[this.targetNick] && SpecialEffectPlayers[this.targetNick].split && SpecialEffectPlayers[this.targetNick].split(';')) {
-                var temp = SpecialEffectPlayers[this.targetNick].split(';')
-                for (var i = 0; i < temp.length; i++) {
-                    if (!this.SpecialEffect) this.SpecialEffect = temp[i];
-                    else if (this.SpecialEffect !== temp[i]) this.SpecialEffect2 = temp[i];
+            if (SpecialEffectPlayers[this.targetNick]) {
+                /* Cache split result on cell — only recompute when nick changes */
+                if (!this.SpecialEffect || this._specialEffectNick !== this.targetNick) {
+                    this._specialEffectNick = this.targetNick;
+                    this.SpecialEffect = null;
+                    this.SpecialEffect2 = null;
+                    var temp = SpecialEffectPlayers[this.targetNick].split(';');
+                    for (var i = 0; i < temp.length; i++) {
+                        if (!this.SpecialEffect) this.SpecialEffect = temp[i];
+                        else if (this.SpecialEffect !== temp[i]) this.SpecialEffect2 = temp[i];
+                    }
                 }
                 /*if (!window.eud){
                     console.log('draw',this.targetNick,this.SpecialEffect)
@@ -17460,8 +17495,7 @@ function thelegendmodproject() {
                         //style.drawImage(iconSpecialSkinEffectsBabyBoss1, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
                     }
                 } else if (this.SpecialEffect === "Gladiator" || this.SpecialEffect2 === "Gladiator") {
-                    var d = new Date();
-                    var n = d.getSeconds();
+                    var n = drawRender._frameSeconds;
                     /*
                     var e;
                     if (n<30){ e = n / 30}
@@ -17475,8 +17509,7 @@ function thelegendmodproject() {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHero", this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5, style);
                     //style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);
                 } else if (this.SpecialEffect === "Hero1" || this.SpecialEffect2 === "Hero1") {
-                    var d = new Date();
-                    var n = d.getSeconds();
+                    var n = drawRender._frameSeconds;
                     var e;
                     if (n < 30) {
                         e = n / 30
@@ -17535,19 +17568,18 @@ function thelegendmodproject() {
                 } else if (this.SpecialEffect === "WhiteArrow" || this.SpecialEffect2 === "WhiteArrow") {
                     //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
-                    var today = new Date();
                     try {
                         if (!window.testAnimatCells) {
                             if (!window.testAnimCell) {
-                                var ab = today.getTime() / 1000
+                                var ab = Date.now() / 1000
                                 if (!window.abam) {
                                     window.abam = ab
                                 }
                                 if (!window.abah) {
-                                    window.abah = today.getHours()
+                                    window.abah = drawRender._frameHours
                                 }
                                 ab = ab - window.abam;
-                                if (today.getHours() === window.abah && ab < 5) {
+                                if (drawRender._frameHours === window.abah && ab < 5) {
                                     style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
                                 } else {
                                     window.testAnimatCells = true;
@@ -17602,11 +17634,11 @@ function thelegendmodproject() {
 
 
                         //26/7/2020
-                        if (LM.ws && LM.ws.includes("replay") && window.replayGreyScale) {
+                        if (LM._isReplay && window.replayGreyScale) {
                             style.filter = 'grayscale(100%)';
-                        } else if (LM.ws && LM.ws.includes("replay") && window.replaySepia) {
+                        } else if (LM._isReplay && window.replaySepia) {
                             style.filter = 'sepia(100%)';
-                        } else if (LM.ws && LM.ws.includes("replay") && window.replayHueRotate) {
+                        } else if (LM._isReplay && window.replayHueRotate) {
                             style.filter = 'hue-rotate(90deg)';
                         }
                         //style.filter='grayscale(100%)';
@@ -17841,7 +17873,7 @@ function thelegendmodproject() {
                                 }
                             }
                         }
-                        if (defaultmapsettings.mbRings && LM.playerCellsMulti && LM.playerCellsMulti.indexOf(this) !== -1) {
+                        if (defaultmapsettings.mbRings && this.playerCellsMulti) {
                             style.strokeStyle = defaultSettings.mbRingColor || '#00E5FF';
                             style.lineWidth = Math.max(~~(y / 40), 8);
                             style.stroke();
@@ -29504,6 +29536,10 @@ Most cells eaten   : ${mostCellsEaten}
             //this.ctx.start2D();
             this.renderStarted = performance.now()
             var _now = Date.now();
+            /* Per-frame caches — avoids per-cell string scans and Date allocations */
+            LM._isReplay = !!(LM.ws && LM.ws.includes("replay"));
+            this._frameSeconds = ~~(_now / 1000) % 60; /* Date.getSeconds() equivalent */
+            this._frameHours = new Date(_now).getHours(); /* only once per frame, not per cell */
             /* Background-tab recovery: if >1s since last render, the tab was hidden.
              * Snap all cells to their target positions instantly to avoid stale ghosts. */
             if (LM.time && (_now - LM.time) > 1000) {
@@ -30950,7 +30986,8 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 ctx.stroke();
             } else {
-                var batches = {};
+                /* Reuse persistent batch object — arrays are cleared with .length=0 after each draw */
+                var batches = this._rainbowBatches || (this._rainbowBatches = {});
                 for (var length = 0; length < food.length; length++) {
                     var f = food[length];
                     if (!f || f.invisible) continue;
@@ -30960,7 +30997,9 @@ Most cells eaten   : ${mostCellsEaten}
                     if (!batches[color]) batches[color] = [];
                     batches[color].push(f);
                 }
-                for (var col in batches) {
+                var batchKeys = Object.keys(batches);
+                for (var ki = 0; ki < batchKeys.length; ki++) {
+                    var col = batchKeys[ki];
                     var batch = batches[col];
                     ctx.fillStyle = col;
                     ctx.beginPath();
@@ -30971,6 +31010,7 @@ Most cells eaten   : ${mostCellsEaten}
                         ctx.arc(item.x, item.y, r, 0, twoPi, false);
                     }
                     ctx.fill();
+                    batch.length = 0; /* reuse array next frame */
                 }
             }
 
@@ -31413,7 +31453,12 @@ Most cells eaten   : ${mostCellsEaten}
                         var angle = Math.PI * 0.8;
 
                         var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
-                        this.ghostcellstext = removeEmojis(application.escapeHTML(ghostNick));
+                        /* Cache cleaned text on ghost cell — only recompute when nick changes */
+                        if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
+                            ghost._cleanedNick = ghostNick;
+                            ghost._cleanedText = removeEmojis(application.escapeHTML(ghostNick));
+                        }
+                        this.ghostcellstext = ghost._cleanedText;
                         this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, sz * this.pi2 / 6, angle);
                         if (_showSkins && ghostNick) {
                             var node = application.getCustomSkin(ghostNick, "#000000");
