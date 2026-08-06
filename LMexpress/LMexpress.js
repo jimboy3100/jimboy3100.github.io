@@ -3157,13 +3157,7 @@ function universalchat() {
                 my.log("Received a command with an unknown name: " + cmd.name);
         }
     };
-    my.sendMinimapServerCommand = function (e) {
-        if (stat.minimap_socket && stat.minimap_socket.connected) {
-            stat.minimap_socket.emit("command", e);
-            return true;
-        }
-        return false;
-    };
+    // sendMinimapServerCommand is now defined above using binary ATPacket protocol
     my.resetMinimap = function () {
         //$("#messageTableTemp").empty(), $("#messageTableComplete").empty();
         window.authenticAgartoolId = [];
