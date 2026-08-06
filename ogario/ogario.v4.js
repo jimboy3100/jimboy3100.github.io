@@ -33542,6 +33542,40 @@ Most cells eaten   : ${mostCellsEaten}
                 if (hiddenMs > 500 && typeof application !== 'undefined') {
                     application.sendResyncRequest();
                 }
+
+                /*
+                 * Expanding Land map restoration.
+                 *
+                 * While the tab is backgrounded, several things can corrupt the
+                 * map state:
+                 *   1. Socket drops → onClose resets isLegendWorld → auto-reconnect
+                 *      processes the first SetBorder as a generic private server
+                 *      (mapOffset = mapSize/2 instead of 0).
+                 *   2. Chrome buffers WS messages; when the tab resumes, a flood
+                 *      of packets may re-process SetBorder with a stale
+                 *      isLegendWorld flag.
+                 *   3. Map events (shrink/expand transitions) that depend on
+                 *      Date.now() compute wildly wrong interpolation when the
+                 *      tab was hidden for seconds/minutes.
+                 *
+                 * Fix: if we're (still) on an Expanding Land server, force
+                 * re-derive the map geometry from the stored border values.
+                 */
+                if (
+                    LM.isLegendWorld &&
+                    Number.isFinite(LM.viewMinX) &&
+                    Number.isFinite(LM.viewMaxX) &&
+                    LM.viewMaxX > LM.viewMinX
+                ) {
+                    LM.mapOffsetFixed = false;
+                    if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = false;
+                    LM.setMapOffset(
+                        LM.viewMinX,
+                        LM.viewMinY,
+                        LM.viewMaxX,
+                        LM.viewMaxY
+                    );
+                }
             });
         }
 
