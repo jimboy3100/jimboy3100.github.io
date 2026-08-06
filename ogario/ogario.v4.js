@@ -20220,7 +20220,7 @@ function thelegendmodproject() {
                 case 5: // MAP_RESIZE_COMPLETE
                     me.phase = 0;
                     me.active = false;
-                    console.log('%c[LW]%c Resize complete: ' + ~~currentSize, 'color:#3f3', 'color:inherit');
+                    //console.log('%c[LW]%c Resize complete: ' + ~~currentSize, 'color:#3f3', 'color:inherit');
                     break;
             }
         },
@@ -21827,7 +21827,7 @@ function thelegendmodproject() {
                         /* State-based login: trigger AFTER beacon confirms server is ready.
                          * This replaces the old 200ms blind timeout in onOpen(). */
                         if (window.master && window.master.login) {
-                            console.log('[LW Auth] Triggering master.login() after LW beacon');
+                            //console.log('[LW Auth] Triggering master.login() after LW beacon');
                             window.master.login();
                         }
                     } else if (LM.isLegendWorld && _lwOp === 200 && data.byteLength >= 42) {
