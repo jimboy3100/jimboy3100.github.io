@@ -29169,10 +29169,8 @@ Most cells eaten   : ${mostCellsEaten}
                 var massVal = cell.mass > 0 ? ~~cell.mass : ~~(cellSize * cellSize / 100);
                 var massStr;
                 if (defaultmapsettings.shortMass && massVal >= 1000) {
-                    massStr = (Math.floor(massVal / 100) / 10).toFixed(1) + 'k';
+                    massStr = (Math.round(massVal / 100) / 10) + 'k';
                 } else {
-                    if (massVal >= 1000) massVal = Math.round(massVal / 10) * 10;
-                    else if (massVal >= 100) massVal = Math.round(massVal / 5) * 5;
                     massStr = '' + massVal;
                 }
 

@@ -105,7 +105,9 @@
 				type: 'normal'
 			},	
 			'hk-scanTrick': {
-				label: textLanguage['hk-scanTrick'],
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-scanTrick']) || (typeof textLanguage !== 'undefined' && textLanguage.scanTrickGroup) || 'Scan Trick';
+				},
 				defaultKey: '',
 				keyDown() {
 					var game = window.legendmod || window.LM;
@@ -122,7 +124,9 @@
 				type: 'normal'
 			},
 			'hk-limitposition': {
-				label: textLanguage['hk-limitposition'],
+				get label() {
+					return (typeof textLanguage !== 'undefined' && textLanguage['hk-limitposition']) || 'Limit Position';
+				},
 				defaultKey: '',
 				keyDown() {
 				window.followStraight = true
