@@ -24318,6 +24318,7 @@ Most cells eaten   : ${mostCellsEaten}
                 case 16:
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
+                    this.countPps();
                     if (window.clientProfiler) window.clientProfiler.recordPacket(performance.now() - _tPkt);
                     break;
                 case 64:
