@@ -17,12 +17,8 @@ else{
 
 $("#SHOSHOBtn").click();
 $("#SHOSHOBtn").click();
-$("#XPBtn").click();
-$("#XPBtn").click();
 $("#MAINBTBtn").click();
 $("#MAINBTBtn").click();
-$("#AnimatedSkinBtn").click();
-$("#AnimatedSkinBtn").click();
 $("#HideAllBthn").click();
 $("#HideAllBthn").click();
 $("#TIMEcalBtn").click();

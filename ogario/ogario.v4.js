@@ -19584,7 +19584,7 @@ function thelegendmodproject() {
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
-                    self.flushCellsData();
+                    self.flushCellsData(true);
                 }
                 self.sendMessage(view);
             }
@@ -19600,7 +19600,7 @@ function thelegendmodproject() {
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 if (self.isLegendWorld || self.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
-                    self.flushCellsData();
+                    self.flushCellsData(true);
                 }
                 self.sendMessage(view);
             }
@@ -19759,7 +19759,7 @@ function thelegendmodproject() {
             }
             // Default (agar.io / Expanding Land / other): <skin>nick format
             if (this.isLegendWorld || this.serverType === 'expandingland' || document.getElementById('server-token').value.includes('expanding.land')) {
-                this.flushCellsData();
+                this.flushCellsData(true);
             }
             /* Include skin in the join packet as <skin>nick format.
              * The server parses this at client.c:302 to store player->skin.
@@ -20498,10 +20498,15 @@ function thelegendmodproject() {
                     if (this.protocolKey) {
                         this.protocolKey = this.shiftKey(this.protocolKey);
                     }
-                    this.flushCellsData();
+                    /*
+                     * ClearAll clears ENTITY state, not Expanding Land's authoritative
+                     * dynamic map geometry.  During tab-resync we remain on the same
+                     * Expanding Land connection, so preserve the current border.
+                     */
+                    this.flushCellsData(LM.isLegendWorld === true);
                     break;
                 case 20:
-                    this.flushCellsData();
+                    this.flushCellsData(LM.isLegendWorld === true);
                     break;
                 case 32:
                     if (data.byteLength < 5) {
@@ -24540,7 +24545,8 @@ Most cells eaten   : ${mostCellsEaten}
             window.targetingLeadY = legendmod.ghostCells[o].y;
             legendmod.drawCommander2 = true;
         },
-        flushCellsData() {
+        flushCellsData(preserveMapGeometry) {
+            preserveMapGeometry = preserveMapGeometry === true;
             this.time = Date.now(); // prevent stale timestamp on first frame after switch
             if (!LM.isLegendWorld) {
                 this.mapOffsetFixed = false;
@@ -24580,28 +24586,40 @@ Most cells eaten   : ${mostCellsEaten}
                     }
                 }
             }
-            /* Reset map bounds to defaults so stale borders don't persist */
-            if (this.connectionIntegrity) {
-                this.mapMinX = 0;
-                this.mapMinY = 0;
-                this.mapMaxX = 14142;
-                this.mapMaxY = 14142;
-                this.mapMidX = 7071;
-                this.mapMidY = 7071;
-                this.mapOffsetX = -7071;
-                this.mapOffsetY = -7071;
-            } else {
-                this.mapMinX = -7071;
-                this.mapMinY = -7071;
-                this.mapMaxX = 7071;
-                this.mapMaxY = 7071;
-                this.mapMidX = 0;
-                this.mapMidY = 0;
-                this.mapOffsetX = 0;
-                this.mapOffsetY = 0;
+            /*
+             * A ClearAll packet is primarily an entity-store reset.
+             *
+             * Expanding Land has a dynamic authoritative border.  During an
+             * in-session tab resync, resetting that border to ±7071 corrupts the
+             * current tier until the server happens to resize the map again.
+             *
+             * Real connection/server changes still call flushCellsData() without
+             * preserveMapGeometry, so stale borders are still removed there.
+             */
+            if (!preserveMapGeometry) {
+                if (this.connectionIntegrity) {
+                    this.mapMinX = 0;
+                    this.mapMinY = 0;
+                    this.mapMaxX = 14142;
+                    this.mapMaxY = 14142;
+                    this.mapMidX = 7071;
+                    this.mapMidY = 7071;
+                    this.mapOffsetX = -7071;
+                    this.mapOffsetY = -7071;
+                } else {
+                    this.mapMinX = -7071;
+                    this.mapMinY = -7071;
+                    this.mapMaxX = 7071;
+                    this.mapMaxY = 7071;
+                    this.mapMidX = 0;
+                    this.mapMidY = 0;
+                    this.mapOffsetX = 0;
+                    this.mapOffsetY = 0;
+                }
+
+                this.viewX = (this.mapMinX + this.mapMaxX) / 2;
+                this.viewY = (this.mapMinY + this.mapMaxY) / 2;
             }
-            this.viewX = (this.mapMinX + this.mapMaxX) / 2;
-            this.viewY = (this.mapMinY + this.mapMaxY) / 2;
             this.Waves = [];
 
             //for SPECT
