@@ -31080,16 +31080,40 @@ Most cells eaten   : ${mostCellsEaten}
             LM.playerY = this.camY;
         },
         setScale(size) {
+            /* Scale smoothing: same dt-correction as camera smoothing.
+             * Original: (9*scale + target) / 10 per frame → retain=0.9
+             * Time-based: alpha = 1 - 0.9^(dt/16.667)
+             * _camDt is already computed in setView() which runs first. */
             if (!LM.autoZoom) {
-                this.scale = (9 * this.scale + this.getZoom()) / 10;
+                var _zoomTarget = this.getZoom();
+                if (LM.isLegendWorld && this._lastCamTime) {
+                    var _zDtMs = LM.time - (this._lastScaleTime || LM.time);
+                    var _zDt = _zDtMs > 0 ? _zDtMs / 16.667 : 1;
+                    if (_zDt > 10) _zDt = 10;
+                    this._lastScaleTime = LM.time;
+                    var _zAlpha = 1 - Math.pow(0.9, _zDt);
+                    this.scale += (_zoomTarget - this.scale) * _zAlpha;
+                } else {
+                    this.scale = (9 * this.scale + _zoomTarget) / 10;
+                }
                 LM.viewScale = this.scale;
                 return;
             }
+            var _scaleTarget;
             if (LM.play) {
-                this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
-                //this.scale = (9 * this.scale + Math.min(64 / size, 1) ** 0.4 * this.getZoom()) / 10;
+                _scaleTarget = Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom();
             } else {
-                this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
+                _scaleTarget = LM.scale * this.getZoom();
+            }
+            if (LM.isLegendWorld && this._lastCamTime) {
+                var _zDtMs2 = LM.time - (this._lastScaleTime || LM.time);
+                var _zDt2 = _zDtMs2 > 0 ? _zDtMs2 / 16.667 : 1;
+                if (_zDt2 > 10) _zDt2 = 10;
+                this._lastScaleTime = LM.time;
+                var _zAlpha2 = 1 - Math.pow(0.9, _zDt2);
+                this.scale += (_scaleTarget - this.scale) * _zAlpha2;
+            } else {
+                this.scale = (9 * this.scale + _scaleTarget) / 10;
             }
             LM.viewScale = this.scale;
         },
