@@ -31035,85 +31035,32 @@ Most cells eaten   : ${mostCellsEaten}
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
             var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
-
-            /* ── Time-based camera smoothing (Expanding Land) ──
-             * The original `(cam + 2*target) / 3` runs once per rendered frame,
-             * so its real-time convergence speed scales directly with FPS:
-             *   144 FPS → 95% in ~19ms
-             *    37 FPS → 95% in ~74ms  (3.9× slower — feels "heavy")
-             *
-             * On Expanding Land (which tracks ~1.7× more cells → lower FPS),
-             * use dt-corrected exponential decay so the convergence rate is
-             * constant in wall-clock time:
-             *   alpha = 1 - retain^(dt / 16.667ms)
-             * where retain = 1/3 for active play, 29/30 for spectator.
-             * At 60 FPS this produces identical output to the original formula. */
-            var _camDtMs = this._lastCamTime ? (LM.time - this._lastCamTime) : 0;
-            var _camDt = _camDtMs > 0 ? _camDtMs / 16.667 : 1; /* normalize to 60fps; first frame = reference */
-            if (_camDt > 10) _camDt = 10; /* cap to prevent overshoot after long tab-hide */
-            this._lastCamTime = LM.time;
-
             if (activeHasCells) {
                 if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
-                } else if (LM.isLegendWorld) {
-                    var _camAlpha = 1 - Math.pow(1/3, _camDt);
-                    this.camX += (targetCamX - this.camX) * _camAlpha;
-                    this.camY += (targetCamY - this.camY) * _camAlpha;
                 } else {
                     this.camX = (this.camX + 2 * targetCamX) / 3;
                     this.camY = (this.camY + 2 * targetCamY) / 3;
                 }
             } else {
-                if (LM.isLegendWorld) {
-                    var _specAlpha = 1 - Math.pow(29/30, _camDt);
-                    this.camX += (targetCamX - this.camX) * _specAlpha;
-                    this.camY += (targetCamY - this.camY) * _specAlpha;
-                } else {
-                    this.camX = (29 * this.camX + targetCamX) / 30;
-                    this.camY = (29 * this.camY + targetCamY) / 30;
-                }
+                this.camX = (29 * this.camX + targetCamX) / 30;
+                this.camY = (29 * this.camY + targetCamY) / 30;
             }
 
             LM.playerX = this.camX;
             LM.playerY = this.camY;
         },
         setScale(size) {
-            /* Scale smoothing: same dt-correction as camera smoothing.
-             * Original: (9*scale + target) / 10 per frame → retain=0.9
-             * Time-based: alpha = 1 - 0.9^(dt/16.667)
-             * _camDt is already computed in setView() which runs first. */
             if (!LM.autoZoom) {
-                var _zoomTarget = this.getZoom();
-                if (LM.isLegendWorld && this._lastCamTime) {
-                    var _zDtMs = LM.time - (this._lastScaleTime || LM.time);
-                    var _zDt = _zDtMs > 0 ? _zDtMs / 16.667 : 1;
-                    if (_zDt > 10) _zDt = 10;
-                    this._lastScaleTime = LM.time;
-                    var _zAlpha = 1 - Math.pow(0.9, _zDt);
-                    this.scale += (_zoomTarget - this.scale) * _zAlpha;
-                } else {
-                    this.scale = (9 * this.scale + _zoomTarget) / 10;
-                }
+                this.scale = (9 * this.scale + this.getZoom()) / 10;
                 LM.viewScale = this.scale;
                 return;
             }
-            var _scaleTarget;
             if (LM.play) {
-                _scaleTarget = Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom();
+                this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
             } else {
-                _scaleTarget = LM.scale * this.getZoom();
-            }
-            if (LM.isLegendWorld && this._lastCamTime) {
-                var _zDtMs2 = LM.time - (this._lastScaleTime || LM.time);
-                var _zDt2 = _zDtMs2 > 0 ? _zDtMs2 / 16.667 : 1;
-                if (_zDt2 > 10) _zDt2 = 10;
-                this._lastScaleTime = LM.time;
-                var _zAlpha2 = 1 - Math.pow(0.9, _zDt2);
-                this.scale += (_scaleTarget - this.scale) * _zAlpha2;
-            } else {
-                this.scale = (9 * this.scale + _scaleTarget) / 10;
+                this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
             }
             LM.viewScale = this.scale;
         },
