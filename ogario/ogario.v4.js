@@ -20896,7 +20896,7 @@ function thelegendmodproject() {
 
                         /* Section 1: Shared stats (old 0xCB + 0xC9) */
                         var elHumans = data.getUint16(s, true); s += 2;
-                        var elBots = data.getUint32(s, true); s += 4;
+                        var elBots = data.getUint16(s, true); s += 2;
                         ogario.elPlayerCount = elHumans;
                         ogario.elBotCount = elBots;
                         LM.elPlayerCount = elHumans;
@@ -20907,8 +20907,8 @@ function thelegendmodproject() {
                             ogario.serverHz = _hz;
                             LM.serverHz = _hz;
                         }
-                        if (s + 4 <= data.byteLength) {
-                            var aliveTotal = data.getUint32(s, true); s += 4;
+                        if (s + 2 <= data.byteLength) {
+                            var aliveTotal = data.getUint16(s, true); s += 2;
                             if (this.top5totalPlayers) {
                                 this.top5totalPlayers.textContent = aliveTotal;
                             }
