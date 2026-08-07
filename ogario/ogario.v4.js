@@ -16936,7 +16936,7 @@ function thelegendmodproject() {
              * means cells only reach 50% of their lerp before the next update
              * interrupts — this produces visible micro-stalls ("friction").
              * Matching the window to the tick rate lets every lerp complete. */
-            if (LM.serverHz > 0) {
+            if (LM.isLegendWorld && LM.serverHz > 0) {
                 anim = 1000 / LM.serverHz;  /* 25 Hz → 40ms */
             }
             var time = LM.time - (this.updateTime || this.time);
