@@ -18447,7 +18447,8 @@ function thelegendmodproject() {
                             //return;
                         }
                         else {
-                            if (!((recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
+                            var recursive = false;
+                            if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)) {
                                 this.setDrawing();
                                 this.setDrawingScale();
                                 if (defaultSettings.textAlpha != 1) {
@@ -30255,8 +30256,11 @@ Most cells eaten   : ${mostCellsEaten}
             var viewScale = this.scale || 1;
 
             /* Match Canvas2D auto-hide: pass cell size (world units), same as Canvas2D's `y` */
-            var recursive = application.setAutoHideCellInfo(cellSize);
-            if (recursive && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) return;
+            var recursive = false;
+            if (!cell.isPlayerCell) {
+                recursive = application.setAutoHideCellInfo(cellSize);
+                if (recursive && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) return;
+            }
 
             /* No text to draw at all? */
             if (defaultmapsettings.noNames && !defaultmapsettings.showMass) return;
