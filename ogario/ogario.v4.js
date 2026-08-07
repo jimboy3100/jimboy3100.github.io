@@ -19081,7 +19081,7 @@ function thelegendmodproject() {
                     _resumed = true;
                     clearTimeout(_fallbackTimer);
                     _oldSocket.onclose = null;
-                    console.log('[LM] Old socket closed, creating new connection to: ' + _connectUrl);
+                    //console.log('[LM] Old socket closed, creating new connection to: ' + _connectUrl);
                     _self._finishConnect(_connectUrl, app);
                 }
 
@@ -20241,10 +20241,7 @@ function thelegendmodproject() {
                                     exp.memory.buffer
                                 )
                             };
-                            console.log(
-                                '%c[LZ4]%c WASM decoder ready (1.3 KB)',
-                                'color:#0f0', 'color:inherit'
-                            );
+                            /* LZ4 WASM init success (silent) */
                         }).catch(function(e) {
                             console.warn(
                                 '[LZ4] WASM init failed, using JS fallback:', e
@@ -21924,7 +21921,7 @@ function thelegendmodproject() {
                     this.protocolKey = data.getUint32(s, true);
 
                     //window.testobjectsOpcode241.getUint32(1, true);
-                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
+                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
                     window.generatedProtocolKey = this.protocolKey;
                     var key = new Uint8Array(data.buffer, s += 4);
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received Server version:', key);
@@ -22038,8 +22035,7 @@ function thelegendmodproject() {
                             );
                         }
 
-                        console.log('%c[Expanding Land]%c Connected to Expanding Land server!',
-                            'color: #33ff33; font-weight: bold', 'color: inherit');
+                        /* [Expanding Land] Connected (silent) */
                         /* State-based login: trigger AFTER beacon confirms server is ready.
                          * This replaces the old 200ms blind timeout in onOpen(). */
                         if (window.master && window.master.login) {
@@ -24763,15 +24759,6 @@ Most cells eaten   : ${mostCellsEaten}
                     this.viewY = (bottom + top) / 2;
                 }
                 if (isFullPacket) {
-                    if (!this.mapOffsetFixed) {
-                        console.log('%c[MapOffset DEBUG]%c borders:', 'color:#ff0', 'color:inherit',
-                            'left=', left, 'top=', top, 'right=', right, 'bottom=', bottom,
-                            '| mapSize=', this.mapSize, 'mapOffset=', this.mapOffset,
-                            '| offsetX=', this.mapOffsetX, 'offsetY=', this.mapOffsetY,
-                            '| minX=', this.mapMinX, 'minY=', this.mapMinY, 'maxX=', this.mapMaxX, 'maxY=', this.mapMaxY,
-                            '| integrity=', this.connectionIntegrity, 'isLW=', LM.isLegendWorld,
-                            '| serverType=', this.serverType);
-                    }
                     this.mapOffsetFixed = true;
                 }
             }
@@ -25202,19 +25189,7 @@ Most cells eaten   : ${mostCellsEaten}
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
 
-            /* Telemetry monitoring logger */
-            this._updateCellsTelemetryCount = (this._updateCellsTelemetryCount || 0) + 1;
-            if (this._updateCellsTelemetryCount % 300 === 0) {
-                console.log('[OGARIO TELEMETRY] updateCells stats:', {
-                    cellsLength: this.cells.length,
-                    indexedCount: Object.keys(this.indexedCells).length,
-                    playerCells: this.playerCells.length,
-                    mapOffsetX: this.mapOffsetX,
-                    mapOffsetY: this.mapOffsetY,
-                    camX: (typeof drawRender !== "undefined" && drawRender) ? drawRender.camX : null,
-                    camY: (typeof drawRender !== "undefined" && drawRender) ? drawRender.camY : null
-                });
-            }
+
         },
         updateCells(view, offset) {
 
@@ -25592,20 +25567,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             //if (window.historystate && legendmod.play) {historystate();}	
 
-            /* ── Performance timing report ──────────────────────── */
-            if (_jsT0 > 0) {
-                var _jsElapsed = performance.now() - _jsT0;
-                if (!this._updateCellsTimings) this._updateCellsTimings = { sum: 0, count: 0 };
-                this._updateCellsTimings.sum += _jsElapsed;
-                this._updateCellsTimings.count++;
-                if (this._updateCellsTimings.count >= 100) {
-                    var avg = (this._updateCellsTimings.sum / this._updateCellsTimings.count).toFixed(2);
-                    console.log('%c[PERF]%c updateCells avg: ' + avg + 'ms/tick (over 100 ticks)',
-                        'color: #ff0; font-weight: bold', 'color: inherit');
-                    this._updateCellsTimings.sum = 0;
-                    this._updateCellsTimings.count = 0;
-                }
-            }
+
 
         },
         color2Hex(number) {
