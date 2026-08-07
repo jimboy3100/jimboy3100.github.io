@@ -24670,15 +24670,42 @@ Most cells eaten   : ${mostCellsEaten}
                 this.mapOffset = this.mapSize / 2;
                 LM.mapOffset = this.mapOffset;
             } else {
-                /* private or custom servers: expand map size if larger packet arrives */
-                if (!this.mapSize || pWidth > this.mapSize) {
-                    this.mapSize = pWidth;
+                /*
+                 * MultiOgar / generic private servers:
+                 *
+                 * Opcode 64 is the authoritative border for THIS connection.
+                 *
+                 * NEVER inherit mapSize from the previous arena.
+                 * In particular, switching from Expanding Land can leave mapSize at
+                 * 80000 / 160000 / etc. The old "only grow" test then makes a normal
+                 * MultiOgar map appear in the bottom-right corner.
+                 */
+                if (
+                    Number.isFinite(pWidth) &&
+                    pWidth > 0 &&
+                    Number.isFinite(pHeight) &&
+                    pHeight > 0
+                ) {
+                    this.mapSize = Math.max(pWidth, pHeight);
                 }
+
                 this.mapOffset = this.mapSize / 2;
                 LM.mapOffset = this.mapOffset;
             }
 
-            var isFullPacket = (pWidth > 6000 && pHeight > 6000) || (pWidth >= (this.mapSize - 500));
+            /*
+             * Every opcode-64 packet from a generic MultiOgar/private server is an
+             * authoritative map-border packet.
+             */
+            var isGenericPrivate =
+                !LM.isLegendWorld &&
+                !this.connectionIntegrity &&
+                !temp2;
+
+            var isFullPacket =
+                isGenericPrivate ||
+                (pWidth > 6000 && pHeight > 6000) ||
+                (pWidth >= (this.mapSize - 500));
 
             if (!this.mapOffsetFixed || isFullPacket) {
                 if (this.connectionIntegrity || temp2) {
@@ -24690,8 +24717,16 @@ Most cells eaten   : ${mostCellsEaten}
                     this.mapMaxX = this.mapOffset - this.mapOffsetX;
                     this.mapMaxY = this.mapOffset - this.mapOffsetY;
                 } else {
-                    var currentWidth = (this.mapMaxX != null && this.mapMinX != null) ? (this.mapMaxX - this.mapMinX) : 0;
-                    if (!this.mapOffsetFixed || pWidth >= currentWidth) {
+                    var currentWidth =
+                        (this.mapMaxX != null && this.mapMinX != null)
+                            ? (this.mapMaxX - this.mapMinX)
+                            : 0;
+
+                    if (
+                        isGenericPrivate ||
+                        !this.mapOffsetFixed ||
+                        pWidth >= currentWidth
+                    ) {
                         /*
                          * Expanding Land uses centered coordinates while its
                          * minimap intentionally omits LM.mapOffset.
