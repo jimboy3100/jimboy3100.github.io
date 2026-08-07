@@ -31035,17 +31035,45 @@ Most cells eaten   : ${mostCellsEaten}
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
             var activeHasCells = LM.playerCells.length || (_activeSpect && _activeSpect.playerCellIDs && _activeSpect.playerCellIDs.length);
+
+            /* ── Time-based camera smoothing (Expanding Land) ──
+             * The original `(cam + 2*target) / 3` runs once per rendered frame,
+             * so its real-time convergence speed scales directly with FPS:
+             *   144 FPS → 95% in ~19ms
+             *    37 FPS → 95% in ~74ms  (3.9× slower — feels "heavy")
+             *
+             * On Expanding Land (which tracks ~1.7× more cells → lower FPS),
+             * use dt-corrected exponential decay so the convergence rate is
+             * constant in wall-clock time:
+             *   alpha = 1 - retain^(dt / 16.667ms)
+             * where retain = 1/3 for active play, 29/30 for spectator.
+             * At 60 FPS this produces identical output to the original formula. */
+            var _camDtMs = this._lastCamTime ? (LM.time - this._lastCamTime) : 0;
+            var _camDt = _camDtMs > 0 ? _camDtMs / 16.667 : 1; /* normalize to 60fps; first frame = reference */
+            if (_camDt > 10) _camDt = 10; /* cap to prevent overshoot after long tab-hide */
+            this._lastCamTime = LM.time;
+
             if (activeHasCells) {
                 if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500) {
                     this.camX = targetCamX;
                     this.camY = targetCamY;
+                } else if (LM.isLegendWorld) {
+                    var _camAlpha = 1 - Math.pow(1/3, _camDt);
+                    this.camX += (targetCamX - this.camX) * _camAlpha;
+                    this.camY += (targetCamY - this.camY) * _camAlpha;
                 } else {
                     this.camX = (this.camX + 2 * targetCamX) / 3;
                     this.camY = (this.camY + 2 * targetCamY) / 3;
                 }
             } else {
-                this.camX = (29 * this.camX + targetCamX) / 30;
-                this.camY = (29 * this.camY + targetCamY) / 30;
+                if (LM.isLegendWorld) {
+                    var _specAlpha = 1 - Math.pow(29/30, _camDt);
+                    this.camX += (targetCamX - this.camX) * _specAlpha;
+                    this.camY += (targetCamY - this.camY) * _specAlpha;
+                } else {
+                    this.camX = (29 * this.camX + targetCamX) / 30;
+                    this.camY = (29 * this.camY + targetCamY) / 30;
+                }
             }
 
             LM.playerX = this.camX;
