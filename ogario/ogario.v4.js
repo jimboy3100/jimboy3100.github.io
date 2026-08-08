@@ -29327,7 +29327,7 @@ Most cells eaten   : ${mostCellsEaten}
 
             /* How many screen pixels one grid cell occupies.
              * Used by the shader to fade out + thin lines at high zoom. */
-            var gridScreenSpacing = gridSpacing * viewScale * (this.canvasWidth / 2.0);
+            var gridScreenSpacing = gridSpacing * viewScale;
             gl.uniform1f(this.u_gridScreenSpacing, gridScreenSpacing);
 
             gl.bindVertexArray(this.glVAO);
@@ -31202,27 +31202,31 @@ Most cells eaten   : ${mostCellsEaten}
             this.ctx.scale(this.dpr || 1, this.dpr || 1);
             this.ctx.save();
 
-            /* Round to integer pixels to prevent sub-pixel anti-aliasing
-             * shimmer on the background grid when moving. */
-            var _tx = (this.canvasWidth / 2) - (this.camX * this.scale);
-            var _ty = (this.canvasHeight / 2) - (this.camY * this.scale);
-            this.ctx.translate(Math.round(_tx), Math.round(_ty));
+            this.ctx.translate(
+                (this.canvasWidth / 2) - (this.camX * this.scale),
+                (this.canvasHeight / 2) - (this.camY * this.scale)
+            );
             this.ctx.scale(this.scale, this.scale);
-            //this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
-            //this.ctx.scale(this.scale, this.scale);
-            //this.ctx.translate(-this.camX, -this.camY);
 
             try {
                 var _tGrid = performance.now();
                 if (defaultmapsettings.showGrid) {
-                    /* Grid MUST render on Canvas2D (same layer as background) so
-                     * it's visible regardless of theme colors. WebGL grid would
-                     * render on the GL overlay canvas (z-index:2) where dark grid
-                     * colors at low alpha are invisible on the transparent GL surface. */
-                    if (defaultmapsettings.showOptimisedGrid) {
-                        this.drawCustomNewGrid();
-                    } else {
-                        this.drawGrid(this.ctx);
+                    var _gridDrawnOnGPU = false;
+                    if (
+                        this.gl &&
+                        (
+                            typeof defaultmapsettings.webgl2Acceleration === "undefined" ||
+                            defaultmapsettings.webgl2Acceleration
+                        )
+                    ) {
+                        _gridDrawnOnGPU = this.drawWebGLGridShader();
+                    }
+                    if (!_gridDrawnOnGPU) {
+                        if (defaultmapsettings.showOptimisedGrid) {
+                            this.drawCustomNewGrid();
+                        } else {
+                            this.drawGrid(this.ctx);
+                        }
                     }
                 }
                 if (defaultmapsettings.showBgSectors) {
@@ -32726,7 +32730,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },*/
         drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor); //Sonia2
+            this.drawCircles(ctx, biggestCell, 760, 8, 0.8, defaultSettings.enemyBSTEColor); //Sonia2
             if (players.length) {
                 var current = currentBiggestCell ? players.length - 1 : 0;
                 if (!players[current]) { ctx.globalAlpha = 1; return; }
@@ -32751,7 +32755,7 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor); //Sonia2
+            this.draw2Circles(ctx, biggestCell, 760, 8, 0.8, defaultSettings.enemyBSTEDColor); //Sonia2
             if (players.length) {
                 var current = currentBiggestCell ? players.length - 1 : 0;
                 if (!players[current]) { ctx.globalAlpha = 1; return; }
