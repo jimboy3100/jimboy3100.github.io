@@ -27117,16 +27117,39 @@ Most cells eaten   : ${mostCellsEaten}
                         }
 
                         /*
-                         * Only fade when one complete 50-world-unit square
-                         * approaches one physical screen pixel.
+                         * ====================================================
+                         * FAR-ZOOM GRID LOD
+                         * ====================================================
                          *
-                         * Normal zoom and ordinary far zoom remain fully
-                         * visible.
+                         * Do NOT keep rendering a dense procedural grid until
+                         * each grid square is only 1-3 screen pixels wide.
+                         *
+                         * At that density individual grid lines become
+                         * sub-pixel and start producing moire / muddy patterns
+                         * while zooming.
+                         *
+                         * Keep the grid completely unchanged at normal zoom,
+                         * then smoothly fade it before it becomes too dense.
+                         *
+                         * >= 14 px per grid square : fully visible
+                         *  6-14 px                  : smooth fade
+                         * <= 6 px                   : invisible
+                         *
+                         * This affects ONLY far-zoom visibility.
+                         * It does NOT change:
+                         *
+                         * - grid position
+                         * - grid spacing
+                         * - camera coordinates
+                         * - line thickness
+                         * - user grid color
+                         * - user rgba alpha
+                         * - fwidth anti-aliasing
                          */
                         float fadeAlpha =
                             smoothstep(
-                                1.0,
-                                3.0,
+                                6.0,
+                                14.0,
                                 u_gridScreenSpacing
                             );
 
@@ -27136,12 +27159,6 @@ Most cells eaten   : ${mostCellsEaten}
                         ) {
                             discard;
                         }
-
-                        float safeScreenSpacing =
-                            max(
-                                u_gridScreenSpacing,
-                                0.0001
-                            );
 
                         /*
                          * Continuous grid coordinates.
