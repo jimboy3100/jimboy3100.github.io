@@ -29029,6 +29029,657 @@ Most cells eaten   : ${mostCellsEaten}
                         10
                     );
 
+                /*
+                 * ============================================================
+                 * WEBGL2 VIRUS RENDERER
+                 * ============================================================
+                 *
+                 * Viruses must participate in the SAME depth space as cells.
+                 *
+                 * This is required for:
+                 *
+                 *   smaller cell < virus  -> cell underneath virus
+                 *   larger cell  > virus  -> cell above virus
+                 *
+                 * Transparent viruses are real source-over alpha:
+                 *
+                 *   virusAlpha < 1
+                 *       -> smaller cells remain visible through the virus.
+                 *
+                 * All virus appearance remains controlled by user settings:
+                 *
+                 *   virusColor
+                 *   virusStrokeColor
+                 *   transparentViruses
+                 *   virusAlpha
+                 *   virusStrokeSize
+                 *   virusSpikes
+                 *   virusSpikesRatio
+                 *   virusSpikesSize
+                 *   virusGlow
+                 *   virusGlowColor
+                 *   virusGlowSize
+                 *   virColors
+                 */
+                var virusVsSource = `#version 300 es
+
+                in vec2 a_unitPos;
+
+                in vec2 a_center;
+                in float a_radius;
+                in float a_drawRadius;
+
+                in vec4 a_fillColor;
+                in vec4 a_strokeColor;
+
+                in float a_strokeWidth;
+                in float a_spikeCount;
+                in float a_spikeSize;
+
+                in vec4 a_glowColor;
+                in float a_glowSize;
+
+                in float a_z;
+
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_viewScale;
+
+                out vec2 v_local;
+
+                flat out float v_radius;
+
+                flat out vec4 v_fillColor;
+                flat out vec4 v_strokeColor;
+
+                flat out float v_strokeWidth;
+                flat out float v_spikeCount;
+                flat out float v_spikeSize;
+
+                flat out vec4 v_glowColor;
+                flat out float v_glowSize;
+
+                void main() {
+                    v_local =
+                        a_unitPos *
+                        a_drawRadius;
+
+                    v_radius =
+                        a_radius;
+
+                    v_fillColor =
+                        a_fillColor;
+
+                    v_strokeColor =
+                        a_strokeColor;
+
+                    v_strokeWidth =
+                        a_strokeWidth;
+
+                    v_spikeCount =
+                        a_spikeCount;
+
+                    v_spikeSize =
+                        a_spikeSize;
+
+                    v_glowColor =
+                        a_glowColor;
+
+                    v_glowSize =
+                        a_glowSize;
+
+                    vec2 worldPos =
+                        a_center +
+                        v_local;
+
+                    vec2 clipPos =
+                        (
+                            worldPos -
+                            u_viewCenter
+                        ) *
+                        u_viewScale;
+
+                    gl_Position =
+                        vec4(
+                            clipPos.x,
+                            -clipPos.y,
+                            a_z,
+                            1.0
+                        );
+                }`;
+
+                var virusFsSource = `#version 300 es
+
+                precision highp float;
+
+                in vec2 v_local;
+
+                flat in float v_radius;
+
+                flat in vec4 v_fillColor;
+                flat in vec4 v_strokeColor;
+
+                flat in float v_strokeWidth;
+                flat in float v_spikeCount;
+                flat in float v_spikeSize;
+
+                flat in vec4 v_glowColor;
+                flat in float v_glowSize;
+
+                out vec4 fragColor;
+
+                const float PI =
+                    3.14159265358979323846;
+
+                vec4 sourceOver(
+                    vec4 top,
+                    vec4 bottom
+                ) {
+                    float outAlpha =
+                        top.a +
+                        bottom.a *
+                        (
+                            1.0 -
+                            top.a
+                        );
+
+                    if (
+                        outAlpha <=
+                        0.000001
+                    ) {
+                        return vec4(
+                            0.0
+                        );
+                    }
+
+                    vec3 premultiplied =
+                        top.rgb *
+                        top.a +
+                        bottom.rgb *
+                        bottom.a *
+                        (
+                            1.0 -
+                            top.a
+                        );
+
+                    return vec4(
+                        premultiplied /
+                        outAlpha,
+                        outAlpha
+                    );
+                }
+
+                void main() {
+                    float dist =
+                        length(
+                            v_local
+                        );
+
+                    float aa =
+                        max(
+                            fwidth(
+                                dist
+                            ),
+                            0.0001
+                        );
+
+                    /*
+                     * --------------------------------------------------------
+                     * VIRUS FILL
+                     * --------------------------------------------------------
+                     *
+                     * Normal non-jelly virus fill in the existing Canvas path
+                     * is circular. Spikes belong to the stroke.
+                     */
+                    float fillCoverage =
+                        1.0 -
+                        smoothstep(
+                            v_radius -
+                                aa,
+                            v_radius +
+                                aa,
+                            dist
+                        );
+
+                    /*
+                     * --------------------------------------------------------
+                     * VIRUS STROKE SHAPE
+                     * --------------------------------------------------------
+                     *
+                     * virusSpikes == OFF:
+                     *     circular stroke at v_radius
+                     *
+                     * virusSpikes == ON:
+                     *     alternating inner/outer radius, matching the
+                     *     createStrokeVirusPath() semantics.
+                     */
+                    float strokeRadius =
+                        v_radius;
+
+                    if (
+                        v_spikeCount >=
+                        3.0 &&
+                        v_spikeSize >
+                        0.0
+                    ) {
+                        float angle =
+                            atan(
+                                v_local.y,
+                                v_local.x
+                            );
+
+                        float phase =
+                            fract(
+                                (
+                                    angle +
+                                    PI
+                                ) /
+                                (
+                                    2.0 *
+                                    PI
+                                ) *
+                                v_spikeCount
+                            );
+
+                        /*
+                         * 0 at each inner point,
+                         * 1 halfway between them at the outer point.
+                         */
+                        float spikeWave =
+                            1.0 -
+                            abs(
+                                phase *
+                                2.0 -
+                                1.0
+                            );
+
+                        float outerRadius =
+                            max(
+                                0.0,
+                                v_radius -
+                                2.0
+                            );
+
+                        float innerRadius =
+                            max(
+                                0.0,
+                                outerRadius -
+                                v_spikeSize
+                            );
+
+                        strokeRadius =
+                            mix(
+                                innerRadius,
+                                outerRadius,
+                                spikeWave
+                            );
+                    }
+
+                    float halfStroke =
+                        max(
+                            0.0,
+                            v_strokeWidth *
+                            0.5
+                        );
+
+                    float strokeDistance =
+                        abs(
+                            dist -
+                            strokeRadius
+                        );
+
+                    float strokeCoverage =
+                        1.0 -
+                        smoothstep(
+                            halfStroke -
+                                aa,
+                            halfStroke +
+                                aa,
+                            strokeDistance
+                        );
+
+                    /*
+                     * --------------------------------------------------------
+                     * VIRUS GLOW
+                     * --------------------------------------------------------
+                     *
+                     * Procedural soft glow around the configured stroke.
+                     *
+                     * v_glowSize is supplied in world units after converting
+                     * the user's screen-space glow size using current scale.
+                     */
+                    float glowCoverage =
+                        0.0;
+
+                    if (
+                        v_glowSize >
+                        0.0001 &&
+                        v_glowColor.a >
+                        0.0001
+                    ) {
+                        float outsideStroke =
+                            max(
+                                strokeDistance -
+                                halfStroke,
+                                0.0
+                            );
+
+                        float normalizedGlow =
+                            outsideStroke /
+                            max(
+                                v_glowSize,
+                                0.0001
+                            );
+
+                        glowCoverage =
+                            exp(
+                                -2.0 *
+                                normalizedGlow *
+                                normalizedGlow
+                            );
+                    }
+
+                    vec4 glow =
+                        vec4(
+                            v_glowColor.rgb,
+                            v_glowColor.a *
+                            glowCoverage
+                        );
+
+                    vec4 fill =
+                        vec4(
+                            v_fillColor.rgb,
+                            v_fillColor.a *
+                            fillCoverage
+                        );
+
+                    vec4 stroke =
+                        vec4(
+                            v_strokeColor.rgb,
+                            v_strokeColor.a *
+                            strokeCoverage
+                        );
+
+                    /*
+                     * Canvas-equivalent visual order:
+                     *
+                     * glow
+                     *   then fill
+                     *   then stroke
+                     */
+                    vec4 result =
+                        glow;
+
+                    result =
+                        sourceOver(
+                            fill,
+                            result
+                        );
+
+                    result =
+                        sourceOver(
+                            stroke,
+                            result
+                        );
+
+                    if (
+                        result.a <=
+                        0.001
+                    ) {
+                        discard;
+                    }
+
+                    fragColor =
+                        result;
+                }`;
+
+                var virusProgram =
+                    createAndLinkProgram(
+                        gl,
+                        virusVsSource,
+                        virusFsSource
+                    );
+
+                if (
+                    !virusProgram
+                ) {
+                    throw new Error(
+                        'Virus WebGL program creation failed'
+                    );
+                }
+
+                this.glVirusProgram =
+                    virusProgram;
+
+                this.u_virus_viewCenter =
+                    gl.getUniformLocation(
+                        virusProgram,
+                        'u_viewCenter'
+                    );
+
+                this.u_virus_viewScale =
+                    gl.getUniformLocation(
+                        virusProgram,
+                        'u_viewScale'
+                    );
+
+                /*
+                 * Instance layout: 21 floats
+                 *
+                 *  0  center x
+                 *  1  center y
+                 *  2  logical radius
+                 *  3  draw radius
+                 *
+                 *  4  fill R
+                 *  5  fill G
+                 *  6  fill B
+                 *  7  fill A
+                 *
+                 *  8  stroke R
+                 *  9  stroke G
+                 * 10  stroke B
+                 * 11  stroke A
+                 *
+                 * 12  stroke width
+                 * 13  spike count
+                 * 14  spike size
+                 *
+                 * 15  glow R
+                 * 16  glow G
+                 * 17  glow B
+                 * 18  glow A
+                 *
+                 * 19  glow size
+                 * 20  depth Z
+                 */
+                this.glVirusStrideFloats =
+                    21;
+
+                this.glVirusMaxInstances =
+                    8192;
+
+                this.glVirusInstanceData =
+                    new Float32Array(
+                        this.glVirusMaxInstances *
+                        this.glVirusStrideFloats
+                    );
+
+                this.glVirusInstanceVBO =
+                    gl.createBuffer();
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glVirusInstanceVBO
+                );
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    this.glVirusInstanceData.byteLength,
+                    gl.DYNAMIC_DRAW
+                );
+
+                this.glVirusVAO =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    this.glVirusVAO
+                );
+
+                /*
+                 * Unit quad.
+                 */
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    quadVBO
+                );
+
+                var a_virus_unitPos =
+                    gl.getAttribLocation(
+                        virusProgram,
+                        'a_unitPos'
+                    );
+
+                gl.enableVertexAttribArray(
+                    a_virus_unitPos
+                );
+
+                gl.vertexAttribPointer(
+                    a_virus_unitPos,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+                );
+
+                /*
+                 * Per-instance data.
+                 */
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.glVirusInstanceVBO
+                );
+
+                var virusStride =
+                    this.glVirusStrideFloats *
+                    4;
+
+                function setupVirusAttrib(
+                    name,
+                    size,
+                    floatOffset
+                ) {
+                    var location =
+                        gl.getAttribLocation(
+                            virusProgram,
+                            name
+                        );
+
+                    if (
+                        location <
+                        0
+                    ) {
+                        throw new Error(
+                            'Virus shader attribute unavailable: ' +
+                            name
+                        );
+                    }
+
+                    gl.enableVertexAttribArray(
+                        location
+                    );
+
+                    gl.vertexAttribPointer(
+                        location,
+                        size,
+                        gl.FLOAT,
+                        false,
+                        virusStride,
+                        floatOffset *
+                            4
+                    );
+
+                    gl.vertexAttribDivisor(
+                        location,
+                        1
+                    );
+                }
+
+                setupVirusAttrib(
+                    'a_center',
+                    2,
+                    0
+                );
+
+                setupVirusAttrib(
+                    'a_radius',
+                    1,
+                    2
+                );
+
+                setupVirusAttrib(
+                    'a_drawRadius',
+                    1,
+                    3
+                );
+
+                setupVirusAttrib(
+                    'a_fillColor',
+                    4,
+                    4
+                );
+
+                setupVirusAttrib(
+                    'a_strokeColor',
+                    4,
+                    8
+                );
+
+                setupVirusAttrib(
+                    'a_strokeWidth',
+                    1,
+                    12
+                );
+
+                setupVirusAttrib(
+                    'a_spikeCount',
+                    1,
+                    13
+                );
+
+                setupVirusAttrib(
+                    'a_spikeSize',
+                    1,
+                    14
+                );
+
+                setupVirusAttrib(
+                    'a_glowColor',
+                    4,
+                    15
+                );
+
+                setupVirusAttrib(
+                    'a_glowSize',
+                    1,
+                    19
+                );
+
+                setupVirusAttrib(
+                    'a_z',
+                    1,
+                    20
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    null
+                );
+
                 // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~128 MB VRAM)
                 this.glSkinArray = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
@@ -31943,6 +32594,677 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
         },
+        drawWebGLVirusBatch(cellsArray) {
+            if (
+                !this.gl ||
+                !this.glVirusProgram ||
+                !this.glVirusVAO ||
+                !cellsArray ||
+                !cellsArray.length
+            ) {
+                return false;
+            }
+
+            var gl =
+                this.gl;
+
+            var data =
+                this.glVirusInstanceData;
+
+            var stride =
+                this.glVirusStrideFloats;
+
+            var max =
+                this.glVirusMaxInstances;
+
+            var count =
+                0;
+
+            var total =
+                cellsArray.length;
+
+            var viewScale =
+                this.scale ||
+                1;
+
+            /*
+             * Same culling area used by the normal GPU cell batch.
+             */
+            var minX;
+            var maxX;
+            var minY;
+            var maxY;
+
+            if (
+                window.fullSpectator
+            ) {
+                minX =
+                    (
+                        LM.mapMinX != null
+                            ? LM.mapMinX
+                            : -7071
+                    ) -
+                    500;
+
+                maxX =
+                    (
+                        LM.mapMaxX != null
+                            ? LM.mapMaxX
+                            : 7071
+                    ) +
+                    500;
+
+                minY =
+                    (
+                        LM.mapMinY != null
+                            ? LM.mapMinY
+                            : -7071
+                    ) -
+                    500;
+
+                maxY =
+                    (
+                        LM.mapMaxY != null
+                            ? LM.mapMaxY
+                            : 7071
+                    ) +
+                    500;
+            }
+            else {
+                var halfW =
+                    this.canvasWidth /
+                    viewScale /
+                    2 +
+                    250;
+
+                var halfH =
+                    this.canvasHeight /
+                    viewScale /
+                    2 +
+                    250;
+
+                minX =
+                    this.camX -
+                    halfW;
+
+                maxX =
+                    this.camX +
+                    halfW;
+
+                minY =
+                    this.camY -
+                    halfH;
+
+                maxY =
+                    this.camY +
+                    halfH;
+            }
+
+            /*
+             * User virus transparency.
+             *
+             * If Transparent Viruses is OFF, virusAlpha must NOT affect it.
+             */
+            var virusAlpha =
+                1.0;
+
+            if (
+                defaultmapsettings
+                    .transparentViruses
+            ) {
+                virusAlpha =
+                    Number(
+                        defaultSettings
+                            .virusAlpha
+                    );
+
+                if (
+                    !Number.isFinite(
+                        virusAlpha
+                    )
+                ) {
+                    virusAlpha =
+                        1.0;
+                }
+
+                virusAlpha =
+                    Math.max(
+                        0,
+                        Math.min(
+                            1,
+                            virusAlpha
+                        )
+                    );
+            }
+
+            var strokeWidth =
+                Number(
+                    defaultSettings
+                        .virusStrokeSize
+                );
+
+            if (
+                !Number.isFinite(
+                    strokeWidth
+                ) ||
+                strokeWidth <
+                0
+            ) {
+                strokeWidth =
+                    14;
+            }
+
+            var spikeSize =
+                Number(
+                    defaultSettings
+                        .virusSpikesSize
+                );
+
+            if (
+                !Number.isFinite(
+                    spikeSize
+                ) ||
+                spikeSize <
+                0
+            ) {
+                spikeSize =
+                    6;
+            }
+
+            var spikeRatio =
+                Number(
+                    defaultSettings
+                        .virusSpikesRatio
+                );
+
+            if (
+                !Number.isFinite(
+                    spikeRatio
+                ) ||
+                spikeRatio <=
+                0
+            ) {
+                spikeRatio =
+                    0.46;
+            }
+
+            /*
+             * Canvas shadowBlur behaves visually as a screen-space effect.
+             * Convert the user's glow-size setting into world units so zooming
+             * does not wildly resize the glow.
+             */
+            var glowPixels =
+                Number(
+                    defaultSettings
+                        .virusGlowSize
+                );
+
+            if (
+                !Number.isFinite(
+                    glowPixels
+                ) ||
+                glowPixels <
+                0
+            ) {
+                glowPixels =
+                    0;
+            }
+
+            var glowWorld =
+                defaultmapsettings
+                    .virusGlow
+                    ? glowPixels /
+                        Math.max(
+                            viewScale,
+                            0.0001
+                        )
+                    : 0;
+
+            var configuredGlowColor =
+                this.parseWebGLOverlayColor(
+                    defaultSettings
+                        .virusGlowColor ||
+                        '#ffffff',
+                    '#ffffff'
+                );
+
+            for (
+                var i = 0;
+                i < total;
+                i++
+            ) {
+                var cell =
+                    cellsArray[i];
+
+                if (
+                    !cell ||
+                    !cell.isVirus ||
+                    cell.invisible ||
+                    cell.removed
+                ) {
+                    continue;
+                }
+
+                /*
+                 * Same duplicate-spectator suppression as normal cells.
+                 */
+                if (
+                    cell.spectator &&
+                    cell.spectator >
+                    0 &&
+                    !cell.isPlayerCell &&
+                    !cell.isPlayerCellMulti
+                ) {
+                    var rawID =
+                        cell.id %
+                        1000000000;
+
+                    var master =
+                        LM.indexedCells[
+                            rawID
+                        ];
+
+                    if (!master) {
+                        for (
+                            var sNum = 1;
+                            sNum <
+                            cell.spectator;
+                            sNum++
+                        ) {
+                            var candidate =
+                                LM.indexedCells[
+                                    rawID +
+                                    sNum *
+                                    1000000000
+                                ];
+
+                            if (
+                                candidate &&
+                                !candidate.removed
+                            ) {
+                                master =
+                                    candidate;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (
+                        master &&
+                        master !==
+                        cell &&
+                        !master.removed
+                    ) {
+                        continue;
+                    }
+                }
+
+                var x =
+                    cell.x;
+
+                var y =
+                    cell.y;
+
+                var r =
+                    cell.size ||
+                    10;
+
+                /*
+                 * Leave enough room for stroke + glow outside the logical
+                 * virus radius.
+                 */
+                var drawRadius =
+                    r +
+                    strokeWidth *
+                    0.5 +
+                    glowWorld *
+                    2.5 +
+                    2;
+
+                if (
+                    x +
+                    drawRadius <
+                    minX ||
+                    x -
+                    drawRadius >
+                    maxX ||
+                    y +
+                    drawRadius <
+                    minY ||
+                    y -
+                    drawRadius >
+                    maxY
+                ) {
+                    continue;
+                }
+
+                if (
+                    count >=
+                    max
+                ) {
+                    return false;
+                }
+
+                /*
+                 * ------------------------------------------------------------
+                 * VIRUS COLORS
+                 * ------------------------------------------------------------
+                 *
+                 * Match the existing Canvas decision tree.
+                 */
+                var rawMass =
+                    ~~(
+                        r *
+                        r /
+                        100
+                    );
+
+                var fillHex;
+                var strokeHex;
+
+                if (
+                    defaultmapsettings
+                        .virColors &&
+                    LM.play
+                ) {
+                    fillHex =
+                        application
+                            .setVirusColor(
+                                r
+                            );
+
+                    strokeHex =
+                        application
+                            .setVirusStrokeColor(
+                                r
+                            );
+                }
+                else {
+                    /*
+                     * Preserve mother-cell theme colors even when setMass()
+                     * has not run on Canvas this frame.
+                     */
+                    if (
+                        rawMass >
+                        220
+                    ) {
+                        fillHex =
+                            defaultSettings
+                                .mVirusColor ||
+                            cell.virusColor ||
+                            defaultSettings
+                                .virusColor ||
+                            '#33ff33';
+
+                        strokeHex =
+                            defaultSettings
+                                .mVirusStrokeColor ||
+                            cell.virusStroke ||
+                            defaultSettings
+                                .virusStrokeColor ||
+                            '#2ca52c';
+                    }
+                    else {
+                        fillHex =
+                            cell.virusColor ||
+                            defaultSettings
+                                .virusColor ||
+                            '#33ff33';
+
+                        strokeHex =
+                            cell.virusStroke ||
+                            defaultSettings
+                                .virusStrokeColor ||
+                            '#2ca52c';
+                    }
+                }
+
+                var fill =
+                    this.parseWebGLOverlayColor(
+                        fillHex,
+                        '#33ff33'
+                    );
+
+                var stroke =
+                    this.parseWebGLOverlayColor(
+                        strokeHex,
+                        '#2ca52c'
+                    );
+
+                /*
+                 * Transparent Viruses applies to the COMPLETE virus visual.
+                 *
+                 * This is important: a smaller cell underneath a translucent
+                 * virus must remain visible through:
+                 *
+                 *   fill
+                 *   stroke
+                 *   glow
+                 */
+                var fillA =
+                    virusAlpha;
+
+                var strokeA =
+                    virusAlpha;
+
+                var glowA =
+                    defaultmapsettings
+                        .virusGlow
+                        ? virusAlpha
+                        : 0;
+
+                var spikeCount =
+                    0;
+
+                if (
+                    defaultmapsettings
+                        .virusSpikes
+                ) {
+                    spikeCount =
+                        Math.max(
+                            3,
+                            Math.floor(
+                                Math.max(
+                                    1,
+                                    r -
+                                    2
+                                ) *
+                                spikeRatio
+                            )
+                        );
+                }
+
+                /*
+                 * SAME global LM.cells depth coordinate used by ordinary cells.
+                 *
+                 * LM.sortCells() runs before this code, therefore:
+                 *
+                 *     small -> large
+                 *
+                 * and larger objects receive the closer/lower Z.
+                 */
+                var z =
+                    total > 1
+                        ? 0.9 -
+                            (
+                                i /
+                                (
+                                    total -
+                                    1
+                                )
+                            ) *
+                            0.89
+                        : 0.45;
+
+                var idx =
+                    count *
+                    stride;
+
+                data[idx] =
+                    x;
+
+                data[idx + 1] =
+                    y;
+
+                data[idx + 2] =
+                    r;
+
+                data[idx + 3] =
+                    drawRadius;
+
+                data[idx + 4] =
+                    fill[0];
+
+                data[idx + 5] =
+                    fill[1];
+
+                data[idx + 6] =
+                    fill[2];
+
+                data[idx + 7] =
+                    fillA;
+
+                data[idx + 8] =
+                    stroke[0];
+
+                data[idx + 9] =
+                    stroke[1];
+
+                data[idx + 10] =
+                    stroke[2];
+
+                data[idx + 11] =
+                    strokeA;
+
+                data[idx + 12] =
+                    strokeWidth;
+
+                data[idx + 13] =
+                    spikeCount;
+
+                data[idx + 14] =
+                    defaultmapsettings
+                        .virusSpikes
+                        ? spikeSize
+                        : 0;
+
+                data[idx + 15] =
+                    configuredGlowColor[0];
+
+                data[idx + 16] =
+                    configuredGlowColor[1];
+
+                data[idx + 17] =
+                    configuredGlowColor[2];
+
+                data[idx + 18] =
+                    glowA;
+
+                data[idx + 19] =
+                    glowWorld;
+
+                data[idx + 20] =
+                    z;
+
+                /*
+                 * Tell cell.draw() that the complete visible virus was already
+                 * rendered on WebGL.
+                 *
+                 * Its existing virus fast-return prevents Canvas double draw.
+                 */
+                cell._webglRendered =
+                    true;
+
+                cell._webglZ =
+                    z;
+
+                count++;
+            }
+
+            if (
+                count ===
+                0
+            ) {
+                return true;
+            }
+
+            gl.enable(
+                gl.DEPTH_TEST
+            );
+
+            gl.depthFunc(
+                gl.LESS
+            );
+
+            gl.depthMask(
+                true
+            );
+
+            gl.enable(
+                gl.BLEND
+            );
+
+            gl.blendFunc(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+
+            gl.useProgram(
+                this.glVirusProgram
+            );
+
+            gl.uniform2f(
+                this.u_virus_viewCenter,
+                this.camX,
+                this.camY
+            );
+
+            gl.uniform2f(
+                this.u_virus_viewScale,
+
+                2.0 *
+                viewScale /
+                this.canvasWidth,
+
+                2.0 *
+                viewScale /
+                this.canvasHeight
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.glVirusInstanceVBO
+            );
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+
+                data.subarray(
+                    0,
+                    count *
+                    stride
+                )
+            );
+
+            gl.bindVertexArray(
+                this.glVirusVAO
+            );
+
+            gl.drawArraysInstanced(
+                gl.TRIANGLE_STRIP,
+                0,
+                4,
+                count
+            );
+
+            gl.bindVertexArray(
+                null
+            );
+
+            return true;
+        },
         drawWebGLCellBatch(cellsArray) {
             var _tGL = performance.now();
             if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
@@ -32343,10 +33665,35 @@ Most cells eaten   : ${mostCellsEaten}
                     skinAlpha;
 
                 /*
-                 * Z is assigned after the batch is built.
+                 * GLOBAL LM.cells depth.
+                 *
+                 * LM.sortCells() already sorted the complete world list
+                 * small -> large.
+                 *
+                 * IMPORTANT:
+                 *
+                 * Do NOT compress depth using only WebGL ordinary cells.
+                 *
+                 * Viruses now use this exact same global index, which makes:
+                 *
+                 *     cell.size < virus.size
+                 *         -> cell behind virus
+                 *
+                 *     cell.size > virus.size
+                 *         -> cell in front of virus
                  */
                 data[idx + 9] =
-                    0;
+                    cellsArray.length > 1
+                        ? 0.9 -
+                            (
+                                i /
+                                (
+                                    cellsArray.length -
+                                    1
+                                )
+                            ) *
+                            0.89
+                        : 0.45;
 
                 cell._webglCellIdx =
                     count;
@@ -32355,40 +33702,6 @@ Most cells eaten   : ${mostCellsEaten}
 
                 cell._webglRendered =
                     true;
-            }
-
-            /*
-             * Cells are already sorted small -> large.
-             *
-             * Assign depth only across the actual WebGL cell batch,
-             * exactly as before the virus-depth experiment.
-             *
-             * Larger cells receive the lower/closer Z value.
-             */
-            for (
-                var ci = 0;
-                ci < count;
-                ci++
-            ) {
-                var zDepth =
-                    count > 1
-                        ? 0.9 -
-                            (
-                                ci /
-                                (
-                                    count -
-                                    1
-                                )
-                            ) *
-                            0.89
-                        : 0.45;
-
-                data[
-                    ci *
-                    10 +
-                    9
-                ] =
-                    zDepth;
             }
 
             /*
@@ -32791,64 +34104,334 @@ Most cells eaten   : ${mostCellsEaten}
                 /* sortCells() already sorted LM.cells earlier in this frame (line 29547).
                  * No need to re-sort — removed redundant O(N²) insertion sort. */
 
-                /* WebGL2 cell body+skin batch — draws all eligible cell bodies on GPU in 1 draw call.
-                 * Cells rendered by WebGL get _webglRendered=true so cell.draw() skips body/skin.
-                 * Fallback: viruses, jelly, contours, video skins, removed cells stay on Canvas2D. */
-                if (this.gl && this.glCellProgram && !defaultmapsettings.jellyPhisycs && !defaultmapsettings.cellContours
-                    && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)) {
-                    /* Pre-clear _webglRendered for ALL cells to prevent stale flags from
-                     * previous frames (e.g., if cell.draw() threw an exception). */
-                    for (var _fi = 0; _fi < LM.cells.length; _fi++) {
-                        if (LM.cells[_fi]) LM.cells[_fi]._webglRendered = false;
-                    }
-                    var gl =
-                        this.gl;
-
-                    gl.enable(
-                        gl.BLEND
-                    );
-
-                    gl.blendFunc(
-                        gl.SRC_ALPHA,
-                        gl.ONE_MINUS_SRC_ALPHA
-                    );
-
+                /*
+                 * ============================================================
+                 * ATOMIC WEBGL WORLD BODY PASS
+                 * ============================================================
+                 *
+                 * Ordinary cells AND viruses must share one GL depth buffer.
+                 *
+                 * If either side cannot render safely, clear the GL surface and
+                 * fall back to the existing globally sorted Canvas cell.draw()
+                 * loop for the complete world.
+                 */
+                if (
+                    this.gl &&
+                    this.glCellProgram &&
+                    this.glVirusProgram &&
+                    !defaultmapsettings
+                        .jellyPhisycs &&
+                    !defaultmapsettings
+                        .cellContours &&
+                    (
+                        typeof defaultmapsettings
+                            .webgl2Acceleration ===
+                            "undefined" ||
+                        defaultmapsettings
+                            .webgl2Acceleration
+                    )
+                ) {
                     /*
-                     * Render the ordinary WebGL cell batch.
+                     * Capacity preflight.
                      *
-                     * Viruses keep their original existing rendering path.
+                     * Never discover after cells were already drawn that the
+                     * virus VBO cannot hold the current world.
                      */
-                    this.drawWebGLCellBatch(
-                        LM.cells
-                    );
+                    var _virusCount =
+                        0;
 
-                    /* WebGL text pass: draw nick+mass as textured quads with same depth values.
-                     * The depth buffer from cell bodies ensures larger cells occlude smaller cells' text.
-                     * Disable depth WRITES so text doesn't interfere with other text's depth. */
-                    if (this.glTextProgram) {
-                        var _tTxt = performance.now();
-                        gl.depthMask(false); /* read-only depth: text is occluded by bodies but doesn't write */
-                        /* Set shared uniforms once (viewCenter/viewScale don't change per cell) */
-                        var _tvs = this.scale || 1;
-                        gl.useProgram(this.glTextProgram);
-                        gl.uniform2f(this.u_text_viewCenter, this.camX, this.camY);
-                        gl.uniform2f(this.u_text_viewScale, 2.0 * _tvs / this.canvasWidth, 2.0 * _tvs / this.canvasHeight);
-                        gl.uniform1i(this.u_text_tex, 0);
-                        gl.uniform1f(this.u_text_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
-                        gl.bindVertexArray(this.glTextVAO);
-                        for (var ti = 0; ti < LM.cells.length; ti++) {
-                            var tCell = LM.cells[ti];
-                            if (tCell && tCell._webglRendered) {
-                                try { this.drawWebGLCellText(tCell); } catch (eText) { }
+                    for (
+                        var _vci = 0;
+                        _vci <
+                        LM.cells.length;
+                        _vci++
+                    ) {
+                        var _vc =
+                            LM.cells[
+                                _vci
+                            ];
+
+                        if (
+                            _vc &&
+                            _vc.isVirus &&
+                            !_vc.removed &&
+                            !_vc.invisible
+                        ) {
+                            _virusCount++;
+                        }
+                    }
+
+                    var _virusCapacityOK =
+                        _virusCount <=
+                        this
+                            .glVirusMaxInstances;
+
+                    if (
+                        _virusCapacityOK
+                    ) {
+                        /*
+                         * Clear stale GPU flags from previous frame.
+                         */
+                        for (
+                            var _fi = 0;
+                            _fi <
+                            LM.cells.length;
+                            _fi++
+                        ) {
+                            if (
+                                LM.cells[
+                                    _fi
+                                ]
+                            ) {
+                                LM.cells[
+                                    _fi
+                                ]
+                                    ._webglRendered =
+                                    false;
+
+                                if (
+                                    LM.cells[
+                                        _fi
+                                    ]
+                                        ._webglZ !==
+                                        undefined
+                                ) {
+                                    delete LM.cells[
+                                        _fi
+                                    ]
+                                        ._webglZ;
+                                }
                             }
                         }
-                        gl.bindVertexArray(null);
-                        gl.depthMask(true);
-                        if (window.clientProfiler) window.clientProfiler.recordText(performance.now() - _tTxt);
-                    }
 
-                    /* Disable depth testing for remaining GL draws (grid, borders, rings are overlays) */
-                    gl.disable(gl.DEPTH_TEST);
+                        var gl =
+                            this.gl;
+
+                        gl.enable(
+                            gl.BLEND
+                        );
+
+                        gl.blendFunc(
+                            gl.SRC_ALPHA,
+                            gl.ONE_MINUS_SRC_ALPHA
+                        );
+
+                        /*
+                         * FIRST:
+                         * ordinary cells populate color + depth.
+                         *
+                         * Their depth is based on GLOBAL LM.cells ordering.
+                         */
+                        var _cellBatchOK =
+                            this.drawWebGLCellBatch(
+                                LM.cells
+                            );
+
+                        var _virusBatchOK =
+                            false;
+
+                        if (
+                            _cellBatchOK
+                        ) {
+                            /*
+                             * SECOND:
+                             * visible viruses render against the same depth.
+                             *
+                             * Transparent virus pixels blend over already-drawn
+                             * smaller cells instead of deleting them.
+                             *
+                             * Larger cells have a closer depth and therefore
+                             * reject virus fragments automatically.
+                             */
+                            _virusBatchOK =
+                                this.drawWebGLVirusBatch(
+                                    LM.cells
+                                );
+                        }
+
+                        var _gpuWorldOK =
+                            _cellBatchOK &&
+                            _virusBatchOK;
+
+                        if (
+                            !_gpuWorldOK
+                        ) {
+                            /*
+                             * Atomic fallback.
+                             *
+                             * Never leave half of the world on WebGL and half
+                             * on Canvas because DOM z-index would destroy
+                             * size ordering.
+                             */
+                            gl.clearColor(
+                                0,
+                                0,
+                                0,
+                                0
+                            );
+
+                            gl.clear(
+                                gl.COLOR_BUFFER_BIT |
+                                gl.DEPTH_BUFFER_BIT
+                            );
+
+                            for (
+                                var _rf = 0;
+                                _rf <
+                                LM.cells.length;
+                                _rf++
+                            ) {
+                                var _fallbackCell =
+                                    LM.cells[
+                                        _rf
+                                    ];
+
+                                if (
+                                    !_fallbackCell
+                                ) {
+                                    continue;
+                                }
+
+                                _fallbackCell
+                                    ._webglRendered =
+                                    false;
+
+                                if (
+                                    _fallbackCell
+                                        ._webglCellIdx !==
+                                        undefined
+                                ) {
+                                    delete _fallbackCell
+                                        ._webglCellIdx;
+                                }
+
+                                if (
+                                    _fallbackCell
+                                        ._webglZ !==
+                                        undefined
+                                ) {
+                                    delete _fallbackCell
+                                        ._webglZ;
+                                }
+                            }
+                        }
+                        else if (
+                            this.glTextProgram
+                        ) {
+                            /*
+                             * =================================================
+                             * WEBGL TEXT PASS
+                             * =================================================
+                             */
+                            var _tTxt =
+                                performance.now();
+
+                            gl.depthMask(
+                                false
+                            );
+
+                            var _tvs =
+                                this
+                                    .scale ||
+                                1;
+
+                            gl.useProgram(
+                                this
+                                    .glTextProgram
+                            );
+
+                            gl.uniform2f(
+                                this
+                                    .u_text_viewCenter,
+                                this.camX,
+                                this.camY
+                            );
+
+                            gl.uniform2f(
+                                this
+                                    .u_text_viewScale,
+
+                                2.0 *
+                                _tvs /
+                                this
+                                    .canvasWidth,
+
+                                2.0 *
+                                _tvs /
+                                this
+                                    .canvasHeight
+                            );
+
+                            gl.uniform1i(
+                                this
+                                    .u_text_tex,
+                                0
+                            );
+
+                            gl.uniform1f(
+                                this
+                                    .u_text_alpha,
+
+                                defaultSettings.textAlpha !=
+                                    null
+                                    ? defaultSettings.textAlpha
+                                    : 1.0
+                            );
+
+                            gl.bindVertexArray(
+                                this
+                                    .glTextVAO
+                            );
+
+                            for (
+                                var ti = 0;
+                                ti <
+                                LM.cells
+                                    .length;
+                                ti++
+                            ) {
+                                var tCell =
+                                    LM.cells[
+                                        ti
+                                    ];
+
+                                if (
+                                    tCell &&
+                                    tCell._webglRendered
+                                ) {
+                                    try {
+                                        this.drawWebGLCellText(
+                                            tCell
+                                        );
+                                    }
+                                    catch (
+                                        eText
+                                    ) {}
+                                }
+                            }
+
+                            gl.bindVertexArray(
+                                null
+                            );
+
+                            gl.depthMask(
+                                true
+                            );
+
+                            if (
+                                window.clientProfiler
+                            ) {
+                                window.clientProfiler.recordText(
+                                    performance.now() -
+                                        _tTxt
+                                );
+                            }
+                        }
+
+                        gl.disable(
+                            gl.DEPTH_TEST
+                        );
+                    }
                 }
 
                 /* Compact-in-place: O(N) removal preserving z-order (replaces O(N²) splice) */
