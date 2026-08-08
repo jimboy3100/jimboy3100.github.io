@@ -27208,7 +27208,7 @@ Most cells eaten   : ${mostCellsEaten}
                          * unit wide, therefore half-width is 0.5 world units.
                          */
                         float halfLineWidth =
-                            0.5 /
+                            1.0 /
                             max(
                                 u_gridSpacing,
                                 0.0001
@@ -32514,9 +32514,12 @@ Most cells eaten   : ${mostCellsEaten}
                     cell.isVirus
                         ? (
                             26 *
-                            Math.max(
-                                0,
-                                configuredMassScale
+                            (
+                                Math.max(
+                                    0,
+                                    configuredMassScale
+                                ) /
+                                3
                             )
                         )
                         : (
