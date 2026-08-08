@@ -27155,12 +27155,30 @@ Most cells eaten   : ${mostCellsEaten}
                                 0.5
                             );
 
+                        /*
+                         * Match the original Canvas grid thickness.
+                         *
+                         * Canvas used the default 1-world-unit stroke.
+                         * A grid cell is u_gridSpacing world units wide.
+                         *
+                         * Therefore each side of the line occupies:
+                         *
+                         *     0.5 world units / gridSpacing
+                         *
+                         * For the normal 50-unit grid:
+                         *
+                         *     0.5 / 50 = 0.01
+                         *
+                         * Unlike the previous 1.5 / screenSpacing formula,
+                         * this naturally becomes thinner when zooming out
+                         * and thicker when zooming in, exactly like the
+                         * world-space Canvas grid did.
+                         */
                         float lineThickness =
-                            clamp(
-                                1.5 /
-                                safeScreenSpacing,
-                                0.005,
-                                0.08
+                            0.5 /
+                            max(
+                                u_gridSpacing,
+                                0.0001
                             );
 
                         float threshold =
@@ -27168,7 +27186,9 @@ Most cells eaten   : ${mostCellsEaten}
                             lineThickness;
 
                         /*
-                         * Anti-aliased procedural line.
+                         * Small fixed edge smoothing.
+                         *
+                         * This affects only antialiasing, NOT user opacity.
                          */
                         float line =
                             smoothstep(
