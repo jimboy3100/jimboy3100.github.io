@@ -31105,7 +31105,7 @@ Most cells eaten   : ${mostCellsEaten}
             );
 
             var gridSpacing =
-                50.0;
+                100.0;
 
             /*
              * Wrapped phase keeps values tiny even on enormous private maps.
