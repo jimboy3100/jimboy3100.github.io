@@ -27204,11 +27204,13 @@ Most cells eaten   : ${mostCellsEaten}
                             );
 
                         /*
-                         * Original Canvas grid was approximately one world
-                         * unit wide, therefore half-width is 0.5 world units.
+                         * Bolder WebGL grid.
+                         *
+                         * Total line width = 3 world units.
+                         * Keep user-selected gridColor and alpha untouched.
                          */
                         float halfLineWidth =
-                            1.0 /
+                            1.5 /
                             max(
                                 u_gridSpacing,
                                 0.0001
