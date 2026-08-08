@@ -4553,7 +4553,6 @@ var displayText = {
         virColors: 'Kolory wirusow',
         splitRange: 'Zasieg podzialu',
         virusesRange: 'Zasieg wirusow',
-        showOptimisedGrid: 'Image as grid (fallback)',
         textStroke: 'Obwodki nazw i masy',
         namesStroke: 'Obwodki nazw',
         massStroke: 'Obwodki masy',
@@ -5050,7 +5049,6 @@ var displayText = {
         qdsplitRange: 'Quick double split range', //Sonia2
         sdsplitRange: 'Slow double split range', //Sonia2
         virusesRange: 'Viruses range',
-        showOptimisedGrid: 'Image as grid (fallback)',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
@@ -6366,7 +6364,6 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
-    showOptimisedGrid: false,
     textStroke: false,
     namesStroke: true,
     massStroke: true,
@@ -9586,7 +9583,7 @@ function thelegendmodproject() {
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
-            this.addOptions(["showGrid", "showOptimisedGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
+            this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
