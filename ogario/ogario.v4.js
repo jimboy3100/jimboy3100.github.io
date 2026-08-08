@@ -31926,333 +31926,6 @@ Most cells eaten   : ${mostCellsEaten}
                 }
             }
         },
-        drawWebGLVirusDepthPrepass(cellsArray) {
-            /*
-             * ============================================================
-             * VIRUS WEBGL DEPTH BRIDGE
-             * ============================================================
-             *
-             * Viruses currently retain their existing visual renderer:
-             *
-             *     fill
-             *     stroke
-             *     spikes
-             *     glow
-             *     transparency
-             *     virus mass
-             *
-             * But their DEPTH participates in the main WebGL scene.
-             *
-             * Result:
-             *
-             *     smaller cell < virus  -> virus covers cell
-             *     larger cell > virus   -> cell covers virus
-             *
-             * No visible WebGL color is produced by this pass.
-             */
-
-            if (
-                !this.gl ||
-                !this.glCellProgram ||
-                !this.glCellVAO ||
-                !cellsArray ||
-                !cellsArray.length
-            ) {
-                return false;
-            }
-
-            var gl =
-                this.gl;
-
-            var data =
-                this.glCellInstanceData;
-
-            var count =
-                0;
-
-            var max =
-                this.glCellMaxInstances;
-
-            var total =
-                cellsArray.length;
-
-            var viewScale =
-                this.scale ||
-                1;
-
-            var minX;
-            var maxX;
-            var minY;
-            var maxY;
-
-            if (window.fullSpectator) {
-                minX =
-                    (
-                        LM.mapMinX != null
-                            ? LM.mapMinX
-                            : -7071
-                    ) -
-                    500;
-
-                maxX =
-                    (
-                        LM.mapMaxX != null
-                            ? LM.mapMaxX
-                            : 7071
-                    ) +
-                    500;
-
-                minY =
-                    (
-                        LM.mapMinY != null
-                            ? LM.mapMinY
-                            : -7071
-                    ) -
-                    500;
-
-                maxY =
-                    (
-                        LM.mapMaxY != null
-                            ? LM.mapMaxY
-                            : 7071
-                    ) +
-                    500;
-            }
-            else {
-                var halfW =
-                    this.canvasWidth /
-                    viewScale /
-                    2 +
-                    250;
-
-                var halfH =
-                    this.canvasHeight /
-                    viewScale /
-                    2 +
-                    250;
-
-                minX =
-                    this.camX -
-                    halfW;
-
-                maxX =
-                    this.camX +
-                    halfW;
-
-                minY =
-                    this.camY -
-                    halfH;
-
-                maxY =
-                    this.camY +
-                    halfH;
-            }
-
-            for (
-                var i = 0;
-                i < total;
-                i++
-            ) {
-                var cell =
-                    cellsArray[i];
-
-                if (
-                    !cell ||
-                    !cell.isVirus ||
-                    cell.invisible ||
-                    cell.removed
-                ) {
-                    continue;
-                }
-
-                var x =
-                    cell.x;
-
-                var y =
-                    cell.y;
-
-                var r =
-                    cell.size ||
-                    10;
-
-                if (
-                    x + r < minX ||
-                    x - r > maxX ||
-                    y + r < minY ||
-                    y - r > maxY
-                ) {
-                    continue;
-                }
-
-                if (
-                    count >=
-                    max
-                ) {
-                    return false;
-                }
-
-                var idx =
-                    count *
-                    10;
-
-                data[idx] =
-                    x;
-
-                data[idx + 1] =
-                    y;
-
-                data[idx + 2] =
-                    r;
-
-                /*
-                 * Color is irrelevant because gl.colorMask(false...) below
-                 * prevents this pre-pass from touching the color buffer.
-                 */
-                data[idx + 3] =
-                    0;
-
-                data[idx + 4] =
-                    0;
-
-                data[idx + 5] =
-                    0;
-
-                data[idx + 6] =
-                    1;
-
-                /*
-                 * No skin.
-                 */
-                data[idx + 7] =
-                    -1;
-
-                data[idx + 8] =
-                    0;
-
-                /*
-                 * IMPORTANT:
-                 * use the GLOBAL sorted LM.cells index.
-                 *
-                 * LM.cells is sorted small -> large.
-                 * Larger objects therefore receive lower/closer depth.
-                 */
-                data[idx + 9] =
-                    total > 1
-                        ? 0.9 -
-                            (
-                                i /
-                                (
-                                    total -
-                                    1
-                                )
-                            ) *
-                            0.89
-                        : 0.45;
-
-                count++;
-            }
-
-            if (!count) {
-                return true;
-            }
-
-            gl.enable(
-                gl.DEPTH_TEST
-            );
-
-            gl.depthFunc(
-                gl.LESS
-            );
-
-            gl.depthMask(
-                true
-            );
-
-            /*
-             * DEPTH ONLY.
-             *
-             * The virus remains visually rendered by the existing virus path.
-             */
-            gl.colorMask(
-                false,
-                false,
-                false,
-                false
-            );
-
-            try {
-                gl.useProgram(
-                    this.glCellProgram
-                );
-
-                gl.uniform2f(
-                    this.u_cell_viewCenter,
-                    this.camX,
-                    this.camY
-                );
-
-                gl.uniform2f(
-                    this.u_cell_viewScale,
-
-                    2.0 *
-                    viewScale /
-                    this.canvasWidth,
-
-                    2.0 *
-                    viewScale /
-                    this.canvasHeight
-                );
-
-                gl.uniform1i(
-                    this.u_skinArray,
-                    0
-                );
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    this.glCellInstanceVBO
-                );
-
-                gl.bufferSubData(
-                    gl.ARRAY_BUFFER,
-                    0,
-
-                    data.subarray(
-                        0,
-                        count * 10
-                    )
-                );
-
-                gl.bindVertexArray(
-                    this.glCellVAO
-                );
-
-                gl.drawArraysInstanced(
-                    gl.TRIANGLE_STRIP,
-                    0,
-                    4,
-                    count
-                );
-
-                gl.bindVertexArray(
-                    null
-                );
-            }
-            finally {
-                /*
-                 * Absolutely mandatory.
-                 * Never leave color writes disabled for the real cell pass.
-                 */
-                gl.colorMask(
-                    true,
-                    true,
-                    true,
-                    true
-                );
-            }
-
-            return true;
-        },
         drawWebGLCellBatch(cellsArray) {
             var _tGL = performance.now();
             if (!this.gl || !this.glCellProgram || !cellsArray || !cellsArray.length) return false;
@@ -32653,24 +32326,10 @@ Most cells eaten   : ${mostCellsEaten}
                     skinAlpha;
 
                 /*
-                 * GLOBAL LM.cells depth.
-                 *
-                 * i is the index in the already size-sorted LM.cells array.
-                 * Viruses and ordinary cells therefore use exactly the same
-                 * depth coordinate system.
+                 * Z is assigned after the batch is built.
                  */
                 data[idx + 9] =
-                    cellsArray.length > 1
-                        ? 0.9 -
-                            (
-                                i /
-                                (
-                                    cellsArray.length -
-                                    1
-                                )
-                            ) *
-                            0.89
-                        : 0.45;
+                    0;
 
                 cell._webglCellIdx =
                     count;
@@ -32679,6 +32338,40 @@ Most cells eaten   : ${mostCellsEaten}
 
                 cell._webglRendered =
                     true;
+            }
+
+            /*
+             * Cells are already sorted small -> large.
+             *
+             * Assign depth only across the actual WebGL cell batch,
+             * exactly as before the virus-depth experiment.
+             *
+             * Larger cells receive the lower/closer Z value.
+             */
+            for (
+                var ci = 0;
+                ci < count;
+                ci++
+            ) {
+                var zDepth =
+                    count > 1
+                        ? 0.9 -
+                            (
+                                ci /
+                                (
+                                    count -
+                                    1
+                                )
+                            ) *
+                            0.89
+                        : 0.45;
+
+                data[
+                    ci *
+                    10 +
+                    9
+                ] =
+                    zDepth;
             }
 
             /*
@@ -33104,23 +32797,10 @@ Most cells eaten   : ${mostCellsEaten}
                     );
 
                     /*
-                     * FIRST:
-                     * put viruses into the shared WebGL depth buffer.
+                     * Render the ordinary WebGL cell batch.
                      *
-                     * SECOND:
-                     * render real WebGL cells against that depth.
+                     * Viruses keep their original existing rendering path.
                      */
-                    var virusDepthOK =
-                        this.drawWebGLVirusDepthPrepass(
-                            LM.cells
-                        );
-
-                    if (!virusDepthOK) {
-                        console.error(
-                            '[LegendMod WebGL] Virus depth pre-pass failed'
-                        );
-                    }
-
                     this.drawWebGLCellBatch(
                         LM.cells
                     );
