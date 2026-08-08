@@ -32577,33 +32577,72 @@ Most cells eaten   : ${mostCellsEaten}
                         )
                         : 0;
 
-                /*
-                 * cell.mass may not yet have been initialized by cell.draw().
-                 */
-                var massVal =
-                    cell.mass > 0
-                        ? ~~cell.mass
-                        : ~~(
+                var massVal;
+
+                if (
+                    cell.isVirus
+                ) {
+                    /*
+                     * IMPORTANT:
+                     *
+                     * Do NOT use cell.mass here.
+                     *
+                     * The legacy setMass() may already have converted cell.mass
+                     * from raw virus mass into the Virus Shots counter.
+                     *
+                     * Reusing cell.mass and applying the formula again causes:
+                     *
+                     *     normal virus:
+                     *         raw mass 100
+                     *         -> shots 7
+                     *         -> shots AGAIN = 13   WRONG
+                     *
+                     * Always reconstruct the RAW virus mass from its size first,
+                     * exactly as the original Virus Shots implementation did.
+                     */
+                    var rawVirusMass =
+                        ~~(
                             cellSize *
                             cellSize /
                             100
                         );
 
-                /*
-                 * Preserve Virus Shots setting on WebGL viruses.
-                 */
-                if (
-                    cell.isVirus &&
-                    defaultmapsettings.virMassShots
-                ) {
                     massVal =
-                        ~~(
-                            (
-                                200 -
-                                massVal
-                            ) /
-                            14
-                        );
+                        rawVirusMass;
+
+                    /*
+                     * Original Legend Mod Virus Shots formula.
+                     *
+                     * Only convert viruses below 200 raw mass,
+                     * exactly like the original implementation.
+                     */
+                    if (
+                        defaultmapsettings.virMassShots &&
+                        rawVirusMass <
+                        200
+                    ) {
+                        massVal =
+                            ~~(
+                                (
+                                    200 -
+                                    rawVirusMass
+                                ) /
+                                14
+                            );
+                    }
+                }
+                else {
+                    /*
+                     * Ordinary cells keep their existing behavior unchanged.
+                     */
+                    massVal =
+                        cell.mass > 0
+                            ? ~~cell.mass
+                            : ~~(
+                                cellSize *
+                                cellSize /
+                                100
+                            );
                 }
 
                 var massStr;
