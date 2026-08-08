@@ -27525,10 +27525,26 @@ Most cells eaten   : ${mostCellsEaten}
                 uniform float u_gridScreenSpacing;  // grid spacing in screen pixels
                 out vec4 fragColor;
                 void main() {
-                    /* Fade out completely when grid cells are smaller than ~8 px on screen.
-                     * This prevents grid lines from merging into a solid dark fill at high zoom. */
-                    float fadeAlpha = smoothstep(4.0, 12.0, u_gridScreenSpacing);
-                    if (fadeAlpha <= 0.001) discard;
+                    /*
+                     * Keep the grid visible through normal and far zoom.
+                     *
+                     * Only fade when individual grid cells approach roughly
+                     * one physical screen pixel, where distinct grid lines
+                     * can no longer be represented without aliasing.
+                     */
+                    float fadeAlpha =
+                        smoothstep(
+                            1.0,
+                            3.0,
+                            u_gridScreenSpacing
+                        );
+
+                    if (
+                        fadeAlpha <=
+                        0.001
+                    ) {
+                        discard;
+                    }
 
                     vec2 coord = fract(v_worldPos / u_gridSpacing);
                     vec2 grid = abs(coord - 0.5);
@@ -29711,12 +29727,17 @@ Most cells eaten   : ${mostCellsEaten}
                 );
 
             /*
-             * Default Canvas grid was intentionally subtle.
+             * Match Canvas theme semantics exactly:
              *
-             * If the theme supplies rgba(), preserve its explicit alpha.
+             *     #RRGGBB       -> alpha 1
+             *     rgb(...)      -> alpha 1
+             *     rgba(..., A)  -> alpha A
+             *
+             * The theme's gridColor is ALREADY chosen to be subtle.
+             * Never multiply ordinary hex colors by an extra 0.08.
              */
             var gridAlpha =
-                0.08;
+                1.0;
 
             if (
                 typeof gridColor ===
@@ -29724,7 +29745,7 @@ Most cells eaten   : ${mostCellsEaten}
             ) {
                 var rgbaMatch =
                     gridColor.match(
-                        /rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/i
+                        /rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/i
                     );
 
                 if (rgbaMatch) {
