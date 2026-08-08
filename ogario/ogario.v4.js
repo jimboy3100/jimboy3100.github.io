@@ -32356,7 +32356,16 @@ Most cells eaten   : ${mostCellsEaten}
             /* Program, viewCenter, viewScale, texture unit, and VAO are set once by caller */
             gl.uniform2f(this.u_text_worldPos, worldX, worldY);
             gl.uniform2f(this.u_text_quadSize, halfW, halfH);
-            gl.uniform1f(this.u_text_z, z - 0.005); /* slightly in front of body */
+            /*
+             * Exact body depth.
+             *
+             * Text uses LEQUAL during its pass, so it can draw on its own
+             * body's depth without jumping in front of larger objects.
+             */
+            gl.uniform1f(
+                this.u_text_z,
+                z
+            );
             gl.uniform2f(this.u_text_offset, 0, offsetY);
 
             gl.activeTexture(gl.TEXTURE0);
@@ -32375,9 +32384,26 @@ Most cells eaten   : ${mostCellsEaten}
 
             /* Match Canvas2D auto-hide: pass cell size (world units), same as Canvas2D's `y` */
             var recursive = false;
-            if (!cell.isPlayerCell) {
-                recursive = application.setAutoHideCellInfo(cellSize);
-                if (recursive && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) return;
+
+            /*
+             * Canvas viruses never used normal-cell auto-hide rules.
+             */
+            if (
+                !cell.isPlayerCell &&
+                !cell.isVirus
+            ) {
+                recursive =
+                    application.setAutoHideCellInfo(
+                        cellSize
+                    );
+
+                if (
+                    recursive &&
+                    defaultmapsettings.autoHideNames &&
+                    defaultmapsettings.autoHideMass
+                ) {
+                    return;
+                }
             }
 
             /* No text to draw at all? */
@@ -32393,7 +32419,16 @@ Most cells eaten   : ${mostCellsEaten}
              * texture rasterization size is multiplied by viewScale; layout is
              * deliberately independent of zoom. */
             var namesScale = defaultSettings.namesScale || 1;
-            var massScale = defaultSettings.massScale || 1;
+            var massScale =
+                cell.isVirus
+                    ? (
+                        defaultSettings.virMassScale ||
+                        3
+                    )
+                    : (
+                        defaultSettings.massScale ||
+                        1
+                    );
             var strokeScale = defaultSettings.strokeScale || 1;
             var baseWorldFontSize = Math.max(cellSize * 0.3, 26);
             var nickWorldFontSize = baseWorldFontSize * namesScale;
@@ -32411,7 +32446,8 @@ Most cells eaten   : ${mostCellsEaten}
             var nickStrokeW = defaultmapsettings.namesStroke
                 ? ~~(nickFontSize * 0.1 * strokeScale) : 0;
 
-            var showNick = cell.targetNick
+            var showNick = !cell.isVirus
+                && cell.targetNick
                 && !defaultmapsettings.noNames
                 && !(recursive && defaultmapsettings.autoHideNames)
                 && !(cell.isPlayerCell && defaultmapsettings.hideMyName)
@@ -32475,9 +32511,19 @@ Most cells eaten   : ${mostCellsEaten}
                  * Camera zoom is applied later, once, by drawWebGLTextQuad().
                  */
                 var massWorldFontSize =
-                    nickWorldFontSize *
-                    0.85 *
-                    normalizedMassScale;
+                    cell.isVirus
+                        ? (
+                            26 *
+                            Math.max(
+                                0,
+                                configuredMassScale
+                            )
+                        )
+                        : (
+                            nickWorldFontSize *
+                            0.85 *
+                            normalizedMassScale
+                        );
 
                 /*
                  * Prevent drawWebGLTextQuad() from activating its legacy
@@ -32539,6 +32585,23 @@ Most cells eaten   : ${mostCellsEaten}
                             cellSize /
                             100
                         );
+
+                /*
+                 * Preserve Virus Shots setting on WebGL viruses.
+                 */
+                if (
+                    cell.isVirus &&
+                    defaultmapsettings.virMassShots
+                ) {
+                    massVal =
+                        ~~(
+                            (
+                                200 -
+                                massVal
+                            ) /
+                            14
+                        );
+                }
 
                 var massStr;
 
@@ -34326,6 +34389,10 @@ Most cells eaten   : ${mostCellsEaten}
                             var _tTxt =
                                 performance.now();
 
+                            gl.depthFunc(
+                                gl.LEQUAL
+                            );
+
                             gl.depthMask(
                                 false
                             );
@@ -34416,6 +34483,10 @@ Most cells eaten   : ${mostCellsEaten}
 
                             gl.depthMask(
                                 true
+                            );
+
+                            gl.depthFunc(
+                                gl.LESS
                             );
 
                             if (
