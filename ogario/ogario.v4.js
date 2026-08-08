@@ -26727,63 +26727,34 @@ Most cells eaten   : ${mostCellsEaten}
             if (!this.overlayCanvas) {
                 var overlay = document.createElement('canvas');
                 overlay.id = 'legendmod-render-overlay';
-                overlay.style.cssText =
-                    'position:absolute;top:0;left:0;pointer-events:none;background:transparent;display:none;';
-
+                overlay.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;background:transparent;display:none;';
                 this.canvas.parentNode.appendChild(overlay);
                 this.overlayCanvas = overlay;
                 this.overlayCtx = overlay.getContext('2d');
             }
 
             /*
-             * FIXED deterministic render stack:
-             *
-             *   base Canvas2D
-             *       background / custom background / complete fallback
-             *
-             *   WebGL2
-             *       grid
-             *       border
-             *       helper geometry
-             *       food
-             *       cells + skins
-             *       viruses
-             *       nick + mass
-             *
-             *   overlay Canvas2D
-             *       only effects that intentionally belong ABOVE cells
-             *
-             * DO NOT give all three canvases the same z-index.
+             * Deterministic layers:
+             * 1. Original Canvas2D background/fallback.
+             * 2. WebGL cell bodies, skins and text.
+             * 3. Canvas2D foreground indicators and rings.
              */
-            this.canvas.style.position =
-                this.canvas.style.position || 'absolute';
+            this.canvas.style.position = this.canvas.style.position || 'absolute';
 
             if (this._renderLayerZ === null) {
-                var computedZ =
-                    parseInt(
-                        window.getComputedStyle(this.canvas).zIndex,
-                        10
-                    );
-
-                this._renderLayerZ =
-                    Number.isFinite(computedZ)
-                        ? computedZ
-                        : 1;
+                var computedZ = parseInt(window.getComputedStyle(this.canvas).zIndex, 10);
+                this._renderLayerZ = Number.isFinite(computedZ) ? computedZ : 1;
             }
 
-            var baseZ = this._renderLayerZ;
-
-            this.canvas.style.zIndex =
-                String(baseZ);
+            var layerZ = String(this._renderLayerZ);
+            this.canvas.style.zIndex = layerZ;
 
             if (this.glCanvas) {
-                this.glCanvas.style.zIndex =
-                    String(baseZ + 1);
+                this.glCanvas.style.zIndex = layerZ;
             }
 
             if (this.overlayCanvas) {
-                this.overlayCanvas.style.zIndex =
-                    String(baseZ + 2);
+                this.overlayCanvas.style.zIndex = layerZ;
             }
         },
 
@@ -26801,36 +26772,6 @@ Most cells eaten   : ${mostCellsEaten}
                 cell.y + radius < this.camY - halfH ||
                 cell.y - radius > this.camY + halfH
             );
-        },
-
-        getWebGLSceneZ(sortedIndex, totalCount) {
-            /*
-             * LM.cells is already sorted:
-             *
-             *     smaller -> larger
-             *     then id for equal sizes
-             *
-             * WebGL depth uses LESS, therefore later/larger objects
-             * must receive LOWER Z values.
-             *
-             * IMPORTANT:
-             * cells AND viruses use this SAME global index.
-             */
-            if (!(totalCount > 1)) {
-                return 0.45;
-            }
-
-            var t =
-                Math.max(
-                    0,
-                    Math.min(
-                        1,
-                        sortedIndex /
-                        (totalCount - 1)
-                    )
-                );
-
-            return 0.90 - t * 0.89;
         },
 
         _resetWebGLSkinTextureArray() {
@@ -26875,17 +26816,67 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
 
-        _resolveWebGLSkinResource(cell, uploadReadyImage) {
-            /*
-             * ONE resolver for both:
-             *
-             *     canUseWebGLScene()
-             *     drawWebGLCellBatch()
-             *
-             * Previously those paths resolved skins differently, allowing
-             * preflight to succeed and the actual GPU batch to abort later.
-             */
+        _getWebGLSkinAlphaMode(node) {
+            if (!node) return 'none';
 
+            if (!this.glSkinAlphaMode) {
+                this.glSkinAlphaMode = new WeakMap();
+            }
+
+            var cachedMode = this.glSkinAlphaMode.get(node);
+
+            if (cachedMode) {
+                return cachedMode;
+            }
+
+            var mode = 'unknown';
+
+            try {
+                var sampleCanvas = document.createElement('canvas');
+                sampleCanvas.width = 64;
+                sampleCanvas.height = 64;
+
+                var sampleCtx =
+                    sampleCanvas.getContext('2d', { willReadFrequently: true }) ||
+                    sampleCanvas.getContext('2d');
+
+                sampleCtx.clearRect(0, 0, 64, 64);
+                sampleCtx.drawImage(node, 0, 0, 64, 64);
+
+                var pixels = sampleCtx.getImageData(0, 0, 64, 64).data;
+                mode = 'opaque';
+
+                for (var y = 3; y < 61 && mode !== 'partial'; y++) {
+                    var dy = y - 31.5;
+
+                    for (var x = 3; x < 61; x++) {
+                        var dx = x - 31.5;
+
+                        if (dx * dx + dy * dy > 28.5 * 28.5) {
+                            continue;
+                        }
+
+                        var alpha = pixels[(y * 64 + x) * 4 + 3];
+
+                        if (alpha > 0 && alpha < 250) {
+                            mode = 'partial';
+                            break;
+                        }
+
+                        if (alpha === 0 && mode === 'opaque') {
+                            mode = 'binary';
+                        }
+                    }
+                }
+            } catch (error) {
+                mode = 'unknown';
+            }
+
+            this.glSkinAlphaMode.set(node, mode);
+            return mode;
+        },
+
+        _resolveWebGLSkin(cell, uploadReadyImage) {
             if (
                 !cell ||
                 !defaultmapsettings.customSkins ||
@@ -26894,299 +26885,117 @@ Most cells eaten   : ${mostCellsEaten}
             ) {
                 return {
                     requested: false,
-                    video: false,
                     layer: -1,
                     node: null,
-                    key: null
+                    alphaMode: 'none'
                 };
             }
 
-            var isParty =
-                application.gameMode === ':party';
-
-            var skinUrl = null;
-
-            /*
-             * LM/chat/custom nickname skin lookup.
-             */
-            if (cell.targetNick) {
-                var mode =
-                    isParty
-                        ? cell.targetNick + cell.color
-                        : cell.targetNick;
-
-                var cleanNick =
-                    cell.targetNick
-                        .replace(/\[.*?\]/g, '')
-                        .trim();
-
-                skinUrl =
-                    application.customSkinsMap[mode] ||
-                    application.customSkinsMap[cell.targetNick] ||
-                    application.customSkinsMap[
-                        cell.targetNick + '#000000'
-                    ] ||
-                    (
-                        cleanNick
-                            ? (
-                                application.customSkinsMap[cleanNick] ||
-                                application.customSkinsMap[
-                                    cleanNick + '#000000'
-                                ] ||
-                                application.customSkinsMap[
-                                    cleanNick + cell.color
-                                ]
-                            )
-                            : null
-                    );
-            }
-
-            /*
-             * Vanilla / official skin lookup.
-             */
-            if (!skinUrl && cell.skin) {
-                skinUrl =
-                    application.customSkinsMap[cell.skin] ||
-                    (
-                        window.VanillaSkinUrlMap
-                            ? (
-                                window.VanillaSkinUrlMap[cell.skin] ||
-                                window.VanillaSkinUrlMap[
-                                    '%' + cell.skin
-                                ] ||
-                                window.VanillaSkinUrlMap[
-                                    String(cell.skin).toLowerCase()
-                                ]
-                            )
-                            : null
-                    );
-            }
-
-            /*
-             * Video skins are genuinely different rendering objects.
-             * Never mix one Canvas video cell into a GPU body scene.
-             */
-            if (
-                typeof skinUrl === 'string' &&
-                /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(skinUrl)
-            ) {
-                return {
-                    requested: true,
-                    video: true,
-                    layer: -1,
-                    node: null,
-                    key: skinUrl
-                };
-            }
-
-            if (skinUrl) {
-                if (
-                    !application.customSkinsCache
-                        .hasOwnProperty(skinUrl)
-                ) {
-                    application.loadSkin(
-                        application.customSkinsCache,
-                        skinUrl,
-                        undefined,
-                        true
-                    );
-                }
-
-                var halfKey =
-                    skinUrl + '_cached3';
-
-                var activeKey =
-                    (
-                        this._skinHalf &&
-                        this.glSkinMap &&
-                        this.glSkinMap[halfKey] !== undefined
-                    )
-                        ? halfKey
-                        : skinUrl;
-
-                var node =
-                    application.customSkinsCache[halfKey] ||
-                    application.customSkinsCache[
-                        skinUrl + '_cached'
-                    ] ||
-                    application.customSkinsCache[skinUrl];
-
-                if (
-                    !node ||
-                    node._failed ||
-                    !(
-                        node.naturalWidth > 0 ||
-                        node.width > 0
-                    )
-                ) {
-                    return {
-                        requested: true,
-                        video: false,
-                        layer: -1,
-                        node: node || null,
-                        key: activeKey
-                    };
-                }
-
-                var mappedLayer =
-                    this.glSkinMap
-                        ? this.glSkinMap[activeKey]
-                        : undefined;
-
-                if (
-                    mappedLayer === undefined &&
-                    uploadReadyImage
-                ) {
-                    mappedLayer =
-                        this.uploadSkinTexture(
-                            activeKey,
-                            node
-                        );
-                }
-
-                return {
-                    requested: true,
-                    video: false,
-                    layer:
-                        typeof mappedLayer === 'number'
-                            ? mappedLayer
-                            : -1,
-                    node: node,
-                    key: activeKey
-                };
-            }
-
-            /*
-             * Compatibility path for already-decoded custom skin nodes.
-             *
-             * IMPORTANT:
-             * partial-alpha skins are VALID GPU skins.
-             * The WebGL cell shader already composites:
-             *
-             *     body first
-             *     skin second
-             *
-             * Do not reject transparent pixels and make cells disappear.
-             */
-            var directNode = null;
+            var node = null;
 
             try {
-                directNode =
-                    application.getCustomSkin(
-                        cell.targetNick,
-                        cell.color,
-                        cell.skin
-                    );
-            } catch (e) {
-            }
+                node = application.getCustomSkin(
+                    cell.targetNick,
+                    cell.color,
+                    cell.skin
+                );
+            } catch (error) { }
 
             if (
-                !directNode ||
-                directNode._failed ||
+                !node ||
+                node._failed ||
                 !(
-                    directNode.naturalWidth > 0 ||
-                    directNode.width > 0
+                    node.naturalWidth > 0 ||
+                    node.width > 0 ||
+                    node.videoWidth > 0
                 )
             ) {
                 return {
                     requested: false,
-                    video: false,
                     layer: -1,
                     node: null,
-                    key: null
+                    alphaMode: 'none'
+                };
+            }
+
+            var alphaMode = this._getWebGLSkinAlphaMode(node);
+
+            if (alphaMode === 'partial' || alphaMode === 'unknown') {
+                return {
+                    requested: true,
+                    layer: -1,
+                    node: node,
+                    alphaMode: alphaMode
                 };
             }
 
             if (!this.glSkinNodeMap) {
-                this.glSkinNodeMap =
-                    new WeakMap();
+                this.glSkinNodeMap = new WeakMap();
             }
 
-            var directLayer =
-                this.glSkinNodeMap.get(
-                    directNode
-                );
+            var mappedLayer = this.glSkinNodeMap.get(node);
 
-            if (
-                typeof directLayer !== 'number' &&
-                uploadReadyImage
-            ) {
-                directLayer =
-                    this.uploadSkinTexture(
-                        directNode,
-                        directNode
-                    );
+            if (typeof mappedLayer !== 'number' && uploadReadyImage) {
+                mappedLayer = this.uploadSkinTexture(node, node);
             }
 
             return {
                 requested: true,
-                video: false,
-                layer:
-                    typeof directLayer === 'number'
-                        ? directLayer
-                        : -1,
-                node: directNode,
-                key: directNode
+                layer: typeof mappedLayer === 'number' ? mappedLayer : -1,
+                node: node,
+                alphaMode: alphaMode
             };
         },
 
         canUseWebGLScene(cellsArray) {
-            /*
-             * ALL-OR-NOTHING GPU SCENE.
-             *
-             * NEVER:
-             *
-             *     GPU food + Canvas viruses
-             *     GPU opponent rings + Canvas viruses
-             *     GPU border + Canvas fallback cells
-             *
-             * Those combinations caused the exact layering bugs we fixed before.
-             */
+            this._webglBackgroundActive = false;
 
-            if (
-                defaultmapsettings.webgl2Acceleration === false
-            ) {
-                return false;
-            }
-
-            if (
-                this._webglDisabledUntil &&
-                Date.now() < this._webglDisabledUntil
-            ) {
-                return false;
-            }
+            if (defaultmapsettings.webgl2Acceleration === false) return false;
+            if (this._webglDisabledUntil && Date.now() < this._webglDisabledUntil) return false;
 
             if (
                 !this.gl ||
                 !this.glCanvas ||
-                !this.overlayCtx ||
                 !this.glCellProgram ||
                 !this.glTextProgram ||
-                !this.glVirusProgram ||
-                !this.glGridProgram ||
-                !this.glGridVAO ||
-                !this.glBorderProgram ||
-                !this.glBorderVAO
+                !this.overlayCtx
             ) {
                 return false;
             }
 
-            if (!cellsArray) {
+            if (!cellsArray || !cellsArray.length) return false;
+
+            if (
+                this.glSkinNextLayer >= this.glSkinMaxLayers &&
+                !this._resetWebGLSkinTextureArray()
+            ) {
                 return false;
             }
 
             /*
-             * These actually change cell geometry/compositing.
-             * Until they have their own GPU implementation, use ONE complete
-             * Canvas frame rather than corrupting z-order with a hybrid frame.
+             * These rendering paths cannot safely be reproduced by a detached WebGL
+             * canvas without changing Canvas clipping, compositing or draw order.
              */
-            if (LM.gameMode === ':teams') {
+            if (LM.gameMode === ':teams') return false;
+            if (defaultmapsettings.jellyPhisycs || defaultmapsettings.cellContours) return false;
+
+            if (
+                defaultmapsettings.transparentCells &&
+                defaultSettings.cellsAlpha < 0.999
+            ) {
                 return false;
             }
 
             if (
-                defaultmapsettings.jellyPhisycs ||
-                defaultmapsettings.cellContours
+                defaultmapsettings.transparentSkins &&
+                defaultSettings.skinsAlpha < 0.999
+            ) {
+                return false;
+            }
+
+            if (
+                defaultmapsettings.myTransparentSkin &&
+                defaultSettings.skinsAlpha < 0.999
             ) {
                 return false;
             }
@@ -27205,31 +27014,30 @@ Most cells eaten   : ${mostCellsEaten}
 
             if (
                 dyinglight1load === 'yes' ||
-                defaultmapsettings.spawnSpecialEffects
+                defaultmapsettings.spawnSpecialEffects ||
+                defaultmapsettings.teammatesInd
             ) {
                 return false;
             }
 
-            /*
-             * ShadowBlur is still Canvas-specific.
-             * These are OFF by default.
-             *
-             * If enabled, fall back for the COMPLETE frame — never mix layers.
-             */
+            if (defaultmapsettings.FBTracking) return false;
+
             if (
-                defaultmapsettings.showCellShadows ||
-                (
-                    defaultmapsettings.multiBoxShadow &&
-                    LM.playerCellsMulti &&
-                    LM.playerCellsMulti.length
-                )
+                (defaultmapsettings.multiBoxShadow || defaultmapsettings.mbRings) &&
+                LM.playerCellsMulti &&
+                LM.playerCellsMulti.length
             ) {
                 return false;
             }
 
-            /*
-             * Legacy merge timer alters the per-cell Canvas text path.
-             */
+            if (
+                defaultmapsettings.showChat &&
+                this._chatLookup &&
+                this._chatLookup.size
+            ) {
+                return false;
+            }
+
             if (
                 window.ExternalScripts &&
                 window.legendmod5 &&
@@ -27238,15 +27046,13 @@ Most cells eaten   : ${mostCellsEaten}
                 return false;
             }
 
-            var gpuCellCount = 0;
+            var gpuCount = 0;
+            var minGpuSize = Infinity;
+            var maxCanvasCellSize = -Infinity;
+            var visibleCanvasCells = 0;
 
-            for (
-                var i = 0;
-                i < cellsArray.length;
-                i++
-            ) {
-                var cell =
-                    cellsArray[i];
+            for (var i = 0; i < cellsArray.length; i++) {
+                var cell = cellsArray[i];
 
                 if (
                     !cell ||
@@ -27258,16 +27064,10 @@ Most cells eaten   : ${mostCellsEaten}
                     continue;
                 }
 
-                if (
-                    LM.hideSmallBots &&
-                    cell.size <= 36
-                ) {
+                if (LM.hideSmallBots && cell.size <= 36) {
                     continue;
                 }
 
-                /*
-                 * Actual special-effect cells still need their Canvas effect.
-                 */
                 if (
                     cell.SpecialEffect ||
                     cell.SpecialEffect2 ||
@@ -27285,79 +27085,71 @@ Most cells eaten   : ${mostCellsEaten}
                     return false;
                 }
 
-                /*
-                 * FBTracking is ON by default, so do NOT disable GPU merely
-                 * because the setting is enabled.
-                 *
-                 * Only fall back if an actual Facebook half-skin overlay exists
-                 * on a visible cell.
-                 */
-                if (
-                    defaultmapsettings.FBTracking &&
-                    cell.targetNick
-                ) {
-                    var fbUrl =
-                        application.customSkinsMap[
-                            cell.targetNick + 'facebookskin'
-                        ];
+                if (cell.isVirus) {
+                    visibleCanvasCells++;
+                    maxCanvasCellSize = Math.max(
+                        maxCanvasCellSize,
+                        cell.size || 0
+                    );
+                    continue;
+                }
+
+                if (defaultmapsettings.videoSkins && cell.targetNick) {
+                    var videoUrl =
+                        application.gameMode === ':party'
+                            ? application.customSkinsMap[
+                            cell.targetNick + cell.color
+                            ]
+                            : application.customSkinsMap[cell.targetNick];
 
                     if (
-                        fbUrl &&
-                        application.customSkinsCache[
-                            fbUrl + '_cached4'
-                        ]
+                        typeof videoUrl === 'string' &&
+                        /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(videoUrl)
                     ) {
                         return false;
                     }
                 }
 
-                /*
-                 * Viruses are GPU now.
-                 */
-                if (cell.isVirus) {
-                    continue;
-                }
+                var skinInfo = this._resolveWebGLSkin(cell, true);
 
-                gpuCellCount++;
-
-                if (
-                    gpuCellCount >
-                    this.glCellMaxInstances
-                ) {
+                if (skinInfo.requested && skinInfo.layer < 0) {
                     return false;
                 }
 
-                var skinInfo =
-                    this._resolveWebGLSkinResource(
-                        cell,
-                        true
-                    );
+                gpuCount++;
 
-                if (
-                    skinInfo.video ||
-                    (
-                        skinInfo.requested &&
-                        skinInfo.layer < 0
-                    )
-                ) {
-                    /*
-                     * Wait until the static skin is upload-ready BEFORE starting
-                     * a GPU frame. Never abort half-way through a rendered scene.
-                     */
+                if (gpuCount > this.glCellMaxInstances) {
                     return false;
                 }
+
+                minGpuSize = Math.min(
+                    minGpuSize,
+                    cell.size || 0
+                );
             }
 
+            if (!gpuCount) return false;
+
+            /*
+             * Canvas viruses may remain beneath the GPU layer only when every GPU
+             * cell is strictly larger. Equality is unsafe because IDs break ties.
+             */
+            if (
+                visibleCanvasCells &&
+                !(minGpuSize > maxCanvasCellSize)
+            ) {
+                return false;
+            }
+
+            this._webglBackgroundActive = false;
             return true;
         },
 
         setWebGLFrameMode(active) {
-            this._gpuSceneActive =
-                !!active;
+            this._gpuSceneActive = !!active;
 
             this._foregroundCtx =
-                this._gpuSceneActive &&
-                this.overlayCtx
+                this._gpuSceneActive && this.overlayCtx
                     ? this.overlayCtx
                     : this.ctx;
 
@@ -27382,10 +27174,11 @@ Most cells eaten   : ${mostCellsEaten}
         },
 
         canDrawWebGLPrimitive() {
-            return !!(
-                this._gpuSceneActive &&
-                this.gl
-            );
+            /*
+             * Arbitrary Canvas primitives cannot be interleaved correctly with a
+             * separate WebGL DOM canvas. Keep non-cell primitives on Canvas.
+             */
+            return false;
         },
 
         resizeCanvas() {
@@ -27690,48 +27483,6 @@ Most cells eaten   : ${mostCellsEaten}
                 this.u_gridColor = gl.getUniformLocation(gridProgram, 'u_gridColor');
                 this.u_gridScreenSpacing = gl.getUniformLocation(gridProgram, 'u_gridScreenSpacing');
 
-                /*
-                 * GRID MUST HAVE ITS OWN VAO.
-                 *
-                 * Attribute locations belong to the linked program.
-                 * Reusing this.glVAO here can feed a_unitPos through the
-                 * wrong attribute slot and produce the giant horizontal band.
-                 */
-                this.glGridVAO =
-                    gl.createVertexArray();
-
-                gl.bindVertexArray(
-                    this.glGridVAO
-                );
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    quadVBO
-                );
-
-                var a_grid_unit =
-                    gl.getAttribLocation(
-                        gridProgram,
-                        'a_unitPos'
-                    );
-
-                gl.enableVertexAttribArray(
-                    a_grid_unit
-                );
-
-                gl.vertexAttribPointer(
-                    a_grid_unit,
-                    2,
-                    gl.FLOAT,
-                    false,
-                    0,
-                    0
-                );
-
-                gl.bindVertexArray(
-                    null
-                );
-
                 // --- WebGL2 Procedural Border Shader ---
                 // Uses view-relative coordinates to avoid float precision loss on huge maps.
                 // The vertex shader outputs position relative to viewCenter so the fragment
@@ -27749,896 +27500,68 @@ Most cells eaten   : ${mostCellsEaten}
 
                 var borderFsSource = `#version 300 es
                 precision highp float;
-
                 in vec2 v_relPos;
-
-                uniform vec4 u_borderRect;
+                // Border rect stored as view-relative offsets (borderEdge - viewCenter)
+                uniform vec4 u_borderRect;   // relMinX, relMinY, relMaxX, relMaxY
                 uniform float u_lineWidth;
                 uniform vec4 u_borderColor;
-                uniform vec4 u_glowColor;
-                uniform float u_glowSize;
-
+                uniform float u_glowSize;    // 0 = no glow
                 out vec4 fragColor;
-
                 void main() {
                     float x = v_relPos.x;
                     float y = v_relPos.y;
-
-                    float hw =
-                        max(
-                            0.5,
-                            u_lineWidth * 0.5
-                        );
-
+                    float hw = u_lineWidth * 0.5;
                     float relMinX = u_borderRect.x;
                     float relMinY = u_borderRect.y;
                     float relMaxX = u_borderRect.z;
                     float relMaxY = u_borderRect.w;
 
-                    /*
-                     * VALID smoothstep ordering.
-                     *
-                     * Do not use:
-                     *
-                     *     smoothstep(high, low, x)
-                     *
-                     * because edge0 >= edge1 is undefined GLSL behaviour.
-                     */
-                    float aaX =
-                        max(
-                            fwidth(x),
-                            0.25
-                        );
+                    // Signed distances to each border edge (negative = inside the line)
+                    float dLeft  = abs(x - relMinX) - hw;
+                    float dRight = abs(x - relMaxX) - hw;
+                    float dTop   = abs(y - relMinY) - hw;
+                    float dBot   = abs(y - relMaxY) - hw;
 
-                    float aaY =
-                        max(
-                            fwidth(y),
-                            0.25
-                        );
+                    // Range checks — is this pixel within the horizontal/vertical span of the border?
+                    // Use smoothstep with a 1-pixel feather to avoid hard aliasing at corners
+                    float inRangeX = smoothstep(relMinX - hw - 1.0, relMinX - hw + 1.0, x)
+                                   * smoothstep(relMaxX + hw + 1.0, relMaxX + hw - 1.0, x);
+                    float inRangeY = smoothstep(relMinY - hw - 1.0, relMinY - hw + 1.0, y)
+                                   * smoothstep(relMaxY + hw + 1.0, relMaxY + hw - 1.0, y);
 
-                    float inRangeX =
-                        smoothstep(
-                            relMinX - hw - aaX,
-                            relMinX - hw + aaX,
-                            x
-                        ) *
-                        (
-                            1.0 -
-                            smoothstep(
-                                relMaxX + hw - aaX,
-                                relMaxX + hw + aaX,
-                                x
-                            )
-                        );
-
-                    float inRangeY =
-                        smoothstep(
-                            relMinY - hw - aaY,
-                            relMinY - hw + aaY,
-                            y
-                        ) *
-                        (
-                            1.0 -
-                            smoothstep(
-                                relMaxY + hw - aaY,
-                                relMaxY + hw + aaY,
-                                y
-                            )
-                        );
-
-                    float dLeft =
-                        abs(x - relMinX) - hw;
-
-                    float dRight =
-                        abs(x - relMaxX) - hw;
-
-                    float dTop =
-                        abs(y - relMinY) - hw;
-
-                    float dBottom =
-                        abs(y - relMinY) - hw;
-
-                    float lineLeft =
-                        (
-                            1.0 -
-                            smoothstep(
-                                -aaX,
-                                aaX,
-                                dLeft
-                            )
-                        ) *
-                        inRangeY;
-
-                    float lineRight =
-                        (
-                            1.0 -
-                            smoothstep(
-                                -aaX,
-                                aaX,
-                                dRight
-                            )
-                        ) *
-                        inRangeY;
-
-                    float lineTop =
-                        (
-                            1.0 -
-                            smoothstep(
-                                -aaY,
-                                aaY,
-                                dTop
-                            )
-                        ) *
-                        inRangeX;
-
-                    float lineBottom =
-                        (
-                            1.0 -
-                            smoothstep(
-                                -aaY,
-                                aaY,
-                                dBottom
-                            )
-                        ) *
-                        inRangeX;
-
-                    float coreLine =
-                        max(
-                            max(
-                                lineLeft,
-                                lineRight
-                            ),
-                            max(
-                                lineTop,
-                                lineBottom
-                            )
-                        );
-
-                    float glow = 0.0;
+                    // Core line: smoothstep for anti-aliased edges (no flickering)
+                    float lineLeft  = smoothstep(1.0, -1.0, dLeft)  * inRangeY;
+                    float lineRight = smoothstep(1.0, -1.0, dRight) * inRangeY;
+                    float lineTop   = smoothstep(1.0, -1.0, dTop)   * inRangeX;
+                    float lineBot   = smoothstep(1.0, -1.0, dBot)   * inRangeX;
+                    float coreLine  = max(max(lineLeft, lineRight), max(lineTop, lineBot));
 
                     if (u_glowSize > 0.0) {
-                        float glowLeft =
-                            (
-                                1.0 -
-                                smoothstep(
-                                    0.0,
-                                    u_glowSize,
-                                    max(dLeft, 0.0)
-                                )
-                            ) *
-                            inRangeY;
-
-                        float glowRight =
-                            (
-                                1.0 -
-                                smoothstep(
-                                    0.0,
-                                    u_glowSize,
-                                    max(dRight, 0.0)
-                                )
-                            ) *
-                            inRangeY;
-
-                        float glowTop =
-                            (
-                                1.0 -
-                                smoothstep(
-                                    0.0,
-                                    u_glowSize,
-                                    max(dTop, 0.0)
-                                )
-                            ) *
-                            inRangeX;
-
-                        float glowBottom =
-                            (
-                                1.0 -
-                                smoothstep(
-                                    0.0,
-                                    u_glowSize,
-                                    max(dBottom, 0.0)
-                                )
-                            ) *
-                            inRangeX;
-
-                        glow =
-                            max(
-                                max(
-                                    glowLeft,
-                                    glowRight
-                                ),
-                                max(
-                                    glowTop,
-                                    glowBottom
-                                )
-                            ) *
-                            0.5;
+                        // Glow: soft falloff beyond the line edge
+                        float glowLeft  = max(0.0, 1.0 - max(dLeft, 0.0) / u_glowSize) * inRangeY;
+                        float glowRight = max(0.0, 1.0 - max(dRight, 0.0) / u_glowSize) * inRangeY;
+                        float glowTop   = max(0.0, 1.0 - max(dTop, 0.0) / u_glowSize) * inRangeX;
+                        float glowBot   = max(0.0, 1.0 - max(dBot, 0.0) / u_glowSize) * inRangeX;
+                        float glow      = max(max(glowLeft, glowRight), max(glowTop, glowBot));
+                        float alpha     = max(coreLine, glow * 0.5);
+                        if (alpha <= 0.001) discard;
+                        fragColor = vec4(u_borderColor.rgb, u_borderColor.a * alpha);
+                    } else {
+                        if (coreLine <= 0.001) discard;
+                        fragColor = vec4(u_borderColor.rgb, u_borderColor.a * coreLine);
                     }
-
-                    float alpha =
-                        max(
-                            coreLine,
-                            glow
-                        );
-
-                    if (alpha <= 0.001) {
-                        discard;
-                    }
-
-                    vec3 finalRgb =
-                        mix(
-                            u_glowColor.rgb,
-                            u_borderColor.rgb,
-                            clamp(
-                                coreLine,
-                                0.0,
-                                1.0
-                            )
-                        );
-
-                    float finalAlpha =
-                        max(
-                            u_borderColor.a *
-                            coreLine,
-                            u_glowColor.a *
-                            glow
-                        );
-
-                    fragColor =
-                        vec4(
-                            finalRgb,
-                            finalAlpha
-                        );
                 }`;
 
-                var borderProgram =
-                    createAndLinkProgram(
-                        gl,
-                        borderVsSource,
-                        borderFsSource
-                    );
-
-                if (!borderProgram) {
-                    throw new Error(
-                        'Border WebGL program creation failed'
-                    );
+                var borderProgram = createAndLinkProgram(gl, borderVsSource, borderFsSource);
+                if (borderProgram) {
+                    this.glBorderProgram = borderProgram;
+                    this.u_border_viewCenter = gl.getUniformLocation(borderProgram, 'u_viewCenter');
+                    this.u_border_viewScale = gl.getUniformLocation(borderProgram, 'u_viewScale');
+                    this.u_borderRect = gl.getUniformLocation(borderProgram, 'u_borderRect');
+                    this.u_borderLineWidth = gl.getUniformLocation(borderProgram, 'u_lineWidth');
+                    this.u_borderColor = gl.getUniformLocation(borderProgram, 'u_borderColor');
+                    this.u_borderGlowSize = gl.getUniformLocation(borderProgram, 'u_glowSize');
                 }
-
-                this.glBorderProgram =
-                    borderProgram;
-
-                this.u_border_viewCenter =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_viewCenter'
-                    );
-
-                this.u_border_viewScale =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_viewScale'
-                    );
-
-                this.u_borderRect =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_borderRect'
-                    );
-
-                this.u_borderLineWidth =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_lineWidth'
-                    );
-
-                this.u_borderColor =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_borderColor'
-                    );
-
-                this.u_borderGlowColor =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_glowColor'
-                    );
-
-                this.u_borderGlowSize =
-                    gl.getUniformLocation(
-                        borderProgram,
-                        'u_glowSize'
-                    );
-
-                /*
-                 * BORDER gets its own VAO too.
-                 */
-                this.glBorderVAO =
-                    gl.createVertexArray();
-
-                gl.bindVertexArray(
-                    this.glBorderVAO
-                );
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    quadVBO
-                );
-
-                var a_border_unit =
-                    gl.getAttribLocation(
-                        borderProgram,
-                        'a_unitPos'
-                    );
-
-                gl.enableVertexAttribArray(
-                    a_border_unit
-                );
-
-                gl.vertexAttribPointer(
-                    a_border_unit,
-                    2,
-                    gl.FLOAT,
-                    false,
-                    0,
-                    0
-                );
-
-                gl.bindVertexArray(
-                    null
-                );
-
-                /*
-                 * ============================================================
-                 * WEBGL2 VIRUS RENDERER
-                 * ============================================================
-                 *
-                 * Canvas behaviour preserved:
-                 *
-                 *   circular fill
-                 *   independent fill transparency
-                 *   configurable stroke
-                 *   optional spiky stroke
-                 *   configurable spike ratio / size
-                 *   optional glow
-                 *   global LM.cells z-order
-                 */
-
-                var virusVsSource = `#version 300 es
-                in vec2 a_unitPos;
-
-                in vec2 a_center;
-                in float a_radius;
-                in float a_extent;
-                in vec4 a_fillColor;
-                in vec4 a_strokeColor;
-                in float a_z;
-
-                uniform vec2 u_viewCenter;
-                uniform vec2 u_viewScale;
-
-                out vec2 v_local;
-
-                flat out float v_radius;
-                flat out vec4 v_fillColor;
-                flat out vec4 v_strokeColor;
-
-                void main() {
-                    v_local =
-                        a_unitPos *
-                        a_extent;
-
-                    v_radius =
-                        a_radius;
-
-                    v_fillColor =
-                        a_fillColor;
-
-                    v_strokeColor =
-                        a_strokeColor;
-
-                    vec2 worldPos =
-                        a_center +
-                        v_local;
-
-                    vec2 clipPos =
-                        (
-                            worldPos -
-                            u_viewCenter
-                        ) *
-                        u_viewScale;
-
-                    gl_Position =
-                        vec4(
-                            clipPos.x,
-                            -clipPos.y,
-                            a_z,
-                            1.0
-                        );
-                }`;
-
-                var virusFsSource = `#version 300 es
-                precision highp float;
-
-                in vec2 v_local;
-
-                flat in float v_radius;
-                flat in vec4 v_fillColor;
-                flat in vec4 v_strokeColor;
-
-                uniform float u_strokeWidth;
-                uniform float u_spikeRatio;
-                uniform float u_spikeSize;
-                uniform float u_useSpikes;
-
-                uniform float u_glowSize;
-                uniform vec4 u_glowColor;
-
-                out vec4 fragColor;
-
-                const float TWO_PI =
-                    6.28318530717958647692;
-
-                vec4 sourceOver(
-                    vec4 front,
-                    vec4 back
-                ) {
-                    float outA =
-                        front.a +
-                        back.a *
-                        (
-                            1.0 -
-                            front.a
-                        );
-
-                    if (
-                        outA <=
-                        0.00001
-                    ) {
-                        return vec4(0.0);
-                    }
-
-                    vec3 outRgb =
-                        (
-                            front.rgb *
-                            front.a +
-                            back.rgb *
-                            back.a *
-                            (
-                                1.0 -
-                                front.a
-                            )
-                        ) /
-                        outA;
-
-                    return vec4(
-                        outRgb,
-                        outA
-                    );
-                }
-
-                void main() {
-                    float dist =
-                        length(v_local);
-
-                    float radialAA =
-                        max(
-                            fwidth(dist),
-                            0.35
-                        );
-
-                    /*
-                     * FILL:
-                     * Canvas fills a normal circle.
-                     */
-                    float fillMask =
-                        1.0 -
-                        smoothstep(
-                            v_radius -
-                            radialAA,
-
-                            v_radius +
-                            radialAA,
-
-                            dist
-                        );
-
-                    /*
-                     * STROKE:
-                     * Canvas createStrokeVirusPath() alternates between:
-                     *
-                     *     radius - 2 - spikeSize
-                     *     radius - 2
-                     *
-                     * around the circumference.
-                     */
-                    float strokeRadius =
-                        v_radius;
-
-                    if (
-                        u_useSpikes >
-                        0.5
-                    ) {
-                        float spikeCount =
-                            max(
-                                3.0,
-                                floor(
-                                    max(
-                                        1.0,
-
-                                        (
-                                            v_radius -
-                                            2.0
-                                        ) *
-                                        u_spikeRatio
-                                    )
-                                )
-                            );
-
-                        float angle =
-                            atan(
-                                v_local.y,
-                                v_local.x
-                            );
-
-                        angle =
-                            mod(
-                                angle +
-                                TWO_PI,
-                                TWO_PI
-                            );
-
-                        float phase =
-                            fract(
-                                angle /
-                                TWO_PI *
-                                spikeCount
-                            );
-
-                        float triangle =
-                            1.0 -
-                            abs(
-                                phase *
-                                2.0 -
-                                1.0
-                            );
-
-                        float innerRadius =
-                            max(
-                                0.0,
-
-                                v_radius -
-                                2.0 -
-                                u_spikeSize
-                            );
-
-                        float outerRadius =
-                            max(
-                                innerRadius,
-
-                                v_radius -
-                                2.0
-                            );
-
-                        strokeRadius =
-                            mix(
-                                innerRadius,
-                                outerRadius,
-                                triangle
-                            );
-                    }
-
-                    float halfStroke =
-                        max(
-                            0.5,
-                            u_strokeWidth *
-                            0.5
-                        );
-
-                    float strokeDistance =
-                        abs(
-                            dist -
-                            strokeRadius
-                        );
-
-                    float strokeMask =
-                        1.0 -
-                        smoothstep(
-                            halfStroke -
-                            radialAA,
-
-                            halfStroke +
-                            radialAA,
-
-                            strokeDistance
-                        );
-
-                    float glowMask =
-                        0.0;
-
-                    if (
-                        u_glowSize >
-                        0.0
-                    ) {
-                        glowMask =
-                            (
-                                1.0 -
-                                smoothstep(
-                                    halfStroke,
-
-                                    halfStroke +
-                                    u_glowSize,
-
-                                    strokeDistance
-                                )
-                            ) *
-                            0.65;
-                    }
-
-                    /*
-                     * Canvas order:
-                     *
-                     *     glow
-                     *     fill
-                     *     stroke
-                     */
-                    vec4 result =
-                        vec4(
-                            u_glowColor.rgb,
-                            u_glowColor.a *
-                            glowMask
-                        );
-
-                    result =
-                        sourceOver(
-                            vec4(
-                                v_fillColor.rgb,
-
-                                v_fillColor.a *
-                                fillMask
-                            ),
-
-                            result
-                        );
-
-                    result =
-                        sourceOver(
-                            vec4(
-                                v_strokeColor.rgb,
-
-                                v_strokeColor.a *
-                                strokeMask
-                            ),
-
-                            result
-                        );
-
-                    if (
-                        result.a <=
-                        0.001
-                    ) {
-                        discard;
-                    }
-
-                    fragColor =
-                        result;
-                }`;
-
-                var virusProgram =
-                    createAndLinkProgram(
-                        gl,
-                        virusVsSource,
-                        virusFsSource
-                    );
-
-                if (!virusProgram) {
-                    throw new Error(
-                        'Virus WebGL program creation failed'
-                    );
-                }
-
-                this.glVirusProgram =
-                    virusProgram;
-
-                this.u_virus_viewCenter =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_viewCenter'
-                    );
-
-                this.u_virus_viewScale =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_viewScale'
-                    );
-
-                this.u_virus_strokeWidth =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_strokeWidth'
-                    );
-
-                this.u_virus_spikeRatio =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_spikeRatio'
-                    );
-
-                this.u_virus_spikeSize =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_spikeSize'
-                    );
-
-                this.u_virus_useSpikes =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_useSpikes'
-                    );
-
-                this.u_virus_glowSize =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_glowSize'
-                    );
-
-                this.u_virus_glowColor =
-                    gl.getUniformLocation(
-                        virusProgram,
-                        'u_glowColor'
-                    );
-
-                this.glVirusVAO =
-                    gl.createVertexArray();
-
-                gl.bindVertexArray(
-                    this.glVirusVAO
-                );
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    quadVBO
-                );
-
-                var a_virus_unit =
-                    gl.getAttribLocation(
-                        virusProgram,
-                        'a_unitPos'
-                    );
-
-                gl.enableVertexAttribArray(
-                    a_virus_unit
-                );
-
-                gl.vertexAttribPointer(
-                    a_virus_unit,
-                    2,
-                    gl.FLOAT,
-                    false,
-                    0,
-                    0
-                );
-
-                /*
-                 * Instance:
-                 *
-                 *  0  x
-                 *  1  y
-                 *  2  radius
-                 *  3  extent
-                 *
-                 *  4  fill R
-                 *  5  fill G
-                 *  6  fill B
-                 *  7  fill A
-                 *
-                 *  8  stroke R
-                 *  9  stroke G
-                 * 10  stroke B
-                 * 11  stroke A
-                 *
-                 * 12  global Z
-                 */
-
-                this.glVirusInstanceVBO =
-                    gl.createBuffer();
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    this.glVirusInstanceVBO
-                );
-
-                this.glVirusMaxInstances =
-                    4096;
-
-                gl.bufferData(
-                    gl.ARRAY_BUFFER,
-
-                    this.glVirusMaxInstances *
-                    13 *
-                    4,
-
-                    gl.DYNAMIC_DRAW
-                );
-
-                var virusStride =
-                    13 *
-                    4;
-
-                function bindVirusAttrib(
-                    name,
-                    size,
-                    offset
-                ) {
-                    var loc =
-                        gl.getAttribLocation(
-                            virusProgram,
-                            name
-                        );
-
-                    gl.enableVertexAttribArray(
-                        loc
-                    );
-
-                    gl.vertexAttribPointer(
-                        loc,
-                        size,
-                        gl.FLOAT,
-                        false,
-                        virusStride,
-                        offset * 4
-                    );
-
-                    gl.vertexAttribDivisor(
-                        loc,
-                        1
-                    );
-                }
-
-                bindVirusAttrib(
-                    'a_center',
-                    2,
-                    0
-                );
-
-                bindVirusAttrib(
-                    'a_radius',
-                    1,
-                    2
-                );
-
-                bindVirusAttrib(
-                    'a_extent',
-                    1,
-                    3
-                );
-
-                bindVirusAttrib(
-                    'a_fillColor',
-                    4,
-                    4
-                );
-
-                bindVirusAttrib(
-                    'a_strokeColor',
-                    4,
-                    8
-                );
-
-                bindVirusAttrib(
-                    'a_z',
-                    1,
-                    12
-                );
-
-                gl.bindVertexArray(
-                    null
-                );
-
-                this.glVirusInstanceData =
-                    new Float32Array(
-                        this.glVirusMaxInstances *
-                        13
-                    );
 
                 this.glMaxInstances = 50000;
                 this.glInstanceData = new Float32Array(this.glMaxInstances * 7);
@@ -30407,7 +29330,7 @@ Most cells eaten   : ${mostCellsEaten}
             var gridScreenSpacing = gridSpacing * viewScale;
             gl.uniform1f(this.u_gridScreenSpacing, gridScreenSpacing);
 
-            gl.bindVertexArray(this.glGridVAO || this.glVAO);
+            gl.bindVertexArray(this.glVAO);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             gl.bindVertexArray(null);
 
@@ -30427,7 +29350,6 @@ Most cells eaten   : ${mostCellsEaten}
             var baseLw = lineWidth || 20;
             var lw = Math.max(baseLw, 3 / Math.max(viewScale, 0.001));
             var glowSize = defaultmapsettings.borderGlow ? (defaultSettings.borderGlowSize || 15) : 0;
-            var glowColorRGBA = this.parseWebGLOverlayColor(defaultSettings.borderGlowColor || colorHex || '#FF0000', '#FF0000');
 
             gl.useProgram(this.glBorderProgram);
             gl.uniform2f(this.u_border_viewCenter, this.camX, this.camY);
@@ -30437,12 +29359,9 @@ Most cells eaten   : ${mostCellsEaten}
             gl.uniform4f(this.u_borderRect, minX - this.camX, minY - this.camY, maxX - this.camX, maxY - this.camY);
             gl.uniform1f(this.u_borderLineWidth, lw * 0.5);
             gl.uniform4f(this.u_borderColor, rR, rG, rB, 1.0);
-            if (this.u_borderGlowColor) {
-                gl.uniform4f(this.u_borderGlowColor, glowColorRGBA[0], glowColorRGBA[1], glowColorRGBA[2], glowColorRGBA[3]);
-            }
             gl.uniform1f(this.u_borderGlowSize, glowSize);
 
-            gl.bindVertexArray(this.glBorderVAO || this.glVAO);
+            gl.bindVertexArray(this.glVAO);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
             gl.bindVertexArray(null);
 
@@ -30452,85 +29371,7 @@ Most cells eaten   : ${mostCellsEaten}
             return this.drawWebGLBatch(cellsArray);
         },
         drawWebGLViruses(virusesArray) {
-            if (!this.gl || !this.glVirusProgram || !virusesArray || !virusesArray.length) return false;
-            var gl = this.gl;
-            var data = this.glVirusInstanceData;
-            var count = 0;
-            var max = this.glVirusMaxInstances;
-            var viewScale = this.scale || 1;
-
-            var totalCellCount = LM.cells ? LM.cells.length : virusesArray.length;
-
-            gl.useProgram(this.glVirusProgram);
-            gl.uniform2f(this.u_virus_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_virus_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-
-            var strokeWidth = defaultSettings.virusStrokeSize || 6;
-            var spikeRatio = defaultmapsettings.virusSpikes ? (defaultSettings.virusSpikesRatio || 0.4) : 0.0;
-            var spikeSize = defaultmapsettings.virusSpikes ? (defaultSettings.virusSpikesSize || 8) : 0.0;
-            var useSpikes = defaultmapsettings.virusSpikes ? 1.0 : 0.0;
-            var glowSize = defaultmapsettings.virusGlow ? (defaultSettings.virusGlowSize || 10) : 0.0;
-
-            var glowColorRGBA = this.parseWebGLOverlayColor(defaultSettings.virusGlowColor || '#00ff00', '#00ff00');
-
-            gl.uniform1f(this.u_virus_strokeWidth, strokeWidth);
-            gl.uniform1f(this.u_virus_spikeRatio, spikeRatio);
-            gl.uniform1f(this.u_virus_spikeSize, spikeSize);
-            gl.uniform1f(this.u_virus_useSpikes, useSpikes);
-            gl.uniform1f(this.u_virus_glowSize, glowSize);
-            if (this.u_virus_glowColor) {
-                gl.uniform4f(this.u_virus_glowColor, glowColorRGBA[0], glowColorRGBA[1], glowColorRGBA[2], glowColorRGBA[3]);
-            }
-
-            for (var i = 0; i < virusesArray.length; i++) {
-                var cell = virusesArray[i];
-                if (!cell || cell.invisible || cell.removed) continue;
-                if (!this._isCellInsideFrame(cell, 250)) continue;
-
-                var sortedIndex = LM.cells ? LM.cells.indexOf(cell) : i;
-                if (sortedIndex === -1) sortedIndex = i;
-                var z = this.getWebGLSceneZ(sortedIndex, totalCellCount);
-
-                var r = cell.size || 10;
-                var extent = r + strokeWidth + spikeSize + glowSize + 10;
-
-                var fillColorRGBA = this.parseWebGLOverlayColor(cell.color || '#33ff33', '#33ff33');
-                fillColorRGBA[3] = defaultSettings.virusesAlpha != null ? defaultSettings.virusesAlpha : 1.0;
-
-                var strokeColorRGBA = this.parseWebGLOverlayColor(defaultSettings.virusStrokeColor || cell.strokeColor || '#00cc00', '#00cc00');
-
-                var idx = count * 13;
-                data[idx]     = cell.x;
-                data[idx + 1] = cell.y;
-                data[idx + 2] = r;
-                data[idx + 3] = extent;
-
-                data[idx + 4] = fillColorRGBA[0];
-                data[idx + 5] = fillColorRGBA[1];
-                data[idx + 6] = fillColorRGBA[2];
-                data[idx + 7] = fillColorRGBA[3];
-
-                data[idx + 8]  = strokeColorRGBA[0];
-                data[idx + 9]  = strokeColorRGBA[1];
-                data[idx + 10] = strokeColorRGBA[2];
-                data[idx + 11] = strokeColorRGBA[3];
-
-                data[idx + 12] = z;
-
-                count++;
-                if (count >= max) break;
-            }
-
-            if (!count) return true;
-
-            gl.bindVertexArray(this.glVirusVAO || this.glVAO);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glVirusInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 13));
-
-            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-            gl.bindVertexArray(null);
-
-            return true;
+            return this.drawWebGLBatch(virusesArray);
         },
         /* Filled circle batch with uniform color — used by ghost cells and similar
          * cases where Canvas2D uses ctx.fill() (not ctx.stroke()). */
