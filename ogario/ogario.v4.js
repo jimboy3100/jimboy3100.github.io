@@ -26710,23 +26710,703 @@ Most cells eaten   : ${mostCellsEaten}
         pelletColored: [],
         cellsColored: [],
         setCanvas() {
-            this.canvas = document.getElementById('canvas');
-            if (!this.canvas) return;
-            this.ctx = this.canvas.getContext('2d');
+            this.canvas =
+                document.getElementById(
+                    'canvas'
+                );
+
+            if (!this.canvas) {
+                return;
+            }
+
+            this.ctx =
+                this.canvas.getContext(
+                    '2d'
+                );
+
+            /*
+             * Main WebGL:
+             * cells / skins / GPU world primitives.
+             */
             this.initWebGL();
+
+            /*
+             * Dedicated WebGL background-grid renderer.
+             *
+             * The grid MUST NOT share the main WebGL DOM canvas because
+             * the main GL canvas must remain above legacy Canvas2D world
+             * objects.
+             */
+            this.initGridWebGL();
+
+            /*
+             * Creates:
+             *
+             * backgroundCanvas
+             * overlayCanvas
+             *
+             * and assigns deterministic z-order to every renderer.
+             */
             this.initOverlayCanvas();
-            this.canvas.onmousemove = function (event) {
-                LM.clientX = event.clientX;
-                LM.clientY = event.clientY;
-                LM.getCursorPosition();
-            };
+
+            this.canvas.onmousemove =
+                function (event) {
+                    LM.clientX =
+                        event.clientX;
+
+                    LM.clientY =
+                        event.clientY;
+
+                    LM.getCursorPosition();
+                };
         },
+
+        initGridWebGL() {
+            /*
+             * ============================================================
+             * DEDICATED WEBGL2 GRID LAYER
+             * ============================================================
+             *
+             * The grid is intentionally isolated from this.glCanvas.
+             *
+             * Final DOM order:
+             *
+             *   backgroundCanvas   custom image background
+             *   gridCanvas         WebGL procedural grid
+             *   canvas             Canvas2D world primitives
+             *   glCanvas           WebGL cells / skins / text
+             *   overlayCanvas      foreground/UI effects
+             *
+             * Therefore the grid can NEVER appear above:
+             *
+             *   food
+             *   viruses
+             *   opponent rings
+             *   Canvas fallback cells
+             *   WebGL cells
+             *   map border
+             *
+             * merely because they use another rendering backend.
+             */
+
+            try {
+                if (
+                    !this.canvas ||
+                    !this.canvas.parentNode
+                ) {
+                    return false;
+                }
+
+                if (!this.gridCanvas) {
+                    var gridCanvas =
+                        document.createElement(
+                            'canvas'
+                        );
+
+                    gridCanvas.id =
+                        'legendmod-webgl-grid';
+
+                    gridCanvas.style.cssText =
+                        'position:absolute;' +
+                        'top:0;' +
+                        'left:0;' +
+                        'pointer-events:none;' +
+                        'background:transparent;';
+
+                    this.canvas.parentNode.appendChild(
+                        gridCanvas
+                    );
+
+                    this.gridCanvas =
+                        gridCanvas;
+
+                    var self =
+                        this;
+
+                    gridCanvas.addEventListener(
+                        'webglcontextlost',
+                        function (event) {
+                            event.preventDefault();
+
+                            console.warn(
+                                '[LegendMod Grid WebGL] Context lost'
+                            );
+
+                            self.gridGl =
+                                null;
+
+                            self.gridGlProgram =
+                                null;
+
+                            self.gridGlVAO =
+                                null;
+
+                            self.gridGlVBO =
+                                null;
+                        },
+                        false
+                    );
+
+                    gridCanvas.addEventListener(
+                        'webglcontextrestored',
+                        function () {
+                            console.log(
+                                '[LegendMod Grid WebGL] Context restored'
+                            );
+
+                            self.gridGl =
+                                null;
+
+                            self.gridGlProgram =
+                                null;
+
+                            self.gridGlVAO =
+                                null;
+
+                            self.gridGlVBO =
+                                null;
+
+                            self.initGridWebGL();
+                            self.initOverlayCanvas();
+                            self.resizeCanvas();
+                        },
+                        false
+                    );
+                }
+
+                if (
+                    this.gridGl &&
+                    this.gridGlProgram &&
+                    this.gridGlVAO
+                ) {
+                    return true;
+                }
+
+                var gl =
+                    this.gridCanvas.getContext(
+                        'webgl2',
+                        {
+                            alpha: true,
+                            premultipliedAlpha: false,
+                            antialias: false,
+                            depth: false,
+                            stencil: false,
+                            preserveDrawingBuffer: false
+                        }
+                    );
+
+                if (!gl) {
+                    console.error(
+                        '[LegendMod Grid WebGL] WebGL2 unavailable'
+                    );
+
+                    return false;
+                }
+
+                this.gridGl =
+                    gl;
+
+                function compileGridShader(
+                    type,
+                    source
+                ) {
+                    var shader =
+                        gl.createShader(
+                            type
+                        );
+
+                    gl.shaderSource(
+                        shader,
+                        source
+                    );
+
+                    gl.compileShader(
+                        shader
+                    );
+
+                    if (
+                        !gl.getShaderParameter(
+                            shader,
+                            gl.COMPILE_STATUS
+                        )
+                    ) {
+                        var error =
+                            gl.getShaderInfoLog(
+                                shader
+                            );
+
+                        gl.deleteShader(
+                            shader
+                        );
+
+                        throw new Error(
+                            'Grid shader compile failed: ' +
+                            error
+                        );
+                    }
+
+                    return shader;
+                }
+
+                function createGridProgram(
+                    vertexSource,
+                    fragmentSource
+                ) {
+                    var vertexShader =
+                        compileGridShader(
+                            gl.VERTEX_SHADER,
+                            vertexSource
+                        );
+
+                    var fragmentShader =
+                        compileGridShader(
+                            gl.FRAGMENT_SHADER,
+                            fragmentSource
+                        );
+
+                    var program =
+                        gl.createProgram();
+
+                    gl.attachShader(
+                        program,
+                        vertexShader
+                    );
+
+                    gl.attachShader(
+                        program,
+                        fragmentShader
+                    );
+
+                    gl.linkProgram(
+                        program
+                    );
+
+                    gl.deleteShader(
+                        vertexShader
+                    );
+
+                    gl.deleteShader(
+                        fragmentShader
+                    );
+
+                    if (
+                        !gl.getProgramParameter(
+                            program,
+                            gl.LINK_STATUS
+                        )
+                    ) {
+                        var error =
+                            gl.getProgramInfoLog(
+                                program
+                            );
+
+                        gl.deleteProgram(
+                            program
+                        );
+
+                        throw new Error(
+                            'Grid program link failed: ' +
+                            error
+                        );
+                    }
+
+                    return program;
+                }
+
+                /*
+                 * Keep TWO coordinate systems:
+                 *
+                 * v_gridPos:
+                 *     wrapped coordinates for fract().
+                 *     Small values prevent float32 precision loss.
+                 *
+                 * v_viewOffset:
+                 *     world position relative to camera.
+                 *     Used to clip against map bounds without sending huge
+                 *     absolute coordinates into the fragment shader.
+                 */
+
+                var vertexSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    in vec2 a_unitPos;
+
+                    uniform vec2 u_viewScale;
+                    uniform vec2 u_gridPhase;
+
+                    out vec2 v_gridPos;
+                    out vec2 v_viewOffset;
+
+                    void main() {
+                        gl_Position =
+                            vec4(
+                                a_unitPos,
+                                0.0,
+                                1.0
+                            );
+
+                        vec2 worldOffset =
+                            (
+                                a_unitPos /
+                                u_viewScale
+                            ) *
+                            vec2(
+                                1.0,
+                                -1.0
+                            );
+
+                        v_viewOffset =
+                            worldOffset;
+
+                        v_gridPos =
+                            u_gridPhase +
+                            worldOffset;
+                    }`;
+
+                var fragmentSource =
+                    `#version 300 es
+
+                    precision highp float;
+
+                    in vec2 v_gridPos;
+                    in vec2 v_viewOffset;
+
+                    uniform float u_gridSpacing;
+                    uniform float u_gridScreenSpacing;
+
+                    uniform vec4 u_gridColor;
+
+                    /*
+                     * Map rectangle RELATIVE TO CAMERA:
+                     *
+                     * x = mapMinX - camX
+                     * y = mapMinY - camY
+                     * z = mapMaxX - camX
+                     * w = mapMaxY - camY
+                     */
+                    uniform vec4 u_mapBoundsRelative;
+
+                    out vec4 fragColor;
+
+                    void main() {
+                        /*
+                         * ====================================================
+                         * MAP CLIPPING
+                         * ====================================================
+                         *
+                         * The previous fullscreen WebGL shader painted grid
+                         * outside the arena too.
+                         *
+                         * Canvas drawGrid() never did that: it filled only the
+                         * actual LM map rectangle.
+                         */
+
+                        if (
+                            v_viewOffset.x <
+                                u_mapBoundsRelative.x ||
+                            v_viewOffset.x >
+                                u_mapBoundsRelative.z ||
+                            v_viewOffset.y <
+                                u_mapBoundsRelative.y ||
+                            v_viewOffset.y >
+                                u_mapBoundsRelative.w
+                        ) {
+                            discard;
+                        }
+
+                        /*
+                         * Only fade when one complete 50-world-unit square
+                         * approaches one physical screen pixel.
+                         *
+                         * Normal zoom and ordinary far zoom remain fully
+                         * visible.
+                         */
+                        float fadeAlpha =
+                            smoothstep(
+                                1.0,
+                                3.0,
+                                u_gridScreenSpacing
+                            );
+
+                        if (
+                            fadeAlpha <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        float safeScreenSpacing =
+                            max(
+                                u_gridScreenSpacing,
+                                0.0001
+                            );
+
+                        vec2 coord =
+                            fract(
+                                v_gridPos /
+                                u_gridSpacing
+                            );
+
+                        vec2 grid =
+                            abs(
+                                coord -
+                                0.5
+                            );
+
+                        float lineThickness =
+                            clamp(
+                                1.5 /
+                                safeScreenSpacing,
+                                0.005,
+                                0.08
+                            );
+
+                        float threshold =
+                            0.5 -
+                            lineThickness;
+
+                        /*
+                         * Anti-aliased procedural line.
+                         */
+                        float line =
+                            smoothstep(
+                                threshold -
+                                    0.005,
+                                threshold +
+                                    0.005,
+                                max(
+                                    grid.x,
+                                    grid.y
+                                )
+                            );
+
+                        if (
+                            line <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        fragColor =
+                            vec4(
+                                u_gridColor.rgb,
+                                u_gridColor.a *
+                                line *
+                                fadeAlpha
+                            );
+                    }`;
+
+                var program =
+                    createGridProgram(
+                        vertexSource,
+                        fragmentSource
+                    );
+
+                this.gridGlProgram =
+                    program;
+
+                this.grid_u_viewScale =
+                    gl.getUniformLocation(
+                        program,
+                        'u_viewScale'
+                    );
+
+                this.grid_u_gridPhase =
+                    gl.getUniformLocation(
+                        program,
+                        'u_gridPhase'
+                    );
+
+                this.grid_u_gridSpacing =
+                    gl.getUniformLocation(
+                        program,
+                        'u_gridSpacing'
+                    );
+
+                this.grid_u_gridScreenSpacing =
+                    gl.getUniformLocation(
+                        program,
+                        'u_gridScreenSpacing'
+                    );
+
+                this.grid_u_gridColor =
+                    gl.getUniformLocation(
+                        program,
+                        'u_gridColor'
+                    );
+
+                this.grid_u_mapBoundsRelative =
+                    gl.getUniformLocation(
+                        program,
+                        'u_mapBoundsRelative'
+                    );
+
+                /*
+                 * Fullscreen quad.
+                 */
+                var quad =
+                    new Float32Array([
+                        -1, -1,
+                         1, -1,
+                        -1,  1,
+                         1,  1
+                    ]);
+
+                this.gridGlVBO =
+                    gl.createBuffer();
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlVBO
+                );
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    quad,
+                    gl.STATIC_DRAW
+                );
+
+                this.gridGlVAO =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    this.gridGlVAO
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlVBO
+                );
+
+                var positionLocation =
+                    gl.getAttribLocation(
+                        program,
+                        'a_unitPos'
+                    );
+
+                if (
+                    positionLocation <
+                    0
+                ) {
+                    throw new Error(
+                        'Grid a_unitPos unavailable'
+                    );
+                }
+
+                gl.enableVertexAttribArray(
+                    positionLocation
+                );
+
+                gl.vertexAttribPointer(
+                    positionLocation,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    null
+                );
+
+                gl.disable(
+                    gl.DEPTH_TEST
+                );
+
+                gl.disable(
+                    gl.CULL_FACE
+                );
+
+                gl.enable(
+                    gl.BLEND
+                );
+
+                gl.blendFunc(
+                    gl.SRC_ALPHA,
+                    gl.ONE_MINUS_SRC_ALPHA
+                );
+
+                return true;
+            }
+            catch (error) {
+                console.error(
+                    '[LegendMod Grid WebGL] Initialization failed:',
+                    error
+                );
+
+                this.gridGl =
+                    null;
+
+                this.gridGlProgram =
+                    null;
+
+                this.gridGlVAO =
+                    null;
+
+                return false;
+            }
+        },
+
         initOverlayCanvas() {
             if (
                 !this.canvas ||
                 !this.canvas.parentNode
             ) {
                 return;
+            }
+
+            var parent =
+                this.canvas.parentNode;
+
+            /*
+             * ============================================================
+             * BACKGROUND-ONLY CANVAS
+             * ============================================================
+             *
+             * Custom background images used to be painted on this.canvas.
+             * That canvas also contains world primitives, so it cannot be
+             * placed below the grid without placing ALL Canvas objects below
+             * the grid.
+             *
+             * Separate background ownership fixes that contradiction.
+             */
+
+            if (!this.backgroundCanvas) {
+                var backgroundCanvas =
+                    document.createElement(
+                        'canvas'
+                    );
+
+                backgroundCanvas.id =
+                    'legendmod-render-background';
+
+                backgroundCanvas.style.cssText =
+                    'position:absolute;' +
+                    'top:0;' +
+                    'left:0;' +
+                    'pointer-events:none;' +
+                    'background:transparent;';
+
+                parent.insertBefore(
+                    backgroundCanvas,
+                    this.canvas
+                );
+
+                this.backgroundCanvas =
+                    backgroundCanvas;
+
+                this.backgroundCtx =
+                    backgroundCanvas.getContext(
+                        '2d'
+                    );
             }
 
             if (!this.overlayCanvas) {
@@ -26746,7 +27426,7 @@ Most cells eaten   : ${mostCellsEaten}
                     'background:transparent;' +
                     'display:none;';
 
-                this.canvas.parentNode.appendChild(
+                parent.appendChild(
                     overlay
                 );
 
@@ -26761,21 +27441,21 @@ Most cells eaten   : ${mostCellsEaten}
 
             /*
              * ============================================================
-             * DETERMINISTIC COMPOSITING STACK
+             * ABSOLUTE RENDER STACK
              * ============================================================
              *
-             * base Canvas:
-             *     custom/background-only legacy content
+             * LOWEST
              *
-             * WebGL:
-             *     GPU world renderer
+             *  body CSS background
+             *  backgroundCanvas     custom background images
+             *  gridCanvas           WEBGL GRID
+             *  canvas               Canvas world objects
+             *  glCanvas             WebGL world objects
+             *  overlayCanvas        foreground/UI
              *
-             * overlay:
-             *     only true foreground/UI effects
+             * HIGHEST
              *
-             * The old code assigned all three the SAME z-index and relied on
-             * DOM insertion order. That is fragile when canvases are recreated
-             * after WebGL context loss or reconnect/resume.
+             * This is the key fix.
              */
 
             this.canvas.style.position =
@@ -26807,16 +27487,42 @@ Most cells eaten   : ${mostCellsEaten}
             var baseZ =
                 this._renderLayerZ;
 
+            if (this.backgroundCanvas) {
+                this.backgroundCanvas.style.zIndex =
+                    String(
+                        baseZ
+                    );
+            }
+
+            if (this.gridCanvas) {
+                this.gridCanvas.style.zIndex =
+                    String(
+                        baseZ +
+                        1
+                    );
+            }
+
+            /*
+             * ALL Canvas world primitives now physically sit above grid.
+             */
             this.canvas.style.zIndex =
                 String(
-                    baseZ
+                    baseZ +
+                    2
                 );
 
+            /*
+             * Preserve the existing relationship:
+             *
+             * main GL world > Canvas world.
+             *
+             * We are NOT changing cell/virus architecture in this patch.
+             */
             if (this.glCanvas) {
                 this.glCanvas.style.zIndex =
                     String(
                         baseZ +
-                        1
+                        3
                     );
             }
 
@@ -26824,8 +27530,25 @@ Most cells eaten   : ${mostCellsEaten}
                 this.overlayCanvas.style.zIndex =
                     String(
                         baseZ +
-                        2
+                        4
                     );
+            }
+
+            /*
+             * World canvases themselves must never supply an opaque CSS
+             * background because the real background belongs underneath grid.
+             */
+            this.canvas.style.background =
+                'transparent';
+
+            if (this.glCanvas) {
+                this.glCanvas.style.background =
+                    'transparent';
+            }
+
+            if (this.gridCanvas) {
+                this.gridCanvas.style.background =
+                    'transparent';
             }
         },
 
@@ -27253,27 +27976,178 @@ Most cells eaten   : ${mostCellsEaten}
         },
 
         resizeCanvas() {
-            var dpr = (defaultmapsettings.highDPI || window.LM_IS_MOBILE) ? Math.min(window.devicePixelRatio || 1, 2) : 1;
-            this.dpr = dpr;
-            window.LM_DPR = dpr;
-            this.canvasWidth = window.innerWidth;
-            this.canvasHeight = window.innerHeight;
-            this.canvas.width = this.canvasWidth * dpr;
-            this.canvas.height = this.canvasHeight * dpr;
-            LM.canvasWidth = this.canvasWidth;
-            LM.canvasHeight = this.canvasHeight;
-            if (this.glCanvas) {
-                this.glCanvas.width = this.canvasWidth * dpr;
-                this.glCanvas.height = this.canvasHeight * dpr;
-                this.glCanvas.style.width = this.canvasWidth + 'px';
-                this.glCanvas.style.height = this.canvasHeight + 'px';
-                if (this.gl) this.gl.viewport(0, 0, this.canvasWidth * dpr, this.canvasHeight * dpr);
+            var dpr =
+                (
+                    defaultmapsettings.highDPI ||
+                    window.LM_IS_MOBILE
+                )
+                    ? Math.min(
+                        window.devicePixelRatio ||
+                        1,
+                        2
+                    )
+                    : 1;
+
+            this.dpr =
+                dpr;
+
+            window.LM_DPR =
+                dpr;
+
+            this.canvasWidth =
+                window.innerWidth;
+
+            this.canvasHeight =
+                window.innerHeight;
+
+            var physicalWidth =
+                Math.max(
+                    1,
+                    Math.round(
+                        this.canvasWidth *
+                        dpr
+                    )
+                );
+
+            var physicalHeight =
+                Math.max(
+                    1,
+                    Math.round(
+                        this.canvasHeight *
+                        dpr
+                    )
+                );
+
+            /*
+             * ============================================================
+             * Canvas2D WORLD
+             * ============================================================
+             */
+
+            this.canvas.width =
+                physicalWidth;
+
+            this.canvas.height =
+                physicalHeight;
+
+            this.canvas.style.width =
+                this.canvasWidth +
+                'px';
+
+            this.canvas.style.height =
+                this.canvasHeight +
+                'px';
+
+            LM.canvasWidth =
+                this.canvasWidth;
+
+            LM.canvasHeight =
+                this.canvasHeight;
+
+            /*
+             * ============================================================
+             * BACKGROUND IMAGE LAYER
+             * ============================================================
+             */
+
+            if (this.backgroundCanvas) {
+                this.backgroundCanvas.width =
+                    physicalWidth;
+
+                this.backgroundCanvas.height =
+                    physicalHeight;
+
+                this.backgroundCanvas.style.width =
+                    this.canvasWidth +
+                    'px';
+
+                this.backgroundCanvas.style.height =
+                    this.canvasHeight +
+                    'px';
             }
+
+            /*
+             * ============================================================
+             * DEDICATED WEBGL GRID
+             * ============================================================
+             */
+
+            if (this.gridCanvas) {
+                this.gridCanvas.width =
+                    physicalWidth;
+
+                this.gridCanvas.height =
+                    physicalHeight;
+
+                this.gridCanvas.style.width =
+                    this.canvasWidth +
+                    'px';
+
+                this.gridCanvas.style.height =
+                    this.canvasHeight +
+                    'px';
+
+                if (this.gridGl) {
+                    this.gridGl.viewport(
+                        0,
+                        0,
+                        physicalWidth,
+                        physicalHeight
+                    );
+                }
+            }
+
+            /*
+             * ============================================================
+             * MAIN WEBGL WORLD
+             * ============================================================
+             */
+
+            if (this.glCanvas) {
+                this.glCanvas.width =
+                    physicalWidth;
+
+                this.glCanvas.height =
+                    physicalHeight;
+
+                this.glCanvas.style.width =
+                    this.canvasWidth +
+                    'px';
+
+                this.glCanvas.style.height =
+                    this.canvasHeight +
+                    'px';
+
+                if (this.gl) {
+                    this.gl.viewport(
+                        0,
+                        0,
+                        physicalWidth,
+                        physicalHeight
+                    );
+                }
+            }
+
+            /*
+             * ============================================================
+             * FOREGROUND
+             * ============================================================
+             */
+
             if (this.overlayCanvas) {
-                this.overlayCanvas.width = this.canvasWidth * dpr;
-                this.overlayCanvas.height = this.canvasHeight * dpr;
-                this.overlayCanvas.style.width = this.canvasWidth + 'px';
-                this.overlayCanvas.style.height = this.canvasHeight + 'px';
+                this.overlayCanvas.width =
+                    physicalWidth;
+
+                this.overlayCanvas.height =
+                    physicalHeight;
+
+                this.overlayCanvas.style.width =
+                    this.canvasWidth +
+                    'px';
+
+                this.overlayCanvas.style.height =
+                    this.canvasHeight +
+                    'px';
             }
         },
         initWebGL() {
@@ -27363,14 +28237,36 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 if (!this.glCanvas) {
-                    this.glCanvas = document.createElement('canvas');
-                    this.glCanvas.style.cssText = 'position:absolute;top:0;left:0;pointer-events:none;z-index:2;';
-                    if (this.canvas && this.canvas.parentNode) {
-                        /* Insert GL canvas AFTER (on top of) Canvas2D */
-                        this.canvas.parentNode.appendChild(this.glCanvas);
+                    this.glCanvas =
+                        document.createElement(
+                            'canvas'
+                        );
+
+                    /*
+                     * initOverlayCanvas() owns ALL z-indices.
+                     *
+                     * Never hardcode z-index here.
+                     */
+                    this.glCanvas.style.cssText =
+                        'position:absolute;' +
+                        'top:0;' +
+                        'left:0;' +
+                        'pointer-events:none;' +
+                        'background:transparent;';
+
+                    if (
+                        this.canvas &&
+                        this.canvas.parentNode
+                    ) {
+                        this.canvas.parentNode.appendChild(
+                            this.glCanvas
+                        );
                     }
-                    /* Canvas2D is now the BACKGROUND layer (behind WebGL) */
-                    if (this.canvas) this.canvas.style.background = 'transparent';
+
+                    if (this.canvas) {
+                        this.canvas.style.background =
+                            'transparent';
+                    }
 
                     /* WebGL context loss recovery: GPU driver reset, tab backgrounding, etc.
                      * On loss: null out gl so batch functions return false → Canvas2D fallback.
@@ -27500,171 +28396,6 @@ Most cells eaten   : ${mostCellsEaten}
                 gl.vertexAttribDivisor(a_color, 1);
 
                 gl.bindVertexArray(null);
-
-                // --- WebGL2 Procedural Grid Shader ---
-                var gridVsSource = `#version 300 es
-                in vec2 a_unitPos;
-                uniform vec2 u_viewCenter;
-                uniform vec2 u_viewScale;
-                out vec2 v_worldPos;
-                void main() {
-                    gl_Position = vec4(a_unitPos, 0.0, 1.0);
-                    /*
-                     * u_viewCenter now receives only the wrapped grid phase
-                     * (0 to gridSpacing), not absolute camera coordinates.
-                     * This avoids float32 precision loss on large maps.
-                     */
-                    v_worldPos = u_viewCenter + (a_unitPos / u_viewScale) * vec2(1.0, -1.0);
-                }`;
-
-                var gridFsSource = `#version 300 es
-                precision highp float;
-                in vec2 v_worldPos;
-                uniform float u_gridSpacing;
-                uniform vec4 u_gridColor;
-                uniform float u_gridScreenSpacing;  // grid spacing in screen pixels
-                out vec4 fragColor;
-                void main() {
-                    /*
-                     * Keep the grid visible through normal and far zoom.
-                     *
-                     * Only fade when individual grid cells approach roughly
-                     * one physical screen pixel, where distinct grid lines
-                     * can no longer be represented without aliasing.
-                     */
-                    float fadeAlpha =
-                        smoothstep(
-                            1.0,
-                            3.0,
-                            u_gridScreenSpacing
-                        );
-
-                    if (
-                        fadeAlpha <=
-                        0.001
-                    ) {
-                        discard;
-                    }
-
-                    vec2 coord = fract(v_worldPos / u_gridSpacing);
-                    vec2 grid = abs(coord - 0.5);
-
-                    /* Scale line width proportionally so lines stay ~1-2 px on screen.
-                     * At normal zoom (gridScreenSpacing ~50-200 px), threshold ≈ 0.48 (4% line width).
-                     * At high zoom (gridScreenSpacing ~12 px), threshold ≈ 0.42 (thinner lines). */
-                    float lineThickness = clamp(1.5 / u_gridScreenSpacing, 0.005, 0.08);
-                    float threshold = 0.5 - lineThickness;
-
-                    float line = smoothstep(threshold - 0.005, threshold + 0.005, max(grid.x, grid.y));
-                    if (line <= 0.0) discard;
-                    fragColor = vec4(u_gridColor.rgb, u_gridColor.a * line * fadeAlpha);
-                }`;
-
-                var gridProgram =
-                    createAndLinkProgram(
-                        gl,
-                        gridVsSource,
-                        gridFsSource
-                    );
-
-                if (!gridProgram) {
-                    throw new Error(
-                        'Grid WebGL program creation failed'
-                    );
-                }
-
-                this.glGridProgram =
-                    gridProgram;
-
-                this.u_grid_viewCenter =
-                    gl.getUniformLocation(
-                        gridProgram,
-                        'u_viewCenter'
-                    );
-
-                this.u_grid_viewScale =
-                    gl.getUniformLocation(
-                        gridProgram,
-                        'u_viewScale'
-                    );
-
-                this.u_gridSpacing =
-                    gl.getUniformLocation(
-                        gridProgram,
-                        'u_gridSpacing'
-                    );
-
-                this.u_gridColor =
-                    gl.getUniformLocation(
-                        gridProgram,
-                        'u_gridColor'
-                    );
-
-                this.u_gridScreenSpacing =
-                    gl.getUniformLocation(
-                        gridProgram,
-                        'u_gridScreenSpacing'
-                    );
-
-                /*
-                 * ============================================================
-                 * GRID-SPECIFIC VAO
-                 * ============================================================
-                 *
-                 * NEVER reuse this.glVAO here.
-                 *
-                 * this.glVAO belongs to the generic instanced-circle program.
-                 * Attribute locations are program-specific. Reusing that VAO
-                 * with glGridProgram is what can turn the fullscreen quad into
-                 * a horizontal strip / malformed grid.
-                 *
-                 * Grid owns only:
-                 *
-                 *     a_unitPos
-                 *
-                 * backed by the already-created fullscreen quad VBO.
-                 */
-
-                this.glGridVAO =
-                    gl.createVertexArray();
-
-                gl.bindVertexArray(
-                    this.glGridVAO
-                );
-
-                gl.bindBuffer(
-                    gl.ARRAY_BUFFER,
-                    quadVBO
-                );
-
-                var a_grid_unitPos =
-                    gl.getAttribLocation(
-                        gridProgram,
-                        'a_unitPos'
-                    );
-
-                if (a_grid_unitPos < 0) {
-                    throw new Error(
-                        'Grid shader a_unitPos attribute unavailable'
-                    );
-                }
-
-                gl.enableVertexAttribArray(
-                    a_grid_unitPos
-                );
-
-                gl.vertexAttribPointer(
-                    a_grid_unitPos,
-                    2,
-                    gl.FLOAT,
-                    false,
-                    0,
-                    0
-                );
-
-                gl.bindVertexArray(
-                    null
-                );
 
                 // --- WebGL2 Procedural Border Shader ---
                 // Uses view-relative coordinates to avoid float precision loss on huge maps.
@@ -29568,50 +30299,57 @@ Most cells eaten   : ${mostCellsEaten}
         drawWebGLGridShader() {
             /*
              * ============================================================
-             * WEBGL2 PROCEDURAL GRID
+             * DEDICATED WEBGL GRID DRAW
              * ============================================================
              *
-             * There is intentionally NO Canvas grid path here.
+             * IMPORTANT:
              *
-             * Important invariants:
+             * this function uses:
              *
-             *  1. Grid uses its own glGridVAO.
-             *  2. Camera coordinates sent to fract() remain wrapped to 0..50,
-             *     preventing float32 precision loss on huge maps.
-             *  3. Grid spacing in screen pixels is:
+             *     this.gridGl
              *
-             *         worldSpacing * viewScale
+             * NOT:
              *
-             *     and NOT multiplied by canvasWidth / 2.
-             *  4. Camera translation remains floating-point. No Math.round().
+             *     this.gl
+             *
+             * The grid therefore has a physically lower DOM layer than every
+             * world object.
              */
 
             if (
-                !this.gl ||
-                !this.glGridProgram ||
-                !this.glGridVAO
+                !this.gridGl ||
+                !this.gridGlProgram ||
+                !this.gridGlVAO
             ) {
                 return false;
             }
 
             var gl =
-                this.gl;
+                this.gridGl;
 
             var viewScale =
-                Number(this.scale);
+                Number(
+                    this.scale
+                );
 
             if (
-                !Number.isFinite(viewScale) ||
+                !Number.isFinite(
+                    viewScale
+                ) ||
                 viewScale <= 0
             ) {
-                viewScale = 1;
+                return false;
             }
 
             var width =
-                Number(this.canvasWidth);
+                Number(
+                    this.canvasWidth
+                );
 
             var height =
-                Number(this.canvasHeight);
+                Number(
+                    this.canvasHeight
+                );
 
             if (
                 !Number.isFinite(width) ||
@@ -29623,16 +30361,25 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             /*
-             * Grid is a background primitive.
-             *
-             * Do not inherit depth state left behind by cell rendering.
+             * Dedicated grid layer is completely rebuilt each frame.
              */
+            gl.clearColor(
+                0,
+                0,
+                0,
+                0
+            );
+
+            gl.clear(
+                gl.COLOR_BUFFER_BIT
+            );
+
             gl.disable(
                 gl.DEPTH_TEST
             );
 
-            gl.depthMask(
-                false
+            gl.disable(
+                gl.CULL_FACE
             );
 
             gl.enable(
@@ -29645,21 +30392,14 @@ Most cells eaten   : ${mostCellsEaten}
             );
 
             gl.useProgram(
-                this.glGridProgram
+                this.gridGlProgram
             );
 
-            /*
-             * One normal Agar.io grid square is 50 world units.
-             */
             var gridSpacing =
                 50.0;
 
             /*
-             * Keep GPU values small.
-             *
-             * With very large/private-server maps, sending camX/camY directly
-             * into fract() eventually loses enough float32 precision to make
-             * grid lines jump or disappear.
+             * Wrapped phase keeps values tiny even on enormous private maps.
              */
             var gridPhaseX =
                 (
@@ -29682,24 +30422,13 @@ Most cells eaten   : ${mostCellsEaten}
                 gridSpacing;
 
             gl.uniform2f(
-                this.u_grid_viewCenter,
+                this.grid_u_gridPhase,
                 gridPhaseX,
                 gridPhaseY
             );
 
-            /*
-             * World -> clip conversion.
-             *
-             * x:
-             *     2 * viewScale / viewportWidth
-             *
-             * y:
-             *     2 * viewScale / viewportHeight
-             *
-             * The vertex shader already flips Y.
-             */
             gl.uniform2f(
-                this.u_grid_viewScale,
+                this.grid_u_viewScale,
                 2.0 *
                     viewScale /
                     width,
@@ -29709,49 +30438,89 @@ Most cells eaten   : ${mostCellsEaten}
             );
 
             gl.uniform1f(
-                this.u_gridSpacing,
+                this.grid_u_gridSpacing,
                 gridSpacing
             );
 
             /*
-             * Respect the user's theme grid color.
+             * ============================================================
+             * MAP CLIPPING
+             * ============================================================
+             *
+             * Old Canvas grid only filled the map rectangle.
+             *
+             * Do the same on GPU.
+             */
+
+            var mapMinX =
+                LM.mapMinX != null
+                    ? LM.mapMinX
+                    : -7071;
+
+            var mapMinY =
+                LM.mapMinY != null
+                    ? LM.mapMinY
+                    : -7071;
+
+            var mapMaxX =
+                LM.mapMaxX != null
+                    ? LM.mapMaxX
+                    : 7071;
+
+            var mapMaxY =
+                LM.mapMaxY != null
+                    ? LM.mapMaxY
+                    : 7071;
+
+            gl.uniform4f(
+                this.grid_u_mapBoundsRelative,
+
+                mapMinX -
+                    this.camX,
+
+                mapMinY -
+                    this.camY,
+
+                mapMaxX -
+                    this.camX,
+
+                mapMaxY -
+                    this.camY
+            );
+
+            /*
+             * Theme color.
              */
             var gridColor =
                 defaultSettings.gridColor ||
                 '#ffffff';
 
-            var gridRGBA =
+            var rgba =
                 this.parseWebGLOverlayColor(
                     gridColor,
                     '#ffffff'
                 );
 
-            /*
-             * Match Canvas theme semantics exactly:
-             *
-             *     #RRGGBB       -> alpha 1
-             *     rgb(...)      -> alpha 1
-             *     rgba(..., A)  -> alpha A
-             *
-             * The theme's gridColor is ALREADY chosen to be subtle.
-             * Never multiply ordinary hex colors by an extra 0.08.
-             */
-            var gridAlpha =
+            var alpha =
                 1.0;
 
+            /*
+             * Preserve explicit rgba() alpha.
+             * Hex colors remain full alpha exactly like Canvas strokeStyle.
+             */
             if (
                 typeof gridColor ===
                 'string'
             ) {
-                var rgbaMatch =
+                var alphaMatch =
                     gridColor.match(
                         /rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/i
                     );
 
-                if (rgbaMatch) {
+                if (alphaMatch) {
                     var parsedAlpha =
                         Number(
-                            rgbaMatch[1]
+                            alphaMatch[1]
                         );
 
                     if (
@@ -29759,7 +30528,7 @@ Most cells eaten   : ${mostCellsEaten}
                             parsedAlpha
                         )
                     ) {
-                        gridAlpha =
+                        alpha =
                             Math.max(
                                 0,
                                 Math.min(
@@ -29772,49 +30541,30 @@ Most cells eaten   : ${mostCellsEaten}
             }
 
             gl.uniform4f(
-                this.u_gridColor,
-                gridRGBA[0],
-                gridRGBA[1],
-                gridRGBA[2],
-                gridAlpha
+                this.grid_u_gridColor,
+                rgba[0],
+                rgba[1],
+                rgba[2],
+                alpha
             );
 
             /*
-             * THIS IS THE CORRECT PIXEL SPACING.
-             *
-             * Example:
-             *
-             * scale = 1
-             * 50 world units = 50 screen pixels.
+             * Pixel size of one 50-world-unit grid square.
              */
             var gridScreenSpacing =
                 gridSpacing *
                 viewScale;
 
             gl.uniform1f(
-                this.u_gridScreenSpacing,
+                this.grid_u_gridScreenSpacing,
                 Math.max(
                     gridScreenSpacing,
                     0.0001
                 )
             );
 
-            /*
-             * GRID-SPECIFIC VAO.
-             *
-             * Do not replace this with:
-             *
-             *     this.glVAO
-             *
-             * and do not use:
-             *
-             *     this.glGridVAO || this.glVAO
-             *
-             * A missing grid VAO is a real renderer failure, not permission to
-             * feed the grid shader a VAO belonging to another program.
-             */
             gl.bindVertexArray(
-                this.glGridVAO
+                this.gridGlVAO
             );
 
             gl.drawArrays(
@@ -29827,11 +30577,31 @@ Most cells eaten   : ${mostCellsEaten}
                 null
             );
 
-            gl.depthMask(
-                true
+            return true;
+        },
+
+        clearWebGLGrid() {
+            /*
+             * Required when user turns showGrid OFF.
+             *
+             * Since grid has its own persistent canvas, failing to clear it
+             * would leave the previous frame visible.
+             */
+
+            if (!this.gridGl) {
+                return;
+            }
+
+            this.gridGl.clearColor(
+                0,
+                0,
+                0,
+                0
             );
 
-            return true;
+            this.gridGl.clear(
+                this.gridGl.COLOR_BUFFER_BIT
+            );
         },
         drawWebGLBorders(
             minX,
@@ -31699,8 +32469,8 @@ Most cells eaten   : ${mostCellsEaten}
         },
 
         renderFrame() {
-            /* Clear WebGL with transparent black each frame — the GL canvas (z-index:2)
-             * must be transparent so the Canvas2D background (z-index:1) shows through. */
+            /* Clear WebGL with transparent black each frame — the GL canvas (base + 3)
+             * must be transparent so the Canvas2D background (base) and grid (base + 1) show through. */
             if (this.gl) {
                 this.gl.clearColor(0, 0, 0, 0.0);
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -31849,48 +32619,55 @@ Most cells eaten   : ${mostCellsEaten}
 
             try {
                 var _tGrid = performance.now();
+
+                /*
+                 * DEDICATED WEBGL GRID
+                 */
                 if (
                     defaultmapsettings.showGrid
                 ) {
-                    /*
-                     * WEBGL GRID ONLY.
-                     *
-                     * Do NOT silently fall back to:
-                     *
-                     *     drawCustomNewGrid()
-                     *     drawGrid(this.ctx)
-                     *
-                     * If WebGL grid initialization failed, we want that failure
-                     * visible so it can be fixed instead of hiding it behind an
-                     * expensive Canvas renderer.
-                     */
-
-                    var gridRendered =
-                        this.drawWebGLGridShader();
-
-                    if (
-                        !gridRendered &&
-                        !this._webglGridFailureLogged
-                    ) {
-                        this._webglGridFailureLogged =
-                            true;
-
-                        console.error(
-                            '[LegendMod WebGL] Grid unavailable: glGridProgram/glGridVAO was not initialized.'
-                        );
-                    }
-                    else if (gridRendered) {
-                        this._webglGridFailureLogged =
-                            false;
-                    }
+                    this.drawWebGLGridShader();
+                } else {
+                    this.clearWebGLGrid();
                 }
+
+                /*
+                 * DEDICATED BACKGROUND IMAGE CANVAS
+                 */
+                if (
+                    this.backgroundCtx &&
+                    defaultSettings.customBackground
+                ) {
+                    this.backgroundCtx.clearRect(
+                        0,
+                        0,
+                        this.canvasWidth * (this.dpr || 1),
+                        this.canvasHeight * (this.dpr || 1)
+                    );
+                    this.backgroundCtx.save();
+                    this.backgroundCtx.scale(this.dpr || 1, this.dpr || 1);
+                    this.backgroundCtx.translate(
+                        (this.canvasWidth / 2) - (this.camX * this.scale),
+                        (this.canvasHeight / 2) - (this.camY * this.scale)
+                    );
+                    this.backgroundCtx.scale(this.scale, this.scale);
+                    this.drawCustomBackgrounds(this.backgroundCtx);
+                    this.backgroundCtx.restore();
+                } else if (this.backgroundCtx) {
+                    this.backgroundCtx.clearRect(
+                        0,
+                        0,
+                        this.canvasWidth * (this.dpr || 1),
+                        this.canvasHeight * (this.dpr || 1)
+                    );
+                }
+
                 if (defaultmapsettings.showBgSectors) {
                     this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
                 }
                 if (LM.gameMode === ':battleroyale') {
                     this.drawBattleArea(this.ctx);
                 }
-                this.drawCustomBackgrounds()
                 if (defaultmapsettings.showMapBorders) {
                     var tempborderwidthradius = (defaultSettings.bordersWidth || 20) / 2;
                     var _bMinX = LM.mapMinX - tempborderwidthradius;
@@ -32460,52 +33237,164 @@ Most cells eaten   : ${mostCellsEaten}
                 ctx.restore();
             }
         },
-        drawCustomBackgrounds() {
-            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
-                if (!legendmod.customMidPic) {
-                    if (defaultSettings.customBackground) {
-                        legendmod.customMidPic = new Image;
-                        legendmod.customMidPic.src = defaultSettings.customBackground;
-                    }
-                    /*else {
-                            legendmod.customMidPic = new Image;
-                            legendmod.customMidPic.src = defaultSettings.customServerImage1;
-                        }*/
-                } else if (legendmod.customMidPic && defaultSettings.customBackground && legendmod.customMidPic.src != defaultSettings.customBackground) {
-                    legendmod.customMidPic = new Image;
-                    legendmod.customMidPic.src = defaultSettings.customBackground;
+        drawCustomBackgrounds(ctx) {
+            /*
+             * Custom image backgrounds belong on backgroundCanvas.
+             *
+             * Never draw them on this.ctx anymore, because this.ctx is now a
+             * WORLD layer physically ABOVE the WebGL grid.
+             */
+
+            ctx =
+                ctx ||
+                this.backgroundCtx;
+
+            if (!ctx) {
+                return;
+            }
+
+            if (
+                !defaultSettings.customBackground ||
+                defaultSettings.customBackground ===
+                    ''
+            ) {
+                return;
+            }
+
+            if (!legendmod.customMidPic) {
+                legendmod.customMidPic =
+                    new Image();
+
+                legendmod.customMidPic.src =
+                    defaultSettings.customBackground;
+            }
+            else if (
+                legendmod.customMidPic.src !==
+                defaultSettings.customBackground
+            ) {
+                legendmod.customMidPic =
+                    new Image();
+
+                legendmod.customMidPic.src =
+                    defaultSettings.customBackground;
+            }
+
+            var alpha =
+                Number(
+                    defaultSettings.backgroundAlpha
+                );
+
+            if (
+                !Number.isFinite(alpha)
+            ) {
+                alpha =
+                    1;
+            }
+
+            alpha =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        alpha
+                    )
+                );
+
+            var previousAlpha =
+                ctx.globalAlpha;
+
+            ctx.globalAlpha =
+                alpha;
+
+            /*
+             * Dying-light background image.
+             */
+            if (
+                dyinglight1load ===
+                    'yes' &&
+                typeof cimg5 !==
+                    'undefined' &&
+                cimg5 &&
+                !cimg5._failed &&
+                (
+                    cimg5.width > 0 ||
+                    cimg5.naturalWidth > 0
+                )
+            ) {
+                try {
+                    ctx.drawImage(
+                        cimg5,
+
+                        legendmod.mapMinX -
+                            LM.mapSize -
+                            1,
+
+                        legendmod.mapMinY -
+                            LM.mapSize -
+                            1,
+
+                        (
+                            legendmod.mapMaxX -
+                            legendmod.mapMinX
+                        ) *
+                            3,
+
+                        (
+                            legendmod.mapMaxY -
+                            legendmod.mapMinY
+                        ) *
+                            3
+                    );
                 }
-                if (dyinglight1load === "yes" && typeof cimg5 !== "undefined" && cimg5 && !cimg5._failed && (cimg5.width > 0 || cimg5.naturalWidth > 0)) {
-                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
-                    try {
-                        this.ctx.drawImage(
-                            cimg5,
-                            legendmod.mapMinX - LM.mapSize - 1,
-                            legendmod.mapMinY - LM.mapSize - 1,
-                            (legendmod.mapMaxX - legendmod.mapMinX) * 3,
-                            (legendmod.mapMaxY - legendmod.mapMinY) * 3
-                        );
-                    } catch (eCimg5) { }
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha;
-                }
-                if (defaultSettings.customBackground && legendmod.customMidPic && !legendmod.customMidPic._failed && ((legendmod.customMidPic.naturalWidth > 0 && legendmod.customMidPic.naturalHeight > 0) || (legendmod.customMidPic.width > 0 && legendmod.customMidPic.height > 0))) {
-                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha;
-                    try {
-                        this.ctx.drawImage(
-                            legendmod.customMidPic,
-                            legendmod.mapMinX,
-                            legendmod.mapMinY,
-                            legendmod.mapMaxX - legendmod.mapMinX,
-                            legendmod.mapMaxY - legendmod.mapMinY
-                        );
-                    } catch (eBgPic) {
-                        legendmod.customMidPic._failed = true;
-                    }
-                    this.ctx.globalAlpha = this.prevctxglobalAlpha;
+                catch (error) {
                 }
             }
+
+            /*
+             * Normal custom map background.
+             */
+            if (
+                legendmod.customMidPic &&
+                !legendmod.customMidPic._failed &&
+                (
+                    (
+                        legendmod.customMidPic
+                            .naturalWidth >
+                            0 &&
+                        legendmod.customMidPic
+                            .naturalHeight >
+                            0
+                    ) ||
+                    (
+                        legendmod.customMidPic.width >
+                            0 &&
+                        legendmod.customMidPic.height >
+                            0
+                    )
+                )
+            ) {
+                try {
+                    ctx.drawImage(
+                        legendmod.customMidPic,
+
+                        legendmod.mapMinX,
+                        legendmod.mapMinY,
+
+                        legendmod.mapMaxX -
+                            legendmod.mapMinX,
+
+                        legendmod.mapMaxY -
+                            legendmod.mapMinY
+                    );
+                }
+                catch (error) {
+                    legendmod.customMidPic._failed =
+                        true;
+                }
+            }
+
+            ctx.globalAlpha =
+                previousAlpha;
         },
         drawViewPorts(ctx) {
             this.drawViewport(this.ctx, '1', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor || '#ffffff', 15);
@@ -33254,8 +34143,8 @@ Most cells eaten   : ${mostCellsEaten}
                 return;
             }
             /* WebGL2 GPU batch: 1 draw call for all food dots.
-             * DISABLED: WebGL food renders on the GL canvas (z-index:2) which overlays
-             * the Canvas2D canvas. Since viruses are drawn on Canvas2D (they need
+             * DISABLED: WebGL food renders on the GL canvas (base + 3) which overlays
+             * the Canvas2D canvas (base + 2). Since viruses are drawn on Canvas2D (they need
              * glow/spikes), WebGL food would appear ON TOP of viruses.
              * Canvas2D food is drawn first (before cell loop), so it correctly
              * appears behind viruses on the same compositing layer. */
