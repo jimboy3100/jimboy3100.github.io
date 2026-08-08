@@ -32516,12 +32516,9 @@ Most cells eaten   : ${mostCellsEaten}
                     cell.isVirus
                         ? (
                             26 *
-                            (
-                                Math.max(
-                                    0,
-                                    configuredMassScale
-                                ) /
-                                3
+                            Math.max(
+                                0,
+                                configuredMassScale
                             )
                         )
                         : (
