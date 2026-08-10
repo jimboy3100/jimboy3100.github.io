@@ -12180,8 +12180,8 @@ function thelegendmodproject() {
                     if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 1 && LM.mapEvent.phase <= 4)) {
                         var me = LM.mapEvent;
                         var targetHalf = me.targetSize / 2;
-                        var tMinX = (-targetHalf + r) * n;
-                        var tMinY = (-targetHalf + l) * n;
+                        var tMinX = ((me.centerX || 0) - targetHalf + r) * n;
+                        var tMinY = ((me.centerY || 0) - targetHalf + l) * n;
                         var tW = me.targetSize * n;
                         var tH = me.targetSize * n;
                         var mmCtx = this.miniMapCtx;
@@ -27555,6 +27555,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 uniform vec2 u_zoneCenter;
                 uniform float u_zonePrevHalf;
                 uniform float u_zoneCurrHalf;
+                uniform float u_zoneCurrentHalf;
                 uniform float u_zonePhase;
                 uniform float u_zoneProgress;
                 uniform float u_time;
@@ -27582,9 +27583,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     /*
                      * Smoothly interpolate from previous half-size to
-                     * current half-size based on transition progress.
+                     * target half-size based on transition progress.
                      */
-                    float activeHalf =
+                    float targetHalf =
                         mix(
                             u_zonePrevHalf,
                             u_zoneCurrHalf,
@@ -27596,33 +27597,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
 
                     /*
-                     * Fragments INSIDE the safe zone are discarded.
+                     * u_zoneCurrentHalf = the CURRENT visible map border
+                     * half-size. This defines the outer limit for contraction
+                     * or the inner limit for expansion.
                      */
-                    if (
-                        distFromCenter <
-                        activeHalf
-                    ) {
-                        discard;
-                    }
+                    float currentHalf =
+                        u_zoneCurrentHalf;
 
-                    /*
-                     * Distance into the danger zone from the border edge.
-                     */
-                    float penetration =
-                        distFromCenter -
-                        activeHalf;
-
-                    /*
-                     * Phase 2 (warning): yellow-orange pulse.
-                     * Phase 3 (danger): red pulse, higher base alpha.
-                     * Phase 4 (shrinking): similar to danger with
-                     *                       fast shrinking animation.
-                     *
-                     * u_zonePhase:
-                     *     2.0 = warning
-                     *     3.0 = danger
-                     *     4.0 = shrinking
-                     */
                     float pulse =
                         sin(
                             u_time *
@@ -27633,45 +27614,124 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     float baseAlpha;
                     vec3 baseColor;
+                    float penetration;
 
                     if (
-                        u_zonePhase >=
-                        2.5
+                        u_zonePhase <
+                        1.5
                     ) {
                         /*
-                         * Danger / shrinking: red tint.
+                         * ═══ EXPANSION (phase 1) ═══
+                         *
+                         * Shade the NEW territory being added:
+                         *     target rect MINUS current rect
+                         *
+                         * Fragment must be:
+                         *     inside target AND outside current
+                         */
+                        bool inTarget =
+                            distFromCenter <=
+                            targetHalf;
+
+                        bool inCurrent =
+                            distFromCenter <=
+                            currentHalf;
+
+                        if (
+                            !inTarget ||
+                            inCurrent
+                        ) {
+                            discard;
+                        }
+
+                        penetration =
+                            distFromCenter -
+                            currentHalf;
+
+                        /*
+                         * Blue-cyan expansion glow.
                          */
                         baseColor =
                             vec3(
-                                0.9,
-                                0.1,
-                                0.1
+                                0.13,
+                                0.67,
+                                1.0
                             );
 
                         baseAlpha =
-                            0.15 +
+                            0.06 +
                             pulse *
-                            0.1;
+                            0.04;
                     }
                     else {
                         /*
-                         * Warning: yellow-orange tint.
+                         * ═══ CONTRACTION (phases 2-4) ═══
+                         *
+                         * Shade the DOOMED territory:
+                         *     current rect MINUS target rect
+                         *
+                         * Fragment must be:
+                         *     inside current AND outside target
                          */
-                        baseColor =
-                            vec3(
-                                0.95,
-                                0.7,
-                                0.1
-                            );
+                        bool inCurrent =
+                            distFromCenter <=
+                            currentHalf;
 
-                        baseAlpha =
-                            0.08 +
-                            pulse *
-                            0.06;
+                        bool inTarget =
+                            distFromCenter <=
+                            targetHalf;
+
+                        if (
+                            !inCurrent ||
+                            inTarget
+                        ) {
+                            discard;
+                        }
+
+                        penetration =
+                            distFromCenter -
+                            targetHalf;
+
+                        if (
+                            u_zonePhase >=
+                            2.5
+                        ) {
+                            /*
+                             * Danger / shrinking: red tint.
+                             */
+                            baseColor =
+                                vec3(
+                                    0.9,
+                                    0.1,
+                                    0.1
+                                );
+
+                            baseAlpha =
+                                0.15 +
+                                pulse *
+                                0.1;
+                        }
+                        else {
+                            /*
+                             * Warning: green-yellow tint
+                             * matching the Canvas2D original.
+                             */
+                            baseColor =
+                                vec3(
+                                    0.27,
+                                    0.87,
+                                    0.4
+                                );
+
+                            baseAlpha =
+                                0.12 +
+                                pulse *
+                                0.06;
+                        }
                     }
 
                     /*
-                     * Fade in from zero at the border edge over ~200
+                     * Fade in from zero at the band edge over ~200
                      * world units so the overlay does not pop in harshly.
                      */
                     float edgeFade =
@@ -27732,6 +27792,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     gl.getUniformLocation(
                         zoneProgram,
                         'u_zoneCurrHalf'
+                    );
+
+                this.u_zone_zoneCurrentHalf =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zoneCurrentHalf'
                     );
 
                 this.u_zone_zonePhase =
@@ -34242,27 +34308,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     LM.mapEvent &&
                     LM.mapEvent.active &&
                     (
-                        LM.mapEvent.phase >= 2 &&
+                        LM.mapEvent.phase >= 1 &&
                         LM.mapEvent.phase <= 4
-                    )
+                    ) &&
+                    this.gridGl &&
+                    this.gridGlZoneProgram &&
+                    this.gridGlZoneVAO
                 ) {
-                    /*
-                     * Prefer the WebGL zone shader when available.
-                     *
-                     * The grid WebGL context lives on gridCanvas, NOT
-                     * the cell overlay canvas, so we can safely draw
-                     * into it without interfering with the cell batch.
-                     */
-                    if (
-                        this.gridGl &&
-                        this.gridGlZoneProgram &&
-                        this.gridGlZoneVAO
-                    ) {
-                        this.drawWebGLZone();
-                    }
-                    else {
-                        this.drawLegendWorldZone(this.ctx);
-                    }
+                    this.drawWebGLZone();
                 }
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
@@ -35799,13 +35852,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * quad inverse transform.
              */
             var viewScale =
-                this.viewScale || 1.0;
+                this.scale || 1.0;
 
             var cameraX =
-                this.viewX || 0;
+                this.camX || 0;
 
             var cameraY =
-                this.viewY || 0;
+                this.camY || 0;
 
             var canvasW =
                 this.gridCanvas
@@ -35865,6 +35918,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 currHalf
             );
 
+            /*
+             * Current visible map half-size — the actual
+             * border the player sees right now.
+             */
+            var mapW =
+                (LM.mapMaxX || 7071) -
+                (LM.mapMinX || -7071);
+
+            var mapH =
+                (LM.mapMaxY || 7071) -
+                (LM.mapMinY || -7071);
+
+            var currentHalf =
+                Math.max(
+                    mapW,
+                    mapH,
+                    1.0
+                ) / 2.0;
+
+            gl.uniform1f(
+                this.u_zone_zoneCurrentHalf,
+                currentHalf
+            );
+
             gl.uniform1f(
                 this.u_zone_zonePhase,
                 me.phase
@@ -35895,130 +35972,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
         },
         /* ── Expanding Land: Warning/Danger zone overlay ── */
-        drawLegendWorldZone(ctx) {
-            if (!LM.mapEvent || !LM.mapEvent.active) return;
-            var me = LM.mapEvent;
-            var now = Date.now();
-            var pulse = Math.sin(now / 600) * 0.5 + 0.5; // 0-1 smooth pulse
-            var fastPulse = Math.sin(now / 250) * 0.5 + 0.5; // faster for danger
-
-            // Current map borders
-            var oMinX = LM.mapMinX, oMinY = LM.mapMinY;
-            var oMaxX = LM.mapMaxX, oMaxY = LM.mapMaxY;
-            var oW = oMaxX - oMinX, oH = oMaxY - oMinY;
-
-            // Target border (centered at 0,0)
-            var targetHalf = me.targetSize / 2;
-            var tMinX = -targetHalf, tMinY = -targetHalf;
-
-            if (me.phase === 1) {
-                /* ═══ EXPANSION: highlight the NEW territory being added ═══ */
-                if (Math.abs(me.targetSize - oW) >= 2) {
-                    // Fill the expansion band (target minus current) with blue glow
-                    ctx.save();
-                    var alpha = 0.06 + 0.04 * pulse;
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = '#22aaff';
-                    ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.globalAlpha = 1;
-                    ctx.fillRect(oMinX, oMinY, oW, oH);
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.restore();
-
-                    // Animated dashed border on the NEW outer border
-                    ctx.save();
-                    var dashOffset = (now / 30) % 60;
-                    ctx.strokeStyle = 'rgba(34, 170, 255, ' + (0.35 + 0.2 * pulse) + ')';
-                    ctx.lineWidth = 3;
-                    ctx.setLineDash([30, 15]);
-                    ctx.lineDashOffset = dashOffset;
-                    ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                    ctx.setLineDash([]);
-                    ctx.restore();
-
-                    // Subtle inner glow line on the expansion edge
-                    ctx.save();
-                    ctx.strokeStyle = 'rgba(100, 200, 255, ' + (0.15 + 0.1 * pulse) + ')';
-                    ctx.lineWidth = 8;
-                    ctx.shadowColor = 'rgba(34, 170, 255, 0.4)';
-                    ctx.shadowBlur = 12;
-                    ctx.strokeRect(tMinX + 4, tMinY + 4, me.targetSize - 8, me.targetSize - 8);
-                    ctx.restore();
-                }
-            } else {
-                /* ═══ CONTRACTION PHASES (2=warning, 3=danger, 4=shrinking) ═══ */
-                if (Math.abs(oMaxX - targetHalf) >= 1) {
-                    var alpha, color;
-                    if (me.phase === 2) {
-                        alpha = 0.25 + 0.05 * pulse;
-                        color = '#44dd66';
-                    } else if (me.phase === 3) {
-                        alpha = 0.35 + 0.1 * fastPulse;
-                        color = '#ff3333';
-                    } else {
-                        alpha = 0.45 + 0.15 * fastPulse;
-                        color = '#ff2222';
-                    }
-
-                    // Fill current map, cut out safe zone
-                    ctx.save();
-                    ctx.globalAlpha = alpha;
-                    ctx.fillStyle = color;
-                    ctx.fillRect(oMinX, oMinY, oW, oH);
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.globalAlpha = 1;
-                    ctx.fillRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.restore();
-
-                    // Safe zone border
-                    ctx.save();
-                    var borderAlpha = me.phase === 2 ? (0.4 + 0.2 * pulse) : (0.5 + 0.3 * fastPulse);
-                    var borderColor = me.phase === 2 ? 'rgba(100, 220, 100, ' + borderAlpha + ')'
-                        : 'rgba(255, 80, 80, ' + borderAlpha + ')';
-                    ctx.strokeStyle = borderColor;
-                    ctx.lineWidth = me.phase >= 3 ? 5 : 3;
-                    ctx.setLineDash(me.phase === 2 ? [40, 20] : [15, 8]);
-                    if (me.phase >= 3) ctx.lineDashOffset = (now / 20) % 23;
-                    ctx.strokeRect(tMinX, tMinY, me.targetSize, me.targetSize);
-                    ctx.setLineDash([]);
-                    ctx.restore();
-
-                    // Glow on danger border for phase 3+
-                    if (me.phase >= 3) {
-                        ctx.save();
-                        ctx.strokeStyle = 'rgba(255, 60, 60, ' + (0.15 + 0.15 * fastPulse) + ')';
-                        ctx.lineWidth = 10;
-                        ctx.shadowColor = 'rgba(255, 40, 40, 0.5)';
-                        ctx.shadowBlur = 16;
-                        ctx.strokeRect(tMinX + 5, tMinY + 5, me.targetSize - 10, me.targetSize - 10);
-                        ctx.restore();
-                    }
-                }
-            }
-
-            // ═══ STATUS LABEL (all phases) ═══
-            var label = '', labelColor = '', labelAlpha = 0.8;
-            if (me.phase === 1) { label = '🌍 MAP EXPANDING'; labelColor = '#88ddff'; labelAlpha = 0.6 + 0.2 * pulse; }
-            else if (me.phase === 2) { label = '⚠ MAP SHRINKING SOON'; labelColor = '#aaffaa'; labelAlpha = 0.65 + 0.15 * pulse; }
-            else if (me.phase === 3) { label = '⛔ DANGER ZONE'; labelColor = '#ff6666'; labelAlpha = 0.75 + 0.2 * fastPulse; }
-            else if (me.phase === 4) { label = '💀 MAP SHRINKING'; labelColor = '#ff4444'; labelAlpha = 0.8 + 0.15 * fastPulse; }
-            if (label) {
-                ctx.save();
-                var labelY = me.phase === 1 ? tMinY + 16 : tMinY + 12;
-                var fontSize = Math.max(26, Math.min(40, me.targetSize * 0.004));
-                ctx.font = '700 ' + fontSize + 'px Ubuntu, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'top';
-                ctx.globalAlpha = labelAlpha;
-                ctx.fillStyle = labelColor;
-                ctx.shadowColor = 'rgba(0,0,0,0.6)';
-                ctx.shadowBlur = 6;
-                ctx.fillText(label, 0, labelY);
-                ctx.restore();
-            }
-        },
+        /* drawLegendWorldZone — removed, zone is now WebGL-only via drawWebGLZone() */
         /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
                     ctx.strokeStyle = radius;
@@ -36500,8 +36454,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 1 / scale;
 
             /*
-             * forceCanvas2D=true keeps every opponent bubble beneath both
-             * WebGL cell bodies and Canvas2D cell/virus fallbacks.
+             * WebGL path: opponent bubbles are drawn before the cell
+             * batch (drawHelpers → drawWebGLCellBatch). The GPU depth
+             * buffer ensures cells always cover the bubble indicators.
              */
             this.drawBubbleCircles(
                 ctx,
@@ -36510,7 +36465,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEDColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36520,7 +36475,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36530,7 +36485,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36540,7 +36495,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.splitRangeColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36550,7 +36505,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36560,7 +36515,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEColor,
-                true
+                false
             );
 
             this.drawBubbleCircles(
@@ -36570,7 +36525,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEDColor,
-                true
+                false
             );
 
             if (reset) {
@@ -36604,22 +36559,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 1 / scale;
 
             /*
-             * IMPORTANT:
-             *
-             * forceCanvas2D=true is intentional.
-             *
-             * The WebGL canvas is a separate DOM layer above the Canvas2D
-             * background canvas. If opponent rings are emitted through
-             * drawWebGLRingsBatch(), they can cover Canvas2D viruses and
-             * fallback cells regardless of JavaScript call order.
-             *
-             * Rendering the rings on Canvas2D before all bodies gives the
-             * required composition:
-             *
-             *     opponent ring
-             *     cell or virus body
-             *     skin
-             *     nickname and mass
+             * WebGL path: opponent rings are drawn before the cell
+             * batch (drawHelpers → drawWebGLCellBatch). The GPU depth
+             * buffer ensures cells always cover the ring indicators.
              */
             this.drawCircles(
                 ctx,
@@ -36628,7 +36570,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEDColor,
-                true
+                false
             );
 
             this.drawCircles(
@@ -36638,7 +36580,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBSTEColor,
-                true
+                false
             );
 
             this.drawCircles(
@@ -36648,7 +36590,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemyBColor,
-                true
+                false
             );
 
             this.drawCircles(
@@ -36658,7 +36600,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySColor,
-                true
+                false
             );
 
             this.drawCircles(
@@ -36668,7 +36610,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEColor,
-                true
+                false
             );
 
             this.drawCircles(
@@ -36678,7 +36620,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha,
                 0.75,
                 defaultSettings.enemySSTEDColor,
-                true
+                false
             );
 
             if (reset) {
