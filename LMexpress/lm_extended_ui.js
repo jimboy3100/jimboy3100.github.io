@@ -358,20 +358,227 @@
     // ─── Component 1: 🏆 Leaderboards & Weekly Leagues Modal ───
     window.currentLeagueTab = 1; // 1 = My League, 2 = Country, 3 = World, 4 = Friends
 
-    // Official Agar.io Level-to-League Tier calculator (from agario.js lines 3074 & 19794)
-    window.getLeagueTierFromLevel = function(level) {
-        level = parseInt(level, 10) || 1;
-        if (level >= 90) return { id: 'kraken', name: 'Kraken League', color: '#029070', gradient: 'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)' };
-        if (level >= 80) return { id: 'mammoth', name: 'Mammoth League', color: '#7b6750', gradient: 'linear-gradient(135deg, #7b6750 0%, #4e3629 100%)' };
-        if (level >= 70) return { id: 'crocodile', name: 'Crocodile League', color: '#1b8b05', gradient: 'linear-gradient(135deg, #1b8b05 0%, #0d4702 100%)' };
-        if (level >= 60) return { id: 'panther', name: 'Panther League', color: '#4d4643', gradient: 'linear-gradient(135deg, #4d4643 0%, #212121 100%)' };
-        if (level >= 50) return { id: 'bear', name: 'Bear League', color: '#8b4a1f', gradient: 'linear-gradient(135deg, #8b4a1f 0%, #4e270d 100%)' };
-        if (level >= 40) return { id: 'hunter', name: 'Hunter League', color: '#f62000', gradient: 'linear-gradient(135deg, #f62000 0%, #b71c1c 100%)' };
-        if (level >= 30) return { id: 'fox', name: 'Fox League', color: '#f36101', gradient: 'linear-gradient(135deg, #f36101 0%, #e65100 100%)' };
-        if (level >= 20) return { id: 'bat', name: 'Bat League', color: '#a822c7', gradient: 'linear-gradient(135deg, #a822c7 0%, #4a148c 100%)' };
-        if (level >= 10) return { id: 'wasp', name: 'Wasp League', color: '#ca8f01', gradient: 'linear-gradient(135deg, #ca8f01 0%, #f57f17 100%)' };
-        return { id: 'fly', name: 'Fly League', color: '#8f7e3a', gradient: 'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)' };
-    };
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * CONFIG-DRIVEN LEAGUE TIER PRESENTATION
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * RANGE / NAME:
+     *
+     *      Leagues - Tiers
+     *
+     * PRESENTATION:
+     *
+     *      LM theme layer
+     *
+     * Do not hardcode account-level thresholds here anymore.
+     */
+
+
+    window._lmLeaguePresentation =
+        {
+            fly: {
+                color:
+                    '#8f7e3a',
+
+                gradient:
+                    'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)'
+            },
+
+            wasp: {
+                color:
+                    '#ca8f01',
+
+                gradient:
+                    'linear-gradient(135deg, #ca8f01 0%, #f57f17 100%)'
+            },
+
+            bat: {
+                color:
+                    '#a822c7',
+
+                gradient:
+                    'linear-gradient(135deg, #a822c7 0%, #4a148c 100%)'
+            },
+
+            fox: {
+                color:
+                    '#f36101',
+
+                gradient:
+                    'linear-gradient(135deg, #f36101 0%, #e65100 100%)'
+            },
+
+            hunter: {
+                color:
+                    '#f62000',
+
+                gradient:
+                    'linear-gradient(135deg, #f62000 0%, #b71c1c 100%)'
+            },
+
+            bear: {
+                color:
+                    '#8b4a1f',
+
+                gradient:
+                    'linear-gradient(135deg, #8b4a1f 0%, #4e270d 100%)'
+            },
+
+            panther: {
+                color:
+                    '#4d4643',
+
+                gradient:
+                    'linear-gradient(135deg, #4d4643 0%, #212121 100%)'
+            },
+
+            crocodile: {
+                color:
+                    '#1b8b05',
+
+                gradient:
+                    'linear-gradient(135deg, #1b8b05 0%, #0d4702 100%)'
+            },
+
+            mammoth: {
+                color:
+                    '#7b6750',
+
+                gradient:
+                    'linear-gradient(135deg, #7b6750 0%, #4e3629 100%)'
+            },
+
+            kraken: {
+                color:
+                    '#029070',
+
+                gradient:
+                    'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)'
+            }
+        };
+
+
+    window.getLeagueTierFromLevel =
+        function (
+            level
+        ) {
+            var configuredTier =
+                typeof window
+                    .getAgarLeagueTierFromLevel ===
+                    'function'
+                    ? window
+                        .getAgarLeagueTierFromLevel(
+                            level
+                        )
+                    : null;
+
+
+            var theme =
+                getTheme();
+
+
+            /*
+             * Configuration may not have arrived during the first few
+             * milliseconds of page startup.
+             *
+             * Do NOT recreate the old level threshold ladder as fallback.
+             */
+            if (
+                !configuredTier
+            ) {
+                return {
+                    id:
+                        'unknown',
+
+                    configName:
+                        '',
+
+                    name:
+                        'League',
+
+                    color:
+                        theme.mc,
+
+                    gradient:
+                        'linear-gradient(135deg, ' +
+                        theme.b1 +
+                        ' 0%, ' +
+                        theme.b3 +
+                        ' 100%)',
+
+                    levelFrom:
+                        null,
+
+                    levelTo:
+                        null,
+
+                    spread:
+                        0,
+
+                    topSize:
+                        0,
+
+                    raw:
+                        null
+                };
+            }
+
+
+            var presentation =
+                window
+                    ._lmLeaguePresentation[
+                        configuredTier.id
+                    ] ||
+                {};
+
+
+            return {
+                id:
+                    configuredTier.id,
+
+                configName:
+                    configuredTier
+                        .configName,
+
+                name:
+                    configuredTier.name,
+
+                color:
+                    presentation.color ||
+                    theme.mc,
+
+                gradient:
+                    presentation.gradient ||
+                    (
+                        'linear-gradient(135deg, ' +
+                        theme.b1 +
+                        ' 0%, ' +
+                        theme.b3 +
+                        ' 100%)'
+                    ),
+
+                levelFrom:
+                    configuredTier
+                        .levelFrom,
+
+                levelTo:
+                    configuredTier
+                        .levelTo,
+
+                spread:
+                    configuredTier
+                        .spread,
+
+                topSize:
+                    configuredTier
+                        .topSize,
+
+                raw:
+                    configuredTier
+                        .raw
+            };
+        };
 
     window._escapeLeagueHtmlText = function(value) {
         if (
@@ -7792,41 +7999,301 @@
         });
 
         /*
-         * Track potion status for autobrewing without overwriting
-         * the rich per-slot state from HUNK 6 (readyAt,
-         * secondsRemaining, receivedAt, raw, productId).
+         * ═══════════════════════════════════════════════════════════════
+         * POTION STATE MERGE
+         * ═══════════════════════════════════════════════════════════════
          *
-         * Only MERGE fields that the Vue app provides.
-         * If HUNK 6 already populated the slot, keep its data.
+         * application.updatePotions()/newPotion() own the authoritative
+         * rich potion state.
+         *
+         * syncProfileTabUI() is allowed to MERGE newer information from
+         * the Vue/application user model, but must never collapse:
+         *
+         *     readyAt
+         *     secondsRemaining
+         *     receivedAt
+         *     productId
+         *     raw
+         *
+         * back into the old minimal object.
+         *
+         * IMPORTANT:
+         *
+         * If pData carries a fresh secondsRemaining/expiresInSeconds,
+         * that snapshot wins over an older readyAt.
          */
-        for (var s = 1; s <= 3; s++) {
-            var pData = potions[s - 1] || null;
-            var potionKey = 'potion' + s;
-            if (pData) {
-                var existing = window.LM.user.potionsStatus[potionKey];
-                if (existing && existing.readyAt) {
-                    /* HUNK 6 already owns this slot — only refresh status */
-                    existing.status = Number(pData.status) || existing.status;
-                } else {
-                    /* No HUNK 6 data yet — seed from Vue without inventing readyAt */
-                    window.LM.user.potionsStatus[potionKey] = {
-                        type: pData.productId || pData.type || '',
-                        productId: pData.productId || pData.type || '',
-                        slot: s,
-                        status: Number(pData.status) || 1,
-                        secondsRemaining: Number(pData.secondsRemaining) || 0,
-                        receivedAt: Date.now(),
-                        readyAt: pData.secondsRemaining
-                            ? Date.now() + Number(pData.secondsRemaining) * 1000
-                            : 0,
-                        expires: pData.expiresInSeconds
-                            ? new Date(Date.now() + (pData.expiresInSeconds * 1000))
-                            : (pData.secondsRemaining
-                                ? new Date(Date.now() + Number(pData.secondsRemaining) * 1000)
-                                : new Date(0))
-                    };
-                }
+
+        for (
+            var s = 1;
+            s <= 3;
+            s++
+        ) {
+            var pData =
+                potions[
+                    s - 1
+                ] ||
+                null;
+
+
+            if (!pData) {
+                /*
+                 * Do not delete here.
+                 *
+                 * updatePotions() owns deletion because it receives the
+                 * authoritative server slot list.
+                 */
+                continue;
             }
+
+
+            var potionKey =
+                'potion' +
+                s;
+
+
+            var previous =
+                window.LM
+                    .user
+                    .potionsStatus[
+                        potionKey
+                    ] ||
+                {};
+
+
+            var now =
+                Date.now();
+
+
+            /*
+             * STATUS
+             */
+            var status =
+                Number(
+                    pData.status
+                );
+
+
+            if (
+                !Number.isFinite(
+                    status
+                ) ||
+                status <= 0
+            ) {
+                status =
+                    Number(
+                        previous.status
+                    ) ||
+                    1;
+            }
+
+
+            /*
+             * PRODUCT
+             */
+            var productId =
+                pData.productId ||
+                pData.type ||
+                previous.productId ||
+                previous.type ||
+                '';
+
+
+            /*
+             * Detect a fresh timer snapshot.
+             */
+            var freshSeconds =
+                null;
+
+
+            if (
+                pData.secondsRemaining !==
+                    undefined &&
+                pData.secondsRemaining !==
+                    null
+            ) {
+                freshSeconds =
+                    Math.max(
+                        0,
+                        Number(
+                            pData
+                                .secondsRemaining
+                        ) ||
+                        0
+                    );
+
+            } else if (
+                pData.expiresInSeconds !==
+                    undefined &&
+                pData.expiresInSeconds !==
+                    null
+            ) {
+                freshSeconds =
+                    Math.max(
+                        0,
+                        Number(
+                            pData
+                                .expiresInSeconds
+                        ) ||
+                        0
+                    );
+            }
+
+
+            var readyAt =
+                Number(
+                    previous.readyAt
+                ) ||
+                0;
+
+
+            var secondsRemaining =
+                0;
+
+
+            var receivedAt =
+                Number(
+                    previous.receivedAt
+                ) ||
+                now;
+
+
+            /*
+             * Only BREWING potions should carry a running deadline.
+             */
+            if (
+                status === 2
+            ) {
+                if (
+                    freshSeconds !==
+                    null
+                ) {
+                    /*
+                     * Fresh server/application snapshot wins.
+                     */
+                    secondsRemaining =
+                        freshSeconds;
+
+
+                    receivedAt =
+                        now;
+
+
+                    readyAt =
+                        now +
+                        secondsRemaining *
+                        1000;
+
+                } else if (
+                    readyAt > 0
+                ) {
+                    /*
+                     * No new snapshot.
+                     *
+                     * Preserve the existing absolute deadline and derive
+                     * the current remaining time.
+                     */
+                    secondsRemaining =
+                        Math.max(
+                            0,
+                            Math.ceil(
+                                (
+                                    readyAt -
+                                    now
+                                ) /
+                                1000
+                            )
+                        );
+
+                } else {
+                    /*
+                     * Last compatibility fallback.
+                     */
+                    secondsRemaining =
+                        Math.max(
+                            0,
+                            Number(
+                                previous
+                                    .secondsRemaining
+                            ) ||
+                            0
+                        );
+
+
+                    if (
+                        secondsRemaining >
+                        0
+                    ) {
+                        readyAt =
+                            now +
+                            secondsRemaining *
+                            1000;
+
+
+                        receivedAt =
+                            now;
+                    }
+                }
+
+            } else {
+                /*
+                 * Obtained / ready-to-brew / ready-to-open potions do not
+                 * have an active brew countdown.
+                 */
+                secondsRemaining =
+                    0;
+
+
+                readyAt =
+                    0;
+            }
+
+
+            var expires =
+                readyAt > 0
+                    ? new Date(
+                        readyAt
+                    )
+                    : new Date(
+                        0
+                    );
+
+
+            window.LM
+                .user
+                .potionsStatus[
+                    potionKey
+                ] = {
+                    type:
+                        productId,
+
+                    productId:
+                        productId,
+
+                    slot:
+                        s,
+
+                    status:
+                        status,
+
+                    secondsRemaining:
+                        secondsRemaining,
+
+                    receivedAt:
+                        receivedAt,
+
+                    readyAt:
+                        readyAt,
+
+                    expires:
+                        expires,
+
+                    /*
+                     * Keep current source object available for diagnostics
+                     * and future fields.
+                     */
+                    raw:
+                        pData
+                };
         }
 
         // 5. Friends Button Disabled state when unauthenticated, missing UID, not logged in with Facebook, or disconnected
@@ -7864,6 +8331,44 @@
                           .removeAttr('title');
             }
         }
+
+        /*
+         * Keep the configured boost catalogue synchronized with
+         * authoritative wallet quantities.
+         *
+         * initBoostDropdown() has its own signature guard, so no actual
+         * DOM rebuild happens when nothing changed.
+         */
+        if (
+            typeof window
+                .initBoostDropdown ===
+                'function'
+        ) {
+            window
+                .initBoostDropdown(
+                    false
+                );
+        }
+
+
+        /*
+         * Refresh the GameConfiguration + live account panel immediately
+         * after profile synchronization.
+         *
+         * The 1-second countdown repaint still handles timer animation,
+         * but account changes should not wait for that timer.
+         */
+        if (
+            typeof window
+                .renderAgarEconomyPanel ===
+                'function'
+        ) {
+            window
+                .renderAgarEconomyPanel(
+                    level
+                );
+        }
+
 
         // 6. Render Promo Reward Banner if token detected
         window.renderPromoRewardBanner();

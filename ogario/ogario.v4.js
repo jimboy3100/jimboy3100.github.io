@@ -4546,7 +4546,16 @@ window.rebuildAgarConfigIndex = function () {
             Object.create(null),
 
         visualQuestByType:
-            Object.create(null)
+            Object.create(null),
+
+        /*
+         * Leagues - Tiers
+         *
+         * Array because tier ranges are naturally ordered records rather
+         * than a product-id dictionary.
+         */
+        leagueTiers:
+            []
     };
 
 
@@ -4934,6 +4943,63 @@ window.rebuildAgarConfigIndex = function () {
                     row.questType
                 ] = row;
         }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Leagues - Tiers
+     * ─────────────────────────────────────────────────────────────
+     *
+     * Typical player-level tiers:
+     *
+     *     Fly
+     *     Wasp
+     *     Bat
+     *     Fox
+     *     Hunter
+     *     Bear
+     *     Panther
+     *     Crocodile
+     *     Mammoth
+     *     Kraken
+     *
+     * The same section can also contain leaderboard scopes such as:
+     *
+     *     country
+     *     world
+     *     friends
+     *
+     * Store everything here; the level resolver filters non-level rows.
+     */
+    list =
+        rows(
+            'Leagues - Tiers'
+        );
+
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row =
+            list[i];
+
+
+        if (
+            !row ||
+            !row.leagueName
+        ) {
+            continue;
+        }
+
+
+        index
+            .leagueTiers
+            .push(
+                row
+            );
     }
 
 
@@ -5699,6 +5765,23 @@ window.getAgarPotionInfo =
         }
 
 
+        if (
+            currentPrice !==
+                null &&
+            currentPrice !==
+                undefined
+        ) {
+            currentPrice =
+                Math.max(
+                    0,
+                    Number(
+                        currentPrice
+                    ) ||
+                    0
+                );
+        }
+
+
         return {
             potionId:
                 potionId,
@@ -5935,6 +6018,23 @@ window.getAgarTimedEventInfo =
         }
 
 
+        if (
+            currentPrice !==
+                null &&
+            currentPrice !==
+                undefined
+        ) {
+            currentPrice =
+                Math.max(
+                    0,
+                    Number(
+                        currentPrice
+                    ) ||
+                    0
+                );
+        }
+
+
         return {
             eventId:
                 eventId,
@@ -6033,6 +6133,192 @@ window.getAgarVisualQuest =
                 ] ||
             null
         );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════
+ * CONFIG-DRIVEN PLAYER LEAGUE TIER
+ * ═════════════════════════════════════════════════════════════════════════
+ *
+ * Static level ranges come from:
+ *
+ *      Leagues - Tiers
+ *
+ * This is NOT used as a replacement for the live weekly league returned by
+ * opcode 131 / Agar.io's official League API.
+ *
+ * It is only the authoritative static:
+ *
+ *      account level → configured tier range
+ *
+ * resolver.
+ */
+
+window.getAgarLeagueTierFromLevel =
+    function (
+        level
+    ) {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+
+        if (
+            !index ||
+            !Array.isArray(
+                index.leagueTiers
+            )
+        ) {
+            return null;
+        }
+
+
+        var numericLevel =
+            Number(
+                level
+            );
+
+
+        if (
+            !Number.isFinite(
+                numericLevel
+            )
+        ) {
+            numericLevel =
+                1;
+        }
+
+
+        numericLevel =
+            Math.max(
+                1,
+                Math.floor(
+                    numericLevel
+                )
+            );
+
+
+        for (
+            var i = 0;
+            i < index
+                .leagueTiers
+                .length;
+            i++
+        ) {
+            var row =
+                index
+                    .leagueTiers[
+                        i
+                    ];
+
+
+            if (
+                !row ||
+                !row.leagueName
+            ) {
+                continue;
+            }
+
+
+            var name =
+                String(
+                    row.leagueName
+                )
+                    .trim();
+
+
+            var id =
+                name
+                    .toLowerCase();
+
+
+            /*
+             * These are leaderboard categories/scopes, not player
+             * account-level tiers.
+             */
+            if (
+                id === 'country' ||
+                id === 'world' ||
+                id === 'friends'
+            ) {
+                continue;
+            }
+
+
+            var levelFrom =
+                Number(
+                    row.levelFrom
+                );
+
+
+            var levelTo =
+                Number(
+                    row.levelTo
+                );
+
+
+            if (
+                !Number.isFinite(
+                    levelFrom
+                ) ||
+                !Number.isFinite(
+                    levelTo
+                )
+            ) {
+                continue;
+            }
+
+
+            if (
+                numericLevel >=
+                    levelFrom &&
+                numericLevel <=
+                    levelTo
+            ) {
+                return {
+                    id:
+                        id,
+
+                    configName:
+                        name,
+
+                    name:
+                        /\bleague$/i.test(
+                            name
+                        )
+                            ? name
+                            : (
+                                name +
+                                ' League'
+                            ),
+
+                    levelFrom:
+                        levelFrom,
+
+                    levelTo:
+                        levelTo,
+
+                    spread:
+                        Number(
+                            row.spread
+                        ) ||
+                        0,
+
+                    topSize:
+                        Number(
+                            row.topSize
+                        ) ||
+                        0,
+
+                    raw:
+                        row
+                };
+            }
+        }
+
+
+        return null;
     };
 
 
@@ -27435,189 +27721,669 @@ function thelegendmodproject() {
                 }
             }
         },
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * ACTIVE BOOSTS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * LIVE SERVER:
+         *
+         *      productId
+         *      expiresInSeconds
+         *
+         * GAMECONFIGURATION:
+         *
+         *      type
+         *      multiplier
+         *      configured duration
+         *
+         * Do not derive XP/Mass type from the first character anymore.
+         */
         displayActiveBoosts(items) {
-            /*
-             * Clear stale boost text first.
-             * If no boost of a given type is active, the UI should be blank.
-             */
-            $('#xp-active').html('');
-            $('#mass-active').html('');
-            $('#coin-active').html('');
+            $('#xp-active')
+                .empty();
 
-            if (!window._lmActiveBoosts) {
-                window._lmActiveBoosts = Object.create(null);
+
+            $('#mass-active')
+                .empty();
+
+
+            $('#coin-active')
+                .empty();
+
+
+            if (
+                !Array.isArray(
+                    items
+                )
+            ) {
+                items = [];
             }
 
-            /* Reset before re-populating from the authoritative server list */
-            window._lmActiveBoosts = Object.create(null);
 
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                var _bi = window.getAgarBoostInfo
-                    ? window.getAgarBoostInfo(item.productId)
-                    : null;
+            window._lmActiveBoosts =
+                Object.create(
+                    null
+                );
 
-                var _bName;
-                if (_bi) {
-                    _bName = window.formatAgarProduct
-                        ? window.formatAgarProduct(item.productId, 1)
-                        : item.productId;
-                } else {
-                    _bName = item.productId;
+
+            var receivedAt =
+                Date.now();
+
+
+            for (
+                var i = 0;
+                i < items.length;
+                i++
+            ) {
+                var item =
+                    items[i];
+
+
+                if (
+                    !item ||
+                    !item.productId
+                ) {
+                    continue;
                 }
 
-                var _exp = new Date(
-                    Date.now() + item.expiresInSeconds * 1000
-                ).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
 
-                var boostType = _bi ? _bi.type : null;
+                var productId =
+                    String(
+                        item.productId
+                    );
+
+
+                var info =
+                    typeof window
+                        .getAgarBoostInfo ===
+                        'function'
+                        ? window
+                            .getAgarBoostInfo(
+                                productId
+                            )
+                        : null;
+
+
+                var secondsRemaining =
+                    Math.max(
+                        0,
+                        Number(
+                            item
+                                .expiresInSeconds
+                        ) ||
+                        0
+                    );
+
+
+                var expiresAt =
+                    receivedAt +
+                    secondsRemaining *
+                    1000;
+
+
+                var displayName =
+                    typeof window
+                        .formatAgarProduct ===
+                        'function'
+                        ? window
+                            .formatAgarProduct(
+                                productId,
+                                1
+                            )
+                        : productId;
+
+
+                var remainingText =
+                    typeof window
+                        .formatAgarDurationSeconds ===
+                        'function'
+                        ? window
+                            .formatAgarDurationSeconds(
+                                secondsRemaining,
+                                true
+                            )
+                        : (
+                            secondsRemaining +
+                            's'
+                        );
+
+
+                var displayText =
+                    displayName +
+                    ' \u2014 ' +
+                    remainingText +
+                    ' remaining';
+
+
+                var boostType =
+                    info &&
+                    info.type
+                        ? String(
+                            info.type
+                        )
+                            .toLowerCase()
+                        : '';
+
 
                 /*
-                 * Fallback to first-character heuristic only when
-                 * GameConfiguration has not been received yet.
+                 * Save server state regardless of whether this client knows
+                 * how to render a newly introduced product.
                  */
-                if (!boostType) {
-                    var firstChar = item.productId[0];
-                    if (firstChar === 'x') boostType = 'xp';
-                    else if (firstChar === 'm') boostType = 'mass';
-                    else if (firstChar === 'c') boostType = 'coin';
+                window
+                    ._lmActiveBoosts[
+                        productId
+                    ] = {
+                        productId:
+                            productId,
+
+                        type:
+                            boostType ||
+                            null,
+
+                        multiplier:
+                            info
+                                ? (
+                                    Number(
+                                        info.multiplier
+                                    ) ||
+                                    1
+                                )
+                                : 1,
+
+                        configuredDurationMins:
+                            info
+                                ? (
+                                    Number(
+                                        info.durationMins
+                                    ) ||
+                                    0
+                                )
+                                : 0,
+
+                        expiresInSeconds:
+                            secondsRemaining,
+
+                        receivedAt:
+                            receivedAt,
+
+                        expiresAt:
+                            expiresAt,
+
+                        displayName:
+                            displayName,
+
+                        config:
+                            info,
+
+                        raw:
+                            item
+                    };
+
+
+                if (
+                    boostType ===
+                    'xp'
+                ) {
+                    $('#xp-active')
+                        .text(
+                            displayText
+                        );
+
+
+                    continue;
                 }
 
-                var displayText = _bName + ' expires at ' + _exp;
 
-                window._lmActiveBoosts[item.productId] = {
-                    productId: item.productId,
-                    type: boostType,
-                    expiresInSeconds: item.expiresInSeconds,
-                    expiresAt: Date.now() + item.expiresInSeconds * 1000,
-                    name: _bName,
-                    info: _bi
-                };
+                if (
+                    boostType ===
+                    'mass'
+                ) {
+                    $('#mass-active')
+                        .text(
+                            displayText
+                        );
 
-                if (boostType === 'xp') {
-                    $('#xp-active').html(displayText);
-                } else if (boostType === 'mass') {
-                    $('#mass-active').html(displayText);
-                } else if (boostType === 'coin') {
-                    $('#coin-active').html(displayText);
+
+                    continue;
+                }
+
+
+                /*
+                 * coin-active is retained for compatibility with older
+                 * server products, but it is NOT classified as an XP/Mass
+                 * gameplay boost.
+                 */
+                if (
+                    boostType ===
+                    'coin'
+                ) {
+                    $('#coin-active')
+                        .text(
+                            displayText
+                        );
+
+
+                    continue;
+                }
+
+
+                /*
+                 * Unknown future product:
+                 *
+                 * retain state, but never invent gameplay semantics.
+                 */
+                console.warn(
+                    '[LM BOOST] Active product has no configured boost type:',
+                    productId,
+                    item
+                );
+            }
+
+
+            /*
+             * Wallet/active state may have changed.
+             *
+             * initBoostDropdown() itself avoids unnecessary DOM rebuilding.
+             */
+            if (
+                typeof window
+                    .initBoostDropdown ===
+                    'function'
+            ) {
+                try {
+                    window
+                        .initBoostDropdown(
+                            false
+                        );
+                } catch (
+                    boostSelectorError
+                ) {
+                    console.warn(
+                        '[LM BOOST] Could not refresh configured boost selector:',
+                        boostSelectorError
+                    );
                 }
             }
+
 
             try {
                 document.dispatchEvent(
                     new CustomEvent(
                         'lm-active-boosts-updated',
-                        { detail: window._lmActiveBoosts }
+                        {
+                            detail:
+                                window
+                                    ._lmActiveBoosts
+                        }
                     )
                 );
-            } catch (e) {}
+            } catch (
+                boostEventError
+            ) {
+            }
         },
 
 
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * ACTIVE QUESTS
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * LIVE SERVER:
+         *
+         *      type
+         *      goal
+         *      expiresInSeconds
+         *
+         * GAMECONFIGURATION / Visual - Quests:
+         *
+         *      questType
+         *      description
+         *      serverConversionDivisor
+         *
+         * No manual /60 conversion.
+         * No quest-specific numeric conversion in LM.
+         */
         displayActiveQuests(items) {
-            if (items.length === 0) {
+            var questContainer =
+                $('#quest-active');
+
+
+            questContainer
+                .empty();
+
+
+            if (
+                !Array.isArray(
+                    items
+                )
+            ) {
+                items = [];
+            }
+
+
+            window._lmActiveQuests =
+                [];
+
+
+            if (
+                items.length ===
+                0
+            ) {
                 if (
                     typeof window
                         .questActivationReq ===
                         'function'
                 ) {
-                    window.questActivationReq();
+                    window
+                        .questActivationReq();
                 }
+
+
+                try {
+                    document.dispatchEvent(
+                        new CustomEvent(
+                            'lm-active-quests-updated',
+                            {
+                                detail:
+                                    window
+                                        ._lmActiveQuests
+                            }
+                        )
+                    );
+                } catch (
+                    emptyQuestEventError
+                ) {
+                }
+
+
+                return;
             }
 
-            if (!window._lmActiveQuests) {
-                window._lmActiveQuests = [];
-            }
-            window._lmActiveQuests = [];
 
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i],
-                    type = item.type;
+            var receivedAt =
+                Date.now();
 
-                var _exp = new Date(
-                    Date.now() + item.expiresInSeconds * 1000
-                ).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+
+            for (
+                var i = 0;
+                i < items.length;
+                i++
+            ) {
+                var item =
+                    items[i];
+
+
+                if (
+                    !item ||
+                    !item.type
+                ) {
+                    continue;
+                }
+
+
+                var type =
+                    String(
+                        item.type
+                    );
+
+
+                var visual =
+                    typeof window
+                        .getAgarVisualQuest ===
+                        'function'
+                        ? window
+                            .getAgarVisualQuest(
+                                type
+                            )
+                        : null;
+
 
                 /*
-                 * Resolve the quest visual from GameConfiguration.
-                 *
-                 * Each Visual - Quests row provides:
-                 *     questType            e.g. "time_total"
-                 *     description          e.g. "Survive {0} minutes"
-                 *     serverConversionDivisor  e.g. 60 for time_total, 1 for count-based
+                 * GameConfiguration owns conversion.
                  */
-                var visual = typeof window.getAgarVisualQuest === 'function'
-                    ? window.getAgarVisualQuest(type)
-                    : null;
+                var divisor =
+                    visual
+                        ? Number(
+                            visual
+                                .serverConversionDivisor
+                        )
+                        : 1;
 
-                var questText;
 
-                if (visual && visual.description) {
-                    var divisor = Number(visual.serverConversionDivisor) || 1;
-                    var convertedGoal = divisor !== 1
-                        ? Math.round(item.goal / divisor)
-                        : item.goal;
-
-                    /*
-                     * Replace {0} placeholder with the converted goal value.
-                     */
-                    questText = String(visual.description)
-                        .replace(
-                            /\{0\}/g,
-                            String(convertedGoal)
-                        );
-
-                    questText += '. Expires at ' + _exp;
-                } else {
-                    /*
-                     * Fallback: hardcoded descriptions only when
-                     * GameConfiguration has not been received yet.
-                     */
-                    switch (type) {
-                        case 'normal_cells_eaten':
-                            questText = 'Eat ' + item.goal + ' cells. Expires at ' + _exp;
-                            break;
-                        case 'viruses_eaten':
-                            questText = 'Eat ' + item.goal + ' viruses. Expires at ' + _exp;
-                            break;
-                        case 'food_eaten':
-                            questText = 'Eat ' + item.goal + ' dots. Expires at ' + _exp;
-                            break;
-                        case 'highest_mass':
-                            questText = 'Reach ' + item.goal + ' mass. Expires at ' + _exp;
-                            break;
-                        case 'top_position':
-                            questText = 'Reach TOP-' + item.goal + ' position. Expires at ' + _exp;
-                            break;
-                        case 'time_total':
-                            questText = 'Survive ' + Math.round(item.goal / 60) + ' minutes. Expires at ' + _exp;
-                            break;
-                        default:
-                            questText = type + ' : ' + item.goal + '. Expires at ' + _exp;
-                    }
+                if (
+                    !Number.isFinite(
+                        divisor
+                    ) ||
+                    divisor <= 0
+                ) {
+                    divisor =
+                        1;
                 }
 
-                window._lmActiveQuests.push({
-                    type: type,
-                    goal: item.goal,
-                    expiresInSeconds: item.expiresInSeconds,
-                    expiresAt: Date.now() + item.expiresInSeconds * 1000,
-                    visual: visual,
-                    displayText: questText,
-                    raw: item
-                });
 
-                $('#quest-active').html(questText);
+                var rawGoal =
+                    Number(
+                        item.goal
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        rawGoal
+                    )
+                ) {
+                    rawGoal =
+                        0;
+                }
+
+
+                var displayGoal =
+                    rawGoal /
+                    divisor;
+
+
+                /*
+                 * Keep valid fractional conversions while removing
+                 * floating-point garbage.
+                 */
+                var nearestInteger =
+                    Math.round(
+                        displayGoal
+                    );
+
+
+                if (
+                    Math.abs(
+                        displayGoal -
+                        nearestInteger
+                    ) <
+                    0.000001
+                ) {
+                    displayGoal =
+                        nearestInteger;
+                } else {
+                    displayGoal =
+                        Math.round(
+                            displayGoal *
+                            100
+                        ) /
+                        100;
+                }
+
+
+                var secondsRemaining =
+                    Math.max(
+                        0,
+                        Number(
+                            item
+                                .expiresInSeconds
+                        ) ||
+                        0
+                    );
+
+
+                var expiresAt =
+                    receivedAt +
+                    secondsRemaining *
+                    1000;
+
+
+                var remainingText =
+                    typeof window
+                        .formatAgarDurationSeconds ===
+                        'function'
+                        ? window
+                            .formatAgarDurationSeconds(
+                                secondsRemaining,
+                                true
+                            )
+                        : (
+                            secondsRemaining +
+                            's'
+                        );
+
+
+                var description =
+                    '';
+
+
+                /*
+                 * Prefer the exact configured user-facing description.
+                 */
+                if (
+                    visual &&
+                    visual.description
+                ) {
+                    description =
+                        String(
+                            visual.description
+                        );
+
+
+                    if (
+                        description.indexOf(
+                            '{0}'
+                        ) !== -1
+                    ) {
+                        description =
+                            description.replace(
+                                /\{0\}/g,
+                                String(
+                                    displayGoal
+                                )
+                            );
+                    } else {
+                        description +=
+                            ' ' +
+                            displayGoal;
+                    }
+
+                } else {
+                    /*
+                     * Generic fallback only.
+                     *
+                     * Do not duplicate a second hardcoded quest catalogue.
+                     */
+                    var readableType =
+                        type
+                            .replace(
+                                /_/g,
+                                ' '
+                            )
+                            .replace(
+                                /\b\w/g,
+                                function (
+                                    character
+                                ) {
+                                    return character
+                                        .toUpperCase();
+                                }
+                            );
+
+
+                    description =
+                        readableType +
+                        ': ' +
+                        displayGoal;
+                }
+
+
+                var fullText =
+                    description +
+                    ' \u2014 ' +
+                    remainingText +
+                    ' remaining';
+
+
+                /*
+                 * Use text(), not html(), because quest/config strings
+                 * should never be interpreted as markup.
+                 *
+                 * A separate <div> also means multiple active quests do
+                 * not overwrite each other.
+                 */
+                $('<div>')
+                    .text(
+                        fullText
+                    )
+                    .appendTo(
+                        questContainer
+                    );
+
+
+                window
+                    ._lmActiveQuests
+                    .push({
+                        type:
+                            type,
+
+                        rawGoal:
+                            rawGoal,
+
+                        displayGoal:
+                            displayGoal,
+
+                        serverConversionDivisor:
+                            divisor,
+
+                        expiresInSeconds:
+                            secondsRemaining,
+
+                        receivedAt:
+                            receivedAt,
+
+                        expiresAt:
+                            expiresAt,
+
+                        description:
+                            description,
+
+                        visual:
+                            visual,
+
+                        raw:
+                            item
+                    });
             }
+
 
             try {
                 document.dispatchEvent(
                     new CustomEvent(
                         'lm-active-quests-updated',
-                        { detail: window._lmActiveQuests }
+                        {
+                            detail:
+                                window
+                                    ._lmActiveQuests
+                        }
                     )
                 );
-            } catch (e) {}
+            } catch (
+                questEventError
+            ) {
+            }
         },
 
         displayStats(s) {
