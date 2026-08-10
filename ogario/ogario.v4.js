@@ -27436,11 +27436,27 @@ function thelegendmodproject() {
             }
         },
         displayActiveBoosts(items) {
+            /*
+             * Clear stale boost text first.
+             * If no boost of a given type is active, the UI should be blank.
+             */
+            $('#xp-active').html('');
+            $('#mass-active').html('');
+            $('#coin-active').html('');
+
+            if (!window._lmActiveBoosts) {
+                window._lmActiveBoosts = Object.create(null);
+            }
+
+            /* Reset before re-populating from the authoritative server list */
+            window._lmActiveBoosts = Object.create(null);
+
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var _bi = window.getAgarBoostInfo
                     ? window.getAgarBoostInfo(item.productId)
                     : null;
+
                 var _bName;
                 if (_bi) {
                     _bName = window.formatAgarProduct
@@ -27449,55 +27465,161 @@ function thelegendmodproject() {
                 } else {
                     _bName = item.productId;
                 }
+
                 var _exp = new Date(
                     Date.now() + item.expiresInSeconds * 1000
                 ).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
 
-                if (item.productId[0] === "x") {
-                    $("#xp-active").html(
-                        _bName + ' expires at ' + _exp
-                    );
-                } else if (item.productId[0] === "m") {
-                    $("#mass-active").html(
-                        _bName + ' expires at ' + _exp
-                    );
-                } else if (item.productId[0] === "c") {
-                    $("#coin-active").html(
-                        _bName + ' expires at ' + _exp
-                    );
+                var boostType = _bi ? _bi.type : null;
+
+                /*
+                 * Fallback to first-character heuristic only when
+                 * GameConfiguration has not been received yet.
+                 */
+                if (!boostType) {
+                    var firstChar = item.productId[0];
+                    if (firstChar === 'x') boostType = 'xp';
+                    else if (firstChar === 'm') boostType = 'mass';
+                    else if (firstChar === 'c') boostType = 'coin';
+                }
+
+                var displayText = _bName + ' expires at ' + _exp;
+
+                window._lmActiveBoosts[item.productId] = {
+                    productId: item.productId,
+                    type: boostType,
+                    expiresInSeconds: item.expiresInSeconds,
+                    expiresAt: Date.now() + item.expiresInSeconds * 1000,
+                    name: _bName,
+                    info: _bi
+                };
+
+                if (boostType === 'xp') {
+                    $('#xp-active').html(displayText);
+                } else if (boostType === 'mass') {
+                    $('#mass-active').html(displayText);
+                } else if (boostType === 'coin') {
+                    $('#coin-active').html(displayText);
                 }
             }
+
+            try {
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'lm-active-boosts-updated',
+                        { detail: window._lmActiveBoosts }
+                    )
+                );
+            } catch (e) {}
         },
 
+
         displayActiveQuests(items) {
-            if (items.length === 0) window.questActivationReq()
+            if (items.length === 0) {
+                if (
+                    typeof window
+                        .questActivationReq ===
+                        'function'
+                ) {
+                    window.questActivationReq();
+                }
+            }
+
+            if (!window._lmActiveQuests) {
+                window._lmActiveQuests = [];
+            }
+            window._lmActiveQuests = [];
+
             for (var i = 0; i < items.length; i++) {
                 var item = items[i],
                     type = item.type;
-                switch (type) {
-                    case "normal_cells_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} cells. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    case "viruses_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} viruses. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    case "food_eaten":
-                        $("#quest-active").html(`Eat ${item.goal} dots. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    case "highest_mass":
-                        $("#quest-active").html(`Reach ${item.goal} mass. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    case "top_position":
-                        $("#quest-active").html(`Reach TOP-${item.goal} position. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    case "time_total":
-                        $("#quest-active").html(`Survive ${item.goal / 60} minutes. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
-                        break;
-                    default:
-                        $("#quest-active").html(`${type} : ${item.goal}. Expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+
+                var _exp = new Date(
+                    Date.now() + item.expiresInSeconds * 1000
+                ).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+
+                /*
+                 * Resolve the quest visual from GameConfiguration.
+                 *
+                 * Each Visual - Quests row provides:
+                 *     questType            e.g. "time_total"
+                 *     description          e.g. "Survive {0} minutes"
+                 *     serverConversionDivisor  e.g. 60 for time_total, 1 for count-based
+                 */
+                var visual = typeof window.getAgarVisualQuest === 'function'
+                    ? window.getAgarVisualQuest(type)
+                    : null;
+
+                var questText;
+
+                if (visual && visual.description) {
+                    var divisor = Number(visual.serverConversionDivisor) || 1;
+                    var convertedGoal = divisor !== 1
+                        ? Math.round(item.goal / divisor)
+                        : item.goal;
+
+                    /*
+                     * Replace {0} placeholder with the converted goal value.
+                     */
+                    questText = String(visual.description)
+                        .replace(
+                            /\{0\}/g,
+                            String(convertedGoal)
+                        );
+
+                    questText += '. Expires at ' + _exp;
+                } else {
+                    /*
+                     * Fallback: hardcoded descriptions only when
+                     * GameConfiguration has not been received yet.
+                     */
+                    switch (type) {
+                        case 'normal_cells_eaten':
+                            questText = 'Eat ' + item.goal + ' cells. Expires at ' + _exp;
+                            break;
+                        case 'viruses_eaten':
+                            questText = 'Eat ' + item.goal + ' viruses. Expires at ' + _exp;
+                            break;
+                        case 'food_eaten':
+                            questText = 'Eat ' + item.goal + ' dots. Expires at ' + _exp;
+                            break;
+                        case 'highest_mass':
+                            questText = 'Reach ' + item.goal + ' mass. Expires at ' + _exp;
+                            break;
+                        case 'top_position':
+                            questText = 'Reach TOP-' + item.goal + ' position. Expires at ' + _exp;
+                            break;
+                        case 'time_total':
+                            questText = 'Survive ' + Math.round(item.goal / 60) + ' minutes. Expires at ' + _exp;
+                            break;
+                        default:
+                            questText = type + ' : ' + item.goal + '. Expires at ' + _exp;
+                    }
                 }
+
+                window._lmActiveQuests.push({
+                    type: type,
+                    goal: item.goal,
+                    expiresInSeconds: item.expiresInSeconds,
+                    expiresAt: Date.now() + item.expiresInSeconds * 1000,
+                    visual: visual,
+                    displayText: questText,
+                    raw: item
+                });
+
+                $('#quest-active').html(questText);
             }
+
+            try {
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'lm-active-quests-updated',
+                        { detail: window._lmActiveQuests }
+                    )
+                );
+            } catch (e) {}
         },
+
         displayStats(s) {
             if (!s) s = {}; /* guard: protobuf may not decode userStats */
             /* allTimeScore and massConsumed are uint64 → protobuf.js returns Long objects.

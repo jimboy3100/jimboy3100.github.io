@@ -5674,6 +5674,1645 @@
     };
 
 
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * HUNK 7
+     * GAMECONFIGURATION-DRIVEN ACCOUNT REWARDS / TIMERS PANEL
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * STATIC RULES:
+     *
+     *      GameConfiguration
+     *
+     * supplies:
+     *
+     *      - level-up reward IDs
+     *      - hourly/daily reward definitions
+     *      - timed-event purchase IDs
+     *      - potion purchase IDs
+     *      - potion brew timers
+     *      - time-variable pricing rules
+     *
+     * LIVE STATE:
+     *
+     *      opcode/server state
+     *
+     * supplies:
+     *
+     *      - current level
+     *      - current timed-event remaining time
+     *      - current potion state
+     *      - current potion remaining time
+     *
+     * This UI DOES NOT invent:
+     *
+     *      - prices
+     *      - purchase IDs
+     *      - rewards
+     *      - brew times
+     *
+     * All BUY operations still go through the already-existing:
+     *
+     *      window.softPurchase(purchaseId, context)
+     */
+
+
+    window.getLiveTimedEventSecondsRemaining =
+        function (
+            eventId
+        ) {
+            if (
+                !eventId ||
+                !window._lmTimedEventState
+            ) {
+                return null;
+            }
+
+
+            var state =
+                window._lmTimedEventState[
+                    eventId
+                ];
+
+
+            if (!state) {
+                return null;
+            }
+
+
+            var readyAt =
+                Number(
+                    state.readyAt
+                );
+
+
+            if (
+                Number.isFinite(
+                    readyAt
+                ) &&
+                readyAt > 0
+            ) {
+                return Math.max(
+                    0,
+                    Math.ceil(
+                        (
+                            readyAt -
+                            Date.now()
+                        ) /
+                        1000
+                    )
+                );
+            }
+
+
+            var seconds =
+                Number(
+                    state.nextAvailableInSeconds
+                );
+
+
+            if (
+                Number.isFinite(
+                    seconds
+                )
+            ) {
+                return Math.max(
+                    0,
+                    seconds
+                );
+            }
+
+
+            return null;
+        };
+
+
+    window.getLivePotionSecondsRemaining =
+        function (
+            potion
+        ) {
+            if (!potion) {
+                return null;
+            }
+
+
+            /*
+             * readyAt is preferred because secondsRemaining is only the
+             * server value at the instant the packet was received.
+             */
+            var readyAt =
+                Number(
+                    potion.readyAt
+                );
+
+
+            if (
+                Number.isFinite(
+                    readyAt
+                ) &&
+                readyAt > 0
+            ) {
+                return Math.max(
+                    0,
+                    Math.ceil(
+                        (
+                            readyAt -
+                            Date.now()
+                        ) /
+                        1000
+                    )
+                );
+            }
+
+
+            var seconds =
+                Number(
+                    potion.secondsRemaining
+                );
+
+
+            if (
+                Number.isFinite(
+                    seconds
+                )
+            ) {
+                return Math.max(
+                    0,
+                    seconds
+                );
+            }
+
+
+            /*
+             * Legacy compatibility only.
+             */
+            if (
+                potion.expires &&
+                typeof potion.expires
+                    .getTime ===
+                    'function'
+            ) {
+                var expiresAt =
+                    potion.expires
+                        .getTime();
+
+
+                if (
+                    Number.isFinite(
+                        expiresAt
+                    ) &&
+                    expiresAt > 0
+                ) {
+                    return Math.max(
+                        0,
+                        Math.ceil(
+                            (
+                                expiresAt -
+                                Date.now()
+                            ) /
+                            1000
+                        )
+                    );
+                }
+            }
+
+
+            return null;
+        };
+
+
+    window._formatLmEconomySeconds =
+        function (
+            seconds
+        ) {
+            if (
+                seconds ===
+                    null ||
+                seconds ===
+                    undefined ||
+                !Number.isFinite(
+                    Number(
+                        seconds
+                    )
+                )
+            ) {
+                return 'Waiting for server';
+            }
+
+
+            seconds =
+                Math.max(
+                    0,
+                    Math.ceil(
+                        Number(
+                            seconds
+                        )
+                    )
+                );
+
+
+            if (
+                typeof window
+                    .formatAgarDurationSeconds ===
+                    'function'
+            ) {
+                return window
+                    .formatAgarDurationSeconds(
+                        seconds,
+                        true
+                    );
+            }
+
+
+            var days =
+                Math.floor(
+                    seconds /
+                    86400
+                );
+
+
+            seconds -=
+                days *
+                86400;
+
+
+            var hours =
+                Math.floor(
+                    seconds /
+                    3600
+                );
+
+
+            seconds -=
+                hours *
+                3600;
+
+
+            var minutes =
+                Math.floor(
+                    seconds /
+                    60
+                );
+
+
+            var secs =
+                seconds %
+                60;
+
+
+            var parts = [];
+
+
+            if (days) {
+                parts.push(
+                    days +
+                    'd'
+                );
+            }
+
+
+            if (
+                hours ||
+                days
+            ) {
+                parts.push(
+                    hours +
+                    'h'
+                );
+            }
+
+
+            if (
+                minutes ||
+                hours ||
+                days
+            ) {
+                parts.push(
+                    minutes +
+                    'm'
+                );
+            }
+
+
+            if (
+                !days &&
+                !hours
+            ) {
+                parts.push(
+                    secs +
+                    's'
+                );
+            }
+
+
+            return parts.join(
+                ' '
+            );
+        };
+
+
+    window._lmEconomyEscape =
+        function (
+            value
+        ) {
+            return String(
+                value == null
+                    ? ''
+                    : value
+            )
+                .replace(
+                    /&/g,
+                    '&amp;'
+                )
+                .replace(
+                    /</g,
+                    '&lt;'
+                )
+                .replace(
+                    />/g,
+                    '&gt;'
+                )
+                .replace(
+                    /"/g,
+                    '&quot;'
+                )
+                .replace(
+                    /'/g,
+                    '&#39;'
+                );
+        };
+
+
+    window.renderAgarEconomyPanel =
+        function (
+            currentLevel
+        ) {
+            var profile =
+                $('#profile');
+
+
+            if (
+                !profile.length
+            ) {
+                return false;
+            }
+
+
+            /*
+             * Do not create a second catalogue system.
+             *
+             * If HUNK 1 has not received GameConfiguration yet,
+             * simply wait for lm-agar-config-index-ready.
+             */
+            if (
+                typeof window
+                    .getAgarConfigIndex !==
+                    'function' ||
+                !window
+                    .getAgarConfigIndex()
+            ) {
+                return false;
+            }
+
+
+            var level =
+                Number(
+                    currentLevel
+                );
+
+
+            if (
+                !Number.isFinite(
+                    level
+                ) ||
+                level < 1
+            ) {
+                level =
+                    Number(
+                        window.agarioLEVEL
+                    );
+
+
+                if (
+                    !Number.isFinite(
+                        level
+                    ) ||
+                    level < 1
+                ) {
+                    level =
+                        Number(
+                            window.application &&
+                            window.application.user &&
+                            window.application
+                                .user.level
+                        ) ||
+                        1;
+                }
+            }
+
+
+            level =
+                Math.max(
+                    1,
+                    Math.floor(
+                        level
+                    )
+                );
+
+
+            var theme =
+                getTheme();
+
+
+            var panel =
+                $('#lm-economy-status-panel');
+
+
+            if (
+                !panel.length
+            ) {
+                panel =
+                    $(
+                        '<div>',
+                        {
+                            id:
+                                'lm-economy-status-panel'
+                        }
+                    );
+
+
+                panel.css({
+                    width:
+                        '100%',
+
+                    boxSizing:
+                        'border-box',
+
+                    clear:
+                        'both',
+
+                    margin:
+                        '10px 0',
+
+                    padding:
+                        '10px',
+
+                    borderRadius:
+                        '7px',
+
+                    border:
+                        '1px solid rgba(255,255,255,0.12)'
+                });
+
+
+                /*
+                 * Prefer placing it directly beneath the extended
+                 * account/profile controls.
+                 */
+                var menuButtons =
+                    $('#lm-extended-menu-btns');
+
+
+                if (
+                    menuButtons.length
+                ) {
+                    panel.insertAfter(
+                        menuButtons
+                    );
+                } else {
+                    var profilePanels =
+                        profile
+                            .find(
+                                '.agario-profile-panel'
+                            )
+                            .not(
+                                '#exp-bar'
+                            );
+
+
+                    if (
+                        profilePanels.length
+                    ) {
+                        profilePanels
+                            .first()
+                            .append(
+                                panel
+                            );
+                    } else {
+                        profile.append(
+                            panel
+                        );
+                    }
+                }
+            }
+
+
+            panel.css({
+                background:
+                    theme.pc2,
+
+                color:
+                    theme.tc
+            });
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * NEXT LEVEL REWARD
+             * ─────────────────────────────────────────────────────────
+             */
+            var xpEntry =
+                typeof window
+                    .getAgarXpEntry ===
+                    'function'
+                    ? window
+                        .getAgarXpEntry(
+                            level
+                        )
+                    : null;
+
+
+            var levelRewardId =
+                xpEntry &&
+                xpEntry.levelUpBonusId
+                    ? String(
+                        xpEntry
+                            .levelUpBonusId
+                    )
+                    : '';
+
+
+            var levelRewardText =
+                (
+                    levelRewardId &&
+                    typeof window
+                        .formatAgarReward ===
+                        'function'
+                )
+                    ? window
+                        .formatAgarReward(
+                            levelRewardId
+                        )
+                    : '';
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * HOURLY BONUS
+             * ─────────────────────────────────────────────────────────
+             */
+            var hourlySeconds =
+                window
+                    .getLiveTimedEventSecondsRemaining(
+                        'hourlyBonus'
+                    );
+
+
+            var hourlyInfo =
+                typeof window
+                    .getAgarTimedEventInfo ===
+                    'function'
+                    ? window
+                        .getAgarTimedEventInfo(
+                            'hourlyBonus',
+                            hourlySeconds ===
+                                null
+                                ? undefined
+                                : hourlySeconds
+                        )
+                    : null;
+
+
+            var hourlyRewardId =
+                hourlyInfo &&
+                hourlyInfo.bonusId
+                    ? hourlyInfo
+                        .bonusId
+                    : '';
+
+
+            var hourlyRewardText =
+                (
+                    hourlyRewardId &&
+                    typeof window
+                        .formatAgarReward ===
+                        'function'
+                )
+                    ? window
+                        .formatAgarReward(
+                            hourlyRewardId
+                        )
+                    : '';
+
+
+            var hourlyTimerText;
+
+
+            if (
+                hourlySeconds ===
+                null
+            ) {
+                hourlyTimerText =
+                    'Waiting for server';
+            } else if (
+                hourlySeconds <=
+                0
+            ) {
+                hourlyTimerText =
+                    'READY';
+            } else {
+                hourlyTimerText =
+                    window
+                        ._formatLmEconomySeconds(
+                            hourlySeconds
+                        );
+            }
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * DAILY QUEST / TIME-VARIABLE SKIP PRICE
+             * ─────────────────────────────────────────────────────────
+             */
+            var dailySeconds =
+                window
+                    .getLiveTimedEventSecondsRemaining(
+                        'dailyQuest'
+                    );
+
+
+            var dailyInfo =
+                typeof window
+                    .getAgarTimedEventInfo ===
+                    'function'
+                    ? window
+                        .getAgarTimedEventInfo(
+                            'dailyQuest',
+                            dailySeconds ===
+                                null
+                                ? undefined
+                                : dailySeconds
+                        )
+                    : null;
+
+
+            var dailyTimerText;
+
+
+            if (
+                dailySeconds ===
+                null
+            ) {
+                dailyTimerText =
+                    'Waiting for server';
+            } else if (
+                dailySeconds <=
+                0
+            ) {
+                dailyTimerText =
+                    'READY';
+            } else {
+                dailyTimerText =
+                    window
+                        ._formatLmEconomySeconds(
+                            dailySeconds
+                        );
+            }
+
+
+            var dailyPriceText =
+                '';
+
+
+            if (
+                dailyInfo &&
+                dailyInfo.purchaseId &&
+                dailyInfo.currentPrice !==
+                    null &&
+                dailyInfo.currentPrice !==
+                    undefined
+            ) {
+                var dailyPrice =
+                    Math.max(
+                        0,
+                        Number(
+                            dailyInfo
+                                .currentPrice
+                        ) ||
+                        0
+                    );
+
+
+                dailyPriceText =
+                    typeof window
+                        .formatAgarCurrency ===
+                        'function'
+                        ? window
+                            .formatAgarCurrency(
+                                dailyPrice,
+                                dailyInfo
+                                    .currency
+                            )
+                        : (
+                            String(
+                                dailyPrice
+                            ) +
+                            (
+                                dailyInfo
+                                    .currency
+                                    ? (
+                                        ' ' +
+                                        dailyInfo
+                                            .currency
+                                    )
+                                    : ''
+                            )
+                        );
+            }
+
+
+            /*
+             * Small helper for a consistent row.
+             */
+            function buildRow(
+                icon,
+                label,
+                mainText,
+                rightHtml
+            ) {
+                return (
+                    '<div style="' +
+                        'display:flex;' +
+                        'align-items:center;' +
+                        'gap:8px;' +
+                        'min-height:30px;' +
+                        'padding:5px 2px;' +
+                        'border-top:1px solid rgba(255,255,255,0.07);' +
+                    '">' +
+
+                        '<div style="' +
+                            'width:22px;' +
+                            'flex:0 0 22px;' +
+                            'text-align:center;' +
+                            'font-size:15px;' +
+                        '">' +
+                            window
+                                ._lmEconomyEscape(
+                                    icon
+                                ) +
+                        '</div>' +
+
+                        '<div style="' +
+                            'min-width:0;' +
+                            'flex:1;' +
+                        '">' +
+
+                            '<div style="' +
+                                'font-size:11px;' +
+                                'font-weight:700;' +
+                                'color:' +
+                                window
+                                    ._lmEconomyEscape(
+                                        theme.tc
+                                    ) +
+                                ';' +
+                            '">' +
+                                window
+                                    ._lmEconomyEscape(
+                                        label
+                                    ) +
+                            '</div>' +
+
+                            '<div style="' +
+                                'font-size:10px;' +
+                                'overflow:hidden;' +
+                                'text-overflow:ellipsis;' +
+                                'white-space:normal;' +
+                                'color:' +
+                                window
+                                    ._lmEconomyEscape(
+                                        theme.tc2
+                                    ) +
+                                ';' +
+                            '">' +
+                                window
+                                    ._lmEconomyEscape(
+                                        mainText
+                                    ) +
+                            '</div>' +
+
+                        '</div>' +
+
+                        (
+                            rightHtml ||
+                            ''
+                        ) +
+
+                    '</div>'
+                );
+            }
+
+
+            var html =
+                '<div style="' +
+                    'display:flex;' +
+                    'align-items:center;' +
+                    'justify-content:space-between;' +
+                    'padding:0 2px 7px 2px;' +
+                '">' +
+
+                    '<strong style="' +
+                        'font-size:11px;' +
+                        'letter-spacing:.5px;' +
+                    '">' +
+                        'ACCOUNT REWARDS &amp; TIMERS' +
+                    '</strong>' +
+
+                    '<span style="' +
+                        'font-size:9px;' +
+                        'color:' +
+                        window
+                            ._lmEconomyEscape(
+                                theme.tc2
+                            ) +
+                        ';' +
+                    '">' +
+                        'GameConfiguration + live server state' +
+                    '</span>' +
+
+                '</div>';
+
+
+            html +=
+                buildRow(
+                    '\u2B50',
+                    'Level ' +
+                        level +
+                        ' \u2192 ' +
+                        (
+                            level +
+                            1
+                        ),
+                    levelRewardText ||
+                        (
+                            levelRewardId
+                                ? levelRewardId
+                                : 'No configured reward'
+                        ),
+                    ''
+                );
+
+
+            html +=
+                buildRow(
+                    '\uD83D\uDCB0',
+                    'Hourly Bonus',
+                    hourlyRewardText ||
+                        'Configured timed reward',
+                    '<div style="' +
+                        'font-size:10px;' +
+                        'font-weight:700;' +
+                        'white-space:nowrap;' +
+                        'color:' +
+                        window
+                            ._lmEconomyEscape(
+                                theme.b2
+                            ) +
+                        ';' +
+                    '">' +
+                        window
+                            ._lmEconomyEscape(
+                                hourlyTimerText
+                            ) +
+                    '</div>'
+                );
+
+
+            var dailyButtonHtml =
+                '';
+
+
+            if (
+                dailySeconds !==
+                    null &&
+                dailySeconds > 0 &&
+                dailyInfo &&
+                dailyInfo.purchaseId &&
+                dailyPriceText
+            ) {
+                dailyButtonHtml =
+                    '<button ' +
+                        'type="button" ' +
+                        'class="btn btn-xs lm-timed-event-skip-buy" ' +
+                        'data-event-id="dailyQuest" ' +
+                        'data-purchase-id="' +
+                            window
+                                ._lmEconomyEscape(
+                                    dailyInfo
+                                        .purchaseId
+                                ) +
+                        '" ' +
+                        'style="' +
+                            'margin-left:6px;' +
+                            'font-size:9px;' +
+                            'padding:3px 6px;' +
+                            'background:' +
+                                window
+                                    ._lmEconomyEscape(
+                                        theme.b1
+                                    ) +
+                            ';' +
+                            'color:' +
+                                window
+                                    ._lmEconomyEscape(
+                                        theme.btc
+                                    ) +
+                            ';' +
+                            'border:0;' +
+                            'white-space:nowrap;' +
+                        '"' +
+                    '>' +
+                        'New Quest \u2014 ' +
+                        window
+                            ._lmEconomyEscape(
+                                dailyPriceText
+                            ) +
+                    '</button>';
+            }
+
+
+            html +=
+                buildRow(
+                    '\uD83C\uDFAF',
+                    'Daily Quest',
+                    dailyTimerText,
+                    dailyButtonHtml
+                );
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * POTION SLOTS
+             * ─────────────────────────────────────────────────────────
+             */
+            var potionStates =
+                (
+                    window.LM &&
+                    window.LM.user &&
+                    window.LM.user
+                        .potionsStatus
+                ) ||
+                {};
+
+
+            for (
+                var slot = 1;
+                slot <= 3;
+                slot++
+            ) {
+                var potionKey =
+                    'potion' +
+                    slot;
+
+
+                var potion =
+                    potionStates[
+                        potionKey
+                    ] ||
+                    null;
+
+
+                if (!potion) {
+                    html +=
+                        buildRow(
+                            '\u2697\uFE0F',
+                            'Potion ' +
+                                slot,
+                            'Empty',
+                            ''
+                        );
+
+
+                    continue;
+                }
+
+
+                var productId =
+                    potion.productId ||
+                    potion.type ||
+                    '';
+
+
+                var status =
+                    Number(
+                        potion.status
+                    ) ||
+                    0;
+
+
+                var potionSeconds =
+                    window
+                        .getLivePotionSecondsRemaining(
+                            potion
+                        );
+
+
+                var potionName =
+                    typeof window
+                        .formatAgarProduct ===
+                        'function'
+                        ? window
+                            .formatAgarProduct(
+                                productId,
+                                1
+                            )
+                        : String(
+                            productId
+                        );
+
+
+                var potionStatusText;
+
+
+                if (
+                    status === 1
+                ) {
+                    potionStatusText =
+                        'Ready to brew';
+                } else if (
+                    status === 2
+                ) {
+                    potionStatusText =
+                        'Brewing';
+
+
+                    if (
+                        potionSeconds !==
+                            null
+                    ) {
+                        potionStatusText +=
+                            ' \u2014 ' +
+                            window
+                                ._formatLmEconomySeconds(
+                                    potionSeconds
+                                );
+                    }
+                } else if (
+                    status === 3
+                ) {
+                    potionStatusText =
+                        'Ready to open';
+                } else {
+                    potionStatusText =
+                        'Status ' +
+                        status;
+                }
+
+
+                var potionInfo =
+                    (
+                        status === 2 &&
+                        typeof window
+                            .getAgarPotionInfo ===
+                            'function'
+                    )
+                        ? window
+                            .getAgarPotionInfo(
+                                productId,
+                                slot,
+                                potionSeconds ===
+                                    null
+                                    ? undefined
+                                    : potionSeconds
+                            )
+                        : null;
+
+
+                var potionButtonHtml =
+                    '';
+
+
+                if (
+                    status === 2 &&
+                    potionInfo &&
+                    potionInfo.purchaseId &&
+                    potionInfo.currentPrice !==
+                        null &&
+                    potionInfo.currentPrice !==
+                        undefined
+                ) {
+                    var potionPrice =
+                        Math.max(
+                            0,
+                            Number(
+                                potionInfo
+                                    .currentPrice
+                            ) ||
+                            0
+                        );
+
+
+                    var potionPriceText =
+                        typeof window
+                            .formatAgarCurrency ===
+                            'function'
+                            ? window
+                                .formatAgarCurrency(
+                                    potionPrice,
+                                    potionInfo
+                                        .currency
+                                )
+                            : (
+                                String(
+                                    potionPrice
+                                ) +
+                                (
+                                    potionInfo
+                                        .currency
+                                        ? (
+                                            ' ' +
+                                            potionInfo
+                                                .currency
+                                        )
+                                        : ''
+                                )
+                            );
+
+
+                    potionButtonHtml =
+                        '<button ' +
+                            'type="button" ' +
+                            'class="btn btn-xs lm-potion-skip-buy" ' +
+
+                            'data-potion-id="' +
+                                window
+                                    ._lmEconomyEscape(
+                                        productId
+                                    ) +
+                            '" ' +
+
+                            'data-slot="' +
+                                slot +
+                            '" ' +
+
+                            'data-purchase-id="' +
+                                window
+                                    ._lmEconomyEscape(
+                                        potionInfo
+                                            .purchaseId
+                                    ) +
+                            '" ' +
+
+                            'style="' +
+                                'margin-left:6px;' +
+                                'font-size:9px;' +
+                                'padding:3px 6px;' +
+                                'background:' +
+                                    window
+                                        ._lmEconomyEscape(
+                                            theme.b3
+                                        ) +
+                                ';' +
+                                'color:' +
+                                    window
+                                        ._lmEconomyEscape(
+                                            theme.btc
+                                        ) +
+                                ';' +
+                                'border:0;' +
+                                'white-space:nowrap;' +
+                            '"' +
+
+                        '>' +
+                            'Skip \u2014 ' +
+                            window
+                                ._lmEconomyEscape(
+                                    potionPriceText
+                                ) +
+                        '</button>';
+                }
+
+
+                html +=
+                    buildRow(
+                        status === 3
+                            ? '\uD83E\uDDEA'
+                            : '\u2697\uFE0F',
+
+                        'Potion ' +
+                            slot,
+
+                        potionName +
+                            ' \u2014 ' +
+                            potionStatusText,
+
+                        potionButtonHtml
+                    );
+            }
+
+
+            panel.html(
+                html
+            );
+
+
+            return true;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────
+     * PURCHASE BUTTONS
+     * ─────────────────────────────────────────────────────────────────
+     *
+     * IMPORTANT:
+     *
+     * These DO NOT implement a new shop transport.
+     *
+     * purchaseId came from GameConfiguration.
+     * window.softPurchase() is the existing transport.
+     */
+
+
+    $(document)
+        .off(
+            'click.lmPotionSkipBuy',
+            '.lm-potion-skip-buy'
+        )
+        .on(
+            'click.lmPotionSkipBuy',
+            '.lm-potion-skip-buy',
+            function (
+                event
+            ) {
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                var button =
+                    $(this);
+
+
+                var purchaseId =
+                    String(
+                        button.attr(
+                            'data-purchase-id'
+                        ) ||
+                        ''
+                    );
+
+
+                var potionId =
+                    String(
+                        button.attr(
+                            'data-potion-id'
+                        ) ||
+                        ''
+                    );
+
+
+                var slot =
+                    parseInt(
+                        button.attr(
+                            'data-slot'
+                        ),
+                        10
+                    ) ||
+                    0;
+
+
+                if (
+                    !purchaseId
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    typeof window
+                        .validateShopIntegrity ===
+                        'function' &&
+                    !window
+                        .validateShopIntegrity(
+                            'skip potion brew'
+                        )
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    typeof window
+                        .softPurchase !==
+                        'function'
+                ) {
+                    if (
+                        window.toastr
+                    ) {
+                        toastr.error(
+                            '<b>[POTION]:</b> Soft-purchase transport is unavailable.'
+                        );
+                    }
+
+
+                    return false;
+                }
+
+
+                button.prop(
+                    'disabled',
+                    true
+                );
+
+
+                window
+                    .softPurchase(
+                        purchaseId,
+                        {
+                            kind:
+                                'potion-skip',
+
+                            potionId:
+                                potionId,
+
+                            slot:
+                                slot,
+
+                            purchaseId:
+                                purchaseId,
+
+                            onSuccess:
+                                function () {
+                                    button.prop(
+                                        'disabled',
+                                        false
+                                    );
+
+
+                                    if (
+                                        typeof window
+                                            .renderAgarEconomyPanel ===
+                                            'function'
+                                    ) {
+                                        window
+                                            .renderAgarEconomyPanel();
+                                    }
+                                },
+
+                            onFailure:
+                                function (
+                                    reason
+                                ) {
+                                    button.prop(
+                                        'disabled',
+                                        false
+                                    );
+
+
+                                    console.warn(
+                                        '[LM POTION] Skip purchase failed:',
+                                        purchaseId,
+                                        reason
+                                    );
+                                }
+                        }
+                    );
+
+
+                return false;
+            }
+        );
+
+
+    $(document)
+        .off(
+            'click.lmTimedEventSkipBuy',
+            '.lm-timed-event-skip-buy'
+        )
+        .on(
+            'click.lmTimedEventSkipBuy',
+            '.lm-timed-event-skip-buy',
+            function (
+                event
+            ) {
+                event.preventDefault();
+                event.stopPropagation();
+
+
+                var button =
+                    $(this);
+
+
+                var eventId =
+                    String(
+                        button.attr(
+                            'data-event-id'
+                        ) ||
+                        ''
+                    );
+
+
+                var purchaseId =
+                    String(
+                        button.attr(
+                            'data-purchase-id'
+                        ) ||
+                        ''
+                    );
+
+
+                if (
+                    !eventId ||
+                    !purchaseId
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    typeof window
+                        .validateShopIntegrity ===
+                        'function' &&
+                    !window
+                        .validateShopIntegrity(
+                            'skip timed event'
+                        )
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    typeof window
+                        .softPurchase !==
+                        'function'
+                ) {
+                    if (
+                        window.toastr
+                    ) {
+                        toastr.error(
+                            '<b>[EVENT]:</b> Soft-purchase transport is unavailable.'
+                        );
+                    }
+
+
+                    return false;
+                }
+
+
+                button.prop(
+                    'disabled',
+                    true
+                );
+
+
+                window
+                    .softPurchase(
+                        purchaseId,
+                        {
+                            kind:
+                                'timed-event-skip',
+
+                            eventId:
+                                eventId,
+
+                            purchaseId:
+                                purchaseId,
+
+                            onSuccess:
+                                function () {
+                                    button.prop(
+                                        'disabled',
+                                        false
+                                    );
+
+
+                                    if (
+                                        typeof window
+                                            .renderAgarEconomyPanel ===
+                                            'function'
+                                    ) {
+                                        window
+                                            .renderAgarEconomyPanel();
+                                    }
+                                },
+
+                            onFailure:
+                                function (
+                                    reason
+                                ) {
+                                    button.prop(
+                                        'disabled',
+                                        false
+                                    );
+
+
+                                    console.warn(
+                                        '[LM EVENT] Timed-event purchase failed:',
+                                        eventId,
+                                        purchaseId,
+                                        reason
+                                    );
+                                }
+                        }
+                    );
+
+
+                return false;
+            }
+        );
+
+
+    /*
+     * Server/config changes trigger immediate repaints.
+     */
+    document.addEventListener(
+        'lm-potions-updated',
+        function () {
+            if (
+                typeof window
+                    .renderAgarEconomyPanel ===
+                    'function'
+            ) {
+                window
+                    .renderAgarEconomyPanel();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        'lm-timed-events-updated',
+        function () {
+            if (
+                typeof window
+                    .renderAgarEconomyPanel ===
+                    'function'
+            ) {
+                window
+                    .renderAgarEconomyPanel();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        'lm-agar-config-index-ready',
+        function () {
+            if (
+                typeof window
+                    .renderAgarEconomyPanel ===
+                    'function'
+            ) {
+                window
+                    .renderAgarEconomyPanel();
+            }
+        }
+    );
+
+
+    /*
+     * One lightweight UI countdown tick.
+     *
+     * It does NOT:
+     *
+     *      - make network requests
+     *      - recalculate account state
+     *      - activate rewards
+     *
+     * It only derives remaining seconds from readyAt.
+     */
+    if (
+        !window
+            ._lmEconomyPanelRefreshTimer
+    ) {
+        window
+            ._lmEconomyPanelRefreshTimer =
+            window.setInterval(
+                function () {
+                    if (
+                        document.hidden
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        typeof window
+                            .renderAgarEconomyPanel ===
+                            'function'
+                    ) {
+                        window
+                            .renderAgarEconomyPanel();
+                    }
+                },
+                5000
+            );
+    }
+
+
+
+
 
     // Inject "Official Offer", "Leagues", and "Friends" buttons into Profile Tab (#profile) panel
     function initMenuButtons() {
@@ -6152,18 +7791,41 @@
             return false;
         });
 
-        /* Track potion status for autobrewing without overwriting Vue slots */
+        /*
+         * Track potion status for autobrewing without overwriting
+         * the rich per-slot state from HUNK 6 (readyAt,
+         * secondsRemaining, receivedAt, raw, productId).
+         *
+         * Only MERGE fields that the Vue app provides.
+         * If HUNK 6 already populated the slot, keep its data.
+         */
         for (var s = 1; s <= 3; s++) {
             var pData = potions[s - 1] || null;
+            var potionKey = 'potion' + s;
             if (pData) {
-                var status = pData.status || 1; // 1 = unbrewed, 2 = brewing, 3 = ready
-                var potionKey = 'potion' + s;
-                window.LM.user.potionsStatus[potionKey] = {
-                    type: pData.productId || pData.type || '',
-                    slot: s,
-                    status: status,
-                    expires: pData.expiresInSeconds ? new Date(Date.now() + (pData.expiresInSeconds * 1000)) : new Date(0)
-                };
+                var existing = window.LM.user.potionsStatus[potionKey];
+                if (existing && existing.readyAt) {
+                    /* HUNK 6 already owns this slot — only refresh status */
+                    existing.status = Number(pData.status) || existing.status;
+                } else {
+                    /* No HUNK 6 data yet — seed from Vue without inventing readyAt */
+                    window.LM.user.potionsStatus[potionKey] = {
+                        type: pData.productId || pData.type || '',
+                        productId: pData.productId || pData.type || '',
+                        slot: s,
+                        status: Number(pData.status) || 1,
+                        secondsRemaining: Number(pData.secondsRemaining) || 0,
+                        receivedAt: Date.now(),
+                        readyAt: pData.secondsRemaining
+                            ? Date.now() + Number(pData.secondsRemaining) * 1000
+                            : 0,
+                        expires: pData.expiresInSeconds
+                            ? new Date(Date.now() + (pData.expiresInSeconds * 1000))
+                            : (pData.secondsRemaining
+                                ? new Date(Date.now() + Number(pData.secondsRemaining) * 1000)
+                                : new Date(0))
+                    };
+                }
             }
         }
 
