@@ -3407,6 +3407,16 @@ window.getOfficialAgarXpState = function (
     fallbackXp,
     fallbackLimit
 ) {
+    /*
+     * LEGACY FALLBACK — Hardcoded XP formula.
+     *
+     * Prefer getAgarXpEntry(level).xpToNextLevel from
+     * GameConfiguration when available. This formula is
+     * retained only for offline/config-unavailable scenarios.
+     *
+     * WARNING: This formula says level 1 → 50,
+     * but GameConfiguration says level 1 → 35.
+     */
     function calculateAgarExp(q) {
         var lvl = Math.max(1, Number(q) || 1);
         if (lvl === 1) return 50;
@@ -3500,24 +3510,25 @@ window.getOfficialAgarXpState = function (
     }
 
     /*
-     * GameConfiguration table source
+     * GameConfiguration table source.
+     *
+     * Uses getAgarXpEntry(level) which reads the correct
+     * field: xpToNextLevel (from "Gameplay - XP to Level").
      */
     if (!(totalXp > 0)) {
         try {
-            var xpList =
-                window.GameConfiguration &&
-                window.GameConfiguration.gameConfig &&
-                window.GameConfiguration.gameConfig['Gameplay - XP to Level'];
-
-            if (Array.isArray(xpList)) {
-                for (var k = 0; k < xpList.length; k++) {
-                    if (xpList[k] && Number(xpList[k].level) === Number(level)) {
-                        var gcXp = Number(xpList[k].xp || xpList[k].xpNeeded || xpList[k].maxXp);
-                        if (isFinite(gcXp) && gcXp > 0) {
-                            totalXp = gcXp;
-                            break;
-                        }
-                    }
+            var xpEntry = window.getAgarXpEntry
+                ? window.getAgarXpEntry(level)
+                : null;
+            if (xpEntry) {
+                var gcXp = Number(
+                    xpEntry.xpToNextLevel
+                );
+                if (
+                    isFinite(gcXp) &&
+                    gcXp > 0
+                ) {
+                    totalXp = gcXp;
                 }
             }
         } catch (gcError) { }
@@ -3604,7 +3615,11 @@ window.getOfficialAgarXpState = function (
     }
 
     /*
-     * Algorithmic XP limit calculation for the level (guarantees valid totalXp)
+     * LAST-RESORT FALLBACK — Algorithmic XP limit.
+     *
+     * Only runs if GameConfiguration, Core.models.xpModel,
+     * cached account data, application.agarExp(), AND the
+     * supplied fallback limit ALL failed to produce a value.
      */
     if (!(totalXp > 0) || totalXp < currentXp || (level > 5 && totalXp === 1000)) {
         totalXp = calculateAgarExp(level);
@@ -4234,70 +4249,282 @@ function calcTarget() { }
 
 //function historystate(){};
 
-setTimeout(function () {
-    if (window.LMGameConfiguration !== undefined) {
-        window.LMAgarGameConfiguration = window.LMGameConfiguration;
-        window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
-
-        window.SpineSkinMap = {};
-        try {
-            var spineAnims = LMAgarGameConfiguration.gameConfig["Visual - Prod. Spine Animations"];
-            if (spineAnims) {
-                for (var s = 0; s < spineAnims.length; s++) {
-                    if (spineAnims[s].productId && spineAnims[s].spineFileName) {
-                        window.SpineSkinMap[spineAnims[s].productId] = spineAnims[s].spineFileName;
-                    }
-                }
-            }
-        } catch (e) { }
-
-        /* Build VanillaSkinUrlMap: %skinname -> full URL
-         * Primary: legendmod.ml/vanillaskins/ (our mirror, no CORS issues)
-         * The onerror fallback chain handles missing files via legendmod.ml → proxy → CDN */
-        window.VanillaSkinUrlMap = {};
-        var mirrorBase = "https://jimboy3000.github.io/vanillaskins/";
-        for (var i = 0; i < window.EquippableSkins.length; i++) {
-            var skin = window.EquippableSkins[i];
-            var url = null;
-            if (skin.image && skin.image !== "uses_spine") {
-                url = mirrorBase + skin.image;
-            } else if (skin.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skin.productId]) {
-                url = mirrorBase + window.SpineSkinMap[skin.productId] + ".png";
-            }
-            if (url) {
-                var pId = skin.productId;
-                var rawName = pId.replace('skin_', '');
-                window.VanillaSkinUrlMap['%' + rawName] = url;
-                window.VanillaSkinUrlMap[('%' + rawName).toLowerCase()] = url;
-                window.VanillaSkinUrlMap[pId] = url;
-                window.VanillaSkinUrlMap[pId.toLowerCase()] = url;
-                window.VanillaSkinUrlMap[rawName] = url;
-                window.VanillaSkinUrlMap[rawName.toLowerCase()] = url;
-            }
-        }
-
-        window.FreskinsMap = [];
-        window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
-
-        // Extract Leagues Prizes, Tiers, and Offerable Bundles from GameConfiguration
-        try {
-            window.LeaguesPrizesConfig = LMAgarGameConfiguration.gameConfig["Leagues - Prizes"] || null;
-            window.LeaguesTiersConfig = LMAgarGameConfiguration.gameConfig["Leagues - Tiers"] || null;
-            window.OfferableBundlesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Offerable Bundles"] || null;
-            window.VisualBundlesConfig = LMAgarGameConfiguration.gameConfig["Visual - Bundles"] || null;
-            window.WalletProductBundlesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Product Bundles"] || null;
-            window.PricesMatrixConfig = LMAgarGameConfiguration.gameConfig["Prices - Matrix"] || null;
-            window.PotionHelpConfig = LMAgarGameConfiguration.gameConfig["Visual - Potion Help"] || null;
-            window.MysterySkinTypesConfig = LMAgarGameConfiguration.gameConfig["Mystery Skins - Types"] || null;
-            window.WalletSoftPurchasesConfig = LMAgarGameConfiguration.gameConfig["Wallet - Soft Purchases"] || null;
-
-        } catch (e) { console.warn("[LM] Could not load Leagues/Deals config:", e); }
-
-        for (var player = 0; player < window.FreeSkins.length; player++) {
-            window.FreskinsMap[player] = window.FreeSkins[player].id
+/*
+ * ─── CENTRAL GAMECONFIGURATION ACCESSOR ───
+ *
+ * getAgarConfigSection(name) returns the named section
+ * from whichever GameConfiguration source is available,
+ * or null if not loaded yet.
+ *
+ * Sources (checked in order):
+ *   1. window.GameConfiguration.gameConfig[name]
+ *   2. window.LMAgarGameConfiguration.gameConfig[name]
+ *   3. window.LMGameConfiguration.gameConfig[name]
+ */
+window.getAgarConfigSection = function (name) {
+    var sources = [
+        window.GameConfiguration,
+        window.LMAgarGameConfiguration,
+        window.LMGameConfiguration
+    ];
+    for (var i = 0; i < sources.length; i++) {
+        if (
+            sources[i] &&
+            sources[i].gameConfig &&
+            sources[i].gameConfig[name] != null
+        ) {
+            return sources[i].gameConfig[name];
         }
     }
-}, 5000);
+    return null;
+};
+
+/*
+ * getAgarXpEntry(level) → { level, xpToNextLevel, levelUpBonusId }
+ *
+ * Uses "Gameplay - XP to Level" from GameConfiguration.
+ * Returns null if config not loaded or level not found.
+ *
+ * Matches the official agario.js XPModel.getMaxXpForLevel()
+ * semantics: if level >= list length, returns the last entry.
+ */
+window.getAgarXpEntry = function (level) {
+    var xpList = window.getAgarConfigSection(
+        'Gameplay - XP to Level'
+    );
+    if (!Array.isArray(xpList) || !xpList.length) {
+        return null;
+    }
+
+    var lvl = Number(level) || 1;
+
+    /* If level exceeds the table, cap to the last entry
+     * (same behaviour as official XPModel.getMaxXpForLevel). */
+    if (lvl >= xpList.length) {
+        return xpList[xpList.length - 1] || null;
+    }
+
+    for (var k = 0; k < xpList.length; k++) {
+        if (
+            xpList[k] &&
+            Number(xpList[k].level) === lvl
+        ) {
+            return xpList[k];
+        }
+    }
+
+    return null;
+};
+
+/*
+ * ─── EVENT-DRIVEN GAMECONFIGURATION INIT ───
+ *
+ * Replaces the old setTimeout(..., 5000) approach.
+ *
+ * LMGameConfigurationReady (Promise) and
+ * lm-game-configuration-ready (CustomEvent) are both
+ * emitted by ogario.v4.master.js when the JSON arrives.
+ *
+ * _initGameConfigSections() runs exactly once, regardless
+ * of which signal fires first.
+ */
+var _gameConfigInitDone = false;
+
+function _initGameConfigSections(gc) {
+    if (_gameConfigInitDone) return;
+    if (!gc || !gc.gameConfig) return;
+
+    _gameConfigInitDone = true;
+
+    /* Set canonical references */
+    window.LMAgarGameConfiguration = gc;
+    window.GameConfiguration = gc;
+
+    /* ── Equippable Skins ── */
+    window.EquippableSkins =
+        gc.gameConfig["Gameplay - Equippable Skins"];
+
+    /* ── Spine Animations Map ── */
+    window.SpineSkinMap = {};
+    try {
+        var spineAnims =
+            gc.gameConfig[
+                "Visual - Prod. Spine Animations"
+            ];
+        if (spineAnims) {
+            for (
+                var s = 0;
+                s < spineAnims.length;
+                s++
+            ) {
+                if (
+                    spineAnims[s].productId &&
+                    spineAnims[s].spineFileName
+                ) {
+                    window.SpineSkinMap[
+                        spineAnims[s].productId
+                    ] = spineAnims[s].spineFileName;
+                }
+            }
+        }
+    } catch (e) {}
+
+    /* ── Vanilla Skin URL Map ── */
+    window.VanillaSkinUrlMap = {};
+    var mirrorBase =
+        "https://jimboy3000.github.io/vanillaskins/";
+    for (
+        var i = 0;
+        i < window.EquippableSkins.length;
+        i++
+    ) {
+        var skin = window.EquippableSkins[i];
+        var url = null;
+        if (
+            skin.image &&
+            skin.image !== "uses_spine"
+        ) {
+            url = mirrorBase + skin.image;
+        } else if (
+            skin.image === "uses_spine" &&
+            window.SpineSkinMap &&
+            window.SpineSkinMap[skin.productId]
+        ) {
+            url =
+                mirrorBase +
+                window.SpineSkinMap[
+                    skin.productId
+                ] +
+                ".png";
+        }
+        if (url) {
+            var pId = skin.productId;
+            var rawName = pId.replace(
+                'skin_',
+                ''
+            );
+            window.VanillaSkinUrlMap[
+                '%' + rawName
+            ] = url;
+            window.VanillaSkinUrlMap[
+                ('%' + rawName).toLowerCase()
+            ] = url;
+            window.VanillaSkinUrlMap[pId] = url;
+            window.VanillaSkinUrlMap[
+                pId.toLowerCase()
+            ] = url;
+            window.VanillaSkinUrlMap[rawName] =
+                url;
+            window.VanillaSkinUrlMap[
+                rawName.toLowerCase()
+            ] = url;
+        }
+    }
+
+    /* ── Free Skins ── */
+    window.FreskinsMap = [];
+    window.FreeSkins =
+        gc.gameConfig["Gameplay - Free Skins"];
+    for (
+        var player = 0;
+        player < window.FreeSkins.length;
+        player++
+    ) {
+        window.FreskinsMap[player] =
+            window.FreeSkins[player].id;
+    }
+
+    /*
+     * ── Section globals (thin wrappers) ──
+     *
+     * These remain for backward compatibility with
+     * consumers in skinsAndDeals.js, lm_extended_ui.js,
+     * and ogario.v4.js (e.g. WalletSoftPurchasesConfig).
+     *
+     * New code should use getAgarConfigSection() instead.
+     */
+    try {
+        window.LeaguesPrizesConfig =
+            getAgarConfigSection(
+                "Leagues - Prizes"
+            );
+        window.LeaguesTiersConfig =
+            getAgarConfigSection(
+                "Leagues - Tiers"
+            );
+        window.OfferableBundlesConfig =
+            getAgarConfigSection(
+                "Wallet - Offerable Bundles"
+            );
+        window.VisualBundlesConfig =
+            getAgarConfigSection(
+                "Visual - Bundles"
+            );
+        window.WalletProductBundlesConfig =
+            getAgarConfigSection(
+                "Wallet - Product Bundles"
+            );
+        window.PricesMatrixConfig =
+            getAgarConfigSection(
+                "Prices - Matrix"
+            );
+        window.PotionHelpConfig =
+            getAgarConfigSection(
+                "Visual - Potion Help"
+            );
+        window.MysterySkinTypesConfig =
+            getAgarConfigSection(
+                "Mystery Skins - Types"
+            );
+        window.WalletSoftPurchasesConfig =
+            getAgarConfigSection(
+                "Wallet - Soft Purchases"
+            );
+    } catch (e) {
+        console.warn(
+            "[LM] Could not set config globals:",
+            e
+        );
+    }
+
+    console.log(
+        "[LM] GameConfiguration initialized (" +
+        Object.keys(gc.gameConfig).length +
+        " sections)"
+    );
+}
+
+/* Hook 1: Promise-based (master.js) */
+if (
+    window.LMGameConfigurationReady &&
+    typeof window.LMGameConfigurationReady
+        .then === 'function'
+) {
+    window.LMGameConfigurationReady.then(
+        _initGameConfigSections
+    );
+}
+
+/* Hook 2: CustomEvent fallback */
+window.addEventListener(
+    'lm-game-configuration-ready',
+    function (e) {
+        _initGameConfigSections(
+            e.detail
+        );
+    }
+);
+
+/* Hook 3: If already loaded by the time this runs */
+if (
+    !_gameConfigInitDone &&
+    window.LMGameConfiguration &&
+    window.LMGameConfiguration.gameConfig
+) {
+    _initGameConfigSections(
+        window.LMGameConfiguration
+    );
+}
 
 function userLeaguesInfoResponse() {
     // Bridge between the raw-byte RecordPlayers parser (case 131 in onMobileData)
@@ -22317,7 +22544,13 @@ function thelegendmodproject() {
                         var iXp = u.xpLevelUpdates[0];
                         var gLevel = iXp.finalLevel || 1;
                         var gXp = iXp.finalXpForLevel || 0;
-                        var gNextXp = this.agarExp(gLevel);
+                        var gcEntry = window.getAgarXpEntry
+                            ? window.getAgarXpEntry(gLevel)
+                            : null;
+                        var gNextXp =
+                            (gcEntry && gcEntry.xpToNextLevel > 0)
+                                ? gcEntry.xpToNextLevel
+                                : this.agarExp(gLevel);
                         var exp = gLevel >= 150 ? 100 : ~~(gXp * 100 / gNextXp);
 
                         if (this.user) {
@@ -24155,7 +24388,14 @@ Most cells eaten   : ${mostCellsEaten}
             if (!i) i = {}; /* guard: protobuf may not decode userInfo */
             var level = Number(i.level) || (this.user && this.user.level) || window.agarioLEVEL || 1;
             var xp = (i.xp !== undefined && i.xp !== null) ? Number(i.xp) : ((this.user && this.user.xp) || window.agarioXP || 0);
-            var nextLevelXp = (this.user && this.user.nextLevelXp) || this.agarExp(level);
+            var gcEntry = window.getAgarXpEntry
+                ? window.getAgarXpEntry(level)
+                : null;
+            var nextLevelXp =
+                (this.user && this.user.nextLevelXp)
+                || (gcEntry && gcEntry.xpToNextLevel > 0
+                    ? gcEntry.xpToNextLevel
+                    : this.agarExp(level));
             var exp = level >= 150 ? 100 : (nextLevelXp > 0 ? ~~(xp * 100 / nextLevelXp) : 0);
 
             if (this.user) {
@@ -24314,6 +24554,13 @@ Most cells eaten   : ${mostCellsEaten}
         /* Called after confirmed protobuf type-11 login response from server.
          * Styled to visually match agar.io's native blue notification panel.
          * Uses only server-confirmed data (provider, displayName). */
+        /*
+         * LEGACY FALLBACK — Hardcoded XP formula.
+         *
+         * Prefer getAgarXpEntry(level).xpToNextLevel from
+         * GameConfiguration when available. This method is
+         * retained only for offline/config-unavailable scenarios.
+         */
         agarExp(q) {
             var s = {};
             var i = 0,
