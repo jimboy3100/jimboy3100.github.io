@@ -29554,17 +29554,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
 
                         /*
-                         * IMPORTANT:
+                         * VIVID-BORDER VIRUS SEMANTICS:
                          *
-                         * ONE alpha controls:
+                         * virusAlpha (v_color.a) controls ONLY the
+                         * body fill, matching the Canvas2D path:
                          *
-                         * - virus body
-                         * - virus outline
-                         * - virus spikes
-                         * - virus glow
+                         *     globalAlpha *= virusAlpha;
+                         *     fill();                       // body
+                         *     globalAlpha = savedAlpha;     // restore
+                         *     stroke();                     // border at full
                          *
-                         * Therefore transparentViruses can no longer leave
-                         * opaque spikes/outline behind.
+                         * Stroke, spikes, and glow stay at full
+                         * visibility so borders remain vivid.
                          */
                         float virusAlpha =
                             clamp(
@@ -29578,12 +29579,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             bodyCoverage;
 
                         float glowAlpha =
-                            virusAlpha *
                             glowCoverage *
                             0.45;
 
                         float strokeAlpha =
-                            virusAlpha *
                             strokeCoverage;
 
                         vec3 strokeRgb =
@@ -34615,8 +34614,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             0.99
                     ) {
                         /*
-                         * This one alpha is consumed by the virus shader for
-                         * BODY + STROKE + SPIKES + GLOW.
+                         * virusAlpha is sent via v_color.a.
+                         * The shader applies it ONLY to the body fill;
+                         * stroke/spikes/glow stay vivid (full visibility).
                          */
                         bodyAlpha *=
                             Math.max(
