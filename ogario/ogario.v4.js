@@ -9621,41 +9621,9 @@ function thelegendmodproject() {
             'https://raw.githubusercontent.com/Yahnych/vanilla_skins/master/agar/Guitarist.png': 1,
             'https://raw.githubusercontent.com/Yahnych/vanilla_skins/master/agar/Dancer.png': 1
         },
-        boostsInfo: {
-            "mass_boost_3x_24h": {
-                price: 990,
-                name: "Mass 3X/24H"
-            },
-            "mass_boost_3x_1h": {
-                price: 490,
-                name: "Mass 3X/1H"
-            },
-            "mass_boost_2x_24h": {
-                price: 790,
-                name: "Mass 2X/24H"
-            },
-            "mass_boost_2x_1h": {
-                price: 290,
-                name: "Mass 2X/1H"
-            },
-            "xp_boost_3x_24h": {
-                price: 990,
-                name: "XP 3X/24H"
-            },
-            "xp_boost_3x_1h": {
-                price: 490,
-                name: "XP 3X/1H"
-            },
-            "xp_boost_2x_24h": {
-                price: 790,
-                name: "XP 2X/24H"
-            },
-            "xp_boost_2x_1h": {
-                price: 290,
-                name: "XP 2X/1H"
-            }
-        },
+
         replayData: [],
+
         replays: {
             r: []
         },
@@ -25665,32 +25633,36 @@ function thelegendmodproject() {
                         }
                         break;
                     case 2:
-                        this.user.boosts[items[i].productId] = items[i].amount;
-                        var _bId = items[i].productId;
-                        var _bInfo = window.getAgarBoostInfo
-                            ? window.getAgarBoostInfo(_bId)
-                            : null;
-                        var _bLabel;
-                        if (_bInfo) {
-                            var _bName = window.formatAgarProduct
-                                ? window.formatAgarProduct(_bId, 1)
-                                : _bId;
-                            var _bPrice = (_bInfo.price != null && _bInfo.currency)
-                                ? (window.formatAgarCurrency
-                                    ? window.formatAgarCurrency(_bInfo.price, _bInfo.currency)
-                                    : String(_bInfo.price))
-                                : '';
-                            _bLabel = '(' + items[i].amount + ') ' +
-                                _bName +
-                                (_bPrice ? ' [' + _bPrice + ']' : '') +
-                                (_bInfo.bestDeal ? ' \u2605 BEST' : '');
-                        } else {
-                            _bLabel =
-                                '(' + items[i].amount + ') ' + _bId;
+                        /*
+                         * Wallet packet is authoritative for owned quantity.
+                         *
+                         * Do NOT format the option here.
+                         * initBoostDropdown() is now the only DOM formatter.
+                         */
+                        this.user
+                            .boosts[
+                                items[i]
+                                    .productId
+                            ] =
+                            Number(
+                                items[i]
+                                    .amount
+                            ) || 0;
+
+
+                        if (
+                            typeof window
+                                .initBoostDropdown ===
+                                'function'
+                        ) {
+                            window
+                                .initBoostDropdown(
+                                    true
+                                );
                         }
-                        $('#s-boost option[value=\"' + _bId + '\"]')
-                            .text(_bLabel);
+
                         break;
+
 
                     case 3:
                         /*var name = items[i].productId;
@@ -25947,138 +25919,1305 @@ function thelegendmodproject() {
             setTimeout(dismissGameOver, 12000);
         },
         updateEvents(event) {
-            if (event.length === 0) window.questActivationReq()
-            for (var i = 0; i < event.length; i++) {
-                var e = event[i],
-                    type = e.eventId,
-                    timer = e.nextAvailableInSeconds * 1000;
-                switch (type) {
-                    case "dailyQuest":
-                        if (window.dailyQuestTimer) clearTimeout(window.dailyQuestTimer);
-                        window.dailyQuestTimer = setTimeout(() => {
-                            window.questActivationReq()
-                        }, timer);
+            /*
+             * Preserve server-authoritative timed-event state.
+             *
+             * GameConfiguration tells us:
+             *     WHAT the event means
+             *
+             * Server protobuf tells us:
+             *     WHEN it becomes available
+             */
+
+            if (
+                !Array.isArray(
+                    event
+                )
+            ) {
+                event = [];
+            }
+
+
+            if (
+                !window
+                    ._lmTimedEventState
+            ) {
+                window
+                    ._lmTimedEventState =
+                    Object.create(
+                        null
+                    );
+            }
+
+
+            if (
+                event.length === 0 &&
+                typeof window
+                    .questActivationReq ===
+                    'function'
+            ) {
+                window
+                    .questActivationReq();
+            }
+
+
+            var receivedAt =
+                Date.now();
+
+
+            for (
+                var i = 0;
+                i < event.length;
+                i++
+            ) {
+                var e =
+                    event[i];
+
+
+                if (
+                    !e ||
+                    !e.eventId
+                ) {
+                    continue;
+                }
+
+
+                var eventId =
+                    e.eventId;
+
+
+                var seconds =
+                    Math.max(
+                        0,
+                        Number(
+                            e
+                                .nextAvailableInSeconds
+                        ) || 0
+                    );
+
+
+                var milliseconds =
+                    seconds *
+                    1000;
+
+
+                window
+                    ._lmTimedEventState[
+                        eventId
+                    ] = {
+                        eventId:
+                            eventId,
+
+                        nextAvailableInSeconds:
+                            seconds,
+
+                        receivedAt:
+                            receivedAt,
+
+                        readyAt:
+                            receivedAt +
+                            milliseconds,
+
+                        raw:
+                            e
+                    };
+
+
+                switch (
+                    eventId
+                ) {
+                    case 'dailyQuest':
+
+                        if (
+                            window
+                                .dailyQuestTimer
+                        ) {
+                            clearTimeout(
+                                window
+                                    .dailyQuestTimer
+                            );
+                        }
+
+
+                        window
+                            .dailyQuestTimer =
+                            setTimeout(
+                                function () {
+                                    if (
+                                        typeof window
+                                            .questActivationReq ===
+                                            'function'
+                                    ) {
+                                        window
+                                            .questActivationReq();
+                                    }
+                                },
+                                milliseconds
+                            );
+
                         break;
-                    case "hourlyBonus":
-                        window.hourlyBonusFinalTimer = Date.now() + timer;
-                        if (window.coinsTimer) clearTimeout(window.coinsTimer);
-                        window.coinsTimer = setTimeout(() => {
-                            window.autocoins()
-                        }, timer);
+
+
+                    case 'hourlyBonus':
+
+                        window
+                            .hourlyBonusFinalTimer =
+                            receivedAt +
+                            milliseconds;
+
+
+                        if (
+                            window
+                                .coinsTimer
+                        ) {
+                            clearTimeout(
+                                window
+                                    .coinsTimer
+                            );
+                        }
+
+
+                        window
+                            .coinsTimer =
+                            setTimeout(
+                                function () {
+                                    if (
+                                        typeof window
+                                            .autocoins ===
+                                            'function'
+                                    ) {
+                                        window
+                                            .autocoins();
+                                    }
+                                },
+                                milliseconds
+                            );
+
                         break;
-                    case "potionSkipBrew": //maybe it help to autobrewing
-                        console.log("can open after", timer / 60000)
+
+
+                    case 'potionSkipBrew':
+
+                        /*
+                         * Generic event state only.
+                         *
+                         * Exact potion pricing comes from:
+                         *
+                         *     potionId
+                         *     +
+                         *     slot
+                         *     +
+                         *     secondsRemaining
+                         *
+                         * through getAgarPotionInfo().
+                         */
                         break;
+
+
                     default:
-                        console.log("unknown event", e)
+
+                        /*
+                         * Keep unknown future events in _lmTimedEventState.
+                         * Do not throw them away just because LM has no
+                         * dedicated UI yet.
+                         */
+                        break;
+                }
+            }
+
+
+            try {
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'lm-timed-events-updated',
+                        {
+                            detail:
+                                window
+                                    ._lmTimedEventState
+                        }
+                    )
+                );
+            } catch (
+                eventDispatchError
+            ) {
+            }
+        },
+
+
+        freeCoinTimeLeft() {
+            /*
+             * Existing compatibility API returns milliseconds.
+             */
+
+            if (
+                window
+                    .hourlyBonusFinalTimer
+            ) {
+                var delta =
+                    window
+                        .hourlyBonusFinalTimer -
+                    Date.now();
+
+
+                return (
+                    delta > 0
+                        ? delta
+                        : 0
+                );
+            }
+
+
+            var state =
+                window
+                    ._lmTimedEventState &&
+                window
+                    ._lmTimedEventState
+                    .hourlyBonus;
+
+
+            if (
+                state &&
+                state.readyAt
+            ) {
+                return Math.max(
+                    0,
+                    state.readyAt -
+                    Date.now()
+                );
+            }
+
+
+            return 0;
+        },
+
+
+        newPotion(s) {
+            if (
+                !s ||
+                !this.user
+            ) {
+                return;
+            }
+
+
+            if (
+                !this.user
+                    .potionsStatus
+            ) {
+                this.user
+                    .potionsStatus =
+                    {};
+            }
+
+
+            if (
+                window
+                    .autobrewTimer
+            ) {
+                clearTimeout(
+                    window
+                        .autobrewTimer
+                );
+
+                window
+                    .autobrewTimer =
+                    null;
+            }
+
+
+            var productId =
+                s.productId ||
+                '';
+
+
+            var slot =
+                parseInt(
+                    s.slot,
+                    10
+                );
+
+
+            if (
+                !slot ||
+                slot < 1 ||
+                slot > 3
+            ) {
+                return;
+            }
+
+
+            var status =
+                Number(
+                    s.status
+                ) || 0;
+
+
+            var secondsRemaining =
+                Math.max(
+                    0,
+                    Number(
+                        s
+                            .secondsRemaining
+                    ) || 0
+                );
+
+
+            var receivedAt =
+                Date.now();
+
+
+            var readyAt =
+                receivedAt +
+                secondsRemaining *
+                1000;
+
+
+            var expires =
+                new Date(
+                    readyAt
+                );
+
+
+            var potionKey =
+                'potion' +
+                slot;
+
+
+            this.user
+                .potionsStatus[
+                    potionKey
+                ] = {
+                    type:
+                        productId,
+
+                    productId:
+                        productId,
+
+                    status:
+                        status,
+
+                    slot:
+                        slot,
+
+                    secondsRemaining:
+                        secondsRemaining,
+
+                    receivedAt:
+                        receivedAt,
+
+                    readyAt:
+                        readyAt,
+
+                    expires:
+                        expires,
+
+                    raw:
+                        s
+                };
+
+
+            $(
+                '#' +
+                potionKey +
+                ' img'
+            )
+                .attr(
+                    'src',
+                    'https://www.legendmod.ml/banners/' +
+                    productId +
+                    '.png'
+                );
+
+
+            if (
+                status === 1
+            ) {
+                $(
+                    '#' +
+                    potionKey +
+                    ' img'
+                )
+                    .css(
+                        'border-color',
+                        'red'
+                    );
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' div'
+                )
+                    .css(
+                        'border-color',
+                        'red'
+                    )
+                    .text(
+                        'brew'
+                    );
+
+
+                if (
+                    defaultmapsettings
+                        .autobrewing
+                ) {
+                    var anotherPotionBrewing =
+                        false;
+
+
+                    var currentStatuses =
+                        this.user
+                            .potionsStatus;
+
+
+                    for (
+                        var key in currentStatuses
+                    ) {
+                        if (
+                            !Object.prototype
+                                .hasOwnProperty
+                                .call(
+                                    currentStatuses,
+                                    key
+                                )
+                        ) {
+                            continue;
+                        }
+
+
+                        var currentPotion =
+                            currentStatuses[
+                                key
+                            ];
+
+
+                        if (
+                            currentPotion &&
+                            currentPotion.status ===
+                                2 &&
+                            Number(
+                                currentPotion
+                                    .readyAt
+                            ) >
+                                Date.now()
+                        ) {
+                            anotherPotionBrewing =
+                                true;
+
+                            break;
+                        }
+                    }
+
+
+                    if (
+                        !anotherPotionBrewing &&
+                        typeof window
+                            .brewPotion ===
+                            'function'
+                    ) {
+                        window
+                            .brewPotion(
+                                slot
+                            );
+                    }
+                }
+            }
+
+
+            if (
+                status === 2
+            ) {
+                /*
+                 * Compatibility mirror only.
+                 *
+                 * Per-slot readyAt is authoritative from now on.
+                 */
+                this.user
+                    .brewingEnd =
+                    expires;
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' img'
+                )
+                    .css(
+                        'border-color',
+                        'yellow'
+                    );
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' div'
+                )
+                    .css(
+                        'border-color',
+                        'yellow'
+                    )
+                    .text(
+                        expires
+                            .toTimeString()
+                            .replace(
+                                /^(\d{2}:\d{2}).*/,
+                                '$1'
+                            )
+                    );
+
+
+                window
+                    .autobrewTimer =
+                    setTimeout(
+                        function () {
+                            if (
+                                window.LM &&
+                                typeof LM
+                                    .autobrew ===
+                                    'function'
+                            ) {
+                                LM
+                                    .autobrew();
+                            }
+                        },
+                        Math.max(
+                            0,
+                            secondsRemaining *
+                                1000
+                        )
+                    );
+            }
+
+
+            if (
+                status === 3
+            ) {
+                this.user
+                    .brewedSlots =
+                    (
+                        Number(
+                            this.user
+                                .brewedSlots
+                        ) || 0
+                    ) +
+                    1;
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' img'
+                )
+                    .css(
+                        'border-color',
+                        'green'
+                    );
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' div'
+                )
+                    .css(
+                        'border-color',
+                        'green'
+                    )
+                    .text(
+                        'open'
+                    );
+            }
+
+
+            /*
+             * Recompute rather than blindly decrementing.
+             */
+            var occupiedCount =
+                Object.keys(
+                    this.user
+                        .potionsStatus
+                )
+                    .length;
+
+
+            this.user
+                .emptySlots =
+                Math.max(
+                    0,
+                    3 -
+                    occupiedCount
+                );
+
+
+            if (
+                status !== 2 &&
+                !window
+                    .autobrewTimer
+            ) {
+                window
+                    .autobrewTimer =
+                    setTimeout(
+                        function () {
+                            if (
+                                window.LM &&
+                                typeof LM
+                                    .autobrew ===
+                                    'function'
+                            ) {
+                                LM
+                                    .autobrew();
+                            }
+                        },
+                        3000
+                    );
+            }
+
+
+            try {
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'lm-potions-updated',
+                        {
+                            detail:
+                                this.user
+                                    .potionsStatus
+                        }
+                    )
+                );
+            } catch (
+                potionEventError
+            ) {
+            }
+        },
+
+
+        updatePotions(slots) {
+            if (
+                !Array.isArray(
+                    slots
+                ) ||
+                !this.user
+            ) {
+                return;
+            }
+
+
+            if (
+                !this.user
+                    .potionsStatus
+            ) {
+                this.user
+                    .potionsStatus =
+                    {};
+            }
+
+
+            var empty = [
+                'potion1',
+                'potion2',
+                'potion3'
+            ];
+
+
+            this.user
+                .brewedSlots =
+                0;
+
+
+            if (
+                window
+                    .autobrewTimer
+            ) {
+                clearTimeout(
+                    window
+                        .autobrewTimer
+                );
+
+                window
+                    .autobrewTimer =
+                    null;
+            }
+
+
+            var now =
+                Date.now();
+
+
+            var earliestBrewingReadyAt =
+                0;
+
+
+            for (
+                var i = 0;
+                i < slots.length;
+                i++
+            ) {
+                var s =
+                    slots[i];
+
+
+                if (!s) {
+                    continue;
+                }
+
+
+                var slot =
+                    parseInt(
+                        s.slot,
+                        10
+                    );
+
+
+                if (
+                    !slot ||
+                    slot < 1 ||
+                    slot > 3
+                ) {
+                    continue;
+                }
+
+
+                var potionKey =
+                    'potion' +
+                    slot;
+
+
+                var emptyIndex =
+                    empty.indexOf(
+                        potionKey
+                    );
+
+
+                if (
+                    emptyIndex !== -1
+                ) {
+                    empty.splice(
+                        emptyIndex,
+                        1
+                    );
+                }
+
+
+                var productId =
+                    s.productId ||
+                    '';
+
+
+                var status =
+                    Number(
+                        s.status
+                    ) || 0;
+
+
+                var secondsRemaining =
+                    Math.max(
+                        0,
+                        Number(
+                            s
+                                .secondsRemaining
+                        ) || 0
+                    );
+
+
+                var readyAt =
+                    now +
+                    secondsRemaining *
+                    1000;
+
+
+                var expires =
+                    new Date(
+                        readyAt
+                    );
+
+
+                this.user
+                    .potionsStatus[
+                        potionKey
+                    ] = {
+                        type:
+                            productId,
+
+                        productId:
+                            productId,
+
+                        status:
+                            status,
+
+                        slot:
+                            slot,
+
+                        secondsRemaining:
+                            secondsRemaining,
+
+                        receivedAt:
+                            now,
+
+                        readyAt:
+                            readyAt,
+
+                        expires:
+                            expires,
+
+                        raw:
+                            s
+                    };
+
+
+                $(
+                    '#' +
+                    potionKey +
+                    ' img'
+                )
+                    .attr(
+                        'src',
+                        'https://www.legendmod.ml/banners/' +
+                        productId +
+                        '.png'
+                    );
+
+
+                if (
+                    status === 1
+                ) {
+                    $(
+                        '#' +
+                        potionKey +
+                        ' img'
+                    )
+                        .css(
+                            'border-color',
+                            'red'
+                        );
+
+
+                    $(
+                        '#' +
+                        potionKey +
+                        ' div'
+                    )
+                        .css(
+                            'border-color',
+                            'red'
+                        )
+                        .text(
+                            'brew'
+                        );
+                }
+
+
+                if (
+                    status === 2
+                ) {
+                    if (
+                        !earliestBrewingReadyAt ||
+                        readyAt <
+                            earliestBrewingReadyAt
+                    ) {
+                        earliestBrewingReadyAt =
+                            readyAt;
+                    }
+
+
+                    $(
+                        '#' +
+                        potionKey +
+                        ' img'
+                    )
+                        .css(
+                            'border-color',
+                            'yellow'
+                        );
+
+
+                    $(
+                        '#' +
+                        potionKey +
+                        ' div'
+                    )
+                        .css(
+                            'border-color',
+                            'yellow'
+                        )
+                        .text(
+                            expires
+                                .toTimeString()
+                                .replace(
+                                    /^(\d{2}:\d{2}).*/,
+                                    '$1'
+                                )
+                        );
+                }
+
+
+                if (
+                    status === 3
+                ) {
+                    this.user
+                        .brewedSlots++;
+
+
+                    $(
+                        '#' +
+                        potionKey +
+                        ' img'
+                    )
+                        .css(
+                            'border-color',
+                            'green'
+                        );
+
+
+                    $(
+                        '#' +
+                        potionKey +
+                        ' div'
+                    )
+                        .css(
+                            'border-color',
+                            'green'
+                        )
+                        .text(
+                            'open'
+                        );
+                }
+            }
+
+
+            this.user
+                .emptySlots =
+                empty.length;
+
+
+            /*
+             * Remove slots no longer present in the authoritative server list.
+             */
+            for (
+                var e = 0;
+                e < empty.length;
+                e++
+            ) {
+                var emptyPotion =
+                    empty[e];
+
+
+                delete this.user
+                    .potionsStatus[
+                        emptyPotion
+                    ];
+
+
+                $(
+                    '#' +
+                    emptyPotion +
+                    ' img'
+                )
+                    .attr(
+                        'src',
+                        'https://www.legendmod.ml/banners/potion_empty.png'
+                    )
+                    .css(
+                        'border-color',
+                        'grey'
+                    );
+
+
+                $(
+                    '#' +
+                    emptyPotion +
+                    ' div'
+                )
+                    .css(
+                        'border-color',
+                        'grey'
+                    )
+                    .text(
+                        'empty'
+                    );
+            }
+
+
+            /*
+             * Keep legacy property for old callers.
+             * Never use this value for deciding a particular slot's readiness.
+             */
+            this.user
+                .brewingEnd =
+                earliestBrewingReadyAt
+                    ? new Date(
+                        earliestBrewingReadyAt
+                    )
+                    : new Date(
+                        0
+                    );
+
+
+            if (
+                earliestBrewingReadyAt
+            ) {
+                window
+                    .autobrewTimer =
+                    setTimeout(
+                        function () {
+                            if (
+                                window.LM &&
+                                typeof LM
+                                    .autobrew ===
+                                    'function'
+                            ) {
+                                LM
+                                    .autobrew();
+                            }
+                        },
+                        Math.max(
+                            0,
+                            earliestBrewingReadyAt -
+                            Date.now()
+                        )
+                    );
+            } else {
+                /*
+                 * No brew currently active.
+                 * Check whether an obtained potion should now be started.
+                 */
+                window
+                    .autobrewTimer =
+                    setTimeout(
+                        function () {
+                            if (
+                                window.LM &&
+                                typeof LM
+                                    .autobrew ===
+                                    'function'
+                            ) {
+                                LM
+                                    .autobrew();
+                            }
+                        },
+                        3000
+                    );
+            }
+
+
+            try {
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'lm-potions-updated',
+                        {
+                            detail:
+                                this.user
+                                    .potionsStatus
+                        }
+                    )
+                );
+            } catch (
+                potionEventError
+            ) {
+            }
+        },
+
+
+        autobrew() {
+            if (
+                !defaultmapsettings
+                    .autobrewing ||
+                !window.master ||
+                (
+                    window.master
+                        .context !==
+                        'facebook' &&
+                    window.master
+                        .context !==
+                        'google'
+                )
+            ) {
+                return;
+            }
+
+
+            var statuses =
+                (
+                    LM.user &&
+                    LM.user
+                        .potionsStatus
+                ) ||
+                {};
+
+
+            var values =
+                Object.values(
+                    statuses
+                );
+
+
+            /*
+             * Never begin another brew if one slot is still brewing.
+             */
+            for (
+                var runningIndex = 0;
+                runningIndex <
+                    values.length;
+                runningIndex++
+            ) {
+                var runningPotion =
+                    values[
+                        runningIndex
+                    ];
+
+
+                if (
+                    runningPotion &&
+                    runningPotion.status ===
+                        2 &&
+                    Number(
+                        runningPotion
+                            .readyAt
+                    ) >
+                        Date.now()
+                ) {
+                    return;
+                }
+            }
+
+
+            /*
+             * Start the first unbrewed potion.
+             */
+            for (
+                var i = 0;
+                i < values.length;
+                i++
+            ) {
+                var potion =
+                    values[i];
+
+
+                if (
+                    potion &&
+                    potion.status ===
+                        1
+                ) {
+                    if (
+                        typeof window
+                            .brewPotion ===
+                            'function'
+                    ) {
+                        window
+                            .brewPotion(
+                                potion.slot
+                            );
+                    }
+
+                    break;
                 }
             }
         },
-        freeCoinTimeLeft() {
-            if (window.hourlyBonusFinalTimer) {
-                var delta = window.hourlyBonusFinalTimer - Date.now();
-                return delta > 0 ? delta : 0;
-            }
-            return 0;
-        },
-        newPotion(s) {
-            if (window.autobrewTimer) clearTimeout(window.autobrewTimer);
-            window.autobrewTimer = setTimeout(() => {
-                LM.autobrew()
-            }, 3000);
-            var t = s.productId,
-                r = s.secondsRemaining,
-                potion = "potion" + s.slot,
-                time = new Date(Date.now() + r * 1000),
-                expire = time.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-            this.user.potionsStatus[potion] = {
-                type: t,
-                status: s.status,
-                expires: time,
-                slot: s.slot
-            };
-            $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/${t}.png`);
-            if (s.status === 1) {
-                if (defaultmapsettings.autobrewing && this.user.brewingEnd < Date.now()) window.brewPotion(s.slot);
-                $(`#${potion} img`).css("border-color", "red");
-                $(`#${potion} div`).css("border-color", "red");
-                $(`#${potion} div`).text('brew');
-            };
 
-            this.user.emptySlots -= 1;
-        },
-        updatePotions(slots) {
-            if (!slots || !this.user) return;
-            var empty = ["potion1", "potion2", "potion3"];
-            this.user.brewedSlots = 0;
-            if (window.autobrewTimer) clearTimeout(window.autobrewTimer);
-            window.autobrewTimer = setTimeout(() => {
-                LM.autobrew()
-            }, 3000);
-            for (var i = 0; i < slots.length; i++) {
-                var s = slots[i],
-                    t = s.productId,
-                    r = s.secondsRemaining,
-                    potion = "potion" + s.slot,
-                    time = new Date(Date.now() + r * 1000),
-                    expire = time.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'),
-                    index = empty.indexOf(potion);
-                if (index > -1) empty.splice(index, 1);
-                this.user.potionsStatus[potion] = {
-                    type: t,
-                    status: s.status,
-                    expires: time,
-                    slot: s.slot
-                };
-                $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/${t}.png`);
-                if (s.status === 1) {
-                    $(`#${potion} img`).css("border-color", "red");
-                    $(`#${potion} div`).css("border-color", "red");
-                    $(`#${potion} div`).text('brew');
-                } else if (s.status === 2) {
-                    this.user.brewingEnd = time;
-                    if (window.autobrewTimer) clearTimeout(window.autobrewTimer);
-                    window.autobrewTimer = setTimeout(() => {
-                        LM.autobrew()
-                    }, r * 1000);
-                    $(`#${potion} img`).css("border-color", "yellow");
-                    $(`#${potion} div`).css("border-color", "yellow");
-                    $(`#${potion} div`).text(expire);
-                } else if (s.status === 3) {
-                    this.user.brewedSlots++;
-                    $(`#${potion} img`).css("border-color", "green");
-                    $(`#${potion} div`).css("border-color", "green");
-                    $(`#${potion} div`).text('open');
-                };
-            }
-            this.user.emptySlots = empty.length;
-            empty.forEach((potion) => {
-                $(`#${potion} img`).attr('src', `https://www.legendmod.ml/banners/potion_empty.png`);
-                $(`#${potion} img`).css("border-color", "grey");
-                $(`#${potion} div`).css("border-color", "grey");
-                $(`#${potion} div`).text('empty');
-            })
-        },
-        autobrew() {
-            if (defaultmapsettings.autobrewing && window.master && (window.master.context === "facebook" || window.master.context === "google")) {
-                for (var potion of Object.values(LM.user.potionsStatus)) {
-                    if (potion.status === 1) {
-                        window.brewPotion(potion.slot);
-                        break;
-                    }
-                };
-            }
-        },
+
         getPotionForOpen() {
-            if (window.master && (window.master.context === "facebook" || window.master.context === "google")) {
-                for (var potion of Object.values(LM.user.potionsStatus)) {
-                    if (potion.status === 3 || (potion.status === 2 && this.user.brewingEnd < Date.now())) {
-                        window.openPotion(potion.slot, false);
-                        break;
+            if (
+                !window.master ||
+                (
+                    window.master
+                        .context !==
+                        'facebook' &&
+                    window.master
+                        .context !==
+                        'google'
+                )
+            ) {
+                return;
+            }
+
+
+            var now =
+                Date.now();
+
+
+            var statuses =
+                (
+                    LM.user &&
+                    LM.user
+                        .potionsStatus
+                ) ||
+                {};
+
+
+            var values =
+                Object.values(
+                    statuses
+                );
+
+
+            for (
+                var i = 0;
+                i < values.length;
+                i++
+            ) {
+                var potion =
+                    values[i];
+
+
+                if (!potion) {
+                    continue;
+                }
+
+
+                var readyAt =
+                    Number(
+                        potion
+                            .readyAt
+                    ) || 0;
+
+
+                if (
+                    !readyAt &&
+                    potion.expires &&
+                    typeof potion
+                        .expires
+                        .getTime ===
+                        'function'
+                ) {
+                    readyAt =
+                        potion
+                            .expires
+                            .getTime();
+                }
+
+
+                var slotReady =
+                    potion.status ===
+                        3 ||
+                    (
+                        potion.status ===
+                            2 &&
+                        readyAt > 0 &&
+                        readyAt <=
+                            now
+                    );
+
+
+                if (
+                    slotReady
+                ) {
+                    if (
+                        typeof window
+                            .openPotion ===
+                            'function'
+                    ) {
+                        window
+                            .openPotion(
+                                potion.slot,
+                                false
+                            );
                     }
-                };
+
+                    break;
+                }
             }
         },
+
         updateUserSettings(s) {
             for (var i = 0; i < s.length; i++) {
                 var key = s[i].key;

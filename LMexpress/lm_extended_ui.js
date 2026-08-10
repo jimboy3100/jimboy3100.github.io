@@ -6281,46 +6281,399 @@
         }, 1500);
     };
 
-    window.initBoostDropdown = function() {
-        var sel = $('#s-boost');
-        if (!sel.length) return;
-        if (sel.children('option').length > 1) return; // Already populated
+    window.initBoostDropdown = function(
+        force
+    ) {
+        var sel =
+            $('#s-boost');
+
+
+        if (
+            !sel.length
+        ) {
+            return;
+        }
+
+
+        var catalog =
+            typeof window
+                .getAgarBoostCatalog ===
+                'function'
+                ? window
+                    .getAgarBoostCatalog()
+                : [];
+
+
+        if (
+            !catalog.length &&
+            !force
+        ) {
+            return;
+        }
+
+
+        var inventory =
+            (
+                window.LM &&
+                window.LM.user &&
+                window.LM.user
+                    .boosts
+            ) ||
+            {};
+
+
+        var selectedBefore =
+            sel.val() ||
+            '';
+
+
+        var signatureParts = [];
+
+
+        for (
+            var si = 0;
+            si < catalog.length;
+            si++
+        ) {
+            var signatureInfo =
+                catalog[si];
+
+            signatureParts.push(
+                signatureInfo.productId +
+                ':' +
+                (
+                    Number(
+                        inventory[
+                            signatureInfo.productId
+                        ]
+                    ) || 0
+                ) +
+                ':' +
+                String(
+                    signatureInfo.price
+                ) +
+                ':' +
+                String(
+                    signatureInfo.currency ||
+                    ''
+                ) +
+                ':' +
+                (
+                    signatureInfo.bestDeal
+                        ? '1'
+                        : '0'
+                )
+            );
+        }
+
+
+        var signature =
+            signatureParts.join(
+                '|'
+            );
+
+
+        /*
+         * syncProfileTabUI runs repeatedly.
+         *
+         * Do not rebuild the <select> when:
+         *
+         *   - catalogue is unchanged
+         *   - wallet quantities are unchanged
+         *   - prices/currencies are unchanged
+         *
+         * This also prevents the user's selected option from being reset.
+         */
+        if (
+            !force &&
+            sel.attr(
+                'data-lm-boost-signature'
+            ) === signature
+        ) {
+            return;
+        }
+
+
+        sel.attr(
+            'data-lm-boost-signature',
+            signature
+        );
+
 
         sel.empty();
-        sel.append('<option value="">-- Select Boost --</option>');
-        
-        var boosts = [
-            { id: 'mass_boost_2x_1h', label: '⚡ 2x Mass Boost (1 hr) [90 DNA]' },
-            { id: 'mass_boost_2x_24h', label: '⚡ 2x Mass Boost (24 hrs) [290 DNA]' },
-            { id: 'mass_boost_3x_1h', label: '⚡ 3x Mass Boost (1 hr) [180 DNA]' },
-            { id: 'mass_boost_3x_24h', label: '⚡ 3x Mass Boost (24 hrs) [490 DNA]' },
-            { id: 'xp_boost_2x_1h', label: '⭐ 2x XP Boost (1 hr) [60 DNA]' },
-            { id: 'xp_boost_2x_24h', label: '⭐ 2x XP Boost (24 hrs) [190 DNA]' },
-            { id: 'xp_boost_3x_1h', label: '⭐ 3x XP Boost (1 hr) [120 DNA]' },
-            { id: 'xp_boost_3x_24h', label: '⭐ 3x XP Boost (24 hrs) [390 DNA]' }
-        ];
 
-        boosts.forEach(function(b) {
-            sel.append('<option value="' + b.id + '">' + b.label + '</option>');
-        });
 
-        // Wire BUY / USE buttons
-        $(document).off('click', '#buy-boost').on('click', '#buy-boost', function(e) {
-            e.preventDefault();
-            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('buy boost')) return false;
-            var val = $('#s-boost').val();
-            if (!val) { toastr.warning('Please select a boost first.'); return; }
-            if (typeof window.softPurchase === 'function') window.softPurchase(val);
-        });
+        sel.append(
+            $('<option>', {
+                value:
+                    '',
 
-        $(document).off('click', '#use-boost').on('click', '#use-boost', function(e) {
-            e.preventDefault();
-            if (typeof window.validateShopIntegrity === 'function' && !window.validateShopIntegrity('use boost')) return false;
-            var val = $('#s-boost').val();
-            if (!val) { toastr.warning('Please select a boost first.'); return; }
-            if (typeof window.activateBoost === 'function') window.activateBoost(val);
-        });
+                text:
+                    '-- Select Boost --'
+            })
+        );
+
+
+        for (
+            var i = 0;
+            i < catalog.length;
+            i++
+        ) {
+            var info =
+                catalog[i];
+
+
+            if (
+                !info ||
+                !info.productId
+            ) {
+                continue;
+            }
+
+
+            var owned =
+                Number(
+                    inventory[
+                        info.productId
+                    ]
+                ) || 0;
+
+
+            var icon =
+                info.type ===
+                    'mass'
+                    ? '\u26A1'
+                    : '\u2B50';
+
+
+            var typeName =
+                info.type ===
+                    'mass'
+                    ? 'Mass'
+                    : 'XP';
+
+
+            var duration =
+                typeof window
+                    .formatAgarDurationSeconds ===
+                    'function'
+                    ? window
+                        .formatAgarDurationSeconds(
+                            (
+                                Number(
+                                    info.durationMins
+                                ) || 0
+                            ) *
+                            60,
+                            true
+                        )
+                    : (
+                        String(
+                            info.durationMins ||
+                            0
+                        ) +
+                        'm'
+                    );
+
+
+            var priceText =
+                (
+                    info.price !==
+                        undefined &&
+                    info.price !==
+                        null
+                )
+                    ? (
+                        typeof window
+                            .formatAgarCurrency ===
+                            'function'
+                            ? window
+                                .formatAgarCurrency(
+                                    info.price,
+                                    info.currency
+                                )
+                            : (
+                                String(
+                                    info.price
+                                ) +
+                                (
+                                    info.currency
+                                        ? (
+                                            ' ' +
+                                            info.currency
+                                        )
+                                        : ''
+                                )
+                            )
+                    )
+                    : '';
+
+
+            var label =
+                icon +
+                ' ' +
+                info.multiplier +
+                'x ' +
+                typeName +
+                ' (' +
+                duration +
+                ')';
+
+
+            if (
+                priceText
+            ) {
+                label +=
+                    ' \u2014 ' +
+                    priceText;
+            }
+
+
+            if (
+                owned > 0
+            ) {
+                label +=
+                    ' \u2014 owned: ' +
+                    owned;
+            }
+
+
+            if (
+                info.bestDeal
+            ) {
+                label +=
+                    ' \u2605 BEST';
+            }
+
+
+            $('<option>')
+                .val(
+                    info.productId
+                )
+                .attr(
+                    'data-purchase-id',
+                    info.purchaseId ||
+                    ''
+                )
+                .attr(
+                    'data-currency',
+                    info.currency ||
+                    ''
+                )
+                .attr(
+                    'data-price',
+                    (
+                        info.price !==
+                            undefined &&
+                        info.price !==
+                            null
+                    )
+                        ? info.price
+                        : ''
+                )
+                .attr(
+                    'data-owned',
+                    owned
+                )
+                .attr(
+                    'data-boost-type',
+                    info.type ||
+                    ''
+                )
+                .attr(
+                    'data-multiplier',
+                    info.multiplier ||
+                    1
+                )
+                .attr(
+                    'data-duration-mins',
+                    info.durationMins ||
+                    0
+                )
+                .text(
+                    label
+                )
+                .appendTo(
+                    sel
+                );
+        }
+
+
+        /*
+         * Preserve selected product after catalogue rebuild.
+         */
+        if (
+            selectedBefore
+        ) {
+            var selectedStillExists =
+                sel
+                    .children(
+                        'option'
+                    )
+                    .filter(
+                        function () {
+                            return (
+                                this.value ===
+                                selectedBefore
+                            );
+                        }
+                    )
+                    .length >
+                0;
+
+
+            if (
+                selectedStillExists
+            ) {
+                sel.val(
+                    selectedBefore
+                );
+            }
+        }
     };
+
+
+    /*
+     * GameConfiguration can arrive AFTER lm_extended_ui.js.
+     *
+     * Rebuild immediately when HUNK 2 announces that the new
+     * authoritative configuration/index is available.
+     */
+    document.addEventListener(
+        'lm-agar-config-index-ready',
+        function () {
+            if (
+                typeof window
+                    .initBoostDropdown ===
+                    'function'
+            ) {
+                window
+                    .initBoostDropdown(
+                        true
+                    );
+            }
+
+
+            if (
+                typeof window
+                    .syncProfileTabUI ===
+                    'function'
+            ) {
+                try {
+                    window
+                        .syncProfileTabUI();
+                } catch (
+                    syncError
+                ) {
+                    console.warn(
+                        '[LM BOOST] Profile refresh after configuration failed:',
+                        syncError
+                    );
+                }
+            }
+        }
+    );
+
 
     // Auto-initialize menu buttons and profile sync when DOM is ready
     $(document).ready(function() {
