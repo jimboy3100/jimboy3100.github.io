@@ -20259,7 +20259,7 @@ function thelegendmodproject() {
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
             if (ogario.play) {
-                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                if (window.LM && typeof window.LM.displayChatMsg === 'function') window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
                 return;
             }
 
@@ -20456,7 +20456,7 @@ function thelegendmodproject() {
         },
         sendNick2(nick) {
             if (ogario.play) {
-                window.LM && window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
+                if (window.LM && typeof window.LM.displayChatMsg === 'function') window.LM.displayChatMsg(false, '[SERVER]', 'You are already playing!');
                 return;
             }
             this.playerNick = nick,
