@@ -18571,11 +18571,25 @@ function thelegendmodproject() {
             phase: 0,        // 0=normal, 1=expanding, 2=warning, 3=danger, 4=shrinking
             currentSize: 0,
             targetSize: 0,
+
+            /*
+             * Authoritative server-supplied map-event center.
+             *
+             * NEVER assume Expanding Land is centered at 0,0.
+             */
+            centerX: 0,
+            centerY: 0,
+
             transitionDuration: 0,
             warningDuration: 0,
             startTime: 0,
+
             // The "old" border before resize started (for zone overlay)
-            prevMinX: 0, prevMinY: 0, prevMaxX: 0, prevMaxY: 0,
+            prevMinX: 0,
+            prevMinY: 0,
+            prevMaxX: 0,
+            prevMaxY: 0,
+
             active: false
         },
         mapTier: -1,  // current map tier (0-4), set by opcode 200
@@ -20356,6 +20370,21 @@ function thelegendmodproject() {
             if (currentTier >= 0) LM.mapTier = currentTier;
             me.currentSize = currentSize;
             me.targetSize = targetSize;
+
+            me.centerX =
+                Number.isFinite(
+                    Number(centerX)
+                )
+                    ? Number(centerX)
+                    : 0;
+
+            me.centerY =
+                Number.isFinite(
+                    Number(centerY)
+                )
+                    ? Number(centerY)
+                    : 0;
+
             me.startTime = Date.now();
             me.transitionDuration = transitionDur;
             me.warningDuration = warningDur;
@@ -26668,6 +26697,81 @@ Most cells eaten   : ${mostCellsEaten}
     window.startProfile = function (label) { console.profile(label || 'LegendMod_ClientProfile'); };
     window.stopProfile = function (label) { console.profileEnd(label || 'LegendMod_ClientProfile'); };
 
+/*
+ * Select the actual smallest/biggest player cell by size.
+ *
+ * NEVER assume playerCells[] is sorted.
+ * Multibox, removal, interpolation and packet ordering can all invalidate
+ * the old [0] / [length - 1] assumption.
+ */
+function pickPlayerCellBySize(players, selectBiggest) {
+    if (!players || !players.length) {
+        return null;
+    }
+
+    var selected = null;
+    var selectedSize =
+        selectBiggest
+            ? -Infinity
+            : Infinity;
+
+    for (
+        var i = 0;
+        i < players.length;
+        i++
+    ) {
+        var cell =
+            players[i];
+
+        if (!cell) {
+            continue;
+        }
+
+        /*
+         * targetSize is the latest authoritative server radius.
+         * Fall back to interpolated size when targetSize is unavailable.
+         */
+        var size =
+            Number(
+                cell.targetSize
+            );
+
+        if (
+            !Number.isFinite(size) ||
+            size <= 0
+        ) {
+            size =
+                Number(
+                    cell.size
+                );
+        }
+
+        if (
+            !Number.isFinite(size) ||
+            size <= 0
+        ) {
+            continue;
+        }
+
+        if (
+            !selected ||
+            (
+                selectBiggest
+                    ? size > selectedSize
+                    : size < selectedSize
+            )
+        ) {
+            selected =
+                cell;
+
+            selectedSize =
+                size;
+        }
+    }
+
+    return selected;
+}
+
     window.drawRender = {
         canvas: null,
         ctx: null,
@@ -26834,7 +26938,13 @@ Most cells eaten   : ${mostCellsEaten}
                             self.gridGlProgram =
                                 null;
 
+                            self.gridGlZoneProgram =
+                                null;
+
                             self.gridGlVAO =
+                                null;
+
+                            self.gridGlZoneVAO =
                                 null;
 
                             self.gridGlVBO =
@@ -26856,7 +26966,13 @@ Most cells eaten   : ${mostCellsEaten}
                             self.gridGlProgram =
                                 null;
 
+                            self.gridGlZoneProgram =
+                                null;
+
                             self.gridGlVAO =
+                                null;
+
+                            self.gridGlZoneVAO =
                                 null;
 
                             self.gridGlVBO =
@@ -26873,7 +26989,9 @@ Most cells eaten   : ${mostCellsEaten}
                 if (
                     this.gridGl &&
                     this.gridGlProgram &&
-                    this.gridGlVAO
+                    this.gridGlVAO &&
+                    this.gridGlZoneProgram &&
+                    this.gridGlZoneVAO
                 ) {
                     return true;
                 }
@@ -27390,6 +27508,298 @@ Most cells eaten   : ${mostCellsEaten}
                     gl.ONE_MINUS_SRC_ALPHA
                 );
 
+                /*
+                 * ============================================================
+                 * EXPANDING-LAND ZONE SHADER
+                 * ============================================================
+                 *
+                 * Full-screen-quad approach:
+                 *
+                 *     VS emits a clip-space quad covering the viewport.
+                 *     FS receives the world-space coordinate and evaluates
+                 *     whether the fragment is inside the danger zone.
+                 *
+                 * One draw call, zero CPU geometry, no Canvas2D overlay.
+                 */
+                var zoneVsSource = `#version 300 es
+
+                precision highp float;
+
+                in vec2 a_unitPos;
+
+                uniform vec2 u_viewCenter;
+                uniform vec2 u_invViewScale;
+
+                out vec2 v_worldPos;
+
+                void main() {
+                    v_worldPos =
+                        u_viewCenter +
+                        a_unitPos *
+                        u_invViewScale;
+
+                    gl_Position =
+                        vec4(
+                            a_unitPos,
+                            0.0,
+                            1.0
+                        );
+                }`;
+
+                var zoneFsSource = `#version 300 es
+
+                precision highp float;
+
+                in vec2 v_worldPos;
+
+                uniform vec2 u_zoneCenter;
+                uniform float u_zonePrevHalf;
+                uniform float u_zoneCurrHalf;
+                uniform float u_zonePhase;
+                uniform float u_zoneProgress;
+                uniform float u_time;
+
+                out vec4 fragColor;
+
+                void main() {
+                    float dx =
+                        v_worldPos.x -
+                        u_zoneCenter.x;
+
+                    float dy =
+                        v_worldPos.y -
+                        u_zoneCenter.y;
+
+                    /*
+                     * Chebyshev distance gives axis-aligned square zones
+                     * which matches the rectangular border.
+                     */
+                    float distFromCenter =
+                        max(
+                            abs(dx),
+                            abs(dy)
+                        );
+
+                    /*
+                     * Smoothly interpolate from previous half-size to
+                     * current half-size based on transition progress.
+                     */
+                    float activeHalf =
+                        mix(
+                            u_zonePrevHalf,
+                            u_zoneCurrHalf,
+                            clamp(
+                                u_zoneProgress,
+                                0.0,
+                                1.0
+                            )
+                        );
+
+                    /*
+                     * Fragments INSIDE the safe zone are discarded.
+                     */
+                    if (
+                        distFromCenter <
+                        activeHalf
+                    ) {
+                        discard;
+                    }
+
+                    /*
+                     * Distance into the danger zone from the border edge.
+                     */
+                    float penetration =
+                        distFromCenter -
+                        activeHalf;
+
+                    /*
+                     * Phase 2 (warning): yellow-orange pulse.
+                     * Phase 3 (danger): red pulse, higher base alpha.
+                     * Phase 4 (shrinking): similar to danger with
+                     *                       fast shrinking animation.
+                     *
+                     * u_zonePhase:
+                     *     2.0 = warning
+                     *     3.0 = danger
+                     *     4.0 = shrinking
+                     */
+                    float pulse =
+                        sin(
+                            u_time *
+                            3.0
+                        ) *
+                        0.5 +
+                        0.5;
+
+                    float baseAlpha;
+                    vec3 baseColor;
+
+                    if (
+                        u_zonePhase >=
+                        2.5
+                    ) {
+                        /*
+                         * Danger / shrinking: red tint.
+                         */
+                        baseColor =
+                            vec3(
+                                0.9,
+                                0.1,
+                                0.1
+                            );
+
+                        baseAlpha =
+                            0.15 +
+                            pulse *
+                            0.1;
+                    }
+                    else {
+                        /*
+                         * Warning: yellow-orange tint.
+                         */
+                        baseColor =
+                            vec3(
+                                0.95,
+                                0.7,
+                                0.1
+                            );
+
+                        baseAlpha =
+                            0.08 +
+                            pulse *
+                            0.06;
+                    }
+
+                    /*
+                     * Fade in from zero at the border edge over ~200
+                     * world units so the overlay does not pop in harshly.
+                     */
+                    float edgeFade =
+                        smoothstep(
+                            0.0,
+                            200.0,
+                            penetration
+                        );
+
+                    fragColor =
+                        vec4(
+                            baseColor,
+                            baseAlpha *
+                            edgeFade
+                        );
+                }`;
+
+                var zoneProgram =
+                    createGridProgram(
+                        zoneVsSource,
+                        zoneFsSource
+                    );
+
+                if (!zoneProgram) {
+                    throw new Error(
+                        'Zone WebGL program creation failed'
+                    );
+                }
+
+                this.gridGlZoneProgram =
+                    zoneProgram;
+
+                this.u_zone_viewCenter =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_viewCenter'
+                    );
+
+                this.u_zone_invViewScale =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_invViewScale'
+                    );
+
+                this.u_zone_zoneCenter =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zoneCenter'
+                    );
+
+                this.u_zone_zonePrevHalf =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zonePrevHalf'
+                    );
+
+                this.u_zone_zoneCurrHalf =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zoneCurrHalf'
+                    );
+
+                this.u_zone_zonePhase =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zonePhase'
+                    );
+
+                this.u_zone_zoneProgress =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_zoneProgress'
+                    );
+
+                this.u_zone_time =
+                    gl.getUniformLocation(
+                        zoneProgram,
+                        'u_time'
+                    );
+
+                /*
+                 * Zone VAO reuses the same full-screen quad VBO as the
+                 * grid (a_unitPos in [-1..+1]).
+                 */
+                this.gridGlZoneVAO =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    this.gridGlZoneVAO
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    this.gridGlVBO
+                );
+
+                var zonePositionLocation =
+                    gl.getAttribLocation(
+                        zoneProgram,
+                        'a_unitPos'
+                    );
+
+                if (
+                    zonePositionLocation <
+                    0
+                ) {
+                    throw new Error(
+                        'Zone a_unitPos unavailable'
+                    );
+                }
+
+                gl.enableVertexAttribArray(
+                    zonePositionLocation
+                );
+
+                gl.vertexAttribPointer(
+                    zonePositionLocation,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
                 return true;
             }
             catch (error) {
@@ -27404,7 +27814,13 @@ Most cells eaten   : ${mostCellsEaten}
                 this.gridGlProgram =
                     null;
 
+                this.gridGlZoneProgram =
+                    null;
+
                 this.gridGlVAO =
+                    null;
+
+                this.gridGlZoneVAO =
                     null;
 
                 return false;
@@ -28630,9 +29046,41 @@ Most cells eaten   : ${mostCellsEaten}
 
                 this.u_viewCenter = gl.getUniformLocation(program, 'u_viewCenter');
                 this.u_viewScale = gl.getUniformLocation(program, 'u_viewScale');
-
-                // ===== WebGL2 Cell Shader with Skin Textures + Depth Z =====
+                /*
+                 * ============================================================
+                 * UNIFIED WEBGL2 CELL + VIRUS SHADER
+                 * ============================================================
+                 *
+                 * ONE instance stream.
+                 * ONE draw call.
+                 * ONE depth buffer.
+                 *
+                 * Existing 10-float instance layout is retained:
+                 *
+                 *  0 x
+                 *  1 y
+                 *  2 radius
+                 *  3 red
+                 *  4 green
+                 *  5 blue
+                 *  6 body alpha
+                 *  7 skin layer
+                 *  8 skin alpha
+                 *  9 depth Z
+                 *
+                 * For viruses only:
+                 *
+                 *     skinLayer = -2
+                 *
+                 * identifies a virus.
+                 *
+                 * The otherwise-unused skinAlpha float stores packed
+                 * 0xRRGGBB virus stroke colour.
+                 */
                 var cellVsSource = `#version 300 es
+
+                precision highp float;
+
                 in vec2 a_unitPos;
                 in vec2 a_cellPos;
                 in float a_radius;
@@ -28644,22 +29092,53 @@ Most cells eaten   : ${mostCellsEaten}
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
 
+                /*
+                 * Extra quad radius required by virus stroke/glow.
+                 * Ordinary cells receive zero extra radius.
+                 */
+                uniform float u_virusExtraRadius;
+
                 out vec4 v_color;
-                out vec2 v_unitPos;
+                out vec2 v_localWorld;
 
                 flat out float v_skinLayer;
                 flat out float v_skinAlpha;
+                flat out float v_radius;
+                flat out float v_isVirus;
 
                 void main() {
-                    v_color = a_color;
-                    v_unitPos = a_unitPos;
-                    v_skinLayer = a_skinLayer;
-                    v_skinAlpha = a_skinAlpha;
+                    float isVirus =
+                        a_skinLayer < -1.5
+                            ? 1.0
+                            : 0.0;
+
+                    float quadRadius =
+                        a_radius +
+                        isVirus *
+                        u_virusExtraRadius;
+
+                    v_color =
+                        a_color;
+
+                    v_localWorld =
+                        a_unitPos *
+                        quadRadius;
+
+                    v_skinLayer =
+                        a_skinLayer;
+
+                    v_skinAlpha =
+                        a_skinAlpha;
+
+                    v_radius =
+                        a_radius;
+
+                    v_isVirus =
+                        isVirus;
 
                     vec2 worldPos =
                         a_cellPos +
-                        a_unitPos *
-                        a_radius;
+                        v_localWorld;
 
                     vec2 clipPos =
                         (
@@ -28668,36 +29147,454 @@ Most cells eaten   : ${mostCellsEaten}
                         ) *
                         u_viewScale;
 
-                    gl_Position = vec4(
-                        clipPos.x,
-                        -clipPos.y,
-                        a_z,
-                        1.0
-                    );
+                    gl_Position =
+                        vec4(
+                            clipPos.x,
+                            -clipPos.y,
+                            a_z,
+                            1.0
+                        );
                 }`;
 
                 var cellFsSource = `#version 300 es
+
                 precision highp float;
                 precision highp sampler2DArray;
 
                 in vec4 v_color;
-                in vec2 v_unitPos;
+                in vec2 v_localWorld;
 
                 flat in float v_skinLayer;
                 flat in float v_skinAlpha;
+                flat in float v_radius;
+                flat in float v_isVirus;
 
                 uniform sampler2DArray u_skinArray;
 
+                uniform float u_virusStrokeWidth;
+                uniform float u_virusSpikesEnabled;
+                uniform float u_virusSpikesRatio;
+                uniform float u_virusSpikesSize;
+
+                uniform float u_virusGlowEnabled;
+                uniform float u_virusGlowSize;
+                uniform vec3 u_virusGlowColor;
+
                 out vec4 fragColor;
 
-                void main() {
-                    float distSq =
-                        dot(
-                            v_unitPos,
-                            v_unitPos
+                const float TAU =
+                    6.28318530717958647692;
+
+                /*
+                 * Virus stroke RGB is packed into the already-existing
+                 * skinAlpha float slot.
+                 *
+                 * Every integer <= 0xFFFFFF can be represented exactly by
+                 * highp float32.
+                 */
+                vec3 unpackRgb24(
+                    float packedValue
+                ) {
+                    float packed =
+                        floor(
+                            packedValue +
+                            0.5
                         );
 
-                    if (distSq > 1.0) {
+                    float red =
+                        floor(
+                            packed /
+                            65536.0
+                        );
+
+                    packed -=
+                        red *
+                        65536.0;
+
+                    float green =
+                        floor(
+                            packed /
+                            256.0
+                        );
+
+                    float blue =
+                        packed -
+                        green *
+                        256.0;
+
+                    return
+                        vec3(
+                            red,
+                            green,
+                            blue
+                        ) /
+                        255.0;
+                }
+
+                /*
+                 * Reproduce createStrokeVirusPath().
+                 *
+                 * Existing Canvas implementation:
+                 *
+                 *     outer = size - 2
+                 *     inner = outer - virusSpikesSize
+                 *     spikes = floor(outer * virusSpikesRatio)
+                 *
+                 * Its edges are straight Path2D polygon edges.
+                 *
+                 * Therefore calculate the actual ray/segment intersection
+                 * instead of approximating spikes with sin().
+                 */
+                float virusStarRadius(
+                    vec2 localWorld,
+                    float radius
+                ) {
+                    float outerRadius =
+                        max(
+                            radius -
+                            2.0,
+                            0.0
+                        );
+
+                    /*
+                     * "Virus spikes" off means normal circular stroke.
+                     */
+                    if (
+                        u_virusSpikesEnabled <
+                        0.5
+                    ) {
+                        return radius;
+                    }
+
+                    float innerRadius =
+                        max(
+                            outerRadius -
+                            max(
+                                u_virusSpikesSize,
+                                0.0
+                            ),
+                            0.0
+                        );
+
+                    float spikeCount =
+                        max(
+                            floor(
+                                outerRadius *
+                                max(
+                                    u_virusSpikesRatio,
+                                    0.001
+                                )
+                            ),
+                            3.0
+                        );
+
+                    float sector =
+                        TAU /
+                        spikeCount;
+
+                    float halfSector =
+                        sector *
+                        0.5;
+
+                    /*
+                     * createStrokeVirusPath() uses:
+                     *
+                     * x = centerX + radius * sin(angle)
+                     * y = centerY + radius * cos(angle)
+                     *
+                     * therefore zero degrees is +Y.
+                     */
+                    float angle =
+                        atan(
+                            localWorld.x,
+                            localWorld.y
+                        );
+
+                    if (
+                        angle <
+                        0.0
+                    ) {
+                        angle +=
+                            TAU;
+                    }
+
+                    float localAngle =
+                        mod(
+                            angle,
+                            sector
+                        );
+
+                    float theta =
+                        localAngle <=
+                        halfSector
+                            ? localAngle
+                            : sector -
+                                localAngle;
+
+                    float sinHalf =
+                        sin(
+                            halfSector
+                        );
+
+                    float cosHalf =
+                        cos(
+                            halfSector
+                        );
+
+                    /*
+                     * Exact ray/line-segment intersection with a single
+                     * spike edge.
+                     */
+                    float numerator =
+                        innerRadius *
+                        outerRadius *
+                        sinHalf;
+
+                    float denominator =
+                        cos(theta) *
+                            outerRadius *
+                            sinHalf -
+                        sin(theta) *
+                            (
+                                outerRadius *
+                                    cosHalf -
+                                innerRadius
+                            );
+
+                    return
+                        numerator /
+                        max(
+                            denominator,
+                            0.000001
+                        );
+                }
+
+                void main() {
+                    /*
+                     * ========================================================
+                     * VIRUS
+                     * ========================================================
+                     */
+                    if (
+                        v_isVirus >
+                        0.5
+                    ) {
+                        float radial =
+                            length(
+                                v_localWorld
+                            );
+
+                        float aa =
+                            max(
+                                fwidth(
+                                    radial
+                                ),
+                                0.0001
+                            );
+
+                        /*
+                         * Normal non-jelly virus body is a circular fill.
+                         */
+                        float bodyCoverage =
+                            1.0 -
+                            smoothstep(
+                                v_radius -
+                                    aa,
+                                v_radius +
+                                    aa,
+                                radial
+                            );
+
+                        float strokeRadius =
+                            virusStarRadius(
+                                v_localWorld,
+                                v_radius
+                            );
+
+                        float halfStroke =
+                            max(
+                                u_virusStrokeWidth *
+                                0.5,
+                                0.0
+                            );
+
+                        float strokeDistance =
+                            abs(
+                                radial -
+                                strokeRadius
+                            );
+
+                        float strokeCoverage =
+                            u_virusStrokeWidth >
+                            0.0
+                                ? 1.0 -
+                                    smoothstep(
+                                        max(
+                                            halfStroke -
+                                            aa,
+                                            0.0
+                                        ),
+                                        halfStroke +
+                                            aa,
+                                        strokeDistance
+                                    )
+                                : 0.0;
+
+                        float glowCoverage =
+                            0.0;
+
+                        if (
+                            u_virusGlowEnabled >
+                                0.5 &&
+                            u_virusGlowSize >
+                                0.0
+                        ) {
+                            glowCoverage =
+                                (
+                                    1.0 -
+                                    smoothstep(
+                                        halfStroke,
+                                        halfStroke +
+                                            u_virusGlowSize,
+                                        strokeDistance
+                                    )
+                                ) *
+                                (
+                                    1.0 -
+                                    strokeCoverage
+                                );
+                        }
+
+                        /*
+                         * IMPORTANT:
+                         *
+                         * ONE alpha controls:
+                         *
+                         * - virus body
+                         * - virus outline
+                         * - virus spikes
+                         * - virus glow
+                         *
+                         * Therefore transparentViruses can no longer leave
+                         * opaque spikes/outline behind.
+                         */
+                        float virusAlpha =
+                            clamp(
+                                v_color.a,
+                                0.0,
+                                1.0
+                            );
+
+                        float bodyAlpha =
+                            virusAlpha *
+                            bodyCoverage;
+
+                        float glowAlpha =
+                            virusAlpha *
+                            glowCoverage *
+                            0.45;
+
+                        float strokeAlpha =
+                            virusAlpha *
+                            strokeCoverage;
+
+                        vec3 strokeRgb =
+                            unpackRgb24(
+                                v_skinAlpha
+                            );
+
+                        /*
+                         * Same logical order as Canvas:
+                         *
+                         * body
+                         * -> stroke shadow/glow
+                         * -> actual stroke
+                         */
+                        vec3 premultiplied =
+                            v_color.rgb *
+                            bodyAlpha;
+
+                        float outAlpha =
+                            bodyAlpha;
+
+                        premultiplied =
+                            u_virusGlowColor *
+                            glowAlpha +
+                            premultiplied *
+                            (
+                                1.0 -
+                                glowAlpha
+                            );
+
+                        outAlpha =
+                            glowAlpha +
+                            outAlpha *
+                            (
+                                1.0 -
+                                glowAlpha
+                            );
+
+                        premultiplied =
+                            strokeRgb *
+                            strokeAlpha +
+                            premultiplied *
+                            (
+                                1.0 -
+                                strokeAlpha
+                            );
+
+                        outAlpha =
+                            strokeAlpha +
+                            outAlpha *
+                            (
+                                1.0 -
+                                strokeAlpha
+                            );
+
+                        if (
+                            outAlpha <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        fragColor =
+                            vec4(
+                                premultiplied /
+                                max(
+                                    outAlpha,
+                                    0.00001
+                                ),
+                                outAlpha
+                            );
+
+                        return;
+                    }
+
+                    /*
+                     * ========================================================
+                     * ORDINARY CELL
+                     * ========================================================
+                     *
+                     * Existing cell/skin behaviour remains unchanged.
+                     */
+                    vec2 unitPos =
+                        v_localWorld /
+                        max(
+                            v_radius,
+                            0.0001
+                        );
+
+                    float distSq =
+                        dot(
+                            unitPos,
+                            unitPos
+                        );
+
+                    if (
+                        distSq >
+                        1.0
+                    ) {
                         discard;
                     }
 
@@ -28709,9 +29606,6 @@ Most cells eaten   : ${mostCellsEaten}
                             distSq
                         );
 
-                    /*
-                     * The body exists independently from the skin.
-                     */
                     float bodyAlpha =
                         clamp(
                             v_color.a,
@@ -28730,7 +29624,7 @@ Most cells eaten   : ${mostCellsEaten}
                         0.0
                     ) {
                         vec2 skinUV =
-                            v_unitPos *
+                            unitPos *
                             0.5 +
                             0.5;
 
@@ -28743,10 +29637,6 @@ Most cells eaten   : ${mostCellsEaten}
                                 )
                             );
 
-                        /*
-                         * Skin transparency affects only the skin overlay.
-                         * It can reveal the body, but can never erase it.
-                         */
                         float skinAlpha =
                             clamp(
                                 skinSample.a *
@@ -28756,9 +29646,7 @@ Most cells eaten   : ${mostCellsEaten}
                             );
 
                         /*
-                         * Straight-alpha source-over composition:
-                         *
-                         *     skin over body
+                         * Skin over body.
                          */
                         outAlpha =
                             skinAlpha +
@@ -28788,20 +29676,95 @@ Most cells eaten   : ${mostCellsEaten}
                         }
                     }
 
-                    fragColor = vec4(
-                        outRgb,
-                        outAlpha *
-                        edgeAlpha
-                    );
+                    fragColor =
+                        vec4(
+                            outRgb,
+                            outAlpha *
+                            edgeAlpha
+                        );
                 }`;
 
-                var cellProgram = createAndLinkProgram(gl, cellVsSource, cellFsSource);
-                if (!cellProgram) throw new Error('Cell WebGL program creation failed');
-                this.glCellProgram = cellProgram;
+                var cellProgram =
+                    createAndLinkProgram(
+                        gl,
+                        cellVsSource,
+                        cellFsSource
+                    );
 
-                this.u_cell_viewCenter = gl.getUniformLocation(cellProgram, 'u_viewCenter');
-                this.u_cell_viewScale = gl.getUniformLocation(cellProgram, 'u_viewScale');
-                this.u_skinArray = gl.getUniformLocation(cellProgram, 'u_skinArray');
+                if (!cellProgram) {
+                    throw new Error(
+                        'Unified cell/virus WebGL program creation failed'
+                    );
+                }
+
+                this.glCellProgram =
+                    cellProgram;
+
+                this.u_cell_viewCenter =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_viewCenter'
+                    );
+
+                this.u_cell_viewScale =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_viewScale'
+                    );
+
+                this.u_skinArray =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_skinArray'
+                    );
+
+                this.u_cell_virusExtraRadius =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusExtraRadius'
+                    );
+
+                this.u_cell_virusStrokeWidth =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusStrokeWidth'
+                    );
+
+                this.u_cell_virusSpikesEnabled =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusSpikesEnabled'
+                    );
+
+                this.u_cell_virusSpikesRatio =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusSpikesRatio'
+                    );
+
+                this.u_cell_virusSpikesSize =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusSpikesSize'
+                    );
+
+                this.u_cell_virusGlowEnabled =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusGlowEnabled'
+                    );
+
+                this.u_cell_virusGlowSize =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusGlowSize'
+                    );
+
+                this.u_cell_virusGlowColor =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_virusGlowColor'
+                    );
 
                 // Cell VAO:
                 // 10-float instance stride with independent body and skin alpha.
@@ -30451,8 +31414,47 @@ Most cells eaten   : ${mostCellsEaten}
                 this.gridGlProgram
             );
 
+            /*
+             * ============================================================
+             * WEBGL GRID LOD
+             * ============================================================
+             *
+             * Base grid remains exactly 100 world units.
+             *
+             * At extreme zoom-out use power-of-two parent grids:
+             *
+             *     100
+             *     200
+             *     400
+             *     800
+             *     1600
+             *     ...
+             *
+             * Because every level is an exact multiple of the previous
+             * level, all retained lines stay on the same world origin.
+             *
+             * Most importantly, the shader is never allowed to reach the
+             * <= 6 px fade/discard region.
+             */
             var gridSpacing =
                 100.0;
+
+            var gridScreenSpacing =
+                gridSpacing *
+                viewScale;
+
+            while (
+                gridScreenSpacing <
+                    14.0 &&
+                gridSpacing <
+                    104857600.0
+            ) {
+                gridSpacing *=
+                    2.0;
+
+                gridScreenSpacing *=
+                    2.0;
+            }
 
             /*
              * Wrapped phase keeps values tiny even on enormous private maps.
@@ -30605,11 +31607,9 @@ Most cells eaten   : ${mostCellsEaten}
             );
 
             /*
-             * Pixel size of one 50-world-unit grid square.
+             * gridScreenSpacing was already calculated by the WebGL LOD
+             * selection above.
              */
-            var gridScreenSpacing =
-                gridSpacing *
-                viewScale;
 
             gl.uniform1f(
                 this.grid_u_gridScreenSpacing,
@@ -31729,13 +32729,7 @@ Most cells eaten   : ${mostCellsEaten}
                 return;
             }
 
-            /*
-             * VIRUS TEXT HAS ONE AUTHORITATIVE IMPLEMENTATION:
-             * the original virus massCanvas path.
-             */
-            if (cell.isVirus) {
-                return;
-            }
+
 
             if (
                 !cell.targetNick &&
@@ -32110,6 +33104,72 @@ Most cells eaten   : ${mostCellsEaten}
             var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
             var _isParty = ':party' === application.gameMode;
 
+            /*
+             * ============================================================
+             * UNIFIED CELL + VIRUS GPU CONSTANTS
+             * ============================================================
+             */
+
+            var _virusStrokeWidth =
+                Math.max(
+                    0,
+                    Number(
+                        defaultSettings
+                            .virusStrokeSize
+                    ) || 0
+                );
+
+            var _virusSpikesSize =
+                Math.max(
+                    0,
+                    Number(
+                        defaultSettings
+                            .virusSpikesSize
+                    ) || 0
+                );
+
+            var _virusSpikesRatio =
+                Math.max(
+                    0.001,
+                    Number(
+                        defaultSettings
+                            .virusSpikesRatio
+                    ) || 0.46
+                );
+
+            var _virusGlowSize =
+                defaultmapsettings
+                    .virusGlow
+                    ? Math.max(
+                        0,
+                        Number(
+                            defaultSettings
+                                .virusGlowSize
+                        ) || 0
+                    )
+                    : 0;
+
+            /*
+             * The unit quad must include the complete outer glow.
+             */
+            var _virusExtraRadius =
+                Math.max(
+                    2,
+                    _virusStrokeWidth *
+                        0.5 +
+                    _virusGlowSize +
+                    2
+                );
+
+            var _virusGlowRGB =
+                this.parseWebGLOverlayColor(
+                    defaultSettings
+                        .virusGlowColor,
+                    defaultSettings
+                        .virusStrokeColor ||
+                        '#33ff33'
+                );
+
             for (var i = 0; i < cellsArray.length; i++) {
                 var cell = cellsArray[i];
                 if (!cell || cell.invisible) continue;
@@ -32127,12 +33187,40 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (LM.hideSmallBots && cell.size <= 36) continue;
                 if (cell.isFood) continue; // food cells use separate drawFood() path
-                if (cell.isVirus) continue; // viruses stay on Canvas2D for glow/spikes
+
                 if (cell.removed) continue; // removed cells need Canvas2D alpha fade
 
 
-                var x = cell.x, y = cell.y, r = cell.size;
-                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+                var x =
+                    cell.x;
+
+                var y =
+                    cell.y;
+
+                var r =
+                    cell.size;
+
+                /*
+                 * Virus culling must include outline/glow.
+                 */
+                var _cullRadius =
+                    cell.isVirus
+                        ? r +
+                            _virusExtraRadius
+                        : r;
+
+                if (
+                    x + _cullRadius <
+                        minX ||
+                    x - _cullRadius >
+                        maxX ||
+                    y + _cullRadius <
+                        minY ||
+                    y - _cullRadius >
+                        maxY
+                ) {
+                    continue;
+                }
 
                 /* Video skins require Canvas2D. Abort the complete cell batch instead
                  * of allowing one video-skinned cell to fall behind the WebGL canvas. */
@@ -32158,9 +33246,8 @@ Most cells eaten   : ${mostCellsEaten}
                  * Do not use `parsed || fallback`, because black is the valid
                  * integer value 0x000000 and would incorrectly be replaced.
                  */
-                var colorHex =
-                    cell.color ||
-                    "#808080";
+                var colorHex;
+                var strokeHex;
 
                 var isPlaying =
                     (
@@ -32175,40 +33262,134 @@ Most cells eaten   : ${mostCellsEaten}
                         LM.playerCellsMulti &&
                         LM.playerCellsMulti
                             .length >
-                        0
+                            0
                     );
 
-                if (isPlaying) {
+                /*
+                 * ========================================================
+                 * VIRUS COLOR
+                 * ========================================================
+                 */
+                if (cell.isVirus) {
+                    /*
+                     * Canvas setMass() is no longer responsible for a GPU
+                     * virus, so calculate raw mass here for mother-virus
+                     * colour selection.
+                     */
+                    var _rawVirusMass =
+                        ~~(
+                            r *
+                            r /
+                            100
+                        );
+
+                    cell.mass =
+                        _rawVirusMass;
+
+                    /*
+                     * Preserve existing Legend Mod thresholds.
+                     */
                     if (
-                        (
-                            cell.isPlayerCell ||
-                            cell.playerCellsMulti
-                        ) &&
-                        defaultmapsettings
-                            .myCustomColor &&
-                        ogarcopythelb.color &&
-                        LM.gameMode !==
-                        ":teams"
+                        _rawVirusMass <=
+                        200
                     ) {
-                        colorHex =
-                            ogarcopythelb
-                                .color;
+                        cell.virusColor =
+                            defaultSettings
+                                .virusColor;
+
+                        cell.virusStroke =
+                            defaultSettings
+                                .virusStrokeColor;
                     }
                     else if (
+                        _rawVirusMass >
+                        220
+                    ) {
+                        cell.virusColor =
+                            defaultSettings
+                                .mVirusColor;
+
+                        cell.virusStroke =
+                            defaultSettings
+                                .mVirusStrokeColor;
+                    }
+
+                    if (
                         defaultmapsettings
-                            .oppColors &&
-                        !defaultmapsettings
-                            .oppRings &&
-                        !cell.isFood &&
-                        !defaultmapsettings
-                            .cellContours &&
-                        LM.gameMode !==
-                        ":teams" &&
-                        cell.oppColor
+                            .virColors &&
+                        LM.play
                     ) {
                         colorHex =
-                            cell.oppColor;
+                            application
+                                .setVirusColor(
+                                    r
+                                );
+
+                        strokeHex =
+                            application
+                                .setVirusStrokeColor(
+                                    r
+                                );
                     }
+                    else {
+                        colorHex =
+                            cell.virusColor ||
+                            defaultSettings
+                                .virusColor ||
+                            '#33ff33';
+
+                        strokeHex =
+                            cell.virusStroke ||
+                            defaultSettings
+                                .virusStrokeColor ||
+                            colorHex;
+                    }
+                }
+
+                /*
+                 * ========================================================
+                 * ORDINARY CELL COLOR
+                 * ========================================================
+                 */
+                else {
+                    colorHex =
+                        cell.color ||
+                        '#808080';
+
+                    if (isPlaying) {
+                        if (
+                            (
+                                cell.isPlayerCell ||
+                                cell.playerCellsMulti
+                            ) &&
+                            defaultmapsettings
+                                .myCustomColor &&
+                            ogarcopythelb.color &&
+                            LM.gameMode !==
+                                ':teams'
+                        ) {
+                            colorHex =
+                                ogarcopythelb
+                                    .color;
+                        }
+                        else if (
+                            defaultmapsettings
+                                .oppColors &&
+                            !defaultmapsettings
+                                .oppRings &&
+                            !defaultmapsettings
+                                .cellContours &&
+                            LM.gameMode !==
+                                ':teams' &&
+                            cell.oppColor
+                        ) {
+                            colorHex =
+                                cell.oppColor;
+                        }
+                    }
+
+                    strokeHex =
+                        colorHex;
                 }
 
                 if (
@@ -32297,6 +33478,54 @@ Most cells eaten   : ${mostCellsEaten}
                         colorHex;
                 }
 
+                /*
+                 * Virus stroke colour.
+                 *
+                 * Viruses are comparatively few, so parsing this second color
+                 * is negligible. Ordinary cells simply reuse body cInt.
+                 */
+                var strokeInt =
+                    cInt;
+
+                if (cell.isVirus) {
+                    var _strokeHex =
+                        typeof strokeHex ===
+                        'string'
+                            ? strokeHex
+                                .trim()
+                                .replace(
+                                    /^#/,
+                                    ''
+                                )
+                            : '';
+
+                    if (
+                        /^[0-9a-f]{3}$/i.test(
+                            _strokeHex
+                        )
+                    ) {
+                        _strokeHex =
+                            _strokeHex[0] +
+                            _strokeHex[0] +
+                            _strokeHex[1] +
+                            _strokeHex[1] +
+                            _strokeHex[2] +
+                            _strokeHex[2];
+                    }
+
+                    if (
+                        /^[0-9a-f]{6}$/i.test(
+                            _strokeHex
+                        )
+                    ) {
+                        strokeInt =
+                            parseInt(
+                                _strokeHex,
+                                16
+                            );
+                    }
+                }
+
                 /* Ensure mass is computed even if cell.draw() hasn't run yet.
                  * Canvas2D computes mass inside setMass() which only runs in cell.draw(),
                  * but the WebGL text pass runs BEFORE cell.draw(). */
@@ -32305,15 +33534,39 @@ Most cells eaten   : ${mostCellsEaten}
                 }
 
                 /*
-                 * Body transparency and skin transparency are separate.
-                 *
-                 * transparentSkins must reveal the body color. It must not
-                 * reduce the body color itself.
+                 * ========================================================
+                 * BODY ALPHA
+                 * ========================================================
                  */
                 var bodyAlpha =
                     1.0;
 
-                if (
+                if (cell.isVirus) {
+                    if (
+                        defaultmapsettings
+                            .transparentViruses &&
+                        defaultSettings
+                            .virusAlpha <
+                            0.99
+                    ) {
+                        /*
+                         * This one alpha is consumed by the virus shader for
+                         * BODY + STROKE + SPIKES + GLOW.
+                         */
+                        bodyAlpha *=
+                            Math.max(
+                                0,
+                                Math.min(
+                                    1,
+                                    Number(
+                                        defaultSettings
+                                            .virusAlpha
+                                    ) || 0
+                                )
+                            );
+                    }
+                }
+                else if (
                     defaultmapsettings
                         .transparentCells &&
                     defaultSettings
@@ -32333,7 +33586,15 @@ Most cells eaten   : ${mostCellsEaten}
 
                 var skinRequested =
                     false;
-                if (_showSkins && !cell.isEjected && (cell.targetNick || cell.skin)) {
+                if (
+                    _showSkins &&
+                    !cell.isVirus &&
+                    !cell.isEjected &&
+                    (
+                        cell.targetNick ||
+                        cell.skin
+                    )
+                ) {
                     /* Chat socket skins (nick-based) take priority over vanilla skins */
                     var skinUrl = null;
                     if (cell.targetNick) {
@@ -32462,11 +33723,33 @@ Most cells eaten   : ${mostCellsEaten}
                 data[idx + 6] =
                     bodyAlpha;
 
+                /*
+                 * ========================================================
+                 * SLOT 7 / SLOT 8
+                 * ========================================================
+                 *
+                 * Ordinary:
+                 *
+                 *     slot 7 = texture-array layer
+                 *     slot 8 = skin alpha
+                 *
+                 * Virus:
+                 *
+                 *     slot 7 = -2.0 sentinel
+                 *     slot 8 = packed 0xRRGGBB stroke colour
+                 *
+                 * No extra instance attributes and no larger VBO required.
+                 */
+
                 data[idx + 7] =
-                    skinLayer;
+                    cell.isVirus
+                        ? -2.0
+                        : skinLayer;
 
                 data[idx + 8] =
-                    skinAlpha;
+                    cell.isVirus
+                        ? strokeInt
+                        : skinAlpha;
 
                 /*
                  * GLOBAL LM.cells depth.
@@ -32552,12 +33835,89 @@ Most cells eaten   : ${mostCellsEaten}
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
 
-            gl.useProgram(this.glCellProgram);
-            gl.uniform2f(this.u_cell_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_cell_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-            gl.uniform1i(this.u_skinArray, 0);
+            gl.useProgram(
+                this.glCellProgram
+            );
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glCellInstanceVBO);
+            gl.uniform2f(
+                this.u_cell_viewCenter,
+                this.camX,
+                this.camY
+            );
+
+            gl.uniform2f(
+                this.u_cell_viewScale,
+                2.0 *
+                    viewScale /
+                    this.canvasWidth,
+                2.0 *
+                    viewScale /
+                    this.canvasHeight
+            );
+
+            gl.uniform1i(
+                this.u_skinArray,
+                0
+            );
+
+            /*
+             * ============================================================
+             * VIRUS SHADER SETTINGS
+             * ============================================================
+             */
+
+            gl.uniform1f(
+                this.u_cell_virusExtraRadius,
+                _virusExtraRadius
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusStrokeWidth,
+                _virusStrokeWidth
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusSpikesEnabled,
+                defaultmapsettings
+                    .virusSpikes
+                    ? 1.0
+                    : 0.0
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusSpikesRatio,
+                _virusSpikesRatio
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusSpikesSize,
+                _virusSpikesSize
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusGlowEnabled,
+                defaultmapsettings
+                    .virusGlow
+                    ? 1.0
+                    : 0.0
+            );
+
+            gl.uniform1f(
+                this.u_cell_virusGlowSize,
+                _virusGlowSize
+            );
+
+            gl.uniform3f(
+                this.u_cell_virusGlowColor,
+                _virusGlowRGB[0],
+                _virusGlowRGB[1],
+                _virusGlowRGB[2]
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.glCellInstanceVBO
+            );
             gl.bufferSubData(
                 gl.ARRAY_BUFFER,
                 0,
@@ -32877,8 +34237,32 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (window.clientProfiler) window.clientProfiler.recordGrid(performance.now() - _tGrid);
                 /* ── Expanding Land: Draw warning/danger zone overlay ── */
-                if (LM.isLegendWorld && LM.mapEvent && LM.mapEvent.active && (LM.mapEvent.phase >= 2 && LM.mapEvent.phase <= 4)) {
-                    this.drawLegendWorldZone(this.ctx);
+                if (
+                    LM.isLegendWorld &&
+                    LM.mapEvent &&
+                    LM.mapEvent.active &&
+                    (
+                        LM.mapEvent.phase >= 2 &&
+                        LM.mapEvent.phase <= 4
+                    )
+                ) {
+                    /*
+                     * Prefer the WebGL zone shader when available.
+                     *
+                     * The grid WebGL context lives on gridCanvas, NOT
+                     * the cell overlay canvas, so we can safely draw
+                     * into it without interfering with the cell batch.
+                     */
+                    if (
+                        this.gridGl &&
+                        this.gridGlZoneProgram &&
+                        this.gridGlZoneVAO
+                    ) {
+                        this.drawWebGLZone();
+                    }
+                    else {
+                        this.drawLegendWorldZone(this.ctx);
+                    }
                 }
                 //this.drawCommander(this.ctx);  // disabled — spawn effects unwanted
                 //this.drawCommander2(this.ctx); // disabled — spawn effects unwanted
@@ -32982,8 +34366,22 @@ Most cells eaten   : ${mostCellsEaten}
                     );
 
                     /*
-                     * Ordinary cells draw on WebGL.
-                     * Viruses remain on Canvas2D for authoritative spikes/glow/mass.
+                     * ======================================================
+                     * ONE UNIFIED WEBGL BODY PASS
+                     * ======================================================
+                     *
+                     * LM.cells is already globally sorted small -> large.
+                     *
+                     * Ordinary cells AND viruses are now emitted into the
+                     * same WebGL instanced batch and therefore share:
+                     *
+                     * - one ordered instance stream
+                     * - one depth buffer
+                     * - one draw call
+                     * - one alpha model
+                     *
+                     * There is no separate Canvas virus body pass when
+                     * _webglRendered is true.
                      */
                     var _gpuWorldOK =
                         this.drawWebGLCellBatch(
@@ -33526,29 +34924,79 @@ Most cells eaten   : ${mostCellsEaten}
             }
         },
         drawRMB() {
-            if (drawRender.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
-                var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
-                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
-                if (LM.playerCells[index] === undefined) return;
-                var xc = LM.playerCells[index].targetX //.x
-                var yc = LM.playerCells[index].targetY //.y
-
-                var x = LM.indexedCells[LM.selected].targetX //.x
-                var y = LM.indexedCells[LM.selected].targetY //.y
-
-                var a = xc - x
-                var b = yc - y
-                var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
-
-                var ang = Math.atan2(y - yc, x - xc);
-
-                LM.cursorX = xc + (Math.cos(ang) * distance)
-                LM.cursorY = yc + (Math.sin(ang) * distance)
-                //
-                //LM.selected = null
-                //
-                LM.sendPosition()
+            if (
+                !drawRender.RMB ||
+                !LM.indexedCells[LM.selected] ||
+                !LM.playerCellIDs.length
+            ) {
+                return;
             }
+
+            /*
+             * Logic only — no rendering here.
+             *
+             * Do not trust LM.playerCells array order.
+             */
+            var playerCell =
+                pickPlayerCellBySize(
+                    LM.playerCells,
+                    !!LM.selectBiggestCell
+                );
+
+            if (!playerCell) {
+                return;
+            }
+
+            var selectedCell =
+                LM.indexedCells[
+                    LM.selected
+                ];
+
+            var xc =
+                playerCell.targetX;
+
+            var yc =
+                playerCell.targetY;
+
+            var x =
+                selectedCell.targetX;
+
+            var y =
+                selectedCell.targetY;
+
+            var dx =
+                xc - x;
+
+            var dy =
+                yc - y;
+
+            var distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                ) -
+                (
+                    selectedCell.size +
+                    playerCell.size
+                );
+
+            var ang =
+                Math.atan2(
+                    y - yc,
+                    x - xc
+                );
+
+            LM.cursorX =
+                xc +
+                Math.cos(ang) *
+                distance;
+
+            LM.cursorY =
+                yc +
+                Math.sin(ang) *
+                distance;
+
+            LM.sendPosition();
         },
         drawRings() {
             if (defaultmapsettings.reverseTrick) {
@@ -34274,6 +35722,178 @@ Most cells eaten   : ${mostCellsEaten}
                 "skrrt";
             }
         },
+        /* ── Expanding Land: WebGL zone overlay ── */
+        drawWebGLZone() {
+            var gl =
+                this.gridGl;
+
+            if (
+                !gl ||
+                !this.gridGlZoneProgram ||
+                !this.gridGlZoneVAO
+            ) {
+                return;
+            }
+
+            var me =
+                LM.mapEvent;
+
+            if (
+                !me ||
+                !me.active
+            ) {
+                return;
+            }
+
+            var now =
+                Date.now();
+
+            /*
+             * Compute transition progress [0..1].
+             */
+            var elapsed =
+                now -
+                me.startTime;
+
+            var progress =
+                me.transitionDuration > 0
+                    ? Math.min(
+                          1.0,
+                          elapsed /
+                              me.transitionDuration
+                      )
+                    : 1.0;
+
+            /*
+             * Previous half-size comes from the snapshot stored
+             * when handleMapEvent() fired.
+             */
+            var prevHalfX =
+                (
+                    me.prevMaxX -
+                    me.prevMinX
+                ) /
+                2.0;
+
+            var prevHalfY =
+                (
+                    me.prevMaxY -
+                    me.prevMinY
+                ) /
+                2.0;
+
+            var prevHalf =
+                Math.max(
+                    prevHalfX,
+                    prevHalfY,
+                    1.0
+                );
+
+            var currHalf =
+                me.targetSize > 0
+                    ? me.targetSize / 2.0
+                    : prevHalf;
+
+            /*
+             * viewScale and camera center for the full-screen
+             * quad inverse transform.
+             */
+            var viewScale =
+                this.viewScale || 1.0;
+
+            var cameraX =
+                this.viewX || 0;
+
+            var cameraY =
+                this.viewY || 0;
+
+            var canvasW =
+                this.gridCanvas
+                    ? this.gridCanvas.width
+                    : (
+                          this.canvas
+                              ? this.canvas.width
+                              : 1920
+                      );
+
+            var canvasH =
+                this.gridCanvas
+                    ? this.gridCanvas.height
+                    : (
+                          this.canvas
+                              ? this.canvas.height
+                              : 1080
+                      );
+
+            var invScaleX =
+                canvasW /
+                (2.0 * viewScale);
+
+            var invScaleY =
+                canvasH /
+                (2.0 * viewScale);
+
+            gl.useProgram(
+                this.gridGlZoneProgram
+            );
+
+            gl.uniform2f(
+                this.u_zone_viewCenter,
+                cameraX,
+                cameraY
+            );
+
+            gl.uniform2f(
+                this.u_zone_invViewScale,
+                invScaleX,
+                invScaleY
+            );
+
+            gl.uniform2f(
+                this.u_zone_zoneCenter,
+                me.centerX || 0,
+                me.centerY || 0
+            );
+
+            gl.uniform1f(
+                this.u_zone_zonePrevHalf,
+                prevHalf
+            );
+
+            gl.uniform1f(
+                this.u_zone_zoneCurrHalf,
+                currHalf
+            );
+
+            gl.uniform1f(
+                this.u_zone_zonePhase,
+                me.phase
+            );
+
+            gl.uniform1f(
+                this.u_zone_zoneProgress,
+                progress
+            );
+
+            gl.uniform1f(
+                this.u_zone_time,
+                now / 1000.0
+            );
+
+            gl.bindVertexArray(
+                this.gridGlZoneVAO
+            );
+
+            gl.drawArrays(
+                gl.TRIANGLE_STRIP,
+                0,
+                4
+            );
+
+            gl.bindVertexArray(
+                null
+            );
+        },
         /* ── Expanding Land: Warning/Danger zone overlay ── */
         drawLegendWorldZone(ctx) {
             if (!LM.mapEvent || !LM.mapEvent.active) return;
@@ -34680,56 +36300,183 @@ Most cells eaten   : ${mostCellsEaten}
                 s && (e = []);
             }
         },*/
-        drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            this.drawCircles(ctx, biggestCell, 760, 8, 0.8, defaultSettings.enemyBSTEColor); //Sonia2
-            if (players.length) {
-                var current = currentBiggestCell ? players.length - 1 : 0;
-                if (!players[current]) { ctx.globalAlpha = 1; return; }
-                /* WebGL2 fast path for the player's own split range circle */
-                var _splitAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                    && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _splitAlpha, 1.0, 6)) {
-                    // rendered via GPU
-                } else {
-                    ctx.lineWidth = 6;
-                    ctx.globalAlpha = _splitAlpha;
-                    ctx.strokeStyle = defaultSettings.splitRangeColor;
-                    ctx.beginPath();
-                    ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
-                    ctx.closePath();
-                    ctx.stroke();
-                }
+        drawSplitRange(
+            ctx,
+            biggestCell,
+            players,
+            currentBiggestCell,
+            reset
+        ) {
+            /*
+             * WEBGL ONLY.
+             *
+             * Enemy BSTE helper circles.
+             */
+            if (
+                biggestCell &&
+                biggestCell.length &&
+                this.gl &&
+                defaultmapsettings
+                    .webgl2Acceleration !==
+                    false
+            ) {
+                this.drawWebGLRingsBatch(
+                    biggestCell,
+                    760,
+                    defaultSettings
+                        .enemyBSTEColor,
+                    0.8,
+                    1.0,
+                    8
+                );
             }
-            ctx.globalAlpha = 1;
-            if (reset) {
-                biggestCell = [];
+
+            /*
+             * Select the correct player cell BEFORE rendering.
+             *
+             * Never infer smallest/biggest from array position.
+             */
+            var selected =
+                pickPlayerCellBySize(
+                    players,
+                    !!currentBiggestCell
+                );
+
+            if (
+                selected &&
+                this.gl &&
+                defaultmapsettings
+                    .webgl2Acceleration !==
+                    false
+            ) {
+                var splitAlpha =
+                    defaultSettings.darkTheme
+                        ? 0.7
+                        : 0.35;
+
+                this.drawWebGLRingsBatch(
+                    [selected],
+                    760,
+                    defaultSettings
+                        .splitRangeColor,
+                    splitAlpha,
+                    1.0,
+                    6
+                );
+            }
+
+            if (
+                reset &&
+                biggestCell
+            ) {
+                biggestCell.length =
+                    0;
             }
         },
-        drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-            this.draw2Circles(ctx, biggestCell, 760, 8, 0.8, defaultSettings.enemyBSTEDColor); //Sonia2
-            if (players.length) {
-                var current = currentBiggestCell ? players.length - 1 : 0;
-                if (!players[current]) { ctx.globalAlpha = 1; return; }
-                if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
-                    /* WebGL2 fast path for player's double-split range circle (2x size) */
-                    var _dsAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
-                    if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                        && this.drawWebGLRingsBatch([players[current]], 760, defaultSettings.splitRangeColor, _dsAlpha, 2.0, 6)) {
-                        // rendered via GPU
-                    } else {
-                        ctx.lineWidth = 6;
-                        ctx.globalAlpha = _dsAlpha;
-                        ctx.strokeStyle = defaultSettings.splitRangeColor;
-                        ctx.beginPath();
-                        ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
-                        ctx.closePath();
-                        ctx.stroke();
-                    }
-                }
+
+        drawDoubleSplitRange(
+            ctx,
+            biggestCell,
+            players,
+            currentBiggestCell,
+            reset
+        ) {
+            /*
+             * WEBGL ONLY.
+             *
+             * Quick double-split enemy range:
+             *
+             *     2 * cell radius + 760
+             */
+            if (
+                biggestCell &&
+                biggestCell.length &&
+                this.gl &&
+                defaultmapsettings
+                    .webgl2Acceleration !==
+                    false &&
+                defaultmapsettings
+                    .qdsplitRange
+            ) {
+                this.drawWebGLRingsBatch(
+                    biggestCell,
+                    760,
+                    defaultSettings
+                        .enemyBSTEDColor,
+                    0.8,
+                    2.0,
+                    8
+                );
             }
-            ctx.globalAlpha = 1;
-            if (reset) {
-                biggestCell = [];
+
+            /*
+             * Slow double-split enemy range:
+             *
+             *     1.5 * cell radius + 1520
+             *
+             * Preserve the existing Sonia geometry exactly.
+             */
+            if (
+                biggestCell &&
+                biggestCell.length &&
+                this.gl &&
+                defaultmapsettings
+                    .webgl2Acceleration !==
+                    false &&
+                defaultmapsettings
+                    .sdsplitRange
+            ) {
+                this.drawWebGLDashedRingsBatch(
+                    biggestCell,
+                    1520,
+                    defaultSettings
+                        .enemyBSTEDColor,
+                    0.8,
+                    1.5
+                );
+            }
+
+            /*
+             * Again: select from actual sizes, not array ordering.
+             */
+            var selected =
+                pickPlayerCellBySize(
+                    players,
+                    !!currentBiggestCell
+                );
+
+            if (
+                selected &&
+                selected.size >= 400 &&
+                this.gl &&
+                defaultmapsettings
+                    .webgl2Acceleration !==
+                    false &&
+                defaultmapsettings
+                    .qdsplitRange
+            ) {
+                var doubleSplitAlpha =
+                    defaultSettings.darkTheme
+                        ? 0.7
+                        : 0.35;
+
+                this.drawWebGLRingsBatch(
+                    [selected],
+                    760,
+                    defaultSettings
+                        .splitRangeColor,
+                    doubleSplitAlpha,
+                    2.0,
+                    6
+                );
+            }
+
+            if (
+                reset &&
+                biggestCell
+            ) {
+                biggestCell.length =
+                    0;
             }
         },
         drawBOppRings(
@@ -37206,9 +38953,20 @@ var reverseTrick = {
                 return
             }
 
-            var index = legendmod.selectBiggestCell ? legendmod.playerCells.length - 0x1 : 0x0;
-            var p = legendmod.playerCells[index];
-            if (legendmod.playerCells[index] === undefined) return;
+            /*
+             * Logic fix only.
+             *
+             * Do not assume playerCells[] remains sorted.
+             */
+            var p =
+                pickPlayerCellBySize(
+                    legendmod.playerCells,
+                    !!legendmod.selectBiggestCell
+                );
+
+            if (!p) {
+                return;
+            }
 
             var small = legendmod.indexedCells[this.smallerEnemy],
                 distToP = this.getDistance(p.targetX, p.targetY, small.targetX, small.targetY);
@@ -37217,17 +38975,40 @@ var reverseTrick = {
 
             if (small.size + 760 + p.size < distToP) return
 
-            var xc = legendmod.playerCells[index].targetX //.x
-            var yc = legendmod.playerCells[index].targetY //.y
+            var xc =
+                p.targetX;
 
+            var yc =
+                p.targetY;
 
             var selectedToUse = reverseTrick.smallerEnemy;
-            var x = legendmod.indexedCells[selectedToUse].targetX//.x
-            var y = legendmod.indexedCells[selectedToUse].targetY//.y
 
-            var a = xc - x
-            var b = yc - y
-            var distance = Math.sqrt(a * a + b * b) - (legendmod.indexedCells[selectedToUse].size + legendmod.playerCells[index].size)
+            var x =
+                legendmod.indexedCells[
+                    selectedToUse
+                ].targetX;
+
+            var y =
+                legendmod.indexedCells[
+                    selectedToUse
+                ].targetY;
+
+            var a = xc - x;
+            var b = yc - y;
+
+            var distance =
+                Math.sqrt(
+                    a * a +
+                    b * b
+                ) -
+                (
+                    legendmod
+                        .indexedCells[
+                            selectedToUse
+                        ]
+                        .size +
+                    p.size
+                );
 
             var ang = Math.atan2(y - yc, x - xc);
             legendmod.cursorX = xc + (Math.cos(ang) * distance)
