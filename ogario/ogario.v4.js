@@ -4317,6 +4317,493 @@ window.getAgarXpEntry = function (level) {
 };
 
 /*
+ * ─────────────────────────────────────────────────────────────
+ * AGAR.IO GAMECONFIG REWARD RESOLVER
+ * ─────────────────────────────────────────────────────────────
+ *
+ * Converts:
+ *
+ *      reward / bonus ID
+ *              ↓
+ *      Wallet - Bonuses and Rewards
+ *              ↓
+ *           bundleId
+ *              ↓
+ *      Wallet - Product Bundles
+ *              ↓
+ *      productId + quantity
+ *
+ * Example:
+ *
+ *      hourlyBonus
+ *          ↓
+ *      20_coins
+ *          ↓
+ *      [
+ *          {
+ *              productId: "coin",
+ *              quantity: 20
+ *          }
+ *      ]
+ *
+ * This is deliberately configuration-driven.
+ * No hardcoded league/quest/hourly/level reward amounts.
+ */
+
+window._agarRewardIndex = null;
+
+
+/*
+ * Build the indexes once.
+ *
+ * Wallet - Bonuses and Rewards:
+ *
+ *      id -> reward definition
+ *
+ * Wallet - Product Bundles:
+ *
+ *      bundleId -> all products belonging to that bundle
+ */
+window.buildAgarRewardIndex = function () {
+    var bonuses =
+        window.getAgarConfigSection(
+            'Wallet - Bonuses and Rewards'
+        );
+
+    var bundleProducts =
+        window.getAgarConfigSection(
+            'Wallet - Product Bundles'
+        );
+
+    if (
+        !Array.isArray(bonuses) ||
+        !Array.isArray(bundleProducts)
+    ) {
+        window._agarRewardIndex =
+            null;
+
+        return null;
+    }
+
+    var bonusById =
+        Object.create(null);
+
+    var productsByBundle =
+        Object.create(null);
+
+
+    /*
+     * Index reward/bonus IDs.
+     */
+    for (
+        var i = 0;
+        i < bonuses.length;
+        i++
+    ) {
+        var bonus =
+            bonuses[i];
+
+        if (
+            !bonus ||
+            bonus.id == null
+        ) {
+            continue;
+        }
+
+        bonusById[
+            String(bonus.id)
+        ] = bonus;
+    }
+
+
+    /*
+     * A bundle can contain MORE THAN ONE product.
+     *
+     * Do NOT use .find() here because a bundle such as
+     * 50_coins_5_dna contains multiple rows.
+     */
+    for (
+        var j = 0;
+        j < bundleProducts.length;
+        j++
+    ) {
+        var product =
+            bundleProducts[j];
+
+        if (
+            !product ||
+            product.bundleId == null ||
+            product.productId == null
+        ) {
+            continue;
+        }
+
+        var bundleId =
+            String(
+                product.bundleId
+            );
+
+        if (
+            !productsByBundle[
+                bundleId
+            ]
+        ) {
+            productsByBundle[
+                bundleId
+            ] = [];
+        }
+
+        productsByBundle[
+            bundleId
+        ].push(
+            product
+        );
+    }
+
+
+    window._agarRewardIndex = {
+        bonusById:
+            bonusById,
+
+        productsByBundle:
+            productsByBundle,
+
+        bonuses:
+            bonuses,
+
+        bundleProducts:
+            bundleProducts
+    };
+
+    return window._agarRewardIndex;
+};
+
+
+/*
+ * Return the existing index or build it lazily.
+ */
+window.getAgarRewardIndex = function () {
+    if (
+        window._agarRewardIndex
+    ) {
+        return window._agarRewardIndex;
+    }
+
+    return window.buildAgarRewardIndex();
+};
+
+
+/*
+ * Resolve one reward ID.
+ *
+ * RETURN EXAMPLE:
+ *
+ * {
+ *     rewardId: "levelUpReward",
+ *     bundleId: "50_coins_5_dna",
+ *
+ *     products: [
+ *         {
+ *             productId: "coin",
+ *             quantity: 50
+ *         },
+ *         {
+ *             productId: "dna",
+ *             quantity: 5
+ *         }
+ *     ],
+ *
+ *     rawReward: {...}
+ * }
+ */
+window.resolveAgarReward = function (
+    rewardId
+) {
+    if (
+        rewardId == null ||
+        rewardId === ''
+    ) {
+        return null;
+    }
+
+    var index =
+        window.getAgarRewardIndex();
+
+    if (!index) {
+        return null;
+    }
+
+    var id =
+        String(
+            rewardId
+        );
+
+    var reward =
+        index.bonusById[id];
+
+    if (!reward) {
+        return null;
+    }
+
+    var bundleId =
+        reward.bundleId != null
+            ? String(
+                reward.bundleId
+            )
+            : '';
+
+    if (!bundleId) {
+        return {
+            rewardId:
+                id,
+
+            bundleId:
+                '',
+
+            products:
+                [],
+
+            rawReward:
+                reward
+        };
+    }
+
+    var rows =
+        index.productsByBundle[
+            bundleId
+        ] || [];
+
+    /*
+     * Merge duplicate product rows if Agar.io's
+     * configuration contains the same product more
+     * than once inside one bundle.
+     */
+    var quantities =
+        Object.create(null);
+
+    var productOrder =
+        [];
+
+    for (
+        var i = 0;
+        i < rows.length;
+        i++
+    ) {
+        var row =
+            rows[i];
+
+        if (
+            !row ||
+            row.productId == null
+        ) {
+            continue;
+        }
+
+        var productId =
+            String(
+                row.productId
+            );
+
+        var quantity =
+            Number(
+                row.quantity
+            );
+
+        if (
+            !isFinite(quantity)
+        ) {
+            quantity = 0;
+        }
+
+        if (
+            quantities[
+                productId
+            ] === undefined
+        ) {
+            quantities[
+                productId
+            ] = 0;
+
+            productOrder.push(
+                productId
+            );
+        }
+
+        quantities[
+            productId
+        ] += quantity;
+    }
+
+
+    var products =
+        [];
+
+    for (
+        var p = 0;
+        p < productOrder.length;
+        p++
+    ) {
+        var currentProductId =
+            productOrder[p];
+
+        products.push({
+            productId:
+                currentProductId,
+
+            quantity:
+                quantities[
+                    currentProductId
+                ]
+        });
+    }
+
+
+    return {
+        rewardId:
+            id,
+
+        bundleId:
+            bundleId,
+
+        products:
+            products,
+
+        rawReward:
+            reward
+    };
+};
+
+
+/*
+ * Resolve the configured level-up reward for a level.
+ *
+ * Uses:
+ *
+ * Gameplay - XP to Level
+ *      levelUpBonusId
+ *
+ * then sends that ID through resolveAgarReward().
+ */
+window.getAgarLevelReward = function (
+    level
+) {
+    var xpEntry =
+        window.getAgarXpEntry(
+            level
+        );
+
+    if (
+        !xpEntry ||
+        !xpEntry.levelUpBonusId
+    ) {
+        return null;
+    }
+
+    var reward =
+        window.resolveAgarReward(
+            xpEntry.levelUpBonusId
+        );
+
+    if (!reward) {
+        return null;
+    }
+
+    reward.level =
+        Number(
+            xpEntry.level
+        ) || Number(level) || 1;
+
+    reward.xpToNextLevel =
+        Number(
+            xpEntry.xpToNextLevel
+        ) || 0;
+
+    reward.levelUpBonusId =
+        xpEntry.levelUpBonusId;
+
+    return reward;
+};
+
+
+/*
+ * Convenience function for displaying a reward.
+ *
+ * Does not invent names. It only formats the product IDs
+ * actually present in GameConfiguration.
+ */
+window.formatAgarReward = function (
+    rewardOrId
+) {
+    var reward =
+        typeof rewardOrId ===
+            'string'
+            ? window.resolveAgarReward(
+                rewardOrId
+            )
+            : rewardOrId;
+
+    if (
+        !reward ||
+        !Array.isArray(
+            reward.products
+        ) ||
+        !reward.products.length
+    ) {
+        return '';
+    }
+
+    var result =
+        [];
+
+    for (
+        var i = 0;
+        i < reward.products.length;
+        i++
+    ) {
+        var product =
+            reward.products[i];
+
+        var productId =
+            String(
+                product.productId ||
+                ''
+            );
+
+        var quantity =
+            Number(
+                product.quantity
+            ) || 0;
+
+        var label =
+            productId;
+
+        if (
+            productId === 'coin'
+        ) {
+            label =
+                quantity === 1
+                    ? 'coin'
+                    : 'coins';
+        } else if (
+            productId === 'dna'
+        ) {
+            label =
+                'DNA';
+        }
+
+        result.push(
+            quantity +
+            ' ' +
+            label
+        );
+    }
+
+    return result.join(
+        ' + '
+    );
+};
+
+/*
  * ─── EVENT-DRIVEN GAMECONFIGURATION INIT ───
  *
  * Replaces the old setTimeout(..., 5000) approach.
@@ -4339,6 +4826,13 @@ function _initGameConfigSections(gc) {
     /* Set canonical references */
     window.LMAgarGameConfiguration = gc;
     window.GameConfiguration = gc;
+
+    /*
+     * Configuration changed/loaded:
+     * rebuild all derived reward indexes.
+     */
+    window._agarRewardIndex = null;
+    window.buildAgarRewardIndex();
 
     /* ── Equippable Skins ── */
     window.EquippableSkins =
