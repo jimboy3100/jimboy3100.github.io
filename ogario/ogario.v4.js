@@ -26949,6 +26949,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                             self.gridGlVBO =
                                 null;
+
+                            /* Helper ring pipeline — rebuilt lazily by ensureGridHelperRings() */
+                            self._gridHelperRingContext =
+                                null;
+
+                            self.gridGlSolidRingProgram =
+                                null;
+
+                            self.gridGlSolidRingVAO =
+                                null;
+
+                            self.gridGlSolidRingInstanceVBO =
+                                null;
+
+                            self.gridGlDashedRingProgram =
+                                null;
+
+                            self.gridGlDashedRingVAO =
+                                null;
+
+                            self.gridGlDashedRingInstanceVBO =
+                                null;
                         },
                         false
                     );
@@ -31965,6 +31987,574 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             return true;
         },
+        ensureGridHelperRings() {
+            /*
+             * ============================================================
+             * WEBGL-ONLY LOWER HELPER LAYER
+             * ============================================================
+             *
+             * Opponent/split/double-split rings must NOT share this.gl
+             * with the atomic cell pass.
+             *
+             * this.gl may be cleared when any cell/skin/video forces the
+             * world to fall back to Canvas2D.
+             *
+             * gridGl belongs to a separate WebGL2 canvas physically BELOW
+             * both:
+             *
+             *     Canvas2D world
+             *     main WebGL world
+             *
+             * Therefore helper rings survive either rendering backend.
+             */
+
+            var gl =
+                this.gridGl;
+
+            if (
+                !gl ||
+                !this.gridGlVBO
+            ) {
+                return false;
+            }
+
+            /*
+             * Context restoration creates a NEW WebGL context object.
+             * Rebuild lazily when that happens.
+             */
+            if (
+                this._gridHelperRingContext === gl &&
+                this.gridGlSolidRingProgram &&
+                this.gridGlSolidRingVAO &&
+                this.gridGlSolidRingInstanceVBO &&
+                this.gridGlDashedRingProgram &&
+                this.gridGlDashedRingVAO &&
+                this.gridGlDashedRingInstanceVBO
+            ) {
+                return true;
+            }
+
+            this._gridHelperRingContext =
+                null;
+
+            this.gridGlSolidRingProgram =
+                null;
+
+            this.gridGlSolidRingVAO =
+                null;
+
+            this.gridGlSolidRingInstanceVBO =
+                null;
+
+            this.gridGlDashedRingProgram =
+                null;
+
+            this.gridGlDashedRingVAO =
+                null;
+
+            this.gridGlDashedRingInstanceVBO =
+                null;
+
+            var self =
+                this;
+
+            function compile(
+                type,
+                source
+            ) {
+                var shader =
+                    gl.createShader(
+                        type
+                    );
+
+                gl.shaderSource(
+                    shader,
+                    source
+                );
+
+                gl.compileShader(
+                    shader
+                );
+
+                if (
+                    !gl.getShaderParameter(
+                        shader,
+                        gl.COMPILE_STATUS
+                    )
+                ) {
+                    var error =
+                        gl.getShaderInfoLog(
+                            shader
+                        );
+
+                    gl.deleteShader(
+                        shader
+                    );
+
+                    console.error(
+                        '[LegendMod Helper Rings] Shader compile failed:',
+                        error
+                    );
+
+                    return null;
+                }
+
+                return shader;
+            }
+
+            function link(
+                vertexSource,
+                fragmentSource
+            ) {
+                var vertexShader =
+                    compile(
+                        gl.VERTEX_SHADER,
+                        vertexSource
+                    );
+
+                var fragmentShader =
+                    compile(
+                        gl.FRAGMENT_SHADER,
+                        fragmentSource
+                    );
+
+                if (
+                    !vertexShader ||
+                    !fragmentShader
+                ) {
+                    if (vertexShader) {
+                        gl.deleteShader(
+                            vertexShader
+                        );
+                    }
+
+                    if (fragmentShader) {
+                        gl.deleteShader(
+                            fragmentShader
+                        );
+                    }
+
+                    return null;
+                }
+
+                var program =
+                    gl.createProgram();
+
+                gl.attachShader(
+                    program,
+                    vertexShader
+                );
+
+                gl.attachShader(
+                    program,
+                    fragmentShader
+                );
+
+                gl.linkProgram(
+                    program
+                );
+
+                gl.deleteShader(
+                    vertexShader
+                );
+
+                gl.deleteShader(
+                    fragmentShader
+                );
+
+                if (
+                    !gl.getProgramParameter(
+                        program,
+                        gl.LINK_STATUS
+                    )
+                ) {
+                    console.error(
+                        '[LegendMod Helper Rings] Program link failed:',
+                        gl.getProgramInfoLog(
+                            program
+                        )
+                    );
+
+                    gl.deleteProgram(
+                        program
+                    );
+
+                    return null;
+                }
+
+                return program;
+            }
+
+            /*
+             * One instanced quad per ring.
+             *
+             * Instance layout:
+             *
+             * 0 x
+             * 1 y
+             * 2 outer radius
+             * 3 red
+             * 4 green
+             * 5 blue
+             * 6 alpha
+             * 7 thickness / outer radius
+             */
+            var vertexSource = [
+                '#version 300 es',
+                'precision highp float;',
+                '',
+                'in vec2 a_unitPos;',
+                'in vec2 a_cellPos;',
+                'in float a_radius;',
+                'in vec4 a_color;',
+                'in float a_thickness;',
+                '',
+                'uniform vec2 u_viewCenter;',
+                'uniform vec2 u_viewScale;',
+                '',
+                'out vec4 v_color;',
+                'out vec2 v_unitPos;',
+                'out float v_thickness;',
+                'out float v_radius;',
+                '',
+                'void main() {',
+                '    v_color = a_color;',
+                '    v_unitPos = a_unitPos;',
+                '    v_thickness = a_thickness;',
+                '    v_radius = a_radius;',
+                '    vec2 worldPos = a_cellPos + a_unitPos * a_radius;',
+                '    vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;',
+                '    gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);',
+                '}'
+            ].join('\n');
+
+            var solidFragmentSource = [
+                '#version 300 es',
+                'precision highp float;',
+                '',
+                'in vec4 v_color;',
+                'in vec2 v_unitPos;',
+                'in float v_thickness;',
+                'in float v_radius;',
+                '',
+                'out vec4 fragColor;',
+                '',
+                'void main() {',
+                '    float dist = length(v_unitPos);',
+                '    float aa = max(fwidth(dist), 0.0005);',
+                '    float inner = max(0.0, 1.0 - v_thickness);',
+                '    float outerAlpha = 1.0 - smoothstep(1.0 - aa, 1.0 + aa, dist);',
+                '    float innerAlpha = smoothstep(inner - aa, inner + aa, dist);',
+                '    float ringAlpha = outerAlpha * innerAlpha;',
+                '    if (ringAlpha < 0.001) discard;',
+                '    fragColor = vec4(v_color.rgb, v_color.a * ringAlpha);',
+                '}'
+            ].join('\n');
+
+            var dashedFragmentSource = [
+                '#version 300 es',
+                'precision highp float;',
+                '',
+                'in vec4 v_color;',
+                'in vec2 v_unitPos;',
+                'in float v_thickness;',
+                'in float v_radius;',
+                '',
+                'out vec4 fragColor;',
+                '',
+                'const float TAU = 6.28318530717958647692;',
+                '',
+                'void main() {',
+                '    float dist = length(v_unitPos);',
+                '    float aa = max(fwidth(dist), 0.0005);',
+                '    float inner = max(0.0, 1.0 - v_thickness);',
+                '    float outerAlpha = 1.0 - smoothstep(1.0 - aa, 1.0 + aa, dist);',
+                '    float innerAlpha = smoothstep(inner - aa, inner + aa, dist);',
+                '    float ringAlpha = outerAlpha * innerAlpha;',
+                '    if (ringAlpha < 0.001) discard;',
+                '    float angle = atan(v_unitPos.y, v_unitPos.x);',
+                '    if (angle < 0.0) angle += TAU;',
+                '    float centerRadius = max(v_radius * (1.0 - 0.5 * v_thickness), 0.0001);',
+                '    float arcLength = angle * centerRadius;',
+                '    if (mod(arcLength, 50.0) >= 20.0) discard;',
+                '    fragColor = vec4(v_color.rgb, v_color.a * ringAlpha);',
+                '}'
+            ].join('\n');
+
+            function createPipeline(
+                fragmentSource
+            ) {
+                var program =
+                    link(
+                        vertexSource,
+                        fragmentSource
+                    );
+
+                if (!program) {
+                    return null;
+                }
+
+                var vao =
+                    gl.createVertexArray();
+
+                gl.bindVertexArray(
+                    vao
+                );
+
+                /*
+                 * Reuse gridGl's existing [-1,+1] quad.
+                 */
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    self.gridGlVBO
+                );
+
+                var unitPos =
+                    gl.getAttribLocation(
+                        program,
+                        'a_unitPos'
+                    );
+
+                if (unitPos < 0) {
+                    return null;
+                }
+
+                gl.enableVertexAttribArray(
+                    unitPos
+                );
+
+                gl.vertexAttribPointer(
+                    unitPos,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    0,
+                    0
+                );
+
+                var instanceVBO =
+                    gl.createBuffer();
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    instanceVBO
+                );
+
+                gl.bufferData(
+                    gl.ARRAY_BUFFER,
+                    5000 *
+                    8 *
+                    4,
+                    gl.DYNAMIC_DRAW
+                );
+
+                var stride =
+                    8 *
+                    4;
+
+                var cellPos =
+                    gl.getAttribLocation(
+                        program,
+                        'a_cellPos'
+                    );
+
+                var radius =
+                    gl.getAttribLocation(
+                        program,
+                        'a_radius'
+                    );
+
+                var color =
+                    gl.getAttribLocation(
+                        program,
+                        'a_color'
+                    );
+
+                var thickness =
+                    gl.getAttribLocation(
+                        program,
+                        'a_thickness'
+                    );
+
+                if (
+                    cellPos < 0 ||
+                    radius < 0 ||
+                    color < 0 ||
+                    thickness < 0
+                ) {
+                    return null;
+                }
+
+                gl.enableVertexAttribArray(
+                    cellPos
+                );
+
+                gl.vertexAttribPointer(
+                    cellPos,
+                    2,
+                    gl.FLOAT,
+                    false,
+                    stride,
+                    0
+                );
+
+                gl.vertexAttribDivisor(
+                    cellPos,
+                    1
+                );
+
+                gl.enableVertexAttribArray(
+                    radius
+                );
+
+                gl.vertexAttribPointer(
+                    radius,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    stride,
+                    2 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    radius,
+                    1
+                );
+
+                gl.enableVertexAttribArray(
+                    color
+                );
+
+                gl.vertexAttribPointer(
+                    color,
+                    4,
+                    gl.FLOAT,
+                    false,
+                    stride,
+                    3 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    color,
+                    1
+                );
+
+                gl.enableVertexAttribArray(
+                    thickness
+                );
+
+                gl.vertexAttribPointer(
+                    thickness,
+                    1,
+                    gl.FLOAT,
+                    false,
+                    stride,
+                    7 * 4
+                );
+
+                gl.vertexAttribDivisor(
+                    thickness,
+                    1
+                );
+
+                gl.bindVertexArray(
+                    null
+                );
+
+                gl.bindBuffer(
+                    gl.ARRAY_BUFFER,
+                    null
+                );
+
+                return {
+                    program:
+                        program,
+
+                    vao:
+                        vao,
+
+                    instanceVBO:
+                        instanceVBO,
+
+                    viewCenter:
+                        gl.getUniformLocation(
+                            program,
+                            'u_viewCenter'
+                        ),
+
+                    viewScale:
+                        gl.getUniformLocation(
+                            program,
+                            'u_viewScale'
+                        )
+                };
+            }
+
+            var solid =
+                createPipeline(
+                    solidFragmentSource
+                );
+
+            var dashed =
+                createPipeline(
+                    dashedFragmentSource
+                );
+
+            if (
+                !solid ||
+                !dashed
+            ) {
+                return false;
+            }
+
+            this.gridGlSolidRingProgram =
+                solid.program;
+
+            this.gridGlSolidRingVAO =
+                solid.vao;
+
+            this.gridGlSolidRingInstanceVBO =
+                solid.instanceVBO;
+
+            this.grid_u_solidRing_viewCenter =
+                solid.viewCenter;
+
+            this.grid_u_solidRing_viewScale =
+                solid.viewScale;
+
+            this.gridGlSolidRingData =
+                new Float32Array(
+                    5000 *
+                    8
+                );
+
+            this.gridGlDashedRingProgram =
+                dashed.program;
+
+            this.gridGlDashedRingVAO =
+                dashed.vao;
+
+            this.gridGlDashedRingInstanceVBO =
+                dashed.instanceVBO;
+
+            this.grid_u_dashedRing_viewCenter =
+                dashed.viewCenter;
+
+            this.grid_u_dashedRing_viewScale =
+                dashed.viewScale;
+
+            this.gridGlDashedRingData =
+                new Float32Array(
+                    5000 *
+                    8
+                );
+
+            this._gridHelperRingContext =
+                gl;
+
+            return true;
+        },
+
         drawWebGLRingsBatch(
             players,
             scaleOffset,
@@ -31973,9 +32563,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
             sizeMultiplier,
             canvasLineWidth
         ) {
+            /*
+             * IMPORTANT:
+             *
+             * gridGl, NOT this.gl.
+             */
             if (
-                !this.gl ||
-                !this.glSolidRingProgram ||
+                !this.ensureGridHelperRings()
+            ) {
+                return false;
+            }
+
+            if (
                 !players ||
                 !players.length
             ) {
@@ -31983,50 +32582,65 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             var gl =
-                this.gl;
+                this.gridGl;
 
             var data =
-                this.glSolidRingData;
+                this.gridGlSolidRingData;
 
-            var count = 0;
-            var max = 5000;
+            var count =
+                0;
+
+            var max =
+                5000;
 
             var sizeMultiplierValue =
                 sizeMultiplier == null
-                    ? 1
+                    ? 1.0
                     : Number(
                         sizeMultiplier
                     );
 
+            if (
+                !Number.isFinite(
+                    sizeMultiplierValue
+                ) ||
+                sizeMultiplierValue <= 0
+            ) {
+                sizeMultiplierValue =
+                    1.0;
+            }
+
             var lineWidth =
                 canvasLineWidth == null
-                    ? 4
+                    ? 4.0
                     : Number(
                         canvasLineWidth
                     );
 
             if (
-                !isFinite(
-                    sizeMultiplierValue
-                )
-            ) {
-                sizeMultiplierValue = 1;
-            }
-
-            if (
-                !isFinite(lineWidth) ||
+                !Number.isFinite(
+                    lineWidth
+                ) ||
                 lineWidth <= 0
             ) {
-                lineWidth = 4;
+                lineWidth =
+                    4.0;
             }
 
             var alpha =
                 alphaVal == null
                     ? 0.75
-                    : Number(alphaVal);
+                    : Number(
+                        alphaVal
+                    );
 
-            if (!isFinite(alpha)) {
-                alpha = 0.75;
+            if (
+                !Number.isFinite(
+                    alpha
+                )
+            ) {
+                alpha =
+                    0.75;
             }
 
             alpha =
@@ -32041,20 +32655,50 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var color =
                 this.parseWebGLOverlayColor(
                     colorHex,
-                    "#ffffff"
+                    '#ffffff'
                 );
 
             var viewScale =
-                this.scale || 1;
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <= 0
+            ) {
+                return false;
+            }
+
+            var width =
+                Number(
+                    this.canvasWidth
+                );
+
+            var height =
+                Number(
+                    this.canvasHeight
+                );
+
+            if (
+                !Number.isFinite(width) ||
+                !Number.isFinite(height) ||
+                width <= 0 ||
+                height <= 0
+            ) {
+                return false;
+            }
 
             var halfW =
-                this.canvasWidth /
+                width /
                 viewScale /
                 2 +
                 500;
 
             var halfH =
-                this.canvasHeight /
+                height /
                 viewScale /
                 2 +
                 500;
@@ -32087,53 +32731,75 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     continue;
                 }
 
+                var x =
+                    Number(
+                        player.x
+                    );
+
+                var y =
+                    Number(
+                        player.y
+                    );
+
+                var cellRadius =
+                    Number(
+                        player.size
+                    );
+
+                if (
+                    !Number.isFinite(x) ||
+                    !Number.isFinite(y) ||
+                    !Number.isFinite(cellRadius) ||
+                    cellRadius <= 0
+                ) {
+                    continue;
+                }
+
                 var pathRadius =
-                    (
-                        player.size ||
-                        10
-                    ) *
+                    cellRadius *
                     sizeMultiplierValue +
                     (
-                        scaleOffset ||
+                        Number(
+                            scaleOffset
+                        ) ||
                         0
                     );
 
                 if (
-                    !isFinite(pathRadius) ||
+                    !Number.isFinite(
+                        pathRadius
+                    ) ||
                     pathRadius <= 0
                 ) {
                     continue;
                 }
 
+                /*
+                 * Canvas strokes were centered on pathRadius.
+                 */
                 var outerRadius =
                     pathRadius +
-                    lineWidth * 0.5;
-
-                var x =
-                    player.x;
-
-                var y =
-                    player.y;
+                    lineWidth *
+                    0.5;
 
                 if (
-                    x + outerRadius <
-                    minX ||
-                    x - outerRadius >
-                    maxX ||
-                    y + outerRadius <
-                    minY ||
-                    y - outerRadius >
-                    maxY
+                    x + outerRadius < minX ||
+                    x - outerRadius > maxX ||
+                    y + outerRadius < minY ||
+                    y - outerRadius > maxY
                 ) {
                     continue;
                 }
 
-                if (count >= max) {
+                if (
+                    count >= max
+                ) {
                     return false;
                 }
 
                 var index =
-                    count * 8;
+                    count *
+                    8;
 
                 data[index] =
                     x;
@@ -32170,45 +32836,66 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 count++;
             }
 
-            if (count === 0) {
+            if (
+                count === 0
+            ) {
                 return true;
             }
 
+            gl.disable(
+                gl.DEPTH_TEST
+            );
+
+            gl.disable(
+                gl.CULL_FACE
+            );
+
+            gl.enable(
+                gl.BLEND
+            );
+
+            gl.blendFunc(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+
             gl.useProgram(
-                this.glSolidRingProgram
+                this.gridGlSolidRingProgram
             );
 
             gl.uniform2f(
-                this.u_solidRing_viewCenter,
+                this.grid_u_solidRing_viewCenter,
                 this.camX,
                 this.camY
             );
 
             gl.uniform2f(
-                this.u_solidRing_viewScale,
-                2 *
-                viewScale /
-                this.canvasWidth,
-                2 *
-                viewScale /
-                this.canvasHeight
+                this.grid_u_solidRing_viewScale,
+                2.0 *
+                    viewScale /
+                    width,
+                2.0 *
+                    viewScale /
+                    height
             );
 
             gl.bindBuffer(
                 gl.ARRAY_BUFFER,
-                this.glSolidRingInstanceVBO
+                this.gridGlSolidRingInstanceVBO
             );
 
             gl.bufferSubData(
                 gl.ARRAY_BUFFER,
                 0,
-                data,
-                0,
-                count * 8
+                data.subarray(
+                    0,
+                    count *
+                    8
+                )
             );
 
             gl.bindVertexArray(
-                this.glSolidRingVAO
+                this.gridGlSolidRingVAO
             );
 
             gl.drawArraysInstanced(
@@ -32218,60 +32905,372 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 count
             );
 
-            gl.bindVertexArray(null);
+            gl.bindVertexArray(
+                null
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                null
+            );
 
             return true;
         },
-        /* WebGL2 dashed ring batch — used by draw2Circles sdsplitRange */
-        drawWebGLDashedRingsBatch(players, scaleOffset, colorHex, alphaVal, sizeMultiplier) {
-            if (!this.gl || !this.glDashedRingProgram || !players || !players.length) return false;
-            var gl = this.gl;
-            var data = this.glDashedRingData;
-            var count = 0;
-            var max = 5000;
-            var _sizeMul = sizeMultiplier || 1.0;
 
-            var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 500;
-            var halfH = (this.canvasHeight / viewScale / 2) + 500;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
+        drawWebGLDashedRingsBatch(
+            players,
+            scaleOffset,
+            colorHex,
+            alphaVal,
+            sizeMultiplier,
+            canvasLineWidth
+        ) {
+            if (
+                !this.ensureGridHelperRings()
+            ) {
+                return false;
+            }
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
-            var rR = ((cInt >> 16) & 255) / 255;
-            var rG = ((cInt >> 8) & 255) / 255;
-            var rB = (cInt & 255) / 255;
-            var rA = alphaVal || 0.75;
+            if (
+                !players ||
+                !players.length
+            ) {
+                return false;
+            }
 
-            for (var i = 0; i < players.length && count < max; i++) {
-                var p = players[i];
-                if (!p) continue;
-                var x = p.x, y = p.y, r = (p.size || 10) * _sizeMul + (scaleOffset || 0);
-                if (x + r < minX || x - r > maxX || y + r < minY || y - r > maxY) continue;
+            var gl =
+                this.gridGl;
 
-                var idx = count * 7;
-                data[idx] = x;
-                data[idx + 1] = y;
-                data[idx + 2] = r;
-                data[idx + 3] = rR;
-                data[idx + 4] = rG;
-                data[idx + 5] = rB;
-                data[idx + 6] = rA;
+            var data =
+                this.gridGlDashedRingData;
+
+            var count =
+                0;
+
+            var max =
+                5000;
+
+            var sizeMultiplierValue =
+                sizeMultiplier == null
+                    ? 1.0
+                    : Number(
+                        sizeMultiplier
+                    );
+
+            if (
+                !Number.isFinite(
+                    sizeMultiplierValue
+                ) ||
+                sizeMultiplierValue <= 0
+            ) {
+                sizeMultiplierValue =
+                    1.0;
+            }
+
+            /*
+             * Old draw2Circles used lineWidth = 2 * width;
+             * width was normally 4, therefore 8.
+             */
+            var lineWidth =
+                canvasLineWidth == null
+                    ? 8.0
+                    : Number(
+                        canvasLineWidth
+                    );
+
+            if (
+                !Number.isFinite(
+                    lineWidth
+                ) ||
+                lineWidth <= 0
+            ) {
+                lineWidth =
+                    8.0;
+            }
+
+            var alpha =
+                alphaVal == null
+                    ? 0.75
+                    : Number(
+                        alphaVal
+                    );
+
+            if (
+                !Number.isFinite(
+                    alpha
+                )
+            ) {
+                alpha =
+                    0.75;
+            }
+
+            alpha =
+                Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        alpha
+                    )
+                );
+
+            var color =
+                this.parseWebGLOverlayColor(
+                    colorHex,
+                    '#ffffff'
+                );
+
+            var viewScale =
+                Number(
+                    this.scale
+                );
+
+            if (
+                !Number.isFinite(
+                    viewScale
+                ) ||
+                viewScale <= 0
+            ) {
+                return false;
+            }
+
+            var width =
+                Number(
+                    this.canvasWidth
+                );
+
+            var height =
+                Number(
+                    this.canvasHeight
+                );
+
+            if (
+                !Number.isFinite(width) ||
+                !Number.isFinite(height) ||
+                width <= 0 ||
+                height <= 0
+            ) {
+                return false;
+            }
+
+            var halfW =
+                width /
+                viewScale /
+                2 +
+                500;
+
+            var halfH =
+                height /
+                viewScale /
+                2 +
+                500;
+
+            var minX =
+                this.camX -
+                halfW;
+
+            var maxX =
+                this.camX +
+                halfW;
+
+            var minY =
+                this.camY -
+                halfH;
+
+            var maxY =
+                this.camY +
+                halfH;
+
+            for (
+                var i = 0;
+                i < players.length;
+                i++
+            ) {
+                var player =
+                    players[i];
+
+                if (!player) {
+                    continue;
+                }
+
+                var x =
+                    Number(
+                        player.x
+                    );
+
+                var y =
+                    Number(
+                        player.y
+                    );
+
+                var cellRadius =
+                    Number(
+                        player.size
+                    );
+
+                if (
+                    !Number.isFinite(x) ||
+                    !Number.isFinite(y) ||
+                    !Number.isFinite(cellRadius) ||
+                    cellRadius <= 0
+                ) {
+                    continue;
+                }
+
+                var pathRadius =
+                    cellRadius *
+                    sizeMultiplierValue +
+                    (
+                        Number(
+                            scaleOffset
+                        ) ||
+                        0
+                    );
+
+                if (
+                    !Number.isFinite(
+                        pathRadius
+                    ) ||
+                    pathRadius <= 0
+                ) {
+                    continue;
+                }
+
+                var outerRadius =
+                    pathRadius +
+                    lineWidth *
+                    0.5;
+
+                if (
+                    x + outerRadius < minX ||
+                    x - outerRadius > maxX ||
+                    y + outerRadius < minY ||
+                    y - outerRadius > maxY
+                ) {
+                    continue;
+                }
+
+                if (
+                    count >= max
+                ) {
+                    return false;
+                }
+
+                var index =
+                    count *
+                    8;
+
+                data[index] =
+                    x;
+
+                data[index + 1] =
+                    y;
+
+                data[index + 2] =
+                    outerRadius;
+
+                data[index + 3] =
+                    color[0];
+
+                data[index + 4] =
+                    color[1];
+
+                data[index + 5] =
+                    color[2];
+
+                data[index + 6] =
+                    color[3] *
+                    alpha;
+
+                data[index + 7] =
+                    Math.max(
+                        0.0001,
+                        Math.min(
+                            0.95,
+                            lineWidth /
+                            outerRadius
+                        )
+                    );
+
                 count++;
             }
 
-            if (count === 0) return true;
+            if (
+                count === 0
+            ) {
+                return true;
+            }
 
-            gl.useProgram(this.glDashedRingProgram);
-            gl.uniform2f(this.u_dashedRing_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_dashedRing_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
+            gl.disable(
+                gl.DEPTH_TEST
+            );
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glDashedRingInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 7));
+            gl.disable(
+                gl.CULL_FACE
+            );
 
-            gl.bindVertexArray(this.glDashedRingVAO);
-            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-            gl.bindVertexArray(null);
+            gl.enable(
+                gl.BLEND
+            );
+
+            gl.blendFunc(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+
+            gl.useProgram(
+                this.gridGlDashedRingProgram
+            );
+
+            gl.uniform2f(
+                this.grid_u_dashedRing_viewCenter,
+                this.camX,
+                this.camY
+            );
+
+            gl.uniform2f(
+                this.grid_u_dashedRing_viewScale,
+                2.0 *
+                    viewScale /
+                    width,
+                2.0 *
+                    viewScale /
+                    height
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                this.gridGlDashedRingInstanceVBO
+            );
+
+            gl.bufferSubData(
+                gl.ARRAY_BUFFER,
+                0,
+                data.subarray(
+                    0,
+                    count *
+                    8
+                )
+            );
+
+            gl.bindVertexArray(
+                this.gridGlDashedRingVAO
+            );
+
+            gl.drawArraysInstanced(
+                gl.TRIANGLE_STRIP,
+                0,
+                4,
+                count
+            );
+
+            gl.bindVertexArray(
+                null
+            );
+
+            gl.bindBuffer(
+                gl.ARRAY_BUFFER,
+                null
+            );
 
             return true;
         },
@@ -36264,21 +37263,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /*
              * WEBGL ONLY.
              *
-             * Enemy BSTE helper circles.
+             * Enemy BSTE:
+             *     enemy.size + 760
+             *
+             * Own split range:
+             *     selected.size + 760
              */
+
             if (
                 biggestCell &&
-                biggestCell.length &&
-                this.gl &&
-                defaultmapsettings
-                    .webgl2Acceleration !==
-                    false
+                biggestCell.length
             ) {
                 this.drawWebGLRingsBatch(
                     biggestCell,
                     760,
-                    defaultSettings
-                        .enemyBSTEColor,
+                    defaultSettings.enemyBSTEColor,
                     0.8,
                     1.0,
                     8
@@ -36286,9 +37285,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             /*
-             * Select the correct player cell BEFORE rendering.
-             *
-             * Never infer smallest/biggest from array position.
+             * Do NOT trust playerCells array ordering.
              */
             var selected =
                 pickPlayerCellBySize(
@@ -36296,13 +37293,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     !!currentBiggestCell
                 );
 
-            if (
-                selected &&
-                this.gl &&
-                defaultmapsettings
-                    .webgl2Acceleration !==
-                    false
-            ) {
+            if (selected) {
                 var splitAlpha =
                     defaultSettings.darkTheme
                         ? 0.7
@@ -36311,8 +37302,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawWebGLRingsBatch(
                     [selected],
                     760,
-                    defaultSettings
-                        .splitRangeColor,
+                    defaultSettings.splitRangeColor,
                     splitAlpha,
                     1.0,
                     6
@@ -36338,25 +37328,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /*
              * WEBGL ONLY.
              *
-             * Quick double-split enemy range:
+             * Quick double split:
              *
-             *     2 * cell radius + 760
+             *     2 * size + 760
              */
             if (
                 biggestCell &&
                 biggestCell.length &&
-                this.gl &&
-                defaultmapsettings
-                    .webgl2Acceleration !==
-                    false &&
-                defaultmapsettings
-                    .qdsplitRange
+                defaultmapsettings.qdsplitRange
             ) {
                 this.drawWebGLRingsBatch(
                     biggestCell,
                     760,
-                    defaultSettings
-                        .enemyBSTEDColor,
+                    defaultSettings.enemyBSTEDColor,
                     0.8,
                     2.0,
                     8
@@ -36364,50 +37348,42 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             /*
-             * Slow double-split enemy range:
+             * Slow double split:
              *
-             *     1.5 * cell radius + 1520
+             *     1.5 * size + 1520
              *
-             * Preserve the existing Sonia geometry exactly.
+             * Old implementation:
+             *
+             *     1.5 * size + 2 * 760
              */
             if (
                 biggestCell &&
                 biggestCell.length &&
-                this.gl &&
-                defaultmapsettings
-                    .webgl2Acceleration !==
-                    false &&
-                defaultmapsettings
-                    .sdsplitRange
+                defaultmapsettings.sdsplitRange
             ) {
                 this.drawWebGLDashedRingsBatch(
                     biggestCell,
                     1520,
-                    defaultSettings
-                        .enemyBSTEDColor,
+                    defaultSettings.enemyBSTEDColor,
                     0.8,
-                    1.5
+                    1.5,
+                    8
                 );
             }
 
-            /*
-             * Again: select from actual sizes, not array ordering.
-             */
             var selected =
                 pickPlayerCellBySize(
                     players,
                     !!currentBiggestCell
                 );
 
+            /*
+             * Preserve original >= 400 requirement.
+             */
             if (
                 selected &&
                 selected.size >= 400 &&
-                this.gl &&
-                defaultmapsettings
-                    .webgl2Acceleration !==
-                    false &&
-                defaultmapsettings
-                    .qdsplitRange
+                defaultmapsettings.qdsplitRange
             ) {
                 var doubleSplitAlpha =
                     defaultSettings.darkTheme
@@ -36417,8 +37393,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawWebGLRingsBatch(
                     [selected],
                     760,
-                    defaultSettings
-                        .splitRangeColor,
+                    defaultSettings.splitRangeColor,
                     doubleSplitAlpha,
                     2.0,
                     6
@@ -36680,22 +37655,43 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
-        drawCircles(ctx, players, scale, width, alpha, stroke, forceCanvas2D) {
-            if (!players || !players.length) return;
-            if (!forceCanvas2D && (typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration) && this.drawWebGLRingsBatch(players, scale, stroke, alpha, 1.0, width)) {
-                return;
+        drawCircles(
+            ctx,
+            players,
+            scale,
+            width,
+            alpha,
+            stroke,
+            forceCanvas2D
+        ) {
+            /*
+             * WEBGL ONLY.
+             *
+             * Historical argument meaning:
+             *
+             * scale  = extra radius
+             * width  = ring line width
+             * alpha  = opacity
+             * stroke = color
+             *
+             * forceCanvas2D is deliberately ignored.
+             */
+
+            if (
+                !players ||
+                !players.length
+            ) {
+                return false;
             }
-            ctx.lineWidth = width;
-            ctx.globalAlpha = alpha;
-            ctx.strokeStyle = stroke;
-            ctx.beginPath();
-            for (var length = 0; length < players.length; length++) {
-                if (!players[length]) continue;
-                ctx.moveTo(players[length].x + players[length].size + scale, players[length].y);
-                ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
-            }
-            ctx.stroke();
-            ctx.globalAlpha = 1;
+
+            return this.drawWebGLRingsBatch(
+                players,
+                scale,
+                stroke,
+                alpha,
+                1.0,
+                width
+            );
         },
         drawBubbleCircles(
             ctx,
@@ -36752,48 +37748,59 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         //Sonia (added entire function)
-        draw2Circles(ctx, players, scale, width, alpha, color) {
-            if (!players || !players.length) return;
-            /* WebGL2 fast path for solid quad-split range circles (2x size) */
-            if (defaultmapsettings.qdsplitRange) {
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                    && this.drawWebGLRingsBatch(players, scale, color, alpha, 2.0, width)) {
-                    // rendered via GPU — skip Canvas2D
-                } else {
-                    ctx.lineWidth = width;
-                    ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = color;
-                    ctx.beginPath();
-                    for (var n = 0; n < players.length; n++) {
-                        if (!players[n]) continue;
-                        ctx.moveTo(players[n].x + 2 * players[n].size + scale, players[n].y);
-                        ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                    }
-                    ctx.stroke();
-                }
+        draw2Circles(
+            ctx,
+            players,
+            scale,
+            width,
+            alpha,
+            color
+        ) {
+            /*
+             * WEBGL-ONLY compatibility wrapper.
+             */
+
+            if (
+                !players ||
+                !players.length
+            ) {
+                return false;
             }
-            /* WebGL2 fast path for dashed sdsplitRange circles (1.5x size) */
-            if (defaultmapsettings.sdsplitRange) {
-                if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                    && this.drawWebGLDashedRingsBatch(players, 2 * scale, color, alpha, 1.5)) {
-                    // rendered via GPU
-                } else {
-                    ctx.setLineDash([20, 30]);
-                    ctx.lineWidth = 2 * width;
-                    ctx.globalAlpha = alpha;
-                    ctx.strokeStyle = color;
-                    ctx.beginPath();
-                    for (var n = 0; n < players.length; n++) {
-                        if (!players[n]) continue;
-                        ctx.moveTo(players[n].x + 1.5 * players[n].size + 2 * scale, players[n].y);
-                        ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                    }
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                    ctx.lineWidth = width;
-                }
+
+            var ok =
+                true;
+
+            if (
+                defaultmapsettings.qdsplitRange
+            ) {
+                ok =
+                    this.drawWebGLRingsBatch(
+                        players,
+                        scale,
+                        color,
+                        alpha,
+                        2.0,
+                        width
+                    ) &&
+                    ok;
             }
-            ctx.globalAlpha = 1;
+
+            if (
+                defaultmapsettings.sdsplitRange
+            ) {
+                ok =
+                    this.drawWebGLDashedRingsBatch(
+                        players,
+                        2 * scale,
+                        color,
+                        alpha,
+                        1.5,
+                        2 * width
+                    ) &&
+                    ok;
+            }
+
+            return ok;
         },
         drawDashedCircle(ctx, x, y, radius, times, width, color) {
             ctx.lineWidth = width;
