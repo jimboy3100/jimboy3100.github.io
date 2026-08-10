@@ -4317,491 +4317,1781 @@ window.getAgarXpEntry = function (level) {
 };
 
 /*
- * ─────────────────────────────────────────────────────────────
- * AGAR.IO GAMECONFIG REWARD RESOLVER
- * ─────────────────────────────────────────────────────────────
+ * ═══════════════════════════════════════════════════════════════════════
+ * AGAR.IO GAMECONFIGURATION DERIVED DATA
  *
- * Converts:
+ * IMPORTANT SEPARATION:
  *
- *      reward / bonus ID
- *              ↓
- *      Wallet - Bonuses and Rewards
- *              ↓
- *           bundleId
- *              ↓
- *      Wallet - Product Bundles
- *              ↓
- *      productId + quantity
+ *   GameConfiguration
+ *       = static rules / catalogue / prices / reward definitions.
  *
- * Example:
+ *   protobuf / Core.user / application.user
+ *       = live account state.
  *
- *      hourlyBonus
- *          ↓
- *      20_coins
- *          ↓
- *      [
- *          {
- *              productId: "coin",
- *              quantity: 20
- *          }
- *      ]
- *
- * This is deliberately configuration-driven.
- * No hardcoded league/quest/hourly/level reward amounts.
+ * Never manufacture live account state from GameConfiguration.
+ * ═══════════════════════════════════════════════════════════════════════
  */
 
-window._agarRewardIndex = null;
+window._agarConfigIndexes = null;
 
 
 /*
- * Build the indexes once.
+ * Build lookup tables once.
  *
- * Wallet - Bonuses and Rewards:
- *
- *      id -> reward definition
- *
- * Wallet - Product Bundles:
- *
- *      bundleId -> all products belonging to that bundle
+ * This avoids repeatedly scanning several hundred
+ * Wallet - Soft Purchases rows every time the profile refreshes.
  */
-window.buildAgarRewardIndex = function () {
+window.buildAgarConfigIndexes = function () {
+
     var bonuses =
         window.getAgarConfigSection(
             'Wallet - Bonuses and Rewards'
         );
 
-    var bundleProducts =
+    var bundleRows =
         window.getAgarConfigSection(
             'Wallet - Product Bundles'
         );
 
-    if (
-        !Array.isArray(bonuses) ||
-        !Array.isArray(bundleProducts)
-    ) {
-        window._agarRewardIndex =
-            null;
-
-        return null;
-    }
-
-    var bonusById =
-        Object.create(null);
-
-    var productsByBundle =
-        Object.create(null);
-
-
-    /*
-     * Index reward/bonus IDs.
-     */
-    for (
-        var i = 0;
-        i < bonuses.length;
-        i++
-    ) {
-        var bonus =
-            bonuses[i];
-
-        if (
-            !bonus ||
-            bonus.id == null
-        ) {
-            continue;
-        }
-
-        bonusById[
-            String(bonus.id)
-        ] = bonus;
-    }
-
-
-    /*
-     * A bundle can contain MORE THAN ONE product.
-     *
-     * Do NOT use .find() here because a bundle such as
-     * 50_coins_5_dna contains multiple rows.
-     */
-    for (
-        var j = 0;
-        j < bundleProducts.length;
-        j++
-    ) {
-        var product =
-            bundleProducts[j];
-
-        if (
-            !product ||
-            product.bundleId == null ||
-            product.productId == null
-        ) {
-            continue;
-        }
-
-        var bundleId =
-            String(
-                product.bundleId
-            );
-
-        if (
-            !productsByBundle[
-                bundleId
-            ]
-        ) {
-            productsByBundle[
-                bundleId
-            ] = [];
-        }
-
-        productsByBundle[
-            bundleId
-        ].push(
-            product
+    var softPurchases =
+        window.getAgarConfigSection(
+            'Wallet - Soft Purchases'
         );
-    }
+
+    var gameplayBoosts =
+        window.getAgarConfigSection(
+            'Gameplay - Boosts'
+        );
+
+    var shopBoostItems =
+        window.getAgarConfigSection(
+            'Shop - Boost Items'
+        );
+
+    var leagueTiers =
+        window.getAgarConfigSection(
+            'Leagues - Tiers'
+        );
+
+    var timedEvents =
+        window.getAgarConfigSection(
+            'Timed Events'
+        );
+
+    var achievements =
+        window.getAgarConfigSection(
+            'Achievements'
+        );
 
 
-    window._agarRewardIndex = {
+    var indexes = {
+
         bonusById:
-            bonusById,
+            Object.create(null),
 
-        productsByBundle:
-            productsByBundle,
+        bundleRowsById:
+            Object.create(null),
 
-        bonuses:
-            bonuses,
+        softPurchaseById:
+            Object.create(null),
 
-        bundleProducts:
-            bundleProducts
+        boostGameplayByProductId:
+            Object.create(null),
+
+        boostShopItemByProductId:
+            Object.create(null),
+
+        leagueTiers:
+            Array.isArray(leagueTiers)
+                ? leagueTiers
+                : [],
+
+        timedEventById:
+            Object.create(null),
+
+        achievements:
+            Array.isArray(achievements)
+                ? achievements
+                : [],
+
+        boostCatalog:
+            null
     };
 
-    return window._agarRewardIndex;
-};
 
+    /*
+     * Wallet - Bonuses and Rewards
+     *
+     * IMPORTANT:
+     * official field is "bonusId", NOT "id".
+     */
+    if (Array.isArray(bonuses)) {
 
-/*
- * Return the existing index or build it lazily.
- */
-window.getAgarRewardIndex = function () {
-    if (
-        window._agarRewardIndex
-    ) {
-        return window._agarRewardIndex;
+        for (
+            var i = 0;
+            i < bonuses.length;
+            i++
+        ) {
+
+            var bonus =
+                bonuses[i];
+
+            if (
+                !bonus ||
+                bonus.bonusId === undefined ||
+                bonus.bonusId === null
+            ) {
+                continue;
+            }
+
+            indexes.bonusById[
+                String(
+                    bonus.bonusId
+                )
+            ] = bonus;
+        }
     }
 
-    return window.buildAgarRewardIndex();
+
+    /*
+     * Wallet - Product Bundles
+     *
+     * IMPORTANT:
+     *
+     * The identifying field is "id".
+     *
+     * A bundle may have MANY rows sharing that same id:
+     *
+     *     50_coins_5_dna
+     *         coin = 50
+     *         dna  = 5
+     *
+     * Never use Array.find() and assume one row == one bundle.
+     */
+    if (Array.isArray(bundleRows)) {
+
+        for (
+            var b = 0;
+            b < bundleRows.length;
+            b++
+        ) {
+
+            var row =
+                bundleRows[b];
+
+            if (
+                !row ||
+                row.id === undefined ||
+                row.id === null
+            ) {
+                continue;
+            }
+
+            var bundleId =
+                String(
+                    row.id
+                );
+
+            if (
+                !indexes
+                    .bundleRowsById[
+                        bundleId
+                    ]
+            ) {
+
+                indexes
+                    .bundleRowsById[
+                        bundleId
+                    ] = [];
+            }
+
+            indexes
+                .bundleRowsById[
+                    bundleId
+                ]
+                .push(row);
+        }
+    }
+
+
+    /*
+     * Wallet - Soft Purchases
+     */
+    if (Array.isArray(softPurchases)) {
+
+        for (
+            var s = 0;
+            s < softPurchases.length;
+            s++
+        ) {
+
+            var purchase =
+                softPurchases[s];
+
+            if (
+                !purchase ||
+                purchase.id === undefined ||
+                purchase.id === null
+            ) {
+                continue;
+            }
+
+            indexes.softPurchaseById[
+                String(
+                    purchase.id
+                )
+            ] = purchase;
+        }
+    }
+
+
+    /*
+     * Gameplay - Boosts
+     *
+     * Contains the ACTUAL gameplay semantics:
+     *
+     *     productId
+     *     type
+     *     multiplier
+     *     durationMins
+     */
+    if (Array.isArray(gameplayBoosts)) {
+
+        for (
+            var g = 0;
+            g < gameplayBoosts.length;
+            g++
+        ) {
+
+            var gameplay =
+                gameplayBoosts[g];
+
+            if (
+                !gameplay ||
+                !gameplay.productId
+            ) {
+                continue;
+            }
+
+            indexes
+                .boostGameplayByProductId[
+                    String(
+                        gameplay.productId
+                    )
+                ] = gameplay;
+        }
+    }
+
+
+    /*
+     * Shop - Boost Items
+     *
+     * Connects:
+     *
+     *     productIdToQuantify
+     *              ↓
+     *     purchaseId
+     *
+     * Example:
+     *
+     *     mass_boost_2x_1h
+     *              ↓
+     *     1_mass_boost_2x_1h
+     */
+    if (Array.isArray(shopBoostItems)) {
+
+        for (
+            var sh = 0;
+            sh < shopBoostItems.length;
+            sh++
+        ) {
+
+            var shopItem =
+                shopBoostItems[sh];
+
+            if (
+                !shopItem ||
+                !shopItem.productIdToQuantify
+            ) {
+                continue;
+            }
+
+            indexes
+                .boostShopItemByProductId[
+                    String(
+                        shopItem
+                            .productIdToQuantify
+                    )
+                ] = shopItem;
+        }
+    }
+
+
+    /*
+     * Timed Events
+     */
+    if (Array.isArray(timedEvents)) {
+
+        for (
+            var t = 0;
+            t < timedEvents.length;
+            t++
+        ) {
+
+            var timedEvent =
+                timedEvents[t];
+
+            if (
+                !timedEvent ||
+                timedEvent.id === undefined ||
+                timedEvent.id === null
+            ) {
+                continue;
+            }
+
+            indexes.timedEventById[
+                String(
+                    timedEvent.id
+                )
+            ] = timedEvent;
+        }
+    }
+
+
+    window._agarConfigIndexes =
+        indexes;
+
+    return indexes;
 };
 
 
+window.getAgarConfigIndexes =
+    function () {
+
+        if (
+            window._agarConfigIndexes
+        ) {
+            return window
+                ._agarConfigIndexes;
+        }
+
+        return window
+            .buildAgarConfigIndexes();
+    };
+
+
 /*
- * Resolve one reward ID.
+ * ───────────────────────────────────────────────────────────────
+ * GENERIC REWARD RESOLVER
+ * ───────────────────────────────────────────────────────────────
  *
- * RETURN EXAMPLE:
+ * Input:
+ *
+ *     "levelUpReward"
+ *
+ * Flow:
+ *
+ *     Wallet - Bonuses and Rewards
+ *             ↓
+ *        bundleId
+ *             ↓
+ *     Wallet - Product Bundles
+ *
+ * Output:
  *
  * {
  *     rewardId: "levelUpReward",
  *     bundleId: "50_coins_5_dna",
- *
  *     products: [
- *         {
- *             productId: "coin",
- *             quantity: 50
- *         },
- *         {
- *             productId: "dna",
- *             quantity: 5
- *         }
- *     ],
- *
- *     rawReward: {...}
+ *         { productId: "coin", quantity: 50 },
+ *         { productId: "dna",  quantity: 5  }
+ *     ]
  * }
  */
-window.resolveAgarReward = function (
-    rewardId
-) {
-    if (
-        rewardId == null ||
-        rewardId === ''
+window.resolveAgarReward =
+    function (
+        rewardId
     ) {
-        return null;
-    }
 
-    var index =
-        window.getAgarRewardIndex();
+        if (
+            rewardId === undefined ||
+            rewardId === null ||
+            rewardId === ''
+        ) {
+            return null;
+        }
 
-    if (!index) {
-        return null;
-    }
+        var indexes =
+            window
+                .getAgarConfigIndexes();
 
-    var id =
-        String(
-            rewardId
-        );
+        if (!indexes) {
+            return null;
+        }
 
-    var reward =
-        index.bonusById[id];
+        var id =
+            String(
+                rewardId
+            );
 
-    if (!reward) {
-        return null;
-    }
+        var bonus =
+            indexes
+                .bonusById[id];
 
-    var bundleId =
-        reward.bundleId != null
-            ? String(
-                reward.bundleId
+        if (!bonus) {
+
+            return null;
+        }
+
+        var bundleId =
+            bonus.bundleId !==
+                undefined &&
+            bonus.bundleId !==
+                null
+                ? String(
+                    bonus.bundleId
+                )
+                : '';
+
+        var rows =
+            (
+                bundleId &&
+                indexes
+                    .bundleRowsById[
+                        bundleId
+                    ]
             )
-            : '';
+                ? indexes
+                    .bundleRowsById[
+                        bundleId
+                    ]
+                : [];
 
-    if (!bundleId) {
+
+        /*
+         * Aggregate duplicate product rows safely.
+         */
+        var productMap =
+            Object.create(null);
+
+        var productOrder =
+            [];
+
+        for (
+            var i = 0;
+            i < rows.length;
+            i++
+        ) {
+
+            var row =
+                rows[i];
+
+            if (
+                !row ||
+                row.productId === undefined ||
+                row.productId === null
+            ) {
+                continue;
+            }
+
+            var productId =
+                String(
+                    row.productId
+                );
+
+            var quantity =
+                Number(
+                    row.quantity
+                );
+
+            if (
+                !isFinite(quantity)
+            ) {
+                quantity = 0;
+            }
+
+            if (
+                !productMap[
+                    productId
+                ]
+            ) {
+
+                productMap[
+                    productId
+                ] = {
+
+                    productId:
+                        productId,
+
+                    quantity:
+                        0,
+
+                    rows:
+                        []
+                };
+
+                productOrder.push(
+                    productId
+                );
+            }
+
+            productMap[
+                productId
+            ].quantity +=
+                quantity;
+
+            productMap[
+                productId
+            ].rows.push(
+                row
+            );
+        }
+
+
+        var products =
+            [];
+
+        for (
+            var p = 0;
+            p < productOrder.length;
+            p++
+        ) {
+
+            products.push(
+                productMap[
+                    productOrder[p]
+                ]
+            );
+        }
+
+
         return {
+
             rewardId:
                 id,
 
             bundleId:
+                bundleId,
+
+            origin:
+                bonus
+                    .productUpdateOrigin ||
                 '',
 
+            bonus:
+                bonus,
+
             products:
-                [],
+                products,
 
-            rawReward:
-                reward
+            rows:
+                rows
         };
-    }
-
-    var rows =
-        index.productsByBundle[
-            bundleId
-        ] || [];
-
-    /*
-     * Merge duplicate product rows if Agar.io's
-     * configuration contains the same product more
-     * than once inside one bundle.
-     */
-    var quantities =
-        Object.create(null);
-
-    var productOrder =
-        [];
-
-    for (
-        var i = 0;
-        i < rows.length;
-        i++
-    ) {
-        var row =
-            rows[i];
-
-        if (
-            !row ||
-            row.productId == null
-        ) {
-            continue;
-        }
-
-        var productId =
-            String(
-                row.productId
-            );
-
-        var quantity =
-            Number(
-                row.quantity
-            );
-
-        if (
-            !isFinite(quantity)
-        ) {
-            quantity = 0;
-        }
-
-        if (
-            quantities[
-                productId
-            ] === undefined
-        ) {
-            quantities[
-                productId
-            ] = 0;
-
-            productOrder.push(
-                productId
-            );
-        }
-
-        quantities[
-            productId
-        ] += quantity;
-    }
-
-
-    var products =
-        [];
-
-    for (
-        var p = 0;
-        p < productOrder.length;
-        p++
-    ) {
-        var currentProductId =
-            productOrder[p];
-
-        products.push({
-            productId:
-                currentProductId,
-
-            quantity:
-                quantities[
-                    currentProductId
-                ]
-        });
-    }
-
-
-    return {
-        rewardId:
-            id,
-
-        bundleId:
-            bundleId,
-
-        products:
-            products,
-
-        rawReward:
-            reward
     };
-};
 
 
-/*
- * Resolve the configured level-up reward for a level.
- *
- * Uses:
- *
- * Gameplay - XP to Level
- *      levelUpBonusId
- *
- * then sends that ID through resolveAgarReward().
- */
-window.getAgarLevelReward = function (
-    level
-) {
-    var xpEntry =
-        window.getAgarXpEntry(
-            level
-        );
-
-    if (
-        !xpEntry ||
-        !xpEntry.levelUpBonusId
+window.getAgarProductDisplayName =
+    function (
+        productId
     ) {
-        return null;
-    }
 
-    var reward =
-        window.resolveAgarReward(
-            xpEntry.levelUpBonusId
-        );
-
-    if (!reward) {
-        return null;
-    }
-
-    reward.level =
-        Number(
-            xpEntry.level
-        ) || Number(level) || 1;
-
-    reward.xpToNextLevel =
-        Number(
-            xpEntry.xpToNextLevel
-        ) || 0;
-
-    reward.levelUpBonusId =
-        xpEntry.levelUpBonusId;
-
-    return reward;
-};
-
-
-/*
- * Convenience function for displaying a reward.
- *
- * Does not invent names. It only formats the product IDs
- * actually present in GameConfiguration.
- */
-window.formatAgarReward = function (
-    rewardOrId
-) {
-    var reward =
-        typeof rewardOrId ===
-            'string'
-            ? window.resolveAgarReward(
-                rewardOrId
-            )
-            : rewardOrId;
-
-    if (
-        !reward ||
-        !Array.isArray(
-            reward.products
-        ) ||
-        !reward.products.length
-    ) {
-        return '';
-    }
-
-    var result =
-        [];
-
-    for (
-        var i = 0;
-        i < reward.products.length;
-        i++
-    ) {
-        var product =
-            reward.products[i];
-
-        var productId =
+        var id =
             String(
-                product.productId ||
+                productId || ''
+            );
+
+        if (id === 'coin') {
+            return 'Coins';
+        }
+
+        if (id === 'dna') {
+            return 'DNA';
+        }
+
+        if (id === 'trophy') {
+            return 'Trophies';
+        }
+
+        var text =
+            id;
+
+        if (
+            text.indexOf(
+                'skin_'
+            ) === 0
+        ) {
+            text =
+                text.substring(5);
+        }
+
+        if (
+            text.indexOf(
+                'mass_boost_'
+            ) === 0
+        ) {
+
+            text =
+                text.replace(
+                    'mass_boost_',
+                    'Mass Boost '
+                );
+        }
+
+        if (
+            text.indexOf(
+                'xp_boost_'
+            ) === 0
+        ) {
+
+            text =
+                text.replace(
+                    'xp_boost_',
+                    'XP Boost '
+                );
+        }
+
+        text =
+            text.replace(
+                /_/g,
+                ' '
+            );
+
+        /*
+         * Capitalize words only for display.
+         */
+        return text.replace(
+            /\b[a-z]/g,
+            function (character) {
+                return character
+                    .toUpperCase();
+            }
+        );
+    };
+
+
+window.formatAgarReward =
+    function (
+        rewardOrId
+    ) {
+
+        var reward =
+            typeof rewardOrId ===
+                'string'
+                ? window
+                    .resolveAgarReward(
+                        rewardOrId
+                    )
+                : rewardOrId;
+
+        if (
+            !reward ||
+            !Array.isArray(
+                reward.products
+            ) ||
+            !reward.products.length
+        ) {
+            return '';
+        }
+
+        var parts =
+            [];
+
+        for (
+            var i = 0;
+            i <
+                reward.products.length;
+            i++
+        ) {
+
+            var product =
+                reward.products[i];
+
+            var productId =
+                String(
+                    product.productId ||
+                    ''
+                );
+
+            var quantity =
+                Number(
+                    product.quantity
+                );
+
+            if (
+                !isFinite(quantity)
+            ) {
+                quantity = 0;
+            }
+
+
+            if (
+                productId ===
+                'coin'
+            ) {
+
+                parts.push(
+                    '💰 ' +
+                    quantity
+                        .toLocaleString() +
+                    ' Coins'
+                );
+
+                continue;
+            }
+
+
+            if (
+                productId ===
+                'dna'
+            ) {
+
+                parts.push(
+                    '🧬 ' +
+                    quantity
+                        .toLocaleString() +
+                    ' DNA'
+                );
+
+                continue;
+            }
+
+
+            if (
+                productId ===
+                'trophy'
+            ) {
+
+                parts.push(
+                    '🏆 ' +
+                    quantity
+                        .toLocaleString() +
+                    ' Trophies'
+                );
+
+                continue;
+            }
+
+
+            if (
+                productId.indexOf(
+                    'skin_'
+                ) === 0
+            ) {
+
+                parts.push(
+                    '🎨 ' +
+                    window
+                        .getAgarProductDisplayName(
+                            productId
+                        )
+                );
+
+                continue;
+            }
+
+
+            if (
+                productId.indexOf(
+                    'mass_boost_'
+                ) === 0 ||
+                productId.indexOf(
+                    'xp_boost_'
+                ) === 0
+            ) {
+
+                parts.push(
+                    '⚡ ' +
+                    (
+                        quantity > 1
+                            ? quantity +
+                              ' × '
+                            : ''
+                    ) +
+                    window
+                        .getAgarProductDisplayName(
+                            productId
+                        )
+                );
+
+                continue;
+            }
+
+
+            parts.push(
+                (
+                    quantity > 0
+                        ? quantity
+                            .toLocaleString() +
+                          ' × '
+                        : ''
+                ) +
+                window
+                    .getAgarProductDisplayName(
+                        productId
+                    )
+            );
+        }
+
+        return parts.join(
+            ' + '
+        );
+    };
+
+
+/*
+ * ───────────────────────────────────────────────────────────────
+ * LEAGUE TIER FROM CONFIG
+ * ───────────────────────────────────────────────────────────────
+ */
+window.getAgarLeagueTierFromLevel =
+    function (
+        level
+    ) {
+
+        var indexes =
+            window
+                .getAgarConfigIndexes();
+
+        if (!indexes) {
+            return null;
+        }
+
+        var numericLevel =
+            Math.max(
+                1,
+                Number(level) || 1
+            );
+
+        var tiers =
+            indexes.leagueTiers ||
+            [];
+
+        for (
+            var i = 0;
+            i < tiers.length;
+            i++
+        ) {
+
+            var tier =
+                tiers[i];
+
+            if (
+                !tier ||
+                !tier.leagueName
+            ) {
+                continue;
+            }
+
+            var configName =
+                String(
+                    tier.leagueName
+                );
+
+            var id =
+                configName
+                    .toLowerCase();
+
+            /*
+             * These are leaderboard scopes,
+             * not player level tiers.
+             */
+            if (
+                id === 'country' ||
+                id === 'world' ||
+                id === 'friends'
+            ) {
+                continue;
+            }
+
+            var from =
+                Number(
+                    tier.levelFrom
+                );
+
+            var to =
+                Number(
+                    tier.levelTo
+                );
+
+            if (
+                isFinite(from) &&
+                isFinite(to) &&
+                numericLevel >= from &&
+                numericLevel <= to
+            ) {
+
+                return {
+
+                    id:
+                        id,
+
+                    configName:
+                        configName,
+
+                    name:
+                        configName +
+                        ' League',
+
+                    levelFrom:
+                        from,
+
+                    levelTo:
+                        to,
+
+                    spread:
+                        Number(
+                            tier.spread
+                        ) || 0,
+
+                    topSize:
+                        Number(
+                            tier.topSize
+                        ) || 0,
+
+                    raw:
+                        tier
+                };
+            }
+        }
+
+        return null;
+    };
+
+
+/*
+ * ───────────────────────────────────────────────────────────────
+ * TIMED EVENTS
+ * ───────────────────────────────────────────────────────────────
+ */
+window.getAgarTimedEventConfig =
+    function (
+        eventId
+    ) {
+
+        if (
+            eventId === undefined ||
+            eventId === null
+        ) {
+            return null;
+        }
+
+        var indexes =
+            window
+                .getAgarConfigIndexes();
+
+        if (!indexes) {
+            return null;
+        }
+
+        return (
+            indexes
+                .timedEventById[
+                    String(
+                        eventId
+                    )
+                ] ||
+            null
+        );
+    };
+
+
+window.getAgarTimedEventIntervalMs =
+    function (
+        eventId
+    ) {
+
+        var event =
+            window
+                .getAgarTimedEventConfig(
+                    eventId
+                );
+
+        if (!event) {
+            return null;
+        }
+
+        var minutes =
+            Number(
+                event.intervalMins
+            );
+
+        /*
+         * e.g. potionSkipBrew says
+         * "read_from_potions".
+         */
+        if (
+            !isFinite(minutes) ||
+            minutes < 0
+        ) {
+            return null;
+        }
+
+        return (
+            minutes *
+            60 *
+            1000
+        );
+    };
+
+
+/*
+ * ───────────────────────────────────────────────────────────────
+ * BOOST CATALOG
+ * ───────────────────────────────────────────────────────────────
+ *
+ * Combines:
+ *
+ *     Gameplay - Boosts
+ *     Shop - Boost Items
+ *     Wallet - Soft Purchases
+ *
+ * This gives us one authoritative object containing:
+ *
+ *     productId
+ *     purchaseId
+ *     type
+ *     multiplier
+ *     duration
+ *     price
+ *     currency
+ *     best-deal state
+ */
+window.getAgarBoostCatalog =
+    function () {
+
+        var indexes =
+            window
+                .getAgarConfigIndexes();
+
+        if (!indexes) {
+            return [];
+        }
+
+        if (
+            Array.isArray(
+                indexes.boostCatalog
+            )
+        ) {
+            return indexes
+                .boostCatalog;
+        }
+
+        var result =
+            [];
+
+        var gameplayMap =
+            indexes
+                .boostGameplayByProductId;
+
+        var shopMap =
+            indexes
+                .boostShopItemByProductId;
+
+
+        var productIds =
+            Object.keys(
+                gameplayMap
+            );
+
+        for (
+            var i = 0;
+            i < productIds.length;
+            i++
+        ) {
+
+            var productId =
+                productIds[i];
+
+            var gameplay =
+                gameplayMap[
+                    productId
+                ];
+
+            var shopItem =
+                shopMap[
+                    productId
+                ] || {};
+
+            var purchaseId =
+                shopItem.purchaseId
+                    ? String(
+                        shopItem.purchaseId
+                    )
+                    : (
+                        '1_' +
+                        productId
+                    );
+
+            var purchase =
+                indexes
+                    .softPurchaseById[
+                        purchaseId
+                    ] || null;
+
+
+            var type =
+                String(
+                    gameplay.type ||
+                    (
+                        productId
+                            .indexOf(
+                                'xp_'
+                            ) === 0
+                            ? 'xp'
+                            : 'mass'
+                    )
+                )
+                    .toLowerCase();
+
+
+            var multiplier =
+                Number(
+                    gameplay.multiplier
+                );
+
+            var durationMins =
+                Number(
+                    gameplay.durationMins
+                );
+
+
+            var price =
+                purchase
+                    ? Number(
+                        purchase
+                            .currencyAmount
+                    )
+                    : null;
+
+            if (
+                !isFinite(price)
+            ) {
+                price = null;
+            }
+
+
+            var currencyProductId =
+                purchase &&
+                purchase.currencyProductId
+                    ? String(
+                        purchase
+                            .currencyProductId
+                    )
+                    : '';
+
+
+            var shortDuration;
+
+            if (
+                durationMins === 60
+            ) {
+                shortDuration =
+                    '1H';
+            } else if (
+                durationMins === 1440
+            ) {
+                shortDuration =
+                    '24H';
+            } else if (
+                durationMins > 0 &&
+                durationMins % 60 === 0
+            ) {
+                shortDuration =
+                    (
+                        durationMins /
+                        60
+                    ) +
+                    'H';
+            } else {
+                shortDuration =
+                    durationMins +
+                    'M';
+            }
+
+
+            var longDuration;
+
+            if (
+                durationMins === 60
+            ) {
+                longDuration =
+                    '1 hr';
+            } else if (
+                durationMins === 1440
+            ) {
+                longDuration =
+                    '24 hrs';
+            } else if (
+                durationMins > 0 &&
+                durationMins % 60 === 0
+            ) {
+                longDuration =
+                    (
+                        durationMins /
+                        60
+                    ) +
+                    ' hrs';
+            } else {
+                longDuration =
+                    durationMins +
+                    ' min';
+            }
+
+
+            var typeName =
+                type === 'xp'
+                    ? 'XP'
+                    : 'Mass';
+
+
+            result.push({
+
+                productId:
+                    productId,
+
+                purchaseId:
+                    purchaseId,
+
+                type:
+                    type,
+
+                typeName:
+                    typeName,
+
+                multiplier:
+                    multiplier,
+
+                durationMins:
+                    durationMins,
+
+                durationShort:
+                    shortDuration,
+
+                durationLong:
+                    longDuration,
+
+                price:
+                    price,
+
+                currencyProductId:
+                    currencyProductId,
+
+                family:
+                    purchase
+                        ? (
+                            purchase.family ||
+                            ''
+                        )
+                        : '',
+
+                bundleId:
+                    purchase
+                        ? (
+                            purchase.bundleId ||
+                            ''
+                        )
+                        : '',
+
+                bestDeal:
+                    String(
+                        shopItem
+                            .bestDealSticker ||
+                        ''
+                    )
+                        .toUpperCase() ===
+                    'YES',
+
+                categoryPosition:
+                    Number(
+                        shopItem
+                            .categoryPosition
+                    ) || 0,
+
+                position:
+                    Number(
+                        shopItem
+                            .position
+                    ) || 0,
+
+                gameplay:
+                    gameplay,
+
+                shopItem:
+                    shopItem,
+
+                purchase:
+                    purchase,
+
+                /*
+                 * Keep old compact naming semantics
+                 * for existing active-boost UI.
+                 */
+                name:
+                    typeName +
+                    ' ' +
+                    multiplier +
+                    'X/' +
+                    shortDuration
+            });
+        }
+
+
+        /*
+         * Preserve the familiar LM order:
+         *
+         * Mass 2x 1h
+         * Mass 2x 24h
+         * Mass 3x 1h
+         * Mass 3x 24h
+         * XP ...
+         */
+        result.sort(
+            function (
+                a,
+                b
+            ) {
+
+                var typeA =
+                    a.type ===
+                        'mass'
+                        ? 0
+                        : 1;
+
+                var typeB =
+                    b.type ===
+                        'mass'
+                        ? 0
+                        : 1;
+
+                if (
+                    typeA !== typeB
+                ) {
+                    return (
+                        typeA -
+                        typeB
+                    );
+                }
+
+                if (
+                    a.multiplier !==
+                    b.multiplier
+                ) {
+                    return (
+                        a.multiplier -
+                        b.multiplier
+                    );
+                }
+
+                return (
+                    a.durationMins -
+                    b.durationMins
+                );
+            }
+        );
+
+
+        indexes.boostCatalog =
+            result;
+
+        return result;
+    };
+
+
+window.getAgarBoostInfo =
+    function (
+        productId
+    ) {
+
+        var id =
+            String(
+                productId || ''
+            );
+
+        if (!id) {
+            return null;
+        }
+
+        var catalog =
+            window
+                .getAgarBoostCatalog();
+
+        for (
+            var i = 0;
+            i < catalog.length;
+            i++
+        ) {
+
+            if (
+                catalog[i]
+                    .productId ===
+                id
+            ) {
+                return catalog[i];
+            }
+        }
+
+
+        /*
+         * Startup fallback only.
+         *
+         * Keep the existing application.boostsInfo
+         * values usable until GameConfiguration arrives.
+         */
+        var legacy =
+            window.application &&
+            window.application
+                .boostsInfo &&
+            window.application
+                .boostsInfo[id]
+                ? window.application
+                    .boostsInfo[id]
+                : null;
+
+        var match =
+            /^(mass|xp)_boost_(\d+)x_(\d+)h$/i
+                .exec(id);
+
+        if (
+            legacy ||
+            match
+        ) {
+
+            var type =
+                match
+                    ? match[1]
+                        .toLowerCase()
+                    : (
+                        id.indexOf(
+                            'xp_'
+                        ) === 0
+                            ? 'xp'
+                            : 'mass'
+                    );
+
+            var multiplier =
+                match
+                    ? Number(
+                        match[2]
+                    )
+                    : 0;
+
+            var hours =
+                match
+                    ? Number(
+                        match[3]
+                    )
+                    : 0;
+
+            return {
+
+                productId:
+                    id,
+
+                purchaseId:
+                    '1_' +
+                    id,
+
+                type:
+                    type,
+
+                typeName:
+                    type === 'xp'
+                        ? 'XP'
+                        : 'Mass',
+
+                multiplier:
+                    multiplier,
+
+                durationMins:
+                    hours *
+                    60,
+
+                durationShort:
+                    hours +
+                    'H',
+
+                durationLong:
+                    hours === 1
+                        ? '1 hr'
+                        : (
+                            hours +
+                            ' hrs'
+                        ),
+
+                price:
+                    legacy &&
+                    isFinite(
+                        Number(
+                            legacy.price
+                        )
+                    )
+                        ? Number(
+                            legacy.price
+                        )
+                        : null,
+
+                currencyProductId:
+                    'coin',
+
+                bestDeal:
+                    false,
+
+                name:
+                    legacy &&
+                    legacy.name
+                        ? legacy.name
+                        : (
+                            (
+                                type ===
+                                'xp'
+                                    ? 'XP'
+                                    : 'Mass'
+                            ) +
+                            ' ' +
+                            multiplier +
+                            'X/' +
+                            hours +
+                            'H'
+                        )
+            };
+        }
+
+
+        return null;
+    };
+
+
+window.getAgarCurrencyDisplay =
+    function (
+        currencyProductId
+    ) {
+
+        var id =
+            String(
+                currencyProductId ||
                 ''
             );
 
-        var quantity =
-            Number(
-                product.quantity
-            ) || 0;
-
-        var label =
-            productId;
-
         if (
-            productId === 'coin'
+            id === 'coin'
         ) {
-            label =
-                quantity === 1
-                    ? 'coin'
-                    : 'coins';
-        } else if (
-            productId === 'dna'
-        ) {
-            label =
-                'DNA';
+            return {
+                icon:
+                    '💰',
+                name:
+                    'Coins'
+            };
         }
 
-        result.push(
-            quantity +
-            ' ' +
-            label
-        );
-    }
+        if (
+            id === 'dna'
+        ) {
+            return {
+                icon:
+                    '🧬',
+                name:
+                    'DNA'
+            };
+        }
 
-    return result.join(
-        ' + '
-    );
-};
+        return {
+            icon:
+                '🪙',
+            name:
+                window
+                    .getAgarProductDisplayName(
+                        id
+                    )
+        };
+    };
+
+
+window.formatAgarBoostOptionLabel =
+    function (
+        boost,
+        ownedAmount
+    ) {
+
+        if (!boost) {
+            return '';
+        }
+
+        var icon =
+            boost.type === 'xp'
+                ? '⭐'
+                : '⚡';
+
+        var label =
+            icon +
+            ' ' +
+            boost.multiplier +
+            'x ' +
+            boost.typeName +
+            ' Boost (' +
+            boost.durationLong +
+            ')';
+
+
+        if (
+            boost.price !== null &&
+            boost.price !== undefined
+        ) {
+
+            var currency =
+                window
+                    .getAgarCurrencyDisplay(
+                        boost
+                            .currencyProductId
+                    );
+
+            label +=
+                ' [' +
+                currency.icon +
+                ' ' +
+                Number(
+                    boost.price
+                )
+                    .toLocaleString() +
+                ' ' +
+                currency.name +
+                ']';
+        }
+
+
+        if (
+            boost.bestDeal
+        ) {
+            label +=
+                ' ★ BEST';
+        }
+
+
+        if (
+            ownedAmount !== undefined &&
+            ownedAmount !== null
+        ) {
+
+            var amount =
+                Number(
+                    ownedAmount
+                );
+
+            if (
+                isFinite(amount)
+            ) {
+
+                label =
+                    '(' +
+                    amount +
+                    ') ' +
+                    label;
+            }
+        }
+
+
+        return label;
+    };
+
+
+/*
+ * Keep the old application.boostsInfo object synchronized
+ * for any external/legacy LM plugin that still accesses it.
+ *
+ * New LM code should use getAgarBoostInfo().
+ */
+window.syncLegacyAgarBoostInfoCache =
+    function () {
+
+        if (
+            !window.application
+        ) {
+            return;
+        }
+
+        var catalog =
+            window
+                .getAgarBoostCatalog();
+
+        if (
+            !catalog.length
+        ) {
+            return;
+        }
+
+        if (
+            !window.application
+                .boostsInfo
+        ) {
+
+            window.application
+                .boostsInfo = {};
+        }
+
+
+        for (
+            var i = 0;
+            i < catalog.length;
+            i++
+        ) {
+
+            var boost =
+                catalog[i];
+
+            window.application
+                .boostsInfo[
+                    boost.productId
+                ] = {
+
+                    price:
+                        boost.price,
+
+                    name:
+                        boost.name,
+
+                    purchaseId:
+                        boost.purchaseId,
+
+                    currencyProductId:
+                        boost
+                            .currencyProductId,
+
+                    multiplier:
+                        boost.multiplier,
+
+                    durationMins:
+                        boost.durationMins,
+
+                    type:
+                        boost.type
+                };
+        }
+    };
+
+
+window.getAgarAchievementDefinitions =
+    function () {
+
+        var indexes =
+            window
+                .getAgarConfigIndexes();
+
+        return indexes
+            ? indexes.achievements
+            : [];
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * ─── EVENT-DRIVEN GAMECONFIGURATION INIT ───
@@ -4829,10 +6119,11 @@ function _initGameConfigSections(gc) {
 
     /*
      * Configuration changed/loaded:
-     * rebuild all derived reward indexes.
+     * rebuild all derived indexes and sync legacy caches.
      */
-    window._agarRewardIndex = null;
-    window.buildAgarRewardIndex();
+    window._agarConfigIndexes = null;
+    window.buildAgarConfigIndexes();
+    window.syncLegacyAgarBoostInfoCache();
 
     /* ── Equippable Skins ── */
     window.EquippableSkins =
@@ -4862,6 +6153,7 @@ function _initGameConfigSections(gc) {
             }
         }
     } catch (e) {}
+
 
     /* ── Vanilla Skin URL Map ── */
     window.VanillaSkinUrlMap = {};
@@ -4981,10 +6273,20 @@ function _initGameConfigSections(gc) {
         );
     }
 
+    var boostCount = 0;
+    try {
+        boostCount =
+            Object.keys(
+                window.getAgarBoostCatalog()
+            ).length;
+    } catch (ignore) {}
+
     console.log(
         "[LM] GameConfiguration initialized (" +
         Object.keys(gc.gameConfig).length +
-        " sections)"
+        " sections, " +
+        boostCount +
+        " boosts)"
     );
 }
 
@@ -24189,8 +25491,34 @@ function thelegendmodproject() {
                         break;
                     case 2:
                         this.user.boosts[items[i].productId] = items[i].amount;
-                        $('#s-boost option[value=\"' + items[i].productId + '\"]').text(' (' + items[i].amount + ') ' + ' [' + application.boostsInfo[items[i].productId].price + ']  ' + application.boostsInfo[items[i].productId].name);
+                        var _bId = items[i].productId;
+                        var _bInfo = window.getAgarBoostInfo
+                            ? window.getAgarBoostInfo(_bId)
+                            : null;
+                        var _bLabel;
+                        if (_bInfo) {
+                            _bLabel = window.formatAgarBoostOptionLabel
+                                ? window.formatAgarBoostOptionLabel(
+                                      _bInfo,
+                                      items[i].amount
+                                  )
+                                : ' (' + items[i].amount + ') ' + _bInfo.name;
+                        } else if (
+                            application.boostsInfo &&
+                            application.boostsInfo[_bId]
+                        ) {
+                            _bLabel =
+                                ' (' + items[i].amount + ') ' +
+                                ' [' + application.boostsInfo[_bId].price + ']  ' +
+                                application.boostsInfo[_bId].name;
+                        } else {
+                            _bLabel =
+                                ' (' + items[i].amount + ') ' + _bId;
+                        }
+                        $('#s-boost option[value=\"' + _bId + '\"]')
+                            .text(_bLabel);
                         break;
+
                     case 3:
                         /*var name = items[i].productId;
                         if (name.includes && name.includes("_level_")) {
@@ -24798,13 +26126,40 @@ function thelegendmodproject() {
         displayActiveBoosts(items) {
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
+                var _bi = window.getAgarBoostInfo
+                    ? window.getAgarBoostInfo(item.productId)
+                    : null;
+                var _bName;
+                if (_bi) {
+                    _bName = _bi.name;
+                } else if (
+                    application.boostsInfo &&
+                    application.boostsInfo[item.productId]
+                ) {
+                    _bName = application.boostsInfo[item.productId].name;
+                } else {
+                    _bName = item.productId;
+                }
+                var _exp = new Date(
+                    Date.now() + item.expiresInSeconds * 1000
+                ).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+
                 if (item.productId[0] === "x") {
-                    $("#xp-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                    $("#xp-active").html(
+                        _bName + ' expires at ' + _exp
+                    );
                 } else if (item.productId[0] === "m") {
-                    $("#mass-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now() + item.expiresInSeconds * 1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                    $("#mass-active").html(
+                        _bName + ' expires at ' + _exp
+                    );
+                } else if (item.productId[0] === "c") {
+                    $("#coin-active").html(
+                        _bName + ' expires at ' + _exp
+                    );
                 }
             }
         },
+
         displayActiveQuests(items) {
             if (items.length === 0) window.questActivationReq()
             for (var i = 0; i < items.length; i++) {
