@@ -23884,11 +23884,7 @@ function thelegendmodproject() {
                     ) {
                         this.teamPlayers[
                             existingIdx
-                        ].x = posX;
-
-                        this.teamPlayers[
-                            existingIdx
-                        ].y = posY;
+                        ].setPosition(posX, posY);
                     }
 
                     if (mass !== undefined) {
@@ -23928,10 +23924,7 @@ function thelegendmodproject() {
                         posX !== undefined &&
                         posY !== undefined
                     ) {
-                        map.x = posX;
-                        map.y = posY;
-                        map.lastX = posX;
-                        map.lastY = posY;
+                        map.setPosition(posX, posY);
                     }
 
                     if (mass !== undefined) {
@@ -24826,8 +24819,7 @@ function thelegendmodproject() {
                 if (a > 249999) return; //to stop the spammer
                 //if (a > 360000) return;
                 var n = this.teamPlayers[i];
-                n.x = s,
-                    n.y = o,
+                n.setPosition(s, o);
                     n.mass = a,
                     n.alive = true,
                     n.updateTime = Date.now(),
@@ -52081,10 +52073,27 @@ function minimapCell(envId, cb, i, s) {
     this.skinID = i;
     this.skinURL = s;
     this.lbgpi = -1; //Sonia4
+
+    /*
+     * Raw target position (set by server updates).
+     * These are the "ground truth" coordinates.
+     */
     this.x = 0;
     this.y = 0;
+
+    /*
+     * Animated display position (what we actually render).
+     * Lerps toward x/y each frame for smooth movement.
+     */
     this.lastX = 0;
     this.lastY = 0;
+
+    /*
+     * Flag: false until first real position arrives.
+     * Prevents the initial lerp-from-origin jump.
+     */
+    this.positionInitialized = false;
+
     this.mass = 0;
     this.clanTag = "";
     this.color = null;
@@ -52092,51 +52101,142 @@ function minimapCell(envId, cb, i, s) {
     this.alive = false;
     this.updateTime = null;
     this.pi2 = 2 * Math.PI;
+
+    /*
+     * Nick canvas cache.
+     * Stores a pre-rendered offscreen canvas of the nick text
+     * so we don't call fillText/strokeText every frame.
+     */
+    this._nickCache = null;     /* offscreen canvas */
+    this._nickCacheKey = null;  /* cache invalidation key */
+
     this.setColor = function (i, inRevIdx) {
         this.color = i;
         if (7 === inRevIdx.length) {
             this.customColor = inRevIdx;
         }
     };
+
+    /*
+     * Set raw target position.
+     * On the very first update, snap animated position
+     * to the target immediately (no lerp from 0,0).
+     */
+    this.setPosition = function (px, py) {
+        this.x = px;
+        this.y = py;
+        if (!this.positionInitialized) {
+            this.lastX = px;
+            this.lastY = py;
+            this.positionInitialized = true;
+        }
+    };
+
+    /*
+     * Build a cache key from all settings that affect
+     * the nick text appearance.  If anything changes
+     * the cached canvas is invalidated.
+     */
+    this._buildNickCacheKey = function () {
+        return (
+            this.nick + '|' +
+            defaultSettings.miniMapNickFontWeight + '|' +
+            defaultSettings.miniMapNickSize + '|' +
+            defaultSettings.miniMapNickFontFamily + '|' +
+            defaultSettings.miniMapNickStrokeSize + '|' +
+            defaultSettings.miniMapNickStrokeColor + '|' +
+            defaultSettings.miniMapNickColor
+        );
+    };
+
+    /*
+     * Render the nick text to an offscreen canvas.
+     * Called only when the cache key changes.
+     */
+    this._renderNickCache = function () {
+        var key = this._buildNickCacheKey();
+        if (this._nickCacheKey === key && this._nickCache) {
+            return;
+        }
+        this._nickCacheKey = key;
+
+        var font =
+            defaultSettings.miniMapNickFontWeight +
+            ' ' +
+            defaultSettings.miniMapNickSize +
+            'px ' +
+            defaultSettings.miniMapNickFontFamily;
+
+        /* Measure text width on a temporary context */
+        if (!minimapCell._measureCtx) {
+            var mc = document.createElement('canvas');
+            mc.width = 1;
+            mc.height = 1;
+            minimapCell._measureCtx = mc.getContext('2d');
+        }
+        minimapCell._measureCtx.font = font;
+        var metrics = minimapCell._measureCtx.measureText(this.nick);
+        var textWidth = Math.ceil(metrics.width);
+        var strokePad = defaultSettings.miniMapNickStrokeSize || 0;
+        var fontSize = defaultSettings.miniMapNickSize || 10;
+
+        var cw = textWidth + strokePad * 2 + 4;
+        var ch = fontSize + strokePad * 2 + 4;
+
+        if (!this._nickCache) {
+            this._nickCache = document.createElement('canvas');
+        }
+        this._nickCache.width = cw;
+        this._nickCache.height = ch;
+        var ctx = this._nickCache.getContext('2d');
+
+        ctx.font = font;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        var cx = cw / 2;
+        var cy = ch / 2;
+
+        if (strokePad > 0) {
+            ctx.lineWidth = strokePad;
+            ctx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
+            ctx.strokeText(this.nick, cx, cy);
+        }
+
+        ctx.fillStyle = defaultSettings.miniMapNickColor;
+        ctx.fillText(this.nick, cx, cy);
+    };
+
     this.drawPosition = function (options, margin, mult, startcode, endcode, value) {
         if (!(!this.alive || startcode && endcode && this.id != endcode)) {
+
             /*
-            var isPositionOK=false;
-            var flag=false;
-            for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
-                if (window.predictedGhostCells[e] && legendmod.leaderboard[e] && this.nick === legendmod.leaderboard[e].nick){
-                    flag=true;	
-                    this.lastX = window.predictedGhostCells[e].x;
-                    this.lastY = window.predictedGhostCells[e].y;
-                    isPositionOK = true;
-                }
-            }
-            if ( (flag===false && this.lbgpi >= 0) || legendmod.gameMode === ":party"){
-                isPositionOK = true;									
-            }	
-            
-            */
+             * Smooth interpolation: lerp animated position
+             * toward raw target at ~97% per frame.
+             */
             this.lastX = (29 * this.lastX + this.x) / 30;
             this.lastY = (29 * this.lastY + this.y) / 30;
 
-            //if (isPositionOK){
             var w = (this.lastX + margin) * mult;
             var h = (this.lastY + margin) * mult;
             if (w < -10 || w > 170 || h < -10 || h > 170) return;
-            if (this.nick.length > 0) {
-                options.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
-                options.textAlign = "center";
-                var namead = "";
-                //if (this.lbgpi < 0) namead += " [N]";
-                if (defaultSettings.miniMapNickStrokeSize > 0) {
-                    options.lineWidth = defaultSettings.miniMapNickStrokeSize;
-                    options.strokeStyle = defaultSettings.miniMapNickStrokeColor;
 
-                    options.strokeText(this.nick + namead, w, h - (2 * defaultSettings.miniMapTeammatesSize + 2));
+            /*
+             * Draw nick from cached offscreen canvas.
+             */
+            if (this.nick.length > 0) {
+                this._renderNickCache();
+                if (this._nickCache && this._nickCache.width > 0) {
+                    var nickY = h - (2 * defaultSettings.miniMapTeammatesSize + 2);
+                    options.drawImage(
+                        this._nickCache,
+                        w - this._nickCache.width / 2,
+                        nickY - this._nickCache.height / 2
+                    );
                 }
-                options.fillStyle = defaultSettings.miniMapNickColor;
-                options.fillText(this.nick + namead, w, h - (2 * defaultSettings.miniMapTeammatesSize + 2));
             }
+
+            /* Draw teammate dot */
             options.beginPath();
             options.arc(w, h, defaultSettings.miniMapTeammatesSize, 0, this.pi2, false);
             options.closePath();
@@ -52146,7 +52246,6 @@ function minimapCell(envId, cb, i, s) {
                 options.fillStyle = value;
             }
             options.fill();
-            //}
         }
     };
 }
@@ -52598,8 +52697,12 @@ function Socket3updateTeamPlayerPosition(Socket3data) {
     if (!application.teamPlayers[h]) {
         return;
     }
-    application.teamPlayers[h].x = Socket3data.x;
-    application.teamPlayers[h].y = Socket3data.y;
+    if (application.teamPlayers[h].setPosition) {
+        application.teamPlayers[h].setPosition(Socket3data.x, Socket3data.y);
+    } else {
+        application.teamPlayers[h].x = Socket3data.x;
+        application.teamPlayers[h].y = Socket3data.y;
+    }
     application.teamPlayers[h].mass = Socket3data.mass;
     application.teamPlayers[h].alive = true;
     var tempTime = new Date().getTime();
