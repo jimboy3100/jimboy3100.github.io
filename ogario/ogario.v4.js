@@ -21177,6 +21177,18 @@ function thelegendmodproject() {
         },
         onPlay() {
             //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
+
+            /* Clear stale spectate/world-map cells before spawning.
+             * Without this, cells from the previous viewport linger as grey
+             * blobs (no color data) until the server's first ClearAll arrives. */
+            legendmod.cells = [];
+            legendmod.indexedCells = {};
+            legendmod.removedCells = [];
+            legendmod.food = [];
+            legendmod.viruses = [];
+            legendmod.playerCells = [];
+            if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
+
             this.play();
             this.hideMenu();
             if (window.addKeyListeners) {
