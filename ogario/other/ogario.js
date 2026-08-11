@@ -6656,12 +6656,12 @@ function init(window, ogario, JQuery) {
             }
             ctx.strokeStyle = stroke;
             ctx.lineWidth = width;
+            /* Circular map border */
+            const cx = (minX + maxX) / 2;
+            const cy = (minY + maxY) / 2;
+            const radius = (maxX - minX) / 2;
             ctx.beginPath();
-            ctx.moveTo(minX, minY);
-            ctx.lineTo(maxX, minY);
-            ctx.lineTo(maxX, maxY);
-            ctx.lineTo(minX, maxY);
-            ctx.closePath();
+            ctx.arc(cx, cy, radius, 0, this.pi2, false);
             ctx.stroke();
         },
         drawVirusesRange(ctx, viruses, reset) {
