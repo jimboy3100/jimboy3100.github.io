@@ -22728,6 +22728,15 @@ function thelegendmodproject() {
             }
         },
         drawMiniMap() {
+            /* Expanding Land: circular minimap clipping (reverts on server switch) */
+            var _isCircle = !!(window.LM && window.LM.isLegendWorld);
+            if (this._miniMapCircle !== _isCircle) {
+                this._miniMapCircle = _isCircle;
+                $('#minimap-hud').css({
+                    'border-radius': _isCircle ? '50%' : '0',
+                    'overflow': _isCircle ? 'hidden' : 'visible'
+                });
+            }
             if (ogario.mapOffsetFixed) {
                 const t = defaultSettings.miniMapWidth;
                 const e = defaultSettings.miniMapTop;
@@ -50735,12 +50744,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var baseLw = canvas || defaultSettings.bordersWidth || 20;
                 ctx.lineWidth = Math.max(baseLw, 3 / Math.max(this.scale || 1, 0.001));
 
-                /* Circular map border */
-                var cx = (text + x0) / 2;
-                var cy = (x1 + y0) / 2;
-                var r = (x0 - text) / 2;
-                ctx.beginPath();
-                ctx.arc(cx, cy, r, 0, 2 * Math.PI, false);
+                if (window.LM && window.LM.isLegendWorld) {
+                    /* Expanding Land: circular map border */
+                    var cx = (text + x0) / 2;
+                    var cy = (x1 + y0) / 2;
+                    var r = (x0 - text) / 2;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, 2 * Math.PI, false);
+                } else {
+                    /* Standard rectangular border with corner decorations */
+                    ctx.beginPath();
+                    ctx.moveTo(text + ctx.lineWidth, x1);
+                    ctx.lineTo(x0 - ctx.lineWidth, x1);
+                    ctx.moveTo(x0, x1);
+                    ctx.lineTo(x0 + ctx.lineWidth, x1 - ctx.lineWidth);
+                    ctx.moveTo(x0, x1 + ctx.lineWidth);
+                    ctx.lineTo(x0, y0 - ctx.lineWidth);
+                    ctx.moveTo(x0, y0);
+                    ctx.lineTo(x0 + ctx.lineWidth, y0 + ctx.lineWidth);
+                    ctx.moveTo(x0 - ctx.lineWidth, y0);
+                    ctx.lineTo(text + ctx.lineWidth, y0);
+                    ctx.moveTo(text, y0);
+                    ctx.lineTo(text - ctx.lineWidth, y0 + ctx.lineWidth);
+                    ctx.moveTo(text, y0 - ctx.lineWidth);
+                    ctx.lineTo(text, x1 + ctx.lineWidth);
+                    ctx.moveTo(text, x1);
+                    ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
+                }
 
                 if (defaultmapsettings.borderGlow) {
                     ctx.shadowBlur = defaultSettings.borderGlowSize || 15;
