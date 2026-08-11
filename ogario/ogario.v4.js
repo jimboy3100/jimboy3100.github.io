@@ -34589,44 +34589,65 @@ function thelegendmodproject() {
                 if (
                     status === 2
                 ) {
+                    /*
+                     * The server does not push a separate status-change
+                     * when a brew finishes. If the timer has already expired,
+                     * promote to status=3 locally so the UI, autobrew, and
+                     * economy panel all see "open".
+                     */
                     if (
-                        !earliestBrewingReadyAt ||
-                        readyAt <
-                            earliestBrewingReadyAt
+                        readyAt > 0 &&
+                        readyAt <=
+                            now
                     ) {
-                        earliestBrewingReadyAt =
-                            readyAt;
-                    }
+                        status = 3;
+
+                        this.user
+                            .potionsStatus[
+                                potionKey
+                            ].status =
+                            3;
+
+                    } else {
+                        if (
+                            !earliestBrewingReadyAt ||
+                            readyAt <
+                                earliestBrewingReadyAt
+                        ) {
+                            earliestBrewingReadyAt =
+                                readyAt;
+                        }
 
 
-                    $(
-                        '#' +
-                        potionKey +
-                        ' img'
-                    )
-                        .css(
-                            'border-color',
-                            'yellow'
-                        );
-
-
-                    $(
-                        '#' +
-                        potionKey +
-                        ' div'
-                    )
-                        .css(
-                            'border-color',
-                            'yellow'
+                        $(
+                            '#' +
+                            potionKey +
+                            ' img'
                         )
-                        .text(
-                            expires
-                                .toTimeString()
-                                .replace(
-                                    /^(\d{2}:\d{2}).*/,
-                                    '$1'
-                                )
-                        );
+                            .css(
+                                'border-color',
+                                'yellow'
+                            );
+
+
+                        $(
+                            '#' +
+                            potionKey +
+                            ' div'
+                        )
+                            .css(
+                                'border-color',
+                                'yellow'
+                            )
+                            .text(
+                                expires
+                                    .toTimeString()
+                                    .replace(
+                                        /^(\d{2}:\d{2}).*/,
+                                        '$1'
+                                    )
+                            );
+                    }
                 }
 
 
@@ -34739,6 +34760,128 @@ function thelegendmodproject() {
                     .autobrewTimer =
                     setTimeout(
                         function () {
+                            /*
+                             * Locally promote any expired brewing slots
+                             * from status=2 to status=3 ("open").
+                             *
+                             * The server does not push a status-change
+                             * packet when brewing finishes.
+                             */
+                            var promoted =
+                                false;
+
+
+                            var promoteNow =
+                                Date.now();
+
+
+                            var statuses =
+                                (
+                                    window.LM &&
+                                    LM.user &&
+                                    LM.user
+                                        .potionsStatus
+                                ) ||
+                                {};
+
+
+                            var keys =
+                                Object.keys(
+                                    statuses
+                                );
+
+
+                            for (
+                                var pi = 0;
+                                pi <
+                                    keys.length;
+                                pi++
+                            ) {
+                                var pk =
+                                    keys[pi];
+
+
+                                var pv =
+                                    statuses[pk];
+
+
+                                if (
+                                    !pv ||
+                                    pv.status !==
+                                        2
+                                ) {
+                                    continue;
+                                }
+
+
+                                var pReadyAt =
+                                    Number(
+                                        pv.readyAt
+                                    ) || 0;
+
+
+                                if (
+                                    pReadyAt > 0 &&
+                                    pReadyAt <=
+                                        promoteNow
+                                ) {
+                                    pv.status = 3;
+
+                                    promoted =
+                                        true;
+
+
+                                    /*
+                                     * Update legacy DOM.
+                                     */
+                                    $(
+                                        '#' +
+                                        pk +
+                                        ' img'
+                                    )
+                                        .css(
+                                            'border-color',
+                                            'green'
+                                        );
+
+
+                                    $(
+                                        '#' +
+                                        pk +
+                                        ' div'
+                                    )
+                                        .css(
+                                            'border-color',
+                                            'green'
+                                        )
+                                        .text(
+                                            'open'
+                                        );
+                                }
+                            }
+
+
+                            if (
+                                promoted
+                            ) {
+                                try {
+                                    document
+                                        .dispatchEvent(
+                                            new CustomEvent(
+                                                'lm-potions-updated',
+                                                {
+                                                    detail:
+                                                        statuses
+                                                }
+                                            )
+                                        );
+                                } catch (
+                                    promoteEventErr
+                                ) {
+                                }
+                            }
+
+
                             if (
                                 window.LM &&
                                 typeof LM

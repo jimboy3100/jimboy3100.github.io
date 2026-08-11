@@ -9034,7 +9034,9 @@
 
 
             for (var slot = 1; slot <= 3; slot++) {
-                var potionEl = document.getElementById('potion' + slot);
+                var potionKey = 'potion' + slot;
+                var pp = potionStates[potionKey] || null;
+
                 /* Default is 'brew' — empty slots are brewable, server validates */
                 var pState = 'brew';
                 var pRarity = '';
@@ -9045,40 +9047,71 @@
                 var pBorder = '#4caf50';
                 var pBg = 'rgba(76,175,80,0.08)';
 
-                if (potionEl) {
-                    var pImg = potionEl.querySelector('img');
-                    var pSrc = pImg ? String(pImg.src || '') : '';
-                    var pMatch = pSrc.match(/potion_([a-z]+)\./i);
-                    if (pMatch && pMatch[1]) pRarity = pMatch[1].toLowerCase();
+                if (pp) {
+                    /*
+                     * Extract rarity from productId (e.g. "potion_exotic" → "exotic").
+                     * Falls back to legacy DOM img src scraping only if productId missing.
+                     */
+                    var ppProductId = pp.productId || pp.type || '';
+                    var pRarityMatch = ppProductId.match(/potion_([a-z]+)/i);
+                    if (pRarityMatch && pRarityMatch[1]) {
+                        pRarity = pRarityMatch[1].toLowerCase();
+                    } else {
+                        var potionEl = document.getElementById(potionKey);
+                        if (potionEl) {
+                            var pImg = potionEl.querySelector('img');
+                            var pSrc = pImg ? String(pImg.src || '') : '';
+                            var pSrcMatch = pSrc.match(/potion_([a-z]+)\./i);
+                            if (pSrcMatch && pSrcMatch[1]) pRarity = pSrcMatch[1].toLowerCase();
+                        }
+                    }
 
-                    var pDiv = potionEl.querySelector('div');
-                    var pText = pDiv ? String(pDiv.textContent || '').trim().toLowerCase() : '';
 
-                    if (pText === 'brew') {
+                    var ppStatus = Number(pp.status) || 0;
+                    var ppSecsLeft = typeof window.getLivePotionSecondsRemaining === 'function'
+                        ? window.getLivePotionSecondsRemaining(pp) : null;
+
+
+                    /*
+                     * Status 2 with an expired timer means the brew is done.
+                     * The server doesn't push a status update — the client must infer it.
+                     */
+                    if (ppStatus === 2 && ppSecsLeft !== null && ppSecsLeft <= 0) {
+                        ppStatus = 3;
+                    }
+
+
+                    if (ppStatus === 1) {
+                        /* Obtained, ready to brew */
                         pState = 'brew';
                         pSvg = _pvBrew;
                         pGlow = '0 0 8px rgba(76,175,80,0.5)';
                         pBorder = '#4caf50';
                         pBg = 'rgba(76,175,80,0.08)';
-                    } else if (pText === 'open') {
+                    } else if (ppStatus === 2) {
+                        /* Actively brewing — live countdown */
+                        pState = 'brewing';
+                        if (ppSecsLeft !== null && ppSecsLeft > 0) {
+                            var bMin = Math.floor(ppSecsLeft / 60);
+                            var bSec = ppSecsLeft % 60;
+                            pTimer = (bMin < 10 ? '0' : '') + bMin + ':' +
+                                     (bSec < 10 ? '0' : '') + bSec;
+                        } else {
+                            pTimer = '...';
+                        }
+                        pSvg = _pvBrewing;
+                        pGlow = '0 0 8px rgba(255,152,0,0.5)';
+                        pBorder = '#ff9800';
+                        pBg = 'rgba(255,152,0,0.08)';
+                    } else if (ppStatus === 3) {
+                        /* Brewed, ready to open */
                         pState = 'open';
                         pSvg = _pvOpen;
                         pGlow = '0 0 12px rgba(156,39,176,0.6), 0 0 4px rgba(255,235,59,0.4)';
                         pBorder = '#9c27b0';
                         pBg = 'rgba(156,39,176,0.1)';
-                    } else if (/\d/.test(pText)) {
-                        pState = 'brewing';
-                        pTimer = pText;
-                        pSvg = _pvBrewing;
-                        pGlow = '0 0 8px rgba(255,152,0,0.5)';
-                        pBorder = '#ff9800';
-                        pBg = 'rgba(255,152,0,0.08)';
-                    } else if (pText) {
-                        pState = 'brew';
-                        pSvg = _pvBrew;
-                        pBorder = '#4caf50';
-                        pBg = 'rgba(76,175,80,0.06)';
                     }
+                    /* ppStatus === 0 or unknown: leave as default 'brew' */
                 }
 
                 var pAccent = (pRarity && _rarityAccents[pRarity]) ? _rarityAccents[pRarity] : '';
@@ -9091,8 +9124,6 @@
 
                 /* Skip button for brewing potions */
                 if (pState === 'brewing') {
-                    var pk = 'potion' + slot;
-                    var pp = potionStates[pk] || null;
 
                     if (pp && Number(pp.status) === 2) {
                         var ppId = pp.productId || pp.type || '';
@@ -9741,6 +9772,27 @@
 
     document.addEventListener(
         'lm-agar-config-index-ready',
+        function () {
+            if (
+                typeof window
+                    .renderAgarEconomyPanel ===
+                    'function'
+            ) {
+                window
+                    .renderAgarEconomyPanel();
+            }
+        }
+    );
+
+
+    /*
+     * Immediately re-render when potion state changes.
+     *
+     * Fired by updatePotions() after brew/open responses and by the
+     * autobrewTimer callback when it promotes expired brews to "open".
+     */
+    document.addEventListener(
+        'lm-potions-updated',
         function () {
             if (
                 typeof window
