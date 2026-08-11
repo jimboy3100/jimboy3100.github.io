@@ -8416,6 +8416,23 @@ window.getAgarVipStatus =
         ) {
         }
 
+        /*
+         * LegendMod fallback: official agarApp.API / Core.user are not
+         * available because LM doesn't load bundle_end.js or the Haxe
+         * runtime. Read the VIP flag extracted from the protobuf
+         * loginResponseField.userSubscriptions during login.
+         */
+        if (typeof window._lmHasVIPSubscription === 'boolean') {
+            return {
+                known: true,
+                active: window._lmHasVIPSubscription,
+                source: 'legendmod-protobuf',
+                subscription:
+                    window.getAgarSubscription('vip_weekly'),
+                raw: null
+            };
+        }
+
         return {
             known:
                 false,
@@ -8646,6 +8663,7 @@ if (!window._lmVipRuntimeListenersInstalled) {
     }, false);
 
     document.addEventListener('logout', function () {
+        delete window._lmHasVIPSubscription;
         var prev = window._lmVipStatusCache;
         var next = { known: false, active: false, source: 'logout',
             subscription: typeof window.getAgarSubscription === 'function'
@@ -29268,8 +29286,25 @@ function thelegendmodproject() {
                         skipBrew: {},
                         sessionId: u.userSessionId,
                         tokens: u.tokens,
-                        info: u.userInfo
+                        info: u.userInfo,
+                        hasVIPSubscription: false
                     };
+
+                    /* Extract VIP subscription state from protobuf field 20.
+                     * Official agario.js (line ~19314): checks if enum value 1
+                     * is in data.get_userSubscriptions().get_active() */
+                    try {
+                        var subs = u.userSubscriptions;
+                        if (subs && subs.active && Array.isArray(subs.active)) {
+                            this.user.hasVIPSubscription = subs.active.indexOf(1) !== -1;
+                        } else if (subs && typeof subs.get_active === 'function') {
+                            var activeList = subs.get_active();
+                            if (activeList) this.user.hasVIPSubscription = activeList.indexOf(1) !== -1;
+                        }
+                    } catch (vipErr) {
+                        console.warn('[LM VIP] Error parsing userSubscriptions:', vipErr);
+                    }
+                    window._lmHasVIPSubscription = this.user.hasVIPSubscription;
 
                     if (window.coinsTimer) clearTimeout(window.coinsTimer);
                     window.coinsTimer = setTimeout(() => {
