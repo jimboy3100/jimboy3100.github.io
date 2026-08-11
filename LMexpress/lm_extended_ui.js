@@ -6735,18 +6735,6 @@
                         'ACCOUNT REWARDS &amp; TIMERS' +
                     '</strong>' +
 
-                    '<span style="' +
-                        'font-size:9px;' +
-                        'color:' +
-                        window
-                            ._lmEconomyEscape(
-                                theme.tc2
-                            ) +
-                        ';' +
-                    '">' +
-                        'GameConfiguration + live server state' +
-                    '</span>' +
-
                 '</div>';
 
 
