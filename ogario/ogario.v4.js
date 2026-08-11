@@ -3326,10 +3326,13 @@ function buyBoost(
                     info.purchaseId,
 
                 onSuccess:
-                    function () {
+                    function (
+                        response,
+                        pendingPurchase
+                    ) {
                         /*
-                         * Wallet update should arrive from the server, but
-                         * refresh the visible selector immediately afterward.
+                         * productUpdates were already applied by opcode 71
+                         * before this callback runs.
                          */
                         if (
                             typeof window
@@ -3342,6 +3345,7 @@ function buyBoost(
                                 );
                         }
 
+
                         if (
                             typeof window
                                 .syncProfileTabUI ===
@@ -3349,6 +3353,36 @@ function buyBoost(
                         ) {
                             window
                                 .syncProfileTabUI();
+                        }
+
+
+                        /*
+                         * Dedicated Shop windows repaint from authoritative state.
+                         */
+                        try {
+                            document.dispatchEvent(
+                                new CustomEvent(
+                                    'lm-configured-boost-purchased',
+                                    {
+                                        detail: {
+                                            productId:
+                                                info.productId,
+
+                                            purchaseId:
+                                                info.purchaseId,
+
+                                            response:
+                                                response,
+
+                                            pendingPurchase:
+                                                pendingPurchase
+                                        }
+                                    }
+                                )
+                            );
+                        } catch (
+                            boostPurchaseEventError
+                        ) {
                         }
                     },
 
@@ -3424,6 +3458,43 @@ function useBoost(
 
     return false;
 }
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * CONFIGURED BOOST ACTION BRIDGE
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * lm_extended_ui.js must never duplicate:
+ *
+ *      productId -> purchaseId
+ *      softPurchase()
+ *      activateBoost()
+ *
+ * Those jobs already belong to buyBoost()/useBoost().
+ *
+ * Expose only tiny bridges.
+ */
+
+window.buyConfiguredBoost =
+    function (
+        productId
+    ) {
+        return buyBoost(
+            productId
+        );
+    };
+
+
+window.useConfiguredBoost =
+    function (
+        productId
+    ) {
+        return useBoost(
+            productId
+        );
+    };
+
 
 /*
 function massx21hour(slot) {
@@ -27527,20 +27598,34 @@ function thelegendmodproject() {
                         break;
                     case 2:
                         /*
-                         * Wallet packet is authoritative for owned quantity.
-                         *
-                         * Do NOT format the option here.
-                         * initBoostDropdown() is now the only DOM formatter.
+                         * ═══════════════════════════════════════════════════════════
+                         * NORMAL BOOST INVENTORY
+                         * ═══════════════════════════════════════════════════════════
                          */
+
+                        var boostWalletProductId =
+                            String(
+                                items[i]
+                                    .productId ||
+                                ''
+                            );
+
+
+                        var boostWalletAmount =
+                            Math.max(
+                                0,
+                                Number(
+                                    items[i]
+                                        .amount
+                                ) || 0
+                            );
+
+
                         this.user
                             .boosts[
-                                items[i]
-                                    .productId
+                                boostWalletProductId
                             ] =
-                            Number(
-                                items[i]
-                                    .amount
-                            ) || 0;
+                            boostWalletAmount;
 
 
                         if (
@@ -27553,6 +27638,31 @@ function thelegendmodproject() {
                                     true
                                 );
                         }
+
+
+                        /*
+                         * Any open dedicated Boost Shop can now repaint immediately.
+                         */
+                        try {
+                            document.dispatchEvent(
+                                new CustomEvent(
+                                    'lm-boost-inventory-updated',
+                                    {
+                                        detail: {
+                                            productId:
+                                                boostWalletProductId,
+
+                                            amount:
+                                                boostWalletAmount
+                                        }
+                                    }
+                                )
+                            );
+                        } catch (
+                            boostInventoryEventError
+                        ) {
+                        }
+
 
                         break;
 
@@ -27614,7 +27724,58 @@ function thelegendmodproject() {
                         if (items[i].amount > 0) window.activateQuest();
                         break;
                     case 5:
-                        this.user.rushBoosts[items[i].productId] = items[i].amount;
+                        /*
+                         * ═══════════════════════════════════════════════════════════
+                         * RUSH BOOST INVENTORY
+                         * ═══════════════════════════════════════════════════════════
+                         */
+
+                        var rushWalletProductId =
+                            String(
+                                items[i]
+                                    .productId ||
+                                ''
+                            );
+
+
+                        var rushWalletAmount =
+                            Math.max(
+                                0,
+                                Number(
+                                    items[i]
+                                        .amount
+                                ) || 0
+                            );
+
+
+                        this.user
+                            .rushBoosts[
+                                rushWalletProductId
+                            ] =
+                            rushWalletAmount;
+
+
+                        try {
+                            document.dispatchEvent(
+                                new CustomEvent(
+                                    'lm-rush-inventory-updated',
+                                    {
+                                        detail: {
+                                            productId:
+                                                rushWalletProductId,
+
+                                            amount:
+                                                rushWalletAmount
+                                        }
+                                    }
+                                )
+                            );
+                        } catch (
+                            rushInventoryEventError
+                        ) {
+                        }
+
+
                         break;
                     case 6:
                         this.user.potions[items[i].productId] = items[i].amount;

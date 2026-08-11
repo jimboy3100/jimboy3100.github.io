@@ -5002,6 +5002,19 @@
                     if (typeof window.showXPBoostModal === 'function') window.showXPBoostModal();
                     else if (typeof window.initBoostDropdown === 'function') window.initBoostDropdown();
                 }
+            },
+            {
+                id: 'rush',
+                name: 'Rush Boost',
+                bannerColor: '#d84315',
+                gradient: 'linear-gradient(180deg, #ff7043 0%, #d84315 100%)',
+                icon: '🚀',
+                bgGraphic: 'linear-gradient(135deg, rgba(255,87,34,0.2) 0%, rgba(230,74,25,0.4) 100%)',
+                badge: '',
+                action: function() {
+                    document.getElementById('lm-main-shop-modal').remove();
+                    if (typeof window.showRushBoostModal === 'function') window.showRushBoostModal();
+                }
             }
         ];
 
@@ -5273,261 +5286,579 @@
         document.body.appendChild(modal);
     };
 
-    window.showXPBoostModal = function() {
-        injectStyles();
-        var t = getTheme();
+    /*
+     * ═══════════════════════════════════════════════════════════════════
+     * CONFIG-DRIVEN NORMAL BOOST SHOP
+     * ═══════════════════════════════════════════════════════════════════
+     *
+     * Actions:
+     *
+     *      window.buyConfiguredBoost(productId)
+     *      window.useConfiguredBoost(productId)
+     *
+     * No shorthand IDs. No hardcoded prices. No hardcoded durations.
+     */
 
-        var old = document.getElementById('lm-xp-boost-modal');
-        if (old) old.remove();
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
-
-        var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
-        var count_2x_1h = userBoosts.xp_2x_1h || userBoosts['xp_boost_2x_1h'] || 0;
-        var count_2x_24h = userBoosts.xp_2x_24h || userBoosts['xp_boost_2x_24h'] || 0;
-        var count_3x_1h = userBoosts.xp_3x_1h || userBoosts['xp_boost_3x_1h'] || 0;
-        var count_3x_24h = userBoosts.xp_3x_24h || userBoosts['xp_boost_3x_24h'] || 0;
-
-        var modal = document.createElement('div');
-        modal.id = 'lm-xp-boost-modal';
-        modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '1000000';
-        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-
-        window.useBoostItem = function(boostId, count) {
-            if (count <= 0) {
-                if (window.toastr) window.toastr.warning('<b>[BOOST]:</b> You do not own any ' + boostId + ' boosts.');
-                return;
+    window._lmGetBoostInventory =
+        function () {
+            if (
+                window.application &&
+                window.application.user &&
+                window.application.user.boosts
+            ) {
+                return window.application.user.boosts;
             }
-            if (typeof window.activateBoost === 'function') {
-                window.activateBoost(boostId);
-            } else if (window.application && typeof window.application.activateBoost === 'function') {
-                window.application.activateBoost(boostId);
+
+            if (
+                window.LM &&
+                window.LM.user &&
+                window.LM.user.boosts
+            ) {
+                return window.LM.user.boosts;
+            }
+
+            return {};
+        };
+
+
+    window._lmGetBoostOwnedCount =
+        function (productId) {
+            var inventory = window._lmGetBoostInventory();
+            return Math.max(0, Number(inventory[productId]) || 0);
+        };
+
+
+    window.showConfiguredBoostModal =
+        function (boostType) {
+            boostType = String(boostType || '').toLowerCase();
+
+            if (boostType !== 'xp' && boostType !== 'mass') {
+                console.warn('[LM BOOST SHOP] Invalid boost type:', boostType);
+                return false;
+            }
+
+            injectStyles();
+
+            var modalId = boostType === 'xp'
+                ? 'lm-xp-boost-modal'
+                : 'lm-mass-boost-modal';
+
+            var old = document.getElementById(modalId);
+            if (old) old.remove();
+
+            var catalog = typeof window.getAgarBoostCatalog === 'function'
+                ? window.getAgarBoostCatalog().filter(function (item) {
+                    return item && item.type === boostType;
+                })
+                : [];
+
+            var appUser = (window.application && window.application.user) || {};
+            var dnaBalance = Number(appUser.dna) || 0;
+            var coinsBalance = Number(appUser.coins) || 0;
+
+            var t = getTheme();
+
+            var modal = document.createElement('div');
+            modal.id = modalId;
+            modal.className = 'lm-modal-overlay';
+            modal.style.zIndex = '1000000';
+            modal.dataset.boostType = boostType;
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) modal.remove();
+            });
+
+            var shell = document.createElement('div');
+            shell.className = 'lm-modal-container';
+            shell.style.cssText =
+                'background:' + t.bg + ';' +
+                'border-radius:16px;' +
+                'width:720px;' +
+                'max-width:94vw;' +
+                'padding:0;' +
+                'overflow:hidden;' +
+                'box-shadow:0 10px 40px rgba(0,0,0,.6);';
+
+            /* Header */
+            var header = document.createElement('div');
+            header.style.cssText =
+                'padding:16px 24px;' +
+                'display:flex;align-items:center;justify-content:space-between;' +
+                'border-bottom:1px solid ' + t.border + ';';
+
+            var leftBox = document.createElement('div');
+            leftBox.style.cssText = 'display:flex;align-items:center;gap:12px;';
+
+            var back = document.createElement('button');
+            back.type = 'button';
+            back.textContent = '\u2039';
+            back.title = 'Back to Shop';
+            back.style.cssText =
+                'width:32px;height:32px;border-radius:50%;background:#00d3ff;' +
+                'color:#fff;border:none;font-weight:900;font-size:18px;cursor:pointer;';
+            back.onclick = function () {
+                modal.remove();
+                if (typeof window.showShopModal === 'function') window.showShopModal();
+            };
+
+            var heading = document.createElement('div');
+            heading.style.cssText = 'font-size:22px;font-weight:900;color:' + t.tc1 + ';';
+            heading.textContent = boostType === 'xp' ? 'XP Boost' : 'Starting Mass Boost';
+
+            leftBox.appendChild(back);
+            leftBox.appendChild(heading);
+
+            var balDiv = document.createElement('div');
+            balDiv.style.cssText = 'display:flex;align-items:center;gap:10px;';
+
+            var dnaEl = document.createElement('div');
+            dnaEl.style.cssText =
+                'background:' + t.cardBg + ';border:2px solid #8bc34a;padding:4px 12px;' +
+                'border-radius:20px;font-size:13px;font-weight:800;color:#558b2f;';
+            dnaEl.textContent = '\uD83E\uDDEC ' + dnaBalance.toLocaleString();
+
+            var coinsEl = document.createElement('div');
+            coinsEl.style.cssText =
+                'background:' + t.cardBg + ';border:2px solid #fbc02d;padding:4px 12px;' +
+                'border-radius:20px;font-size:13px;font-weight:800;color:#f57f17;';
+            coinsEl.textContent = '\uD83D\uDCB0 ' + coinsBalance.toLocaleString();
+
+            var closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.textContent = '\u00D7';
+            closeBtn.style.cssText =
+                'background:none;border:none;font-size:24px;color:' + t.tc2 + ';' +
+                'cursor:pointer;font-weight:900;';
+            closeBtn.onclick = function () { modal.remove(); };
+
+            balDiv.appendChild(dnaEl);
+            balDiv.appendChild(coinsEl);
+            balDiv.appendChild(closeBtn);
+
+            header.appendChild(leftBox);
+            header.appendChild(balDiv);
+
+            /* Body */
+            var body = document.createElement('div');
+            body.style.cssText =
+                'padding:22px;background:' + t.panelBg + ';' +
+                'max-height:68vh;overflow-y:auto;';
+
+            if (catalog.length === 0) {
+                var empty = document.createElement('div');
+                empty.style.cssText =
+                    'padding:35px;text-align:center;color:' + t.tc2 + ';font-size:14px;';
+                empty.textContent = 'Agar.io has not supplied this boost catalogue yet.';
+                body.appendChild(empty);
             } else {
-                if (window.toastr) window.toastr.success('<b>[BOOST]:</b> Activated ' + boostId + '!');
+                var grid = document.createElement('div');
+                grid.style.cssText =
+                    'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;';
+
+                catalog.forEach(function (info) {
+                    var owned = window._lmGetBoostOwnedCount(info.productId);
+
+                    var duration = typeof window.formatAgarDurationSeconds === 'function'
+                        ? window.formatAgarDurationSeconds(
+                            (Number(info.durationMins) || 0) * 60, true
+                        )
+                        : (info.durationMins + 'm');
+
+                    var priceText = (info.price !== null && info.price !== undefined)
+                        ? (typeof window.formatAgarCurrency === 'function'
+                            ? window.formatAgarCurrency(info.price, info.currency)
+                            : (info.price + ' ' + (info.currency || '')))
+                        : 'Unavailable';
+
+                    var card = document.createElement('div');
+                    card.style.cssText =
+                        'position:relative;background:' + t.cardBg + ';' +
+                        'border-radius:14px;padding:17px;' +
+                        'border:1px solid ' + t.border + ';' +
+                        'display:flex;flex-direction:column;min-height:215px;';
+
+                    if (info.bestDeal) {
+                        var bestTag = document.createElement('div');
+                        bestTag.textContent = '\u2605 BEST';
+                        bestTag.style.cssText =
+                            'position:absolute;top:10px;left:10px;' +
+                            'background:#ff9800;color:#fff;padding:3px 7px;' +
+                            'border-radius:12px;font-size:9px;font-weight:900;';
+                        card.appendChild(bestTag);
+                    }
+
+                    var visual = document.createElement('div');
+                    visual.style.cssText =
+                        'margin:18px auto 8px;width:88px;height:88px;border-radius:50%;' +
+                        'display:flex;align-items:center;justify-content:center;' +
+                        'font-size:42px;font-weight:900;' +
+                        'background:' + (info.type === 'xp'
+                            ? 'radial-gradient(circle,#fff176,#ffb300)'
+                            : 'radial-gradient(circle,#29b6f6,#0288d1)') + ';' +
+                        'color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18);';
+                    visual.textContent = info.type === 'xp' ? '\u2B50' : 'M';
+                    card.appendChild(visual);
+
+                    var title = document.createElement('div');
+                    title.style.cssText =
+                        'text-align:center;font-size:17px;font-weight:900;color:' + t.tc1 + ';';
+                    title.textContent = info.multiplier + 'x ' +
+                        (info.type === 'xp' ? 'XP' : 'Starting Mass');
+                    card.appendChild(title);
+
+                    var durEl = document.createElement('div');
+                    durEl.style.cssText =
+                        'text-align:center;font-size:12px;font-weight:700;' +
+                        'color:' + t.tc2 + ';margin-top:3px;';
+                    durEl.textContent = duration;
+                    card.appendChild(durEl);
+
+                    var ownedEl = document.createElement('div');
+                    ownedEl.style.cssText =
+                        'text-align:center;font-size:11px;font-weight:800;' +
+                        'color:' + t.tc2 + ';margin:8px 0;';
+                    ownedEl.textContent = 'Owned: ' + owned;
+                    ownedEl.dataset.productId = info.productId;
+                    ownedEl.className = 'lm-boost-owned-label';
+                    card.appendChild(ownedEl);
+
+                    var actions = document.createElement('div');
+                    actions.style.cssText =
+                        'display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;';
+
+                    var buyBtn = document.createElement('button');
+                    buyBtn.type = 'button';
+                    buyBtn.style.cssText =
+                        'border:0;border-radius:8px;padding:8px 6px;font-size:12px;' +
+                        'font-weight:900;cursor:pointer;' +
+                        'background:linear-gradient(180deg,#8bc34a,#689f38);color:#fff;';
+                    buyBtn.textContent = 'BUY ' + priceText;
+
+                    if (!info.purchaseId) {
+                        buyBtn.disabled = true;
+                        buyBtn.style.opacity = '.4';
+                    }
+
+                    buyBtn.onclick = (function (capturedInfo, capturedPriceText, btn) {
+                        return function () {
+                            if (!capturedInfo.purchaseId ||
+                                typeof window.buyConfiguredBoost !== 'function') {
+                                return false;
+                            }
+
+                            if (typeof window._lmHasPendingSoftPurchase === 'function' &&
+                                window._lmHasPendingSoftPurchase(capturedInfo.purchaseId)) {
+                                if (window.toastr) toastr.info('This purchase is already pending.');
+                                return false;
+                            }
+
+                            btn.disabled = true;
+                            btn.textContent = 'BUYING...';
+
+                            var sent = window.buyConfiguredBoost(capturedInfo.productId);
+                            if (!sent) {
+                                btn.disabled = false;
+                                btn.textContent = 'BUY ' + capturedPriceText;
+                            }
+
+                            return false;
+                        };
+                    })(info, priceText, buyBtn);
+
+                    var useBtn = document.createElement('button');
+                    useBtn.type = 'button';
+                    useBtn.style.cssText =
+                        'border:0;border-radius:8px;padding:8px 6px;font-size:12px;' +
+                        'font-weight:900;cursor:pointer;' +
+                        'background:linear-gradient(180deg,#29b6f6,#0288d1);color:#fff;';
+                    useBtn.textContent = 'USE';
+
+                    if (owned <= 0) {
+                        useBtn.disabled = true;
+                        useBtn.style.opacity = '.4';
+                        useBtn.style.cursor = 'not-allowed';
+                    }
+
+                    useBtn.onclick = (function (capturedInfo) {
+                        return function () {
+                            var cur = window._lmGetBoostOwnedCount(capturedInfo.productId);
+                            if (cur <= 0) {
+                                if (window.toastr) {
+                                    toastr.warning('<b>[BOOST]:</b> You do not own this boost.');
+                                }
+                                return false;
+                            }
+
+                            if (typeof window.useConfiguredBoost === 'function') {
+                                window.useConfiguredBoost(capturedInfo.productId);
+                            }
+
+                            return false;
+                        };
+                    })(info);
+
+                    actions.appendChild(buyBtn);
+                    actions.appendChild(useBtn);
+                    card.appendChild(actions);
+                    grid.appendChild(card);
+                });
+
+                body.appendChild(grid);
             }
+
+            shell.appendChild(header);
+            shell.appendChild(body);
+            modal.appendChild(shell);
+            document.body.appendChild(modal);
+
+            return true;
         };
 
-        window.showBoostInfoPopover = function(title, text) {
-            var oldInfo = document.getElementById('lm-boost-info-popover');
-            if (oldInfo) oldInfo.remove();
 
-            var pop = document.createElement('div');
-            pop.id = 'lm-boost-info-popover';
-            pop.className = 'lm-modal-overlay';
-            pop.style.zIndex = '1000020';
-            pop.innerHTML = `
-                <div class="lm-modal-container" style="background: #fff; border-radius: 14px; width: 380px; padding: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative;">
-                    <button onclick="document.getElementById('lm-boost-info-popover').remove();" style="position: absolute; right: 14px; top: 14px; background: none; border: none; font-size: 20px; color: #888; cursor: pointer; font-weight: 900;">&times;</button>
-                    <div style="font-size: 20px; font-weight: 900; color: #333; margin-bottom: 10px;">${title}</div>
-                    <div style="font-size: 14px; color: #666; line-height: 1.5;">${text}</div>
-                </div>
-            `;
-            document.body.appendChild(pop);
+    /*
+     * Compatibility: existing Shop categories call these names.
+     */
+    window.showXPBoostModal =
+        function () {
+            return window.showConfiguredBoostModal('xp');
         };
 
-        modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 680px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
-                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <button onclick="document.getElementById('lm-xp-boost-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
-                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">XP Boost</div>
-                    </div>
 
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
-                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
-                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
-                            <span>💰 ${coinsBalance.toLocaleString()}</span>
-                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <button onclick="document.getElementById('lm-xp-boost-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
-                    </div>
-                </div>
+    window.showMassBoostModal =
+        function () {
+            return window.showConfiguredBoostModal('mass');
+        };
 
-                <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f7f9fa;">
-                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Double XP Boost', 'Doubles all XP earned in game matches for the duration of the boost.');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
 
-                        <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double XP Boost</div>
-                            
-                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">⭐</div>
-                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #e65100; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">2X</div>
-                            </div>
-                        </div>
+    /*
+     * ═══════════════════════════════════════════════════════════════════
+     * CONFIG-DRIVEN RUSH BOOST SHOP
+     * ═══════════════════════════════════════════════════════════════════
+     *
+     * BUY: window.buyAgarRushBoost(productId)
+     *
+     * There is NO invented "Use Rush Boost" protocol here.
+     */
 
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('xp_2x_1h', ${count_2x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_1h}</div>
-                                </div>
-                            </div>
 
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('xp_2x_24h', ${count_2x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_24h}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    window._lmGetRushBoostOwnedCount =
+        function (productId) {
+            var inventory =
+                (window.application && window.application.user &&
+                    window.application.user.rushBoosts) ||
+                (window.LM && window.LM.user && window.LM.user.rushBoosts) ||
+                {};
+            return Math.max(0, Number(inventory[productId]) || 0);
+        };
 
-                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Triple XP Boost', 'Triples all XP earned in game matches for the duration of the boost.');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
 
-                        <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple XP Boost</div>
-                            
-                            <div style="position: relative; margin: 10px auto; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
-                                <div style="font-size: 72px; text-shadow: 0 6px 16px rgba(0,0,0,0.15);">⭐</div>
-                                <div style="position: absolute; bottom: 10px; font-size: 22px; font-weight: 900; color: #e65100; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.5);">3X</div>
-                            </div>
-                        </div>
+    window.showRushBoostModal =
+        function () {
+            injectStyles();
 
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('xp_3x_1h', ${count_3x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_1h}</div>
-                                </div>
-                            </div>
+            var old = document.getElementById('lm-rush-boost-modal');
+            if (old) old.remove();
 
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('xp_3x_24h', ${count_3x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_24h}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+            var catalog = typeof window.getAgarRushBoostCatalog === 'function'
+                ? window.getAgarRushBoostCatalog()
+                : [];
 
-        document.body.appendChild(modal);
-    };
+            catalog = catalog.filter(function (info) {
+                if (!info) return false;
+                var vis = String(info.visibility || '').toLowerCase();
+                return (!vis || vis === 'default' || vis === 'visible');
+            });
 
-    window.showMassBoostModal = function() {
-        injectStyles();
-        var t = getTheme();
+            var appUser = (window.application && window.application.user) || {};
+            var coinsBalance = Number(appUser.coins) || 0;
+            var t = getTheme();
 
-        var old = document.getElementById('lm-mass-boost-modal');
-        if (old) old.remove();
+            var modal = document.createElement('div');
+            modal.id = 'lm-rush-boost-modal';
+            modal.className = 'lm-modal-overlay';
+            modal.style.zIndex = '1000000';
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) modal.remove();
+            });
 
-        var dnaBalance = (window.application && window.application.user && window.application.user.dna !== undefined && window.application.user.dna !== null) ? window.application.user.dna : (window.userDna || 0);
-        var coinsBalance = (window.application && window.application.user && window.application.user.coins !== undefined && window.application.user.coins !== null) ? window.application.user.coins : (window.userCoins || 0);
+            var shell = document.createElement('div');
+            shell.className = 'lm-modal-container';
+            shell.style.cssText =
+                'background:' + t.bg + ';border-radius:16px;width:650px;max-width:94vw;' +
+                'padding:0;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.6);';
 
-        var userBoosts = (window.application && window.application.user && window.application.user.boosts) || window.userBoosts || {};
-        var count_2x_1h = userBoosts.mass_2x_1h || userBoosts['mass_boost_2x_1h'] || 0;
-        var count_2x_24h = userBoosts.mass_2x_24h || userBoosts['mass_boost_2x_24h'] || 0;
-        var count_3x_1h = userBoosts.mass_3x_1h || userBoosts['mass_boost_3x_1h'] || 0;
-        var count_3x_24h = userBoosts.mass_3x_24h || userBoosts['mass_boost_3x_24h'] || 0;
+            /* Header */
+            var header = document.createElement('div');
+            header.style.cssText =
+                'padding:16px 24px;display:flex;align-items:center;' +
+                'justify-content:space-between;' +
+                'border-bottom:1px solid ' + t.border + ';';
 
-        var modal = document.createElement('div');
-        modal.id = 'lm-mass-boost-modal';
-        modal.className = 'lm-modal-overlay';
-        modal.style.zIndex = '1000000';
-        modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+            var titleBox = document.createElement('div');
+            titleBox.style.cssText = 'display:flex;align-items:center;gap:12px;';
 
-        modal.innerHTML = `
-            <div class="lm-modal-container" style="background: #ffffff; border-radius: 16px; width: 680px; padding: 0; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
-                <div style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.08);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <button onclick="document.getElementById('lm-mass-boost-modal').remove(); if(window.showShopModal) window.showShopModal();" style="width: 32px; height: 32px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,211,255,0.4);" title="Back to Shop">‹</button>
-                        <div style="font-size: 22px; font-weight: 900; color: #444; letter-spacing: 0.5px;">Starting Mass Boost</div>
-                    </div>
+            var backBtn = document.createElement('button');
+            backBtn.type = 'button';
+            backBtn.textContent = '\u2039';
+            backBtn.title = 'Back to Shop';
+            backBtn.style.cssText =
+                'width:32px;height:32px;border-radius:50%;background:#ff5722;' +
+                'color:#fff;border:none;font-weight:900;font-size:18px;cursor:pointer;';
+            backBtn.onclick = function () {
+                modal.remove();
+                if (typeof window.showShopModal === 'function') window.showShopModal();
+            };
 
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="background: #f0f4f8; border: 2px solid #8bc34a; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #558b2f; display: flex; align-items: center; gap: 6px;">
-                            <span>🧬 ${dnaBalance.toLocaleString()}</span>
-                            <span style="background: #8bc34a; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <div style="background: #f0f4f8; border: 2px solid #fbc02d; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; color: #f57f17; display: flex; align-items: center; gap: 6px;">
-                            <span>💰 ${coinsBalance.toLocaleString()}</span>
-                            <span style="background: #fbc02d; color: #fff; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; cursor: pointer;">+</span>
-                        </div>
-                        <button onclick="document.getElementById('lm-mass-boost-modal').remove();" style="background: none; border: none; font-size: 24px; color: #888; cursor: pointer; font-weight: 900; margin-left: 8px;">&times;</button>
-                    </div>
-                </div>
+            var headingEl = document.createElement('div');
+            headingEl.style.cssText = 'font-size:22px;font-weight:900;color:' + t.tc1 + ';';
+            headingEl.textContent = 'Rush Boost';
 
-                <div style="padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f7f9fa;">
-                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Double Starting Mass', 'Starts every match with double starting mass (e.g. 50 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+            titleBox.appendChild(backBtn);
+            titleBox.appendChild(headingEl);
 
-                        <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Double Starting Mass</div>
-                            
-                            <div style="position: relative; margin: 10px auto; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #00b0ff 0%, #0091ea 100%); border-radius: 50%; box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 12px rgba(0,145,234,0.4); border: 3px solid #fff;">
-                                <div style="font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">M</div>
-                                <div style="position: absolute; bottom: -4px; right: -4px; font-size: 20px; font-weight: 900; color: #fff; background: #0288d1; border: 2px solid #fff; border-radius: 12px; padding: 2px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">2X</div>
-                            </div>
-                        </div>
+            var rightBox = document.createElement('div');
+            rightBox.style.cssText = 'display:flex;align-items:center;gap:10px;';
 
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('mass_2x_1h', ${count_2x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_1h}</div>
-                                </div>
-                            </div>
+            var coinsBadge = document.createElement('div');
+            coinsBadge.style.cssText =
+                'background:' + t.cardBg + ';border:2px solid #fbc02d;padding:4px 12px;' +
+                'border-radius:20px;font-size:13px;font-weight:800;color:#f57f17;';
+            coinsBadge.textContent = '\uD83D\uDCB0 ' + coinsBalance.toLocaleString();
 
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('mass_2x_24h', ${count_2x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_2x_24h}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            var closeEl = document.createElement('button');
+            closeEl.type = 'button';
+            closeEl.textContent = '\u00D7';
+            closeEl.style.cssText =
+                'background:none;border:none;font-size:24px;color:' + t.tc2 + ';' +
+                'cursor:pointer;font-weight:900;';
+            closeEl.onclick = function () { modal.remove(); };
 
-                    <div style="background: #eceff1; border-radius: 14px; padding: 20px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.06);">
-                        <button onclick="window.showBoostInfoPopover('Triple Starting Mass', 'Starts every match with triple starting mass (e.g. 75 mass instead of 25).');" style="position: absolute; right: 12px; top: 12px; width: 22px; height: 22px; border-radius: 50%; background: #00d3ff; color: #fff; border: none; font-weight: 900; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">?</button>
+            rightBox.appendChild(coinsBadge);
+            rightBox.appendChild(closeEl);
 
-                        <div>
-                            <div style="font-size: 17px; font-weight: 900; color: #333; margin-bottom: 12px;">Triple Starting Mass</div>
-                            
-                            <div style="position: relative; margin: 10px auto; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #00b0ff 0%, #0091ea 100%); border-radius: 50%; box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), 0 4px 12px rgba(0,145,234,0.4); border: 3px solid #fff;">
-                                <div style="font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">M</div>
-                                <div style="position: absolute; bottom: -4px; right: -4px; font-size: 20px; font-weight: 900; color: #fff; background: #0288d1; border: 2px solid #fff; border-radius: 12px; padding: 2px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">3X</div>
-                            </div>
-                        </div>
+            header.appendChild(titleBox);
+            header.appendChild(rightBox);
 
-                        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">1 Hour</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('mass_3x_1h', ${count_3x_1h});" style="background: linear-gradient(180deg, #7cb342 0%, #689f38 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(104,159,56,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_1h}</div>
-                                </div>
-                            </div>
+            /* Body */
+            var body = document.createElement('div');
+            body.style.cssText =
+                'padding:22px;background:' + t.panelBg + ';' +
+                'max-height:68vh;overflow-y:auto;';
 
-                            <div>
-                                <div style="font-size: 12px; font-weight: 800; color: #555; margin-bottom: 4px;">24 Hours</div>
-                                <div style="position: relative;">
-                                    <button onclick="window.useBoostItem('mass_3x_24h', ${count_3x_24h});" style="background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: #fff; font-weight: 900; font-size: 15px; padding: 8px 0; border-radius: 8px; border: none; cursor: pointer; width: 100%; box-shadow: 0 3px 8px rgba(230,81,0,0.4);">Use</button>
-                                    <div style="position: absolute; top: -6px; right: -6px; background: #ff1744; color: #fff; font-weight: 900; font-size: 11px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4);">${count_3x_24h}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+            if (catalog.length === 0) {
+                var emptyEl = document.createElement('div');
+                emptyEl.style.cssText =
+                    'padding:35px;text-align:center;color:' + t.tc2 + ';font-size:14px;';
+                emptyEl.textContent = 'Agar.io has not supplied the Rush boost catalogue yet.';
+                body.appendChild(emptyEl);
+            } else {
+                var gridEl = document.createElement('div');
+                gridEl.style.cssText =
+                    'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;';
 
-        document.body.appendChild(modal);
-    };
+                catalog.forEach(function (info) {
+                    var owned = window._lmGetRushBoostOwnedCount(info.productId);
+
+                    var priceText = (info.price !== null && info.price !== undefined)
+                        ? (typeof window.formatAgarCurrency === 'function'
+                            ? window.formatAgarCurrency(info.price, info.currency)
+                            : (info.price + ' ' + (info.currency || '')))
+                        : 'Unavailable';
+
+                    var card = document.createElement('div');
+                    card.style.cssText =
+                        'position:relative;background:' + t.cardBg + ';' +
+                        'border-radius:14px;padding:17px;' +
+                        'border:1px solid ' + t.border + ';' +
+                        'display:flex;flex-direction:column;min-height:190px;';
+
+                    var vis = document.createElement('div');
+                    vis.style.cssText =
+                        'margin:14px auto 8px;width:88px;height:88px;border-radius:50%;' +
+                        'display:flex;align-items:center;justify-content:center;' +
+                        'font-size:36px;font-weight:900;' +
+                        'background:radial-gradient(circle,#ff8a65,#e64a19);' +
+                        'color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18);';
+                    vis.textContent = '\uD83D\uDE80';
+                    card.appendChild(vis);
+
+                    var titleEl = document.createElement('div');
+                    titleEl.style.cssText =
+                        'text-align:center;font-size:17px;font-weight:900;color:' + t.tc1 + ';';
+                    titleEl.textContent = '+' + info.addition + ' Starting Mass';
+                    card.appendChild(titleEl);
+
+                    var ownedLabel = document.createElement('div');
+                    ownedLabel.style.cssText =
+                        'text-align:center;font-size:11px;font-weight:800;' +
+                        'color:' + t.tc2 + ';margin:8px 0;';
+                    ownedLabel.textContent = 'Owned: ' + owned;
+                    ownedLabel.dataset.productId = info.productId;
+                    ownedLabel.className = 'lm-rush-owned-label';
+                    card.appendChild(ownedLabel);
+
+                    var posLabel = document.createElement('div');
+                    posLabel.style.cssText =
+                        'text-align:center;font-size:10px;color:' + t.tc2 + ';margin-bottom:6px;';
+                    posLabel.textContent = info.position
+                        ? 'Position: ' + info.position
+                        : '';
+                    card.appendChild(posLabel);
+
+                    var buyRush = document.createElement('button');
+                    buyRush.type = 'button';
+                    buyRush.style.cssText =
+                        'border:0;border-radius:8px;padding:10px 6px;font-size:13px;' +
+                        'font-weight:900;cursor:pointer;width:100%;margin-top:auto;' +
+                        'background:linear-gradient(180deg,#ff7043,#d84315);color:#fff;';
+                    buyRush.textContent = 'BUY ' + priceText;
+
+                    if (!info.purchaseId) {
+                        buyRush.disabled = true;
+                        buyRush.style.opacity = '.4';
+                    }
+
+                    buyRush.onclick = (function (capturedInfo, capturedPriceText, btn) {
+                        return function () {
+                            if (!capturedInfo.purchaseId ||
+                                typeof window.buyAgarRushBoost !== 'function') {
+                                return false;
+                            }
+
+                            if (typeof window._lmHasPendingSoftPurchase === 'function' &&
+                                window._lmHasPendingSoftPurchase(capturedInfo.purchaseId)) {
+                                if (window.toastr) toastr.info('This purchase is already pending.');
+                                return false;
+                            }
+
+                            btn.disabled = true;
+                            btn.textContent = 'BUYING...';
+
+                            var sent = window.buyAgarRushBoost(capturedInfo.productId);
+                            if (!sent) {
+                                btn.disabled = false;
+                                btn.textContent = 'BUY ' + capturedPriceText;
+                            }
+
+                            return false;
+                        };
+                    })(info, priceText, buyRush);
+
+                    card.appendChild(buyRush);
+                    gridEl.appendChild(card);
+                });
+
+                body.appendChild(gridEl);
+            }
+
+            shell.appendChild(header);
+            shell.appendChild(body);
+            modal.appendChild(shell);
+            document.body.appendChild(modal);
+
+            return true;
+        };
+
 
     window.openShop = function(cat) {
         if (cat === 'potions' || cat === 'flasks') {
@@ -5538,6 +5869,8 @@
             else if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
         } else if (cat === 'skins') {
             if (typeof window.BeforeSpecialDeals === 'function') window.BeforeSpecialDeals();
+        } else if (cat === 'rush') {
+            if (typeof window.showRushBoostModal === 'function') window.showRushBoostModal();
         } else {
             window.showShopModal();
         }
