@@ -24923,12 +24923,19 @@ function thelegendmodproject() {
             if ((b === 2 || b === 3) && (window.legendmod.bgpi === 1 || window.legendmod.bgpi === 0)) mat[1] = !mat[1];
             window.legendmod.vnr = this.dematrix(mat);
 
-            /* Re-translate all existing cells when an axis flip changes.
-             * Without this, cells already on screen keep their pre-flip
-             * coordinates → mirroring effect (cells appear on both sides). */
+            this._retranslateAllOnFlip(oldFlipX, oldFlipY, mat);
+        },
+        /* Shared helper: when a rotation axis flips, re-translate EVERY
+         * coordinate store so nothing keeps stale pre-flip positions.
+         * translateX/translateY are self-inverse (applying twice = identity),
+         * so this works for both flip-on and flip-off transitions. */
+        _retranslateAllOnFlip(oldFlipX, oldFlipY, mat) {
             var xFlipped = (!!mat[0]) !== oldFlipX;
             var yFlipped = (!!mat[1]) !== oldFlipY;
-            if ((xFlipped || yFlipped) && legendmod.indexedCells) {
+            if (!xFlipped && !yFlipped) return;
+
+            /* 1. All game cells (players, food, viruses, ejected mass) */
+            if (legendmod.indexedCells) {
                 for (var cid in legendmod.indexedCells) {
                     if (!legendmod.indexedCells.hasOwnProperty(cid)) continue;
                     var cell = legendmod.indexedCells[cid];
@@ -24943,6 +24950,36 @@ function thelegendmodproject() {
                         cell.startY = legendmod.translateY(cell.startY);
                     }
                 }
+            }
+
+            /* 2. Ghost cells (leaderboard position markers) */
+            if (legendmod.ghostCells) {
+                for (var gi = 0; gi < legendmod.ghostCells.length; gi++) {
+                    var gc = legendmod.ghostCells[gi];
+                    if (xFlipped) gc.x = legendmod.translateX(gc.x);
+                    if (yFlipped) gc.y = legendmod.translateY(gc.y);
+                }
+            }
+
+            /* 3. Predicted ghost cells */
+            if (window.predictedGhostCells) {
+                for (var pi = 0; pi < window.predictedGhostCells.length; pi++) {
+                    var pg = window.predictedGhostCells[pi];
+                    if (pg) {
+                        if (xFlipped) pg.x = legendmod.translateX(pg.x);
+                        if (yFlipped) pg.y = legendmod.translateY(pg.y);
+                    }
+                }
+            }
+
+            /* 4. Camera position (prevents one-frame jolt) */
+            if (xFlipped) {
+                if (legendmod.viewX != null) legendmod.viewX = legendmod.translateX(legendmod.viewX);
+                if (legendmod.viewXTrue != null) legendmod.viewXTrue = legendmod.translateX(legendmod.viewXTrue);
+            }
+            if (yFlipped) {
+                if (legendmod.viewY != null) legendmod.viewY = legendmod.translateY(legendmod.viewY);
+                if (legendmod.viewYTrue != null) legendmod.viewYTrue = legendmod.translateY(legendmod.viewYTrue);
             }
         },
         settechvnr(b) { //jimboy3100's 5/5/2020
@@ -24965,25 +25002,7 @@ function thelegendmodproject() {
                 mat[1] = 1;
                 mat[0] = 1;
             }
-            /* Re-translate existing cells (same logic as setvnr) */
-            var xFlipped = (!!mat[0]) !== oldFlipX;
-            var yFlipped = (!!mat[1]) !== oldFlipY;
-            if ((xFlipped || yFlipped) && legendmod.indexedCells) {
-                for (var cid in legendmod.indexedCells) {
-                    if (!legendmod.indexedCells.hasOwnProperty(cid)) continue;
-                    var cell = legendmod.indexedCells[cid];
-                    if (xFlipped) {
-                        cell.x = legendmod.translateX(cell.x);
-                        cell.targetX = legendmod.translateX(cell.targetX);
-                        cell.startX = legendmod.translateX(cell.startX);
-                    }
-                    if (yFlipped) {
-                        cell.y = legendmod.translateY(cell.y);
-                        cell.targetY = legendmod.translateY(cell.targetY);
-                        cell.startY = legendmod.translateY(cell.startY);
-                    }
-                }
-            }
+            this._retranslateAllOnFlip(oldFlipX, oldFlipY, mat);
         },
         updatevnr() {
             /* Disable map rotation on Expanding Land server */
