@@ -391,90 +391,25 @@
      */
 
 
-    window._lmLeaguePresentation =
-        {
-            fly: {
-                color:
-                    '#8f7e3a',
-
-                gradient:
-                    'linear-gradient(135deg, #8f7e3a 0%, #5d4037 100%)'
-            },
-
-            wasp: {
-                color:
-                    '#ca8f01',
-
-                gradient:
-                    'linear-gradient(135deg, #ca8f01 0%, #f57f17 100%)'
-            },
-
-            bat: {
-                color:
-                    '#a822c7',
-
-                gradient:
-                    'linear-gradient(135deg, #a822c7 0%, #4a148c 100%)'
-            },
-
-            fox: {
-                color:
-                    '#f36101',
-
-                gradient:
-                    'linear-gradient(135deg, #f36101 0%, #e65100 100%)'
-            },
-
-            hunter: {
-                color:
-                    '#f62000',
-
-                gradient:
-                    'linear-gradient(135deg, #f62000 0%, #b71c1c 100%)'
-            },
-
-            bear: {
-                color:
-                    '#8b4a1f',
-
-                gradient:
-                    'linear-gradient(135deg, #8b4a1f 0%, #4e270d 100%)'
-            },
-
-            panther: {
-                color:
-                    '#4d4643',
-
-                gradient:
-                    'linear-gradient(135deg, #4d4643 0%, #212121 100%)'
-            },
-
-            crocodile: {
-                color:
-                    '#1b8b05',
-
-                gradient:
-                    'linear-gradient(135deg, #1b8b05 0%, #0d4702 100%)'
-            },
-
-            mammoth: {
-                color:
-                    '#7b6750',
-
-                gradient:
-                    'linear-gradient(135deg, #7b6750 0%, #4e3629 100%)'
-            },
-
-            kraken: {
-                color:
-                    '#029070',
-
-                gradient:
-                    'linear-gradient(135deg, #d32f2f 0%, #7b1fa2 100%)'
-            }
-        };
-
-
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * CONFIG-DRIVEN LEAGUE TIER + VISUAL PRESENTATION
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * LEVEL RANGE:
+     *
+     *      Leagues - Tiers
+     *
+     * COLOR / ICON / LOCALE:
+     *
+     *      Visual - Leagues
+     *
+     * WEEKLY RANK / PRIZES:
+     *
+     *      official Agar.io league response only
+     *
+     * _resolveOfficialLeaguePrizeData() remains completely untouched.
+     */
     window.getLeagueTierFromLevel =
         function (
             level
@@ -494,12 +429,6 @@
                 getTheme();
 
 
-            /*
-             * Configuration may not have arrived during the first few
-             * milliseconds of page startup.
-             *
-             * Do NOT recreate the old level threshold ladder as fallback.
-             */
             if (
                 !configuredTier
             ) {
@@ -513,15 +442,26 @@
                     name:
                         'League',
 
+                    localeTag:
+                        '',
+
                     color:
                         theme.mc,
 
                     gradient:
-                        'linear-gradient(135deg, ' +
-                        theme.b1 +
-                        ' 0%, ' +
-                        theme.b3 +
-                        ' 100%)',
+                        (
+                            'linear-gradient(135deg, ' +
+                            theme.mc +
+                            ' 0%, ' +
+                            theme.pc2 +
+                            ' 100%)'
+                        ),
+
+                    icon:
+                        null,
+
+                    isTiered:
+                        false,
 
                     levelFrom:
                         null,
@@ -536,17 +476,69 @@
                         0,
 
                     raw:
+                        null,
+
+                    rawVisual:
                         null
                 };
             }
 
 
-            var presentation =
-                window
-                    ._lmLeaguePresentation[
-                        configuredTier.id
-                    ] ||
-                {};
+            var visualLookupName =
+                configuredTier
+                    .configName ||
+                configuredTier
+                    .name ||
+                configuredTier
+                    .id ||
+                '';
+
+
+            var visual =
+                typeof window
+                    .getAgarVisualLeague ===
+                    'function'
+                    ? window
+                        .getAgarVisualLeague(
+                            visualLookupName
+                        )
+                    : null;
+
+
+            /*
+             * Do not recreate the old fly/wasp/bat/... hardcoded palette.
+             */
+            var visualColor =
+                (
+                    visual &&
+                    visual.outlineColor &&
+                    visual.outlineColor.valid &&
+                    visual.outlineColor.css
+                )
+                    ? visual.outlineColor.css
+                    : theme.mc;
+
+
+            var gradientEnd =
+                theme.pc2;
+
+
+            if (
+                visual &&
+                visual.outlineColor &&
+                visual.outlineColor.valid
+            ) {
+                gradientEnd =
+                    (
+                        'rgba(' +
+                        visual.outlineColor.r +
+                        ',' +
+                        visual.outlineColor.g +
+                        ',' +
+                        visual.outlineColor.b +
+                        ',0.42)'
+                    );
+            }
 
 
             return {
@@ -557,22 +549,40 @@
                     configuredTier
                         .configName,
 
+                /*
+                 * Keep the tier resolver's configured name as the visible
+                 * fallback until LM's localization layer resolves localeTag.
+                 */
                 name:
-                    configuredTier.name,
+                    configuredTier
+                        .name,
+
+                localeTag:
+                    visual
+                        ? visual.localeTag
+                        : '',
 
                 color:
-                    presentation.color ||
-                    theme.mc,
+                    visualColor,
 
                 gradient:
-                    presentation.gradient ||
                     (
                         'linear-gradient(135deg, ' +
-                        theme.b1 +
+                        visualColor +
                         ' 0%, ' +
-                        theme.b3 +
+                        gradientEnd +
                         ' 100%)'
                     ),
+
+                icon:
+                    visual
+                        ? visual.icon
+                        : null,
+
+                isTiered:
+                    visual
+                        ? visual.isTiered
+                        : true,
 
                 levelFrom:
                     configuredTier
@@ -592,7 +602,12 @@
 
                 raw:
                     configuredTier
-                        .raw
+                        .raw,
+
+                rawVisual:
+                    visual
+                        ? visual.raw
+                        : null
             };
         };
 
@@ -3860,15 +3875,100 @@
 
         var buildBodyContent = function(tab) {
             if (tab === 'howto') {
-                var helpSettings = (window.GameConfiguration && window.GameConfiguration.gameConfig && window.GameConfiguration.gameConfig["Visual - Help Settings"]) ||
-                                   (window.LMAgarGameConfiguration && window.LMAgarGameConfiguration.gameConfig && window.LMAgarGameConfiguration.gameConfig["Visual - Help Settings"]) || [];
-                var getHelp = function(k, def) {
-                    if (!helpSettings || !helpSettings.length) return def;
-                    var s = helpSettings.find(function(x) { return x.key === k; });
-                    return s ? s.value : def;
-                };
-                var minPosFFA = getHelp("potionsMinPositionFreeForAll", "10");
-                var minTimeFFA = getHelp("potionsMinTimeFreeForAll", "100");
+                /*
+                 * Visual - Help Settings now comes through the canonical
+                 * GameConfiguration resolver.
+                 */
+                var getHelp =
+                    function (
+                        key,
+                        fallback
+                    ) {
+                        return typeof window
+                            .getAgarHelpSetting ===
+                            'function'
+                                ? window
+                                    .getAgarHelpSetting(
+                                        key,
+                                        fallback
+                                    )
+                                : fallback;
+                    };
+
+
+                var minPosFFA =
+                    getHelp(
+                        'potionsMinPositionFreeForAll',
+                        10
+                    );
+
+                var minTimeFFA =
+                    getHelp(
+                        'potionsMinTimeFreeForAll',
+                        20
+                    );
+
+
+                /*
+                 * Preserve the remaining configured help-animation metadata
+                 * instead of leaving it unreachable.
+                 */
+                var helpAnimationConfig =
+                    {
+                        startingDelayInSecs:
+                            Number(
+                                getHelp(
+                                    'startingDelayInSecs',
+                                    2
+                                )
+                            ),
+
+                        waveDurationInSecs:
+                            Number(
+                                getHelp(
+                                    'waveDurationInSecs',
+                                    2
+                                )
+                            ),
+
+                        timeBetweenWaveAnimationsInSecs:
+                            Number(
+                                getHelp(
+                                    'timeBetweenWaveAnimationsInSecs',
+                                    2
+                                )
+                            ),
+
+                        timeAfterGlowAnimationsInSecs:
+                            Number(
+                                getHelp(
+                                    'timeAfterGlowAnimationsInSecs',
+                                    1
+                                )
+                            ),
+
+                        timeAfterEatAnimationsInSecs:
+                            Number(
+                                getHelp(
+                                    'timeAfterEatAnimationsInSecs',
+                                    2
+                                )
+                            ),
+
+                        skinToShowInPotionsHelpMenu:
+                            String(
+                                getHelp(
+                                    'skinToShowInPotionsHelpMenu',
+                                    ''
+                                ) ||
+                                ''
+                            )
+                    };
+
+
+                window
+                    .AgarPotionHelpAnimationConfig =
+                    helpAnimationConfig;
 
                 return `
                     <div style="display: flex; gap: 16px; padding: 10px;">
@@ -6574,23 +6674,329 @@
         }
     });
 
-    // ─── Component 3: ⭕ Battle Royale Toxic Ring Overlay & HUD ───
-    document.addEventListener('battleRoyalePhaseUpdate', function(e) {
-        var phase = e.detail;
-        var banner = document.getElementById('br-hud-banner');
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'br-hud-banner';
-            document.body.appendChild(banner);
-        }
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * GAMECONFIGURATION VISUAL BRIDGE
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Expose official visual metadata as CSS variables.
+     *
+     * IMPORTANT:
+     *
+     * We do NOT overwrite defaultSettings minimap/theme colors.
+     * Existing LM user customization therefore remains authoritative.
+     *
+     * Config-aware UI/render code can opt into these variables/resolvers.
+     */
+    window.applyAgarVisualConfiguration =
+        function () {
+            if (
+                typeof window
+                    .getAgarMinimapSetting !==
+                    'function'
+            ) {
+                return false;
+            }
 
-        if (phase) {
-            banner.style.display = 'flex';
-            banner.innerHTML = `<span>☣️ BATTLE ROYALE BORDER SHRINKING!</span>`;
-        } else {
-            banner.style.display = 'none';
+
+            var root =
+                document
+                    .documentElement;
+
+            if (!root) {
+                return false;
+            }
+
+
+            function setColorVariable(
+                name,
+                key
+            ) {
+                var raw =
+                    window
+                        .getAgarMinimapSetting(
+                            key,
+                            null
+                        );
+
+                if (
+                    raw === null ||
+                    raw === undefined
+                ) {
+                    root
+                        .style
+                        .removeProperty(
+                            name
+                        );
+
+                    return;
+                }
+
+
+                var info =
+                    typeof window
+                        .parseAgarRgbaColor ===
+                        'function'
+                        ? window
+                            .parseAgarRgbaColor(
+                                raw
+                            )
+                        : null;
+
+
+                if (
+                    info &&
+                    info.valid &&
+                    info.css
+                ) {
+                    root
+                        .style
+                        .setProperty(
+                            name,
+                            info.css
+                        );
+                } else {
+                    root
+                        .style
+                        .removeProperty(
+                            name
+                        );
+                }
+            }
+
+
+            setColorVariable(
+                '--lm-agar-minimap-fill',
+                'minimapFillColor'
+            );
+
+            setColorVariable(
+                '--lm-agar-minimap-outline',
+                'minimapOutlineColor'
+            );
+
+            setColorVariable(
+                '--lm-agar-br-danger-fill',
+                'dangerAreaFillColor'
+            );
+
+            setColorVariable(
+                '--lm-agar-br-danger-outline',
+                'dangerAreaOutlineColor'
+            );
+
+            setColorVariable(
+                '--lm-agar-br-safe-outline',
+                'safeAreaOutlineColor'
+            );
+
+            /*
+             * playerDotColor from the current GameConfiguration is malformed/
+             * unusual for an RGBA8 value. The strict parser deliberately
+             * refuses to truncate it.
+             */
+            setColorVariable(
+                '--lm-agar-minimap-player-dot',
+                'playerDotColor'
+            );
+
+
+            var dotRadius =
+                window
+                    .getAgarMinimapSetting(
+                        'playerDotRadius',
+                        null
+                    );
+
+            if (
+                dotRadius !== null &&
+                dotRadius !== undefined
+            ) {
+                root
+                    .style
+                    .setProperty(
+                        '--lm-agar-minimap-player-dot-radius',
+                        String(
+                            dotRadius
+                        ) +
+                        'px'
+                    );
+            }
+
+
+            try {
+                document
+                    .dispatchEvent(
+                        new CustomEvent(
+                            'lm-agar-visual-config-updated',
+                            {
+                                detail:
+                                    {
+                                        source:
+                                            'applyAgarVisualConfiguration'
+                                    }
+                            }
+                        )
+                    );
+            } catch (
+                visualEventError
+            ) {
+            }
+
+
+            return true;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * Battle Royale status banner
+     * ─────────────────────────────────────────────────────────────────────
+     *
+     * The phase itself remains live/server-driven.
+     * Only visual styling comes from GameConfiguration.
+     */
+    document.addEventListener(
+        'battleRoyalePhaseUpdate',
+        function (
+            e
+        ) {
+            var phase =
+                e.detail;
+
+            var banner =
+                document
+                    .getElementById(
+                        'br-hud-banner'
+                    );
+
+
+            if (!banner) {
+                banner =
+                    document
+                        .createElement(
+                            'div'
+                        );
+
+                banner.id =
+                    'br-hud-banner';
+
+                document
+                    .body
+                    .appendChild(
+                        banner
+                    );
+            }
+
+
+            var dangerFill =
+                'rgba(255,0,0,0.25)';
+
+            var dangerOutline =
+                '#ff0000';
+
+
+            if (
+                typeof window
+                    .getAgarMinimapSetting ===
+                    'function' &&
+                typeof window
+                    .parseAgarRgbaColor ===
+                    'function'
+            ) {
+                var rawFill =
+                    window
+                        .getAgarMinimapSetting(
+                            'dangerAreaFillColor',
+                            null
+                        );
+
+                if (rawFill) {
+                    var parsedFill =
+                        window
+                            .parseAgarRgbaColor(
+                                rawFill
+                            );
+
+                    if (
+                        parsedFill &&
+                        parsedFill.valid
+                    ) {
+                        dangerFill =
+                            parsedFill.css;
+                    }
+                }
+
+
+                var rawOutline =
+                    window
+                        .getAgarMinimapSetting(
+                            'dangerAreaOutlineColor',
+                            null
+                        );
+
+                if (rawOutline) {
+                    var parsedOutline =
+                        window
+                            .parseAgarRgbaColor(
+                                rawOutline
+                            );
+
+                    if (
+                        parsedOutline &&
+                        parsedOutline.valid
+                    ) {
+                        dangerOutline =
+                            parsedOutline.css;
+                    }
+                }
+            }
+
+
+            if (
+                phase
+            ) {
+                banner
+                    .style
+                    .display =
+                    'flex';
+
+                banner
+                    .style
+                    .background =
+                    dangerFill;
+
+                banner
+                    .style
+                    .borderColor =
+                    dangerOutline;
+
+                banner
+                    .style
+                    .boxShadow =
+                    (
+                        '0 0 18px ' +
+                        dangerOutline
+                    );
+
+                banner
+                    .innerHTML =
+                    '<span>☣️ BATTLE ROYALE BORDER SHRINKING!</span>';
+            } else {
+                banner
+                    .style
+                    .display =
+                    'none';
+            }
         }
-    });
+    );
+
+
+    /*
+     * Apply immediately when possible.
+     */
+    window
+        .applyAgarVisualConfiguration();
 
     // ─── Component 4: 🎁 "Claim All Rewards" Menu Button ───
     window.claimAllRewardsAndGifts = function() {
@@ -10181,6 +10587,38 @@
                 typeof window.showPremiumPotionsModal === 'function') {
                 try { window.showPremiumPotionsModal(); }
                 catch (e) { console.warn('[LM POTION SHOP] Config refresh failed:', e); }
+            }
+
+            /*
+             * Refresh all static presentation metadata now that the canonical
+             * GameConfiguration index is available.
+             */
+            if (
+                typeof window
+                    .applyAgarVisualConfiguration ===
+                    'function'
+            ) {
+                window
+                    .applyAgarVisualConfiguration();
+            }
+
+
+            /*
+             * If the profile UI is already visible, make it consume the newly
+             * configured league presentation immediately.
+             */
+            if (
+                typeof window
+                    .syncProfileTabUI ===
+                    'function'
+            ) {
+                try {
+                    window
+                        .syncProfileTabUI();
+                } catch (
+                    leagueVisualRefreshError
+                ) {
+                }
             }
         }
     );

@@ -4544,8 +4544,34 @@ function populateSkins() {
 
         var ownedSkinsObj = getOwnedSkinsMap();
 
-        skinShopFiltered = skins.filter(function(skin) {
-            if (!skin || !skin.productId || skin.productId === 'skin_empty') return false;
+        skinShopFiltered =
+            skins.filter(
+                function (
+                    skin
+                ) {
+                    var unequippedTag =
+                        typeof window
+                            .getAgarUserSetting ===
+                            'function'
+                                ? String(
+                                    window
+                                        .getAgarUserSetting(
+                                            'skinUnequippedTag',
+                                            'skin_empty'
+                                        ) ||
+                                    'skin_empty'
+                                )
+                                : 'skin_empty';
+
+
+                    if (
+                        !skin ||
+                        !skin.productId ||
+                        skin.productId ===
+                            unequippedTag
+                    ) {
+                        return false;
+                    }
             if (currentFilter === 'owned' && !isSkinOwned(skin, ownedSkinsObj)) return false;
             if (query !== '') {
                 var name = (skin.displayName || skin.productId.replace('skin_', '').replace(/_/g, ' ')).toLowerCase();
@@ -4976,44 +5002,282 @@ function syncEquippedSkinFromServer() {
 
     if (serverSkinId === undefined || serverSkinId === null) return;
 
-    // Empty string means no skin equipped (default)
-    if (serverSkinId === '' || serverSkinId === 'skin_empty') {
-        if (localStorage.getItem('equippedSkinId')) {
-            localStorage.removeItem('equippedSkinId');
-            localStorage.removeItem('equippedSkinImage');
-            console.log('[SKIN] Server says no skin equipped, cleared localStorage');
+    /*
+     * Default Settings - User owns the authoritative configured
+     * "no skin equipped" tag.
+     *
+     * Current GameConfiguration:
+     *
+     *      skinUnequippedTag = skin_empty
+     *
+     * Keep a compatibility fallback only for config-unavailable startup.
+     */
+    var configuredUnequippedSkinTag =
+        typeof window
+            .getAgarUserSetting ===
+            'function'
+                ? String(
+                    window
+                        .getAgarUserSetting(
+                            'skinUnequippedTag',
+                            'skin_empty'
+                        ) ||
+                    'skin_empty'
+                )
+                : 'skin_empty';
+
+
+    if (
+        serverSkinId ===
+            '' ||
+        serverSkinId ===
+            configuredUnequippedSkinTag
+    ) {
+        if (
+            localStorage
+                .getItem(
+                    'equippedSkinId'
+                )
+        ) {
+            localStorage
+                .removeItem(
+                    'equippedSkinId'
+                );
+
+            localStorage
+                .removeItem(
+                    'equippedSkinImage'
+                );
+
+            console.log(
+                '[SKIN] Server says no skin equipped, cleared localStorage'
+            );
         }
+
         return;
     }
 
-    // If we found a server-side skin that differs from localStorage, sync it
-    if (serverSkinId !== localStorage.getItem('equippedSkinId')) {
-        localStorage.setItem('equippedSkinId', serverSkinId);
-        // Try to find the image name from config
-        var skinData = findSkinInConfig(serverSkinId);
-        if (skinData && skinData.image) {
-            localStorage.setItem('equippedSkinImage', skinData.image);
+
+    /*
+     * If we found a server-side skin that differs from localStorage,
+     * synchronize only the local presentation cache.
+     *
+     * Server setting remains authoritative.
+     */
+    if (
+        serverSkinId !==
+        localStorage
+            .getItem(
+                'equippedSkinId'
+            )
+    ) {
+        localStorage
+            .setItem(
+                'equippedSkinId',
+                serverSkinId
+            );
+
+
+        var skinData =
+            findSkinInConfig(
+                serverSkinId
+            );
+
+
+        if (
+            skinData &&
+            skinData.image
+        ) {
+            localStorage
+                .setItem(
+                    'equippedSkinImage',
+                    skinData.image
+                );
         }
-        console.log('[SKIN] Synced server equipped skin to localStorage:', serverSkinId);
+
+
+        console.log(
+            '[SKIN] Synced server equipped skin to localStorage:',
+            serverSkinId
+        );
     }
 }
 
-/**
- * Find a skin's data (image, cellColor, etc.) from the GameConfiguration.
- * Returns the skin object or null if not found.
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * CONFIG-DRIVEN SKIN COMPATIBILITY RESOLVER
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Existing callers historically expect a flat gameplay-skin-like object.
+ *
+ * The canonical resolver now also knows:
+ *
+ *      Gameplay - Equippable Skins
+ *      Gameplay - Free Skins
+ *      Wallet - Products
+ *      Visual - Products
+ *      Shop - Skins
+ *      Visual - Prod. Spine Animations
+ *      Mystery Skins - Types
+ *
+ * Do not mutate any GameConfiguration source row.
  */
-function findSkinInConfig(productId) {
-    if (!window.GameConfiguration || !window.GameConfiguration.gameConfig) return null;
-    var skins = window.GameConfiguration.gameConfig["Gameplay - Equippable Skins"];
-    if (!skins) return null;
-    for (var i = 0; i < skins.length; i++) {
-        if (skins[i].productId === productId) {
+function findSkinInConfig(
+    productId
+) {
+    var id =
+        String(
+            productId ||
+            ''
+        ).trim();
+
+    if (!id) {
+        return null;
+    }
+
+
+    /*
+     * Preferred central path.
+     */
+    if (
+        typeof window
+            .getAgarUnifiedSkinInfo ===
+            'function'
+    ) {
+        var unified =
+            window
+                .getAgarUnifiedSkinInfo(
+                    id
+                );
+
+        if (
+            unified
+        ) {
+            /*
+             * Preserve the old return shape as much as possible.
+             */
+            var base =
+                unified.gameplay ||
+                unified.free ||
+                unified.visual ||
+                unified.shop ||
+                {};
+
+
+            var compatible =
+                {};
+
+            for (
+                var key in base
+            ) {
+                if (
+                    Object.prototype
+                        .hasOwnProperty
+                        .call(
+                            base,
+                            key
+                        )
+                ) {
+                    compatible[key] =
+                        base[key];
+                }
+            }
+
+
+            compatible.productId =
+                compatible.productId ||
+                unified.productId ||
+                id;
+
+
+            if (
+                compatible.image ===
+                    undefined &&
+                unified.image !==
+                    undefined
+            ) {
+                compatible.image =
+                    unified.image;
+            }
+
+
+            if (
+                compatible.cellColor ===
+                    undefined &&
+                unified.cellColor !==
+                    undefined
+            ) {
+                compatible.cellColor =
+                    unified.cellColor;
+            }
+
+
+            /*
+             * New consumers can access every source without breaking old
+             * callers that expect .productId/.image/.cellColor.
+             */
+            compatible
+                ._lmUnified =
+                unified;
+
+
+            return compatible;
+        }
+    }
+
+
+    /*
+     * Startup compatibility fallback only.
+     *
+     * This remains useful if skinsAndDeals.js executes before the canonical
+     * config index exists.
+     */
+    var config =
+        (
+            window
+                .GameConfiguration &&
+            window
+                .GameConfiguration
+                .gameConfig
+        )
+            ? window
+                .GameConfiguration
+                .gameConfig
+            : null;
+
+    if (!config) {
+        return null;
+    }
+
+
+    var skins =
+        config[
+            'Gameplay - Equippable Skins'
+        ] ||
+        [];
+
+
+    for (
+        var i = 0;
+        i < skins.length;
+        i++
+    ) {
+        if (
+            skins[i] &&
+            skins[i].productId ===
+                id
+        ) {
             return skins[i];
         }
     }
+
+
     return null;
 }
-window.findSkinInConfig = findSkinInConfig;
+
+window.findSkinInConfig =
+    findSkinInConfig;
 
 /**
  * Return a stable canonical key for a gameplay skin.

@@ -8290,6 +8290,303 @@ window.getAgarGameplaySetting =
 
 /*
  * ═════════════════════════════════════════════════════════════════════════════
+ * GAMEPLAY MODE NORMALIZER
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Maps user-facing / internal mode names to the
+ * Default Settings - Gameplay column keys.
+ */
+window.normalizeAgarGameplayConfigMode =
+    function (
+        mode
+    ) {
+        if (
+            !mode
+        ) {
+            return 'free_for_all';
+        }
+
+        var lower =
+            String(
+                mode
+            )
+                .trim()
+                .toLowerCase();
+
+
+        if (
+            lower === 'ffa' ||
+            lower === 'classic' ||
+            lower === 'freeforall' ||
+            lower === 'free for all'
+        ) {
+            return 'free_for_all';
+        }
+
+        if (
+            lower === 'rush' ||
+            lower === 'rushmode'
+        ) {
+            return 'rush_mode';
+        }
+
+        if (
+            lower === 'br' ||
+            lower === 'battleroyale' ||
+            lower === 'battle royale'
+        ) {
+            return 'battle_royale';
+        }
+
+        if (
+            lower === 'teamrush' ||
+            lower === 'team_rush'
+        ) {
+            return 'team_rush';
+        }
+
+        return lower;
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * CLIENT-SIDE GAMEPLAY CAPABILITY SNAPSHOT
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * For HUD hints / local prediction / UI only.
+ *
+ * Do NOT feed these values back into authoritative player/cell state.
+ */
+window.getAgarGameplayCapabilities =
+    function (
+        mode
+    ) {
+        var effectiveMode =
+            window
+                .normalizeAgarGameplayConfigMode(
+                    mode ||
+                    (
+                        window.LM &&
+                        window.LM.gameMode
+                    ) ||
+                    ''
+                );
+
+        function configuredNumber(
+            key
+        ) {
+            var value =
+                window
+                    .getAgarGameplaySetting(
+                        key,
+                        effectiveMode
+                    );
+
+            if (
+                value ===
+                    null ||
+                value ===
+                    undefined
+            ) {
+                return null;
+            }
+
+            var number =
+                Number(
+                    value
+                );
+
+            return Number.isFinite(
+                number
+            )
+                ? number
+                : null;
+        }
+
+
+        return {
+            mode:
+                effectiveMode,
+
+            baseMass:
+                configuredNumber(
+                    'baseMass'
+                ),
+
+            minMassToShoot:
+                configuredNumber(
+                    'minMassToShoot'
+                ),
+
+            minMassToSplit:
+                configuredNumber(
+                    'minMassToSplit'
+                ),
+
+            maxPlayerCells:
+                configuredNumber(
+                    'maxPlayerCells'
+                ),
+
+            timeToSendDirection:
+                configuredNumber(
+                    'timeToSendDirection'
+                ),
+
+            angleToSendDirection:
+                configuredNumber(
+                    'angleToSendDirection'
+                ),
+
+            levelLock:
+                configuredNumber(
+                    'levelLock'
+                ),
+
+            respawnTimer:
+                configuredNumber(
+                    'respawnTimer'
+                ),
+
+            gameTimeMins:
+                configuredNumber(
+                    'gameTimeMins'
+                ),
+
+            pressurePeriod:
+                configuredNumber(
+                    'pressurePeriod'
+                ),
+
+            stressPeriod:
+                configuredNumber(
+                    'stressPeriod'
+                ),
+
+            timeBeforeStartSecs:
+                configuredNumber(
+                    'timeBeforeStartSecs'
+                ),
+
+            zoomMultiplier:
+                configuredNumber(
+                    'zoomMultiplier'
+                ),
+
+            mysterySkinGlowInterval:
+                configuredNumber(
+                    'mysterySkinGlowInterval'
+                ),
+
+            mysterySkinEatInterval:
+                configuredNumber(
+                    'mysterySkinEatInterval'
+                ),
+
+            mysterySkinAnimationFramesToSkip:
+                configuredNumber(
+                    'mysterySkinAnimationFramesToSkip'
+                ),
+
+            spineTextureCacheCapacity:
+                configuredNumber(
+                    'spineTextureCacheCapacity'
+                )
+        };
+    };
+
+
+/*
+ * Convenience helpers for UI prediction.
+ *
+ * They answer:
+ *
+ *      "According to the currently loaded client configuration,
+ *       would this mass normally satisfy the configured threshold?"
+ *
+ * They DO NOT authorize an action and they do not replace the server.
+ */
+window.canAgarConfigShootMass =
+    function (
+        mass,
+        mode
+    ) {
+        var threshold =
+            window
+                .getAgarGameplayCapabilities(
+                    mode
+                )
+                .minMassToShoot;
+
+        if (
+            threshold ===
+                null
+        ) {
+            return null;
+        }
+
+        var currentMass =
+            Number(
+                mass
+            );
+
+        if (
+            !Number.isFinite(
+                currentMass
+            )
+        ) {
+            return null;
+        }
+
+        return (
+            currentMass >=
+            threshold
+        );
+    };
+
+
+window.canAgarConfigSplitMass =
+    function (
+        mass,
+        mode
+    ) {
+        var threshold =
+            window
+                .getAgarGameplayCapabilities(
+                    mode
+                )
+                .minMassToSplit;
+
+        if (
+            threshold ===
+                null
+        ) {
+            return null;
+        }
+
+        var currentMass =
+            Number(
+                mass
+            );
+
+        if (
+            !Number.isFinite(
+                currentMass
+            )
+        ) {
+            return null;
+        }
+
+        return (
+            currentMass >=
+            threshold
+        );
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
  * DEFAULT SETTINGS - USER
  * ═════════════════════════════════════════════════════════════════════════════
  */
@@ -13304,16 +13601,124 @@ function _initGameConfigSections(gc) {
     }
 
     /*
-     * Build all derived economy/shop indexes immediately after the
-     * authoritative configuration has been installed.
+     * Build the canonical index once.
+     *
+     * Existing globals below/elsewhere are compatibility projections,
+     * not independent configuration models.
      */
+    var rebuiltAgarIndex =
+        null;
+
     if (
         typeof window
             .rebuildAgarConfigIndex ===
             'function'
     ) {
-        window
-            .rebuildAgarConfigIndex();
+        rebuiltAgarIndex =
+            window
+                .rebuildAgarConfigIndex();
+    }
+
+
+    if (
+        rebuiltAgarIndex
+    ) {
+        /*
+         * ─────────────────────────────────────────────────────────────
+         * LEGACY SpineSkinMap
+         * ─────────────────────────────────────────────────────────────
+         *
+         * Preserve its old productId -> filename contract for render/
+         * skin URL consumers, but source it from the complete canonical
+         * product/action index.
+         */
+        window.SpineSkinMap =
+            Object.create(
+                null
+            );
+
+        var indexedSpineFiles =
+            rebuiltAgarIndex
+                .spineFileByProductId ||
+            {};
+
+        for (
+            var indexedSpineProductId
+                in indexedSpineFiles
+        ) {
+            if (
+                !Object.prototype
+                    .hasOwnProperty
+                    .call(
+                        indexedSpineFiles,
+                        indexedSpineProductId
+                    )
+            ) {
+                continue;
+            }
+
+            window
+                .SpineSkinMap[
+                    indexedSpineProductId
+                ] =
+                indexedSpineFiles[
+                    indexedSpineProductId
+                ];
+        }
+
+
+        /*
+         * ─────────────────────────────────────────────────────────────
+         * LEGACY FreeSkins / FreskinsMap
+         * ─────────────────────────────────────────────────────────────
+         */
+        window.FreeSkins =
+            rebuiltAgarIndex
+                .freeSkinRows
+                .slice();
+
+        window.FreskinsMap =
+            [];
+
+        for (
+            var freeSkinProjectionIndex = 0;
+            freeSkinProjectionIndex <
+                window
+                    .FreeSkins
+                    .length;
+            freeSkinProjectionIndex++
+        ) {
+            var freeSkinProjectionRow =
+                window
+                    .FreeSkins[
+                        freeSkinProjectionIndex
+                    ];
+
+            if (
+                freeSkinProjectionRow &&
+                freeSkinProjectionRow.id !==
+                    undefined &&
+                freeSkinProjectionRow.id !==
+                    null
+            ) {
+                window
+                    .FreskinsMap[
+                        freeSkinProjectionIndex
+                    ] =
+                    freeSkinProjectionRow
+                        .id;
+            }
+        }
+
+
+        /*
+         * Keep the old MysterySkinTypesConfig global, but make it another
+         * compatibility view of the canonical index.
+         */
+        window.MysterySkinTypesConfig =
+            rebuiltAgarIndex
+                .mysterySkinTypeRows
+                .slice();
     }
 
 
