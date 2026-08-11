@@ -32215,6 +32215,7 @@ function thelegendmodproject() {
 
                     var max = 0; //Sonia3
                     var mmax = 0; //Sonia3
+                    var rawFirstX = null, rawFirstY = null; // raw coords for bgpi (no rotation applied)
 
                     for (var n = 0; n < u; n++) {
                         var d = data.getInt32(s, true);
@@ -32227,6 +32228,11 @@ function thelegendmodproject() {
                         s += 5;
 
                         var g = ~~Math.sqrt(100 * m);
+
+                        /* Capture raw server coordinates of the first ghost cell
+                         * BEFORE rotation is applied, so calculatebgpi doesn't
+                         * feed back into the rotation matrix (fixes shaking). */
+                        if (n === 0) { rawFirstX = d; rawFirstY = f; }
 
                         this.ghostCells.push({
                             'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
@@ -32242,9 +32248,12 @@ function thelegendmodproject() {
                         } //Sonia3
                     }
 
-                    //window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
-                    if (this.ghostCells[0]) {
-                        window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[0].x, this.ghostCells[0].y); //Sonia3
+                    /* Use RAW (untranslated) coordinates for bgpi calculation.
+                     * Previously this used ghostCells[0].x/y which were already
+                     * rotation-translated, creating a feedback loop that caused
+                     * bgpi to oscillate → rotation to flip → map to shake. */
+                    if (rawFirstX !== null) {
+                        window.legendmod.bgpi = this.calculatebgpi(rawFirstX, rawFirstY);
                     } else {
                         window.legendmod.bgpi = 4;
                     }
