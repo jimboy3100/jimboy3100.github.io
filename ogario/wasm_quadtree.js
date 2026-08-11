@@ -30,7 +30,7 @@ var WasmQuadTree = (function () {
         if (ready) return;
 
         try {
-            var wasmUrl = 'https://legendmod.ml/wasm/quadtree.wasm';
+            var wasmUrl = 'https://cdn.jsdelivr.net/gh/jimboy3100/jimboy3100.github.io@master/wasm/quadtree.wasm';
             var importObject = {
                 env: {
                     memory: new WebAssembly.Memory({ initial: 32 }) /* 2MB */
