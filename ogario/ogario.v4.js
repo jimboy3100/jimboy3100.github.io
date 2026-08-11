@@ -8071,6 +8071,321 @@ window.getAgarMinimapSetting =
 
 /*
  * ═════════════════════════════════════════════════════════════════════════════
+ * VISUAL - MINIMAP AGGREGATE
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * Returns all minimap visual settings as parsed RGBA color objects.
+ *
+ * Consumers should check .valid on each color before using .css.
+ */
+window.getAgarMinimapVisuals =
+    function () {
+        if (
+            typeof window
+                .getAgarMinimapSetting !==
+                'function' ||
+            typeof window
+                .parseAgarRgbaColor !==
+                'function'
+        ) {
+            return null;
+        }
+
+
+        function colorSetting(
+            key
+        ) {
+            var raw =
+                window
+                    .getAgarMinimapSetting(
+                        key,
+                        null
+                    );
+
+            if (
+                raw === null ||
+                raw === undefined
+            ) {
+                return {
+                    valid:
+                        false,
+
+                    css:
+                        null,
+
+                    r: 0,
+                    g: 0,
+                    b: 0,
+                    a: 0,
+
+                    raw:
+                        null
+                };
+            }
+
+            var parsed =
+                window
+                    .parseAgarRgbaColor(
+                        raw
+                    );
+
+            if (
+                !parsed
+            ) {
+                return {
+                    valid:
+                        false,
+
+                    css:
+                        null,
+
+                    r: 0,
+                    g: 0,
+                    b: 0,
+                    a: 0,
+
+                    raw:
+                        raw
+                };
+            }
+
+            parsed.raw =
+                raw;
+
+            return parsed;
+        }
+
+
+        return {
+            minimapFillColor:
+                colorSetting(
+                    'minimapFillColor'
+                ),
+
+            minimapOutlineColor:
+                colorSetting(
+                    'minimapOutlineColor'
+                ),
+
+            dangerAreaFillColor:
+                colorSetting(
+                    'dangerAreaFillColor'
+                ),
+
+            dangerAreaOutlineColor:
+                colorSetting(
+                    'dangerAreaOutlineColor'
+                ),
+
+            safeAreaOutlineColor:
+                colorSetting(
+                    'safeAreaOutlineColor'
+                ),
+
+            playerDotColor:
+                colorSetting(
+                    'playerDotColor'
+                ),
+
+            playerDotRadius:
+                Number(
+                    window
+                        .getAgarMinimapSetting(
+                            'playerDotRadius',
+                            3
+                        )
+                ) ||
+                3
+        };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
+ * BATTLE ROYALE — OFFICIAL MINIMAP VISUALS
+ * ═════════════════════════════════════════════════════════════════════════════
+ *
+ * IMPORTANT OWNERSHIP RULE:
+ *
+ *      World / arena BR rendering:
+ *          Legend Mod theme/user settings remain authoritative.
+ *
+ *      Minimap BR rendering:
+ *          "Visual - Minimap" is the correct static presentation source.
+ *
+ * We intentionally do NOT overwrite:
+ *
+ *      defaultSettings.dangerAreaColor
+ *      defaultSettings.safeAreaColor
+ *
+ * because those are LM user/theme presentation preferences outside the
+ * official minimap-specific visual configuration.
+ */
+window.getAgarBattleRoyaleMinimapStyle =
+    function () {
+        var visuals =
+            typeof window
+                .getAgarMinimapVisuals ===
+                'function'
+                ? window
+                    .getAgarMinimapVisuals()
+                : null;
+
+
+        var lmDefaults =
+            (
+                typeof defaultSettings !==
+                    'undefined' &&
+                defaultSettings
+            )
+                ? defaultSettings
+                : {};
+
+
+        var dangerFill =
+            (
+                visuals &&
+                visuals
+                    .dangerAreaFillColor &&
+                visuals
+                    .dangerAreaFillColor
+                    .valid
+            )
+                ? visuals
+                    .dangerAreaFillColor
+                : null;
+
+
+        var dangerOutline =
+            (
+                visuals &&
+                visuals
+                    .dangerAreaOutlineColor &&
+                visuals
+                    .dangerAreaOutlineColor
+                    .valid
+            )
+                ? visuals
+                    .dangerAreaOutlineColor
+                : null;
+
+
+        var safeOutline =
+            (
+                visuals &&
+                visuals
+                    .safeAreaOutlineColor &&
+                visuals
+                    .safeAreaOutlineColor
+                    .valid
+            )
+                ? visuals
+                    .safeAreaOutlineColor
+                : null;
+
+
+        /*
+         * parseAgarRgbaColor() already encodes the configured alpha into
+         * its CSS result.
+         *
+         * Example:
+         *
+         *      0xff000040
+         *
+         * becomes approximately:
+         *
+         *      rgba(255,0,0,0.251)
+         *
+         * Therefore drawDangerArea() must use globalAlpha = 1 when the
+         * configured RGBA value is used. Applying 0.25 again would make
+         * the danger area ~6% opaque instead of ~25%.
+         */
+        var dangerFillCss =
+            dangerFill
+                ? dangerFill.css
+                : (
+                    lmDefaults
+                        .dangerAreaColor ||
+                    '#bf00aa'
+                );
+
+
+        var dangerFillAlpha =
+            dangerFill
+                ? 1
+                : 0.25;
+
+
+        var dangerOutlineCss =
+            dangerOutline
+                ? dangerOutline.css
+                : (
+                    lmDefaults
+                        .dangerAreaColor ||
+                    '#bf00aa'
+                );
+
+
+        var safeOutlineCss =
+            safeOutline
+                ? safeOutline.css
+                : (
+                    lmDefaults
+                        .safeAreaColor ||
+                    '#ffffff'
+                );
+
+
+        return {
+            /*
+             * Filled unsafe region outside the current BR circle.
+             */
+            dangerFillCss:
+                dangerFillCss,
+
+            dangerFillAlpha:
+                dangerFillAlpha,
+
+
+            /*
+             * Solid border around the current unsafe/safe boundary.
+             */
+            dangerOutlineCss:
+                dangerOutlineCss,
+
+
+            /*
+             * Dashed target/safe-area circle.
+             */
+            safeOutlineCss:
+                safeOutlineCss,
+
+
+            configured:
+                !!(
+                    dangerFill ||
+                    dangerOutline ||
+                    safeOutline
+                ),
+
+
+            rawDangerFill:
+                dangerFill,
+
+            rawDangerOutline:
+                dangerOutline,
+
+            rawSafeOutline:
+                safeOutline,
+
+            rawMinimapVisuals:
+                visuals
+        };
+    };
+
+
+/*
+ * ═════════════════════════════════════════════════════════════════════════════
  * VISUAL - POPUP PRIORITIES
  * ═════════════════════════════════════════════════════════════════════════════
  */
@@ -49318,28 +49633,287 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.drawSafeArea(ctx, LM.battleRoyale.targetX, LM.battleRoyale.targetY, LM.battleRoyale.targetRadius, 40, defaultSettings.safeAreaColor);
             }
         },
-        drawBattleAreaOnMinimap(ctx, width, heigth, newWidth, offsetX, offsetY) {
-            if (LM.battleRoyale.state) {
-                if (!this.battleAreaMap) {
-                    this.battleAreaMap = document.createElement("canvas");
-                    this.battleAreaMapCtx = this.battleAreaMap.getContext("2d");
-                }
-                if (this.battleAreaMap.width != width) {
-                    this.battleAreaMap.width = width;
-                    this.battleAreaMap.height = heigth;
-                } else {
-                    this.battleAreaMapCtx.clearRect(0, 0, width, heigth);
-                }
-                var newX = (LM.battleRoyale.x + offsetX) * newWidth;
-                var newY = (LM.battleRoyale.y + offsetY) * newWidth;
-                var newRadius = LM.battleRoyale.radius * newWidth;
-                this.drawDangerArea(this.battleAreaMapCtx, newX, newY, newRadius, 0, 0, width, heigth, defaultSettings.dangerAreaColor, 0.25);
-                newX = ~~((LM.battleRoyale.targetX + offsetX) * newWidth);
-                newY = ~~((LM.battleRoyale.targetY + offsetY) * newWidth);
-                newRadius = ~~(LM.battleRoyale.targetRadius * newWidth);
-                this.drawSafeArea(this.battleAreaMapCtx, newX, newY, newRadius, 2, defaultSettings.safeAreaColor);
-                ctx.drawImage(this.battleAreaMap, 0, 0);
+        /*
+         * ═══════════════════════════════════════════════════════════════
+         * BATTLE ROYALE MINIMAP
+         * ═══════════════════════════════════════════════════════════════
+         *
+         * Geometry/state:
+         *      authoritative live LM.battleRoyale state
+         *
+         * Presentation:
+         *      GameConfiguration "Visual - Minimap"
+         *
+         * World BR rendering remains untouched and still honors the LM
+         * theme/user dangerAreaColor + safeAreaColor settings.
+         */
+        drawBattleAreaOnMinimap(
+            ctx,
+            width,
+            heigth,
+            newWidth,
+            offsetX,
+            offsetY
+        ) {
+            if (
+                !LM.battleRoyale.state
+            ) {
+                return;
             }
+
+
+            /*
+             * Lazily allocate one reusable minimap battle-area canvas.
+             */
+            if (
+                !this.battleAreaMap
+            ) {
+                this.battleAreaMap =
+                    document
+                        .createElement(
+                            'canvas'
+                        );
+
+                this.battleAreaMapCtx =
+                    this
+                        .battleAreaMap
+                        .getContext(
+                            '2d'
+                        );
+            }
+
+
+            if (
+                !this.battleAreaMapCtx
+            ) {
+                return;
+            }
+
+
+            /*
+             * Updating either canvas dimension clears its bitmap and resets
+             * the complete 2D context state.
+             *
+             * The old implementation tested only width, which could leave
+             * an incorrect backing height when the minimap shape changed.
+             */
+            if (
+                this.battleAreaMap.width !==
+                    width ||
+                this.battleAreaMap.height !==
+                    heigth
+            ) {
+                this.battleAreaMap.width =
+                    width;
+
+                this.battleAreaMap.height =
+                    heigth;
+            } else {
+                this.battleAreaMapCtx
+                    .clearRect(
+                        0,
+                        0,
+                        width,
+                        heigth
+                    );
+            }
+
+
+            var visualStyle =
+                typeof window
+                    .getAgarBattleRoyaleMinimapStyle ===
+                    'function'
+                    ? window
+                        .getAgarBattleRoyaleMinimapStyle()
+                    : {
+                        dangerFillCss:
+                            defaultSettings
+                                .dangerAreaColor ||
+                            '#bf00aa',
+
+                        dangerFillAlpha:
+                            0.25,
+
+                        dangerOutlineCss:
+                            defaultSettings
+                                .dangerAreaColor ||
+                            '#bf00aa',
+
+                        safeOutlineCss:
+                            defaultSettings
+                                .safeAreaColor ||
+                            '#ffffff'
+                    };
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * CURRENT LIVE BATTLE CIRCLE
+             * ─────────────────────────────────────────────────────────
+             */
+            var newX =
+                (
+                    LM.battleRoyale.x +
+                    offsetX
+                ) *
+                newWidth;
+
+
+            var newY =
+                (
+                    LM.battleRoyale.y +
+                    offsetY
+                ) *
+                newWidth;
+
+
+            var newRadius =
+                LM
+                    .battleRoyale
+                    .radius *
+                newWidth;
+
+
+            /*
+             * Existing destination-out implementation remains responsible
+             * for filling everything OUTSIDE the live circle.
+             */
+            this.drawDangerArea(
+                this.battleAreaMapCtx,
+
+                newX,
+                newY,
+                newRadius,
+
+                0,
+                0,
+                width,
+                heigth,
+
+                visualStyle
+                    .dangerFillCss,
+
+                visualStyle
+                    .dangerFillAlpha
+            );
+
+
+            /*
+             * Visual - Minimap provides a SEPARATE dangerAreaOutlineColor.
+             *
+             * The old implementation discarded this distinction entirely.
+             */
+            if (
+                LM.battleRoyale.radius !==
+                    LM.battleRoyale.maxRadius &&
+                newRadius >
+                    0 &&
+                visualStyle
+                    .dangerOutlineCss
+            ) {
+                var battleMapCtx =
+                    this
+                        .battleAreaMapCtx;
+
+
+                battleMapCtx.save();
+
+                battleMapCtx
+                    .beginPath();
+
+
+                battleMapCtx.arc(
+                    newX,
+                    newY,
+                    newRadius,
+                    0,
+                    this.pi2,
+                    false
+                );
+
+
+                battleMapCtx.lineWidth =
+                    1;
+
+
+                battleMapCtx.strokeStyle =
+                    visualStyle
+                        .dangerOutlineCss;
+
+
+                battleMapCtx.stroke();
+
+                battleMapCtx.restore();
+            }
+
+
+            /*
+             * ─────────────────────────────────────────────────────────
+             * NEXT/TARGET SAFE CIRCLE
+             * ─────────────────────────────────────────────────────────
+             */
+            newX =
+                ~~(
+                    (
+                        LM
+                            .battleRoyale
+                            .targetX +
+                        offsetX
+                    ) *
+                    newWidth
+                );
+
+
+            newY =
+                ~~(
+                    (
+                        LM
+                            .battleRoyale
+                            .targetY +
+                        offsetY
+                    ) *
+                    newWidth
+                );
+
+
+            newRadius =
+                ~~(
+                    LM
+                        .battleRoyale
+                        .targetRadius *
+                    newWidth
+                );
+
+
+            /*
+             * Keep the existing dashed-circle behaviour/state checks.
+             *
+             * Only the color now comes from:
+             *
+             *      Visual - Minimap.safeAreaOutlineColor
+             */
+            this.drawSafeArea(
+                this.battleAreaMapCtx,
+
+                newX,
+                newY,
+                newRadius,
+
+                2,
+
+                visualStyle
+                    .safeOutlineCss
+            );
+
+
+            /*
+             * Composite the cached BR layer onto the actual minimap.
+             */
+            ctx.drawImage(
+                this.battleAreaMap,
+                0,
+                0
+            );
         },
         drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
             if (!(LM.battleRoyale.radius === LM.battleRoyale.maxRadius || radius <= 0)) {

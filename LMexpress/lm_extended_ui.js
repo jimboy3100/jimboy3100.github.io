@@ -6661,18 +6661,1274 @@
         body.appendChild(container);
     });
 
-    // Delegated backdrop & ESC key close handlers for LM modals
-    $(document).off('click.lmModal', '.lm-modal-overlay').on('click.lmModal', '.lm-modal-overlay', function(e) {
-        if (e.target === this) {
-            $(this).remove();
-        }
-    });
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * GLOBAL LM MODAL CLOSE ROUTING
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Ordinary LM modal:
+     *
+     *      same behaviour as before.
+     *
+     * Queue-owned modal:
+     *
+     *      invoke its close callback so the queue can finalize the active
+     *      entry and display the next configured popup.
+     *
+     * We DO NOT hook or replace Agar.io/Haxe's native popup manager here.
+     */
+    $(document)
+        .off(
+            'click.lmModal',
+            '.lm-modal-overlay'
+        )
+        .on(
+            'click.lmModal',
+            '.lm-modal-overlay',
+            function (
+                e
+            ) {
+                /*
+                 * Only clicking the dark backdrop closes the modal.
+                 * Clicking inside the modal must never bubble into close.
+                 */
+                if (
+                    e.target !==
+                    this
+                ) {
+                    return;
+                }
 
-    $(document).off('keydown.lmModal').on('keydown.lmModal', function(e) {
-        if (e.which === 27) {
-            $('.lm-modal-overlay').remove();
-        }
-    });
+
+                var overlay =
+                    this;
+
+
+                if (
+                    typeof overlay
+                        ._lmCloseCallback ===
+                        'function'
+                ) {
+                    try {
+                        overlay
+                            ._lmCloseCallback(
+                                'backdrop'
+                            );
+                    } catch (
+                        closeError
+                    ) {
+                        console.error(
+                            '[LM MODAL] Queue close callback failed:',
+                            closeError
+                        );
+
+
+                        /*
+                         * Fail closed: never leave a dead modal covering the UI.
+                         */
+                        $(overlay)
+                            .remove();
+                    }
+
+
+                    return;
+                }
+
+
+                /*
+                 * Legacy / non-queued LM modal.
+                 */
+                $(overlay)
+                    .remove();
+            }
+        );
+
+
+    $(document)
+        .off(
+            'keydown.lmModal'
+        )
+        .on(
+            'keydown.lmModal',
+            function (
+                e
+            ) {
+                if (
+                    e.which !==
+                        27 &&
+                    e.key !==
+                        'Escape'
+                ) {
+                    return;
+                }
+
+
+                /*
+                 * A queue-owned popup gets first refusal.
+                 *
+                 * Search newest/topmost overlay first.
+                 */
+                var overlays =
+                    $(
+                        '.lm-modal-overlay'
+                    )
+                        .toArray()
+                        .reverse();
+
+
+                for (
+                    var overlayIndex = 0;
+                    overlayIndex <
+                        overlays.length;
+                    overlayIndex++
+                ) {
+                    var overlay =
+                        overlays[
+                            overlayIndex
+                        ];
+
+
+                    if (
+                        !overlay ||
+                        typeof overlay
+                            ._lmCloseCallback !==
+                            'function'
+                    ) {
+                        continue;
+                    }
+
+
+                    try {
+                        overlay
+                            ._lmCloseCallback(
+                                'escape'
+                            );
+                    } catch (
+                        queueEscapeError
+                    ) {
+                        console.error(
+                            '[LM MODAL] Queue ESC close failed:',
+                            queueEscapeError
+                        );
+
+
+                        $(overlay)
+                            .remove();
+                    }
+
+
+                    return;
+                }
+
+
+                /*
+                 * Preserve the old behaviour for ordinary LM modals:
+                 *
+                 *      ESC removes all non-queued overlays.
+                 */
+                $(
+                    '.lm-modal-overlay'
+                )
+                    .remove();
+            }
+        );
+
+
+    /*
+     * ═════════════════════════════════════════════════════════════════════
+     * LM CONFIG-AWARE POPUP QUEUE
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * VERY IMPORTANT:
+     *
+     * This is NOT Agar.io's native Haxe popup queue.
+     *
+     * It does NOT:
+     *
+     *      - intercept Core.ui popup creation
+     *      - suppress native Agar.io popups
+     *      - fabricate popup IDs
+     *      - fabricate Haxe state IDs
+     *      - infer a popup's meaning from its numeric ID
+     *
+     * It exists only for LM-owned popups that explicitly opt in by calling:
+     *
+     *      enqueueAgarConfigPopup(...)
+     *
+     * If the caller knows BOTH the official popupId and official stateId,
+     * then "Visual - Popup Priorities" can order those LM popup requests.
+     */
+
+
+    window._lmConfigPopupQueue =
+        window
+            ._lmConfigPopupQueue ||
+        [];
+
+
+    window._lmConfigPopupActive =
+        window
+            ._lmConfigPopupActive ||
+        null;
+
+
+    window._lmConfigPopupSequence =
+        Number(
+            window
+                ._lmConfigPopupSequence
+        ) ||
+        0;
+
+
+    window._lmConfigPopupObserver =
+        window
+            ._lmConfigPopupObserver ||
+        null;
+
+
+    window._lmConfigPopupMutationScheduled =
+        false;
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * EVENT DISPATCH HELPER
+     * ─────────────────────────────────────────────────────────────────────
+     */
+    window._lmDispatchConfigPopupEvent =
+        function (
+            eventName,
+            detail
+        ) {
+            try {
+                document
+                    .dispatchEvent(
+                        new CustomEvent(
+                            eventName,
+                            {
+                                detail:
+                                    detail
+                            }
+                        )
+                    );
+            } catch (
+                eventError
+            ) {
+                /*
+                 * Popup functionality must never depend on CustomEvent support.
+                 */
+            }
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * RESOLVE CONFIGURED PRIORITY
+     * ─────────────────────────────────────────────────────────────────────
+     *
+     * State is mandatory for configured lookup because popupId alone is not
+     * globally unique in the GameConfiguration priority table.
+     */
+    window._lmResolveConfigPopupPriority =
+        function (
+            popupId,
+            stateId,
+            explicitPriority,
+            explicitShowImmediately
+        ) {
+            var hasPopupId =
+                popupId !==
+                    undefined &&
+                popupId !==
+                    null &&
+                String(
+                    popupId
+                ) !==
+                    '';
+
+
+            var hasStateId =
+                stateId !==
+                    undefined &&
+                stateId !==
+                    null &&
+                String(
+                    stateId
+                ) !==
+                    '';
+
+
+            var configured =
+                null;
+
+
+            if (
+                hasPopupId &&
+                hasStateId &&
+                typeof window
+                    .getAgarPopupPriority ===
+                    'function'
+            ) {
+                try {
+                    configured =
+                        window
+                            .getAgarPopupPriority(
+                                popupId,
+                                stateId
+                            );
+                } catch (
+                    priorityLookupError
+                ) {
+                    console.warn(
+                        '[LM POPUP QUEUE] Config priority lookup failed:',
+                        priorityLookupError
+                    );
+                }
+            }
+
+
+            var priority =
+                configured
+                    ? Number(
+                        configured
+                            .priority
+                    )
+                    : Number(
+                        explicitPriority
+                    );
+
+
+            if (
+                !Number.isFinite(
+                    priority
+                )
+            ) {
+                priority =
+                    0;
+            }
+
+
+            var showImmediately;
+
+
+            if (
+                typeof explicitShowImmediately ===
+                    'boolean'
+            ) {
+                showImmediately =
+                    explicitShowImmediately;
+            } else {
+                showImmediately =
+                    !!(
+                        configured &&
+                        configured
+                            .showImmediately
+                    );
+            }
+
+
+            return {
+                priority:
+                    priority,
+
+                showImmediately:
+                    showImmediately,
+
+                configured:
+                    !!configured,
+
+                popupId:
+                    hasPopupId
+                        ? popupId
+                        : null,
+
+                stateId:
+                    hasStateId
+                        ? stateId
+                        : null,
+
+                raw:
+                    configured
+            };
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * SORT QUEUE
+     * ─────────────────────────────────────────────────────────────────────
+     *
+     * 1. configured/explicit showImmediately requests first
+     * 2. larger priority first
+     * 3. FIFO for identical priority
+     *
+     * "showImmediately" does NOT interrupt an already-visible modal.
+     *
+     * Preempting an active modal could destroy user interaction/state.
+     */
+    window._lmSortConfigPopupQueue =
+        function () {
+            window
+                ._lmConfigPopupQueue
+                .sort(
+                    function (
+                        a,
+                        b
+                    ) {
+                        var immediateDelta =
+                            (
+                                b.showImmediately
+                                    ? 1
+                                    : 0
+                            ) -
+                            (
+                                a.showImmediately
+                                    ? 1
+                                    : 0
+                            );
+
+
+                        if (
+                            immediateDelta !==
+                            0
+                        ) {
+                            return immediateDelta;
+                        }
+
+
+                        var priorityDelta =
+                            (
+                                Number(
+                                    b.priority
+                                ) ||
+                                0
+                            ) -
+                            (
+                                Number(
+                                    a.priority
+                                ) ||
+                                0
+                            );
+
+
+                        if (
+                            priorityDelta !==
+                            0
+                        ) {
+                            return priorityDelta;
+                        }
+
+
+                        return (
+                            (
+                                Number(
+                                    a.sequence
+                                ) ||
+                                0
+                            ) -
+                            (
+                                Number(
+                                    b.sequence
+                                ) ||
+                                0
+                            )
+                        );
+                    }
+                );
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * OBSERVE ORDINARY LM MODAL REMOVAL
+     * ─────────────────────────────────────────────────────────────────────
+     *
+     * A configured popup should not suddenly appear over an unrelated LM
+     * dialog the user is already using.
+     *
+     * Rather than continuously polling, observe DOM changes only while a
+     * configured popup is waiting.
+     */
+    window._lmEnsureConfigPopupObserver =
+        function () {
+            if (
+                window
+                    ._lmConfigPopupObserver ||
+                typeof MutationObserver ===
+                    'undefined' ||
+                !document.body
+            ) {
+                return;
+            }
+
+
+            window
+                ._lmConfigPopupObserver =
+                new MutationObserver(
+                    function () {
+                        if (
+                            window
+                                ._lmConfigPopupMutationScheduled
+                        ) {
+                            return;
+                        }
+
+
+                        window
+                            ._lmConfigPopupMutationScheduled =
+                            true;
+
+
+                        Promise
+                            .resolve()
+                            .then(
+                                function () {
+                                    window
+                                        ._lmConfigPopupMutationScheduled =
+                                        false;
+
+
+                                    if (
+                                        typeof window
+                                            ._lmPumpConfigPopupQueue ===
+                                            'function'
+                                    ) {
+                                        window
+                                            ._lmPumpConfigPopupQueue();
+                                    }
+                                }
+                            );
+                    }
+                );
+
+
+            window
+                ._lmConfigPopupObserver
+                .observe(
+                    document.body,
+                    {
+                        childList:
+                            true,
+
+                        subtree:
+                            true
+                    }
+                );
+        };
+
+
+    window._lmStopConfigPopupObserverIfIdle =
+        function () {
+            if (
+                window
+                    ._lmConfigPopupActive ||
+                window
+                    ._lmConfigPopupQueue
+                    .length >
+                    0
+            ) {
+                return;
+            }
+
+
+            var observer =
+                window
+                    ._lmConfigPopupObserver;
+
+
+            if (
+                observer
+            ) {
+                try {
+                    observer
+                        .disconnect();
+                } catch (
+                    observerDisconnectError
+                ) {
+                }
+            }
+
+
+            window
+                ._lmConfigPopupObserver =
+                null;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * FIND EXISTING ENTRY BY DEDUPE KEY
+     * ─────────────────────────────────────────────────────────────────────
+     */
+    window._lmFindConfigPopupByDedupeKey =
+        function (
+            dedupeKey
+        ) {
+            if (
+                dedupeKey ===
+                    undefined ||
+                dedupeKey ===
+                    null ||
+                String(
+                    dedupeKey
+                ) ===
+                    ''
+            ) {
+                return null;
+            }
+
+
+            var normalized =
+                String(
+                    dedupeKey
+                );
+
+
+            if (
+                window
+                    ._lmConfigPopupActive &&
+                window
+                    ._lmConfigPopupActive
+                    .dedupeKey ===
+                    normalized
+            ) {
+                return window
+                    ._lmConfigPopupActive;
+            }
+
+
+            var queue =
+                window
+                    ._lmConfigPopupQueue;
+
+
+            for (
+                var i = 0;
+                i <
+                    queue.length;
+                i++
+            ) {
+                if (
+                    queue[i] &&
+                    queue[i]
+                        .dedupeKey ===
+                        normalized
+                ) {
+                    return queue[i];
+                }
+            }
+
+
+            return null;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * PUMP
+     * ─────────────────────────────────────────────────────────────────────
+     */
+    window._lmPumpConfigPopupQueue =
+        function () {
+            if (
+                window
+                    ._lmConfigPopupActive
+            ) {
+                return false;
+            }
+
+
+            var queue =
+                window
+                    ._lmConfigPopupQueue;
+
+
+            if (
+                !queue.length
+            ) {
+                window
+                    ._lmStopConfigPopupObserverIfIdle();
+
+                return false;
+            }
+
+
+            /*
+             * Do not cover another unrelated LM modal.
+             */
+            var existingOverlay =
+                document
+                    .querySelector(
+                        '.lm-modal-overlay'
+                    );
+
+
+            if (
+                existingOverlay
+            ) {
+                window
+                    ._lmEnsureConfigPopupObserver();
+
+                return false;
+            }
+
+
+            window
+                ._lmSortConfigPopupQueue();
+
+
+            var entry =
+                queue.shift();
+
+
+            if (
+                !entry
+            ) {
+                return false;
+            }
+
+
+            window
+                ._lmConfigPopupActive =
+                entry;
+
+
+            entry._finished =
+                false;
+
+
+            /*
+             * One and only one completion path.
+             */
+            entry.finish =
+                function (
+                    reason,
+                    payload
+                ) {
+                    if (
+                        entry
+                            ._finished
+                    ) {
+                        return false;
+                    }
+
+
+                    entry
+                        ._finished =
+                        true;
+
+
+                    if (
+                        window
+                            ._lmConfigPopupActive ===
+                        entry
+                    ) {
+                        window
+                            ._lmConfigPopupActive =
+                            null;
+                    }
+
+
+                    if (
+                        typeof entry
+                            .onClose ===
+                            'function'
+                    ) {
+                        try {
+                            entry
+                                .onClose(
+                                    reason ||
+                                        'closed',
+                                    payload,
+                                    entry
+                                );
+                        } catch (
+                            onCloseError
+                        ) {
+                            console.error(
+                                '[LM POPUP QUEUE] onClose failed:',
+                                onCloseError
+                            );
+                        }
+                    }
+
+
+                    window
+                        ._lmDispatchConfigPopupEvent(
+                            'lm-config-popup-closed',
+                            {
+                                id:
+                                    entry.id,
+
+                                popupId:
+                                    entry.popupId,
+
+                                stateId:
+                                    entry.stateId,
+
+                                priority:
+                                    entry.priority,
+
+                                showImmediately:
+                                    entry
+                                        .showImmediately,
+
+                                reason:
+                                    reason ||
+                                    'closed',
+
+                                payload:
+                                    payload,
+
+                                entry:
+                                    entry
+                            }
+                        );
+
+
+                    /*
+                     * Wait until DOM removal has completed before creating the
+                     * next overlay.
+                     */
+                    window.setTimeout(
+                        function () {
+                            window
+                                ._lmPumpConfigPopupQueue();
+                        },
+                        0
+                    );
+
+
+                    window
+                        ._lmStopConfigPopupObserverIfIdle();
+
+
+                    return true;
+                };
+
+
+            try {
+                var opened =
+                    entry
+                        .open(
+                            entry.finish,
+                            entry
+                        );
+
+
+                if (
+                    opened ===
+                    false
+                ) {
+                    entry
+                        .finish(
+                            'open-failed'
+                        );
+
+                    return false;
+                }
+
+
+                window
+                    ._lmDispatchConfigPopupEvent(
+                        'lm-config-popup-opened',
+                        {
+                            id:
+                                entry.id,
+
+                            popupId:
+                                entry.popupId,
+
+                            stateId:
+                                entry.stateId,
+
+                            priority:
+                                entry.priority,
+
+                            showImmediately:
+                                entry
+                                    .showImmediately,
+
+                            configuredPriority:
+                                entry
+                                    .configuredPriority,
+
+                            entry:
+                                entry
+                        }
+                    );
+
+
+                return true;
+            } catch (
+                popupOpenError
+            ) {
+                console.error(
+                    '[LM POPUP QUEUE] Popup open failed:',
+                    popupOpenError
+                );
+
+
+                entry
+                    .finish(
+                        'open-error',
+                        popupOpenError
+                    );
+
+
+                return false;
+            }
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * PUBLIC ENQUEUE
+     * ─────────────────────────────────────────────────────────────────────
+     *
+     * options:
+     *
+     *      popupId
+     *      stateId
+     *      priority
+     *      showImmediately
+     *      dedupeKey
+     *      metadata
+     *      open(done, entry)
+     *      onClose(reason, payload, entry)
+     */
+    window.enqueueAgarConfigPopup =
+        function (
+            options
+        ) {
+            options =
+                options ||
+                {};
+
+
+            if (
+                typeof options
+                    .open !==
+                    'function'
+            ) {
+                console.warn(
+                    '[LM POPUP QUEUE] Rejected popup without open() callback.'
+                );
+
+                return null;
+            }
+
+
+            var dedupeKey =
+                options
+                    .dedupeKey !==
+                    undefined &&
+                options
+                    .dedupeKey !==
+                    null
+                    ? String(
+                        options
+                            .dedupeKey
+                    )
+                    : '';
+
+
+            if (
+                dedupeKey
+            ) {
+                var existing =
+                    window
+                        ._lmFindConfigPopupByDedupeKey(
+                            dedupeKey
+                        );
+
+
+                if (
+                    existing
+                ) {
+                    return existing.id;
+                }
+            }
+
+
+            var resolved =
+                window
+                    ._lmResolveConfigPopupPriority(
+                        options
+                            .popupId,
+
+                        options
+                            .stateId,
+
+                        options
+                            .priority,
+
+                        options
+                            .showImmediately
+                    );
+
+
+            window
+                ._lmConfigPopupSequence++;
+
+
+            var sequence =
+                window
+                    ._lmConfigPopupSequence;
+
+
+            var entry =
+                {
+                    id:
+                        (
+                            'lm-config-popup-' +
+                            sequence
+                        ),
+
+                    sequence:
+                        sequence,
+
+                    popupId:
+                        resolved
+                            .popupId,
+
+                    stateId:
+                        resolved
+                            .stateId,
+
+                    priority:
+                        resolved
+                            .priority,
+
+                    showImmediately:
+                        resolved
+                            .showImmediately,
+
+                    configuredPriority:
+                        resolved
+                            .configured,
+
+                    rawPriority:
+                        resolved
+                            .raw,
+
+                    dedupeKey:
+                        dedupeKey,
+
+                    metadata:
+                        options
+                            .metadata ||
+                        null,
+
+                    open:
+                        options
+                            .open,
+
+                    onClose:
+                        typeof options
+                            .onClose ===
+                            'function'
+                            ? options
+                                .onClose
+                            : null,
+
+                    finish:
+                        null,
+
+                    requestClose:
+                        null,
+
+                    _finished:
+                        false
+                };
+
+
+            window
+                ._lmConfigPopupQueue
+                .push(
+                    entry
+                );
+
+
+            window
+                ._lmSortConfigPopupQueue();
+
+
+            window
+                ._lmEnsureConfigPopupObserver();
+
+
+            window
+                ._lmDispatchConfigPopupEvent(
+                    'lm-config-popup-enqueued',
+                    {
+                        id:
+                            entry.id,
+
+                        popupId:
+                            entry.popupId,
+
+                        stateId:
+                            entry.stateId,
+
+                        priority:
+                            entry.priority,
+
+                        showImmediately:
+                            entry
+                                .showImmediately,
+
+                        configuredPriority:
+                            entry
+                                .configuredPriority,
+
+                        entry:
+                            entry
+                    }
+                );
+
+
+            window
+                ._lmPumpConfigPopupQueue();
+
+
+            return entry.id;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * PUBLIC CLOSE ACTIVE
+     * ─────────────────────────────────────────────────────────────────────
+     */
+    window.closeActiveAgarConfigPopup =
+        function (
+            reason
+        ) {
+            var active =
+                window
+                    ._lmConfigPopupActive;
+
+
+            if (
+                !active
+            ) {
+                return false;
+            }
+
+
+            if (
+                typeof active
+                    .requestClose ===
+                    'function'
+            ) {
+                try {
+                    active
+                        .requestClose(
+                            reason ||
+                                'api-close'
+                        );
+
+                    return true;
+                } catch (
+                    requestCloseError
+                ) {
+                    console.error(
+                        '[LM POPUP QUEUE] requestClose failed:',
+                        requestCloseError
+                    );
+                }
+            }
+
+
+            if (
+                typeof active
+                    .finish ===
+                    'function'
+            ) {
+                active
+                    .finish(
+                        reason ||
+                            'api-close'
+                    );
+            }
+
+
+            return true;
+        };
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────────────
+     * PUBLIC QUEUE STATUS
+     * ─────────────────────────────────────────────────────────────────────
+     */
+    window.getAgarConfigPopupQueueStatus =
+        function () {
+            return {
+                active:
+                    window
+                        ._lmConfigPopupActive
+                        ? {
+                            id:
+                                window
+                                    ._lmConfigPopupActive
+                                    .id,
+
+                            popupId:
+                                window
+                                    ._lmConfigPopupActive
+                                    .popupId,
+
+                            stateId:
+                                window
+                                    ._lmConfigPopupActive
+                                    .stateId,
+
+                            priority:
+                                window
+                                    ._lmConfigPopupActive
+                                    .priority
+                        }
+                        : null,
+
+                queueLength:
+                    window
+                        ._lmConfigPopupQueue
+                        .length,
+
+                queue:
+                    window
+                        ._lmConfigPopupQueue
+                        .map(
+                            function (
+                                entry
+                            ) {
+                                return {
+                                    id:
+                                        entry.id,
+
+                                    popupId:
+                                        entry.popupId,
+
+                                    stateId:
+                                        entry.stateId,
+
+                                    priority:
+                                        entry.priority,
+
+                                    showImmediately:
+                                        entry
+                                            .showImmediately,
+
+                                    dedupeKey:
+                                        entry
+                                            .dedupeKey
+                                };
+                            }
+                        )
+            };
+        };
 
     /*
      * ═════════════════════════════════════════════════════════════════════
