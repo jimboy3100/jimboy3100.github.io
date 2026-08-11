@@ -7343,26 +7343,17 @@
                 '<div style="display:flex;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.07);">';
 
 
-            /* Detect if any slot is currently brewing (status 2) */
-            var _anySlotBrewing = false;
-            for (var _bs = 1; _bs <= 3; _bs++) {
-                var _bk = 'potion' + _bs;
-                if (potionStates[_bk] && Number(potionStates[_bk].status) === 2) {
-                    _anySlotBrewing = true;
-                    break;
-                }
-            }
-
             for (var slot = 1; slot <= 3; slot++) {
                 var potionEl = document.getElementById('potion' + slot);
-                var pState = 'empty';
+                /* Default is 'brew' — empty slots are brewable, server validates */
+                var pState = 'brew';
                 var pRarity = '';
                 var pTimer = '';
                 var pSkipHtml = '';
-                var pSvg = _pvEmpty;
-                var pGlow = 'none';
-                var pBorder = 'rgba(255,255,255,0.08)';
-                var pBg = 'rgba(255,255,255,0.02)';
+                var pSvg = _pvBrew;
+                var pGlow = '0 0 8px rgba(76,175,80,0.5)';
+                var pBorder = '#4caf50';
+                var pBg = 'rgba(76,175,80,0.08)';
 
                 if (potionEl) {
                     var pImg = potionEl.querySelector('img');
@@ -7444,16 +7435,10 @@
 
                 /* Status line */
                 var pStatus = '';
-                if (pState === 'empty') {
-                    pStatus = '<div style="font-size:9px;color:#667;font-weight:600;">Empty</div>';
-                } else if (pState === 'brew' && !_anySlotBrewing) {
+                if (pState === 'brew') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
                         '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
-                } else if (pState === 'brew' && _anySlotBrewing) {
-                    pStatus =
-                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;opacity:.5;">' + pRarityLabel + '</div>' : '') +
-                        '<div style="font-size:8px;color:#667;font-weight:600;">\u23F3 WAIT</div>';
                 } else if (pState === 'brewing') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
@@ -7471,13 +7456,10 @@
                 var pActionAttr = '';
                 var pCursor = '';
 
-                if (pState === 'brew' && !_anySlotBrewing) {
+                if (pState === 'brew') {
                     pActionClass = ' lm-potion-action';
                     pActionAttr = ' data-slot="' + slot + '" data-action="brew"';
                     pCursor = 'cursor:pointer;';
-                } else if (pState === 'brew' && _anySlotBrewing) {
-                    /* Another slot is already brewing — show grayed out */
-                    pCursor = 'cursor:not-allowed;opacity:.45;';
                 } else if (pState === 'open') {
                     pActionClass = ' lm-potion-action';
                     pActionAttr = ' data-slot="' + slot + '" data-action="open"';
