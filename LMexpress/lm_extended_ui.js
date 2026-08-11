@@ -7343,6 +7343,16 @@
                 '<div style="display:flex;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.07);">';
 
 
+            /* Detect if any slot is currently brewing (status 2) */
+            var _anySlotBrewing = false;
+            for (var _bs = 1; _bs <= 3; _bs++) {
+                var _bk = 'potion' + _bs;
+                if (potionStates[_bk] && Number(potionStates[_bk].status) === 2) {
+                    _anySlotBrewing = true;
+                    break;
+                }
+            }
+
             for (var slot = 1; slot <= 3; slot++) {
                 var potionEl = document.getElementById('potion' + slot);
                 var pState = 'empty';
@@ -7363,7 +7373,7 @@
                     var pDiv = potionEl.querySelector('div');
                     var pText = pDiv ? String(pDiv.textContent || '').trim().toLowerCase() : '';
 
-                    if (pText === 'brew' || pText === 'ready') {
+                    if (pText === 'brew') {
                         pState = 'brew';
                         pSvg = _pvBrew;
                         pGlow = '0 0 8px rgba(76,175,80,0.5)';
@@ -7436,10 +7446,14 @@
                 var pStatus = '';
                 if (pState === 'empty') {
                     pStatus = '<div style="font-size:9px;color:#667;font-weight:600;">Empty</div>';
-                } else if (pState === 'brew') {
+                } else if (pState === 'brew' && !_anySlotBrewing) {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
                         '<div style="font-size:8px;color:#8bc34a;font-weight:700;">\u25B6 BREW</div>';
+                } else if (pState === 'brew' && _anySlotBrewing) {
+                    pStatus =
+                        (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;opacity:.5;">' + pRarityLabel + '</div>' : '') +
+                        '<div style="font-size:8px;color:#667;font-weight:600;">\u23F3 WAIT</div>';
                 } else if (pState === 'brewing') {
                     pStatus =
                         (pRarityLabel ? '<div style="font-size:9px;color:' + pBorder + ';font-weight:700;">' + pRarityLabel + '</div>' : '') +
@@ -7457,10 +7471,13 @@
                 var pActionAttr = '';
                 var pCursor = '';
 
-                if (pState === 'brew') {
+                if (pState === 'brew' && !_anySlotBrewing) {
                     pActionClass = ' lm-potion-action';
                     pActionAttr = ' data-slot="' + slot + '" data-action="brew"';
                     pCursor = 'cursor:pointer;';
+                } else if (pState === 'brew' && _anySlotBrewing) {
+                    /* Another slot is already brewing — show grayed out */
+                    pCursor = 'cursor:not-allowed;opacity:.45;';
                 } else if (pState === 'open') {
                     pActionClass = ' lm-potion-action';
                     pActionAttr = ' data-slot="' + slot + '" data-action="open"';
@@ -8106,6 +8123,134 @@
 
 
 
+
+
+    /*
+     * ═══════════════════════════════════════════════════════════════════════
+     * POTION REWARD REVEAL
+     * ═══════════════════════════════════════════════════════════════════════
+     *
+     * When a potion is opened (opcode 125), ogario.v4.js dispatches
+     * 'lm-potion-reward' with the reward items. We show a reveal modal.
+     */
+
+    window._lmRewardPresentation = {
+        coin:     { icon: '\uD83D\uDCB0', label: 'Coins',  color: '#ffd700' },
+        dna:      { icon: '\uD83E\uDDEC', label: 'DNA',    color: '#7c4dff' },
+        create_skin_token: { icon: '\uD83C\uDFA8', label: 'Skin Token', color: '#ff4081' }
+    };
+
+    window._lmGetRewardPresentation = function (productId) {
+        if (window._lmRewardPresentation[productId]) return window._lmRewardPresentation[productId];
+        if (productId.indexOf('piece') !== -1) {
+            var skinName = productId.replace(/_piece.*/, '').replace(/_/g, ' ');
+            return { icon: '\uD83E\uDDE9', label: skinName + ' piece', color: '#42a5f5' };
+        }
+        if (productId.indexOf('skin_') === 0 || productId.indexOf('premium_') === 0) {
+            return { icon: '\u2728', label: productId.replace(/_/g, ' '), color: '#ff6d00' };
+        }
+        return { icon: '\uD83C\uDF81', label: productId.replace(/_/g, ' '), color: '#78909c' };
+    };
+
+    document.addEventListener('lm-potion-reward', function (e) {
+        var rewards = e && e.detail && e.detail.rewards;
+        if (!rewards || !rewards.length) {
+            if (window.toastr) toastr.success('<b>[POTION]:</b> Opened! No rewards this time.');
+            return;
+        }
+
+        injectStyles();
+        var t = getTheme();
+
+        var old = document.getElementById('lm-potion-reward-modal');
+        if (old) old.remove();
+
+        var modal = document.createElement('div');
+        modal.id = 'lm-potion-reward-modal';
+        modal.className = 'lm-modal-overlay';
+        modal.style.zIndex = '1000001';
+        modal.addEventListener('click', function (ev) {
+            if (ev.target === modal) modal.remove();
+        });
+
+        var shell = document.createElement('div');
+        shell.className = 'lm-modal-container';
+        shell.style.cssText = 'background:' + t.pc + ';border-color:' + t.mc + ';width:380px;max-width:90vw;text-align:center;';
+
+        /* Header */
+        var header = document.createElement('div');
+        header.style.cssText = 'padding:18px 20px 8px;font-size:24px;font-weight:900;color:' + t.tc + ';';
+        header.innerHTML = '\uD83E\uDDEA Potion Reward!';
+        shell.appendChild(header);
+
+        var subtitle = document.createElement('div');
+        subtitle.style.cssText = 'font-size:11px;color:' + t.tc2 + ';margin-bottom:14px;';
+        subtitle.textContent = 'You received ' + rewards.length + ' item' + (rewards.length > 1 ? 's' : '') + ':';
+        shell.appendChild(subtitle);
+
+        /* Reward cards */
+        var body = document.createElement('div');
+        body.style.cssText = 'padding:0 20px 16px;display:flex;flex-direction:column;gap:8px;';
+
+        for (var i = 0; i < rewards.length; i++) {
+            var rw = rewards[i];
+            var pres = window._lmGetRewardPresentation(rw.productId);
+
+            var card = document.createElement('div');
+            card.style.cssText =
+                'display:flex;align-items:center;gap:12px;padding:10px 14px;' +
+                'border-radius:10px;border:1px solid ' + pres.color + '33;' +
+                'background:' + pres.color + '12;' +
+                'animation:lm-reward-pop .4s ease ' + (i * 0.15) + 's both;';
+
+            var iconEl = document.createElement('div');
+            iconEl.style.cssText = 'font-size:28px;flex-shrink:0;';
+            iconEl.textContent = pres.icon;
+
+            var infoEl = document.createElement('div');
+            infoEl.style.cssText = 'flex:1;text-align:left;';
+            infoEl.innerHTML =
+                '<div style="font-weight:800;font-size:14px;color:' + pres.color + ';">' + pres.label + '</div>' +
+                (rw.amount > 1 ? '<div style="font-size:11px;color:' + t.tc2 + ';">x' + rw.amount + '</div>' : '');
+
+            card.appendChild(iconEl);
+            card.appendChild(infoEl);
+            body.appendChild(card);
+        }
+
+        shell.appendChild(body);
+
+        /* Close button */
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'btn';
+        closeBtn.style.cssText =
+            'margin:0 20px 16px;padding:8px 24px;border-radius:8px;font-weight:700;' +
+            'background:linear-gradient(135deg,' + t.b1 + ',' + t.b2 + ');color:#fff;border:none;cursor:pointer;';
+        closeBtn.textContent = 'Nice!';
+        closeBtn.onclick = function () { modal.remove(); };
+        shell.appendChild(closeBtn);
+
+        modal.appendChild(shell);
+        document.body.appendChild(modal);
+
+        /* Add pop animation if not already present */
+        if (!document.getElementById('lm-reward-pop-style')) {
+            var style = document.createElement('style');
+            style.id = 'lm-reward-pop-style';
+            style.textContent =
+                '@keyframes lm-reward-pop {' +
+                    '0% { opacity:0; transform:translateY(12px) scale(.9); }' +
+                    '100% { opacity:1; transform:translateY(0) scale(1); }' +
+                '}';
+            document.head.appendChild(style);
+        }
+
+        /* Auto-close after 8 seconds */
+        setTimeout(function () {
+            var m = document.getElementById('lm-potion-reward-modal');
+            if (m) m.remove();
+        }, 8000);
+    });
 
 
     /*

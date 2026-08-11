@@ -27805,7 +27805,19 @@ function thelegendmodproject() {
                     try {
                         var u = r.uncompressedData.brewPotionForSlotResponseField;
                         if (u) {
-                            if (u.userPotions && u.userPotions.length) {
+                            var brewResult = Number(u.result) || 0;
+                            if (brewResult === 1 && u.userPotions && u.userPotions.length) {
+                                /* Success */
+                                this.updatePotions(u.userPotions);
+                                if (window.toastr) toastr.success('<b>[POTION]:</b> Brewing started! \u2615');
+                            } else if (brewResult === 3) {
+                                /* Already brewing another slot */
+                                if (window.toastr) toastr.warning('<b>[POTION]:</b> Already brewing another potion. Wait for it to finish.');
+                            } else if (brewResult === 2) {
+                                /* Not collected / unavailable */
+                                if (window.toastr) toastr.warning('<b>[POTION]:</b> Potion not available to brew.');
+                            } else if (u.userPotions && u.userPotions.length) {
+                                /* Unknown result but has potions — update anyway */
                                 this.updatePotions(u.userPotions);
                             }
                         }
@@ -27826,7 +27838,31 @@ function thelegendmodproject() {
                             }
                             if (window._userInitiatedPotionOpen) {
                                 window._userInitiatedPotionOpen = false;
-                                toastr.success('<b>[SERVER]:</b> Potion consumed! &#x1F9EA;');
+
+                                /* Dispatch reward event for the UI modal */
+                                try {
+                                    var rewardItems = [];
+                                    if (u.productUpdates && u.productUpdates.length) {
+                                        for (var ri = 0; ri < u.productUpdates.length; ri++) {
+                                            var pu = u.productUpdates[ri];
+                                            if (pu && pu.userWalletItem) {
+                                                rewardItems.push({
+                                                    productId: pu.userWalletItem.productId || '',
+                                                    amount: Number(pu.userWalletItem.amount) || 0,
+                                                    type: Number(pu.userWalletItem.type) || 0,
+                                                    origin: Number(pu.origin) || 0
+                                                });
+                                            }
+                                        }
+                                    }
+                                    document.dispatchEvent(
+                                        new CustomEvent('lm-potion-reward', {
+                                            detail: { rewards: rewardItems }
+                                        })
+                                    );
+                                } catch (rewardEvtErr) {
+                                    console.warn('[LM] Potion reward event error:', rewardEvtErr);
+                                }
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
