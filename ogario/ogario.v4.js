@@ -2998,6 +2998,82 @@ window._lmSkinUploadState =
         originalButtonText: null
     };
 
+
+/*
+ * Build the skin-upload button label from config.
+ *
+ * Resolves the purchaseId through the full config chain,
+ * looks up the price in Wallet - Soft Purchases, and
+ * formats it as e.g. "Upload & Buy (90 DNA)".
+ *
+ * If the config is unavailable, returns a generic label.
+ */
+window.getSkinUploadButtonLabel =
+    function () {
+        var purchaseId =
+            (
+                typeof window
+                    .getAgarCustomSkinPurchaseId ===
+                    'function'
+            )
+            ? window
+                .getAgarCustomSkinPurchaseId()
+            : null;
+
+        if (
+            !purchaseId
+        ) {
+            return 'Upload & Buy';
+        }
+
+        var spInfo =
+            (
+                typeof window
+                    .getAgarSoftPurchaseInfo ===
+                    'function'
+            )
+            ? window
+                .getAgarSoftPurchaseInfo(
+                    purchaseId
+                )
+            : null;
+
+        if (
+            !spInfo ||
+            !spInfo.currencyAmount
+        ) {
+            return 'Upload & Buy';
+        }
+
+        var cost =
+            Number(
+                spInfo.currencyAmount
+            ) || 0;
+
+        var currency =
+            String(
+                spInfo.currencyProductId ||
+                'dna'
+            )
+                .trim()
+                .toUpperCase();
+
+        if (
+            cost <= 0
+        ) {
+            return 'Upload & Buy (free)';
+        }
+
+        return (
+            'Upload & Buy (' +
+            cost.toLocaleString() +
+            ' ' +
+            currency +
+            ')'
+        );
+    };
+
+
 window._lmSetSkinUploadBusy =
     function (message) {
         var state =
@@ -3021,7 +3097,14 @@ window._lmSetSkinUploadBusy =
         if (!state.originalButtonText) {
             state.originalButtonText =
                 button.text() ||
-                'Upload & Buy (90 DNA)';
+                (
+                    typeof window
+                        .getSkinUploadButtonLabel ===
+                        'function'
+                    ? window
+                        .getSkinUploadButtonLabel()
+                    : 'Upload & Buy'
+                );
         }
 
         button
@@ -3066,7 +3149,14 @@ window._lmFinishSkinUploadUi =
                 )
                 .text(
                     state.originalButtonText ||
-                    'Upload & Buy (90 DNA)'
+                    (
+                        typeof window
+                            .getSkinUploadButtonLabel ===
+                            'function'
+                        ? window
+                            .getSkinUploadButtonLabel()
+                        : 'Upload & Buy'
+                    )
                 );
         }
 
@@ -5083,6 +5173,20 @@ window.rebuildAgarConfigIndex = function () {
 
 
         /*
+         * Wallet - Amount Variable Prices:
+         *
+         *      actionCounter
+         *      from / to
+         *      purchaseId
+         *      referencePurchaseId
+         *
+         * Keyed by referencePurchaseId → array of rules.
+         */
+        amountVariablePricesByRef:
+            Object.create(null),
+
+
+        /*
          * ═══════════════════════════════════════════════════════════════
          * QUESTS
          * ═══════════════════════════════════════════════════════════════
@@ -5220,6 +5324,58 @@ window.rebuildAgarConfigIndex = function () {
                 .softPurchaseById[
                     row.id
                 ] = row;
+        }
+    }
+
+
+    /*
+     * ─────────────────────────────────────────────────────────────
+     * Wallet - Amount Variable Prices
+     * ─────────────────────────────────────────────────────────────
+     *
+     * actionCounter
+     * from / to
+     * purchaseId
+     * referencePurchaseId
+     */
+    list =
+        rows(
+            'Wallet - Amount Variable Prices'
+        );
+
+    for (
+        i = 0;
+        i < list.length;
+        i++
+    ) {
+        row = list[i];
+
+        if (
+            row &&
+            row.referencePurchaseId
+        ) {
+            var refKey =
+                String(
+                    row.referencePurchaseId
+                );
+
+            if (
+                !index
+                    .amountVariablePricesByRef[
+                        refKey
+                    ]
+            ) {
+                index
+                    .amountVariablePricesByRef[
+                        refKey
+                    ] = [];
+            }
+
+            index
+                .amountVariablePricesByRef[
+                    refKey
+                ]
+                .push(row);
         }
     }
 
@@ -12064,6 +12220,259 @@ window.getAgarSoftPurchaseInfo =
                 ] ||
             null
         );
+    };
+
+
+/*
+ * Resolve a referencePurchaseId through Wallet - Amount Variable Prices.
+ *
+ * Checks the user's action counters against the configured [from, to) range
+ * for each rule. Returns the specific purchaseId that matches, or falls back
+ * to the referencePurchaseId itself if no rule matches.
+ *
+ * Example:
+ *   resolveAmountVariablePrice("1_create_skin_token_variable")
+ *     → "1_create_skin_token_first_skin"   (when skinsCreated == 0)
+ *     → "1_create_skin_token_variable"     (when skinsCreated >= 1)
+ */
+window.resolveAmountVariablePrice =
+    function (
+        referencePurchaseId
+    ) {
+        if (
+            !referencePurchaseId
+        ) {
+            return referencePurchaseId;
+        }
+
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index ||
+            !index
+                .amountVariablePricesByRef
+        ) {
+            return referencePurchaseId;
+        }
+
+        var rules =
+            index
+                .amountVariablePricesByRef[
+                    referencePurchaseId
+                ];
+
+        if (
+            !rules ||
+            !rules.length
+        ) {
+            return referencePurchaseId;
+        }
+
+        /*
+         * Read the user's action counters.
+         */
+        var counters =
+            (
+                window.LM &&
+                LM.user &&
+                LM.user
+                    .actionCounters
+            ) ||
+            {};
+
+        for (
+            var ri = 0;
+            ri < rules.length;
+            ri++
+        ) {
+            var rule =
+                rules[ri];
+
+            if (
+                !rule ||
+                !rule.actionCounter ||
+                !rule.purchaseId
+            ) {
+                continue;
+            }
+
+            /*
+             * Map config counter names to protobuf fields.
+             *
+             * Config uses "skins_created";
+             * protobuf uses "skinsCreated".
+             */
+            var counterName =
+                String(
+                    rule.actionCounter
+                );
+
+            var counterValue = 0;
+
+            if (
+                counterName ===
+                    'skins_created'
+            ) {
+                counterValue =
+                    Number(
+                        counters
+                            .skinsCreated
+                    ) || 0;
+            } else if (
+                counterName ===
+                    'potions_obtained'
+            ) {
+                counterValue =
+                    Number(
+                        counters
+                            .potionsObtained
+                    ) || 0;
+            } else if (
+                counterName ===
+                    'quests_completed'
+            ) {
+                counterValue =
+                    Number(
+                        counters
+                            .questsCompleted
+                    ) || 0;
+            } else {
+                /*
+                 * Generic fallback:
+                 * try direct camelCase match.
+                 */
+                counterValue =
+                    Number(
+                        counters[
+                            counterName
+                        ]
+                    ) || 0;
+            }
+
+            var from =
+                Number(
+                    rule.from
+                ) || 0;
+
+            var to =
+                Number(
+                    rule.to
+                );
+
+            /*
+             * The range is [from, to).
+             * If `to` is absent / NaN, treat the rule
+             * as unbounded above.
+             */
+            if (
+                counterValue >= from &&
+                (
+                    isNaN(to) ||
+                    counterValue < to
+                )
+            ) {
+                return String(
+                    rule.purchaseId
+                );
+            }
+        }
+
+        /*
+         * No rule matched → use the reference
+         * (normal/variable) purchase itself.
+         */
+        return referencePurchaseId;
+    };
+
+
+/*
+ * Resolve the final purchaseId for custom-skin creation.
+ *
+ * Chain:
+ *   1.  Default Settings - Custom Skins → createUserSkinsPurchaseID
+ *   2.  If the value is an experiment object, use configDefault
+ *       (we do not pick experiment branches ourselves)
+ *   3.  Pass through resolveAmountVariablePrice()
+ *   4.  Return the specific purchaseId
+ */
+window.getAgarCustomSkinPurchaseId =
+    function () {
+        var index =
+            window
+                .getAgarConfigIndex();
+
+        if (
+            !index
+        ) {
+            return null;
+        }
+
+        /*
+         * Step 1: Read the base purchaseId
+         * from Default Settings - Custom Skins.
+         */
+        var setting =
+            index
+                .customSkinSettingByKey[
+                    'createUserSkinsPurchaseID'
+                ];
+
+        var basePurchaseId =
+            null;
+
+        if (setting) {
+            var val =
+                setting.value;
+
+            if (
+                typeof val ===
+                    'string'
+            ) {
+                /*
+                 * Plain string value.
+                 */
+                basePurchaseId =
+                    val;
+            } else if (
+                val &&
+                typeof val ===
+                    'object'
+            ) {
+                /*
+                 * Experiment descriptor.
+                 *
+                 * Use configDefault (Control)
+                 * as the safe fallback.
+                 *
+                 * We do NOT pick A/B ourselves.
+                 */
+                basePurchaseId =
+                    String(
+                        val.configDefault ||
+                        val.Control ||
+                        val.A ||
+                        ''
+                    ) ||
+                    null;
+            }
+        }
+
+        if (
+            !basePurchaseId
+        ) {
+            return null;
+        }
+
+        /*
+         * Step 2: Resolve through Amount
+         *         Variable Prices.
+         */
+        return window
+            .resolveAmountVariablePrice(
+                basePurchaseId
+            );
     };
 
 
@@ -25536,13 +25945,38 @@ function thelegendmodproject() {
              *   this.user.dna / this.user.coins — currency balance
              *   this.user.skinCreateTokens — standard skin token balance
              *   this.user.skinCreateVIPTokens — VIP skin token balance
-             *   window.WalletSoftPurchasesConfig — price config table
+             *   getAgarCustomSkinPurchaseId() — config-driven purchaseId
+             *   getAgarSoftPurchaseInfo() — price/currency from config
              *   app.softPurchase() — sends opcode 70 via mesega
              */
             var app = this;
 
+            /*
+             * Resolve the purchase ID through the full config chain:
+             *
+             *   Default Settings - Custom Skins
+             *       → createUserSkinsPurchaseID
+             *       → Wallet - Amount Variable Prices
+             *           (skins_created counter selects first-skin vs normal)
+             *       → final purchaseId
+             *
+             * Falls back to "1_create_skin_token" only if the config
+             * chain is entirely unavailable.
+             */
             var standardTokenPurchaseId =
+                (
+                    typeof window
+                        .getAgarCustomSkinPurchaseId ===
+                        'function' &&
+                    window
+                        .getAgarCustomSkinPurchaseId()
+                ) ||
                 "1_create_skin_token";
+
+            console.log(
+                "[LM SKIN] Resolved purchaseId: " +
+                standardTokenPurchaseId
+            );
 
             var indexedSubscriptions = [];
 
@@ -25588,56 +26022,48 @@ function thelegendmodproject() {
                 needsTokenPurchase =
                     true;
 
-                if (
-                    Array.isArray(
-                        window
-                            .WalletSoftPurchasesConfig
+                /*
+                 * Look up the resolved purchaseId
+                 * in Wallet - Soft Purchases via the
+                 * indexed config, not the raw array.
+                 */
+                var spInfo =
+                    (
+                        typeof window
+                            .getAgarSoftPurchaseInfo ===
+                            'function'
                     )
+                    ? window
+                        .getAgarSoftPurchaseInfo(
+                            standardTokenPurchaseId
+                        )
+                    : null;
+
+                if (
+                    spInfo &&
+                    spInfo.currencyAmount
                 ) {
-                    for (
-                        var spIdx = 0;
-                        spIdx <
-                        window
-                            .WalletSoftPurchasesConfig
-                            .length;
-                        spIdx++
-                    ) {
-                        var sp =
-                            window
-                                .WalletSoftPurchasesConfig[
-                                spIdx
-                            ];
+                    configuredCost =
+                        Number(
+                            spInfo
+                                .currencyAmount
+                        ) || 0;
 
-                        if (
-                            sp &&
-                            sp.productId ===
-                                standardTokenPurchaseId
-                        ) {
-                            configuredCost =
-                                Number(
-                                    sp.currencyAmount
-                                ) || 0;
-
-                            configuredCurrency =
-                                String(
-                                    sp.currencyProductId ||
-                                    "dna"
-                                )
-                                    .trim()
-                                    .toLowerCase();
-
-                            break;
-                        }
-                    }
+                    configuredCurrency =
+                        String(
+                            spInfo
+                                .currencyProductId ||
+                            "dna"
+                        )
+                            .trim()
+                            .toLowerCase();
                 }
 
                 if (!configuredCost) {
-                    configuredCost = 90;
-                    configuredCurrency =
-                        "dna";
-
                     console.warn(
-                        "[LM SKIN] Soft-purchase config not found; using default: 90 DNA."
+                        "[LM SKIN] Soft-purchase config not found for '" +
+                        standardTokenPurchaseId +
+                        "'; purchase will proceed but balance check is skipped."
                     );
                 }
 
@@ -25980,7 +26406,7 @@ function thelegendmodproject() {
              * Do not guess that 500ms is enough.
              *
              * Opcode 150 is sent only after the matching opcode 71 confirms
-             * that 1_create_skin_token was actually purchased.
+             * that the skin-token soft-purchase was actually completed.
              */
             if (needsTokenPurchase) {
                 if (
