@@ -29728,9 +29728,8 @@ function thelegendmodproject() {
             }
 
             if (this.serverType === 'senpa') {
-                // Senpa: standard WebSocket, server sends init first (opcode 0)
-                // No handshake/fingerprint needed from client side
-                // Delta rewrites mi.com → senpa.io (mi.com is an alias that doesn't accept WS)
+                // Senpa: requires WASM module for anti-cheat protocol
+                // Delta rewrites mi.com → senpa.io (mi.com is an alias)
                 t = t.replace('mi.com', 'senpa.io');
                 this.ws = t;
                 var self = this;
@@ -29740,12 +29739,65 @@ function thelegendmodproject() {
                 self._senpaMyClientID = -1;
                 self._senpaSpectate = false;
                 self._senpaAuthSent = false;
-                self.socket = new WebSocket(t);
-                self.socket.binaryType = 'arraybuffer';
-                self.socket.onopen = function () { app.onOpen(); };
-                self.socket.onmessage = function (t) { app.onMessage(t); };
-                self.socket.onerror = function (t) { app.onError(t); };
-                self.socket.onclose = function (t) { app.onClose(t); };
+
+                function _senpaDoConnect() {
+                    var SenpaModule = window._SenpaModule;
+                    if (!SenpaModule || !SenpaModule.create) {
+                        console.error('%c[Senpa]%c WASM module not loaded or missing create()', 'color:#fa3', 'color:inherit');
+                        return;
+                    }
+                    var senpaUrl = t + '?';
+                    // Module.create() wraps WebSocket with anti-cheat WASM layer
+                    self.socket = SenpaModule.create(
+                        senpaUrl,
+                        function onOpen(a) {
+                            // Defer to microtask so socket is fully initialized
+                            queueMicrotask(function() { app.onOpen(); });
+                        },
+                        function onClose(a) {
+                            app.onClose(a);
+                        },
+                        function onMessage(a) {
+                            // WASM passes raw data, wrap in MessageEvent
+                            var msg = { data: a };
+                            app.onMessage(msg);
+                        },
+                        function onError(a) {
+                            app.onError(a);
+                        }
+                    );
+                    // Wrap send to go through WASM socket
+                    var _origSenpaSend = self.socket && self.socket.send ? self.socket.send.bind(self.socket) : null;
+                    if (_origSenpaSend) {
+                        self._senpaSend = _origSenpaSend;
+                    }
+                }
+
+                // Lazy-load the WASM module if not already loaded
+                if (window._SenpaModule && window._SenpaModule.create) {
+                    _senpaDoConnect();
+                } else {
+                    console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
+                    var script = document.createElement('script');
+                    script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
+                    script.onload = function() {
+                        // WASM module needs time to initialize (onRuntimeInitialized)
+                        var _waitForInit = setInterval(function() {
+                            if (window._SenpaModule && window._SenpaModule.create) {
+                                clearInterval(_waitForInit);
+                                console.log('%c[Senpa]%c WASM module ready', 'color:#fa3', 'color:inherit');
+                                _senpaDoConnect();
+                            }
+                        }, 100);
+                        // Timeout after 10 seconds
+                        setTimeout(function() { clearInterval(_waitForInit); }, 10000);
+                    };
+                    script.onerror = function() {
+                        console.error('%c[Senpa]%c Failed to load WASM module script', 'color:#fa3', 'color:inherit');
+                    };
+                    document.head.appendChild(script);
+                }
+
                 application.getWS(self.ws);
                 application.sendServerJoin();
                 application.sendServerData();
