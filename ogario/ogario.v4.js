@@ -24914,29 +24914,75 @@ function thelegendmodproject() {
             window.legendmod.setrot = 1;
             window.legendmod.rotcnt = 0;
             var mat = window.legendmod.vector[window.legendmod.vnr];
+            var oldFlipX = !!mat[0];
+            var oldFlipY = !!mat[1];
             //window.legendmod.prevvnr = window.legendmod.vnr; //jimboy31001
             if ((b === 0 || b === 3) && (window.legendmod.bgpi === 1 || window.legendmod.bgpi === 2)) mat[0] = !mat[0];
             if ((b === 1 || b === 2) && (window.legendmod.bgpi === 0 || window.legendmod.bgpi === 3)) mat[0] = !mat[0];
             if ((b === 0 || b === 1) && (window.legendmod.bgpi === 2 || window.legendmod.bgpi === 3)) mat[1] = !mat[1];
             if ((b === 2 || b === 3) && (window.legendmod.bgpi === 1 || window.legendmod.bgpi === 0)) mat[1] = !mat[1];
             window.legendmod.vnr = this.dematrix(mat);
+
+            /* Re-translate all existing cells when an axis flip changes.
+             * Without this, cells already on screen keep their pre-flip
+             * coordinates → mirroring effect (cells appear on both sides). */
+            var xFlipped = (!!mat[0]) !== oldFlipX;
+            var yFlipped = (!!mat[1]) !== oldFlipY;
+            if ((xFlipped || yFlipped) && legendmod.indexedCells) {
+                for (var cid in legendmod.indexedCells) {
+                    if (!legendmod.indexedCells.hasOwnProperty(cid)) continue;
+                    var cell = legendmod.indexedCells[cid];
+                    if (xFlipped) {
+                        cell.x = legendmod.translateX(cell.x);
+                        cell.targetX = legendmod.translateX(cell.targetX);
+                        cell.startX = legendmod.translateX(cell.startX);
+                    }
+                    if (yFlipped) {
+                        cell.y = legendmod.translateY(cell.y);
+                        cell.targetY = legendmod.translateY(cell.targetY);
+                        cell.startY = legendmod.translateY(cell.startY);
+                    }
+                }
+            }
         },
         settechvnr(b) { //jimboy3100's 5/5/2020
+            var mat = window.legendmod.vector[window.legendmod.vnr];
+            var oldFlipX = !!mat[0];
+            var oldFlipY = !!mat[1];
             if (b === 0) {
-                window.legendmod.vector[window.legendmod.vnr][1] = 0;
-                window.legendmod.vector[window.legendmod.vnr][0] = 0;
+                mat[1] = 0;
+                mat[0] = 0;
             }
             if (b === 1) {
-                window.legendmod.vector[window.legendmod.vnr][1] = 0;
-                window.legendmod.vector[window.legendmod.vnr][0] = 1;
+                mat[1] = 0;
+                mat[0] = 1;
             }
             if (b === 2) {
-                window.legendmod.vector[window.legendmod.vnr][1] = 1;
-                window.legendmod.vector[window.legendmod.vnr][0] = 0;
+                mat[1] = 1;
+                mat[0] = 0;
             }
             if (b === 3) {
-                window.legendmod.vector[window.legendmod.vnr][1] = 1;
-                window.legendmod.vector[window.legendmod.vnr][0] = 1;
+                mat[1] = 1;
+                mat[0] = 1;
+            }
+            /* Re-translate existing cells (same logic as setvnr) */
+            var xFlipped = (!!mat[0]) !== oldFlipX;
+            var yFlipped = (!!mat[1]) !== oldFlipY;
+            if ((xFlipped || yFlipped) && legendmod.indexedCells) {
+                for (var cid in legendmod.indexedCells) {
+                    if (!legendmod.indexedCells.hasOwnProperty(cid)) continue;
+                    var cell = legendmod.indexedCells[cid];
+                    if (xFlipped) {
+                        cell.x = legendmod.translateX(cell.x);
+                        cell.targetX = legendmod.translateX(cell.targetX);
+                        cell.startX = legendmod.translateX(cell.startX);
+                    }
+                    if (yFlipped) {
+                        cell.y = legendmod.translateY(cell.y);
+                        cell.targetY = legendmod.translateY(cell.targetY);
+                        cell.startY = legendmod.translateY(cell.startY);
+                    }
+                }
             }
         },
         updatevnr() {
